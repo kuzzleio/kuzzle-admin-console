@@ -1,6 +1,6 @@
 [![Join the chat at https://gitter.im/kuzzleio/kuzzle](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kuzzleio/kuzzle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-<p align=center> ![logo](docs/images/logo.png)
+<p align=center> ![logo](https://raw.githubusercontent.com/kuzzleio/kuzzle/master/docs/images/logo.png)
 
 # Kuzzle BO
 
