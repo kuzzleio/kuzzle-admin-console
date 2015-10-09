@@ -1,0 +1,27 @@
+# Node
+node_modules
+npm-debug.log*
+.node_history
+# Exclude coverage report
+!/coverage/
+/coverage/*
+!/coverage/scripts
+# Plugin config folder
+config/plugins/
+
+# IDE
+.idea
+
+# Docker
+docker-compose-custom.yml
+
+# vagrant
+/.vagrant
+
+# Other
+.DS_STORE
+*#
+*~
+.*.swp
+.tags
+
