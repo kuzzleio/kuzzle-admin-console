@@ -1,0 +1,6 @@
+kuzzleBo:
+  image: kuzzleio/bo-base
+  volumes:
+    - ".:/var/app"
+  ports:
+    - "3000:3000"
