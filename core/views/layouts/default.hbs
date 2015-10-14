@@ -1,5 +1,18 @@
-{{>head}}
+<html>
+    {{>head}}
 
-layout
+    <body>
+        <div id="wrapper">
+            {{>menuBar}}
 
-{{{ body }}}
+            <div id="page-wrapper">
+                <div class="container-fluid">
+                    {{{ body }}}
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+    {{>scripts}}
+</html>

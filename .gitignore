@@ -24,4 +24,4 @@ docker-compose-custom.yml
 *~
 .*.swp
 .tags
-
+.sass-cache

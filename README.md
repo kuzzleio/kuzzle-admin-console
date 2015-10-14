@@ -17,6 +17,30 @@ Kuzzle uses [Elasticsearch filter DSL](https://www.elastic.co/guide/en/elasticse
 
 # Installation
 
+## With docker, from scratch
+
+You can use the `docker-compose/all.yml` which will run all Kuzzle stack and the BO.
+
+    $ docker-compose -f docker-compose/all.yml up
+
+If you want to customize which service to launch or if you don't want to clone the repo, you can create your own docker-compose.yml file. 
+If you want to communicate with Kuzzle in Stomp or AMQ, you probably want to add a service rabbitMQ.
+
+**Note:** For more information about how to install Kuzzle, you can check [this documentation](https://github.com/kuzzleio/kuzzle/blob/master/docs/installation.md)
+
+## With docker with an existing running Kuzzle
+
+You can run the back office using the Kuzzle BO image with a link to your Kuzzle instance
+
+    $ docker run --link my-kuzzle-container-name:kuzzle kuzzleio/bo
+    
+Where `my-kuzzle-container-name` is the container name where your Kuzzle is running. If you are in trouble for get your container name you can retrieve it with
+    
+    $ docker ps | grep kuzzleio/kuzzle
+    
+The container name is in the last column.
+
+**Note:** For more information about how to install Kuzzle, you can check [this documentation](https://github.com/kuzzleio/kuzzle/blob/master/docs/installation.md)
 
 # Running Tests
 

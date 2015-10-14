@@ -1,0 +1,13 @@
+.menubar {
+  background-color: #37474f;
+  border-color: #37474f; }
+
+#sidebar .side-nav {
+  background-color: #263238; }
+  #sidebar .side-nav li.active {
+    background-color: #45b29d; }
+    #sidebar .side-nav li.active a {
+      background-color: #45b29d; }
+  #sidebar .side-nav li a:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #fff; }
