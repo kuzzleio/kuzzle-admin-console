@@ -1,5 +1,5 @@
 kuzzleBo:
-  image: kuzzleio/bo-base
+  image: kuzzleio/bo
   volumes:
     - ".:/var/app"
   ports:

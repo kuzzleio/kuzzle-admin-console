@@ -19,9 +19,9 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "express-handlebars": "^2.0.1",
+    "kuzzle-sdk": "git+https://github.com/kuzzleio/sdk-javascript.git#v1.0",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0",
-    "kuzzle-sdk": "1.0.0"
+    "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -30,5 +30,4 @@
     "grunt-contrib-watch": "^0.6.1",
     "gruntify-eslint": "^1.1.0"
   }
-
 }
