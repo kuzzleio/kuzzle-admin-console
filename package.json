@@ -20,7 +20,8 @@
     "express": "~4.13.1",
     "express-handlebars": "^2.0.1",
     "morgan": "~1.6.1",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "kuzzle-sdk": "1.0.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

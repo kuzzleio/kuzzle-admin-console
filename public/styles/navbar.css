@@ -1,6 +1,12 @@
 .menubar {
-  background-color: #37474f;
-  border-color: #37474f; }
+  background-color: #FFFFFF;
+  border-color: #E6E6E6; }
+  .menubar .navbar-brand {
+    padding: 10px 15px; }
+  .menubar .navbar-toggle {
+    background-color: #333; }
+  .menubar img {
+    height: 30px; }
 
 #sidebar .side-nav {
   background-color: #263238; }

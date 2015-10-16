@@ -3,7 +3,12 @@ var
   router = express.Router();
 
 router.get('/browse', function(req, res) {
-  res.render('persistence/browse');
+
+  if (!req.xhr) {
+    return res.render('persistence/browse');
+  }
+
+
 });
 
 module.exports = router;
