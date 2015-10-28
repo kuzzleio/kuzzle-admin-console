@@ -3,5 +3,16 @@ body {
 }
 
 #page-wrapper {
+    padding: 0;
     background-color: #F3F3F3;
+
+    #loading-bar-wrapper {
+        .bar {
+            position: inherit;
+            height: 3px;
+        }
+    }
+    .headline {
+        margin-bottom: 30px;
+    }
 }

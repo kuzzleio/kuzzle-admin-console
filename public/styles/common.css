@@ -2,4 +2,10 @@ body {
   background-color: #F3F3F3; }
 
 #page-wrapper {
+  padding: 0;
   background-color: #F3F3F3; }
+  #page-wrapper #loading-bar-wrapper .bar {
+    position: inherit;
+    height: 3px; }
+  #page-wrapper .headline {
+    margin-bottom: 30px; }

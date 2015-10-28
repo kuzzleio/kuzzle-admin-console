@@ -1,13 +1,16 @@
 <html>
     {{>head}}
 
-    <body>
+    <body ng-app="kuzzle">
         <div id="wrapper">
             {{>menuBar}}
 
             <div id="page-wrapper">
+                <div id="loading-bar-wrapper">
+                    <div></div>
+                </div>
                 <div class="container-fluid">
-                    {{{ body }}}
+                    <div ui-view="bodyView"></div>
                 </div>
             </div>
         </div>

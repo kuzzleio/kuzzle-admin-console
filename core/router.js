@@ -1,12 +1,14 @@
 var
   index = require('./controllers/index'),
-  persistence = require('./controllers/persistence');
+  storage = require('./controllers/storage'),
+  schema = require('./controllers/schema');
 
 module.exports = {
 
   initRoutes: function (app) {
     app.use('/', index);
-    app.use('/persistence', persistence);
+    app.use('/storage', storage);
+    app.use('/schema', schema);
   }
 
 };

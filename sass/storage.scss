@@ -1,0 +1,53 @@
+.collections {
+  font-size: 1.3em;
+  height: 70%;
+  padding-right: 0;
+  margin-right: 50px;
+  text-align: center;
+
+  li.active a {
+    background-color: #528186;
+
+    &:focus {
+      background-color: #528186;
+    }
+    &:hover {
+      color: #fff;
+      background-color: #6C9A9E;
+    }
+  }
+}
+
+.filters {
+  form {
+    margin-top: 10px;
+
+    .actions-term {
+      margin-top: 8px;
+      padding-left: 0;
+
+      .add-term, .remove-term {
+        cursor: pointer;
+        margin-right: 10px;
+      }
+    }
+    .ace_editor {
+      height: 200px;
+      margin-bottom: 10px;
+    }
+  }
+}
+
+.documents .panel {
+  margin-bottom: 5px;
+
+  .panel-body {
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+}
+
+.panel-body .json-formatter-row:first-child > a:first-child > .thumbnail-text {
+  opacity: .5;
+}
+

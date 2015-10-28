@@ -13,7 +13,8 @@
   #sidebar .side-nav li.active {
     background-color: #45b29d; }
     #sidebar .side-nav li.active a {
-      background-color: #45b29d; }
+      background-color: #45b29d;
+      color: #fff; }
   #sidebar .side-nav li a:hover {
     background-color: rgba(0, 0, 0, 0.1) !important;
     color: #fff; }

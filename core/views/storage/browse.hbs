@@ -1,0 +1,19 @@
+<div class="row" ng-controller="BrowseCtrl" ng-init="init()">
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            Storage <small>Browse data</small>
+        </h1>
+    </div>
+
+    <div class="col-sm-2 collections">
+        <ul class="nav nav-pills nav-stacked">
+            <li ui-sref-active="active" ng-repeat="collection in collections | orderBy">
+                <a ui-sref=".documents({collection: collection})" ng-bind="collection"></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-sm-offset-1 col-sm-8">
+        <div ui-view="subView"></div>
+    </div>
+</div>

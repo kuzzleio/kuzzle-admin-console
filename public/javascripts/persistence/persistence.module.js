@@ -1,1 +1,0 @@
-angular.module('kuzzle.persistence', ['kuzzle.socket']);

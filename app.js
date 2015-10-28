@@ -10,7 +10,7 @@ var
 
 // view engine setup
 app.engine('.hbs', exphbs({
-  defaultLayout: 'default',
+  defaultLayout: null,
   layoutsDir: 'core/views/layouts',
   partialsDir: ['core/views/partials'],
   extname: '.hbs'
