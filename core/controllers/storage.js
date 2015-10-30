@@ -32,14 +32,13 @@ router.get('/listCollection', function (req, res) {
 router.post('/search', function (req, res) {
 
   var
-    limit = 3,
+    limit = 10,
     page = 1,
     pagination,
     queryParams = req.query,
     params = req.body,
     filter = params.filter,
     collection = params.collection;
-
 
   if (!collection) {
     return res.json({error: true, message: 'collection is missing'});
@@ -51,7 +50,10 @@ router.post('/search', function (req, res) {
 
   pagination = {
     from: (page - 1) * limit,
-    size: limit
+    size: limit,
+    sort: [
+      '_uid'
+    ]
   };
 
   filter = _.extend(pagination, filter);

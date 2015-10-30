@@ -2,8 +2,7 @@ angular.module('kuzzle', [
   'ui.router',
   'kuzzle.storage',
   'angular-loading-bar',
-  'ngAnimate',
-  'ui-notification'
+  'ngAnimate'
 ])
 
   .config(['$httpProvider', function($httpProvider) {

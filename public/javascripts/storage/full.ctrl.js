@@ -5,7 +5,8 @@ angular.module('kuzzle.storage')
     '$http',
     'documentApi',
     '$stateParams',
-    function ($scope, $http, documentApi, $stateParams) {
+    'socket',
+    function ($scope, $http, documentApi, $stateParams, socket) {
 
       $scope.schema = {
         title: $stateParams.collection,
@@ -15,9 +16,11 @@ angular.module('kuzzle.storage')
       $scope.id = $stateParams.id;
 
       $scope.init = function () {
-        var data = {
-          filter: {ids: {values: [$stateParams.id]}}
-        };
+        var
+          data = {
+            filter: {ids: {values: [$stateParams.id]}}
+          },
+          id = null;
 
         documentApi.search($stateParams.collection, data)
           .then(function (response) {
@@ -26,6 +29,13 @@ angular.module('kuzzle.storage')
             }
 
             $scope.document = response.data.documents[0].body;
+            id = response.data.documents[0]._id;
+
+            socket.on('update:'+id)
+              .forEach(function (update) {
+                console.log(update);
+              });
+            socket.emit('document', {id: id});
           })
           .catch(function (error) {
             console.error(error);
@@ -38,8 +48,7 @@ angular.module('kuzzle.storage')
     '$scope',
     'documentApi',
     '$stateParams',
-    'Notification',
-    function ($scope, documentApi, $stateParams, notification) {
+    function ($scope, documentApi, $stateParams) {
 
       $scope.onSubmit = function () {
         var document = {
@@ -47,15 +56,7 @@ angular.module('kuzzle.storage')
           body: $scope.editor.getValue()
         };
 
-        documentApi.update($stateParams.collection, document)
-          .then(function (response) {
-            if (!response.error) {
-              notification.success('Document updated !');
-            }
-            else {
-              notification.error('Error during document update. Please retry.')
-            }
-          })
+        documentApi.update($stateParams.collection, document, true);
       }
 
   }]);

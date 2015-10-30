@@ -1,6 +1,6 @@
-angular.module('kuzzle.documentApi', [])
+angular.module('kuzzle.documentApi', ['ui-notification'])
 
-  .service('documentApi', ['$http', function ($http) {
+  .service('documentApi', ['$http', 'Notification', function ($http, notification) {
     return {
       search: function (collection, filter, page) {
         if (!page) {
@@ -20,11 +20,23 @@ angular.module('kuzzle.documentApi', [])
         })
       },
 
-      update: function (collection, document) {
-        return $http.post('/storage/update', {
+      update: function (collection, document, notify) {
+        $http.post('/storage/update', {
           collection: collection,
           document: document
-        });
+        })
+          .then(function (response) {
+            if (!notify) {
+              return false;
+            }
+
+            if (!response.error) {
+              notification.success('Document updated !');
+            }
+            else {
+              notification.error('Error during document update. Please retry.')
+            }
+          })
       }
     }
   }]);

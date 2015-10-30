@@ -132,7 +132,7 @@ angular.module('kuzzle.storage')
           $scope.documents[index].body = JSON.parse($scope.documents[index].json);
           $scope.documents[index].isEdit = false;
 
-          documentApi.update($scope.collection, $scope.documents[index]);
+          documentApi.update($scope.collection, $scope.documents[index], true);
         }
         catch (e) {
 
