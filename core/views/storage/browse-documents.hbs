@@ -1,4 +1,4 @@
-<div class="browse-documents" ng-controller="BrowseDocumentsCtrl" ng-init="init()">
+<div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
 
     <div class="panel panel-default filters">
         <div class="panel-body">
@@ -28,7 +28,7 @@
                         </div>
                     </form>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-default" ng-click="basicSearch()">Submit</button>
+                        <button type="submit" class="btn btn-success ng-click="basicSearch()">Submit</button>
                     </div>
                 </uib-tab>
                 <uib-tab heading="Advanced filter">
@@ -39,7 +39,7 @@
                             <json-edit content="filter"></json-edit>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-default" ng-click="advancedSearch()">Submit</button>
+                                <button type="submit" class="btn btn-success" ng-click="advancedSearch()">Submit</button>
                                 <button class="btn btn-danger" ng-click="resetAdvancedFilter()">Reset</button>
                             </div>
                         </div>
@@ -52,7 +52,20 @@
     <div class="row documents" ng-repeat="document in documents">
         <div class="panel panel-default">
             <div class="panel-body">
-                <json-formatter open="0" json="document.body"></json-formatter>
+                <div class="row">
+                    <div class="col-sm-11">
+                        <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
+                        <json-edit content="document" ng-show="document.isEdit"></json-edit>
+                    </div>
+                    <div class="col-sm-1 pull-right" ng-show="!document.isEdit">
+                        <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument($index)"></span>
+                        <a class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage-full({collection: collection, id: document._id})"></a>
+                    </div>
+                    <div class="col-sm-1 pull-right" ng-show="document.isEdit">
+                        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument($index)"></span>
+                        <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument($index)"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

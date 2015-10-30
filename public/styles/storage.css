@@ -29,6 +29,11 @@
   .documents .panel .panel-body {
     padding-bottom: 10px;
     padding-top: 10px; }
+    .documents .panel .panel-body .ace_editor {
+      height: 250px; }
+    .documents .panel .panel-body .edit-document {
+      cursor: pointer;
+      margin-right: 15px; }
 
 .panel-body .json-formatter-row:first-child > a:first-child > .thumbnail-text {
   opacity: .5; }

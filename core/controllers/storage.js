@@ -68,4 +68,35 @@ router.post('/search', function (req, res) {
 
 });
 
+router.post('/update', function (req, res) {
+
+  var
+    document = req.param('document'),
+    collection = req.param('collection');
+
+  if (!document) {
+    return res.json({error: true, message: 'No document provided'});
+  }
+
+  if (!collection) {
+    return res.json({error: true, message: 'No collection provided'});
+  }
+
+  kuzzle
+    .dataCollectionFactory(collection)
+    .replacePromise(document._id, document.body)
+    .then(function () {
+      return res.json({error: false});
+    })
+    .catch(function (error) {
+      return res.json({error: true, message: error});
+    });
+});
+
+router.get('/full', function (req, res) {
+
+  return res.render('storage/full');
+
+});
+
 module.exports = router;

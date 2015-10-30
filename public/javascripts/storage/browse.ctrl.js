@@ -1,6 +1,6 @@
 angular.module('kuzzle.storage')
 
-  .controller('BrowseCtrl', ['$scope', '$http', function ($scope, $http) {
+  .controller('StorageBrowseCtrl', ['$scope', '$http', function ($scope, $http) {
 
     $scope.collections = [];
 

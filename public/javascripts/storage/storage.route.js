@@ -21,5 +21,11 @@ angular.module('kuzzle.storage')
           "subView": { templateUrl: '/storage/browse-documents' }
         }
       })
+      .state('storage-full', {
+        url: '/storage/:collection/:id',
+        views: {
+          "bodyView": { templateUrl: '/storage/full' }
+        }
+      })
 
   }]);

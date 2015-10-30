@@ -1,0 +1,13 @@
+<div class="row" ng-controller="StorageFullCtrl" ng-init="init()">
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            Storage <small>edit</small>
+        </h1>
+    </div>
+
+    <div class="col-sm-12">
+        <json-editor schema="schema" startval="document" buttons-controller="StorageFullButtonsCtrl">
+            <button type="submit" class="btn btn-success" ng-click="onSubmit($event)">Update</button>
+        </json-editor>
+    </div>
+</div>

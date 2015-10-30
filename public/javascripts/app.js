@@ -2,7 +2,8 @@ angular.module('kuzzle', [
   'ui.router',
   'kuzzle.storage',
   'angular-loading-bar',
-  'ngAnimate'
+  'ngAnimate',
+  'ui-notification'
 ])
 
   .config(['$httpProvider', function($httpProvider) {
@@ -12,4 +13,15 @@ angular.module('kuzzle', [
   .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeSpinner = false;
     cfpLoadingBarProvider.parentSelector = '#loading-bar-wrapper';
+  }])
+
+  .config(['JSONEditorProvider', function (JSONEditorProvider) {
+    JSONEditorProvider.configure({
+      defaults: {
+        options: {
+          iconlib: 'bootstrap3',
+          theme: 'bootstrap3'
+        }
+      }
+    });
   }]);

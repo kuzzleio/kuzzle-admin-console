@@ -44,6 +44,16 @@
   .panel-body {
     padding-bottom: 10px;
     padding-top: 10px;
+
+    .ace_editor {
+      height: 250px;
+    }
+
+    .edit-document {
+      cursor: pointer;
+      margin-right: 15px;
+
+    }
   }
 }
 
