@@ -2,7 +2,11 @@ angular.module('kuzzle', [
   'ui.router',
   'kuzzle.storage',
   'angular-loading-bar',
-  'ngAnimate'
+  'ngAnimate',
+  'kuzzle.uid',
+  'kuzzle.sidebar',
+  'ui-notification',
+  'kuzzle.bufferCancel'
 ])
 
   .config(['$httpProvider', function($httpProvider) {
@@ -14,13 +18,9 @@ angular.module('kuzzle', [
     cfpLoadingBarProvider.parentSelector = '#loading-bar-wrapper';
   }])
 
-  .config(['JSONEditorProvider', function (JSONEditorProvider) {
-    JSONEditorProvider.configure({
-      defaults: {
-        options: {
-          iconlib: 'bootstrap3',
-          theme: 'bootstrap3'
-        }
-      }
+  .config(['NotificationProvider', function(NotificationProvider) {
+    NotificationProvider.setOptions({
+      delay: 5000,
+      closeOnClick: false
     });
   }]);

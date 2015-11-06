@@ -1,6 +1,6 @@
 angular.module('kuzzle.storage')
 
-  .config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+  .config(['$stateProvider', function ($stateProvider) {
 
     $stateProvider
       .state('storage', {
@@ -9,22 +9,28 @@ angular.module('kuzzle.storage')
           "bodyView": { templateUrl: '/storage' }
         }
       })
-      .state('storage-browse', {
-        url: '/storage/browse',
+      .state('storage.browse', {
+        url: '/browse',
         views: {
-          "bodyView": { templateUrl: '/storage/browse' }
+          "mainView": { templateUrl: '/storage/browse' }
         }
       })
-      .state('storage-browse.documents', {
-        url: '/:collection',
+      .state('storage.browse.documents', {
+        url: '/:collection?basicFilter&advancedFilter',
         views: {
           "subView": { templateUrl: '/storage/browse-documents' }
         }
       })
-      .state('storage-full', {
-        url: '/storage/:collection/:id',
+      .state('storage.create', {
+        url: '/:collection/add',
         views: {
-          "bodyView": { templateUrl: '/storage/full' }
+          "mainView": { templateUrl: '/storage/create' }
+        }
+      })
+      .state('storage.full', {
+        url: '/:collection/:id',
+        views: {
+          "mainView": { templateUrl: '/storage/full' }
         }
       })
 

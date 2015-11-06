@@ -1,13 +1,14 @@
-<div class="row" ng-controller="StorageFullCtrl" ng-init="init()">
+<div class="row edit-document" ng-controller="StorageFullCtrl" ng-init="init()">
     <div class="col-sm-12 headline">
         <h1 class="page-header">
             Storage <small>edit</small>
         </h1>
     </div>
 
-    <div class="col-sm-12">
-        <json-editor schema="schema" startval="document" buttons-controller="StorageFullButtonsCtrl">
-            <button type="submit" class="btn btn-success" ng-click="onSubmit($event)">Update</button>
+    <div class="col-sm-10 col-sm-offset-1 ">
+        <json-editor class="form" schema="schema" startval="document" buttons-controller="StorageFullButtonsCtrl">
+            <button type="submit" class="btn btn-success control" ng-click="onSubmit($event)">Update</button>
+            <a href class="control" ng-click="">Cancel</a>
         </json-editor>
     </div>
 </div>

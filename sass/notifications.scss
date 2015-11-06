@@ -1,0 +1,18 @@
+.ui-notification {
+
+  box-shadow: 1px 1px 10px rgba(0,0,0,.3);
+
+  a {
+    cursor: pointer;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  .close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+  }
+}

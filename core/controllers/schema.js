@@ -1,7 +1,7 @@
 var
   express = require('express'),
   router = express.Router(),
-  kuzzle = require('../services/kuzzle'),
+  kuzzle = require('../services/kuzzle')(),
   _ = require('lodash');
 
 router.get('/get', function (req, res) {

@@ -2,6 +2,32 @@ body {
     background-color: #F3F3F3;
 }
 
+div.view-fade {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    opacity: 1;
+
+    &.ng-enter,
+    &.ng-leave {
+        -webkit-transition: all .5s ease;
+        transition: all .5s ease;
+    }
+    &.ng-enter {
+        opacity: 0;
+    }
+    &.ng-enter-active {
+        opacity: 1;
+    }
+    &.ng-leave {
+        opacity: 1;
+    }
+    &.ng-leave-active {
+        opacity: 0;
+    }
+}
+
 #page-wrapper {
     padding: 0;
     background-color: #F3F3F3;

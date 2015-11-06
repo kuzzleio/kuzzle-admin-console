@@ -1,0 +1,38 @@
+{
+  "name": "kuzzle-bo",
+  "description": "Official back office for manage and monitor your Kuzzle",
+  "main": "app.js",
+  "authors": [
+    "Kuzzle Team"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "kuzzle",
+    "backoffice"
+  ],
+  "homepage": "https://github.com/kuzzleio/kuzzle-bo",
+  "moduleType": [
+    "amd"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "public/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angular": "1.4.7",
+    "angular-animate": "~1.4.7",
+    "angular-bootstrap": "~0.14.3",
+    "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master",
+    "json-formatter": "~0.4.0",
+    "angular-ui-router": "~0.2.15",
+    "rxjs": "~4.0.6",
+    "angular-loading-bar": "~0.8.0",
+    "angular-ui-ace": "bower",
+    "angular-json-editor": "git://github.com/AnthonySendra/angular-json-editor#master"
+  }
+}

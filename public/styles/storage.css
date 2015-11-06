@@ -1,8 +1,4 @@
 .collections {
-  font-size: 1.3em;
-  height: 70%;
-  padding-right: 0;
-  margin-right: 50px;
   text-align: center; }
   .collections li.active a {
     background-color: #528186; }
@@ -12,28 +8,40 @@
       color: #fff;
       background-color: #6C9A9E; }
 
-.filters form {
+.browse-documents .create {
+  margin-bottom: 10px; }
+  .browse-documents .create button {
+    padding: 8px 30px 8px 30px; }
+.browse-documents .filters form {
   margin-top: 10px; }
-  .filters form .actions-term {
+  .browse-documents .filters form .actions-term {
     margin-top: 8px;
     padding-left: 0; }
-    .filters form .actions-term .add-term, .filters form .actions-term .remove-term {
+    .browse-documents .filters form .actions-term .add-term, .browse-documents .filters form .actions-term .remove-term {
       cursor: pointer;
       margin-right: 10px; }
-  .filters form .ace_editor {
+  .browse-documents .filters form .ace_editor {
     height: 200px;
     margin-bottom: 10px; }
-
-.documents .panel {
+  .browse-documents .filters form button {
+    margin-right: 10px; }
+.browse-documents .documents .panel {
   margin-bottom: 5px; }
-  .documents .panel .panel-body {
+  .browse-documents .documents .panel.deleted {
+    background-color: #EBCCCC;
+    border-color: rgba(255, 0, 0, 0.29); }
+  .browse-documents .documents .panel .panel-body {
     padding-bottom: 10px;
     padding-top: 10px; }
-    .documents .panel .panel-body .ace_editor {
+    .browse-documents .documents .panel .panel-body .ace_editor {
       height: 250px; }
-    .documents .panel .panel-body .edit-document {
+    .browse-documents .documents .panel .panel-body .edit-document {
       cursor: pointer;
-      margin-right: 15px; }
+      margin-right: 4px; }
+    .browse-documents .documents .panel .panel-body .json-formatter-row:first-child > a:first-child > .thumbnail-text {
+      opacity: .5; }
+    .browse-documents .documents .panel .panel-body ul span {
+      margin-right: 10px; }
 
-.panel-body .json-formatter-row:first-child > a:first-child > .thumbnail-text {
-  opacity: .5; }
+.edit-document .form button.control {
+  margin-right: 10px; }

@@ -1,5 +1,11 @@
 var
   Kuzzle = require('kuzzle-sdk'),
-  kuzzle = new Kuzzle('http://kuzzle:7512');
+  kuzzle;
 
-module.exports = kuzzle;
+module.exports = function () {
+  if (!kuzzle) {
+    kuzzle = new Kuzzle('http://kuzzle:7512');
+  }
+
+  return kuzzle;
+};

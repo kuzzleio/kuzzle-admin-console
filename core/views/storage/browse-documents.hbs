@@ -1,69 +1,91 @@
 <div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
 
-    <div class="panel panel-default filters">
-        <div class="panel-body">
-            <uib-tabset>
-                <uib-tab heading="Basic filter">
-                    <form class="form-horizontal">
-                        <div class="form-group" ng-repeat="term in filter.terms" ng-class="{'has-error': term.error}">
-                            <div class="col-sm-2">
-                                <input
-                                        type="text"
-                                        ng-model="term.field"
-                                        placeholder="Field"
-                                        uib-typeahead="field for field in fields | filter:$viewValue"
-                                        class="form-control" />
-                            </div>
-                            <div class="col-sm-2">
-                                <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
-                                </select>
-                            </div>
-                            <div class="col-sm-2">
-                                <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
-                            </div>
-                            <div class="col-sm-1 actions-term">
-                                <span ng-if="$last" class="glyphicon glyphicon-plus add-term text-success" aria-hidden="true" ng-click="addTerm()"></span>
-                                <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm($index)"></span>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-success" ng-click="basicSearch()">Submit</button>
-                    </div>
-                </uib-tab>
-                <uib-tab heading="Advanced filter">
-                    <form>
-                        <div class="form-group">
-                            <label for="filter">Filter</label>
-                            <p class="text-danger" ng-show="error" ng-bind="error"></p>
-                            <json-edit content="filter"></json-edit>
+    <div class="row create">
+        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})">Add</button>
+    </div>
 
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-success" ng-click="advancedSearch()">Submit</button>
-                                <button class="btn btn-danger" ng-click="resetAdvancedFilter()">Reset</button>
+    <div class="row">
+        <div class="panel panel-default filters">
+            <div class="panel-body">
+                <uib-tabset>
+                    <uib-tab heading="Basic filter" active="searchType.basic">
+                        <form class="form-horizontal">
+                            <div class="form-group" ng-repeat="term in filter.terms" ng-class="{'has-error': term.error}">
+                                <div class="col-sm-2">
+                                    <input
+                                            type="text"
+                                            ng-model="term.field"
+                                            placeholder="Field"
+                                            uib-typeahead="field for field in fields | filter:$viewValue"
+                                            typeahead-min-length="0"
+                                            class="form-control" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
+                                </div>
+                                <div class="col-sm-1 actions-term">
+                                    <span ng-if="$last" class="glyphicon glyphicon-plus add-term text-success" aria-hidden="true" ng-click="addTerm()"></span>
+                                    <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm($index)"></span>
+                                </div>
                             </div>
+                        </form>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-default" ng-click="basicSearch()">Submit</button>
                         </div>
-                    </form>
-                </uib-tab>
-            </uib-tabset>
+                    </uib-tab>
+                    <uib-tab heading="Advanced filter" active="searchType.advanced">
+                        <form>
+                            <div class="form-group">
+                                <label for="filter">Filter</label>
+                                <p class="text-danger" ng-show="error" ng-bind="error"></p>
+                                <json-edit content="filter"></json-edit>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-default" ng-click="advancedSearch()">Submit</button>
+                                    <a href ng-click="resetAdvancedFilter()">Reset</a>
+                                </div>
+                            </div>
+                        </form>
+                    </uib-tab>
+                </uib-tabset>
+            </div>
         </div>
     </div>
 
+    <div class="row" ng-show="documents.length == 0">
+        <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
+    </div>
+    <div class="row"  ng-show="documents.length != 0">
+        <p class="col-sm-1 pull-right" ng-bind="total"></p>
+    </div>
+
     <div class="row documents" ng-repeat="document in documents">
-        <div class="panel panel-default">
+        <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-11">
                         <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
                         <json-edit content="document" ng-show="document.isEdit"></json-edit>
                     </div>
-                    <div class="col-sm-1 pull-right" ng-show="!document.isEdit">
+                    <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && !document.isEdit">
+                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})"></span>
                         <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument($index)"></span>
-                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage-full({collection: collection, id: document._id})"></span>
+                        <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        </span>
+                        <ul class="dropdown-menu">
+                            <li><a href ng-click="delete($index)"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
+                        </ul>
                     </div>
-                    <div class="col-sm-1 pull-right" ng-show="document.isEdit">
+                    <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && document.isEdit">
                         <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument($index)"></span>
                         <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument($index)"></span>
+                    </div>
+                    <div class="col-sm-1 pull-right" ng-show="document.isDeleted">
+                        <a href ng-click="cancelDelete($index)">Cancel</a>
                     </div>
                 </div>
             </div>

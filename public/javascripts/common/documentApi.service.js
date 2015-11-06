@@ -1,6 +1,9 @@
-angular.module('kuzzle.documentApi', ['ui-notification'])
+angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
 
-  .service('documentApi', ['$http', 'Notification', function ($http, notification) {
+  .service('documentApi', ['$http', 'socket', 'uid', 'Notification', 'bufferCancel', function ($http, socket, uid, notification, bufferCancel) {
+    var
+      clientId = uid.new();
+
     return {
       search: function (collection, filter, page) {
         if (!page) {
@@ -23,6 +26,63 @@ angular.module('kuzzle.documentApi', ['ui-notification'])
       update: function (collection, document, notify) {
         $http.post('/storage/update', {
           collection: collection,
+          document: document,
+          clientId: clientId
+        })
+          .then(function (response) {
+            if (!notify) {
+              return false;
+            }
+
+            if (!response.data.error) {
+              notification.success('Document updated !');
+            }
+            else {
+              notification.error('Error during document update. Please retry.')
+            }
+          });
+      },
+
+      subscribeId: function (collection, id, cb) {
+        socket.on('subscribeDocument:update:' + id)
+          .forEach(function (result) {
+            cb(result);
+          });
+        socket.emit('subscribeDocument', {id: id, collection: collection, requestId: requestId});
+      },
+
+      deleteById: function (collection, id, buffer) {
+        var data = {
+          collection: collection,
+          id: id,
+          clientId: clientId
+        };
+
+        if (buffer) {
+          bufferCancel.add('deleteById', collection, id);
+          data.buffer = true;
+        }
+
+        return $http.post('/storage/deleteById', {
+          collection: collection,
+          id: id,
+          buffer: true,
+          clientId: clientId
+        });
+      },
+
+      cancelDeleteById: function (collection, id) {
+        bufferCancel.cancel('deleteById', collection, id);
+        return $http.post('/storage/cancel-deleteById', {
+          collection: collection,
+          id: id,
+          clientId: clientId
+        });
+      },
+
+      create: function (collection, document, notify) {
+        $http.post('/storage/create', {
+          collection: collection,
           document: document
         })
           .then(function (response) {
@@ -30,13 +90,13 @@ angular.module('kuzzle.documentApi', ['ui-notification'])
               return false;
             }
 
-            if (!response.error) {
-              notification.success('Document updated !');
+            if (!response.data.error) {
+              notification.success('Document created !');
             }
             else {
-              notification.error('Error during document update. Please retry.')
+              notification.error('Error during document creation. Please retry.')
             }
-          })
+          });
       }
     }
   }]);

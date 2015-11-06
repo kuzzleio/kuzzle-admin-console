@@ -5,8 +5,9 @@ angular.module('kuzzle.storage')
     '$http',
     'documentApi',
     '$stateParams',
-    'socket',
-    function ($scope, $http, documentApi, $stateParams, socket) {
+    '$state',
+    'Notification',
+    function ($scope, $http, documentApi, $stateParams, $state, notification) {
 
       $scope.schema = {
         title: $stateParams.collection,
@@ -15,12 +16,13 @@ angular.module('kuzzle.storage')
       };
       $scope.id = $stateParams.id;
 
+      var message = null;
+
       $scope.init = function () {
         var
           data = {
             filter: {ids: {values: [$stateParams.id]}}
-          },
-          id = null;
+          };
 
         documentApi.search($stateParams.collection, data)
           .then(function (response) {
@@ -29,18 +31,28 @@ angular.module('kuzzle.storage')
             }
 
             $scope.document = response.data.documents[0].body;
-            id = response.data.documents[0]._id;
-
-            socket.on('update:'+id)
-              .forEach(function (update) {
-                console.log(update);
+            documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
+              message = notification.info({
+                message:'Someone has update this document',
+                templateUrl: 'refreshTemplate.html',
+                delay: null,
+                scope: $scope,
+                closeOnClick: false
               });
-            socket.emit('document', {id: id});
+            });
+
           })
           .catch(function (error) {
             console.error(error);
             return false;
           })
+      };
+
+      $scope.refresh = function () {
+        $state.reload();
+        message.then(function (notificationScope) {
+          notificationScope.kill(true);
+        })
       }
     }])
 

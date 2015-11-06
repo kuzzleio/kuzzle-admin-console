@@ -1,6 +1,24 @@
 body {
   background-color: #F3F3F3; }
 
+div.view-fade {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  opacity: 1; }
+  div.view-fade.ng-enter, div.view-fade.ng-leave {
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease; }
+  div.view-fade.ng-enter {
+    opacity: 0; }
+  div.view-fade.ng-enter-active {
+    opacity: 1; }
+  div.view-fade.ng-leave {
+    opacity: 1; }
+  div.view-fade.ng-leave-active {
+    opacity: 0; }
+
 #page-wrapper {
   padding: 0;
   background-color: #F3F3F3; }

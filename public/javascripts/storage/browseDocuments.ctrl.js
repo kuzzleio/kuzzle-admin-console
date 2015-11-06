@@ -12,14 +12,20 @@ angular.module('kuzzle.storage')
     'schema',
     '$filter',
     'documentApi',
-    function ($scope, $http, $stateParams, schema, $filter, documentApi) {
+    '$timeout',
+    '$state',
+    'bufferCancel',
+    function ($scope, $http, $stateParams, schema, $filter, documentApi, $timeout, $state, bufferCancel) {
 
       $scope.collection = $stateParams.collection;
 
-      $scope.documents = [];
+      $scope.documents = false;
       $scope.error = null;
 
-      $scope.searchType = 'basic';
+      $scope.searchType = {
+        basic: true,
+        advanced: false
+      };
       $scope.fields = [];
       $scope.comparators = [
         {
@@ -48,6 +54,7 @@ angular.module('kuzzle.storage')
         }
 
         getSchema();
+        filterTools.getFiltersFromUrl();
         $scope.loadDocuments();
       };
 
@@ -56,9 +63,9 @@ angular.module('kuzzle.storage')
         var
           filter = {};
 
-        if ($scope.searchType === 'advanced') {
+        if ($scope.searchType.advanced) {
           try {
-            filter = getAdvancedFilter();
+            filter = filterTools.getAdvancedFilter();
           }
           catch (e) {
             $scope.error = 'The filter JSON is not valid.';
@@ -66,7 +73,7 @@ angular.module('kuzzle.storage')
           }
         }
         else {
-          filter = getBasicFilter();
+          filter = filterTools.getBasicFilter();
 
           if (!filter) {
             return false;
@@ -75,6 +82,7 @@ angular.module('kuzzle.storage')
 
         $scope.error = null;
 
+        console.log(filter);
         documentApi.search($scope.collection, filter, $scope.currentPage)
           .then(function (response) {
             if (response.error) {
@@ -96,8 +104,10 @@ angular.module('kuzzle.storage')
       };
 
       $scope.removeTerm = function (index) {
-        if (index === $scope.filter.terms.length -1) {
-          $scope.filter.terms[index] = {field: null, equal: $scope.comparators[0], value: null};
+        if (index === $scope.filter.terms.length-1) {
+          $scope.filter.terms[index].field = null;
+          $scope.filter.terms[index].equal = $scope.comparators[0];
+          $scope.filter.terms[index].value = null;
           return false;
         }
 
@@ -106,14 +116,17 @@ angular.module('kuzzle.storage')
 
       $scope.advancedSearch = function () {
         $scope.currentPage = 1;
-        $scope.searchType = 'advanced';
+        setSearchType(true);
+
+        filterTools.setAdvancedFilterInUrl();
         $scope.loadDocuments();
       };
 
       $scope.basicSearch = function () {
         $scope.currentPage = 1;
-        $scope.searchType = 'basic';
+        setSearchType(false);
 
+        filterTools.setBasicFilterInUrl();
         $scope.loadDocuments();
       };
 
@@ -135,7 +148,7 @@ angular.module('kuzzle.storage')
           documentApi.update($scope.collection, $scope.documents[index], true);
         }
         catch (e) {
-
+          console.error(e);
         }
       };
 
@@ -143,59 +156,125 @@ angular.module('kuzzle.storage')
         $scope.documents[index].isEdit = false;
       };
 
-      /** PRIVATE METHODS **/
-      var getAdvancedFilter = function () {
-        if ($scope.filter.json === '') {
-          return {};
-        }
+      $scope.delete = function (index) {
 
-        return JSON.parse($scope.filter.json);
+        documentApi.deleteById($stateParams.collection, $scope.documents[index]._id, true)
+          .then(function (response) {
+            if (!response.data.error) {
+              $scope.documents[index].isDeleted = true;
+
+              $timeout(function () {
+                if (!bufferCancel.isCanceled('deleteById', $stateParams.collection, $scope.documents[index]._id)) {
+                  $scope.documents.splice(index, 1);
+                }
+
+                bufferCancel.clean('deleteById', $stateParams.collection, $scope.documents[index]._id);
+              }, 3000)
+            }
+          });
       };
 
-      var getBasicFilter = function () {
-        var
-          terms = [],
-          formattedTerm = {},
-          length = $scope.filter.terms.length,
-          error = false;
+      $scope.cancelDelete = function (index) {
+        documentApi.cancelDeleteById($stateParams.collection, $scope.documents[index]._id)
+          .then(function (response) {
 
-        $scope.filter.terms.forEach(function (term) {
-          term.error = false;
-
-          // If one of both input (field or value) is not specified, it's an error
-          if ((!term.field && term.value) || (term.field && !term.value)) {
-            if (length > 1) {
-              term.error = true;
-              error = true;
+            if (!response.data.error) {
+              $scope.documents[index].isDeleted = false;
             }
+          })
+      };
+
+      /** PRIVATE METHODS **/
+      var filterTools = {
+        getFiltersFromUrl: function () {
+          if ($stateParams.basicFilter) {
+            try {
+              $scope.filter.terms = JSON.parse(decodeURIComponent($stateParams.basicFilter));
+            }
+            catch (e) {
+              $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
+            }
+            setSearchType(false);
+          }
+          else if ($stateParams.advancedFilter) {
+            $scope.filter.json = decodeURIComponent($stateParams.advancedFilter);
+            setSearchType(true);
+          }
+        },
+        setBasicFilterInUrl: function () {
+          var filter = decodeURIComponent(JSON.stringify($scope.filter.terms));
+          $state.go('storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
+        },
+        setAdvancedFilterInUrl: function () {
+          var filter = decodeURIComponent($scope.filter.json);
+          $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
+        },
+
+
+        getAdvancedFilter: function () {
+          if ($scope.filter.json === '') {
+            return {};
+          }
+
+          return JSON.parse($scope.filter.json);
+        },
+        getBasicFilter: function () {
+          var
+            terms = [],
+            formattedTerm = {},
+            length = $scope.filter.terms.length,
+            error = false;
+
+          $scope.filter.terms.forEach(function (term) {
+            term.error = false;
+
+            // If one of both input (field or value) is not specified, it's an error
+            if ((!term.field && term.value) || (term.field && !term.value)) {
+              if (length > 1) {
+                term.error = true;
+                error = true;
+              }
+              return false;
+            }
+
+            if (!term.field && !term.value) {
+              return false;
+            }
+
+            if (term.equal.value) {
+              formattedTerm = {term: {}};
+              formattedTerm.term[term.field] = term.value;
+              terms.push(formattedTerm);
+            }
+            else {
+              formattedTerm = {not: {term: {}}};
+              formattedTerm.not.term[term.field] = term.value;
+              terms.push(formattedTerm);
+            }
+          });
+
+          if (error) {
             return false;
           }
 
-          if (!term.field && !term.value) {
-            return false;
+          if (terms.length === 0) {
+            return {};
           }
 
-          if (term.equal.value) {
-            formattedTerm = {term: {}};
-            formattedTerm.term[term.field] = term.value;
-            terms.push(formattedTerm);
-          }
-          else {
-            formattedTerm = {not: {term: {}}};
-            formattedTerm.not.term[term.field] = term.value;
-            terms.push(formattedTerm);
-          }
-        });
-
-        if (error) {
-          return false;
+          return {filter: {and: terms}};
         }
+      };
 
-        if (terms.length === 0) {
-          return {};
+      var setSearchType = function (isAdvanced) {
+        $scope.searchType.basic = false;
+        $scope.searchType.advanced = false;
+
+        if (isAdvanced) {
+          $scope.searchType.advanced = true;
         }
-
-        return {filter: {and: terms}};
+        else {
+          $scope.searchType.basic = true
+        }
       };
 
       var getSchema = function () {

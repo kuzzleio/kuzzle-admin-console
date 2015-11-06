@@ -1,13 +1,13 @@
-<div id="sidebar" class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;">
+<div id="sidebar" class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;" ng-controller="SideBarCtrl">
     <ul class="nav navbar-nav side-nav">
         <li ui-sref-active="active">
             <a href="/"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
         </li>
         <li>
             <a href="javascript:;" data-toggle="collapse" data-target="#demo" href><i class="fa fa-fw fa-arrows-v"></i> Storage <i class="fa fa-fw fa-caret-down"></i></a>
-            <ul id="demo" class="collapse">
+            <ul id="demo" class="collapse" ng-class="{ in: ('storage.*.*' | includedByState) }">
                 <li ui-sref-active="active">
-                    <a ui-sref="storage-browse">Browse data</a>
+                    <a ui-sref="storage.browse">Browse data</a>
                 </li>
             </ul>
         </li>

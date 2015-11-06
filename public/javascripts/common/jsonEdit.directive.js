@@ -8,7 +8,6 @@ angular.module('kuzzle.jsonEdit', ['ui.ace'])
         },
         template: '<div ui-ace="{' +
                     'mode: \'json\',' +
-                    'workerPath: \'/javascripts/lib/ace\'' +
                   '}" ng-model="content.json"></div>'
       }
   }]);

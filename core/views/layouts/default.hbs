@@ -10,12 +10,12 @@
                     <div></div>
                 </div>
                 <div class="container-fluid">
-                    <div ui-view="bodyView"></div>
+                    <div class="view-fade" ui-view="bodyView"></div>
                 </div>
             </div>
         </div>
 
-    </body>
-
+    {{> notifications }}
     {{> scripts }}
+    </body>
 </html>
