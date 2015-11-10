@@ -1,9 +1,9 @@
 var
   buffer = {},
-  excludeId = [],
-  timer = 4000;
+  excludeId = [];
 
 module.exports = {
+  timer: 5000,
   add: function (fn, clientId, collection, id, exclude) {
     var self = this;
 
@@ -19,7 +19,7 @@ module.exports = {
       excludeId.push(id);
       setTimeout(function () {
         self.removeIdExcluded(id);
-      }, timer);
+      }, self.timer);
     }
 
     // By default, we add an entry but the function (fn) is not already canceled by the user
@@ -78,7 +78,7 @@ module.exports = {
       self.clean(fn, clientId, collection, id);
       cb();
 
-    }, timer);
+    }, self.timer);
   },
   getExcludedIds: function () {
     return excludeId;

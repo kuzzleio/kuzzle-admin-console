@@ -21,8 +21,21 @@ router.get('/browse-documents', function(req, res) {
 
   return res.render('storage/browse-documents');
 
+});
+
+router.get('/create', function (req, res) {
+
+  return res.render('storage/create');
 
 });
+
+router.get('/full', function (req, res) {
+
+  return res.render('storage/full');
+
+});
+
+
 
 router.get('/listCollection', function (req, res) {
 
@@ -146,12 +159,6 @@ router.post('/create', function (req, res) {
     });
 });
 
-router.get('/create', function (req, res) {
-
-  return res.render('storage/create');
-
-});
-
 router.post('/deleteById', function (req, res) {
 
   var
@@ -218,10 +225,29 @@ router.post('/cancel-deleteById', function (req, res) {
   return res.json({error: false});
 });
 
-router.get('/full', function (req, res) {
+router.get('/getById', function (req, res) {
 
-  return res.render('storage/full');
+  var
+    collection = req.query.collection,
+    id = req.query.id;
 
+  if (!id) {
+    return res.json({error: true, message: 'No id provided'});
+  }
+
+  if (!collection) {
+    return res.json({error: true, message: 'No collection provided'});
+  }
+
+  kuzzle
+    .dataCollectionFactory(collection)
+    .fetchDocumentPromise(id)
+    .then(function (response) {
+      return res.json({document: response});
+    })
+    .catch(function (error) {
+      return res.json({error: true, message: error});
+    });
 });
 
 module.exports = router;

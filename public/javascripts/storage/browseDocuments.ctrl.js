@@ -42,11 +42,9 @@ angular.module('kuzzle.storage')
         json: ''
       };
 
-
       $scope.currentPage = 1;
       $scope.total = 0;
       $scope.limit = 0;
-
 
       $scope.init = function () {
         if (!$scope.collection || !$scope.collection) {
@@ -82,7 +80,6 @@ angular.module('kuzzle.storage')
 
         $scope.error = null;
 
-        console.log(filter);
         documentApi.search($scope.collection, filter, $scope.currentPage)
           .then(function (response) {
             if (response.error) {
@@ -104,7 +101,7 @@ angular.module('kuzzle.storage')
       };
 
       $scope.removeTerm = function (index) {
-        if (index === $scope.filter.terms.length-1) {
+        if ($scope.filter.terms.length === 1) {
           $scope.filter.terms[index].field = null;
           $scope.filter.terms[index].equal = $scope.comparators[0];
           $scope.filter.terms[index].value = null;
@@ -157,7 +154,6 @@ angular.module('kuzzle.storage')
       };
 
       $scope.delete = function (index) {
-
         documentApi.deleteById($stateParams.collection, $scope.documents[index]._id, true)
           .then(function (response) {
             if (!response.data.error) {
@@ -169,7 +165,7 @@ angular.module('kuzzle.storage')
                 }
 
                 bufferCancel.clean('deleteById', $stateParams.collection, $scope.documents[index]._id);
-              }, 3000)
+              }, bufferCancel.timer)
             }
           });
       };
@@ -187,13 +183,28 @@ angular.module('kuzzle.storage')
       /** PRIVATE METHODS **/
       var filterTools = {
         getFiltersFromUrl: function () {
+          var terms = [];
+
           if ($stateParams.basicFilter) {
             try {
-              $scope.filter.terms = JSON.parse(decodeURIComponent($stateParams.basicFilter));
+               terms = JSON.parse(decodeURIComponent($stateParams.basicFilter));
             }
             catch (e) {
               $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
             }
+
+            terms = terms.map(function (term, key) {
+              if (term.equal.value) {
+                term.equal = $scope.comparators[0];
+              }
+              else {
+                term.equal = $scope.comparators[1];
+              }
+
+              return term;
+            });
+
+            $scope.filter.terms = terms;
             setSearchType(false);
           }
           else if ($stateParams.advancedFilter) {
@@ -202,7 +213,7 @@ angular.module('kuzzle.storage')
           }
         },
         setBasicFilterInUrl: function () {
-          var filter = decodeURIComponent(JSON.stringify($scope.filter.terms));
+          var filter = decodeURIComponent(angular.toJson($scope.filter.terms));
           $state.go('storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
         },
         setAdvancedFilterInUrl: function () {

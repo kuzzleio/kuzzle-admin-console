@@ -4,6 +4,7 @@ angular.module('kuzzle.bufferCancel', [])
     var buffer = {};
 
     return {
+      timer: 5000,
       add: function (fn, collection, id) {
         if (!buffer[fn]) {
           buffer[fn] = {};
@@ -40,5 +41,4 @@ angular.module('kuzzle.bufferCancel', [])
         }
       }
     }
-
   });

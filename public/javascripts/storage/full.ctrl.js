@@ -7,30 +7,28 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'Notification',
-    function ($scope, $http, documentApi, $stateParams, $state, notification) {
+    'schema',
+    function ($scope, $http, documentApi, $stateParams, $state, notification, schema) {
 
-      $scope.schema = {
-        title: $stateParams.collection,
-        type: "object",
-        properties: {}
-      };
+      $scope.schema = {};
       $scope.id = $stateParams.id;
 
       var message = null;
 
       $scope.init = function () {
-        var
-          data = {
-            filter: {ids: {values: [$stateParams.id]}}
-          };
 
-        documentApi.search($stateParams.collection, data)
+        schema.buildFormatter($stateParams.collection)
+          .then(function (schema) {
+            $scope.schema = schema;
+          });
+        documentApi.getById($stateParams.collection, $stateParams.id)
           .then(function (response) {
-            if (!response.data || response.data.total === 0) {
+            if (response.data && response.data.error) {
+              console.error(response.data);
               return false;
             }
 
-            $scope.document = response.data.documents[0].body;
+            $scope.document = response.data.document.body;
             documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
               message = notification.info({
                 message:'Someone has update this document',
@@ -53,14 +51,15 @@ angular.module('kuzzle.storage')
         message.then(function (notificationScope) {
           notificationScope.kill(true);
         })
-      }
+      };
     }])
 
   .controller('StorageFullButtonsCtrl', [
     '$scope',
     'documentApi',
     '$stateParams',
-    function ($scope, documentApi, $stateParams) {
+    '$state',
+    function ($scope, documentApi, $stateParams, $state) {
 
       $scope.onSubmit = function () {
         var document = {
@@ -69,6 +68,9 @@ angular.module('kuzzle.storage')
         };
 
         documentApi.update($stateParams.collection, document, true);
-      }
+      };
 
+      $scope.goBack = function () {
+        console.log($state);
+      };
   }]);

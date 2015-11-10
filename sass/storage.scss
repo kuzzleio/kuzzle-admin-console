@@ -79,6 +79,19 @@
       }
     }
   }
+
+  .total-documents {
+    margin-top: 10px;
+    color: #777;
+    p {
+      text-align: right;
+      margin-bottom: 0;
+    }
+  }
+
+  ul.pagination {
+    margin-top: 0;
+  }
 }
 
 .edit-document {

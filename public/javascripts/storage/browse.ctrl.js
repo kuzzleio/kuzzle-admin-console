@@ -29,11 +29,12 @@ angular.module('kuzzle.storage')
     });
 
     var setDefaultCollection = function () {
-      if (!$scope.collections) {
+      if ($scope.collections.length === 0) {
         return false;
       }
 
       if (!$stateParams.collection || $scope.collections.indexOf($stateParams.collection) === -1) {
+        console.log($stateParams.collection);
         $state.go('storage.browse.documents', {collection: $filter('orderBy')($scope.collections)[0]}, {reload: false, notify: true});
       }
     }

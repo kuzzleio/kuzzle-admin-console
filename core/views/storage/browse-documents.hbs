@@ -59,9 +59,6 @@
     <div class="row" ng-show="documents.length == 0">
         <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
     </div>
-    <div class="row"  ng-show="documents.length != 0">
-        <p class="col-sm-1 pull-right" ng-bind="total"></p>
-    </div>
 
     <div class="row documents" ng-repeat="document in documents">
         <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
@@ -92,6 +89,9 @@
         </div>
     </div>
 
+    <div class="row total-documents"  ng-show="documents.length != 0">
+        <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>
+    </div>
     <div class="pull-right">
         <uib-pagination
                 total-items="total"

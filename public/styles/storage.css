@@ -42,6 +42,14 @@
       opacity: .5; }
     .browse-documents .documents .panel .panel-body ul span {
       margin-right: 10px; }
+.browse-documents .total-documents {
+  margin-top: 10px;
+  color: #777; }
+  .browse-documents .total-documents p {
+    text-align: right;
+    margin-bottom: 0; }
+.browse-documents ul.pagination {
+  margin-top: 0; }
 
 .edit-document .form button.control {
   margin-right: 10px; }

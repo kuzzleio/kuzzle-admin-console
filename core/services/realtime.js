@@ -2,7 +2,6 @@ var
   io,
   kuzzle = require('./kuzzle')(),
   sockets = {},
-  rooms = {},
   _ = require('lodash');
 
 module.exports = {
@@ -18,28 +17,19 @@ module.exports = {
           .dataCollectionFactory(data.collection)
           .subscribe({ids: {values: [data.id]}}, function (error, result) {
 
-            socket.emit('subscribeDocument:update:' + data.id, result);
+            if (result.metadata && result.metadata.clientId && result.metadata.clientId === data.clientId) {
+              return false;
+            }
+
+            socket.emit('subscribeDocument:update:' + result._id, result);
 
           }, {subscribeToSelf: true});
 
-        if (!rooms[room.id]) {
-          rooms[room.id] = {
-            room: room,
-            count: 0
-          };
-        }
         if (!sockets[socket.id]) {
-          sockets[socket.id] = {
-            socket: socket,
-            rooms: []
-          };
+          sockets[socket.id] = [];
         }
 
-        rooms[room.id].count++;
-
-        if (sockets[socket.id].rooms.indexOf(room.id) === -1) {
-          sockets[socket.id].rooms.push(room.id);
-        }
+        sockets[socket.id].push(room);
       });
 
       /** Unsubscribe from all rooms on disconnect **/
@@ -48,13 +38,8 @@ module.exports = {
           return false;
         }
 
-        _.forEach(sockets[socket.id].rooms, function (roomId) {
-
-          rooms[roomId].count--;
-          if (rooms[roomId].count <= 0) {
-            rooms[roomId].room.unsubscribe();
-            delete rooms[roomId];
-          }
+        _.forEach(sockets[socket.id], function (room) {
+            room.unsubscribe();
         });
 
         delete sockets[socket.id];

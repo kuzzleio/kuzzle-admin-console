@@ -19,7 +19,7 @@ angular.module('kuzzle.storage')
 
     }])
 
-  .controller('StorageFullButtonsCtrl', [
+  .controller('StorageAddButtonsCtrl', [
     '$scope',
     'documentApi',
     '$stateParams',

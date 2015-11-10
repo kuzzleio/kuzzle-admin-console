@@ -23,6 +23,15 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
         })
       },
 
+      getById: function (collection, id) {
+        return $http.get('/storage/getById', {
+          params: {
+            collection: collection,
+            id: id
+          }
+        });
+      },
+
       update: function (collection, document, notify) {
         $http.post('/storage/update', {
           collection: collection,
@@ -48,7 +57,8 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
           .forEach(function (result) {
             cb(result);
           });
-        socket.emit('subscribeDocument', {id: id, collection: collection, requestId: requestId});
+
+        socket.emit('subscribeDocument', {id: id, collection: collection, clientId: clientId});
       },
 
       deleteById: function (collection, id, buffer) {
@@ -63,12 +73,7 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
           data.buffer = true;
         }
 
-        return $http.post('/storage/deleteById', {
-          collection: collection,
-          id: id,
-          buffer: true,
-          clientId: clientId
-        });
+        return $http.post('/storage/deleteById', data);
       },
 
       cancelDeleteById: function (collection, id) {
