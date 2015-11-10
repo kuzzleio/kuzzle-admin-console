@@ -19,7 +19,7 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "express-handlebars": "^2.0.1",
-    "kuzzle-sdk": "git+https://github.com/kuzzleio/sdk-javascript.git#master",
+    "kuzzle-sdk": "git+https://github.com/kuzzleio/sdk-javascript.git#fix-scope-advancedSearch",
     "lodash": "^3.10.1",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0"

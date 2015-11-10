@@ -29,17 +29,25 @@ angular.module('kuzzle.storage')
       $scope.fields = [];
       $scope.comparators = [
         {
-          label: 'equal to',
+          label: 'is equal to',
           value: true
         },
         {
-          label: 'not equal to',
+          label: 'is not equal to',
           value: false
         }
       ];
       $scope.filter = {
-        terms: [{field: null, equal: $scope.comparators[0], value: null}],
-        json: ''
+        basicFilter: {
+          or: [
+            {
+              and: [
+                {field: null, equal: $scope.comparators[0], value: null}
+              ]
+            }
+          ]
+        },
+        advancedFilter: ''
       };
 
       $scope.currentPage = 1;
@@ -63,7 +71,7 @@ angular.module('kuzzle.storage')
 
         if ($scope.searchType.advanced) {
           try {
-            filter = filterTools.getAdvancedFilter();
+            filter = filterTools.formatAdvancedFilter();
           }
           catch (e) {
             $scope.error = 'The filter JSON is not valid.';
@@ -71,7 +79,7 @@ angular.module('kuzzle.storage')
           }
         }
         else {
-          filter = filterTools.getBasicFilter();
+          filter = filterTools.formatBasicFilter();
 
           if (!filter) {
             return false;
@@ -96,19 +104,31 @@ angular.module('kuzzle.storage')
           })
       };
 
-      $scope.addTerm = function () {
-        $scope.filter.terms.push({field: null, equal: $scope.comparators[0], value: null});
+      $scope.addAndTerm = function (index) {
+        $scope.filter.basicFilter.or[index].and.push({field: null, equal: $scope.comparators[0], value: null});
       };
 
-      $scope.removeTerm = function (index) {
-        if ($scope.filter.terms.length === 1) {
-          $scope.filter.terms[index].field = null;
-          $scope.filter.terms[index].equal = $scope.comparators[0];
-          $scope.filter.terms[index].value = null;
+      $scope.addOr = function () {
+        $scope.filter.basicFilter.or.push({
+          and: [
+            {field: null, equal: $scope.comparators[0], value: null}
+          ]
+        });
+      };
+
+      $scope.removeTerm = function (groupIndex, termIndex) {
+
+        if ($scope.filter.basicFilter.or.length === 1 && $scope.filter.basicFilter.or[0].and.length ===1) {
+          $scope.filter.basicFilter.or[0].and[0].field = null;
+          $scope.filter.basicFilter.or[0].and[0].equal = $scope.comparators[0];
+          $scope.filter.basicFilter.or[0].and[0].value = null;
           return false;
         }
 
-        $scope.filter.terms.splice(index, 1);
+        $scope.filter.basicFilter.or[groupIndex].and.splice(termIndex, 1);
+        if ($scope.filter.basicFilter.or[groupIndex].and.length === 0) {
+          $scope.filter.basicFilter.or.splice(groupIndex, 1);
+        }
       };
 
       $scope.advancedSearch = function () {
@@ -129,7 +149,7 @@ angular.module('kuzzle.storage')
 
       $scope.resetAdvancedFilter = function () {
         $scope.error = null;
-        $scope.filter.json = '';
+        $scope.filter.advancedFilter = '';
       };
 
       $scope.editDocument = function (index) {
@@ -183,96 +203,125 @@ angular.module('kuzzle.storage')
       /** PRIVATE METHODS **/
       var filterTools = {
         getFiltersFromUrl: function () {
-          var terms = [];
+          var filter = [];
 
           if ($stateParams.basicFilter) {
             try {
-               terms = JSON.parse(decodeURIComponent($stateParams.basicFilter));
+              filter = JSON.parse(decodeURIComponent($stateParams.basicFilter));
             }
             catch (e) {
               $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
+              return false;
             }
 
-            terms = terms.map(function (term, key) {
-              if (term.equal.value) {
-                term.equal = $scope.comparators[0];
-              }
-              else {
-                term.equal = $scope.comparators[1];
-              }
+            if (!filter.or) {
+              $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
+              return false;
+            }
 
-              return term;
+            filter.or = filter.or.map(function (group) {
+              group.and = group.and.map(function (term) {
+                if (term.equal.value) {
+                  term.equal = $scope.comparators[0];
+                }
+                else {
+                  term.equal = $scope.comparators[1];
+                }
+
+                return term;
+              });
+
+              return group;
             });
 
-            $scope.filter.terms = terms;
+            $scope.filter.basicFilter = filter;
             setSearchType(false);
           }
           else if ($stateParams.advancedFilter) {
-            $scope.filter.json = decodeURIComponent($stateParams.advancedFilter);
+            $scope.filter.advancedFilter = decodeURIComponent($stateParams.advancedFilter);
             setSearchType(true);
           }
+          else {
+            setSearchType(false);
+          }
+
         },
         setBasicFilterInUrl: function () {
-          var filter = decodeURIComponent(angular.toJson($scope.filter.terms));
+          var filter = null;
+
+          if (Object.keys(this.formatBasicFilter()).length !== 0) {
+            filter = decodeURIComponent(angular.toJson($scope.filter.basicFilter));
+          }
           $state.go('storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
         },
         setAdvancedFilterInUrl: function () {
-          var filter = decodeURIComponent($scope.filter.json);
+          var filter = decodeURIComponent($scope.filter.advancedFilter);
           $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
         },
 
 
-        getAdvancedFilter: function () {
-          if ($scope.filter.json === '') {
+        formatAdvancedFilter: function () {
+          if ($scope.filter.advancedFilter === '') {
             return {};
           }
 
-          return JSON.parse($scope.filter.json);
+          return JSON.parse($scope.filter.advancedFilter);
         },
-        getBasicFilter: function () {
+        formatBasicFilter: function () {
           var
-            terms = [],
+            or = [],
+            and = [],
             formattedTerm = {},
-            length = $scope.filter.terms.length,
+            length = $scope.filter.basicFilter.or.length,
             error = false;
 
-          $scope.filter.terms.forEach(function (term) {
-            term.error = false;
+          $scope.filter.basicFilter.or.forEach(function (group) {
 
-            // If one of both input (field or value) is not specified, it's an error
-            if ((!term.field && term.value) || (term.field && !term.value)) {
-              if (length > 1) {
-                term.error = true;
-                error = true;
+            and = [];
+            group.and.forEach(function (term) {
+              term.error = false;
+
+              // If one of both input (field or value) is not specified, it's an error
+              if ((!term.field && term.value) || (term.field && !term.value)) {
+                if (length > 1) {
+                  term.error = true;
+                  error = true;
+                }
+                return false;
               }
-              return false;
-            }
 
-            if (!term.field && !term.value) {
-              return false;
-            }
+              if (!term.field && !term.value) {
+                return false;
+              }
 
-            if (term.equal.value) {
-              formattedTerm = {term: {}};
-              formattedTerm.term[term.field] = term.value;
-              terms.push(formattedTerm);
-            }
-            else {
-              formattedTerm = {not: {term: {}}};
-              formattedTerm.not.term[term.field] = term.value;
-              terms.push(formattedTerm);
-            }
+              if (term.equal.value) {
+                formattedTerm = {term: {}};
+                formattedTerm.term[term.field] = term.value;
+                and.push(formattedTerm);
+              }
+              else {
+                formattedTerm = {not: {term: {}}};
+                formattedTerm.not.term[term.field] = term.value;
+                and.push(formattedTerm);
+              }
+            });
+
+            or.push({and: and});
           });
 
           if (error) {
             return false;
           }
 
-          if (terms.length === 0) {
+          if (or.length === 0) {
             return {};
           }
 
-          return {filter: {and: terms}};
+          if (or.length === 1 && or[0].and.length === 0) {
+            return {};
+          }
+
+          return {or: or};
         }
       };
 

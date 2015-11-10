@@ -26,24 +26,44 @@
 
   .filters {
     form {
-      margin-top: 10px;
+      margin-top: 20px;
+      margin-bottom: 25px;
 
-      .actions-term {
-        margin-top: 8px;
-        padding-left: 0;
+      .form-group {
+        &.basic-filter {
+          margin-left: -10px;
+          margin-bottom: 10px;
+        }
 
-        .add-term, .remove-term {
-          cursor: pointer;
+        .actions-term {
+          padding-left: 0;
+
+          .add-term, .remove-term {
+            cursor: pointer;
+            margin-right: 10px;
+          }
+          .remove-term {
+            display: none;
+          }
+        }
+        &:hover .remove-term {
+          display: inline-block;
+        }
+        .ace_editor {
+          height: 200px;
+          margin-bottom: 10px;
+        }
+        button {
           margin-right: 10px;
         }
       }
-      .ace_editor {
-        height: 200px;
-        margin-bottom: 10px;
-      }
-      button {
-        margin-right: 10px;
-      }
+    }
+
+    .add-group {
+      margin-left: 5px;
+    }
+    .or-label {
+      font-weight: bold;
     }
   }
 

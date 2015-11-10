@@ -59,6 +59,7 @@ router.post('/search', function (req, res) {
     queryParams = req.query,
     params = req.body,
     filter = params.filter,
+    globalFilter = {},
     collection = params.collection;
 
   if (!collection) {
@@ -80,19 +81,22 @@ router.post('/search', function (req, res) {
   if (!filter) {
     filter = {};
   }
-  if (!filter.filter) {
-    filter= {filter: {and: []}};
-  }
-  if (!filter.filter.and || !Array.isArray(filter.filter.and)) {
-    filter.filter.and = [];
-  }
-  filter.filter.and.push({not: {ids: {values: bufferCancel.getExcludedIds()}}});
 
-  filter = _.extend(pagination, filter);
+
+  globalFilter = {
+    filter: {
+      and: [
+        {not: {ids: {values: bufferCancel.getExcludedIds()}}},
+        filter
+      ]
+    }
+  };
+
+  globalFilter = _.extend(pagination, globalFilter);
 
   kuzzle
     .dataCollectionFactory(collection)
-    .advancedSearchPromise(filter)
+    .advancedSearchPromise(globalFilter)
     .then(function (response) {
         return res.json({documents: response.documents, total: response.total, limit: limit});
     })

@@ -10,28 +10,33 @@
                 <uib-tabset>
                     <uib-tab heading="Basic filter" active="searchType.basic">
                         <form class="form-horizontal">
-                            <div class="form-group" ng-repeat="term in filter.terms" ng-class="{'has-error': term.error}">
-                                <div class="col-sm-2">
-                                    <input
-                                            type="text"
-                                            ng-model="term.field"
-                                            placeholder="Field"
-                                            uib-typeahead="field for field in fields | filter:$viewValue"
-                                            typeahead-min-length="0"
-                                            class="form-control" />
+                            <div ng-repeat="(groupIndex, group) in filter.basicFilter.or">
+                                <div class="form-group basic-filter" ng-repeat="term in group.and" ng-class="{'has-error': term.error}">
+                                    <div class="col-sm-2">
+                                        <input
+                                                type="text"
+                                                ng-model="term.field"
+                                                placeholder="Field"
+                                                uib-typeahead="field for field in fields | filter:$viewValue"
+                                                typeahead-min-length="0"
+                                                class="form-control" />
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
+                                    </div>
+                                    <div class="col-sm-1 actions-term">
+                                        <button class="btn btn-default" ng-if="$last" aria-hidden="true" ng-click="addAndTerm(groupIndex)">And</button>
+                                        <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
+                                    </div>
                                 </div>
-                                <div class="col-sm-2">
-                                    <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
-                                </div>
-                                <div class="col-sm-1 actions-term">
-                                    <span ng-if="$last" class="glyphicon glyphicon-plus add-term text-success" aria-hidden="true" ng-click="addTerm()"></span>
-                                    <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm($index)"></span>
-                                </div>
+
+                                <p class="or-label">or</p>
                             </div>
+                            <button class="btn btn-default add-group" ng-click="addOr()">Add group</button>
                         </form>
                         <div class="form-group">
                             <button type="submit" class="btn btn-default" ng-click="basicSearch()">Submit</button>

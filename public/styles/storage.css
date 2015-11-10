@@ -13,18 +13,29 @@
   .browse-documents .create button {
     padding: 8px 30px 8px 30px; }
 .browse-documents .filters form {
-  margin-top: 10px; }
-  .browse-documents .filters form .actions-term {
-    margin-top: 8px;
+  margin-top: 20px;
+  margin-bottom: 25px; }
+  .browse-documents .filters form .form-group.basic-filter {
+    margin-left: -10px;
+    margin-bottom: 10px; }
+  .browse-documents .filters form .form-group .actions-term {
     padding-left: 0; }
-    .browse-documents .filters form .actions-term .add-term, .browse-documents .filters form .actions-term .remove-term {
+    .browse-documents .filters form .form-group .actions-term .add-term, .browse-documents .filters form .form-group .actions-term .remove-term {
       cursor: pointer;
       margin-right: 10px; }
-  .browse-documents .filters form .ace_editor {
+    .browse-documents .filters form .form-group .actions-term .remove-term {
+      display: none; }
+  .browse-documents .filters form .form-group:hover .remove-term {
+    display: inline-block; }
+  .browse-documents .filters form .form-group .ace_editor {
     height: 200px;
     margin-bottom: 10px; }
-  .browse-documents .filters form button {
+  .browse-documents .filters form .form-group button {
     margin-right: 10px; }
+.browse-documents .filters .add-group {
+  margin-left: 5px; }
+.browse-documents .filters .or-label {
+  font-weight: bold; }
 .browse-documents .documents .panel {
   margin-bottom: 5px; }
   .browse-documents .documents .panel.deleted {
