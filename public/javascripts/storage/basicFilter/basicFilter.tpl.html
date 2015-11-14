@@ -1,0 +1,29 @@
+<form class="form-horizontal">
+    <div ng-repeat="(groupIndex, group) in filters">
+        <div class="form-group basic-filter" ng-repeat="term in group.and" ng-class="{'has-error': term.error}">
+            <div class="col-sm-2">
+                <input
+                        type="text"
+                        ng-model="term.field"
+                        placeholder="Field"
+                        uib-typeahead="field for field in fields | filter:$viewValue"
+                        typeahead-min-length="0"
+                        class="form-control" />
+            </div>
+            <div class="col-sm-2">
+                <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
+            </div>
+            <div class="col-sm-1 actions-term">
+                <button class="btn btn-default" ng-if="$last" aria-hidden="true" ng-click="addAndTerm(groupIndex)">And</button>
+                <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
+            </div>
+        </div>
+
+        <p class="or-label">or</p>
+    </div>
+    <button class="btn btn-default add-group" ng-click="addOr()">{{ addGroupLabel }}</button>
+</form>

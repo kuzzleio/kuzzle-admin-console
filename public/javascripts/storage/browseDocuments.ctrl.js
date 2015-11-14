@@ -14,19 +14,8 @@ angular.module('kuzzle.storage')
     'documentApi',
     '$timeout',
     '$state',
-    'bufferCancel',
-    function ($scope, $http, $stateParams, schema, $filter, documentApi, $timeout, $state, bufferCancel) {
+    function ($scope, $http, $stateParams, schema, $filter, documentApi, $timeout, $state) {
 
-      $scope.collection = $stateParams.collection;
-
-      $scope.documents = [];
-      $scope.error = null;
-
-      $scope.searchType = {
-        basic: true,
-        advanced: false
-      };
-      $scope.fields = [];
       $scope.comparators = [
         {
           label: 'is equal to',
@@ -37,16 +26,23 @@ angular.module('kuzzle.storage')
           value: false
         }
       ];
+
+      $scope.collection = $stateParams.collection;
+
+      $scope.documents = [];
+      $scope.error = null;
+
+      $scope.searchType = {
+        basic: true,
+        advanced: false
+      };
+
       $scope.filter = {
-        basicFilter: {
-          or: [
-            {
-              and: [
-                {field: null, equal: $scope.comparators[0], value: null}
-              ]
-            }
+        basicFilter: [{
+          and: [
+            {field: null, equal: $scope.comparators[0], value: null}
           ]
-        },
+        }],
         advancedFilter: ''
       };
 
@@ -59,7 +55,6 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        getSchema();
         filterTools.getFiltersFromUrl();
         $scope.loadDocuments();
       };
@@ -104,33 +99,6 @@ angular.module('kuzzle.storage')
           })
       };
 
-      $scope.addAndTerm = function (index) {
-        $scope.filter.basicFilter.or[index].and.push({field: null, equal: $scope.comparators[0], value: null});
-      };
-
-      $scope.addOr = function () {
-        $scope.filter.basicFilter.or.push({
-          and: [
-            {field: null, equal: $scope.comparators[0], value: null}
-          ]
-        });
-      };
-
-      $scope.removeTerm = function (groupIndex, termIndex) {
-
-        if ($scope.filter.basicFilter.or.length === 1 && $scope.filter.basicFilter.or[0].and.length ===1) {
-          $scope.filter.basicFilter.or[0].and[0].field = null;
-          $scope.filter.basicFilter.or[0].and[0].equal = $scope.comparators[0];
-          $scope.filter.basicFilter.or[0].and[0].value = null;
-          return false;
-        }
-
-        $scope.filter.basicFilter.or[groupIndex].and.splice(termIndex, 1);
-        if ($scope.filter.basicFilter.or[groupIndex].and.length === 0) {
-          $scope.filter.basicFilter.or.splice(groupIndex, 1);
-        }
-      };
-
       $scope.advancedSearch = function () {
         $scope.currentPage = 1;
         setSearchType(true);
@@ -152,74 +120,21 @@ angular.module('kuzzle.storage')
         $scope.filter.advancedFilter = '';
       };
 
-      $scope.editDocument = function (index) {
-        $scope.documents[index].json = $filter('json')($scope.documents[index].body);
-        $scope.documents[index].isEdit = true;
-      };
-
-      $scope.saveEditDocument = function (index) {
-        try {
-          $scope.documents[index].body = JSON.parse($scope.documents[index].json);
-          $scope.documents[index].isEdit = false;
-
-          documentApi.update($scope.collection, $scope.documents[index], true);
-        }
-        catch (e) {
-          console.error(e);
-        }
-      };
-
-      $scope.cancelEditDocument = function (index) {
-        $scope.documents[index].isEdit = false;
-      };
-
-      $scope.delete = function (index) {
-        documentApi.deleteById($stateParams.collection, $scope.documents[index]._id, true)
-          .then(function (response) {
-            if (!response.data.error) {
-              $scope.documents[index].isDeleted = true;
-
-              $timeout(function () {
-                if (!bufferCancel.isCanceled('deleteById', $stateParams.collection, $scope.documents[index]._id)) {
-                  $scope.documents.splice(index, 1);
-                }
-
-                bufferCancel.clean('deleteById', $stateParams.collection, $scope.documents[index]._id);
-              }, bufferCancel.timer)
-            }
-          });
-      };
-
-      $scope.cancelDelete = function (index) {
-        documentApi.cancelDeleteById($stateParams.collection, $scope.documents[index]._id)
-          .then(function (response) {
-
-            if (!response.data.error) {
-              $scope.documents[index].isDeleted = false;
-            }
-          })
-      };
-
       /** PRIVATE METHODS **/
       var filterTools = {
         getFiltersFromUrl: function () {
-          var filter = [];
+          var filters = [];
 
           if ($stateParams.basicFilter) {
             try {
-              filter = JSON.parse(decodeURIComponent($stateParams.basicFilter));
+              filters = JSON.parse(decodeURIComponent($stateParams.basicFilter));
             }
             catch (e) {
               $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
               return false;
             }
 
-            if (!filter.or) {
-              $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
-              return false;
-            }
-
-            filter.or = filter.or.map(function (group) {
+            filters = filters.map(function (group) {
               group.and = group.and.map(function (term) {
                 if (term.equal.value) {
                   term.equal = $scope.comparators[0];
@@ -234,7 +149,7 @@ angular.module('kuzzle.storage')
               return group;
             });
 
-            $scope.filter.basicFilter = filter;
+            $scope.filter.basicFilter = filters;
             setSearchType(false);
           }
           else if ($stateParams.advancedFilter) {
@@ -244,7 +159,6 @@ angular.module('kuzzle.storage')
           else {
             setSearchType(false);
           }
-
         },
         setBasicFilterInUrl: function () {
           var filter = null;
@@ -272,10 +186,10 @@ angular.module('kuzzle.storage')
             or = [],
             and = [],
             formattedTerm = {},
-            length = $scope.filter.basicFilter.or.length,
+            length = $scope.filter.basicFilter.length,
             error = false;
 
-          $scope.filter.basicFilter.or.forEach(function (group) {
+          $scope.filter.basicFilter.forEach(function (group) {
 
             and = [];
             group.and.forEach(function (term) {
@@ -337,17 +251,4 @@ angular.module('kuzzle.storage')
         }
       };
 
-      var getSchema = function () {
-        schema.get($scope.collection)
-          .then(function (response) {
-            if (response.error) {
-              console.error(response.message);
-              return false;
-            }
-
-            angular.forEach(response.data.mapping, function (value, key) {
-              $scope.fields.push(key);
-            });
-          });
-      };
   }]);

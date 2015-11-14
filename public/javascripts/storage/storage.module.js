@@ -1,8 +1,9 @@
 angular.module('kuzzle.storage', [
   'ui.bootstrap',
-  'jsonFormatter',
   'angular-json-editor',
   'kuzzle.jsonEdit',
   'kuzzle.schema',
-  'kuzzle.documentApi'
+  'kuzzle.documentApi',
+  'kuzzle.storageBasicFilter',
+  'kuzzle.storageDocumentsInline'
 ]);

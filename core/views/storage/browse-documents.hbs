@@ -9,35 +9,15 @@
             <div class="panel-body">
                 <uib-tabset>
                     <uib-tab heading="Basic filter" active="searchType.basic">
-                        <form class="form-horizontal">
-                            <div ng-repeat="(groupIndex, group) in filter.basicFilter.or">
-                                <div class="form-group basic-filter" ng-repeat="term in group.and" ng-class="{'has-error': term.error}">
-                                    <div class="col-sm-2">
-                                        <input
-                                                type="text"
-                                                ng-model="term.field"
-                                                placeholder="Field"
-                                                uib-typeahead="field for field in fields | filter:$viewValue"
-                                                typeahead-min-length="0"
-                                                class="form-control" />
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
-                                    </div>
-                                    <div class="col-sm-1 actions-term">
-                                        <button class="btn btn-default" ng-if="$last" aria-hidden="true" ng-click="addAndTerm(groupIndex)">And</button>
-                                        <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
-                                    </div>
-                                </div>
 
-                                <p class="or-label">or</p>
-                            </div>
-                            <button class="btn btn-default add-group" ng-click="addOr()">Add group</button>
-                        </form>
+                        <storage-basic-filter
+                                add-group-label="Add group"
+                                filters="filter.basicFilter"
+                                collection="collection"
+                                filter-in-url="basicFilterUrl"
+                                comparators="comparators">
+                        </storage-basic-filter>
+
                         <div class="form-group">
                             <button type="submit" class="btn btn-default" ng-click="basicSearch()">Submit</button>
                         </div>
@@ -65,34 +45,7 @@
         <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
     </div>
 
-    <div class="row documents" ng-repeat="document in documents">
-        <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-11">
-                        <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
-                        <json-edit content="document" ng-show="document.isEdit"></json-edit>
-                    </div>
-                    <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && !document.isEdit">
-                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})"></span>
-                        <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument($index)"></span>
-                        <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        </span>
-                        <ul class="dropdown-menu">
-                            <li><a href ng-click="delete($index)"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && document.isEdit">
-                        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument($index)"></span>
-                        <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument($index)"></span>
-                    </div>
-                    <div class="col-sm-1 pull-right" ng-show="document.isDeleted">
-                        <a href ng-click="cancelDelete($index)">Cancel</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <storage-documents-inline documents="documents" collection="collection"></storage-documents-inline>
 
     <div class="row total-documents"  ng-show="documents.length != 0">
         <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>
