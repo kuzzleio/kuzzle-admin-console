@@ -24,8 +24,12 @@
             </div>
         </div>
 
-        <div class="col-sm-9">
+        <div class="col-sm-9" ng-if="collections.length">
             <div ui-view="subView" class="view-fade"></div>
+        </div>
+
+        <div class="col-sm-9" ng-if="!collections.length">
+            <p>There is no collection in this database</p>
         </div>
     </div>
 

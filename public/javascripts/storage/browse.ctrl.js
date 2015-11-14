@@ -9,8 +9,8 @@ angular.module('kuzzle.storage')
 
       $http.get('/storage/listCollection')
         .then(function (response) {
-          if (response.error) {
-            console.error(response.message);
+          if (response.data.error) {
+            console.error(response.data.message);
             return true;
           }
 
@@ -34,7 +34,6 @@ angular.module('kuzzle.storage')
       }
 
       if (!$stateParams.collection || $scope.collections.indexOf($stateParams.collection) === -1) {
-        console.log($stateParams.collection);
         $state.go('storage.browse.documents', {collection: $filter('orderBy')($scope.collections)[0]}, {reload: false, notify: true});
       }
     }
