@@ -5,4 +5,4 @@ ADD ./ /var/app/
 
 RUN cd /var/app && \
     npm install && \
-    bower install
+    bower install --allow-root --config.interactive=false
