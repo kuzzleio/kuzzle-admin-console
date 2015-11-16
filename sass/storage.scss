@@ -12,6 +12,26 @@
       background-color: #6C9A9E;
     }
   }
+
+  .dropdown-menu {
+    width: 200px;
+
+    li {
+      cursor: pointer;
+      a {
+        padding: 8px 0 8px 10px;
+
+        &.external-link {
+          padding: 5px 0 5px 10px;
+          text-decoration: underline;
+          color: #215C9C;
+        }
+      }
+    }
+    .search {
+      padding: 5px;
+    }
+  }
 }
 
 .browse-documents {

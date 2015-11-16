@@ -9,19 +9,15 @@
 
     <div class="row">
         <div class="col-sm-2 collections">
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    collection: <strong ng-bind="stateParams.collection"></strong> <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li ui-sref-active="active" ng-repeat="collection in collections | orderBy">
-                        <a
-                            ui-sref=".documents({collection: collection, advancedFilter: null, basicFilter: null})"
-                            ng-bind="collection">
-                        </a>
-                    </li>
-                </ul>
-            </div>
+            <drop-down-search
+                    label="collection"
+                    selected="stateParams.collection"
+                    create-label="New collection"
+                    on-click-create="createCollection(collection)"
+                    items="collections"
+                    current-item="stateParams.collection"
+                    on-click-item="onClickCollection(item)">
+            </drop-down-search>
         </div>
 
         <div class="col-sm-9" ng-if="collections.length">

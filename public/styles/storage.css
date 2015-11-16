@@ -7,6 +7,18 @@
     .collections li.active a:hover {
       color: #fff;
       background-color: #6C9A9E; }
+  .collections .dropdown-menu {
+    width: 200px; }
+    .collections .dropdown-menu li {
+      cursor: pointer; }
+      .collections .dropdown-menu li a {
+        padding: 8px 0 8px 10px; }
+        .collections .dropdown-menu li a.external-link {
+          padding: 5px 0 5px 10px;
+          text-decoration: underline;
+          color: #215C9C; }
+    .collections .dropdown-menu .search {
+      padding: 5px; }
 
 .browse-documents .create {
   margin-bottom: 10px; }

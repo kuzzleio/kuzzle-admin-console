@@ -5,5 +5,6 @@ angular.module('kuzzle.storage', [
   'kuzzle.schema',
   'kuzzle.documentApi',
   'kuzzle.storageBasicFilter',
-  'kuzzle.storageDocumentsInline'
+  'kuzzle.storageDocumentsInline',
+  'kuzzle.dropDownSearch'
 ]);

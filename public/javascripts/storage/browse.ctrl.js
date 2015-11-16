@@ -28,6 +28,14 @@ angular.module('kuzzle.storage')
       setDefaultCollection();
     });
 
+    $scope.onClickCollection = function (collection) {
+      $state.go('storage.browse.documents', {collection: collection, advancedFilter: null, basicFilter: null});
+    };
+
+    $scope.createCollection = function (collection) {
+      console.log('Go create collection', collection);
+    };
+
     var setDefaultCollection = function () {
       if ($scope.collections.length === 0) {
         return false;
