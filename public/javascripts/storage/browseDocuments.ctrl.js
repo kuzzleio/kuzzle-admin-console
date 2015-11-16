@@ -45,6 +45,7 @@ angular.module('kuzzle.storage')
         }],
         advancedFilter: ''
       };
+      $scope.forms = {};
 
       $scope.currentPage = 1;
       $scope.total = 0;
@@ -112,6 +113,7 @@ angular.module('kuzzle.storage')
         setSearchType(false);
 
         filterTools.setBasicFilterInUrl();
+        filterTools.fillAdvancedSearchWithBasic();
         $scope.loadDocuments();
       };
 
@@ -150,10 +152,11 @@ angular.module('kuzzle.storage')
             });
 
             $scope.filter.basicFilter = filters;
+            this.fillAdvancedSearchWithBasic();
             setSearchType(false);
           }
           else if ($stateParams.advancedFilter) {
-            $scope.filter.advancedFilter = decodeURIComponent($stateParams.advancedFilter);
+            $scope.filter.advancedFilter = $stateParams.advancedFilter;
             setSearchType(true);
           }
           else {
@@ -172,14 +175,24 @@ angular.module('kuzzle.storage')
           var filter = decodeURIComponent($scope.filter.advancedFilter);
           $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
         },
-
-
         formatAdvancedFilter: function () {
           if ($scope.filter.advancedFilter === '') {
             return {};
           }
 
-          return JSON.parse($scope.filter.advancedFilter);
+          try {
+            var advancedFilter = JSON.parse($scope.filter.advancedFilter);
+
+            if (advancedFilter.filter) {
+              return advancedFilter.filter;
+            }
+            else {
+              return advancedFilter.query;
+            }
+          }
+          catch (e) {
+            return {}
+          }
         },
         formatBasicFilter: function () {
           var
@@ -236,6 +249,16 @@ angular.module('kuzzle.storage')
           }
 
           return {or: or};
+        },
+        fillAdvancedSearchWithBasic: function () {
+          if ($scope.forms.advancedSearch && !$scope.forms.advancedSearch.$pristine) {
+            return false;
+          }
+
+
+          var filter = this.formatBasicFilter();
+          filter = {filter: filter};
+          $scope.filter.advancedFilter = angular.toJson(filter, 4);
         }
       };
 

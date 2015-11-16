@@ -4,7 +4,7 @@
             <div class="row">
                 <div class="col-sm-11">
                     <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
-                    <json-edit content="document" ng-show="document.isEdit"></json-edit>
+                    <json-edit content="document.json" ng-show="document.isEdit"></json-edit>
                 </div>
                 <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && !document.isEdit">
                     <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})"></span>
