@@ -9,12 +9,11 @@ angular.module('kuzzle.schema', [])
 
       angular.forEach(mapping, function (value, attribute) {
         properties[attribute] = {};
-
         if (value.type) {
           type = value.type;
 
-          if (value.type === 'long') {
-            type = 'integer';
+          if (value.type === 'long' || value.type === 'double') {
+            type = 'number';
           }
 
           properties[attribute] = {
@@ -27,6 +26,10 @@ angular.module('kuzzle.schema', [])
             type: 'object',
             title: attribute,
             properties: buildPropertiesRecursive(value.properties)
+          };
+
+          if (properties[attribute].properties && properties[attribute].properties.lat && properties[attribute].properties.lon) {
+            properties[attribute].format = 'location';
           }
         }
       });

@@ -1,0 +1,25 @@
+<div class="row edit-document" ng-controller="CollectionFullCtrl" ng-init="init('{{action}}')">
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            Collection <small>{{action}}</small>
+        </h1>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
+        <p>There is no document matching the collection <strong ng-bind="collection"></strong>.</p>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
+
+        <form>
+            <div class="form-group">
+                <label for="name">Collection name</label>
+                <input type="text" class="form-control" ng-model="collection.name" id="name">
+            </div>
+
+            <button type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="create()">Create</button>
+            <button type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
+        </form>
+
+    </div>
+</div>

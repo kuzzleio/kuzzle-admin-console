@@ -11,7 +11,8 @@ angular.module('kuzzle.dropDownSearch', [])
         onClickCreate: '&',
         items: '=',
         onClickItem: '&',
-        currentItem: '='
+        currentItem: '=',
+        placeholder: '@'
       },
       templateUrl: '/javascripts/storage/dropDownSearch/dropDownSearch.tpl.html'
     }

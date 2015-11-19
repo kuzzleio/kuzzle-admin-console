@@ -13,131 +13,168 @@
     }
   }
 
-  .dropdown-menu {
-    width: 200px;
+  drop-down-search {
+    button {
+      width: 200px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .dropdown-menu {
+      width: 200px;
+      li {
+        cursor: pointer;
+        a {
+          padding: 8px 0 8px 10px;
 
-    li {
-      cursor: pointer;
-      a {
-        padding: 8px 0 8px 10px;
-
-        &.external-link {
-          padding: 5px 0 5px 10px;
-          text-decoration: underline;
-          color: #215C9C;
+          &.external-link {
+            padding: 5px 0 5px 10px;
+            text-decoration: underline;
+            color: #215C9C;
+          }
         }
       }
-    }
-    .search {
-      padding: 5px;
+      .search {
+        padding: 5px;
+      }
     }
   }
 }
 
-.browse-documents {
-
-  .create {
-    margin-bottom: 10px;
-
-    button {
-      padding: 8px 30px 8px 30px;
+.storage-browse {
+  h2 {
+    text-align: center;
+    margin-top: 10px;
+    color: #828282;
+    .dropdown {
+      cursor: pointer;
     }
   }
 
-  .filters {
-    form {
-      margin-top: 20px;
-      margin-bottom: 25px;
+  .browse-documents {
 
-      .form-group {
-        &.basic-filter {
-          margin-left: -10px;
-          margin-bottom: 10px;
-        }
+    .create {
+      margin-bottom: 10px;
 
-        .actions-term {
-          padding-left: 0;
+      button {
+        padding: 8px 30px 8px 30px;
+      }
+    }
 
-          .add-term, .remove-term {
-            cursor: pointer;
+    .filters {
+      form {
+        margin-top: 20px;
+        margin-bottom: 25px;
+
+        .form-group {
+          &.basic-filter {
+            margin-left: -10px;
+            margin-bottom: 10px;
+          }
+
+          .actions-term {
+            padding-left: 0;
+
+            .add-term, .remove-term {
+              cursor: pointer;
+              margin-right: 10px;
+            }
+            .remove-term {
+              display: none;
+            }
+          }
+          &:hover .remove-term {
+            display: inline-block;
+          }
+          .ace_editor {
+            height: 250px;
+            margin-bottom: 10px;
+          }
+          button {
             margin-right: 10px;
           }
-          .remove-term {
-            display: none;
-          }
         }
-        &:hover .remove-term {
-          display: inline-block;
-        }
+      }
+
+      .add-group {
+        margin-left: 5px;
+      }
+      .or-label {
+        font-weight: bold;
+      }
+    }
+
+    .documents .panel {
+      margin-bottom: 5px;
+
+      &.deleted {
+        background-color: #EBCCCC;
+        border-color: rgba(255, 0, 0, 0.29);
+      }
+
+      .panel-body {
+        padding-bottom: 10px;
+        padding-top: 10px;
+
         .ace_editor {
           height: 250px;
-          margin-bottom: 10px;
         }
-        button {
-          margin-right: 10px;
+
+        .edit-document {
+          cursor: pointer;
+          margin-right: 4px;
         }
-      }
-    }
 
-    .add-group {
-      margin-left: 5px;
-    }
-    .or-label {
-      font-weight: bold;
-    }
-  }
+        .json-formatter-row:first-child > a:first-child > .thumbnail-text {
+          opacity: .5;
+        }
 
-  .documents .panel {
-    margin-bottom: 5px;
-
-    &.deleted {
-      background-color: #EBCCCC;
-      border-color: rgba(255, 0, 0, 0.29);
-    }
-
-    .panel-body {
-      padding-bottom: 10px;
-      padding-top: 10px;
-
-      .ace_editor {
-        height: 250px;
-      }
-
-      .edit-document {
-        cursor: pointer;
-        margin-right: 4px;
-      }
-
-      .json-formatter-row:first-child > a:first-child > .thumbnail-text {
-        opacity: .5;
-      }
-
-      ul {
-        span {
-          margin-right: 10px;
+        ul {
+          span {
+            margin-right: 10px;
+          }
         }
       }
     }
-  }
 
-  .total-documents {
-    margin-top: 10px;
-    color: #777;
-    p {
-      text-align: right;
-      margin-bottom: 0;
+    .total-documents {
+      margin-top: 10px;
+      color: #777;
+      p {
+        text-align: right;
+        margin-bottom: 0;
+      }
     }
-  }
 
-  ul.pagination {
-    margin-top: 0;
+    ul.pagination {
+      margin-top: 0;
+    }
   }
 }
 
 .edit-document {
   .form {
-    button.control {
-      margin-right: 10px;
+    form {
+      margin-bottom: 30px;
+      fieldset {
+        border-radius: 4px;
+        div {
+          padding: 0 20px 0 20px;
+        }
+      }
+
+      .map {
+        margin-top: 10px;
+        .leaflet-control-container {
+          height: 400px;
+          .leaflet-bar {
+            box-shadow: none;
+          }
+        }
+      }
     }
+  }
+  .go-document {
+    cursor: pointer;
   }
 }

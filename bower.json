@@ -33,6 +33,8 @@
     "rxjs": "~4.0.6",
     "angular-loading-bar": "~0.8.0",
     "angular-ui-ace": "bower",
-    "angular-json-editor": "git://github.com/AnthonySendra/angular-json-editor#master"
+    "angular-leaflet-directive": "~0.10.0",
+    "angular-schema-form": "~0.8.12",
+    "angular-schema-form-bootstrap": "~0.2.0"
   }
 }

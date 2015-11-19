@@ -6,11 +6,9 @@ div.view-fade {
     top: 0;
     left: 0;
     right: 0;
-    height: 100%;
     opacity: 1;
 
-    &.ng-enter,
-    &.ng-leave {
+    &.ng-enter {
         -webkit-transition: all .5s ease;
         transition: all .5s ease;
     }
@@ -28,6 +26,15 @@ div.view-fade {
     }
 }
 
+.actions-group {
+    button.control {
+        margin-right: 10px;
+    }
+    a.control {
+        cursor: pointer;
+    }
+}
+
 #page-wrapper {
     padding: 0;
     background-color: #F3F3F3;
@@ -39,6 +46,15 @@ div.view-fade {
         }
     }
     .headline {
-        margin-bottom: 30px;
+        margin-bottom: 10px;
+    }
+}
+
+.dropdown-menu {
+    li {
+        a.text-danger {
+            color: #a94442;
+            font-weight: bold;
+        }
     }
 }

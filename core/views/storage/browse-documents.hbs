@@ -41,7 +41,7 @@
         </div>
     </div>
 
-    <div class="row" ng-show="documents.length == 0">
+    <div class="row" ng-if="documents.length == 0">
         <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
     </div>
 

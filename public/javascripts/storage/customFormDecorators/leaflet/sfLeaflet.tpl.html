@@ -1,0 +1,21 @@
+
+    <label class="control-label {{form.labelHtmlClass}}" for="lat">{{latLabel}}</label>
+    <input
+            ng-model="marker.lat"
+            type="number"
+            class="form-control {{form.fieldHtmlClass}}"
+            id="lat">
+
+
+    <label class="control-label {{form.labelHtmlClass}}" for="lng">{{lngLabel}}</label>
+    <input
+            ng-model="marker.lng"
+            type="number"
+            class="form-control {{form.fieldHtmlClass}}"
+            id="lng">
+
+<div class="row map">
+    <div class="col-sm-12">
+        <leaflet id="{{form.title}}" markers="markers"></leaflet>
+    </div>
+</div>

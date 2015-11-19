@@ -1,49 +1,61 @@
 angular.module('kuzzle.storage')
 
-  .controller('StorageBrowseCtrl', ['$scope', '$http', '$stateParams', '$state', '$filter', function ($scope, $http, $stateParams, $state, $filter) {
+  .controller('StorageBrowseCtrl', [
+    '$scope',
+    '$http',
+    '$stateParams',
+    '$state',
+    'collectionApi',
+    '$uibModal',
+    function ($scope, $http, $stateParams, $state, collectionApi, $uibModal) {
 
-    $scope.collections = [];
-    $scope.stateParams = $stateParams;
+      var modalDelete;
 
-    $scope.init = function () {
+      $scope.collections = null;
+      $scope.stateParams = $stateParams;
 
-      $http.get('/storage/listCollection')
-        .then(function (response) {
-          if (response.data.error) {
-            console.error(response.data.message);
-            return true;
-          }
+      $scope.init = function () {
+        collectionApi.list()
+          .then(function (response) {
+            if (response.data.error) {
+              console.error(response.data.message);
+              return true;
+            }
 
-          if (response.data) {
-            $scope.collections = response.data;
-            setDefaultCollection();
-          }
-        })
-        .catch(function (error) {
-          console.error(error);
+            if (response.data) {
+              $scope.collections = response.data;
+            }
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      };
+
+      $scope.onClickCollection = function (collection) {
+        $state.go('storage.browse.documents', {collection: collection, advancedFilter: null, basicFilter: null});
+      };
+
+      $scope.createCollection = function (collection) {
+        $state.go('collection.create', {newCollection: collection});
+      };
+
+      $scope.openModaldeleteCollection = function () {
+        modalDelete = $uibModal.open({
+          templateUrl: 'modalDeleteCollection.html',
+          scope: $scope
         });
-    };
+      };
 
-    $scope.$on('$stateChangeSuccess', function () {
-      setDefaultCollection();
-    });
+      $scope.delete = function () {
+        collectionApi.delete($stateParams.collection, true);
+        modalDelete.dismiss('cancel');
+        setTimeout(function () {
+          $state.go('storage.browse', {}, {reload: true});
+        }, 1000);
+      };
 
-    $scope.onClickCollection = function (collection) {
-      $state.go('storage.browse.documents', {collection: collection, advancedFilter: null, basicFilter: null});
-    };
-
-    $scope.createCollection = function (collection) {
-      console.log('Go create collection', collection);
-    };
-
-    var setDefaultCollection = function () {
-      if ($scope.collections.length === 0) {
-        return false;
-      }
-
-      if (!$stateParams.collection || $scope.collections.indexOf($stateParams.collection) === -1) {
-        $state.go('storage.browse.documents', {collection: $filter('orderBy')($scope.collections)[0]}, {reload: false, notify: true});
-      }
-    }
+      $scope.cancelModal = function () {
+        modalDelete.dismiss('cancel');
+      };
 
   }]);

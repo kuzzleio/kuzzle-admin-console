@@ -1,14 +1,54 @@
-<div class="row edit-document" ng-controller="StorageFullCtrl" ng-init="init()">
+<div class="row edit-document" ng-controller="StorageFullCtrl" ng-init="init('{{action}}')">
     <div class="col-sm-12 headline">
         <h1 class="page-header">
-            Storage <small>edit</small>
+            Storage <small>{{action}}</small>
         </h1>
     </div>
 
-    <div class="col-sm-10 col-sm-offset-1 ">
-        <json-editor class="form" schema="schema" startval="document" buttons-controller="StorageFullButtonsCtrl">
-            <button type="submit" class="btn btn-success control" ng-click="onSubmit($event)">Update</button>
-            <a href class="control" ng-click="goBack()">Cancel</a>
-        </json-editor>
+    <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
+        <p>There is no document matching the id <strong ng-bind="id"></strong>.</p>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>id</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Optional" ng-model="document.id" ng-disabled="isEdit" ng-blur="documentExists()"/>
+                        <div class="input-group-addon">
+                            <span ng-if="isLoading">
+                                <span class="fa fa-spinner fa-spin"></span>
+                            </span>
+                            <span ng-if="exists && !isEdit">
+                                <span
+                                        class="go-document glyphicon glyphicon-eye-open"
+                                        title="A document with this id already exists. Click here for access to the whole document."
+                                        ui-sref="storage.full({collection: collection, id: document.id})">
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 form">
+                <form sf-schema="schema" sf-form="form" sf-model="document.body"></form>
+
+                <div class="actions-group">
+                    <div class="checkbox" ng-if="!exists">
+                        <label>
+                            <input type="checkbox" ng-model="another"> Create another
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-success control" ng-if="exists" ng-click="update()">Update</button>
+                    <button type="submit" class="btn btn-success control" ng-if="!exists" ng-click="create()">Create</button>
+
+                    <a href class="control" ng-click="goToList()">List</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

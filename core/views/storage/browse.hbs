@@ -1,4 +1,4 @@
-<div class="row" ng-controller="StorageBrowseCtrl" ng-init="init()">
+<div class="row storage-browse" ng-controller="StorageBrowseCtrl" ng-init="init()">
 
     <div class="col-sm-12 headline">
         <h1 class="page-header">
@@ -6,6 +6,53 @@
         </h1>
     </div>
 
+    <div class="row" ng-if="stateParams.collection">
+        <div class="col-sm-9 col-sm-push-2">
+            <h2>
+                Collection
+                <span ng-bind="stateParams.collection"></span>
+                <div class="btn-group">
+                    <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></small>
+                    <ul class="dropdown-menu">
+                        <li><a href="" ng-click="">Edit</a></li>
+                        <li><a href="" ng-click="">Empty</a></li>
+                        <li ng-click="openModaldeleteCollection()"><a href="" ng-click="" class="text-danger">Delete</a></li>
+                    </ul>
+                </div>
+
+                <script type="text/ng-template" id="modalDeleteCollection.html">
+                    <div class="modal-header">
+                        <h3 class="modal-title"><strong>Delete</strong> collection <span ng-bind="stateParams.collection"></span></h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>This action CANNOT be undone.</p>
+                        <p>This will permanently delete the collection <strong ng-bind="stateParams.collection"></strong> (data AND schema).</p>
+                        <p></p>
+                        <p>Please type in the name of the collection to confirm.</p>
+
+                        <form>
+                            <input class="form-control" type="text" ng-model="deleteName">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="actions-group">
+                            <button class="btn btn-danger control" type="button" ng-click="delete()" ng-disabled="stateParams.collection !== deleteName">
+                                I really want to remove this collection
+                            </button>
+                            <a class="control" ng-click="cancelModal()">Cancel</a>
+                        </div>
+                    </div>
+                </script>
+            </h2>
+        </div>
+    </div>
+    <div class="row" ng-if="!stateParams.collection">
+        <div class="col-sm-9 col-sm-push-2">
+            <h2>
+                Select base and collection
+            </h2>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-sm-2 collections">
@@ -16,16 +63,23 @@
                     on-click-create="createCollection(collection)"
                     items="collections"
                     current-item="stateParams.collection"
-                    on-click-item="onClickCollection(item)">
+                    on-click-item="onClickCollection(item)"
+                    placeholder="Find a collection">
             </drop-down-search>
         </div>
 
-        <div class="col-sm-9" ng-if="collections.length">
+        <div class="col-sm-9" ng-if="stateParams.collection">
             <div ui-view="subView" class="view-fade"></div>
         </div>
 
-        <div class="col-sm-9" ng-if="!collections.length">
+        <div class="col-sm-9" ng-if="collections.length === 0">
             <p>There is no collection in this database</p>
+        </div>
+    </div>
+
+    <div ng-if="!stateParams.collection">
+        <div class="col-sm-2">
+
         </div>
     </div>
 

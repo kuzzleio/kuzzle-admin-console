@@ -41,10 +41,22 @@ angular.module('kuzzle.storageBasicFilter', ['kuzzle.schema'])
             return false;
           }
 
-          angular.forEach(response.data.mapping, function (value, key) {
-            $scope.fields.push(key);
-          });
+          $scope.fields = parseFields(response.data.mapping, '');
         });
+    };
+
+    var parseFields = function (fields, prefix) {
+      var parsedFields = [];
+
+      angular.forEach(fields, function (value, key) {
+        parsedFields.push(prefix + key);
+
+        if (value.properties) {
+          parsedFields = parsedFields.concat(parseFields(value.properties, key + '.'));
+        }
+      });
+
+      return parsedFields;
     };
 
     getFields();

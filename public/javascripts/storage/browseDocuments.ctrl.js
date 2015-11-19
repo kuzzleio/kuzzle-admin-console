@@ -29,7 +29,7 @@ angular.module('kuzzle.storage')
 
       $scope.collection = $stateParams.collection;
 
-      $scope.documents = [];
+      $scope.documents = null;
       $scope.error = null;
 
       $scope.searchType = {

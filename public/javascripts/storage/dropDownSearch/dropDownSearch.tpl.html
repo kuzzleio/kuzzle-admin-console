@@ -1,10 +1,13 @@
 <div class="btn-group">
   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span ng-bind="label"></span>: <strong ng-bind="selected"></strong> <span class="caret"></span>
+    <span ng-if="selected">
+      <span ng-bind="label"></span>: <strong ng-bind="selected"></strong> <span class="caret"></span>
+    </span>
+    <span ng-if="!selected">Select a collection</span>
   </button>
   <ul class="dropdown-menu">
     <li class="search">
-      <input class="form-control" type="text" ng-model="search"/>
+      <input class="form-control" type="text" placeholder="{{placeholder}}" ng-model="search"/>
     </li>
     <li class="divider"></li>
     <li>

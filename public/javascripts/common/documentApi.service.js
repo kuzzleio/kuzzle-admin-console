@@ -1,6 +1,6 @@
 angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
 
-  .service('documentApi', ['$http', 'socket', 'uid', 'Notification', 'bufferCancel', function ($http, socket, uid, notification, bufferCancel) {
+  .service('documentApi', ['$http', 'socket', 'uid', 'Notification', 'bufferCancel', '$q', function ($http, socket, uid, notification, bufferCancel, $q) {
     var
       clientId = uid.new();
 
@@ -33,6 +33,8 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
       },
 
       update: function (collection, document, notify) {
+        var deferred = $q.defer();
+
         $http.post('/storage/update', {
           collection: collection,
           document: document,
@@ -40,16 +42,20 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
         })
           .then(function (response) {
             if (!notify) {
-              return false;
+              return deferred.resolve(response);
             }
 
             if (!response.data.error) {
               notification.success('Document updated !');
+              return deferred.resolve(response);
             }
             else {
-              notification.error('Error during document update. Please retry.')
+              notification.error('Error during document update. Please retry.');
+              return deferred.reject(response.data.error);
             }
           });
+
+        return deferred.promise;
       },
 
       subscribeId: function (collection, id, cb) {
@@ -86,22 +92,27 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
       },
 
       create: function (collection, document, notify) {
+        var deferred = $q.defer();
+
         $http.post('/storage/create', {
           collection: collection,
           document: document
         })
           .then(function (response) {
             if (!notify) {
-              return false;
+              return deferred.resolve(response);
             }
 
             if (!response.data.error) {
               notification.success('Document created !');
+              return deferred.resolve(response.data);
             }
-            else {
-              notification.error('Error during document creation. Please retry.')
-            }
+
+            notification.error('Error during document creation. Please retry.');
+            return deferred.reject(response.data.error);
           });
+
+        return deferred.promise;
       }
     }
   }]);

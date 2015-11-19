@@ -1,24 +1,27 @@
 angular.module('kuzzle', [
   'ui.router',
+  'ui.bootstrap',
   'kuzzle.storage',
+  'kuzzle.collection',
+  'kuzzle.collectionApi',
   'angular-loading-bar',
   'ngAnimate',
   'kuzzle.uid',
-  'kuzzle.sidebar',
   'ui-notification',
-  'kuzzle.bufferCancel'
+  'kuzzle.bufferCancel',
+  'kuzzle.previousState'
 ])
 
-  .config(['$httpProvider', function($httpProvider) {
+  .config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
   }])
 
-  .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+  .config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeSpinner = false;
     cfpLoadingBarProvider.parentSelector = '#loading-bar-wrapper';
   }])
 
-  .config(['NotificationProvider', function(NotificationProvider) {
+  .config(['NotificationProvider', function (NotificationProvider) {
     NotificationProvider.setOptions({
       delay: 5000,
       closeOnClick: false

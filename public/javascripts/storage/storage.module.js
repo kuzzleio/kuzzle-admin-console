@@ -1,10 +1,13 @@
 angular.module('kuzzle.storage', [
-  'ui.bootstrap',
-  'angular-json-editor',
+  'schemaForm',
   'kuzzle.jsonEdit',
   'kuzzle.schema',
   'kuzzle.documentApi',
   'kuzzle.storageBasicFilter',
   'kuzzle.storageDocumentsInline',
-  'kuzzle.dropDownSearch'
+  'kuzzle.dropDownSearch',
+  'leaflet-directive'
 ]);
+
+
+

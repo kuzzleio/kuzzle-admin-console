@@ -5,9 +5,8 @@ div.view-fade {
   top: 0;
   left: 0;
   right: 0;
-  height: 100%;
   opacity: 1; }
-  div.view-fade.ng-enter, div.view-fade.ng-leave {
+  div.view-fade.ng-enter {
     -webkit-transition: all .5s ease;
     transition: all .5s ease; }
   div.view-fade.ng-enter {
@@ -19,6 +18,11 @@ div.view-fade {
   div.view-fade.ng-leave-active {
     opacity: 0; }
 
+.actions-group button.control {
+  margin-right: 10px; }
+.actions-group a.control {
+  cursor: pointer; }
+
 #page-wrapper {
   padding: 0;
   background-color: #F3F3F3; }
@@ -26,4 +30,8 @@ div.view-fade {
     position: inherit;
     height: 3px; }
   #page-wrapper .headline {
-    margin-bottom: 30px; }
+    margin-bottom: 10px; }
+
+.dropdown-menu li a.text-danger {
+  color: #a94442;
+  font-weight: bold; }

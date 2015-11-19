@@ -25,30 +25,16 @@ router.get('/browse-documents', function(req, res) {
 
 router.get('/create', function (req, res) {
 
-  return res.render('storage/create');
+  return res.render('storage/full', {action: 'create'});
 
 });
 
 router.get('/full', function (req, res) {
 
-  return res.render('storage/full');
+  return res.render('storage/full', {action: 'edit'});
 
 });
 
-
-
-router.get('/listCollection', function (req, res) {
-
-  kuzzle
-    .listCollectionsPromise()
-    .then(function (response) {
-      return res.json(response);
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-
-});
 
 router.post('/search', function (req, res) {
 
@@ -59,7 +45,6 @@ router.post('/search', function (req, res) {
     queryParams = req.query,
     params = req.body,
     filter = params.filter,
-    globalFilter = {},
     collection = params.collection;
 
   if (!collection) {
@@ -124,7 +109,6 @@ router.post('/update', function (req, res) {
   if (!clientId) {
     return res.json({error: true, message: 'No clientId provided'});
   }
-
 
   kuzzle
     .dataCollectionFactory(collection)
@@ -255,3 +239,4 @@ router.get('/getById', function (req, res) {
 });
 
 module.exports = router;
+
