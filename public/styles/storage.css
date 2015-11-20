@@ -85,17 +85,19 @@
 .storage-browse .browse-documents ul.pagination {
   margin-top: 0; }
 
-.edit-document .form form {
-  margin-bottom: 30px; }
-  .edit-document .form form fieldset {
-    border-radius: 4px; }
-    .edit-document .form form fieldset div {
-      padding: 0 20px 0 20px; }
-  .edit-document .form form .map {
-    margin-top: 10px; }
-    .edit-document .form form .map .leaflet-control-container {
-      height: 400px; }
-      .edit-document .form form .map .leaflet-control-container .leaflet-bar {
-        box-shadow: none; }
+.edit-document .form {
+  padding-bottom: 20px; }
+  .edit-document .form form {
+    margin-bottom: 30px; }
+    .edit-document .form form fieldset {
+      border-radius: 4px; }
+      .edit-document .form form fieldset div {
+        padding: 0 20px 0 20px; }
+    .edit-document .form form .map {
+      margin-top: 10px; }
+      .edit-document .form form .map .leaflet-control-container {
+        height: 400px; }
+        .edit-document .form form .map .leaflet-control-container .leaflet-bar {
+          box-shadow: none; }
 .edit-document .go-document {
   cursor: pointer; }

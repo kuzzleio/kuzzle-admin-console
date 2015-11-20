@@ -1,6 +1,6 @@
 angular.module('schemaForm')
 
-  .directive('sfLeaflet', [function () {
+  .directive('sfLeaflet', ['leaflet', function (leaflet) {
     return {
       restrict: 'E',
       scope: {
@@ -9,12 +9,17 @@ angular.module('schemaForm')
       },
       templateUrl: 'javascripts/storage/customFormDecorators/leaflet/sfLeaflet.tpl.html',
       link: function (scope) {
+        var
+          id = scope.form.title + '-' + (Math.random() * Date.now()),
+          markerId = 'marker-' + id,
+          marker;
+
+        scope.mapId = 'map-' + id;
 
         scope.$watch('ngModel', function () {
           if (!scope.ngModel) {
             return false;
           }
-          var id = scope.form + (Math.random() * Date.now());
 
           if (scope.ngModel['lat']) {
             scope.latLabel = 'lat';
@@ -36,8 +41,8 @@ angular.module('schemaForm')
           scope.marker = {
             lat: scope.ngModel[scope.latLabel],
             lng: scope.ngModel[scope.lngLabel],
-            id: id,
-            draggable: true
+            draggable: true,
+            id: markerId
           };
 
           scope.$watch('marker', function () {
@@ -45,20 +50,30 @@ angular.module('schemaForm')
             scope.ngModel[scope.latLabel] = scope.marker.lat;
             scope.ngModel[scope.lngLabel] = scope.marker.lng;
           }, true);
-          scope.$on('leafletDirectiveMarker.location.dragend', function (event, marker) {
-            if (marker.model && marker.model.id === id) {
-              scope.marker.lat = marker.model.lat;
-              scope.marker.lng = marker.model.lng;
-            }
-          });
         }, true);
 
+        scope.onMapClick = function (event) {
+          if (!scope.marker) {
+            marker = leaflet.createMarker(scope.mapId, event, {draggable: true});
+            marker.on('dragend', scope.onDrag);
+            scope.$apply(function () {
+              scope.marker = {
+                lat: event.latlng.lat,
+                lng: event.latlng.lng
+              };
+            });
+          }
+        };
+
+        scope.onDrag = function (event) {
+          scope.$apply(function () {
+            scope.marker.lat = event.target._latlng.lat;
+            scope.marker.lng = event.target._latlng.lng;
+          });
+        };
       }
     }
   }])
-  .config(function($logProvider){
-    $logProvider.debugEnabled(false);
-  })
   .run(['$templateCache', '$http', function($templateCache, $http) {
     $http.get('javascripts/storage/customFormDecorators/leaflet/location.tpl.html', {cache: $templateCache});
   }])

@@ -40,7 +40,7 @@ angular.module('kuzzle.storage')
                 $scope.notFoundError = true;
                 return false;
               }
-console.log('ok');
+
               $scope.document.body = response.data.document.body;
               $scope.document.id = response.data.document._id;
 

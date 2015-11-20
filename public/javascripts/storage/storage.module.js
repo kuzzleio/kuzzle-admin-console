@@ -6,7 +6,7 @@ angular.module('kuzzle.storage', [
   'kuzzle.storageBasicFilter',
   'kuzzle.storageDocumentsInline',
   'kuzzle.dropDownSearch',
-  'leaflet-directive'
+  'kuzzle.leaflet'
 ]);
 
 

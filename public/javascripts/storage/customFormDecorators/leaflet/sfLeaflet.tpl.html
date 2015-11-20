@@ -1,21 +1,23 @@
 
-    <label class="control-label {{form.labelHtmlClass}}" for="lat">{{latLabel}}</label>
-    <input
-            ng-model="marker.lat"
-            type="number"
-            class="form-control {{form.fieldHtmlClass}}"
-            id="lat">
+<label class="control-label {{form.labelHtmlClass}}" for="lat">{{latLabel}}</label>
+<input
+        ng-model="marker.lat"
+        type="number"
+        step="any"
+        class="form-control {{form.fieldHtmlClass}}"
+        id="lat">
 
 
-    <label class="control-label {{form.labelHtmlClass}}" for="lng">{{lngLabel}}</label>
-    <input
-            ng-model="marker.lng"
-            type="number"
-            class="form-control {{form.fieldHtmlClass}}"
-            id="lng">
+<label class="control-label {{form.labelHtmlClass}}" for="lng">{{lngLabel}}</label>
+<input
+        ng-model="marker.lng"
+        type="number"
+        step="any"
+        class="form-control {{form.fieldHtmlClass}}"
+        id="lng">
 
 <div class="row map">
     <div class="col-sm-12">
-        <leaflet id="{{form.title}}" markers="markers"></leaflet>
+        <leaflet map-id="mapId" markers="markers" on-map-click="onMapClick(event)" zoom="7" on-drag="onDrag(event, markerId)"></leaflet>
     </div>
 </div>
