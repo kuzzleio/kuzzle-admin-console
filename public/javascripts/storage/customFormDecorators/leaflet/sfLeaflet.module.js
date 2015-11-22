@@ -4,72 +4,89 @@ angular.module('schemaForm')
     return {
       restrict: 'E',
       scope: {
-        ngModel: '=',
-        form: '='
+        markers: '=',
+        marker: '=',
+        form: '=',
+        multiple: '='
       },
       templateUrl: 'javascripts/storage/customFormDecorators/leaflet/sfLeaflet.tpl.html',
       link: function (scope) {
         var
           id = scope.form.title + '-' + (Math.random() * Date.now()),
-          markerId = 'marker-' + id,
-          marker;
+          index;
 
         scope.mapId = 'map-' + id;
+        scope.newMarker = {
+          draggable: true
+        };
 
-        scope.$watch('ngModel', function () {
-          if (!scope.ngModel) {
-            return false;
-          }
+        scope.$watch('marker', function () {
+          getLatLngLabel();
 
-          if (scope.ngModel['lat']) {
-            scope.latLabel = 'lat';
+          if (!scope.markers) {
+            scope.markers = [];
           }
-          if (scope.ngModel['latitude']) {
-            scope.latLabel = 'latitude';
+          if (scope.markers.length === 0 && scope.marker) {
+            scope.marker.id = 0;
+            scope.marker.draggable = true;
+            scope.markers.push(scope.marker);
           }
-
-          if (scope.ngModel['lon']) {
-            scope.lngLabel = 'lon';
-          }
-          if (scope.ngModel['lng']) {
-            scope.lngLabel = 'lng';
-          }
-          if (scope.ngModel['longitude']) {
-            scope.lngLabel = 'longitude';
-          }
-
-          scope.marker = {
-            lat: scope.ngModel[scope.latLabel],
-            lng: scope.ngModel[scope.lngLabel],
-            draggable: true,
-            id: markerId
-          };
-
-          scope.$watch('marker', function () {
-            scope.markers = [scope.marker];
-            scope.ngModel[scope.latLabel] = scope.marker.lat;
-            scope.ngModel[scope.lngLabel] = scope.marker.lng;
-          }, true);
         }, true);
 
-        scope.onMapClick = function (event) {
-          if (!scope.marker) {
-            marker = leaflet.createMarker(scope.mapId, event, {draggable: true});
-            marker.on('dragend', scope.onDrag);
-            scope.$apply(function () {
-              scope.marker = {
-                lat: event.latlng.lat,
-                lng: event.latlng.lng
-              };
-            });
+        scope.onDrag = function (event, index) {
+          scope.$apply(function () {
+            scope.markers[index][scope.latLabel] = event.target._latlng.lat;
+            scope.markers[index][scope.lngLabel] = event.target._latlng.lng;
+          });
+        };
+
+        scope.changeLatLng = function (index) {
+          if (index === undefined) {
+            if (scope.newMarker[scope.latLabel] && scope.newMarker[scope.lngLabel]) {
+              index = scope.markers.length;
+              scope.newMarker.id = index;
+              scope.markers.push(scope.newMarker);
+
+              // reset newMarker values
+              scope.newMarker = {draggable: true};
+            }
           }
         };
 
-        scope.onDrag = function (event) {
-          scope.$apply(function () {
-            scope.marker.lat = event.target._latlng.lat;
-            scope.marker.lng = event.target._latlng.lng;
-          });
+        scope.onMapClick = function (event) {
+          if (!scope.multiple) {
+            index = 0;
+            leaflet.removeAllMarkers(scope.mapId);
+          }
+          else {
+            index = scope.markers.length;
+          }
+
+          scope.markers[index] = {id: index};
+          scope.markers[index][scope.latLabel] = event.latlng.lat;
+          scope.markers[index][scope.lngLabel] = event.latlng.lng;
+          scope.markers[index].draggable = true;
+
+          scope.$apply();
+        };
+
+        var getLatLngLabel = function () {
+          if (scope.form.schema.properties.lat) {
+            scope.latLabel = 'lat';
+          }
+          else if (scope.form.schema.properties.latitude) {
+            scope.latLabel = 'latitude';
+          }
+
+          if (scope.form.schema.properties.lon) {
+            scope.lngLabel = 'lon';
+          }
+          else if (scope.form.schema.properties.lng) {
+            scope.lngLabel = 'lng';
+          }
+          else if (scope.form.schema.properties.longitude) {
+            scope.lngLabel = 'longitude';
+          }
         };
       }
     }

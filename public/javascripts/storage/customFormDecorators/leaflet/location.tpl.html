@@ -2,5 +2,5 @@
     <legend ng-class="{'sr-only': !showTitle() }">{{ form.title }}</legend>
     <div class="help-block" ng-show="form.description" ng-bind-html="form.description"></div>
 
-    <sf-leaflet ng-model="$$value$$" form="form"></sf-leaflet>
+    <sf-leaflet marker="$$value$$" multiple="false" form="form"></sf-leaflet>
 </fieldset>

@@ -15,6 +15,7 @@ router.get('/browse', function(req, res) {
 
   return res.render('storage/browse');
 
+
 });
 
 router.get('/browse-documents', function(req, res) {
@@ -32,6 +33,7 @@ router.get('/create', function (req, res) {
 router.get('/full', function (req, res) {
 
   return res.render('storage/full', {action: 'edit'});
+
 
 });
 

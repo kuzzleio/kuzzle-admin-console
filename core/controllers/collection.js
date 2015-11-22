@@ -56,6 +56,8 @@ router.post('/create', function (req, res) {
     return res.json({error: true, message: 'No collection name provided'});
   }
 
+  console.log(kuzzle);
+
   kuzzle
     .dataCollectionFactory(collection.name)
     .createPromise()
