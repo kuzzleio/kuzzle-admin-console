@@ -15,4 +15,10 @@ angular.module('kuzzle.collection')
           "mainView": { templateUrl: '/collection/create' }
         }
       })
+      .state('collection.full', {
+        url: '/:collection',
+        views: {
+          "mainView": { templateUrl: '/collection/full' }
+        }
+      })
   }]);

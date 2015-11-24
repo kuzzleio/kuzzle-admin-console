@@ -79,7 +79,7 @@ angular.module('kuzzle.leaflet', [])
       restrict: 'E',
       scope: {
         mapId: '=',
-        markers: '=',
+        marker: '=',
         zoom: '=',
         onMapClick: '&',
         onDrag: '&',
@@ -88,8 +88,7 @@ angular.module('kuzzle.leaflet', [])
       },
       template: '<div id="{{ mapId }}"></div>',
       link: function (scope) {
-        var
-          objectMarkers = {};
+        var init = true;
 
         scope.$watch('mapId', function () {
           if (!scope.mapId) {
@@ -99,13 +98,13 @@ angular.module('kuzzle.leaflet', [])
           leaflet.createMap(scope.mapId, scope.zoom || 13);
           leaflet.addEvent(scope.mapId, 'click', scope.onMapClick);
 
-          scope.$watch('markers', function () {
-            if (!scope.markers) {
+          scope.$watch('marker', function () {
+            if (!scope.marker || !init) {
               return false;
             }
 
-            leaflet.removeAllMarkers(scope.mapId);
             addMarkers();
+            init = false;
           }, true);
 
           scope.$watch('zoom', function () {
@@ -122,29 +121,20 @@ angular.module('kuzzle.leaflet', [])
             objectMarker,
             fitBounds = [];
 
-          scope.markers.forEach(function (marker) {
-            if (!marker[scope.latLabel] || !marker[scope.lngLabel]) {
-              return false;
-            }
-
-            objectMarker = leaflet.createMarker(scope.mapId, marker, {draggable: marker.draggable});
-            objectMarker.on('dragend', function (event) {
-              scope.onDrag({event: event, markerId: marker.id});
-            });
-
-            fitBounds.push(marker);
-
-            objectMarkers[marker.id] = objectMarker;
-          });
-
-
-          if (fitBounds.length > 0) {
-            leaflet.setFitBounds(scope.mapId, fitBounds);
-            if (scope.zoom) {
-              leaflet.setZoom(scope.mapId, scope.zoom);
-            }
+          if (!scope.marker[scope.latLabel] || !scope.marker[scope.lngLabel]) {
+            return false;
           }
 
+          objectMarker = leaflet.createMarker(scope.mapId, scope.marker, {draggable: true});
+          objectMarker.on('dragend', function (event) {
+            scope.onDrag({event: event});
+          });
+          fitBounds.push(scope.marker);
+
+          leaflet.setFitBounds(scope.mapId, fitBounds);
+          if (scope.zoom) {
+            leaflet.setZoom(scope.mapId, scope.zoom);
+          }
         }
       }
     }

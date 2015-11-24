@@ -56,11 +56,29 @@ router.post('/create', function (req, res) {
     return res.json({error: true, message: 'No collection name provided'});
   }
 
-  console.log(kuzzle);
-
   kuzzle
     .dataCollectionFactory(collection.name)
     .createPromise()
+    .then(function () {
+      return res.json({error: false});
+    })
+    .catch(function (error) {
+      return res.json({error: true, message: error});
+    });
+});
+
+router.post('/update', function (req, res) {
+
+  var
+    collection = req.body.collection;
+
+  if (!collection) {
+    return res.json({error: true, message: 'No collection provided'});
+  }
+
+  kuzzle
+    .dataCollectionFactory(collection.name)
+    .putMappingPromise(collection.schema)
     .then(function () {
       return res.json({error: false});
     })
@@ -89,6 +107,45 @@ router.post('/delete', function (req, res) {
     });
 });
 
+router.post('/truncate', function (req, res) {
+
+  var
+    collection = req.body.collection;
+
+  if (!collection) {
+    return res.json({error: true, message: 'No collection provided'});
+  }
+
+  kuzzle
+    .dataCollectionFactory(collection)
+    .truncatePromise()
+    .then(function () {
+      return res.json({error: false});
+    })
+    .catch(function (error) {
+      return res.json({error: true, message: error});
+    });
+});
+
+router.post('/getByName', function (req, res) {
+
+  var
+    collection = req.body.collection;
+
+  if (!collection) {
+    return res.json({error: true, message: 'No collection provided'});
+  }
+
+  kuzzle
+    .dataCollectionFactory(collection)
+    .getMappingPromise()
+    .then(function (mapping) {
+      return res.json({error: false});
+    })
+    .catch(function (error) {
+      return res.json({error: true, message: error});
+    });
+});
 
 module.exports = router;
 

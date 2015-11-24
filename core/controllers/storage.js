@@ -34,7 +34,6 @@ router.get('/full', function (req, res) {
 
   return res.render('storage/full', {action: 'edit'});
 
-
 });
 
 
@@ -94,7 +93,6 @@ router.post('/search', function (req, res) {
 });
 
 router.post('/update', function (req, res) {
-
   var
     document = req.body.document,
     collection = req.body.collection,
@@ -139,7 +137,7 @@ router.post('/create', function (req, res) {
   }
 
   kuzzle
-    .dataCollectionFactory(collection)
+    .dataCollectionFactory(collection.name)
     .createDocumentPromise(document)
     .then(function (response) {
       return res.json({error: false, id: response.id});

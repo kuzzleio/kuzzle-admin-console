@@ -4,7 +4,6 @@ angular.module('schemaForm')
     return {
       restrict: 'E',
       scope: {
-        markers: '=',
         marker: '=',
         form: '=',
         multiple: '='
@@ -12,61 +11,24 @@ angular.module('schemaForm')
       templateUrl: 'javascripts/storage/customFormDecorators/leaflet/sfLeaflet.tpl.html',
       link: function (scope) {
         var
-          id = scope.form.title + '-' + (Math.random() * Date.now()),
-          index;
+          id = scope.form.title + '-' + (Math.random() * Date.now());
 
         scope.mapId = 'map-' + id;
-        scope.newMarker = {
-          draggable: true
-        };
 
         scope.$watch('marker', function () {
           getLatLngLabel();
-
-          if (!scope.markers) {
-            scope.markers = [];
-          }
-          if (scope.markers.length === 0 && scope.marker) {
-            scope.marker.id = 0;
-            scope.marker.draggable = true;
-            scope.markers.push(scope.marker);
-          }
         }, true);
 
-        scope.onDrag = function (event, index) {
+        scope.onDrag = function (event) {
           scope.$apply(function () {
-            scope.markers[index][scope.latLabel] = event.target._latlng.lat;
-            scope.markers[index][scope.lngLabel] = event.target._latlng.lng;
+            scope.marker[scope.latLabel] = event.target._latlng.lat;
+            scope.marker[scope.lngLabel] = event.target._latlng.lng;
           });
         };
 
-        scope.changeLatLng = function (index) {
-          if (index === undefined) {
-            if (scope.newMarker[scope.latLabel] && scope.newMarker[scope.lngLabel]) {
-              index = scope.markers.length;
-              scope.newMarker.id = index;
-              scope.markers.push(scope.newMarker);
-
-              // reset newMarker values
-              scope.newMarker = {draggable: true};
-            }
-          }
-        };
-
         scope.onMapClick = function (event) {
-          if (!scope.multiple) {
-            index = 0;
-            leaflet.removeAllMarkers(scope.mapId);
-          }
-          else {
-            index = scope.markers.length;
-          }
-
-          scope.markers[index] = {id: index};
-          scope.markers[index][scope.latLabel] = event.latlng.lat;
-          scope.markers[index][scope.lngLabel] = event.latlng.lng;
-          scope.markers[index].draggable = true;
-
+          scope.markers[scope.latLabel] = event.latlng.lat;
+          scope.markers[scope.lngLabel] = event.latlng.lng;
           scope.$apply();
         };
 

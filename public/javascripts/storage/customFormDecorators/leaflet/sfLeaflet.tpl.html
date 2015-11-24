@@ -1,52 +1,29 @@
-
-<div ng-repeat="marker in markers">
-    <label class="control-label {{form.labelHtmlClass}}" for="lat{{$index}}">{{latLabel}}</label>
+<div>
+    <label class="control-label {{form.labelHtmlClass}}" for="lat">{{latLabel}}</label>
     <input
             ng-model="marker[latLabel]"
             type="number"
             step="any"
             class="form-control {{form.fieldHtmlClass}}"
-            id="lat{{$index}}"
-            ng-blur="changeLatLng($index)"
+            id="lat"
             ng-model-options="{ updateOn: 'blur' }">
 
 
-    <label class="control-label {{form.labelHtmlClass}}" for="lng{{$index}}">{{lngLabel}}</label>
+    <label class="control-label {{form.labelHtmlClass}}" for="lng">{{lngLabel}}</label>
     <input
             ng-model="marker[lngLabel]"
             type="number"
             step="any"
             class="form-control {{form.fieldHtmlClass}}"
-            id="lng{{$index}}"
-            ng-blur="changeLatLng($index)"
-            ng-model-options="{ updateOn: 'blur' }">
-</div>
-<div ng-if="markers.length === 0 || multiple">
-    <label class="control-label {{form.labelHtmlClass}}" for="lat">{{latLabel}}</label>
-    <input
-            ng-model="newMarker[latLabel]"
-            type="number"
-            step="any"
-            class="form-control {{form.fieldHtmlClass}}"
-            id="lat"
-            ng-blur="changeLatLng()">
-
-
-    <label class="control-label {{form.labelHtmlClass}}" for="lng{{$index}}">{{lngLabel}}</label>
-    <input
-            ng-model="newMarker[lngLabel]"
-            type="number"
-            step="any"
-            class="form-control {{form.fieldHtmlClass}}"
             id="lng"
-            ng-blur="changeLatLng()">
+            ng-model-options="{ updateOn: 'blur' }">
 </div>
 
 <div class="row map">
     <div class="col-sm-12">
         <leaflet
                 map-id="mapId"
-                markers="markers"
+                marker="marker"
                 on-map-click="onMapClick(event)"
                 zoom="7"
                 on-drag="onDrag(event, markerId)"
