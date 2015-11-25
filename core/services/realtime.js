@@ -32,19 +32,28 @@ module.exports = {
         sockets[socket.id].push(room);
       });
 
+      /** Because the BO is a Single Page Application, the socket is never disconnect. On state change we have to trigger manually **/
+      socket.on('unsubscribeAll', function () {
+        socketUnsubscribeAll(socket.id);
+      });
+
       /** Unsubscribe from all rooms on disconnect **/
       socket.on('disconnect', function () {
-        if (!sockets[socket.id]) {
-          return false;
-        }
-
-        _.forEach(sockets[socket.id], function (room) {
-            room.unsubscribe();
-        });
-
-        delete sockets[socket.id];
+        socketUnsubscribeAll(socket.id);
       });
 
     });
   }
+};
+
+var socketUnsubscribeAll = function (id) {
+  if (!sockets[id]) {
+    return false;
+  }
+
+  _.forEach(sockets[id], function (room) {
+    room.unsubscribe();
+  });
+
+  delete sockets[id];
 };

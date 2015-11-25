@@ -9,7 +9,8 @@ angular.module('kuzzle', [
   'kuzzle.uid',
   'ui-notification',
   'kuzzle.bufferCancel',
-  'kuzzle.previousState'
+  'kuzzle.previousState',
+  'kuzzle.unsubscribeOnPageChange'
 ])
 
   .config(['$httpProvider', function ($httpProvider) {

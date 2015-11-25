@@ -106,8 +106,7 @@ angular.module('kuzzle.storage')
           body: $scope.document.body
         };
 
-        console.log(document);
-        //documentApi.update($stateParams.collection, document, true);
+        documentApi.update($stateParams.collection, document, true);
       };
 
       $scope.goToList = function () {

@@ -1,6 +1,6 @@
 angular.module('kuzzle.previousState', [])
 
-  .service('previousState', ['$rootScope', '$state', function ($rootScope, $state) {
+  .service('previousState', ['$rootScope', function ($rootScope) {
     var previous = null;
 
     $rootScope.$on('$stateChangeSuccess', function (ev, to, toParams, from) {

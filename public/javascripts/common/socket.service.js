@@ -1,13 +1,16 @@
 angular.module('kuzzle.socket', [])
 
   .factory('socket', ['$rootScope', function ($rootScope) {
-    var socket = io.connect();
+    var
+      socket = io.connect(),
+      events = [];
 
     return {
 
       on: function (eventName) {
         return Rx.Observable.fromEventPattern(
           function (callback) {
+            events.push(eventName);
             socket.on(eventName, function () {
               var args = arguments;
               $rootScope.$apply(function () {
@@ -36,6 +39,12 @@ angular.module('kuzzle.socket', [])
             }
           });
         });
+      },
+
+      unsubscribeAll: function () {
+        events.forEach(function (event) {
+          socket.off(event);
+        })
       }
     };
 

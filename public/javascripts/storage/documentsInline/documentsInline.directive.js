@@ -1,7 +1,9 @@
 angular.module('kuzzle.storageDocumentsInline', [
   'kuzzle.documentApi',
   'jsonFormatter',
-  'kuzzle.bufferCancel'])
+  'kuzzle.bufferCancel',
+  'ui-notification'
+])
 
   .controller('storageDocumentsInlineCtrl', [
     '$scope',
@@ -9,7 +11,8 @@ angular.module('kuzzle.storageDocumentsInline', [
     'documentApi',
     'bufferCancel',
     '$timeout',
-    function ($scope, $filter, documentApi, bufferCancel, $timeout) {
+    'Notification',
+    function ($scope, $filter, documentApi, bufferCancel, $timeout, notification) {
 
       $scope.editDocument = function (index) {
         $scope.documents[index].json = $filter('json')($scope.documents[index].body);
@@ -25,6 +28,7 @@ angular.module('kuzzle.storageDocumentsInline', [
         }
         catch (e) {
           console.error(e);
+          notification.error('Error parsing document.');
         }
       };
 
