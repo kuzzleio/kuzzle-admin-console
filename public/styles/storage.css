@@ -85,6 +85,8 @@
 .storage-browse .browse-documents ul.pagination {
   margin-top: 0; }
 
+.edit-document .view-toggle {
+  margin-bottom: 30px; }
 .edit-document .form {
   padding-bottom: 20px; }
   .edit-document .form form {
@@ -99,5 +101,8 @@
         height: 400px; }
         .edit-document .form form .map .leaflet-control-container .leaflet-bar {
           box-shadow: none; }
+.edit-document .ace_editor {
+  height: 600px;
+  margin-bottom: 20px; }
 .edit-document .go-document {
   cursor: pointer; }

@@ -64,7 +64,7 @@ angular.module('schemaForm')
     function (schemaFormProvider, schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
 
       var location = function(name, schema, options) {
-        if (schema.type === 'location' || (schema.type === 'object' && schema.format === 'location')) {
+        if (schema.type === 'object' && schema.properties && schema.properties.lat && schema.properties.lon && Object.keys(schema.properties).length === 2) {
           var f = schemaFormProvider.stdFormObj(name, schema, options);
           f.key = options.path;
           f.type = 'location';

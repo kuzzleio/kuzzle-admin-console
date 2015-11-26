@@ -27,10 +27,6 @@ angular.module('kuzzle.schema', [])
             title: attribute,
             properties: buildPropertiesRecursive(value.properties)
           };
-
-          if (properties[attribute].properties && properties[attribute].properties.lat && properties[attribute].properties.lon) {
-            properties[attribute].format = 'location';
-          }
         }
       });
 
@@ -67,7 +63,6 @@ angular.module('kuzzle.schema', [])
             };
 
             schema.properties = buildPropertiesRecursive(mapping);
-            schema.defaultProperties = Object.keys(schema.properties);
 
             deferred.resolve(schema);
           });

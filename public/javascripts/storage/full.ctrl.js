@@ -14,12 +14,13 @@ angular.module('kuzzle.storage')
 
       $scope.schema = {};
       $scope.collection = $stateParams.collection;
+      $scope.view = 'form';
       $scope.isEdit = false;
       $scope.exists = false;
       $scope.isLoading = false;
       $scope.another = false;
 
-      $scope.document = {id: $stateParams.id, body: null};
+      $scope.document = {id: $stateParams.id, body: null, json: null};
 
       var message = null;
 
@@ -42,6 +43,7 @@ angular.module('kuzzle.storage')
               }
 
               $scope.document.body = response.data.document.body;
+              $scope.document.json = angular.toJson(response.data.document.body, 4);
               $scope.document.id = response.data.document._id;
 
               $scope.$on("leafletDirectiveMarker.dragend", function (event, args) {
@@ -89,7 +91,13 @@ angular.module('kuzzle.storage')
       };
 
       $scope.create = function () {
-        documentApi.create($scope.collection, $scope.document.body, true)
+        var document = getDocumentBody();
+
+        if (!document) {
+          return false;
+        }
+
+        documentApi.create($scope.collection, document, true)
           .then(function (response) {
             if ($scope.another) {
               $state.reload();
@@ -101,12 +109,13 @@ angular.module('kuzzle.storage')
       };
 
       $scope.update = function () {
-        var document = {
-          _id: $scope.document.id,
-          body: $scope.document.body
-        };
+        var document = getDocumentBody();
 
-        documentApi.update($stateParams.collection, document, true);
+        if (!document) {
+          return false;
+        }
+
+        documentApi.update($stateParams.collection, $scope.document.id, document, true);
       };
 
       $scope.goToList = function () {
@@ -120,10 +129,84 @@ angular.module('kuzzle.storage')
         $state.go('storage.browse.documents', {collection: $stateParams.collection}, {reload: false});
       };
 
+      $scope.switchView = function (view) {
+        if (view === 'json') {
+          $scope.document.json = angular.toJson($scope.document.body, 4);
+        }
+        else {
+          try {
+            $scope.document.body = JSON.parse($scope.document.json);
+            $scope.schema = getUpdatedSchema($scope.document, 'body');
+            $scope.$broadcast('schemaFormRedraw');
+          }
+          catch (e) {
+
+          }
+        }
+
+        $scope.view = view;
+      };
+
       $scope.refresh = function () {
         $state.reload();
         message.then(function (notificationScope) {
           notificationScope.kill(true);
         })
       };
+
+      /** Private **/
+      var getUpdatedSchema = function (document, propertyName) {
+        var
+          schema = {},
+          type = typeof document[propertyName],
+          properties = {},
+          property;
+
+        if (type === 'object') {
+          if (!document[propertyName]) {
+            return false;
+          }
+
+          angular.forEach(document[propertyName], function (value, subProperty) {
+            property = getUpdatedSchema(document[propertyName], subProperty);
+
+            if (!property) {
+              return false;
+            }
+
+            properties[subProperty] = property;
+          });
+
+          schema = {
+            type: 'object',
+            properties: properties
+          };
+        }
+        else {
+          schema = {
+            type: type
+          };
+        }
+
+        return schema;
+      };
+
+      var getDocumentBody = function () {
+        var document;
+
+        if ($scope.view === 'json') {
+          try {
+            document = JSON.parse($scope.document.json);
+          }
+          catch (e) {
+            notification.error('Error parsing document.');
+            return false;
+          }
+        }
+        else {
+          document = $scope.document.body;
+        }
+
+        return document
+      }
     }]);

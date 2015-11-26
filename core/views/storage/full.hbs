@@ -10,6 +10,24 @@
     </div>
 
     <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
+        <div class="row view-toggle">
+            <div class="col-sm-12">
+                <div class="btn-group" role="group">
+                    <button
+                            type="button"
+                            class="btn btn-lg btn-default fa fa-file-text-o"
+                            ng-class="{active: view === 'form'}"
+                            title="Use the form view"
+                            ng-click="switchView('form')"></button>
+                    <button
+                            type="button"
+                            class="btn btn-lg btn-default fa fa-file-code-o"
+                            ng-class="{active: view === 'json'}"
+                            title="Use the JSON view"
+                            ng-click="switchView('json')"></button>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
@@ -34,7 +52,12 @@
         </div>
         <div class="row">
             <div class="col-sm-12 form">
-                <form sf-schema="schema" sf-form="form" sf-model="document.body"></form>
+                <div ng-if="view === 'form'">
+                    <form sf-schema="schema" sf-form="form" sf-model="document.body"></form>
+                </div>
+                <div ng-if="view === 'json'">
+                    <json-edit content="document.json"></json-edit>
+                </div>
 
                 <div class="actions-group">
                     <div class="checkbox" ng-if="!exists">

@@ -153,6 +153,9 @@
 }
 
 .edit-document {
+  .view-toggle {
+    margin-bottom: 30px;
+  }
   .form {
     padding-bottom: 20px;
     form {
@@ -174,6 +177,10 @@
         }
       }
     }
+  }
+  .ace_editor {
+    height: 600px;
+    margin-bottom: 20px;
   }
   .go-document {
     cursor: pointer;
