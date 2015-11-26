@@ -46,7 +46,8 @@ router.post('/search', function (req, res) {
     queryParams = req.query,
     params = req.body,
     filter = params.filter,
-    collection = params.collection;
+    collection = params.collection,
+    globalFilter;
 
   if (!collection) {
     return res.json({error: true, message: 'collection is missing'});
@@ -96,10 +97,15 @@ router.post('/update', function (req, res) {
   var
     document = req.body.document,
     collection = req.body.collection,
-    clientId = req.body.clientId;
+    clientId = req.body.clientId,
+    id = req.body.id;
 
   if (!document) {
     return res.json({error: true, message: 'No document provided'});
+  }
+
+  if (!id) {
+    return res.json({error: true, message: 'No id provided'});
   }
 
   if (!collection) {
@@ -113,7 +119,7 @@ router.post('/update', function (req, res) {
   kuzzle
     .dataCollectionFactory(collection)
     .setHeaders({metadata: {clientId: clientId}})
-    .replaceDocumentPromise(document._id, document.body)
+    .replaceDocumentPromise(id, document)
     .then(function () {
       return res.json({error: false});
     })
@@ -137,7 +143,7 @@ router.post('/create', function (req, res) {
   }
 
   kuzzle
-    .dataCollectionFactory(collection.name)
+    .dataCollectionFactory(collection)
     .createDocumentPromise(document)
     .then(function (response) {
       return res.json({error: false, id: response.id});

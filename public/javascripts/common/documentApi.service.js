@@ -32,11 +32,12 @@ angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
         });
       },
 
-      update: function (collection, document, notify) {
+      update: function (collection, id, document, notify) {
         var deferred = $q.defer();
 
         $http.post('/storage/update', {
           collection: collection,
+          id: id,
           document: document,
           clientId: clientId
         })

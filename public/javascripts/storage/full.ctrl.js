@@ -105,7 +105,10 @@ angular.module('kuzzle.storage')
 
             $scope.document.id = response.id;
             $scope.exists = true;
-          });
+          })
+          .catch(function (error) {
+            console.error(error);
+          })
       };
 
       $scope.update = function () {
