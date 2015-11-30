@@ -3,7 +3,6 @@ angular.module('kuzzle.storage', [
   'kuzzle.jsonEdit',
   'kuzzle.schema',
   'kuzzle.documentApi',
-  'kuzzle.storageBasicFilter',
   'kuzzle.storageDocumentsInline',
   'kuzzle.dropDownSearch',
   'kuzzle.leaflet'

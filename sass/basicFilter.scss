@@ -1,0 +1,42 @@
+.filters {
+  form {
+    margin-top: 20px;
+    margin-bottom: 25px;
+
+    .form-group {
+      &.basic-filter {
+        margin-left: -10px;
+        margin-bottom: 10px;
+      }
+
+      .actions-term {
+        padding-left: 0;
+
+        .add-term, .remove-term {
+          cursor: pointer;
+          margin-right: 10px;
+        }
+        .remove-term {
+          display: none;
+        }
+      }
+      &:hover .remove-term {
+        display: inline-block;
+      }
+      .ace_editor {
+        height: 250px;
+        margin-bottom: 10px;
+      }
+      button {
+        margin-right: 6px;
+      }
+    }
+  }
+
+  .add-group {
+    margin-left: 5px;
+  }
+  .or-label {
+    font-weight: bold;
+  }
+}

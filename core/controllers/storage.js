@@ -132,7 +132,8 @@ router.post('/create', function (req, res) {
 
   var
     collection = req.body.collection,
-    document = req.body.document;
+    document = req.body.document,
+    id = req.body.id;
 
   if (!document) {
     return res.json({error: true, message: 'No document provided'});
@@ -144,7 +145,7 @@ router.post('/create', function (req, res) {
 
   kuzzle
     .dataCollectionFactory(collection)
-    .createDocumentPromise(document)
+    .createDocumentPromise(id, document, {updateIfExist: true})
     .then(function (response) {
       return res.json({error: false, id: response.id});
     })

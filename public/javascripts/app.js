@@ -1,8 +1,10 @@
 angular.module('kuzzle', [
   'ui.router',
   'ui.bootstrap',
+  'kuzzle.basicFilter',
   'kuzzle.storage',
   'kuzzle.collection',
+  'kuzzle.realtime',
   'kuzzle.collectionApi',
   'angular-loading-bar',
   'ngAnimate',

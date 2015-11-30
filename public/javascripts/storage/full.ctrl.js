@@ -10,19 +10,26 @@ angular.module('kuzzle.storage')
     'schema',
     'previousState',
     '$window',
-    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window) {
+    '$uibModal',
+    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, $uibModal) {
 
       $scope.schema = {};
+      $scope.listAttributes = [];
       $scope.collection = $stateParams.collection;
       $scope.view = 'form';
+
       $scope.isEdit = false;
       $scope.exists = false;
       $scope.isLoading = false;
       $scope.another = false;
 
+      $scope.newField = {name: null, type: null, after: null};
+
       $scope.document = {id: $stateParams.id, body: null, json: null};
 
-      var message = null;
+      var
+        message = null,
+        modal;
 
       $scope.init = function (action) {
 
@@ -42,8 +49,10 @@ angular.module('kuzzle.storage')
                 return false;
               }
 
-              $scope.document.body = response.data.document.body;
               $scope.document.json = angular.toJson(response.data.document.body, 4);
+              // use refreshFormWithJson instead of directly put data in body because the field order is different in mapping and in document itself
+              // if we don't do that, when the user switch between json/form view, fields order can move
+              refreshFormWithJson();
               $scope.document.id = response.data.document._id;
 
               $scope.$on("leafletDirectiveMarker.dragend", function (event, args) {
@@ -138,9 +147,7 @@ angular.module('kuzzle.storage')
         }
         else {
           try {
-            $scope.document.body = JSON.parse($scope.document.json);
-            $scope.schema = getUpdatedSchema($scope.document, 'body');
-            $scope.$broadcast('schemaFormRedraw');
+            refreshFormWithJson();
           }
           catch (e) {
 
@@ -156,6 +163,30 @@ angular.module('kuzzle.storage')
           notificationScope.kill(true);
         })
       };
+
+      $scope.openModalAddAttribute = function () {
+        modal = $uibModal.open({
+          templateUrl: 'modalAddAttribute.html',
+          scope: $scope
+        })
+      };
+
+      $scope.cancelModal = function () {
+        modal.dismiss('cancel');
+      };
+
+      $scope.addAttribute = function () {
+        console.log($scope.newField);
+      };
+
+      /** Watchers **/
+      $scope.$watch('schema', function () {
+        if (!$scope.schema || !$scope.schema.properties) {
+          return false;
+        }
+
+        $scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
+      }, true);
 
       /** Private **/
       var getUpdatedSchema = function (document, propertyName) {
@@ -211,5 +242,27 @@ angular.module('kuzzle.storage')
         }
 
         return document
-      }
+      };
+
+      var getFlattenAttributes = function (properties, prefix) {
+        var
+          attributes = [];
+
+        angular.forEach(properties, function (property, name) {
+            if (property.properties) {
+              attributes = attributes.concat(getFlattenAttributes(property.properties, prefix + name + '.'));
+            }
+            else {
+              attributes.push(prefix + name);
+            }
+        });
+
+        return attributes;
+      };
+
+      var refreshFormWithJson = function () {
+        $scope.document.body = JSON.parse($scope.document.json);
+        $scope.schema = getUpdatedSchema($scope.document, 'body');
+        $scope.$broadcast('schemaFormRedraw');
+      };
     }]);

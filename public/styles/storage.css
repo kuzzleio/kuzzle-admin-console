@@ -35,30 +35,6 @@
   margin-bottom: 10px; }
   .storage-browse .browse-documents .create button {
     padding: 8px 30px 8px 30px; }
-.storage-browse .browse-documents .filters form {
-  margin-top: 20px;
-  margin-bottom: 25px; }
-  .storage-browse .browse-documents .filters form .form-group.basic-filter {
-    margin-left: -10px;
-    margin-bottom: 10px; }
-  .storage-browse .browse-documents .filters form .form-group .actions-term {
-    padding-left: 0; }
-    .storage-browse .browse-documents .filters form .form-group .actions-term .add-term, .storage-browse .browse-documents .filters form .form-group .actions-term .remove-term {
-      cursor: pointer;
-      margin-right: 10px; }
-    .storage-browse .browse-documents .filters form .form-group .actions-term .remove-term {
-      display: none; }
-  .storage-browse .browse-documents .filters form .form-group:hover .remove-term {
-    display: inline-block; }
-  .storage-browse .browse-documents .filters form .form-group .ace_editor {
-    height: 250px;
-    margin-bottom: 10px; }
-  .storage-browse .browse-documents .filters form .form-group button {
-    margin-right: 10px; }
-.storage-browse .browse-documents .filters .add-group {
-  margin-left: 5px; }
-.storage-browse .browse-documents .filters .or-label {
-  font-weight: bold; }
 .storage-browse .browse-documents .documents .panel {
   margin-bottom: 5px; }
   .storage-browse .browse-documents .documents .panel.deleted {

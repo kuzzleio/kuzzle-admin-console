@@ -1,6 +1,6 @@
-angular.module('kuzzle.storageBasicFilter', ['kuzzle.schema'])
+angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
 
-  .controller('storageBasicFilterCtrl', ['$scope', 'schema', function ($scope, schema) {
+  .controller('basicFilterCtrl', ['$scope', 'schema', function ($scope, schema) {
 
     $scope.formattedFilter = [];
 
@@ -62,7 +62,7 @@ angular.module('kuzzle.storageBasicFilter', ['kuzzle.schema'])
     getFields();
   }])
 
-  .directive('storageBasicFilter', function () {
+  .directive('basicFilter', function () {
     return {
       restrict: 'E',
       scope: {
@@ -72,7 +72,7 @@ angular.module('kuzzle.storageBasicFilter', ['kuzzle.schema'])
         filterInUrl: '=',
         comparators: '='
       },
-      controller: 'storageBasicFilterCtrl',
+      controller: 'basicFilterCtrl',
       templateUrl: '/javascripts/storage/basicFilter/basicFilter.tpl.html'
     }
   });

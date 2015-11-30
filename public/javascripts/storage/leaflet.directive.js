@@ -11,8 +11,8 @@ angular.module('kuzzle.leaflet', [])
           markers: []
         };
 
-        L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYXNlbmRyYSIsImEiOiJjaWg3anRiYnAwMDFjdjVtMzgzNzZmOGU3In0.uY7SRGbkqccZY0TDHlm32w', {
-          attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        L.tileLayer('http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(maps[mapId].map);
       },
       addEvent: function (mapId, event, cb) {

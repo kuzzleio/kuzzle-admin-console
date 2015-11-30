@@ -18,3 +18,5 @@
   #sidebar .side-nav li a:hover {
     background-color: rgba(0, 0, 0, 0.1) !important;
     color: #fff; }
+  #sidebar .side-nav li a i {
+    padding-right: 5px; }

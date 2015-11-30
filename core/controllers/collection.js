@@ -2,8 +2,7 @@ var
   express = require('express'),
   router = express.Router(),
   kuzzle = require('../services/kuzzle')(),
-  _ = require('lodash'),
-  bufferCancel = require('../services/bufferCancel');
+  _ = require('lodash');
 
 router.get('/', function(req, res) {
 
