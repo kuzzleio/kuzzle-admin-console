@@ -21,20 +21,31 @@ angular.module('kuzzle.realtime')
       advancedFilter: ''
     };
     $scope.collections = [];
+    $scope.collection = null;
     $scope.subscribed = false;
+
+    $scope.messages = [];
+    $scope.documents = [];
 
     $scope.init = function () {
       collectionApi.list()
         .then(function (response) {
           $scope.collections = response.data;
         });
+
+      $scope.documents.push({body: {toto: 'toto'}});
     };
 
-    $scope.subscribe = function () {
+    $scope.basicSubscribe = function () {
+      $scope.subscribed = true;
+    };
+
+    $scope.advancedSubscribe = function () {
       $scope.subscribed = true;
     };
 
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
     };
+
   }]);

@@ -30,7 +30,6 @@ angular.module('kuzzle.storage')
       $scope.collection = $stateParams.collection;
 
       $scope.documents = null;
-      $scope.error = null;
 
       $scope.searchType = {
         basic: true,
@@ -115,11 +114,6 @@ angular.module('kuzzle.storage')
         filterTools.setBasicFilterInUrl();
         filterTools.fillAdvancedSearchWithBasic();
         $scope.loadDocuments();
-      };
-
-      $scope.resetAdvancedFilter = function () {
-        $scope.error = null;
-        $scope.filter.advancedFilter = '';
       };
 
       /** PRIVATE METHODS **/

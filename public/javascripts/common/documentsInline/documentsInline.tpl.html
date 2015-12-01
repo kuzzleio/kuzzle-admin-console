@@ -1,0 +1,38 @@
+<div class="row documents" ng-repeat="document in documents">
+    <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-11">
+                    <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
+                    <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
+                </div>
+                <div ng-if="!canEdit">
+                    <div class="col-sm-1 pull-right">
+                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})">
+                        </span>
+                    </div>
+                </div>
+                <div ng-if="canEdit">
+                    <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && !document.isEdit">
+                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})">
+                        </span>
+                        <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument($index)">
+                        </span>
+                        <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        </span>
+                        <ul class="dropdown-menu">
+                            <li><a href ng-click="delete($index)"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-1 pull-right" ng-show="!document.isDeleted && document.isEdit">
+                        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument($index)"></span>
+                        <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument($index)"></span>
+                    </div>
+                    <div class="col-sm-1 pull-right" ng-show="document.isDeleted">
+                        <a href ng-click="cancelDelete($index)">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
 
-  .controller('basicFilterCtrl', ['$scope', 'schema', function ($scope, schema) {
+  .controller('BasicFilterCtrl', ['$scope', 'schema', function ($scope, schema) {
 
     $scope.formattedFilter = [];
 
@@ -34,6 +34,10 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
     };
 
     var getFields = function () {
+      if (!$scope.collection) {
+        return false;
+      }
+
       schema.get($scope.collection)
         .then(function (response) {
           if (response.error) {
@@ -60,6 +64,11 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
     };
 
     getFields();
+
+    /** WATCHERS **/
+    $scope.$watch('collection', function () {
+      getFields();
+    });
   }])
 
   .directive('basicFilter', function () {
@@ -69,10 +78,9 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
         addGroupLabel: '@',
         filters: '=',
         collection: '=',
-        filterInUrl: '=',
         comparators: '='
       },
-      controller: 'basicFilterCtrl',
-      templateUrl: '/javascripts/storage/basicFilter/basicFilter.tpl.html'
+      controller: 'BasicFilterCtrl',
+      templateUrl: '/javascripts/common/basicFilter/basicFilter.tpl.html'
     }
   });

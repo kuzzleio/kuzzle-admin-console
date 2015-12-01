@@ -1,11 +1,11 @@
-angular.module('kuzzle.storageDocumentsInline', [
+angular.module('kuzzle.documentsInline', [
   'kuzzle.documentApi',
   'jsonFormatter',
   'kuzzle.bufferCancel',
   'ui-notification'
 ])
 
-  .controller('storageDocumentsInlineCtrl', [
+  .controller('DocumentsInlineCtrl', [
     '$scope',
     '$filter',
     'documentApi',
@@ -64,14 +64,15 @@ angular.module('kuzzle.storageDocumentsInline', [
       };
   }])
 
-  .directive('storageDocumentsInline', function () {
+  .directive('documentsInline', function () {
     return {
       restrict: 'E',
       scope: {
         documents: '=',
-        collection: '='
+        collection: '=',
+        canEdit: '='
       },
-      controller: 'storageDocumentsInlineCtrl',
-      templateUrl: '/javascripts/storage/documentsInline/documentsInline.tpl.html'
+      controller: 'DocumentsInlineCtrl',
+      templateUrl: '/javascripts/common/documentsInline/documentsInline.tpl.html'
     }
   });
