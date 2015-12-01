@@ -32,8 +32,6 @@ angular.module('kuzzle.realtime')
         .then(function (response) {
           $scope.collections = response.data;
         });
-
-      $scope.documents.push({body: {toto: 'toto'}});
     };
 
     $scope.basicSubscribe = function () {

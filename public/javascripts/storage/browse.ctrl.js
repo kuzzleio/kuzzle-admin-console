@@ -31,10 +31,18 @@ angular.module('kuzzle.storage')
           });
       };
 
+      /**
+       * Redirect the user on the corresponding list when a collection is clicked
+       * @param collection
+       */
       $scope.onClickCollection = function (collection) {
         $state.go('storage.browse.documents', {collection: collection, advancedFilter: null, basicFilter: null});
       };
 
+      /**
+       * Redirect to the collection creation when the user click on link "New collection"
+       * @param collection
+       */
       $scope.createCollection = function (collection) {
         $state.go('collection.create', {newCollection: collection});
       };
@@ -53,6 +61,9 @@ angular.module('kuzzle.storage')
         });
       };
 
+      /**
+       * Delete the entire collection
+       */
       $scope.delete = function () {
         collectionApi.delete($stateParams.collection, true);
         modal.dismiss('cancel');
@@ -61,6 +72,9 @@ angular.module('kuzzle.storage')
         }, 1000);
       };
 
+      /**
+       * Empty/flush the collection
+       */
       $scope.empty = function () {
         collectionApi.empty($stateParams.collection, true);
         modal.dismiss('cancel');

@@ -5,6 +5,7 @@ angular.module('kuzzle.storage')
     JSONFormatterConfigProvider.hoverPreviewArrayCount = 5;
   }])
 
+  /** This controller is used for display and manage the document list */
   .controller('StorageBrowseDocumentsCtrl', [
     '$scope',
     '$http',
@@ -16,6 +17,7 @@ angular.module('kuzzle.storage')
     '$state',
     function ($scope, $http, $stateParams, schema, $filter, documentApi, $timeout, $state) {
 
+      // List comparators for Basic filter block
       $scope.comparators = [
         {
           label: 'is equal to',
@@ -27,15 +29,18 @@ angular.module('kuzzle.storage')
         }
       ];
 
+      // The selected collection
       $scope.collection = $stateParams.collection;
-
+      // Documents list
       $scope.documents = null;
 
+      // The user can use either a basic search (with term) or an advanced filter
       $scope.searchType = {
         basic: true,
         advanced: false
       };
 
+      // Contains all filter: basic and advanced. The advanced filter is a string
       $scope.filter = {
         basicFilter: [{
           and: [
@@ -44,12 +49,19 @@ angular.module('kuzzle.storage')
         }],
         advancedFilter: ''
       };
+      // Contains the form. Allow to get state (like pristine)
       $scope.forms = {};
 
+      // Manage pagination
       $scope.currentPage = 1;
       $scope.total = 0;
       $scope.limit = 0;
 
+      /**
+       * Call on DOM init.
+       * Parse get parameters from url and get documents for the corresponding filters
+       * @returns {boolean}
+       */
       $scope.init = function () {
         if (!$scope.collection || !$scope.collection) {
           return false;
@@ -59,6 +71,10 @@ angular.module('kuzzle.storage')
         $scope.loadDocuments();
       };
 
+      /**
+       * Load documents according to filters
+       * @returns {boolean}
+       */
       $scope.loadDocuments = function () {
 
         var
@@ -99,6 +115,9 @@ angular.module('kuzzle.storage')
           })
       };
 
+      /**
+       * Trigger an advanced search
+       */
       $scope.advancedSearch = function () {
         $scope.currentPage = 1;
         setSearchType(true);
@@ -107,6 +126,9 @@ angular.module('kuzzle.storage')
         $scope.loadDocuments();
       };
 
+      /**
+       * Trigger an basic search
+       */
       $scope.basicSearch = function () {
         $scope.currentPage = 1;
         setSearchType(false);
@@ -118,6 +140,9 @@ angular.module('kuzzle.storage')
 
       /** PRIVATE METHODS **/
       var filterTools = {
+        /**
+         * Parse the url and get basic or advanced search
+         */
         getFiltersFromUrl: function () {
           var filters = [];
 
@@ -157,6 +182,9 @@ angular.module('kuzzle.storage')
             setSearchType(false);
           }
         },
+        /**
+         * When the user perform a basic filter, we have to change the url according to this filter
+         */
         setBasicFilterInUrl: function () {
           var filter = null;
 
@@ -165,6 +193,9 @@ angular.module('kuzzle.storage')
           }
           $state.go('storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
         },
+        /**
+         * When the user perform a advanced filter, we have to change the url according to this filter
+         */
         setAdvancedFilterInUrl: function () {
           var filter = decodeURIComponent($scope.filter.advancedFilter);
           $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});

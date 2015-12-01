@@ -1,5 +1,6 @@
 angular.module('kuzzle.storage')
 
+  /** This controller is used on a document full view: for edit or create a document **/
   .controller('StorageFullCtrl', [
     '$scope',
     '$http',
@@ -13,24 +14,43 @@ angular.module('kuzzle.storage')
     '$uibModal',
     function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, $uibModal) {
 
+      // Define the schema collection. Allow to display a JSON representation into a form
       $scope.schema = {};
+      // List of all flatten attributes. Useful for display a list of nested attributes
       $scope.listAttributes = [];
+      // The document collection
       $scope.collection = $stateParams.collection;
+      // The view type. Can be 'form' or 'json'. The 'json' view display the document as a JSON object
       $scope.view = 'form';
 
+      // Define if the user is in a 'edit' or a 'create' view
       $scope.isEdit = false;
+      // Define if the document already exists. Can be updated when the user type an already existing _id in form
       $scope.exists = false;
+      // Set to true during the document get by _id when the user enter an _id in form
       $scope.isLoading = false;
+
+      // Checkbox on form. If is set to true, when the user click on 'create', the document is created and the form is reinitialized.
       $scope.another = false;
 
+      // Mock creation of a new field
       $scope.newField = {name: null, type: null, after: null};
 
+      // Document itself. Loaded from server if we are in edition
       $scope.document = {id: $stateParams.id, body: null, json: null};
 
       var
         message = null,
         modal;
 
+      /**
+       * Call on DOM init.
+       * This function will get the document by _id if we are in edition
+       * Prepare the schema according to data set in document
+       * Subscribe to the document modification for displaying a message if someone else edit/delete this document
+       *
+       * @param action Can be 'edit' or 'create'
+       */
       $scope.init = function (action) {
 
         schema.buildFormatter($stateParams.collection)
@@ -55,11 +75,6 @@ angular.module('kuzzle.storage')
               refreshFormWithJson();
               $scope.document.id = response.data.document._id;
 
-              $scope.$on("leafletDirectiveMarker.dragend", function (event, args) {
-                $scope.document.body.location.lat = args.model.lat;
-                $scope.document.body.location.lon = args.model.lng;
-              });
-
               documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
                 message = notification.info({
                   message:'Someone has update this document',
@@ -77,6 +92,10 @@ angular.module('kuzzle.storage')
         }
       };
 
+      /**
+       * This function is triggered on field _id blur.
+       * Get from server and check if document already exists. If the document exists, we'll change `$scope.exists` to true
+       */
       $scope.documentExists = function () {
 
         $scope.exists = false;
@@ -99,6 +118,10 @@ angular.module('kuzzle.storage')
           });
       };
 
+      /**
+       * Triggered when user click on Create button.
+       * The document is persisted to Kuzzle. If `$scope.another` is set to true, the form is reloaded
+       */
       $scope.create = function () {
         var document = getDocumentBody();
 
@@ -120,6 +143,9 @@ angular.module('kuzzle.storage')
           })
       };
 
+      /**
+       * Triggered when user click on Update button
+       */
       $scope.update = function () {
         var document = getDocumentBody();
 
@@ -130,6 +156,11 @@ angular.module('kuzzle.storage')
         documentApi.update($stateParams.collection, $scope.document.id, document, true);
       };
 
+      /**
+       * Triggered when user click on "List" action.
+       * If the user previously come to the list we simply do an history back. If not, we redirect the user on the list of the document's collection
+       * @returns {boolean}
+       */
       $scope.goToList = function () {
         var previous = previousState.get();
 
@@ -141,6 +172,9 @@ angular.module('kuzzle.storage')
         $state.go('storage.browse.documents', {collection: $stateParams.collection}, {reload: false});
       };
 
+      /**
+       * Triggered on click on button on top of the form
+       */
       $scope.switchView = function (view) {
         if (view === 'json') {
           $scope.document.json = angular.toJson($scope.document.body, 4);
@@ -157,6 +191,9 @@ angular.module('kuzzle.storage')
         $scope.view = view;
       };
 
+      /**
+       * When an another user edit the same document, a notification is displayed and the user can click on it for reload the document
+       */
       $scope.refresh = function () {
         $state.reload();
         message.then(function (notificationScope) {
@@ -164,6 +201,9 @@ angular.module('kuzzle.storage')
         })
       };
 
+      /**
+       * Triggered when the user click on "Add Attribute". Will display a modal for adding a new attribute
+       */
       $scope.openModalAddAttribute = function () {
         modal = $uibModal.open({
           templateUrl: 'modalAddAttribute.html',
@@ -179,7 +219,8 @@ angular.module('kuzzle.storage')
         console.log($scope.newField);
       };
 
-      /** Watchers **/
+      /** WATCHERS **/
+
       $scope.$watch('schema', function () {
         if (!$scope.schema || !$scope.schema.properties) {
           return false;
@@ -188,7 +229,15 @@ angular.module('kuzzle.storage')
         $scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
       }, true);
 
-      /** Private **/
+
+      /** PRIVATE **/
+
+      /**
+       * Update the schema according to the document itself
+       * @param document
+       * @param propertyName
+       * @returns {*}
+       */
       var getUpdatedSchema = function (document, propertyName) {
         var
           schema = {},
@@ -225,6 +274,10 @@ angular.module('kuzzle.storage')
         return schema;
       };
 
+      /**
+       * Get the document body according to the current view ('json' or 'form')
+       * @returns {*}
+       */
       var getDocumentBody = function () {
         var document;
 
@@ -244,6 +297,13 @@ angular.module('kuzzle.storage')
         return document
       };
 
+      /**
+       * Flat all document attributes in an array
+       *
+       * @param properties
+       * @param prefix
+       * @returns {Array}
+       */
       var getFlattenAttributes = function (properties, prefix) {
         var
           attributes = [];
@@ -260,6 +320,9 @@ angular.module('kuzzle.storage')
         return attributes;
       };
 
+      /**
+       * Parse the text in json and transform into a form
+       */
       var refreshFormWithJson = function () {
         $scope.document.body = JSON.parse($scope.document.json);
         $scope.schema = getUpdatedSchema($scope.document, 'body');
