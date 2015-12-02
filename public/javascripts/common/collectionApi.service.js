@@ -1,6 +1,8 @@
 angular.module('kuzzle.collectionApi', ['kuzzle.socket', 'ui-notification'])
 
-  .service('collectionApi', ['$http', 'socket', 'Notification', '$q', function ($http, socket, notification, $q) {
+  .service('collectionApi', ['$http', 'socket', 'uid', 'Notification', '$q', function ($http, socket, uid, notification, $q) {
+    var
+      clientId = uid.new();
 
     return {
       list: function () {
@@ -97,6 +99,14 @@ angular.module('kuzzle.collectionApi', ['kuzzle.socket', 'ui-notification'])
           });
 
         return deferred.promise;
-      }
+      },
+      subscribeId: function (collection, filters, cb) {
+        socket.on('subscribeCollection:notify:' + collection)
+          .forEach(function (result) {
+            cb(result);
+          });
+
+        socket.emit('subscribeCollection', {collection: collection, filters: filters, clientId: clientId});
+      },
     }
   }]);
