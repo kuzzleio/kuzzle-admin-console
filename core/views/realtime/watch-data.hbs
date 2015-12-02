@@ -5,14 +5,14 @@
         </h1>
     </div>
 
-    <div class="col-sm-12">
+    <div class="col-sm-8">
         <div class="panel panel-default filters">
             <div class="panel-body">
 
                 <div class="row">
                     <div class="col-sm-5">
                         <div class="form-group">
-                            <label for="exampleInputEmail1">Collection</label>
+                            <label for="collectionName">Collection</label>
                             <input
                                     type="text"
                                     ng-model="collection"
@@ -56,5 +56,10 @@
                 </uib-tabset>
             </div>
         </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="panel panel-default">
+        <messages messages="messages"></messages>
+      </div>
     </div>
 </div>
