@@ -1,7 +1,7 @@
 <form class="form-horizontal">
     <div ng-repeat="(groupIndex, group) in filters">
         <div class="form-group basic-filter" ng-repeat="term in group.and" ng-class="{'has-error': term.error}">
-            <div class="col-sm-2">
+            <div class="col-sm-4">
                 <input
                         type="text"
                         ng-model="term.field"
@@ -14,12 +14,12 @@
                 <select ng-options="item as item.label for item in comparators" class="form-control" ng-model="term.equal">
                 </select>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-4">
                 <input type="text" class="form-control" placeholder="Value" ng-model="term.value">
             </div>
-            <div class="col-sm-1 actions-term">
+            <div class="col-sm-2 actions-term">
                 <button class="btn btn-default" ng-if="$last" aria-hidden="true" ng-click="addAndTerm(groupIndex)">And</button>
-                <span class="glyphicon glyphicon-minus remove-term text-danger" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
+                <span class="glyphicon glyphicon-remove remove-term text-danger" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
             </div>
         </div>
 
