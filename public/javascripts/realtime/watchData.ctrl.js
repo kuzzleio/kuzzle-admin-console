@@ -30,18 +30,18 @@ angular.module('kuzzle.realtime')
         .then(function (response) {
           $scope.collections = response.data;
         });
+    };
 
-      collectionApi.subscribeId('KuzzleTodoDemoMessages', {}, function (notification) {
+    $scope.subscribe = function () {
+      $scope.subscribed = true;
+      $scope.room = collectionApi.subscribeId('KuzzleTodoDemoMessages', {}, function (notification) {
         console.log(notification);
         $scope.messages.push({text: 'New Notification', icon: 'send'});
       })
     };
 
-    $scope.subscribe = function () {
-      $scope.subscribed = true;
-    };
-
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
+      collectionApi.unsubscribe();
     };
   }]);
