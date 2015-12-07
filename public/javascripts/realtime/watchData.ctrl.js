@@ -20,6 +20,9 @@ angular.module('kuzzle.realtime')
       }],
       advancedFilter: ''
     };
+    $scope.forms = {};
+    $scope.searchType = {};
+
     $scope.collections = [];
     $scope.subscribed = false;
 
