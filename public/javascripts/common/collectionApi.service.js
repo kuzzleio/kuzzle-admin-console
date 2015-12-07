@@ -109,9 +109,8 @@ angular.module('kuzzle.collectionApi', ['kuzzle.socket', 'ui-notification'])
         socket.emit('subscribeCollection', {collection: collection, filters: filters, clientId: clientId});
       },
       unsubscribe: function () {
-        // Warning: this is not meant to work like that. A room management should
-        // be implemented.
         socket.unsubscribeAll();
+        socket.emit('unsubscribeAll');
       }
     }
   }]);
