@@ -4,7 +4,8 @@ angular.module('kuzzle.realtime')
     '$scope',
     'collectionApi',
     'filter',
-    function ($scope, collectionApi, filterTools) {
+    'notification',
+    function ($scope, collectionApi, filterTools, notificationTools) {
 
     $scope.comparators = [
       {
@@ -64,37 +65,7 @@ angular.module('kuzzle.realtime')
     };
 
     $scope.addNotification = function (notification) {
-      var messageItem = {
-        id:  notification._id,
-        text: '',
-        icon: 'file',
-        class: '',
-        source: angular.toJson(notification._source, 4),
-        expanded: false
-      };
-
-      switch (notification.action) {
-        case 'create':
-        case 'createOrUpdate':
-          messageItem.text = 'Created new document';
-          messageItem.icon = 'file';
-          messageItem.class = 'text-info';
-        break;
-
-        case 'update':
-          messageItem.text = 'Updated document';
-          messageItem.icon = 'file';
-          messageItem.class = 'text-info';
-        break;
-
-        case 'delete':
-          messageItem.text = 'Deleted document';
-          messageItem.icon = 'remove';
-          messageItem.class = 'text-muted';
-        break;
-      };
-
-      $scope.messages.push(messageItem);
+      $scope.messages.push(notificationTools.notificationToMessage(notification));
     }
 
     $scope.onBasicFilterSelected = function () {
