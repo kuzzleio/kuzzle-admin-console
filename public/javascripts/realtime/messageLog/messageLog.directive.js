@@ -3,6 +3,9 @@ angular.module('kuzzle.realtime')
     $scope.clearMessages = function () {
       $scope.messages = [];
     }
+    $scope.toggleExpanded = function (index) {
+      $scope.messages[index].expanded = !$scope.messages[index].expanded;
+    }
   }])
   .directive('messages', function () {
     return {

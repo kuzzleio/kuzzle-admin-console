@@ -48,7 +48,7 @@ angular.module('kuzzle.realtime')
         filter = filterTools.formatAdvancedFilter($scope.filter.advancedFilter);
 
       $scope.room = collectionApi.subscribeId($scope.collection, filter, function (notification) {
-        $scope.messages.push({text: notification.controller + "." + notification.action, icon: 'send'});
+        $scope.addNotification(notification);
       })
     };
 
@@ -56,6 +56,40 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = false;
       collectionApi.unsubscribe();
     };
+
+    $scope.addNotification = function (notification) {
+      var messageItem = {
+        id:  notification._id,
+        text: '',
+        icon: 'file',
+        class: '',
+        source: angular.toJson(notification._source, 4),
+        expanded: false
+      };
+
+      switch (notification.action) {
+        case 'create':
+        case 'createOrUpdate':
+          messageItem.text = 'Created new document';
+          messageItem.icon = 'file';
+          messageItem.class = 'text-info';
+        break;
+
+        case 'update':
+          messageItem.text = 'Updated document';
+          messageItem.icon = 'file';
+          messageItem.class = 'text-info';
+        break;
+
+        case 'delete':
+          messageItem.text = 'Deleted document';
+          messageItem.icon = 'remove';
+          messageItem.class = 'text-muted';
+        break;
+      };
+
+      $scope.messages.push(messageItem);
+    }
 
     $scope.onBasicFilterSelected = function () {
       // Eventually put here some code that renders a basic filter structure

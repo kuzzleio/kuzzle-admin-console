@@ -1,10 +1,14 @@
 <div class="panel-heading">Message Log
   <button class="pull-right btn btn-default" ng-click="clearMessages()">Clear</button>
+  <div class="clearfix"></div>
 </div>
 <div class="panel-body">
   <ul class="list-group">
-    <li class="list-group-item" ng-repeat="message in messages">
-      <span class="glyphicon glyphicon-{{message.icon}}"></span>&nbsp;{{message.text}}
+    <li class="list-group-item" ng-repeat="(index, message) in messages">
+      <span class="glyphicon glyphicon-{{message.icon}}"></span>&nbsp;
+      <span class="{{message.class}}">{{message.text}}</span>&nbsp;<code>{{message.id}}</code>
+      <button ng-if="message.source" type="button" class="btn btn-default btn-xs" ng-click="toggleExpanded(index)"><span class="glyphicon glyphicon-option-horizontal"></span></button>
+      <pre ng-if="message.source" ng-class="{hide: !message.expanded}">{{message.source}}</pre>
     </li>
   </ul>
 </div>
