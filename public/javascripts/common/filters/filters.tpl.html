@@ -8,11 +8,6 @@
                 filter-in-url="basicFilterUrl"
                 comparators="comparators">
         </basic-filter>
-
-        <div class="form-group">
-            <button type="submit" class="btn btn-default" ng-click="basicSearch()" ng-disabled="subscribed">{{submitLabel}}</button>
-            <button ng-if="stopLabel" type="submit" class="btn btn-default" ng-click="stopSearch()" ng-disabled="!subscribed">{{stopLabel}}</button>
-        </div>
     </uib-tab>
     <uib-tab heading="Advanced filter" active="searchType.advanced">
         <form name="forms.advancedSearch">
@@ -20,13 +15,12 @@
                 <label>Filter</label>
                 <p class="text-danger" ng-show="error" ng-bind="error"></p>
                 <json-edit content="filters.advancedFilter"></json-edit>
-
-                <div class="form-group">
-                    <button type="submit" class="btn btn-default" ng-click="advancedSearch()" ng-disabled="subscribed">{{submitLabel}}</button>
-                    <button ng-if="stopLabel" type="submit" class="btn btn-default" ng-click="stopSearch()" ng-disabled="!subscribed">{{stopLabel}}</button>
-                    <a href ng-click="reset()">{{clearLabel}}</a>
-                </div>
             </div>
         </form>
     </uib-tab>
 </uib-tabset>
+<div class="form-group">
+    <button ng-if="submitLabel" type="submit" class="btn btn-default" ng-click="doSearch()" ng-disabled="subscribed">{{submitLabel}}</button>
+    <button ng-if="stopLabel" type="submit" class="btn btn-default" ng-click="stopSearch()" ng-disabled="!subscribed">{{stopLabel}}</button>
+    <button ng-if="clearLabel" class="btn btn-link" ng-click="reset()">{{clearLabel}}</button>
+</div>

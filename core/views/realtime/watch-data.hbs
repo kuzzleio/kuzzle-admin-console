@@ -1,16 +1,16 @@
-<div class="row realtime-watch" ng-controller="WatchDataCtrl" ng-init="init()">
+<div class="row realtime-watch">
     <div class="col-sm-12 headline">
         <h1 class="page-header">
             Realtime <small>watch data</small>
         </h1>
     </div>
-
-    <div class="col-sm-12">
+</div>
+<div class="row" ng-controller="WatchDataCtrl" ng-init="init()">
+    <div class="col-sm-8">
         <div class="panel panel-default filters">
             <div class="panel-body">
-
                 <div class="row">
-                    <div class="col-sm-4">
+                    <div class="col-sm-12">
                         <div class="form-group">
                             <label>Collection</label>
                             <input
@@ -29,25 +29,20 @@
                         collection="collection"
                         comparators="comparators"
                         search-type="searchType"
-                        submit-label="Subscribe"
-                        clear-label="Clear"
-                        advanced-search="advancedSubscribe()"
-                        basic-search="basicSubscribe()"
-                        stop-search="unsubscribe()"
-                        stop-label="Unsubscribe"
                         subscribed="subscribed">
                 </filters>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-default" ng-click="subscribe()" ng-disabled="subscribed">Subscribe &nbsp;<span class="glyphicon glyphicon-play"><span></button>
+                    <button type="submit" class="btn btn-default" ng-click="unsubscribe()" ng-disabled="!subscribed">Unsubscribe&nbsp;<span class="glyphicon glyphicon-pause"><span></button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-4">
+    <div class="col-sm-4 col-no-padding-left">
         <div class="panel panel-default">
-            <ul>
-                <li ng-repeat="messages in message">
-                    <p ng-bind="message.requestId"></p>
-                </li>
-            </ul>
+            <messages messages="messages"></messages>
         </div>
     </div>
 

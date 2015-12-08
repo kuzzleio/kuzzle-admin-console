@@ -8,6 +8,12 @@ angular.module('kuzzle.filters', [])
       $scope.filters.advancedFilter = '';
     };
 
+    $scope.doSearch = function () {
+      if ($scope.searchType.basic)
+        $scope.basicSearch();
+      else if ($scope.searchType.advanced)
+        $scope.advancedSearch();
+    }
   }])
 
   .directive('filters', [function () {

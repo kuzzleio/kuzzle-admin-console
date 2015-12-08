@@ -1,6 +1,10 @@
 angular.module('kuzzle.realtime')
 
-  .controller('WatchDataCtrl', ['$scope', 'collectionApi', function ($scope, collectionApi) {
+  .controller('WatchDataCtrl', [
+    '$scope',
+    'collectionApi',
+    'filter',
+    function ($scope, collectionApi, filterTools) {
 
     $scope.comparators = [
       {
@@ -20,6 +24,9 @@ angular.module('kuzzle.realtime')
       }],
       advancedFilter: ''
     };
+    $scope.forms = {};
+    $scope.searchType = {};
+
     $scope.collections = [];
     $scope.collection = null;
     $scope.subscribed = false;
@@ -38,12 +45,73 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = true;
     };
 
-    $scope.advancedSubscribe = function () {
+    $scope.subscribe = function () {
       $scope.subscribed = true;
+      var filter = {};
+      if ($scope.searchType.basic)
+        filter = filterTools.formatBasicFilter($scope.filter.basicFilter);
+      else if ($scope.searchType.advanced)
+        filter = filterTools.formatAdvancedFilter($scope.filter.advancedFilter);
+
+      $scope.room = collectionApi.subscribeId($scope.collection, filter, function (notification) {
+        $scope.addNotification(notification);
+      })
     };
 
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
+      collectionApi.unsubscribe();
     };
 
+    $scope.addNotification = function (notification) {
+      var messageItem = {
+        id:  notification._id,
+        text: '',
+        icon: 'file',
+        class: '',
+        source: angular.toJson(notification._source, 4),
+        expanded: false
+      };
+
+      switch (notification.action) {
+        case 'create':
+        case 'createOrUpdate':
+          messageItem.text = 'Created new document';
+          messageItem.icon = 'file';
+          messageItem.class = 'text-info';
+        break;
+
+        case 'update':
+          messageItem.text = 'Updated document';
+          messageItem.icon = 'file';
+          messageItem.class = 'text-info';
+        break;
+
+        case 'delete':
+          messageItem.text = 'Deleted document';
+          messageItem.icon = 'remove';
+          messageItem.class = 'text-muted';
+        break;
+      };
+
+      $scope.messages.push(messageItem);
+    }
+
+    $scope.onBasicFilterSelected = function () {
+      // Eventually put here some code that renders a basic filter structure
+      // from an existing advanced filter predicate.
+    }
+
+    $scope.onAdvancedFilterSelected = function () {
+      // if ($scope.forms.advancedSearch && !$scope.forms.advancedSearch.$pristine) {
+      //   return false;
+      // }
+      $scope.filter.advancedFilter = serializeBasicFilter($scope.filter.basicFilter);
+    }
+
+    var serializeBasicFilter = function (basicFilter) {
+      var filter = filterTools.formatBasicFilter(basicFilter);
+      filter = {filter: filter};
+      return angular.toJson(filter, 4);
+    }
   }]);

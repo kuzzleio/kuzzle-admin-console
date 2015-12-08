@@ -32,6 +32,24 @@ module.exports = {
         sockets[socket.id].push(room);
       });
 
+      /** Subscribe and send update for a specific document **/
+      socket.on('subscribeCollection', function (data) {
+
+        var room = kuzzle
+          .dataCollectionFactory(data.collection)
+          .subscribe(data.filters, {}, function (error, result) {
+
+            socket.emit('subscribeCollection:notify:' + data.collection, result);
+
+          }, {subscribeToSelf: true});
+
+        if (!sockets[socket.id]) {
+          sockets[socket.id] = [];
+        }
+
+        sockets[socket.id].push(room);
+      });
+
       /** Because the BO is a Single Page Application, the socket is never disconnect. On state change we have to trigger manually **/
       socket.on('unsubscribeAll', function () {
         socketUnsubscribeAll(socket.id);

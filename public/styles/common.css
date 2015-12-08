@@ -18,6 +18,9 @@ div.view-fade {
   div.view-fade.ng-leave-active {
     opacity: 0; }
 
+div.row .col-no-padding-left {
+  padding-left: 0;
+}
 .actions-group button.control {
   margin-right: 10px; }
 .actions-group a.control {

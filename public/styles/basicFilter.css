@@ -4,6 +4,9 @@
   .filters form .form-group.basic-filter {
     margin-left: -10px;
     margin-bottom: 10px; }
+    .filters form .form-group.basic-filter .col-no-padding {
+      padding: 0;
+    }
   .filters form .form-group .actions-term {
     padding-left: 0; }
     .filters form .form-group .actions-term .add-term, .filters form .form-group .actions-term .remove-term {
