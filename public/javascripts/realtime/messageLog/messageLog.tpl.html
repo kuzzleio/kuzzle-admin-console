@@ -8,6 +8,7 @@
       <span class="glyphicon glyphicon-{{message.icon}}"></span>&nbsp;
       <span class="{{message.class}}">{{message.text}}</span>&nbsp;<code>{{message.id}}</code>
       <button ng-if="message.source" type="button" class="btn btn-default btn-xs" ng-click="toggleExpanded(index)"><span class="glyphicon glyphicon-option-horizontal"></span></button>
+      <span ng-if="message.source" class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: message.id})"></span>
       <pre ng-if="message.source" ng-class="{hide: !message.expanded}">{{message.source}}</pre>
     </li>
   </ul>

@@ -38,3 +38,8 @@ div.row .col-no-padding-left {
 .dropdown-menu li a.text-danger {
   color: #a94442;
   font-weight: bold; }
+
+.edit-document {
+  cursor: pointer;
+  margin-right: 4px;
+  margin-left: 4px; }

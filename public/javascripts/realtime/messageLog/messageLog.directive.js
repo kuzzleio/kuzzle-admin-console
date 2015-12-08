@@ -11,7 +11,8 @@ angular.module('kuzzle.realtime')
     return {
       restrict: 'E',
       scope: {
-        messages: "="
+        collection: "=",
+        messages: "=",
       },
       controller: 'messageLogCtrl',
       templateUrl: '/javascripts/realtime/messageLog/messageLog.tpl.html'
