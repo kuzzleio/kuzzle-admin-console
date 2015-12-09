@@ -1,10 +1,12 @@
-angular.module('kuzzle.unsubscribeOnPageChange', ['kuzzle.socket'])
+angular.module('kuzzle.unsubscribeOnPageChange', ['kuzzle.kuzzleSdk'])
 
-  .service('unsubscribeOnPageChange', ['$rootScope', 'socket', function ($rootScope, socket) {
+  .service('unsubscribeOnPageChange', ['$rootScope', 'kuzzleSdk', function ($rootScope, kuzzleSdk) {
 
     $rootScope.$on('$stateChangeSuccess', function () {
-      socket.unsubscribeAll();
-      socket.emit('unsubscribeAll');
+      console.log('*** subscriptions', kuzzleSdk.subscriptions);
+      //angular.forEach(kuzzleSdk.subscriptions, function (room) {
+      //  room.unsubscribe();
+      //});
     });
 
   }]);

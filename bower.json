@@ -30,12 +30,12 @@
     "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification#master",
     "json-formatter": "~0.4.0",
     "angular-ui-router": "~0.2.15",
-    "rxjs": "~4.0.6",
     "angular-loading-bar": "~0.8.0",
     "angular-ui-ace": "bower",
     "angular-schema-form": "~0.8.12",
     "angular-schema-form-bootstrap": "~0.2.0",
-    "leaflet": "0.7.x"
+    "leaflet": "0.7.x",
+    "kuzzle-sdk": "git@github.com:kuzzleio/sdk-javascript.git"
   },
   "resolutions": {
     "angular": "1.4.8"
