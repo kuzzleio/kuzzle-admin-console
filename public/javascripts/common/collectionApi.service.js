@@ -111,6 +111,10 @@ angular.module('kuzzle.collectionApi', ['kuzzle.socket', 'ui-notification'])
       unsubscribe: function () {
         socket.unsubscribeAll();
         socket.emit('unsubscribeAll');
+      },
+      publishMessage: function (content) {
+        // TODO implement this using Kuzzle directly.
+        console.log(content);
       }
     }
   }]);

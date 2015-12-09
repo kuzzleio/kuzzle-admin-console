@@ -35,6 +35,8 @@ angular.module('kuzzle.realtime')
     $scope.messages = [];
     $scope.documents = [];
 
+    $scope.messageToPublish = '';
+
     $scope.init = function () {
       collectionApi.list()
         .then(function (response) {
@@ -66,6 +68,19 @@ angular.module('kuzzle.realtime')
 
     $scope.addNotification = function (notification) {
       $scope.messages.push(notificationTools.notificationToMessage(notification));
+    }
+
+    $scope.publishMessage = function (message) {
+      try {
+        collectionApi.publishMessage(JSON.parse(message));
+        $scope.error = "";
+      } catch (e) {
+        $scope.error = e.message;
+        if (e.lineNumber)
+          $scope.error += " on line " + e.lineNumber;
+      } finally {
+
+      }
     }
 
     $scope.onBasicFilterSelected = function () {
