@@ -38,6 +38,20 @@
                 </div>
             </div>
         </div>
+        <div class="panel panel-default publish">
+          <div class="panel-body">
+            <label>Publish <small>a volatile message</small></label>
+            <form name="forms.publish">
+              <div class="form-group">
+                <p class="text-danger" ng-show="error" ng-bind="error"></p>
+                <json-edit content="messageToPublish"></json-edit>
+              </div>
+              <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(messageToPublish)">
+                Publish &nbsp; <span class="glyphicon glyphicon-send"></span>
+              </button>
+            </form>
+          </div>
+        </div>
     </div>
 
     <div class="col-sm-4 col-no-padding-left">
@@ -47,9 +61,5 @@
               messages="messages">
             </messages>
         </div>
-    </div>
-
-    <div class="col-sm-8">
-        <documents-inline documents="documents" collection="collection" can-edit="false"></documents-inline>
     </div>
 </div>

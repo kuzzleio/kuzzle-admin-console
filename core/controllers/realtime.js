@@ -1,7 +1,6 @@
 var
   express = require('express'),
-  router = express.Router(),
-  kuzzle = require('../services/kuzzle')();
+  router = express.Router();
 
 router.get('/', function(req, res) {
 
@@ -14,7 +13,6 @@ router.get('/watch-data', function(req, res) {
   return res.render('realtime/watch-data');
 
 });
-
 
 module.exports = router;
 

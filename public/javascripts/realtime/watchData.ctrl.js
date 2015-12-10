@@ -3,8 +3,10 @@ angular.module('kuzzle.realtime')
   .controller('WatchDataCtrl', [
     '$scope',
     'collectionApi',
+    'documentApi',
     'filter',
-    function ($scope, collectionApi, filterTools) {
+    'notification',
+    function ($scope, collectionApi, documentApi, filterTools, notificationTools) {
 
     $scope.comparators = [
       {
@@ -34,10 +36,12 @@ angular.module('kuzzle.realtime')
     $scope.messages = [];
     $scope.documents = [];
 
+    $scope.messageToPublish = '';
+
     $scope.init = function () {
       collectionApi.list()
         .then(function (response) {
-          $scope.collections = response.data;
+          $scope.collections = response;
         });
     };
 
@@ -53,61 +57,44 @@ angular.module('kuzzle.realtime')
       else if ($scope.searchType.advanced)
         filter = filterTools.formatAdvancedFilter($scope.filter.advancedFilter);
 
-      $scope.room = collectionApi.subscribeId($scope.collection, filter, function (notification) {
+      $scope.room = documentApi.subscribeFilter($scope.collection, filter, function (notification) {
         $scope.addNotification(notification);
       })
     };
 
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
-      collectionApi.unsubscribe();
+      documentApi.unsubscribeRoom($scope.room);
     };
 
     $scope.addNotification = function (notification) {
-      var messageItem = {
-        id:  notification._id,
-        text: '',
-        icon: 'file',
-        class: '',
-        source: angular.toJson(notification._source, 4),
-        expanded: false
-      };
+      $scope.messages.push(notificationTools.notificationToMessage(notification));
+    };
 
-      switch (notification.action) {
-        case 'create':
-        case 'createOrUpdate':
-          messageItem.text = 'Created new document';
-          messageItem.icon = 'file';
-          messageItem.class = 'text-info';
-        break;
+    $scope.publishMessage = function (message) {
+      try {
+        documentApi.publishMessage($scope.collection, JSON.parse(message));
+        $scope.error = "";
+      } catch (e) {
+        $scope.error = e.message;
+        if (e.lineNumber)
+          $scope.error += " on line " + e.lineNumber;
+      } finally {
 
-        case 'update':
-          messageItem.text = 'Updated document';
-          messageItem.icon = 'file';
-          messageItem.class = 'text-info';
-        break;
-
-        case 'delete':
-          messageItem.text = 'Deleted document';
-          messageItem.icon = 'remove';
-          messageItem.class = 'text-muted';
-        break;
-      };
-
-      $scope.messages.push(messageItem);
-    }
+      }
+    };
 
     $scope.onBasicFilterSelected = function () {
       // Eventually put here some code that renders a basic filter structure
       // from an existing advanced filter predicate.
-    }
+    };
 
     $scope.onAdvancedFilterSelected = function () {
       // if ($scope.forms.advancedSearch && !$scope.forms.advancedSearch.$pristine) {
       //   return false;
       // }
       $scope.filter.advancedFilter = serializeBasicFilter($scope.filter.basicFilter);
-    }
+    };
 
     var serializeBasicFilter = function (basicFilter) {
       var filter = filterTools.formatBasicFilter(basicFilter);

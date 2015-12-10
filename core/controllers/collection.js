@@ -1,8 +1,6 @@
 var
   express = require('express'),
-  router = express.Router(),
-  kuzzle = require('../services/kuzzle')(),
-  _ = require('lodash');
+  router = express.Router();
 
 router.get('/', function(req, res) {
 

@@ -84,7 +84,7 @@ router.post('/search', function (req, res) {
     .dataCollectionFactory(collection)
     .advancedSearchPromise(globalFilter)
     .then(function (response) {
-        return res.json({documents: response.documents, total: response.total, limit: limit});
+      return res.json({documents: response.documents, total: response.total, limit: limit});
     })
     .catch(function (error) {
       return res.json({error: true, message: error});

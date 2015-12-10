@@ -132,6 +132,16 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             });
 
           return deferred.promise;
+        },
+
+        publishMessage: function (collection, content) {
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .publishMessage(content);
+        },
+
+        unsubscribeRoom: function (room) {
+          room.unsubscribe();
         }
       }
     }]);
