@@ -16,13 +16,13 @@ angular.module('kuzzle.realtime')
         case 'createOrUpdate':
           messageItem.text = 'Created new document';
           messageItem.icon = 'file';
-          messageItem.class = 'text-info';
+          messageItem.class = 'text-primary';
         break;
 
         case 'update':
           messageItem.text = 'Updated document';
           messageItem.icon = 'file';
-          messageItem.class = 'text-info';
+          messageItem.class = 'text-primary';
         break;
 
         case 'delete':
