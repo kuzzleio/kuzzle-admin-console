@@ -1,4 +1,4 @@
-angular.module('kuzzle.realtime')
+angular.module('kuzzle.messageLog')
   .controller('messageLogCtrl', ['$scope', function ($scope) {
     $scope.clearMessages = function () {
       $scope.initMessages();
@@ -16,6 +16,6 @@ angular.module('kuzzle.realtime')
         initMessages: "&"
       },
       controller: 'messageLogCtrl',
-      templateUrl: '/javascripts/realtime/messageLog/messageLog.tpl.html'
+      templateUrl: '/javascripts/common/messageLog/messageLog.tpl.html'
     }
   });
