@@ -45,6 +45,7 @@ angular.module('kuzzle.realtime')
 
     $scope.initMessages = function () {
       $scope.messages = [{
+        class: 'text-muted',
         icon: 'info-sign',
         text: 'This is your message log. Here, you will see the notifications coming from the collection you have subscribed to. Use the filters on the right to start a subscription.'
       }];
@@ -55,6 +56,9 @@ angular.module('kuzzle.realtime')
     };
 
     $scope.subscribe = function () {
+      if (!$scope.collection)
+        return;
+
       $scope.subscribed = true;
       var filter = {};
       if ($scope.searchType.basic)

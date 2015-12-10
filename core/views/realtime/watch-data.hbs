@@ -9,18 +9,14 @@
     <div class="filters-container">
         <div class="panel panel-default filters">
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label>Collection</label>
-                            <input
-                                    type="text"
-                                    ng-model="collection"
-                                    uib-typeahead="collection for collection in collections | filter:$viewValue"
-                                    typeahead-min-length="0"
-                                    class="form-control" />
-                        </div>
-                    </div>
+                  <div class="form-group">
+                      <label>Collection</label>
+                      <input
+                              type="text"
+                              ng-model="collection"
+                              uib-typeahead="collection for collection in collections | filter:$viewValue"
+                              typeahead-min-length="0"
+                              class="form-control" />
                 </div>
 
                 <filters
