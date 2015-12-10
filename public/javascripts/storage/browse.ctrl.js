@@ -17,14 +17,7 @@ angular.module('kuzzle.storage')
       $scope.init = function () {
         collectionApi.list()
           .then(function (response) {
-            if (response.data.error) {
-              console.error(response.data.message);
-              return true;
-            }
-
-            if (response.data) {
-              $scope.collections = response.data;
-            }
+            $scope.collections = response;
           })
           .catch(function (error) {
             console.error(error);

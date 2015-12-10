@@ -1,8 +1,6 @@
 var
   express = require('express'),
-  router = express.Router(),
-  kuzzle = require('../services/kuzzle')(),
-  _ = require('lodash');
+  router = express.Router();
 
 router.get('/', function(req, res) {
 
@@ -26,124 +24,6 @@ router.get('/full', function (req, res) {
 
   return res.render('collection/full', {action: 'edit'});
 
-});
-
-
-router.get('/list', function (req, res) {
-
-  kuzzle
-    .listCollectionsPromise()
-    .then(function (response) {
-      return res.json(response);
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-
-});
-
-router.post('/create', function (req, res) {
-
-  var
-    collection = req.body.collection;
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  if (!collection.name) {
-    return res.json({error: true, message: 'No collection name provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection.name)
-    .createPromise()
-    .then(function () {
-      return res.json({error: false});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-});
-
-router.post('/update', function (req, res) {
-
-  var
-    collection = req.body.collection;
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection.name)
-    .putMappingPromise(collection.schema)
-    .then(function () {
-      return res.json({error: false});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-});
-
-router.post('/delete', function (req, res) {
-
-  var
-    collection = req.body.collection;
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection)
-    .deletePromise()
-    .then(function () {
-      return res.json({error: false});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-});
-
-router.post('/truncate', function (req, res) {
-
-  var
-    collection = req.body.collection;
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection)
-    .truncatePromise()
-    .then(function () {
-      return res.json({error: false});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-});
-
-router.post('/getByName', function (req, res) {
-
-  var
-    collection = req.body.collection;
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection)
-    .getMappingPromise()
-    .then(function (mapping) {
-      return res.json({error: false});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
 });
 
 module.exports = router;

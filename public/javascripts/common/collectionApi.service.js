@@ -1,120 +1,117 @@
-angular.module('kuzzle.collectionApi', ['kuzzle.socket', 'ui-notification'])
+angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
-  .service('collectionApi', ['$http', 'socket', 'uid', 'Notification', '$q', function ($http, socket, uid, notification, $q) {
-    var
-      clientId = uid.new();
+  .service('collectionApi', [
+    'kuzzleSdk',
+    '$http',
+    'uid',
+    'Notification',
+    '$q',
+    function (kuzzleSdk, $http, uid, notification, $q) {
+      return {
+        list: function () {
+          var deferred = $q.defer();
 
-    return {
-      list: function () {
-        return $http.get('/collection/list');
-      },
-      create: function (collection, notify) {
-        var deferred = $q.defer();
-
-        $http.post('/collection/create', {
-          collection: collection
-        })
-          .then(function (response) {
-            if (!notify) {
-              return deferred.resolve(response);
+          kuzzleSdk.listCollections(function (error, collections) {
+            if (error) {
+              return deferred.reject({error: true, message: error});
             }
 
-            if (!response.data.error) {
-              notification.success('Collection created !');
-              return deferred.resolve(response.data);
-            }
-
-            notification.error('Error during collection creation. Please retry.');
-            return deferred.reject(response.data.error);
+            return deferred.resolve(collections);
           });
 
-        return deferred.promise;
-      },
-      update: function (collection, notify) {
-        var deferred = $q.defer();
+          return deferred.promise;
+        },
+        create: function (collection, notify) {
+          var deferred = $q.defer();
 
-        $http.post('/collection/update', {
-          collection: collection
-        })
-          .then(function (response) {
-            if (!notify) {
-              return deferred.resolve(response);
-            }
+          kuzzleSdk
+            .dataCollectionFactory(collection.name)
+            .create(function (error) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during collection creation. Please retry.');
+                }
 
-            if (!response.data.error) {
-              notification.success('Collection updated !');
-              return deferred.resolve(response.data);
-            }
+                return deferred.reject({error: true, message: error});
+              }
 
-            notification.error('Error during collection update. Please retry.');
-            return deferred.reject(response.data.error);
-          })
-          .catch(function (error) {
-            notification.error('Error during collection update. Please retry.');
-            return deferred.reject(error);
-          });
+              if (notify) {
+                notification.success('Collection created !');
+              }
 
-        return deferred.promise;
-      },
-      delete: function (collection, notify) {
-        var deferred = $q.defer();
+              return deferred.resolve({error: false});
+            });
 
-        $http.post('/collection/delete', {
-          collection: collection
-        })
-          .then(function (response) {
-            if (!notify) {
-              return deferred.resolve(response);
-            }
+          return deferred.promise;
+        },
+        update: function (collection, notify) {
+          var deferred = $q.defer();
 
-            if (!response.data.error) {
-              notification.success('Collection deleted !');
-              return deferred.resolve(response.data);
-            }
+          kuzzleSdk
+            .dataCollectionFactory(collection.name)
+            .putMapping(collection.schema, function (error) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during collection update. Please retry.');
+                }
 
-            notification.error('Error during collection delete. Please retry.');
-            return deferred.reject(response.data.error);
-          });
+                return deferred.reject({error: true, message: error});
+              }
 
-        return deferred.promise;
-      },
-      empty: function (collection, notify) {
-        var deferred = $q.defer();
+              if (notify) {
+                notification.success('Collection updated !');
+              }
 
-        $http.post('/collection/truncate', {
-          collection: collection
-        })
-          .then(function (response) {
-            if (!notify) {
-              return deferred.resolve(response);
-            }
+              return deferred.resolve({error: false});
+            });
 
-            if (!response.data.error) {
-              notification.success('Collection was truncated !');
-              return deferred.resolve(response.data);
-            }
+          return deferred.promise;
+        },
+        delete: function (collectionName, notify) {
+          var deferred = $q.defer();
 
-            notification.error('Error during collection truncate. Please retry.');
-            return deferred.reject(response.data.error);
-          });
+          kuzzleSdk
+            .dataCollectionFactory(collectionName)
+            .delete(function (error) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during collection delete. Please retry.');
+                }
 
-        return deferred.promise;
-      },
-      subscribeId: function (collection, filters, cb) {
-        socket.on('subscribeCollection:notify:' + collection)
-          .forEach(function (result) {
-            cb(result);
-          });
+                return deferred.reject({error: true, message: error});
+              }
 
-        socket.emit('subscribeCollection', {collection: collection, filters: filters, clientId: clientId});
-      },
-      unsubscribe: function () {
-        socket.unsubscribeAll();
-        socket.emit('unsubscribeAll');
-      },
-      publishMessage: function (content) {
-        // TODO implement this using Kuzzle directly.
-        console.log(content);
+              if (notify) {
+                notification.success('Collection deleted !');
+              }
+
+              return deferred.resolve({error: false});
+            });
+
+          return deferred.promise;
+        },
+        empty: function (collection, notify) {
+          var deferred = $q.defer();
+
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .truncate(function (error) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during collection truncate. Please retry.');
+                }
+
+                return deferred.reject({error: true, message: error});
+              }
+
+              if (notify) {
+                notification.success('Collection was truncated !');
+              }
+
+              return deferred.resolve({error: false});
+            });
+
+          return deferred.promise;
+        }
       }
-    }
-  }]);
+    }]);

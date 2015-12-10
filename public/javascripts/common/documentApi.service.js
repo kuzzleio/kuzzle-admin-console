@@ -1,119 +1,147 @@
-angular.module('kuzzle.documentApi', ['kuzzle.socket', 'ui-notification'])
+angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
-  .service('documentApi', ['$http', 'socket', 'uid', 'Notification', 'bufferCancel', '$q', function ($http, socket, uid, notification, bufferCancel, $q) {
-    var
-      clientId = uid.new();
+  .service('documentApi', [
+    'kuzzleSdk',
+    '$http',
+    'uid',
+    'Notification',
+    'bufferCancel',
+    '$q', function (kuzzleSdk, $http, uid, notification, bufferCancel, $q) {
+      var
+        clientId = uid.new();
 
-    return {
-      search: function (collection, filter, page) {
-        if (!page) {
-          page = 1;
-        }
-
-        return $http({
-          url: '/storage/search',
-          method: 'POST',
-          params: {
-            page: page
-          },
-          data: {
-            filter: filter,
-            collection: collection
+      return {
+        search: function (collection, filter, page) {
+          if (!page) {
+            page = 1;
           }
-        })
-      },
 
-      getById: function (collection, id) {
-        return $http.get('/storage/getById', {
-          params: {
+          return $http({
+            url: '/storage/search',
+            method: 'POST',
+            params: {
+              page: page
+            },
+            data: {
+              filter: filter,
+              collection: collection
+            }
+          });
+        },
+
+        getById: function (collection, id) {
+          var
+            deferred = $q.defer();
+
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .fetchDocument(id, function (error, result) {
+              if (error) {
+                return deferred.reject(error);
+              }
+
+              return deferred.resolve({document: result});
+            });
+
+          return deferred.promise;
+        },
+
+        update: function (collection, id, document, notify) {
+          var deferred = $q.defer();
+
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .replaceDocument(id, document, function (error) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during document update. Please retry.');
+                }
+
+                return deferred.reject({error: true, message: error});
+              }
+
+              if (notify) {
+                notification.success('Document updated !');
+              }
+
+              return deferred.resolve({error: false});
+            });
+
+          return deferred.promise;
+        },
+
+        subscribeId: function (collection, id, cb) {
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .subscribe({ids: {values: [id]}}, function (error, result) {
+              cb(result);
+            });
+        },
+
+        subscribeFilter: function (collection, filters, cb) {
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .subscribe(filters, function (error, result) {
+              cb(result);
+            });
+        },
+
+        deleteById: function (collection, id, buffer) {
+          var data = {
             collection: collection,
-            id: id
+            id: id,
+            clientId: clientId
+          };
+
+          if (buffer) {
+            bufferCancel.add('deleteById', collection, id);
+            data.buffer = true;
           }
-        });
-      },
 
-      update: function (collection, id, document, notify) {
-        var deferred = $q.defer();
+          return $http.post('/storage/deleteById', data);
+        },
 
-        $http.post('/storage/update', {
-          collection: collection,
-          id: id,
-          document: document,
-          clientId: clientId
-        })
-          .then(function (response) {
-            if (!notify) {
-              return deferred.resolve(response);
-            }
-
-            if (!response.data.error) {
-              notification.success('Document updated !');
-              return deferred.resolve(response);
-            }
-            else {
-              notification.error('Error during document update. Please retry.');
-              return deferred.reject(response.data.error);
-            }
+        cancelDeleteById: function (collection, id) {
+          bufferCancel.cancel('deleteById', collection, id);
+          return $http.post('/storage/cancel-deleteById', {
+            collection: collection,
+            id: id,
+            clientId: clientId
           });
+        },
 
-        return deferred.promise;
-      },
+        create: function (collection, document, notify) {
+          var deferred = $q.defer();
 
-      subscribeId: function (collection, id, cb) {
-        socket.on('subscribeDocument:update:' + id)
-          .forEach(function (result) {
-            cb(result);
-          });
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .createDocument(document, {updateIfExist: true}, function (error, result) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during document creation. Please retry.');
+                }
 
-        socket.emit('subscribeDocument', {id: id, collection: collection, clientId: clientId});
-      },
+                return deferred.reject({error: true, message: error});
+              }
 
-      deleteById: function (collection, id, buffer) {
-        var data = {
-          collection: collection,
-          id: id,
-          clientId: clientId
-        };
+              if (notify) {
+                notification.success('Document created !');
+              }
 
-        if (buffer) {
-          bufferCancel.add('deleteById', collection, id);
-          data.buffer = true;
+              return deferred.resolve({error: false, id: result.id});
+            });
+
+          return deferred.promise;
+        },
+
+        publishMessage: function (collection, content) {
+          kuzzleSdk
+            .dataCollectionFactory(collection)
+            .publishMessage(content);
+        },
+
+        unsubscribeRoom: function (room) {
+          room.unsubscribe();
         }
-
-        return $http.post('/storage/deleteById', data);
-      },
-
-      cancelDeleteById: function (collection, id) {
-        bufferCancel.cancel('deleteById', collection, id);
-        return $http.post('/storage/cancel-deleteById', {
-          collection: collection,
-          id: id,
-          clientId: clientId
-        });
-      },
-
-      create: function (collection, document, notify) {
-        var deferred = $q.defer();
-
-        $http.post('/storage/create', {
-          collection: collection,
-          document: document
-        })
-          .then(function (response) {
-            if (!notify) {
-              return deferred.resolve(response);
-            }
-
-            if (!response.data.error) {
-              notification.success('Document created !');
-              return deferred.resolve(response.data);
-            }
-
-            notification.error('Error during document creation. Please retry.');
-            return deferred.reject(response.data.error);
-          });
-
-        return deferred.promise;
       }
-    }
-  }]);
+    }]);

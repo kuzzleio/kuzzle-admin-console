@@ -1,6 +1,6 @@
-angular.module('kuzzle.schema', [])
+angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
 
-  .service('schema', ['$http', '$q', function ($http, $q) {
+  .service('schema', ['kuzzleSdk', '$q', function (kuzzleSdk, $q) {
 
     var buildPropertiesRecursive = function (mapping) {
       var
@@ -36,11 +36,19 @@ angular.module('kuzzle.schema', [])
 
     return {
       get: function (collection) {
-        return $http({
-          url: '/schema/get',
-          params: {collection: collection},
-          method: 'GET'
-        })
+        var deferred = $q.defer();
+
+        kuzzleSdk
+          .dataCollectionFactory(collection)
+          .getMapping(function (error, result) {
+            if (error) {
+              return deferred.reject({error: true, message: error});
+            }
+
+            return deferred.resolve({mapping: result.mapping});
+          });
+
+        return deferred.promise;
       },
 
       buildFormatter: function (collection) {
@@ -48,13 +56,10 @@ angular.module('kuzzle.schema', [])
           deferred = $q.defer(),
           mapping,
           schema = {};
+
         this.get(collection)
           .then(function (response) {
-            if (response.data.error) {
-              return deferred.reject(response.data.message);
-            }
-
-            mapping = response.data.mapping;
+            mapping = response.mapping;
 
             schema = {
               title: collection,
@@ -65,6 +70,9 @@ angular.module('kuzzle.schema', [])
             schema.properties = buildPropertiesRecursive(mapping);
 
             deferred.resolve(schema);
+          })
+          .catch(function (error) {
+            return deferred.reject(error);
           });
 
         return deferred.promise;

@@ -15,7 +15,6 @@ router.get('/browse', function(req, res) {
 
   return res.render('storage/browse');
 
-
 });
 
 router.get('/browse-documents', function(req, res) {
@@ -85,73 +84,12 @@ router.post('/search', function (req, res) {
     .dataCollectionFactory(collection)
     .advancedSearchPromise(globalFilter)
     .then(function (response) {
-        return res.json({documents: response.documents, total: response.total, limit: limit});
+      return res.json({documents: response.documents, total: response.total, limit: limit});
     })
     .catch(function (error) {
       return res.json({error: true, message: error});
     });
 
-});
-
-router.post('/update', function (req, res) {
-  var
-    document = req.body.document,
-    collection = req.body.collection,
-    clientId = req.body.clientId,
-    id = req.body.id;
-
-  if (!document) {
-    return res.json({error: true, message: 'No document provided'});
-  }
-
-  if (!id) {
-    return res.json({error: true, message: 'No id provided'});
-  }
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  if (!clientId) {
-    return res.json({error: true, message: 'No clientId provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection)
-    .setHeaders({metadata: {clientId: clientId}})
-    .replaceDocumentPromise(id, document)
-    .then(function () {
-      return res.json({error: false});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
-});
-
-router.post('/create', function (req, res) {
-
-  var
-    collection = req.body.collection,
-    document = req.body.document,
-    id = req.body.id;
-
-  if (!document) {
-    return res.json({error: true, message: 'No document provided'});
-  }
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection)
-    .createDocumentPromise(id, document, {updateIfExist: true})
-    .then(function (response) {
-      return res.json({error: false, id: response.id});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
 });
 
 router.post('/deleteById', function (req, res) {
@@ -218,31 +156,6 @@ router.post('/cancel-deleteById', function (req, res) {
 
   bufferCancel.cancel('deleteById', clientId, collection, id);
   return res.json({error: false});
-});
-
-router.get('/getById', function (req, res) {
-
-  var
-    collection = req.query.collection,
-    id = req.query.id;
-
-  if (!id) {
-    return res.json({error: true, message: 'No id provided'});
-  }
-
-  if (!collection) {
-    return res.json({error: true, message: 'No collection provided'});
-  }
-
-  kuzzle
-    .dataCollectionFactory(collection)
-    .fetchDocumentPromise(id)
-    .then(function (response) {
-      return res.json({document: response});
-    })
-    .catch(function (error) {
-      return res.json({error: true, message: error});
-    });
 });
 
 module.exports = router;

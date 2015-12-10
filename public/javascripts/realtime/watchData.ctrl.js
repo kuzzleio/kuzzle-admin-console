@@ -3,9 +3,10 @@ angular.module('kuzzle.realtime')
   .controller('WatchDataCtrl', [
     '$scope',
     'collectionApi',
+    'documentApi',
     'filter',
     'notification',
-    function ($scope, collectionApi, filterTools, notificationTools) {
+    function ($scope, collectionApi, documentApi, filterTools, notificationTools) {
 
     $scope.comparators = [
       {
@@ -38,7 +39,7 @@ angular.module('kuzzle.realtime')
     $scope.init = function () {
       collectionApi.list()
         .then(function (response) {
-          $scope.collections = response.data;
+          $scope.collections = response;
         });
       $scope.initMessages();
     };
@@ -72,14 +73,18 @@ angular.module('kuzzle.realtime')
         icon: "thumbs-up"
       });
 
-      $scope.room = collectionApi.subscribeId($scope.collection, filter, function (notification) {
+      $scope.room = documentApi.subscribeFilter($scope.collection, filter, function (notification) {
         $scope.addNotification(notification);
+        var phase = $scope.$root.$$phase;
+        if(phase !== '$apply' && phase !== '$digest') {
+          $scope.$apply();
+        }
       })
     };
 
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
-      collectionApi.unsubscribe();
+
       $scope.messages.push({
         text: "You stopped the current subscription.",
         icon: "thumbs-down"
@@ -88,11 +93,11 @@ angular.module('kuzzle.realtime')
 
     $scope.addNotification = function (notification) {
       $scope.messages.push(notificationTools.notificationToMessage(notification));
-    }
+    };
 
     $scope.publishMessage = function (message) {
       try {
-        collectionApi.publishMessage(JSON.parse(message));
+        documentApi.publishMessage($scope.collection, JSON.parse(message));
         $scope.error = "";
       } catch (e) {
         $scope.error = e.message;
@@ -101,19 +106,19 @@ angular.module('kuzzle.realtime')
       } finally {
 
       }
-    }
+    };
 
     $scope.onBasicFilterSelected = function () {
       // Eventually put here some code that renders a basic filter structure
       // from an existing advanced filter predicate.
-    }
+    };
 
     $scope.onAdvancedFilterSelected = function () {
       // if ($scope.forms.advancedSearch && !$scope.forms.advancedSearch.$pristine) {
       //   return false;
       // }
       $scope.filter.advancedFilter = serializeBasicFilter($scope.filter.basicFilter);
-    }
+    };
 
     var serializeBasicFilter = function (basicFilter) {
       var filter = filterTools.formatBasicFilter(basicFilter);

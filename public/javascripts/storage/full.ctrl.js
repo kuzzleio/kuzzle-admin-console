@@ -64,16 +64,12 @@ angular.module('kuzzle.storage')
 
           documentApi.getById($stateParams.collection, $stateParams.id)
             .then(function (response) {
-              if (response.data && response.data.error) {
-                $scope.notFoundError = true;
-                return false;
-              }
+              $scope.document.json = angular.toJson(response.document.content, 4);
 
-              $scope.document.json = angular.toJson(response.data.document.body, 4);
               // use refreshFormWithJson instead of directly put data in body because the field order is different in mapping and in document itself
               // if we don't do that, when the user switch between json/form view, fields order can move
               refreshFormWithJson();
-              $scope.document.id = response.data.document._id;
+              $scope.document.id = response.document.id;
 
               documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
                 message = notification.info({
@@ -86,6 +82,7 @@ angular.module('kuzzle.storage')
               });
             })
             .catch(function (error) {
+              $scope.notFoundError = true;
               console.error(error);
               return false;
             });
