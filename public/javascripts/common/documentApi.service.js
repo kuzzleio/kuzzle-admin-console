@@ -81,7 +81,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         subscribeFilter: function (collection, filters, cb) {
           kuzzleSdk
             .dataCollectionFactory(collection)
-            .subscribe(filters, function (error, result) {
+            .subscribe(filters, {subscribeToSelf: true}, function (error, result) {
               cb(result);
             });
         },
@@ -137,7 +137,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         publishMessage: function (collection, content) {
           kuzzleSdk
             .dataCollectionFactory(collection)
-            .publishMessage(content);
+            .publishMessage(content)
         },
 
         unsubscribeRoom: function (room) {
