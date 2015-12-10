@@ -55,12 +55,14 @@ angular.module('kuzzle.realtime')
           messageItem.icon = 'user';
           messageItem.class = 'message-user';
           messageItem.canEdit = false;
+          messageItem.source = notification.metadata;
         break;
 
         case 'off':
           messageItem.text = 'A user exited this room';
           messageItem.icon = 'user';
           messageItem.class = 'message-user';
+          messageItem.source = notification.metadata;
           messageItem.canEdit = false;
         break;
 
