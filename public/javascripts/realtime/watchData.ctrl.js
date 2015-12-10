@@ -94,7 +94,13 @@ angular.module('kuzzle.realtime')
     };
 
     $scope.addNotification = function (notification) {
-      $scope.messages.push(notificationTools.notificationToMessage(notification));
+      try {
+        $scope.messages.push(notificationTools.notificationToMessage(notification));
+      } catch (e) {
+        console.log("Realtime-WatchData: " + e.message);
+      } finally {
+
+      }
     };
 
     $scope.publishMessage = function (message) {

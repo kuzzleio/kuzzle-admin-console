@@ -21,9 +21,15 @@ angular.module('kuzzle.realtime')
         break;
         case 'create':
         case 'createOrUpdate':
-          messageItem.text = 'Created new document';
           messageItem.icon = 'file';
-          messageItem.class = 'message-created-updated-doc';
+
+          if (notification.state == 'done') {
+            messageItem.text = 'Created new document';
+            messageItem.class = 'message-created-updated-doc';
+          } else if (notification.state == 'pending') {
+            messageItem.text = 'Creating new document';
+            messageItem.class = 'message-pending';
+          }
         break;
 
         case 'update':
@@ -33,11 +39,33 @@ angular.module('kuzzle.realtime')
         break;
 
         case 'delete':
-          messageItem.text = 'Deleted document';
           messageItem.icon = 'remove';
-          messageItem.class = 'message-deleted-doc';
+          messageItem.canEdit = false;
+          if (notification.state == 'done') {
+            messageItem.text = 'Deleted document';
+            messageItem.class = 'message-deleted-doc';
+          } else if (notification.state == 'pending') {
+            messageItem.text = 'Deleting document';
+            messageItem.class = 'message-pending';
+          }
+        break;
+
+        case 'on':
+          messageItem.text = 'A new user is listening to this room';
+          messageItem.icon = 'user';
+          messageItem.class = 'message-user';
           messageItem.canEdit = false;
         break;
+
+        case 'off':
+          messageItem.text = 'A user exited this room';
+          messageItem.icon = 'user';
+          messageItem.class = 'message-user';
+          messageItem.canEdit = false;
+        break;
+
+        default:
+          throw "Unknown notification";
       };
 
       return messageItem;

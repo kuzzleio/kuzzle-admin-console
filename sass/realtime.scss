@@ -42,6 +42,7 @@ $notif-volatile-clr: #60AB61;
 $notif-created-updated-clr: #5E99CC;
 $notif-deleted-clr: #C75856;
 $notif-pending-clr: #DCAC59;
+$notif-user-clr: #917FC3;
 
 .message-volatile {
   color: $notif-volatile-clr;
@@ -57,4 +58,8 @@ $notif-pending-clr: #DCAC59;
 
 .message-pending {
   color: $notif-pending-clr;
+}
+
+.message-user {
+  color: $notif-user-clr;
 }
