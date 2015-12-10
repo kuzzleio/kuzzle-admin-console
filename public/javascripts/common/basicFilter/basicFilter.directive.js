@@ -45,7 +45,7 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
             return false;
           }
 
-          $scope.fields = parseFields(response.data.mapping, '');
+          $scope.fields = parseFields(response.mapping, '');
         });
     };
 

@@ -45,6 +45,9 @@
     padding-top: 10px; }
     .storage-browse .browse-documents .documents .panel .panel-body .ace_editor {
       height: 250px; }
+    .storage-browse .browse-documents .documents .panel .panel-body .edit-document {
+      cursor: pointer;
+      margin-right: 4px; }
     .storage-browse .browse-documents .documents .panel .panel-body .json-formatter-row:first-child > a:first-child > .thumbnail-text {
       opacity: .5; }
     .storage-browse .browse-documents .documents .panel .panel-body ul span {

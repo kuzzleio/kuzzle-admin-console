@@ -18,9 +18,6 @@ div.view-fade {
   div.view-fade.ng-leave-active {
     opacity: 0; }
 
-div.row .col-no-padding-left {
-  padding-left: 0;
-}
 .actions-group button.control {
   margin-right: 10px; }
 .actions-group a.control {
@@ -38,8 +35,3 @@ div.row .col-no-padding-left {
 .dropdown-menu li a.text-danger {
   color: #a94442;
   font-weight: bold; }
-
-.edit-document {
-  cursor: pointer;
-  margin-right: 4px;
-  margin-left: 4px; }
