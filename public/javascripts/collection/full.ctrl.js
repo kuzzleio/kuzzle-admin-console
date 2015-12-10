@@ -23,7 +23,7 @@ angular.module('kuzzle.collection')
 
           schema.get($scope.collection.name)
             .then(function (response) {
-              $scope.collection.schema = angular.toJson(response.data.mapping, 4);
+              $scope.collection.schema = angular.toJson(response.mapping, 4);
             })
             .catch(function (error) {
 
@@ -31,20 +31,14 @@ angular.module('kuzzle.collection')
         }
       };
 
-      $scope.create = function () {
-        collectionApi.create($scope.collection, true)
-          .then(function () {
-            $state.go('storage.browse.documents', {collection: $scope.collection.name});
-          });
-      };
-
-      $scope.update = function () {
+      $scope.update = function (isCreate) {
         try {
           var collection = {
             name: $scope.collection.name,
             schema: JSON.parse($scope.collection.schema)
           };
-          collectionApi.update(collection, true)
+
+          collectionApi.putMapping(collection, true, isCreate)
             .then(function () {
               $state.go('storage.browse.documents', {collection: $scope.collection.name});
             });

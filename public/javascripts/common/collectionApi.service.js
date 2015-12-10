@@ -21,45 +21,34 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        create: function (collection, notify) {
-          var deferred = $q.defer();
+        putMapping: function (collection, notify, isCreate) {
+          var
+            deferred = $q.defer(),
+            messageSuccess,
+            messageError;
 
-          kuzzleSdk
-            .dataCollectionFactory(collection.name)
-            .create(function (error) {
-              if (error) {
-                if (notify) {
-                  notification.error('Error during collection creation. Please retry.');
-                }
-
-                return deferred.reject({error: true, message: error});
-              }
-
-              if (notify) {
-                notification.success('Collection created !');
-              }
-
-              return deferred.resolve({error: false});
-            });
-
-          return deferred.promise;
-        },
-        update: function (collection, notify) {
-          var deferred = $q.defer();
+          if (isCreate) {
+            messageError = 'Error during collection creation. Please retry.';
+            messageSuccess = 'Collection created !';
+          }
+          else {
+            messageError = 'Error during collection update. Please retry.';
+            messageSuccess = 'Collection updated !';
+          }
 
           kuzzleSdk
             .dataCollectionFactory(collection.name)
             .putMapping(collection.schema, function (error) {
               if (error) {
                 if (notify) {
-                  notification.error('Error during collection update. Please retry.');
+                  notification.error(messageError);
                 }
 
                 return deferred.reject({error: true, message: error});
               }
 
               if (notify) {
-                notification.success('Collection updated !');
+                notification.success(messageSuccess);
               }
 
               return deferred.resolve({error: false});
