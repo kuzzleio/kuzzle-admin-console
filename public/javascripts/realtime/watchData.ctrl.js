@@ -7,6 +7,7 @@ angular.module('kuzzle.realtime')
     'filter',
     'notification',
     function ($scope, collectionApi, documentApi, filterTools, notificationTools) {
+    $scope.MAX_LOG_SIZE = 30000;
 
     $scope.comparators = [
       {
@@ -96,6 +97,9 @@ angular.module('kuzzle.realtime')
     $scope.addNotification = function (notification) {
       try {
         $scope.messages.push(notificationTools.notificationToMessage(notification));
+
+        if ($scope.messages.length > $scope.MAX_LOG_SIZE)
+          $scope.messages.shift();
       } catch (e) {
         console.log("Realtime-WatchData: " + e.message);
       } finally {
