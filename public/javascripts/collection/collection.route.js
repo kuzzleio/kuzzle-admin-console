@@ -9,6 +9,12 @@ angular.module('kuzzle.collection')
           "bodyView": { templateUrl: '/collection' }
         }
       })
+      .state('collection.browse', {
+        url: '/browse',
+        views: {
+          "mainView": { templateUrl: '/collection/browse' }
+        }
+      })
       .state('collection.create', {
         url: '/create?newCollection',
         views: {

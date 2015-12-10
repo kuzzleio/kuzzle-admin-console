@@ -1,0 +1,30 @@
+<div class="row storage-browse" ng-controller="CollectionBrowseCtrl" ng-init="init()">
+
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            Storage <small>Browse collection</small>
+        </h1>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 collections" ng-if="collections.length !== 0">
+            <ul class="list-group">
+                <li ng-repeat="collection in collections" class="list-group-item">
+                    <span ng-bind="collection"></span>
+                    <span class="action-collection glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})"></span>
+                    <cog-options-collection
+                            collection="collection"
+                            can-edit="false"
+                            after-empty="afterEmpty()"
+                            after-delete="afterDelete()">
+                    </cog-options-collection>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-sm-12" ng-if="collections.length === 0">
+            <p>There is no collection in this database</p>
+        </div>
+    </div>
+
+</div>

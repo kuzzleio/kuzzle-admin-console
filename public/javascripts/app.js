@@ -9,6 +9,7 @@ angular.module('kuzzle', [
   'kuzzle.realtime',
   'kuzzle.collectionApi',
   'kuzzle.documentsInline',
+  'kuzzle.cogOptionsCollection',
   'angular-loading-bar',
   'ngAnimate',
   'kuzzle.uid',

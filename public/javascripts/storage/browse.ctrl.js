@@ -6,10 +6,7 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'collectionApi',
-    '$uibModal',
-    function ($scope, $http, $stateParams, $state, collectionApi, $uibModal) {
-
-      var modal;
+    function ($scope, $http, $stateParams, $state, collectionApi) {
 
       $scope.collections = null;
       $scope.stateParams = $stateParams;
@@ -40,26 +37,10 @@ angular.module('kuzzle.storage')
         $state.go('collection.create', {newCollection: collection});
       };
 
-      $scope.openModalDeleteCollection = function () {
-        modal = $uibModal.open({
-          templateUrl: 'modalDeleteCollection.html',
-          scope: $scope
-        });
-      };
-
-      $scope.openModalEmptyCollection = function () {
-        modal = $uibModal.open({
-          templateUrl: 'modalEmptyCollection.html',
-          scope: $scope
-        });
-      };
-
       /**
        * Delete the entire collection
        */
-      $scope.delete = function () {
-        collectionApi.delete($stateParams.collection, true);
-        modal.dismiss('cancel');
+      $scope.afterDelete = function () {
         setTimeout(function () {
           $state.go('storage.browse', {}, {reload: true});
         }, 1000);
@@ -68,15 +49,9 @@ angular.module('kuzzle.storage')
       /**
        * Empty/flush the collection
        */
-      $scope.empty = function () {
-        collectionApi.empty($stateParams.collection, true);
-        modal.dismiss('cancel');
+      $scope.afterEmpty = function () {
         setTimeout(function () {
-          $state.go('storage.browse.documents', {collection: $stateParams.collection}, {reload: true});
+          $state.go('storage.browse.documents', {collection: $scope.collection}, {reload: true});
         }, 1000);
-      };
-
-      $scope.cancelModal = function () {
-        modal.dismiss('cancel');
       };
   }]);
