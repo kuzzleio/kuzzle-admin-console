@@ -74,8 +74,10 @@ angular.module('kuzzle.realtime')
       });
 
       $scope.room = documentApi.subscribeFilter($scope.collection, filter, function (notification) {
+        var phase;
+
         $scope.addNotification(notification);
-        var phase = $scope.$root.$$phase;
+        phase = $scope.$root.$$phase;
         if(phase !== '$apply' && phase !== '$digest') {
           $scope.$apply();
         }
