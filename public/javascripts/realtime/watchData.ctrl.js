@@ -31,8 +31,6 @@ angular.module('kuzzle.realtime')
     $scope.collections = [];
     $scope.collection = null;
     $scope.subscribed = false;
-
-    $scope.messages = [];
     $scope.documents = [];
 
     $scope.messageToPublish = '';
@@ -42,7 +40,15 @@ angular.module('kuzzle.realtime')
         .then(function (response) {
           $scope.collections = response.data;
         });
+      $scope.initMessages();
     };
+
+    $scope.initMessages = function () {
+      $scope.messages = [{
+        icon: 'info-sign',
+        text: 'This is your message log. Here, you will see the notifications coming from the collection you have subscribed to. Use the filters on the right to start a subscription.'
+      }];
+    }
 
     $scope.basicSubscribe = function () {
       $scope.subscribed = true;
@@ -56,6 +62,12 @@ angular.module('kuzzle.realtime')
       else if ($scope.searchType.advanced)
         filter = filterTools.formatAdvancedFilter($scope.filter.advancedFilter);
 
+      $scope.messages.push({
+        id: $scope.collection,
+        text: "You are now receiving notifications from ",
+        icon: "thumbs-up"
+      });
+
       $scope.room = collectionApi.subscribeId($scope.collection, filter, function (notification) {
         $scope.addNotification(notification);
       })
@@ -64,6 +76,10 @@ angular.module('kuzzle.realtime')
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
       collectionApi.unsubscribe();
+      $scope.messages.push({
+        text: "You stopped the current subscription.",
+        icon: "thumbs-down"
+      });
     };
 
     $scope.addNotification = function (notification) {

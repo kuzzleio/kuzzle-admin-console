@@ -30,6 +30,11 @@ div.view-fade {
     }
 }
 
+.navbar-brand {
+  height: auto;
+  padding: 10px, 15px, 0, 15px;
+}
+
 .actions-group {
     button.control {
         margin-right: 10px;
@@ -69,4 +74,12 @@ div.view-fade {
 
 .row .col-no-padding-left {
   padding-left: 0;
+}
+
+.fixed-right {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin-top: 50px;
 }

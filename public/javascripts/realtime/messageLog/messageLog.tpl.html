@@ -1,12 +1,20 @@
-<div class="panel-heading">Message Log
-  <button class="pull-right btn btn-default" ng-click="clearMessages()">Clear</button>
-  <div class="clearfix"></div>
-</div>
-<div class="panel-body">
-  <ul class="list-group">
-    <li class="list-group-item" ng-repeat="(index, message) in messages">
+<div style="
+    height: 100%;
+    overflow-y: auto;
+">
+  <button
+    class="pull-right btn btn-default"
+    ng-click="initMessages()"
+    style="margin: 10px;
+      position: absolute;
+      z-index: 100000;
+      right: 0;">
+    Clear
+  </button>
+  <ul class="message-list">
+    <li class="message-item" ng-repeat="(index, message) in messages">
       <span class="glyphicon glyphicon-{{message.icon}}"></span>&nbsp;
-      <span class="{{message.class}}">{{message.text}}</span>&nbsp;<code>{{message.id}}</code>
+      <span class="{{message.class}}">{{message.text}}</span>&nbsp;<code ng-if="message.id">{{message.id}}</code>
       <button ng-if="message.source" type="button" class="btn btn-default btn-xs" ng-click="toggleExpanded(index)"><span class="glyphicon glyphicon-option-horizontal"></span></button>
       <span ng-if="message.source" class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: message.id})"></span>
       <pre ng-if="message.source" ng-class="{hide: !message.expanded}">{{message.source}}</pre>

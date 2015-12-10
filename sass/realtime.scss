@@ -6,3 +6,34 @@
     }
   }
 }
+
+.watch-data-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.filters-container {
+  flex-grow: 1;
+}
+
+$message-log-width: 600px;
+
+.log-spacer {
+  width: $message-log-width;
+}
+
+.message-log {
+  width: $message-log-width;
+  background-color: #263238;
+  color: #ddd;
+
+  .message-list {
+    padding-left: 20px;
+    margin-top: 50px;
+
+    .message-item {
+      list-style-type: none;
+      margin: 10px 0;
+    }
+  }
+}
