@@ -39,6 +39,10 @@ angular.module('kuzzle.storage')
       // Document itself. Loaded from server if we are in edition
       $scope.document = {id: $stateParams.id, body: null, json: null};
 
+      $scope.error = {
+        addAttribute: false
+      };
+
       var
         message = null,
         modal;
@@ -210,10 +214,54 @@ angular.module('kuzzle.storage')
 
       $scope.cancelModal = function () {
         modal.dismiss('cancel');
+        $scope.newField = {name: null, type: null, after: null};
       };
 
       $scope.addAttribute = function () {
-        console.log($scope.newField);
+        $scope.error.addAttribute = false;
+
+        if (!$scope.newField || !$scope.newField.name || !$scope.newField.type) {
+          $scope.error.addAttribute = true;
+          return false;
+        }
+
+        $scope.schema.properties[$scope.newField.name] = {};
+        $scope.schema.properties[$scope.newField.name].type = $scope.newField.type;
+
+        if (!$scope.document.body) {
+          $scope.document.body = {};
+        }
+
+        switch ($scope.newField.type) {
+          case 'string':
+            $scope.document.body[$scope.newField.name] = '';
+            break;
+          case 'object':
+            $scope.document.body[$scope.newField.name] = {};
+            $scope.schema.properties[$scope.newField.name].properties = {};
+            break;
+          case 'location':
+            $scope.schema.properties[$scope.newField.name].type = 'object';
+            $scope.document.body[$scope.newField.name] = {lat: 0, lon: 0};
+            $scope.schema.properties[$scope.newField.name].properties = {
+              lat : {
+                type: 'number'
+              },
+              lon: {
+                type: 'number'
+              }
+            };
+            break;
+          case 'number':
+            $scope.document.body[$scope.newField.name] = 0;
+            break;
+        }
+
+        $scope.document.json = angular.toJson($scope.document.body, 4);
+
+        modal.dismiss('cancel');
+
+        $scope.newField = {name: null, type: null, after: null};
       };
 
       /** WATCHERS **/
@@ -223,7 +271,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
+        //$scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
       }, true);
 
 
@@ -306,12 +354,12 @@ angular.module('kuzzle.storage')
           attributes = [];
 
         angular.forEach(properties, function (property, name) {
-            if (property.properties) {
-              attributes = attributes.concat(getFlattenAttributes(property.properties, prefix + name + '.'));
-            }
-            else {
-              attributes.push(prefix + name);
-            }
+          if (property.properties) {
+            attributes = attributes.concat(getFlattenAttributes(property.properties, prefix + name + '.'));
+          }
+          else {
+            attributes.push(prefix + name);
+          }
         });
 
         return attributes;

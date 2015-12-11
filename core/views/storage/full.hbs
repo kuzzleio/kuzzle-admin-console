@@ -6,7 +6,7 @@
     </div>
 
     <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
-        <p>There is no document matching the id <strong ng-bind="id"></strong>.</p>
+        <p>There is no document matching the id <strong ng-bind="id">null</strong>.</p>
     </div>
 
     <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
@@ -37,14 +37,18 @@
                             <h3 class="modal-title">Add attribute</h3>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form name="form">
+                                <div ng-show="error.addAttribute">
+                                    <p class="text-danger">Field name and Attribute type are mandatory.</p>
+                                </div>
+
                                 <div class="form-group">
                                     <label>Field name</label>
-                                    <input class="form-control" type="text" placeholder="Field name" ng-model="newField.name">
+                                    <input class="form-control" type="text" ng-model="newField.name" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Attribute type</label>
-                                    <select class="form-control" ng-model="newField.type">
+                                    <select class="form-control" ng-model="newField.type" required>
                                         <option value="string">String</option>
                                         <option value="number">Number</option>
                                         <option value="object">Fieldset</option>
@@ -70,7 +74,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row edit-id">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>id</label>
@@ -95,7 +99,11 @@
         <div class="row">
             <div class="col-sm-12 form">
                 <div ng-if="view === 'form'">
-                    <form sf-schema="schema" sf-form="form" sf-model="document.body"></form>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <form sf-schema="schema" sf-form="form" sf-model="document.body"></form>
+                        </div>
+                    </div>
                 </div>
                 <div ng-if="view === 'json'">
                     <json-edit content="document.json"></json-edit>

@@ -120,17 +120,32 @@
   .view-toggle {
     margin-bottom: 30px;
   }
+  .edit-id {
+    margin-top: 50px;
+  }
   .form {
     padding-bottom: 20px;
     form {
       margin-bottom: 30px;
+
+      label {
+        color: #333;
+        font-weight: normal;
+      }
+
+      .has-success .form-control {
+        border: 1px solid #ccc;
+      }
+
       fieldset {
         border-radius: 4px;
         div {
           padding: 0 20px 0 20px;
         }
       }
-
+      .form-control-feedback {
+        display: none;
+      }
       .map {
         margin-top: 10px;
         .leaflet-control-container {
