@@ -47,6 +47,15 @@
   }
 }
 
+// Button create on top of view (collection, document, ...)
+.row.create {
+  margin-bottom: 10px;
+
+  button {
+    padding: 8px 30px 8px 30px;
+  }
+}
+
 .storage-browse {
   h2 {
     text-align: center;
@@ -58,14 +67,6 @@
   }
 
   .browse-documents {
-
-    .create {
-      margin-bottom: 10px;
-
-      button {
-        padding: 8px 30px 8px 30px;
-      }
-    }
 
     .documents .panel {
       margin-bottom: 5px;

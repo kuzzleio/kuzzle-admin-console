@@ -17,9 +17,8 @@ angular.module('kuzzle.collection')
     /**
      * Delete the entire collection
      */
-    $scope.afterDelete = function (index) {
-      $scope.collections.splice(index, 1);
-
+    $scope.afterDelete = function (collection) {
+      $scope.collections.splice($scope.collections.indexOf(collection), 1);
     };
 
   }]);

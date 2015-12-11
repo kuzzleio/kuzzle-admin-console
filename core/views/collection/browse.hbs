@@ -6,28 +6,38 @@
         </h1>
     </div>
 
-    <div class="row">
-        <div class="col-sm-5">
-            <button type="button" class="btn btn-success"  ui-sref="collection.create">Add collection</button>
-        </div>
-        <div class="col-sm-12 collections" ng-if="collections.length !== 0">
-            <ul class="list-group">
-                <li ng-repeat="collection in collections" class="list-group-item">
-                    <span ng-bind="collection"></span>
-                    <span class="action-collection glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})"></span>
-                    <cog-options-collection
-                            collection="collection"
-                            can-edit="false"
-                            after-empty="afterEmpty()"
-                            after-delete="afterDelete()">
-                    </cog-options-collection>
-                </li>
-            </ul>
+    <div class="col-sm-8 col-sm-offset-2">
+        <div class="row create">
+            <div class="col-sm-5">
+                <button type="button" class="btn btn-success"  ui-sref="collection.create">Add collection</button>
+            </div>
         </div>
 
-        <div class="col-sm-12" ng-if="collections.length === 0">
-            <p>There is no collection in this database</p>
+        <div class="row">
+            <div class="col-sm-12 list-collections" ng-if="collections.length !== 0">
+                <div class="panel panel-primary" ng-repeat="collection in collections | orderBy">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <span class="collection-name" ng-bind="collection" ui-sref="collection.full({collection: collection})"></span>
+
+                            <span class="pull-right">
+                                <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})"></span>
+                                <cog-options-collection
+                                        collection="collection"
+                                        can-edit="false"
+                                        after-delete="afterDelete(collection)">
+                                </cog-options-collection>
+                            </span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12" ng-if="collections.length === 0">
+                <p>There is no collection in this database</p>
+            </div>
         </div>
     </div>
+
 
 </div>

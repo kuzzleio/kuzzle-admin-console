@@ -1,55 +1,10 @@
 <span class="cog-options-collection">
-    <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></small>
-    <ul class="dropdown-menu">
-        <li ng-if="canEdit"><a href="" ui-sref="collection.full({collection: collection})">Edit</a></li>
-        <li><a href="" ng-click="openModalEmptyCollection()" class="text-danger">Empty</a></li>
-        <li ng-click="openModalDeleteCollection()"><a href="" ng-click="" class="text-danger">Delete</a></li>
-    </ul>
+    <span class="dropdown">
+        <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></small>
+        <ul class="dropdown-menu">
+            <li ng-if="canEdit"><a href="" ui-sref="collection.full({collection: collection})">Edit</a></li>
+            <li><a href="" ng-click="openModalEmptyCollection()" class="text-danger">Empty</a></li>
+            <li ng-click="openModalDeleteCollection()"><a href="" ng-click="" class="text-danger">Delete</a></li>
+        </ul>
+    </span>
 </span>
-
-<script type="text/ng-template" id="modalDeleteCollection.html">
-    <div class="modal-header">
-        <h3 class="modal-title"><strong>Delete</strong> collection <span ng-bind="collection"></span></h3>
-    </div>
-    <div class="modal-body">
-        <p>This action CANNOT be undone.</p>
-        <p>This will permanently <strong>delete</strong> the collection <strong ng-bind="collection"></strong> (data AND schema).</p>
-        <p></p>
-        <p>Please type in the name of the collection to confirm.</p>
-
-        <form>
-            <input class="form-control" type="text" ng-model="deleteName">
-        </form>
-    </div>
-    <div class="modal-footer">
-        <div class="actions-group">
-            <button class="btn btn-danger control" type="button" ng-click="delete()" ng-disabled="collection !== deleteName">
-                I really want to remove this collection
-            </button>
-            <a class="control" ng-click="cancelModal()">Cancel</a>
-        </div>
-    </div>
-</script>
-<script type="text/ng-template" id="modalEmptyCollection.html">
-    <div class="modal-header">
-        <h3 class="modal-title"><strong>Empty</strong> collection <span ng-bind="collection"></span></h3>
-    </div>
-    <div class="modal-body">
-        <p>This action CANNOT be undone.</p>
-        <p>This will permanently <strong>empty</strong> the collection <strong ng-bind="collection"></strong>.</p>
-        <p></p>
-        <p>Please type in the name of the collection to confirm.</p>
-
-        <form>
-            <input class="form-control" type="text" ng-model="emptyName">
-        </form>
-    </div>
-    <div class="modal-footer">
-        <div class="actions-group">
-            <button class="btn btn-danger control" type="button" ng-click="empty()" ng-disabled="collection !== emptyName">
-                Empty the collection
-            </button>
-            <a class="control" ng-click="cancelModal()">Cancel</a>
-        </div>
-    </div>
-</script>

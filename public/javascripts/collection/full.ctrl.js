@@ -32,20 +32,30 @@ angular.module('kuzzle.collection')
       };
 
       $scope.update = function (isCreate) {
-        try {
-          var collection = {
-            name: $scope.collection.name,
-            schema: JSON.parse($scope.collection.schema)
-          };
+        var collection = {
+          name: $scope.collection.name,
+          schema: {}
+        };
 
-          collectionApi.putMapping(collection, true, isCreate)
-            .then(function () {
+        if ($scope.collection.schema) {
+          try {
+            collection.schema = JSON.parse($scope.collection.schema);
+          }
+          catch (e) {
+            notification.error('Error parsing schema.');
+            return false;
+          }
+        }
+
+        collectionApi.putMapping(collection, true, isCreate)
+          .then(function () {
+            if (!previousState.get() || previousState.get().url.indexOf('collection') !== -1) {
               $state.go('storage.browse.documents', {collection: $scope.collection.name});
-            });
-        }
-        catch (e) {
-          notification.error('Error parsing schema.');
-        }
+              return false;
+            }
+
+            $window.history.back();
+          });
       };
 
       $scope.cancel = function () {
