@@ -12,60 +12,13 @@
                 Collection
                 <span ng-bind="stateParams.collection"></span>
                 <div class="btn-group">
-                    <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></small>
-                    <ul class="dropdown-menu">
-                        <li><a href="" ui-sref="collection.full({collection: stateParams.collection})">Edit</a></li>
-                        <li><a href="" ng-click="openModalEmptyCollection()">Empty</a></li>
-                        <li ng-click="openModalDeleteCollection()"><a href="" ng-click="" class="text-danger">Delete</a></li>
-                    </ul>
+                    <cog-options-collection
+                            collection="stateParams.collection"
+                            can-edit="true"
+                            after-delete="afterDelete()"
+                            after-empty="afterEmpty()">
+                    </cog-options-collection>
                 </div>
-
-                <script type="text/ng-template" id="modalDeleteCollection.html">
-                    <div class="modal-header">
-                        <h3 class="modal-title"><strong>Delete</strong> collection <span ng-bind="stateParams.collection"></span></h3>
-                    </div>
-                    <div class="modal-body">
-                        <p>This action CANNOT be undone.</p>
-                        <p>This will permanently <strong>delete</strong> the collection <strong ng-bind="stateParams.collection"></strong> (data AND schema).</p>
-                        <p></p>
-                        <p>Please type in the name of the collection to confirm.</p>
-
-                        <form>
-                            <input class="form-control" type="text" ng-model="deleteName">
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="actions-group">
-                            <button class="btn btn-danger control" type="button" ng-click="delete()" ng-disabled="stateParams.collection !== deleteName">
-                                I really want to remove this collection
-                            </button>
-                            <a class="control" ng-click="cancelModal()">Cancel</a>
-                        </div>
-                    </div>
-                </script>
-                <script type="text/ng-template" id="modalEmptyCollection.html">
-                    <div class="modal-header">
-                        <h3 class="modal-title"><strong>Empty</strong> collection <span ng-bind="stateParams.collection"></span></h3>
-                    </div>
-                    <div class="modal-body">
-                        <p>This action CANNOT be undone.</p>
-                        <p>This will permanently <strong>empty</strong> the collection <strong ng-bind="stateParams.collection"></strong>.</p>
-                        <p></p>
-                        <p>Please type in the name of the collection to confirm.</p>
-
-                        <form>
-                            <input class="form-control" type="text" ng-model="emptyName">
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="actions-group">
-                            <button class="btn btn-danger control" type="button" ng-click="empty()" ng-disabled="stateParams.collection !== emptyName">
-                                Empty the collection
-                            </button>
-                            <a class="control" ng-click="cancelModal()">Cancel</a>
-                        </div>
-                    </div>
-                </script>
             </h2>
         </div>
     </div>
@@ -78,7 +31,7 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-2 collections">
+        <div class="col-sm-2 dropdown-collections">
             <drop-down-search
                     label="collection"
                     selected="stateParams.collection"

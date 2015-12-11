@@ -3,3 +3,40 @@
     height: 400px;
   }
 }
+
+.list-collections {
+  .panel {
+    margin-bottom: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 0 #000;
+    border-color: #eee;
+    border-bottom: 2px solid #e4eaec;
+    border-radius: 3px;
+
+    .panel-heading {
+      color: #444;
+      background-color: #fff;
+      border: none;
+      padding: 10px 15px;
+
+      .panel-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #656565;
+
+        .collection-name {
+          cursor: pointer;
+        }
+        .glyphicon {
+          cursor: pointer;
+          font-size: 0.8em;
+          margin-right: 5px;
+        }
+      }
+    }
+
+    .panel-body {
+      padding: 9px 14px;
+    }
+  }
+}

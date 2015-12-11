@@ -1,4 +1,4 @@
-.collections {
+.dropdown-collections {
   text-align: center;
 
   li.active a {
@@ -41,6 +41,21 @@
   }
 }
 
+.collections {
+  .action-collection {
+    cursor: pointer;
+  }
+}
+
+// Button create on top of view (collection, document, ...)
+.row.create {
+  margin-bottom: 10px;
+
+  button {
+    padding: 8px 30px 8px 30px;
+  }
+}
+
 .storage-browse {
   h2 {
     text-align: center;
@@ -52,14 +67,6 @@
   }
 
   .browse-documents {
-
-    .create {
-      margin-bottom: 10px;
-
-      button {
-        padding: 8px 30px 8px 30px;
-      }
-    }
 
     .documents .panel {
       margin-bottom: 5px;
@@ -142,4 +149,8 @@
   .go-document {
     cursor: pointer;
   }
+}
+
+.cog-options-collection {
+  cursor: pointer;
 }
