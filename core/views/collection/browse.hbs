@@ -13,26 +13,54 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12 list-collections" ng-if="collections.length !== 0">
-                <div class="panel panel-primary" ng-repeat="collection in collections | orderBy">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="collection-name" ng-bind="collection" ui-sref="collection.full({collection: collection})"></span>
+        <div class="row" ng-if="collections.length !== 0">
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-12 collection-filter">
 
-                            <span class="pull-right">
-                                <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})"></span>
-                                <cog-options-collection
-                                        collection="collection"
-                                        can-edit="false"
-                                        after-delete="afterDelete(collection)">
-                                </cog-options-collection>
-                            </span>
-                        </h3>
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="filter">Collection filter</label>
+                                    <input
+                                            id="filter"
+                                            type="text"
+                                            ng-model="search"
+                                            placeholder="Collection name"
+                                            uib-typeahead="collection for collection in collections | filter:$viewValue"
+                                            typeahead-min-length="0"
+                                            class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-12 list-collections">
+                        <div class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <span class="collection-name" ng-bind="collection" ui-sref="collection.full({collection: collection})"></span>
+
+                                    <span class="pull-right">
+                                        <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})"></span>
+                                        <cog-options-collection
+                                                collection="collection"
+                                                can-edit="false"
+                                                after-delete="afterDelete(collection)">
+                                        </cog-options-collection>
+                                    </span>
+                                </h3>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
+        <div class="row">
             <div class="col-sm-12" ng-if="collections.length === 0">
                 <p>There is no collection in this database</p>
             </div>
