@@ -7,6 +7,9 @@
     </div>
 
     <div class="row">
+        <div class="col-sm-5">
+            <button type="button" class="btn btn-success"  ui-sref="collection.create">Add collection</button>
+        </div>
         <div class="col-sm-12 collections" ng-if="collections.length !== 0">
             <ul class="list-group">
                 <li ng-repeat="collection in collections" class="list-group-item">
