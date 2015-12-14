@@ -45,7 +45,8 @@ angular.module('kuzzle.storage')
 
       var
         message = null,
-        modal;
+        modal,
+        ROOT_DOCUMENT_LABEL = 'Root document';
 
       /**
        * Call on DOM init.
@@ -218,6 +219,10 @@ angular.module('kuzzle.storage')
       };
 
       $scope.addAttribute = function () {
+        var
+          nestedProperties,
+          nestedBody;
+
         $scope.error.addAttribute = false;
 
         if (!$scope.newField || !$scope.newField.name || !$scope.newField.type) {
@@ -225,8 +230,11 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $scope.schema.properties[$scope.newField.name] = {};
-        $scope.schema.properties[$scope.newField.name].type = $scope.newField.type;
+        nestedProperties = getNestedProperties($scope.schema.properties, $scope.newField.after);
+        nestedBody = getNestedBody($scope.document.body, $scope.newField.after);
+
+        nestedProperties[$scope.newField.name] = {};
+        nestedProperties[$scope.newField.name].type = $scope.newField.type;
 
         if (!$scope.document.body) {
           $scope.document.body = {};
@@ -234,16 +242,16 @@ angular.module('kuzzle.storage')
 
         switch ($scope.newField.type) {
           case 'string':
-            $scope.document.body[$scope.newField.name] = '';
+            nestedBody[$scope.newField.name] = '';
             break;
           case 'object':
-            $scope.document.body[$scope.newField.name] = {};
-            $scope.schema.properties[$scope.newField.name].properties = {};
+            nestedBody[$scope.newField.name] = {};
+            nestedProperties[$scope.newField.name].properties = {};
             break;
           case 'location':
-            $scope.schema.properties[$scope.newField.name].type = 'object';
-            $scope.document.body[$scope.newField.name] = {lat: 0, lon: 0};
-            $scope.schema.properties[$scope.newField.name].properties = {
+            nestedBody[$scope.newField.name] = {lat: 0, lon: 0};
+            nestedProperties[$scope.newField.name].type = 'object';
+            nestedProperties[$scope.newField.name].properties = {
               lat : {
                 type: 'number'
               },
@@ -253,14 +261,14 @@ angular.module('kuzzle.storage')
             };
             break;
           case 'number':
-            $scope.document.body[$scope.newField.name] = 0;
+            nestedBody[$scope.newField.name] = 0;
             break;
         }
 
         $scope.document.json = angular.toJson($scope.document.body, 4);
+        $scope.$broadcast('schemaFormRedraw');
 
         modal.dismiss('cancel');
-
         $scope.newField = {name: null, type: null, after: null};
       };
 
@@ -271,7 +279,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
+        $scope.listAttributes = [ROOT_DOCUMENT_LABEL].concat(getFlattenAttributes($scope.schema.properties, ''));
       }, true);
 
 
@@ -355,10 +363,8 @@ angular.module('kuzzle.storage')
 
         angular.forEach(properties, function (property, name) {
           if (property.properties) {
-            attributes = attributes.concat(getFlattenAttributes(property.properties, prefix + name + '.'));
-          }
-          else {
             attributes.push(prefix + name);
+            attributes = attributes.concat(getFlattenAttributes(property.properties, prefix + name + '.'));
           }
         });
 
@@ -372,5 +378,53 @@ angular.module('kuzzle.storage')
         $scope.document.body = JSON.parse($scope.document.json);
         $scope.schema = getUpdatedSchema($scope.document, 'body');
         $scope.$broadcast('schemaFormRedraw');
+      };
+
+      var getNestedProperties = function (properties, path) {
+        var
+          paths,
+          current = properties,
+          i;
+
+        if (!path || path === ROOT_DOCUMENT_LABEL) {
+          return properties;
+        }
+
+        paths = path.split('.');
+
+        for (i = 0; i < paths.length; ++i) {
+          if (current[paths[i]].properties == undefined) {
+            return current[paths[i]];
+          }
+          else {
+            current = current[paths[i]].properties;
+          }
+        }
+
+        return current;
+      };
+
+      var getNestedBody = function (attributes, path) {
+        var
+          paths,
+          current = attributes,
+          i;
+
+        if (!path || path === ROOT_DOCUMENT_LABEL) {
+          return attributes;
+        }
+
+        paths = path.split('.');
+
+        for (i = 0; i < paths.length; ++i) {
+          if (current[paths[i]] == undefined) {
+            return current[paths[i]];
+          }
+          else {
+            current = current[paths[i]];
+          }
+        }
+
+        return current;
       };
     }]);
