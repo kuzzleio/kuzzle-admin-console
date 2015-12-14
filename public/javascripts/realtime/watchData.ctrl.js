@@ -37,7 +37,8 @@ angular.module('kuzzle.realtime')
       $scope.forms.messages.push({
         id: $scope.forms.collection,
         text: "You are now receiving notifications from ",
-        icon: "thumbs-up"
+        icon: "thumbs-up",
+        source: angular.toJson(filter, 4),
       });
 
       $scope.room = documentApi.subscribeFilter($scope.forms.collection, filter, function (notification) {
