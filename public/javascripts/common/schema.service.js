@@ -64,7 +64,8 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
             schema = {
               title: collection,
               type: "object",
-              properties: {}
+              properties: {},
+              disableSuccessState: true
             };
 
             schema.properties = buildPropertiesRecursive(mapping);

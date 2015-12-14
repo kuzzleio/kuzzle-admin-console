@@ -1,10 +1,5 @@
 angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuzzle.collectionApi'])
 
-  .run(['$templateCache', '$http', function($templateCache, $http) {
-    $http.get('javascripts/common/cogOptionsCollection/modalDeleteCollection.tpl.html', {cache: $templateCache});
-    $http.get('javascripts/common/cogOptionsCollection/modalEmptyCollection.tpl.html', {cache: $templateCache});
-  }])
-
   .controller('cogOptionsCollectionCtrl', ['$scope', '$uibModal', '$state', 'collectionApi', function ($scope, $uibModal, $state, collectionApi) {
     var modal;
 

@@ -99,10 +99,11 @@ angular.module('kuzzle.leaflet', [])
           leaflet.addEvent(scope.mapId, 'click', scope.onMapClick);
 
           scope.$watch('marker', function () {
-            if (!scope.marker || !init) {
+            if (!scope.marker) {
               return false;
             }
 
+            leaflet.removeAllMarkers(scope.mapId);
             addMarkers();
             init = false;
           }, true);

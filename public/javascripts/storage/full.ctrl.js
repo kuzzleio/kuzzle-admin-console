@@ -11,8 +11,7 @@ angular.module('kuzzle.storage')
     'schema',
     'previousState',
     '$window',
-    '$uibModal',
-    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, $uibModal) {
+    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window) {
 
       // Define the schema collection. Allow to display a JSON representation into a form
       $scope.schema = {};
@@ -33,15 +32,11 @@ angular.module('kuzzle.storage')
       // Checkbox on form. If is set to true, when the user click on 'create', the document is created and the form is reinitialized.
       $scope.another = false;
 
-      // Mock creation of a new field
-      $scope.newField = {name: null, type: null, after: null};
-
       // Document itself. Loaded from server if we are in edition
       $scope.document = {id: $stateParams.id, body: null, json: null};
 
       var
-        message = null,
-        modal;
+        message = null;
 
       /**
        * Call on DOM init.
@@ -189,6 +184,13 @@ angular.module('kuzzle.storage')
       };
 
       /**
+       * Refresh the form and display new fields
+       */
+      $scope.refreshForm = function () {
+        $scope.$broadcast('schemaFormRedraw');
+      };
+
+      /**
        * When an another user edit the same document, a notification is displayed and the user can click on it for reload the document
        */
       $scope.refresh = function () {
@@ -197,35 +199,6 @@ angular.module('kuzzle.storage')
           notificationScope.kill(true);
         })
       };
-
-      /**
-       * Triggered when the user click on "Add Attribute". Will display a modal for adding a new attribute
-       */
-      $scope.openModalAddAttribute = function () {
-        modal = $uibModal.open({
-          templateUrl: 'modalAddAttribute.html',
-          scope: $scope
-        })
-      };
-
-      $scope.cancelModal = function () {
-        modal.dismiss('cancel');
-      };
-
-      $scope.addAttribute = function () {
-        console.log($scope.newField);
-      };
-
-      /** WATCHERS **/
-
-      $scope.$watch('schema', function () {
-        if (!$scope.schema || !$scope.schema.properties) {
-          return false;
-        }
-
-        $scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
-      }, true);
-
 
       /** PRIVATE **/
 
@@ -292,29 +265,6 @@ angular.module('kuzzle.storage')
         }
 
         return document
-      };
-
-      /**
-       * Flat all document attributes in an array
-       *
-       * @param properties
-       * @param prefix
-       * @returns {Array}
-       */
-      var getFlattenAttributes = function (properties, prefix) {
-        var
-          attributes = [];
-
-        angular.forEach(properties, function (property, name) {
-            if (property.properties) {
-              attributes = attributes.concat(getFlattenAttributes(property.properties, prefix + name + '.'));
-            }
-            else {
-              attributes.push(prefix + name);
-            }
-        });
-
-        return attributes;
       };
 
       /**

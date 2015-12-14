@@ -27,8 +27,8 @@ angular.module('schemaForm')
         };
 
         scope.onMapClick = function (event) {
-          scope.markers[scope.latLabel] = event.latlng.lat;
-          scope.markers[scope.lngLabel] = event.latlng.lng;
+          scope.marker[scope.latLabel] = event.latlng.lat;
+          scope.marker[scope.lngLabel] = event.latlng.lng;
           scope.$apply();
         };
 

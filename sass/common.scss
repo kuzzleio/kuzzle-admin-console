@@ -83,3 +83,9 @@ div.view-fade {
   right: 0;
   margin-top: 50px;
 }
+
+/* FORM */
+
+input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
+    border-color: #FA787E;
+}

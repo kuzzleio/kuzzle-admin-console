@@ -1,13 +1,15 @@
-<div class="row storage-browse" ng-controller="StorageBrowseCtrl" ng-init="init()">
+<div class="storage-browse" ng-controller="StorageBrowseCtrl" ng-init="init()">
 
-    <div class="col-sm-12 headline">
-        <h1 class="page-header">
-            Storage <small>Browse data</small>
-        </h1>
+    <div class="row">
+        <div class="col-sm-12 headline">
+            <h1 class="page-header">
+                Storage <small>Browse data</small>
+            </h1>
+        </div>
     </div>
 
-    <div class="row" ng-if="stateParams.collection">
-        <div class="col-sm-9 col-sm-push-2">
+    <div class="row">
+        <div class="col-sm-12" ng-if="stateParams.collection">
             <h2>
                 Collection
                 <span ng-bind="stateParams.collection"></span>
@@ -21,9 +23,7 @@
                 </div>
             </h2>
         </div>
-    </div>
-    <div class="row" ng-if="!stateParams.collection">
-        <div class="col-sm-9 col-sm-push-2">
+        <div class="col-sm-12" ng-if="!stateParams.collection">
             <h2>
                 Select base and collection
             </h2>
@@ -51,14 +51,12 @@
         <div class="col-sm-9" ng-if="collections.length === 0">
             <p>There is no collection in this database</p>
         </div>
-    </div>
 
-    <div ng-if="!stateParams.collection">
-        <div class="col-sm-2">
+        <div ng-if="!stateParams.collection">
+            <div class="col-sm-2">
 
+            </div>
         </div>
     </div>
-
-
 
 </div>
