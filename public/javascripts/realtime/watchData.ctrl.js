@@ -40,7 +40,7 @@ angular.module('kuzzle.realtime')
         icon: "thumbs-up"
       });
 
-      $scope.forms.room = documentApi.subscribeFilter($scope.forms.collection, filter, function (notification) {
+      $scope.room = documentApi.subscribeFilter($scope.forms.collection, filter, function (notification) {
         var phase;
 
         addNotification(notification);
@@ -56,7 +56,8 @@ angular.module('kuzzle.realtime')
     }
 
     $scope.unsubscribe = function () {
-      $scope.forms.subscribed = false;
+      $scope.subscribed = false;
+      $scope.room.unsubscribe();
 
       $scope.forms.messages.push({
         text: "You stopped the current subscription.",
