@@ -27,50 +27,7 @@
                             ng-click="switchView('json')"></button>
                 </div>
                 <div class="btn-group" role="group">
-                    <button
-                            type="button"
-                            class="btn btn-default"
-                            ng-click="openModalAddAttribute()">Add attribute</button>
-
-                    <script type="text/ng-template" id="modalAddAttribute.html">
-                        <div class="modal-header">
-                            <h3 class="modal-title">Add attribute</h3>
-                        </div>
-                        <div class="modal-body">
-                            <form name="form">
-                                <div ng-show="error.addAttribute">
-                                    <p class="text-danger">Field name and Attribute type are mandatory.</p>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Field name</label>
-                                    <input class="form-control" type="text" ng-model="newField.name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Attribute type</label>
-                                    <select class="form-control" ng-model="newField.type" required>
-                                        <option value="string">String</option>
-                                        <option value="number">Number</option>
-                                        <option value="object">Fieldset</option>
-                                        <option value="location">Location</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>After attribute</label>
-                                    <select class="form-control" ng-options="attribute as attribute for attribute in listAttributes" ng-model="newField.after">
-                                    </select>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="actions-group">
-                                <button class="btn btn-default control" type="button" ng-click="addAttribute()">
-                                    Add attribute
-                                </button>
-                                <a class="control" ng-click="cancelModal()">Cancel</a>
-                            </div>
-                        </div>
-                    </script>
+                    <add-attribute schema="schema" document="document" refresh-form="refreshForm()"></add-attribute>
                 </div>
             </div>
         </div>

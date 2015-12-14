@@ -5,5 +5,6 @@ angular.module('kuzzle.storage', [
   'kuzzle.documentApi',
   'kuzzle.dropDownSearch',
   'kuzzle.leaflet',
-  'kuzzle.filter'
+  'kuzzle.filter',
+  'kuzzle.addAttribute'
 ]);
