@@ -7,7 +7,7 @@ angular.module('kuzzle.realtime')
         text: '',
         icon: 'file',
         class: '',
-        source: angular.toJson(notification._source, 4),
+        source:  notification._source,
         expanded: false,
         canEdit: true
       };
@@ -68,7 +68,7 @@ angular.module('kuzzle.realtime')
 
         default:
           throw "Unknown notification";
-      };
+      }
 
       return messageItem;
     }
