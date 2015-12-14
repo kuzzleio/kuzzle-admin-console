@@ -13,19 +13,19 @@
                       <label>Collection</label>
                       <input
                               type="text"
-                              ng-model="collection"
-                              uib-typeahead="collection for collection in collections | filter:$viewValue"
+                              ng-model="forms.collection"
+                              uib-typeahead="collection for collection in forms.collections | filter:$viewValue"
                               typeahead-min-length="0"
                               class="form-control" />
                 </div>
 
                 <filters
                         add-group-label="Add group"
-                        filters="filter"
-                        collection="collection"
-                        comparators="comparators"
-                        search-type="searchType"
-                        subscribed="subscribed">
+                        filters="forms.filter"
+                        collection="forms.collection"
+                        comparators="forms.comparators"
+                        search-type="forms.searchType"
+                        subscribed="forms.subscribed">
                 </filters>
 
                 <div class="form-group">
@@ -52,9 +52,9 @@
     <div class="log-spacer">
       <messages
         class="fixed-right message-log"
-        collection="collection"
-        messages="messages"
-        init-messages="initMessages()">
+        collection="forms.collection"
+        messages="forms.messages"
+        init-messages="clearMessages()">
       </messages>
     </div>
 </div>
