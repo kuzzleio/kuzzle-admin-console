@@ -40,9 +40,9 @@
             <form name="forms.publish">
               <div class="form-group">
                 <p class="text-danger" ng-show="error" ng-bind="error"></p>
-                <json-edit content="messageToPublish"></json-edit>
+                <json-edit content="forms.messageToPublish"></json-edit>
               </div>
-              <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(messageToPublish)">
+              <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(forms.messageToPublish)">
                 Publish &nbsp; <span class="glyphicon glyphicon-send"></span>
               </button>
             </form>
