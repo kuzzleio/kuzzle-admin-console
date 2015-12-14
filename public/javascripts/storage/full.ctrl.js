@@ -51,37 +51,38 @@ angular.module('kuzzle.storage')
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
             $scope.schema = schema;
+
+            if (action === 'edit') {
+              $scope.isEdit = true;
+              $scope.exists = true;
+
+               documentApi.getById($stateParams.collection, $stateParams.id)
+                .then(function (response) {
+                  $scope.document.json = angular.toJson(response.document.content, 4);
+
+                  // use refreshFormWithJson instead of directly put data in body because the field order is different in mapping and in document itself
+                  // if we don't do that, when the user switch between json/form view, fields order can move
+                  refreshFormWithJson();
+                  $scope.document.id = response.document.id;
+
+                  documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
+                    message = notification.info({
+                      message:'Someone has update this document',
+                      templateUrl: 'refreshTemplate.html',
+                      delay: null,
+                      scope: $scope,
+                      closeOnClick: false
+                    });
+                  });
+                })
+                .catch(function (error) {
+                  $scope.notFoundError = true;
+                  console.error(error);
+                  return false;
+                });
+            }
           });
 
-        if (action === 'edit') {
-          $scope.isEdit = true;
-          $scope.exists = true;
-
-          documentApi.getById($stateParams.collection, $stateParams.id)
-            .then(function (response) {
-              $scope.document.json = angular.toJson(response.document.content, 4);
-
-              // use refreshFormWithJson instead of directly put data in body because the field order is different in mapping and in document itself
-              // if we don't do that, when the user switch between json/form view, fields order can move
-              refreshFormWithJson();
-              $scope.document.id = response.document.id;
-
-              documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
-                message = notification.info({
-                  message:'Someone has update this document',
-                  templateUrl: 'refreshTemplate.html',
-                  delay: null,
-                  scope: $scope,
-                  closeOnClick: false
-                });
-              });
-            })
-            .catch(function (error) {
-              $scope.notFoundError = true;
-              console.error(error);
-              return false;
-            });
-        }
       };
 
       /**
@@ -271,8 +272,11 @@ angular.module('kuzzle.storage')
        * Parse the text in json and transform into a form
        */
       var refreshFormWithJson = function () {
+        var schema;
+
         $scope.document.body = JSON.parse($scope.document.json);
-        $scope.schema = getUpdatedSchema($scope.document, 'body');
+        schema = getUpdatedSchema($scope.document, 'body');
+        $scope.schema = angular.merge(schema, $scope.schema);
         $scope.$broadcast('schemaFormRedraw');
       };
     }]);
