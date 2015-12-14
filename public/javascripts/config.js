@@ -1,0 +1,3 @@
+var config = {
+  kuzzleUrl: null
+};

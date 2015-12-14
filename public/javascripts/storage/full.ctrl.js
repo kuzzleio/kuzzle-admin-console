@@ -271,7 +271,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        //$scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
+        $scope.listAttributes = getFlattenAttributes($scope.schema.properties, '');
       }, true);
 
 
