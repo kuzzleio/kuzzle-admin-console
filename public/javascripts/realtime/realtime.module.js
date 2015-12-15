@@ -1,4 +1,5 @@
 angular.module('kuzzle.realtime', [
   'kuzzle.filter',
-  'kuzzle.messageLog'
+  'kuzzle.messageLog',
+  'kuzzle.headline'
 ]);
