@@ -13,15 +13,15 @@ angular.module('kuzzle.filters')
           }
 
           filters = filters.map(function (group) {
-            group.and = group.and.map(function (term) {
-              if (term.equal.value) {
-                term.equal = comparators[0];
+            group.and = group.and.map(function (match) {
+              if (match.equal.value) {
+                match.equal = comparators[0];
               }
               else {
-                term.equal = comparators[1];
+                match.equal = comparators[1];
               }
 
-              return term;
+              return match;
             });
 
             return group;
@@ -61,58 +61,59 @@ angular.module('kuzzle.filters')
       },
       formatBasicFilter: function (basicFilter) {
         var
-          or = [],
-          and = [],
-          formattedTerm = {},
+          bool = {should: []},
+          must = [],
+          should = [],
+          formattedMatch = {},
           length = basicFilter.length,
           error = false;
 
         basicFilter.forEach(function (group) {
-          and = [];
-          group.and.forEach(function (term) {
-            term.error = false;
+          should = {bool: {must: []}};
+          group.and.forEach(function (match) {
+            match.error = false;
 
             // If one of both input (field or value) is not specified, it's an error
-            if ((!term.field && term.value) || (term.field && !term.value)) {
+            if ((!match.field && match.value) || (match.field && !match.value)) {
               if (length > 1) {
-                term.error = true;
+                match.error = true;
                 error = true;
               }
               return false;
             }
 
-            if (!term.field && !term.value) {
+            if (!match.field && !match.value) {
               return false;
             }
 
-            if (term.equal.value) {
-              formattedTerm = {term: {}};
-              formattedTerm.term[term.field] = term.value;
-              and.push(formattedTerm);
+            if (match.equal.value) {
+              formattedMatch = {match: {}};
+              formattedMatch.match[match.field] = match.value;
+              should.bool.must.push(formattedMatch);
             }
             else {
-              formattedTerm = {not: {term: {}}};
-              formattedTerm.not.term[term.field] = term.value;
-              and.push(formattedTerm);
+              formattedMatch = {not: {match: {}}};
+              formattedMatch.not.match[match.field] = match.value;
+              should.bool.must.push(formattedMatch);
             }
           });
 
-          or.push({and: and});
+          bool.should.push(should);
         });
 
         if (error) {
           return false;
         }
 
-        if (or.length === 0) {
+        if (should.length === 0) {
           return {};
         }
 
-        if (or.length === 1 && or[0].and.length === 0) {
+        if (should.length === 1 && should[0].must.length === 0) {
           return {};
         }
 
-        return {or: or};
+        return {query: {bool: bool}};
       }
     };
   }]);

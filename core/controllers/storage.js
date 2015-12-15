@@ -64,19 +64,21 @@ router.post('/search', function (req, res) {
     ]
   };
 
-  if (!filter) {
-    filter = {};
-  }
-
-
   globalFilter = {
     filter: {
       and: [
-        {not: {ids: {values: bufferCancel.getExcludedIds()}}},
-        filter
+        {not: {ids: {values: bufferCancel.getExcludedIds()}}}
       ]
     }
   };
+
+  if (filter.filter) {
+    globalFilter.filter.and.push(filter.filter);
+  }
+
+  if (filter.query) {
+    globalFilter.query = filter.query;
+  }
 
   globalFilter = _.extend(pagination, globalFilter);
 

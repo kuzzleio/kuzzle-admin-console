@@ -56,7 +56,7 @@ angular.module('kuzzle.storage')
               $scope.isEdit = true;
               $scope.exists = true;
 
-               documentApi.getById($stateParams.collection, $stateParams.id)
+              documentApi.getById($stateParams.collection, $stateParams.id)
                 .then(function (response) {
                   $scope.document.json = angular.toJson(response.document.content, 4);
 
