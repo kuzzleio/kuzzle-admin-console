@@ -97,6 +97,11 @@ angular.module('kuzzle.realtime')
       $scope.forms.messages = [];
     };
 
+    $scope.resetFilters = function () {
+      $scope.forms.filter.advancedFilter = $scope.forms.getInitialAdvancedFilter();
+      $scope.forms.filter.basicFilter = $scope.forms.getInitialBasicFilter();
+    };
+
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
       $scope.room.unsubscribe();
