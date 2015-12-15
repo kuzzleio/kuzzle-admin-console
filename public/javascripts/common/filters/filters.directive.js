@@ -22,6 +22,7 @@ angular.module('kuzzle.filters')
       scope: {
         filters: '=',
         addGroupLabel: '@',
+        dslDocUrl: '@',
         collection: '=',
         comparators: '=',
         searchType: '=',

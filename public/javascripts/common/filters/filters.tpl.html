@@ -11,7 +11,9 @@
     <uib-tab heading="Advanced filter" active="searchType.advanced">
         <form name="forms.advancedSearch">
             <div class="form-group">
-                <label>Filter</label>
+                <label>Filter</label>&nbsp;-&nbsp;<a ng-href="{{dslDocUrl}}" target="_blank">Check out the DSL documentation</a>
+                <button type="button" ng-click="fillAdvancedSearchWithBasic()" class="btn btn-primary pull-right">Fill from basic search</button>
+                <div class="clearfix"></div>
                 <p class="text-danger" ng-show="error" ng-bind="error"></p>
                 <json-edit content="filters.advancedFilter"></json-edit>
             </div>
