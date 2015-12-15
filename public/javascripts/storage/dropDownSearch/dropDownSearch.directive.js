@@ -9,6 +9,7 @@ angular.module('kuzzle.dropDownSearch', [])
       $scope.isOpen = false;
       $scope.selected = $scope.search;
       $scope.search = '';
+      $scope.onClickItem({item: $scope.selected});
     }
   }])
   .directive('dropDownSearch', function () {
