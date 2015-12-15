@@ -25,7 +25,7 @@ angular.module('kuzzle.storage')
        * Redirect the user on the corresponding list when a collection is clicked
        * @param collection
        */
-      $scope.onClickCollection = function (collection) {
+      $scope.onSelectCollection = function (collection) {
         $state.go('storage.browse.documents', {collection: collection, advancedFilter: null, basicFilter: null});
       };
 
@@ -33,14 +33,14 @@ angular.module('kuzzle.storage')
        * Redirect to the collection creation when the user click on link "New collection"
        * @param collection
        */
-      $scope.createCollection = function (collection) {
+      $scope.onCreateCollection = function (collection) {
         $state.go('collection.create', {newCollection: collection});
       };
 
       /**
        * Delete the entire collection
        */
-      $scope.afterDelete = function () {
+      $scope.onDeleteCollection = function () {
         setTimeout(function () {
           $state.go('storage.browse', {}, {reload: true});
         }, 1000);
@@ -49,7 +49,7 @@ angular.module('kuzzle.storage')
       /**
        * Empty/flush the collection
        */
-      $scope.afterEmpty = function () {
+      $scope.onEmptyCollection = function () {
         setTimeout(function () {
           $state.go('storage.browse.documents', {collection: $scope.collection}, {reload: true});
         }, 1000);

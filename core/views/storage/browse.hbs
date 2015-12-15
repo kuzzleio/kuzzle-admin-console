@@ -1,5 +1,5 @@
 <div class="storage-browse" ng-controller="StorageBrowseCtrl" ng-init="init()">
-
+  <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12 headline">
             <h1 class="page-header">
@@ -7,65 +7,43 @@
             </h1>
         </div>
     </div>
-
+  </div>
+  <div class="container">
     <div class="row">
-        <div class="col-sm-12" ng-if="stateParams.collection">
+        <div class="col-sm-10 col-sm-push-1">
           <h2 class="select-collection">
               Collection
               <drop-down-search
-                  ng-if="!stateParams.collection"
-                  label="stateParams.collection"
+                  label=""
                   selected="stateParams.collection"
                   create-label="New collection"
-                  items="stateParams.collections"
+                  items="collections"
                   current-item="stateParams.collection"
                   on-click-create="onCreateCollection(collection)"
                   on-click-item="onSelectCollection(item)"
                   placeholder="Find a collection">
               </drop-down-search>
 
-              <span ng-if="stateParams.collection">
-                <span ng-bind="stateParams.collection"></span>
-                <div class="btn-group">
-                    <cog-options-collection
-                      collection="stateParams.collection"
-                      can-edit="true"
-                      after-delete="onDeleteCollection()"
-                      after-empty="onEmptyCollection()">
-                    </cog-options-collection>
-                </div>
-              </span>
+              <div class="btn-group" ng-if="stateParams.collection">
+                  <cog-options-collection
+                    collection="stateParams.collection"
+                    can-edit="true"
+                    after-delete="onDeleteCollection()"
+                    after-empty="onEmptyCollection()">
+                  </cog-options-collection>
+              </div>
           </h2>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-2 dropdown-collections">
-            <drop-down-search
-                    label="collection"
-                    selected="stateParams.collection"
-                    create-label="New collection"
-                    on-click-create="createCollection(collection)"
-                    items="collections"
-                    current-item="stateParams.collection"
-                    on-click-item="onClickCollection(item)"
-                    placeholder="Find a collection">
-            </drop-down-search>
-        </div>
-
-        <div class="col-sm-9" ng-if="stateParams.collection">
+    <div class="row" ng-if="stateParams.collection">
+        <div class="col-sm-10 col-sm-push-1">
             <div ui-view="subView" class="view-fade"></div>
         </div>
 
         <div class="col-sm-9" ng-if="collections.length === 0">
             <p>There is no collection in this database</p>
         </div>
-
-        <div ng-if="!stateParams.collection">
-            <div class="col-sm-2">
-
-            </div>
-        </div>
     </div>
-
+  </div>
 </div>
