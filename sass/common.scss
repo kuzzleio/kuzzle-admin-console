@@ -117,6 +117,9 @@ h2.select-collection {
     .dropdown-menu {
       width: 200px;
       li {
+        form {
+          margin-bottom: 0;
+        }
         cursor: pointer;
         a {
           padding: 8px 0 8px 10px;
