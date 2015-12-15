@@ -27,6 +27,23 @@ angular.module('kuzzle.realtime')
           $scope.forms.collections = response;
         });
       $scope.forms.collection = $stateParams.collection;
+
+      var filters = {};
+      try {
+        filters = filterTools.getFiltersFromUrl($stateParams, $scope.forms.comparators);
+      } catch (e) {
+        $state.go('realtime.watch-data', {basicFilter: null}, {reload: false});
+      }
+
+      if (filters.basicFilter){
+        $scope.forms.filter.basicFilter = filters.basicFilter;
+        setSearchType(false);
+      } else if (filters.advancedFilter) {
+        $scope.forms.filter.advancedFilter = filters.advancedFilter;
+        setSearchType(true);
+      } else {
+        setSearchType(false);
+      }
     };
 
     $scope.onSelectCollection = function (collection) {
@@ -70,10 +87,14 @@ angular.module('kuzzle.realtime')
 
       $scope.subscribed = true;
       var filter = {};
-      if ($scope.forms.searchType.basic)
+      if ($scope.forms.searchType.basic) {
         filter = filterTools.formatBasicFilter($scope.forms.filter.basicFilter);
-      else if ($scope.forms.searchType.advanced)
+        setBasicFilterInUrl($scope.forms.filter.basicFilter);
+      }
+      else if ($scope.forms.searchType.advanced) {
         filter = filterTools.formatAdvancedFilter($scope.forms.filter.advancedFilter);
+        setAdvancedFilterInUrl($scope.forms.filter.advancedFilter);
+      }
 
       $scope.forms.messages.push({
         id: $scope.forms.collection,
@@ -125,17 +146,18 @@ angular.module('kuzzle.realtime')
       }
     };
 
-    $scope.onBasicFilterSelected = function () {
-      // Eventually put here some code that renders a basic filter structure
-      // from an existing advanced filter predicate.
-    };
+    /** PRIVATE METHODS **/
 
-    $scope.onAdvancedFilterSelected = function () {
-      if ($scope.forms.advancedSearch && !$scope.forms.advancedSearch.$pristine) {
-        return false;
+    var setSearchType = function (isAdvanced) {
+      $scope.forms.searchType.basic = false;
+      $scope.forms.searchType.advanced = false;
+
+      if (isAdvanced) {
+        $scope.forms.searchType.advanced = true;
       }
-
-      $scope.forms.filter.advancedFilter = serializeBasicFilter($scope.forms.filter.basicFilter);
+      else {
+        $scope.forms.searchType.basic = true
+      }
     };
 
     var addNotification = function (notification) {
@@ -146,6 +168,30 @@ angular.module('kuzzle.realtime')
         displayTooManyMessages();
       }
     };
+
+    var fillAdvancedSearchWithBasic = function (basicFilter) {
+      if ($scope.filterForms.advancedSearch && !$scope.filterForms.advancedSearch.$pristine) {
+        return false;
+      }
+
+      var filter = filterTools.formatBasicFilter(basicFilter);
+      filter = {filter: filter};
+      $scope.filter.advancedFilter = angular.toJson(filter, 4);
+    }
+
+    var setBasicFilterInUrl = function (basicFilter) {
+      var filter = null;
+
+      if (Object.keys(filterTools.formatBasicFilter(basicFilter)).length !== 0) {
+        filter = decodeURIComponent(angular.toJson(basicFilter));
+      }
+      $state.go('realtime.watch-data', {basicFilter: filter, advancedFilter: null}, {reload: false});
+    }
+
+    var setAdvancedFilterInUrl = function (advancedFilter) {
+      var filter = decodeURIComponent(advancedFilter);
+      $state.go('realtime.watch-data', {advancedFilter: filter, basicFilter: null}, {reload: false});
+    }
 
     var serializeBasicFilter = function (basicFilter) {
       var filter = filterTools.formatBasicFilter(basicFilter);

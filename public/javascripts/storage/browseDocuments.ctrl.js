@@ -77,7 +77,6 @@ angular.module('kuzzle.storage')
         if (filters.basicFilter){
           $scope.filter.basicFilter = filters.basicFilter;
           setSearchType(false);
-          fillAdvancedSearchWithBasic(filters.basicFilter);
         } else if (filters.advancedFilter) {
           $scope.filter.advancedFilter = filters.advancedFilter;
           setSearchType(true);
@@ -151,7 +150,6 @@ angular.module('kuzzle.storage')
         setSearchType(false);
 
         setBasicFilterInUrl($scope.filter.basicFilter);
-        fillAdvancedSearchWithBasic($scope.filter.basicFilter);
         $scope.loadDocuments();
       };
 
@@ -168,16 +166,6 @@ angular.module('kuzzle.storage')
           $scope.searchType.basic = true
         }
       };
-
-      var fillAdvancedSearchWithBasic = function (basicFilter) {
-        if ($scope.forms.advancedSearch && !$scope.forms.advancedSearch.$pristine) {
-          return false;
-        }
-
-        var filter = filterTools.formatBasicFilter(basicFilter);
-        filter = {filter: filter};
-        $scope.filter.advancedFilter = angular.toJson(filter, 4);
-      }
 
       var setBasicFilterInUrl = function (basicFilter) {
         var filter = null;

@@ -14,6 +14,16 @@ angular.module('kuzzle.filters')
       else if ($scope.searchType.advanced)
         $scope.advancedSearch();
     }
+
+    $scope.fillAdvancedSearchWithBasic = function () {
+      if ($scope.filterForms.advancedSearch && !$scope.filterForms.advancedSearch.$pristine) {
+        return false;
+      }
+
+      var filter = filterTools.formatBasicFilter($scope.filters.basicFilter);
+      filter = {filter: filter};
+      $scope.filters.advancedFilter = angular.toJson(filter, 4);
+    }
   }])
 
   .directive('filters', [function () {
