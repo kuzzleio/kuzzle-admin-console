@@ -1,5 +1,16 @@
 angular.module('kuzzle.dropDownSearch', [])
+  .controller('DropDownSearchCtrl', ['$scope', function ($scope) {
+    $scope.isOpen = false;
 
+    $scope.onPressEnter = function () {
+      if (!$scope.selectVolatileCollections)
+        return;
+
+      $scope.isOpen = false;
+      $scope.selected = $scope.search;
+      $scope.search = '';
+    }
+  }])
   .directive('dropDownSearch', function () {
     return {
       restrict: 'E',
@@ -12,8 +23,10 @@ angular.module('kuzzle.dropDownSearch', [])
         items: '=',
         onClickItem: '&',
         currentItem: '=',
-        placeholder: '@'
+        placeholder: '@',
+        selectVolatileCollections: '='
       },
+      controller: "DropDownSearchCtrl",
       templateUrl: '/javascripts/storage/dropDownSearch/dropDownSearch.tpl.html'
     }
   });
