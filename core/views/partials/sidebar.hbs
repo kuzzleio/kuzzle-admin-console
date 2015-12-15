@@ -22,7 +22,7 @@
                 <i class="fa fa-fw fa-caret-down"></i>
             </a>
             <ul id="menu-storage" class="collapse" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
-                <li ng-class="{ active: ('storage.browse.*' | includedByState) || ('storage.create' | includedByState) }">
+                <li ng-class="{ active: ('storage.*.*' | includedByState) }">
                     <a ui-sref="storage.browse"><i class="fa fa-list-alt"></i> Browse data</a>
                 </li>
                 <li ng-class="{ active: ('collection.*.*' | includedByState) }">

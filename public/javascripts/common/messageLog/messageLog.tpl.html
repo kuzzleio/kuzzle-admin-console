@@ -18,8 +18,8 @@
         {{message.text}}
       </span>&nbsp;<code ng-click="toggleExpanded(index)" style="cursor: pointer" ng-if="message.id">{{message.id}}</code>
       <button ng-if="message.source" type="button" class="btn btn-default btn-xs" ng-click="toggleExpanded(index)" title="Details..."><span class="glyphicon glyphicon-option-horizontal"></span></button>
-      <a href ui-sref="storage.full({collection: collection, id: message.id})"><span ng-if="message.source && message.canEdit" class="edit-document edit glyphicon glyphicon-eye-open" title="Edit document..."></span></a>
-      <pre ng-if="message.source" ng-class="{hide: !message.expanded}">{{message.source}}</pre>
+      <a href ng-if="message.id" ui-sref="storage.full({collection: collection, id: message.id})"><span ng-if="message.source && message.canEdit" class="edit-document edit glyphicon glyphicon-eye-open" title="Edit document..."></span></a>
+      <pre ng-if="message.source && message.expanded">{{message.source | json:4 }}</pre>
     </li>
   </ul>
 </div>

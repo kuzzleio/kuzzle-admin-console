@@ -10,8 +10,15 @@ angular.module('kuzzle.realtime')
     '$state',
     '$stateParams',
     function ($scope, collectionApi, documentApi, filterTools, notificationTools, watchDataForms, $state, $stateParams) {
-    $scope.MAX_LOG_SIZE = 30000;
-    $scope.subscribed = false;
+      var
+        MAX_LOG_SIZE = 100,
+        warning = {
+          alreadyDisplayed: false,
+          lastTime: null,
+          count: 0
+        };
+
+      $scope.subscribed = false;
 
     $scope.init = function () {
       $scope.forms = watchDataForms;
@@ -88,7 +95,7 @@ angular.module('kuzzle.realtime')
 
     $scope.clearMessages = function () {
       $scope.forms.messages = [];
-    }
+    };
 
     $scope.unsubscribe = function () {
       $scope.subscribed = false;
@@ -127,15 +134,11 @@ angular.module('kuzzle.realtime')
     };
 
     var addNotification = function (notification) {
-      try {
-        $scope.forms.messages.push(notificationTools.notificationToMessage(notification));
+      $scope.forms.messages.push(notificationTools.notificationToMessage(notification));
 
-        if ($scope.forms.messages.length > $scope.MAX_LOG_SIZE)
-          $scope.forms.messages.shift();
-      } catch (e) {
-        console.log("Realtime-WatchData: " + e.message);
-      } finally {
-
+      if ($scope.forms.messages.length > MAX_LOG_SIZE) {
+        $scope.forms.messages.shift();
+        displayTooManyMessages();
       }
     };
 
@@ -143,5 +146,29 @@ angular.module('kuzzle.realtime')
       var filter = filterTools.formatBasicFilter(basicFilter);
       filter = {filter: filter};
       return angular.toJson(filter, 4);
+    };
+
+    var displayTooManyMessages = function () {
+      if (warning.alreadyDisplayed) {
+        return false;
+      }
+
+      if (Date.now() - warning.lastTime < 10) {
+        console.log('warning');
+        warning.count++;
+      }
+
+      warning.lastTime = Date.now();
+
+      if (warning.count >= 100) {
+        warning.alreadyDisplayed = true;
+        notification.warning(
+          {
+            message:  '<p>You have too many messages for this subscription.</p>' +
+                      '<p>The display can be slow, try to specify a filter for reduce the amount of messages.</p>',
+            delay: null
+          }
+        );
+      }
     }
   }]);

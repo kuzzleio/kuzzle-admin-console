@@ -73,7 +73,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         subscribeId: function (collection, id, cb) {
           return kuzzleSdk
             .dataCollectionFactory(collection)
-            .subscribe({ids: {values: [id]}}, function (error, result) {
+            .subscribe({ids: {values: [id]}}, {subscribeToSelf: false}, function (error, result) {
               cb(result);
             });
         },
