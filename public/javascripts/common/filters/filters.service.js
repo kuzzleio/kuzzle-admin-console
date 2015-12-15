@@ -46,14 +46,7 @@ angular.module('kuzzle.filters')
         }
 
         try {
-          var advancedFilter = JSON.parse(advancedFilter);
-
-          if (advancedFilter.filter) {
-            return advancedFilter.filter;
-          }
-          else {
-            return advancedFilter.query;
-          }
+          return JSON.parse(advancedFilter);
         }
         catch (e) {
           return {}
@@ -62,7 +55,6 @@ angular.module('kuzzle.filters')
       formatBasicFilter: function (basicFilter) {
         var
           bool = {should: []},
-          must = [],
           should = [],
           formattedMatch = {},
           length = basicFilter.length,

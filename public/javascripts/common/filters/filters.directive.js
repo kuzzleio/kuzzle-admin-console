@@ -21,7 +21,6 @@ angular.module('kuzzle.filters')
       }
 
       var filter = filterTools.formatBasicFilter($scope.filters.basicFilter);
-      filter = {query: filter};
       $scope.filters.advancedFilter = angular.toJson(filter, 4);
     };
   }])
