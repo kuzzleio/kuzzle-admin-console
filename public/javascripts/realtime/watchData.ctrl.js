@@ -100,7 +100,7 @@ angular.module('kuzzle.realtime')
         id: $scope.forms.collection,
         text: "You are now receiving notifications from ",
         icon: "thumbs-up",
-        source: angular.toJson(filter, 4),
+        source: filter,
       });
 
       $scope.room = documentApi.subscribeFilter($scope.forms.collection, filter, function (notification) {
