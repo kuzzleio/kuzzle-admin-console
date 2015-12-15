@@ -10,8 +10,12 @@ angular.module('kuzzle.realtime')
     'Notification',
     function ($scope, collectionApi, documentApi, filterTools, notificationTools, watchDataForms, notification) {
       var
-        MAX_LOG_SIZE = 80,
-        displayWarningTooManyMessages = false;
+        MAX_LOG_SIZE = 100,
+        warning = {
+          alreadyDisplayed: false,
+          lastTime: null,
+          count: 0
+        };
 
       $scope.subscribed = false;
 
@@ -112,8 +116,19 @@ angular.module('kuzzle.realtime')
       };
 
       var displayTooManyMessages = function () {
-        if (!displayWarningTooManyMessages) {
-          displayWarningTooManyMessages = true;
+        if (warning.alreadyDisplayed) {
+          return false;
+        }
+
+        if (Date.now() - warning.lastTime < 10) {
+          console.log('warning');
+          warning.count++;
+        }
+
+        warning.lastTime = Date.now();
+
+        if (warning.count >= 100) {
+          warning.alreadyDisplayed = true;
           notification.warning(
             {
               message:  '<p>You have too many messages for this subscription.</p>' +
