@@ -1,11 +1,11 @@
-angular.module('kuzzle.filters', [])
-  .controller('FiltersCtrl', ['$scope', function ($scope) {
+angular.module('kuzzle.filters')
+  .controller('FiltersCtrl', ['$scope', 'filters', function ($scope, filterTools) {
     $scope.error = null;
     $scope.submited = false;
+    $scope.filterForms = {};
 
     $scope.reset = function () {
-      $scope.error = null;
-      $scope.filters.advancedFilter = '';
+      // TODO! Implement this.
     };
 
     $scope.doSearch = function () {

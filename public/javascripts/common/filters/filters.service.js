@@ -1,6 +1,6 @@
-angular.module('kuzzle.filter', [])
+angular.module('kuzzle.filters')
 
-  .service('filter', [function () {
+  .service('filters', [function () {
     return {
       getFiltersFromUrl: function (params, comparators) {
         if (params.basicFilter) {

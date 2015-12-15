@@ -14,7 +14,7 @@ angular.module('kuzzle.storage')
     'documentApi',
     '$timeout',
     '$state',
-    'filter',
+    'filters',
     function ($scope, $http, $stateParams, schema, documentApi, $timeout, $state, filterTools) {
 
       // List comparators for Basic filter block

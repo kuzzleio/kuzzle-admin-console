@@ -4,12 +4,12 @@ angular.module('kuzzle.realtime')
     '$scope',
     'collectionApi',
     'documentApi',
-    'filter',
     'notification',
     'watchDataForms',
     '$state',
     '$stateParams',
-    function ($scope, collectionApi, documentApi, filterTools, notificationTools, watchDataForms, $state, $stateParams) {
+    'filters',
+    function ($scope, collectionApi, documentApi, notificationTools, watchDataForms, $state, $stateParams, filterTools) {
       var
         MAX_LOG_SIZE = 100,
         warning = {
