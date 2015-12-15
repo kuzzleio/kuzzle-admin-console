@@ -89,11 +89,11 @@ angular.module('kuzzle.realtime')
       var filter = {};
       if ($scope.forms.searchType.basic) {
         filter = filterTools.formatBasicFilter($scope.forms.filter.basicFilter);
-        setBasicFilterInUrl($scope.forms.filter.basicFilter);
+//         setBasicFilterInUrl($scope.forms.filter.basicFilter);
       }
       else if ($scope.forms.searchType.advanced) {
         filter = filterTools.formatAdvancedFilter($scope.forms.filter.advancedFilter);
-        setAdvancedFilterInUrl($scope.forms.filter.advancedFilter);
+//         setAdvancedFilterInUrl($scope.forms.filter.advancedFilter);
       }
 
       $scope.forms.messages.push({
