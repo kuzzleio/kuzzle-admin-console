@@ -1,19 +1,33 @@
 <headline title="Realtime" subtitle="watch data"></headline>
 
 <div class="watch-data-container" ng-controller="WatchDataCtrl" ng-init="init()">
-    <div class="filters-container">
-        <div class="panel panel-default filters">
-            <div class="panel-body">
-                  <div class="form-group">
-                      <label>Collection</label>
-                      <input
-                              type="text"
-                              ng-model="forms.collection"
-                              uib-typeahead="collection for collection in forms.collections | filter:$viewValue"
-                              typeahead-min-length="0"
-                              class="form-control" />
-                </div>
 
+  <div class="filters-log-container">
+    <div class="filters-container">
+      <h2 class="select-collection">
+          Collection
+          <drop-down-search
+              label=""
+              selected="forms.collection"
+              create-label="New collection"
+              items="forms.collections"
+              current-item="forms.collection"
+              on-click-create="onCreateCollection(collection)"
+              on-click-item="onSelectCollection(item)"
+              placeholder="Find a collection">
+          </drop-down-search>
+
+          <div class="btn-group" ng-if="forms.collection">
+              <cog-options-collection
+                collection="forms.collection"
+                can-edit="true"
+                after-delete="onDeleteCollection()"
+                after-empty="onEmptyCollection()">
+              </cog-options-collection>
+          </div>
+      </h2>
+        <div class="panel panel-default filters" ng-if="forms.collection">
+            <div class="panel-body">
                 <filters
                         add-group-label="Add group"
                         filters="forms.filter"
@@ -29,7 +43,7 @@
                 </div>
             </div>
         </div>
-        <div class="panel panel-default publish">
+        <div class="panel panel-default publish" ng-if="forms.collection">
           <div class="panel-body">
             <label>Publish <small>a volatile message</small></label>
             <form name="forms.publish">
@@ -52,4 +66,5 @@
         init-messages="clearMessages()">
       </messages>
     </div>
+  </div>
 </div>

@@ -1,7 +1,7 @@
 <div class="btn-group">
   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span ng-if="selected">
-      <span ng-bind="label"></span>: <strong ng-bind="selected"></strong> <span class="caret"></span>
+      <span ng-if="label"><span ng-bind="label"></span>: </span><strong ng-bind="selected"></strong> <span class="caret"></span>
     </span>
     <span ng-if="!selected">Select a collection</span>
   </button>

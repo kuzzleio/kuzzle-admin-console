@@ -30,7 +30,7 @@ angular.module('kuzzle.realtime')
     forms: {},
     searchType: {},
     collections: [],
-    collection: null,
+    collection: '',
     documents: [],
     messageToPublish: '',
     messages: [firstMessage]

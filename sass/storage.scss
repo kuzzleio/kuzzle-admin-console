@@ -1,45 +1,4 @@
-.dropdown-collections {
-  text-align: center;
 
-  li.active a {
-    background-color: #528186;
-
-    &:focus {
-      background-color: #528186;
-    }
-    &:hover {
-      color: #fff;
-      background-color: #6C9A9E;
-    }
-  }
-
-  drop-down-search {
-    button {
-      width: 200px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
-    .dropdown-menu {
-      width: 200px;
-      li {
-        cursor: pointer;
-        a {
-          padding: 8px 0 8px 10px;
-
-          &.external-link {
-            padding: 5px 0 5px 10px;
-            text-decoration: underline;
-            color: #215C9C;
-          }
-        }
-      }
-      .search {
-        padding: 5px;
-      }
-    }
-  }
-}
 
 .collections {
   .action-collection {

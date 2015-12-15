@@ -10,15 +10,9 @@ angular.module('kuzzle.realtime')
         }
       })
       .state('realtime.watch-data', {
-        url: '/watch-data',
+        url: '/watch-data/:collection?basicFilter&advancedFilter',
         views: {
           "mainView": { templateUrl: '/realtime/watch-data' }
-        }
-      })
-      .state('realtime.manage-subscription', {
-        url: '/manage-subscription',
-        views: {
-          "mainView": { templateUrl: '/realtime/manage-subscription' }
         }
       })
 

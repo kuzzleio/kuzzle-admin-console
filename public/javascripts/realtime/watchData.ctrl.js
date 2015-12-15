@@ -7,7 +7,9 @@ angular.module('kuzzle.realtime')
     'filter',
     'notification',
     'watchDataForms',
-    function ($scope, collectionApi, documentApi, filterTools, notificationTools, watchDataForms) {
+    '$state',
+    '$stateParams',
+    function ($scope, collectionApi, documentApi, filterTools, notificationTools, watchDataForms, $state, $stateParams) {
     $scope.MAX_LOG_SIZE = 30000;
     $scope.subscribed = false;
 
@@ -17,6 +19,38 @@ angular.module('kuzzle.realtime')
         .then(function (response) {
           $scope.forms.collections = response;
         });
+      $scope.forms.collection = $stateParams.collection;
+    };
+
+    $scope.onSelectCollection = function (collection) {
+      $scope.forms.collection = collection;
+      $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
+    }
+
+    /**
+     * Redirect to the collection creation when the user click on link "New collection"
+     * @param collection
+     */
+    $scope.onCreateCollection = function (collection) {
+      $state.go('collection.create', {newCollection: collection});
+    };
+
+    /**
+     * Delete the entire collection
+     */
+    $scope.onDeleteCollection = function () {
+      setTimeout(function () {
+        $state.go('realtime.watch-data', {collection: null}, {reload: true});
+      }, 1000);
+    };
+
+    /**
+     * Empty/flush the collection
+     */
+    $scope.onEmptyCollection = function () {
+      setTimeout(function () {
+        $state.go('realtime.watch-data', {collection: $scope.forms.collection}, {reload: true});
+      }, 1000);
     };
 
     $scope.basicSubscribe = function () {
