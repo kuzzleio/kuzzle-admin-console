@@ -1,3 +1,26 @@
+@import "mixins";
+
+$bs-container-padding: 15px;
+
+.watch-data-container {
+  @extend .h100;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding-top: 70px;
+  width: 100%;
+}
+
+.filters-log-container {
+  @extend .h100;
+}
+
+.filters-container {
+  @extend .h100;
+  overflow-y: auto;
+  padding-right: $bs-container-padding;
+}
+
 .publish {
   .form-group {
     .ace_editor {
@@ -20,6 +43,7 @@ $message-log-width: 600px;
 
 .log-spacer {
   width: $message-log-width;
+  margin-right: -$bs-container-padding;
 }
 
 .message-log {

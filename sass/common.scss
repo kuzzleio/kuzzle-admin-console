@@ -1,6 +1,7 @@
 /* SASS has a weird way of importing regular CSS files.
   http://stackoverflow.com/questions/7111610/import-regular-css-file-in-scss-file */
 @import "lib/sb-admin";
+@import "mixin";
 
 body {
     background-color: #F3F3F3;
@@ -47,15 +48,13 @@ div.view-fade {
 #page-wrapper {
     padding: 0;
     background-color: #F3F3F3;
+    @extend .h100;
 
     #loading-bar-wrapper {
         .bar {
             position: inherit;
             height: 3px;
         }
-    }
-    .headline {
-        margin-bottom: 10px;
     }
 }
 
