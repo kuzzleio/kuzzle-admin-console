@@ -33,7 +33,7 @@ angular.module('kuzzle.storage')
       $scope.another = false;
 
       // Document itself. Loaded from server if we are in edition
-      $scope.document = {id: $stateParams.id, body: null, json: null};
+      $scope.document = {id: $stateParams.id, body: {}, json: null};
 
       var
         message = null;
@@ -56,15 +56,15 @@ angular.module('kuzzle.storage')
               $scope.isEdit = true;
               $scope.exists = true;
 
-               documentApi.getById($stateParams.collection, $stateParams.id)
+              documentApi.getById($stateParams.collection, $stateParams.id)
                 .then(function (response) {
                   $scope.document.json = angular.toJson(response.document.content, 4);
+
+                  $scope.document.id = response.document.id;
 
                   // use refreshFormWithJson instead of directly put data in body because the field order is different in mapping and in document itself
                   // if we don't do that, when the user switch between json/form view, fields order can move
                   refreshFormWithJson();
-                  $scope.document.id = response.document.id;
-
                   documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
                     message = notification.info({
                       message:'Someone has update this document',
@@ -74,12 +74,19 @@ angular.module('kuzzle.storage')
                       closeOnClick: false
                     });
                   });
+
+                  console.log('body', $scope.document.body);
+                  console.log('schema', $scope.schema);
                 })
                 .catch(function (error) {
                   $scope.notFoundError = true;
                   console.error(error);
                   return false;
                 });
+            }
+            else {
+              console.log('body', $scope.document.body);
+              console.log('schema', $scope.schema);
             }
           });
 

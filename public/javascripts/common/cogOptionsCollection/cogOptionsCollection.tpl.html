@@ -1,10 +1,10 @@
 <span class="cog-options-collection">
     <span class="dropdown">
-        <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></small>
+        <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options..."></small>
         <ul class="dropdown-menu">
-            <li ng-if="canEdit"><a href="" ui-sref="collection.full({collection: collection})">Edit</a></li>
-            <li><a href="" ng-click="openModalEmptyCollection()" class="text-danger">Empty</a></li>
-            <li ng-click="openModalDeleteCollection()"><a href="" ng-click="" class="text-danger">Delete</a></li>
+            <li ng-if="canEdit"><a href="" ui-sref="collection.full({collection: collection})" title="Go to full view">Edit</a></li>
+            <li><a href="" ng-click="openModalEmptyCollection()" class="text-danger" title="Truncate the collection...">Empty</a></li>
+            <li ng-click="openModalDeleteCollection()"><a href="" ng-click="" class="text-danger" title="Delete collection and schema...">Delete</a></li>
         </ul>
     </span>
 </span>
