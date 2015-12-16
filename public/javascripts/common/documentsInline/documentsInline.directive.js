@@ -14,17 +14,19 @@ angular.module('kuzzle.documentsInline', [
     'Notification',
     function ($scope, $filter, documentApi, bufferCancel, $timeout, notification) {
 
-      $scope.editDocument = function (index) {
+      $scope.editDocument = function (document) {
+        var index = $scope.documents.indexOf(document);
+
         $scope.documents[index].json = $filter('json')($scope.documents[index].body);
         $scope.documents[index].isEdit = true;
       };
 
-      $scope.saveEditDocument = function (index) {
+      $scope.saveEditDocument = function (document) {
         try {
-          $scope.documents[index].body = JSON.parse($scope.documents[index].json);
-          $scope.documents[index].isEdit = false;
+          document.body = JSON.parse(document.json);
+          document.isEdit = false;
 
-          documentApi.update($scope.collection, $scope.documents[index], true);
+          documentApi.update($scope.collection, document._id, document.body, true);
         }
         catch (e) {
           console.error(e);
@@ -32,33 +34,35 @@ angular.module('kuzzle.documentsInline', [
         }
       };
 
-      $scope.cancelEditDocument = function (index) {
-        $scope.documents[index].isEdit = false;
+      $scope.cancelEditDocument = function (document) {
+        document.isEdit = false;
       };
 
-      $scope.delete = function (index) {
-        documentApi.deleteById($scope.collection, $scope.documents[index]._id, true)
+      $scope.delete = function (document) {
+        var index = $scope.documents.indexOf(document);
+
+        documentApi.deleteById($scope.collection, document._id, true)
           .then(function (response) {
             if (!response.data.error) {
-              $scope.documents[index].isDeleted = true;
+              document.isDeleted = true;
 
               $timeout(function () {
-                if (!bufferCancel.isCanceled('deleteById', $scope.collection, $scope.documents[index]._id)) {
+                if (!bufferCancel.isCanceled('deleteById', $scope.collection, document._id)) {
                   $scope.documents.splice(index, 1);
                 }
 
-                bufferCancel.clean('deleteById', $scope.collection, $scope.documents[index]._id);
+                bufferCancel.clean('deleteById', $scope.collection, document._id);
               }, bufferCancel.timer)
             }
           });
       };
 
-      $scope.cancelDelete = function (index) {
-        documentApi.cancelDeleteById($scope.collection, $scope.documents[index]._id)
+      $scope.cancelDelete = function (document) {
+        documentApi.cancelDeleteById($scope.collection,document._id)
           .then(function (response) {
 
             if (!response.data.error) {
-              $scope.documents[index].isDeleted = false;
+              document.isDeleted = false;
             }
           })
       };
