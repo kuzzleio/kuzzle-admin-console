@@ -88,7 +88,7 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = true;
       var filter = {};
       if ($scope.forms.searchType.basic) {
-        filter = filterTools.formatBasicFilter($scope.forms.filter.basicFilter);
+        filter = filterTools.formatBasicFilter($scope.forms.filter.basicFilter, true);
         setBasicFilterInUrl($scope.forms.filter.basicFilter);
       }
       else if ($scope.forms.searchType.advanced) {
@@ -174,27 +174,27 @@ angular.module('kuzzle.realtime')
         return false;
       }
 
-      var filter = filterTools.formatBasicFilter(basicFilter);
+      var filter = filterTools.formatBasicFilter(basicFilter, true);
       filter = {filter: filter};
       $scope.filter.advancedFilter = angular.toJson(filter, 4);
-    }
+    };
 
     var setBasicFilterInUrl = function (basicFilter) {
       var filter = null;
 
-      if (Object.keys(filterTools.formatBasicFilter(basicFilter)).length !== 0) {
+      if (Object.keys(filterTools.formatBasicFilter(basicFilter, true)).length !== 0) {
         filter = decodeURIComponent(angular.toJson(basicFilter));
       }
       $state.go('realtime.watch-data', {basicFilter: filter, advancedFilter: null}, {reload: false, notify: false});
-    }
+    };
 
     var setAdvancedFilterInUrl = function (advancedFilter) {
       var filter = decodeURIComponent(advancedFilter);
       $state.go('realtime.watch-data', {advancedFilter: filter, basicFilter: null}, {reload: false, notify: false});
-    }
+    };
 
     var serializeBasicFilter = function (basicFilter) {
-      var filter = filterTools.formatBasicFilter(basicFilter);
+      var filter = filterTools.formatBasicFilter(basicFilter, true);
       filter = {filter: filter};
       return angular.toJson(filter, 4);
     };

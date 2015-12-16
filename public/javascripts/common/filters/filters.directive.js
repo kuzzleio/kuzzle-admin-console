@@ -20,7 +20,7 @@ angular.module('kuzzle.filters')
         return false;
       }
 
-      var filter = filterTools.formatBasicFilter($scope.filters.basicFilter);
+      var filter = filterTools.formatBasicFilter($scope.filters.basicFilter, $scope.isRealtime);
       $scope.filters.advancedFilter = angular.toJson(filter, 4);
     };
   }])
@@ -41,7 +41,8 @@ angular.module('kuzzle.filters')
         clearLabel: '@',
         basicSearch: '&',
         advancedSearch: '&',
-        stopSearch: '&'
+        stopSearch: '&',
+        isRealtime: '='
       },
       controller: 'FiltersCtrl',
       templateUrl: '/javascripts/common/filters/filters.tpl.html'

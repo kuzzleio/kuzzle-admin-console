@@ -106,7 +106,7 @@ angular.module('kuzzle.storage')
           }
         }
         else {
-          filter = filterTools.formatBasicFilter($scope.filter.basicFilter);
+          filter = filterTools.formatBasicFilter($scope.filter.basicFilter, false);
 
           if (!filter) {
             return false;
