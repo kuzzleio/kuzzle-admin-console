@@ -84,6 +84,24 @@ div.view-fade {
   margin-top: 50px;
 }
 
+.document-id {
+  &.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-left: 4px;
+    margin-right: -4px;
+  }
+
+  background-color: #EFEFEF;
+  border: 1px solid rgba(43, 43, 43, 0.04);
+  border-radius: 4px;
+  padding: 2px 6px 2px 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #004B52;
+}
+
 /* FORM */
 input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
     border-color: #FA787E;

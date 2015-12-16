@@ -41,6 +41,7 @@
 
         .icons {
           text-align: right;
+          color: rgba(0, 74, 81, 0.79);
         }
 
         .ace_editor {
@@ -52,6 +53,11 @@
           margin-right: 4px;
         }
 
+        .json-formatter-row {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
         .json-formatter-row:first-child > a:first-child > .thumbnail-text {
           opacity: .5;
         }

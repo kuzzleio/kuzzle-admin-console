@@ -14,6 +14,8 @@ angular.module('kuzzle.documentsInline', [
     'Notification',
     function ($scope, $filter, documentApi, bufferCancel, $timeout, notification) {
 
+      $scope.isEllipsed = true;
+
       $scope.editDocument = function (document) {
         var index = $scope.documents.indexOf(document);
 

@@ -2,7 +2,10 @@
     <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
         <div class="panel-body">
             <div class="row">
-                <div class="col-sm-10">
+                <div class="col-sm-1 document-id ellipsis" uib-popover="{{document._id}}" popover-placement="top" popover-animation="false">
+                    <span title="Display the whole ID" ng-bind="document._id"></span>
+                </div>
+                <div class="col-sm-9">
                     <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
                     <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
                 </div>
@@ -33,6 +36,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
