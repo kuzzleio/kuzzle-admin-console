@@ -1,6 +1,6 @@
 angular.module('kuzzle.realtime')
 
-  .config(['$stateProvider', function ($stateProvider) {
+  .config(['$stateProvider', 'USER_ROLES', function ($stateProvider, USER_ROLES) {
 
     $stateProvider
       .state('realtime', {
@@ -13,6 +13,9 @@ angular.module('kuzzle.realtime')
         url: '/watch-data/:collection?basicFilter&advancedFilter',
         views: {
           "mainView": { templateUrl: '/realtime/watch-data' }
+        },
+        data: {
+          authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
         }
       })
 
