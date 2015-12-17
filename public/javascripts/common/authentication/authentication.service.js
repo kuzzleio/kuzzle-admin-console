@@ -1,5 +1,5 @@
 angular.module('kuzzle.authentication')
-.factory('AuthService', function ($http, Session) {
+.factory('AuthService', ['$q', '$http', 'Session', function ($q, $http, Session) {
   var authService = {};
 
   authService.login = function (credentials) {
@@ -38,4 +38,4 @@ angular.module('kuzzle.authentication')
   };
 
   return authService;
-})
+}])

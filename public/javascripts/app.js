@@ -43,10 +43,10 @@ angular.module('kuzzle', [
         event.preventDefault();
         if (AuthService.isAuthenticated()) {
           // user is not allowed
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+          $rootScope.$broadcast(AUTH_EVENTS.notAuthorized, next.name);
         } else {
           // user is not logged in
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated, next.name);
         }
       }
     })
