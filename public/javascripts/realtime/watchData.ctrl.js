@@ -24,7 +24,11 @@ angular.module('kuzzle.realtime')
       $scope.forms = watchDataForms;
       collectionApi.list()
         .then(function (response) {
-          $scope.forms.collections = response;
+          if (Array.isArray(response))
+            $scope.forms.collections = response;
+          else {
+            angular.extend($scope.forms.collections, [], response.stored, response.realtime);
+          }
         });
       $scope.forms.collection = $stateParams.collection;
 

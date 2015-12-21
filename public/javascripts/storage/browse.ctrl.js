@@ -8,13 +8,17 @@ angular.module('kuzzle.storage')
     'collectionApi',
     function ($scope, $http, $stateParams, $state, collectionApi) {
 
-      $scope.collections = null;
+      $scope.collections = [];
       $scope.stateParams = $stateParams;
 
       $scope.init = function () {
         collectionApi.list()
           .then(function (response) {
-            $scope.collections = response;
+            if (Array.isArray(response))
+              $scope.collections = response;
+            else {
+              angular.extend($scope.collections, [], response.stored);
+            }
           })
           .catch(function (error) {
             console.error(error);
