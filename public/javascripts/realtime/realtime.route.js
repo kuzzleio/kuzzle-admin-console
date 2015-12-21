@@ -15,7 +15,7 @@ angular.module('kuzzle.realtime')
           "mainView": { templateUrl: '/realtime/watch-data' }
         },
         data: {
-          authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+        //   authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
         }
       })
 

@@ -38,15 +38,18 @@ angular.module('kuzzle', [
 
   .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', function ($rootScope, AUTH_EVENTS, AuthService) {
     $rootScope.$on('$stateChangeStart', function (event, next) {
-      var authorizedRoles = next.data.authorizedRoles;
-      if (!AuthService.isAuthorized(authorizedRoles)) {
+      var authorizedRoles = null;
+      if (next.data) authorizedRoles = next.data.authorizedRoles;
+
+      if (authorizedRoles && !AuthService.isAuthorized(authorizedRoles)) {
         event.preventDefault();
+        AuthService.setNextRoute(next.name);
         if (AuthService.isAuthenticated()) {
           // user is not allowed
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthorized, next.name);
+          $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
         } else {
           // user is not logged in
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated, next.name);
+          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
         }
       }
     })

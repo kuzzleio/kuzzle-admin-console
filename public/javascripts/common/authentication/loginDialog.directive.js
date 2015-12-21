@@ -8,9 +8,14 @@ angular.module('kuzzle.authentication')
         scope.visible = true;
       };
 
+      var hideDialog = function () {
+        scope.visible = false;
+      }
+
       scope.visible = false;
       scope.$on(AUTH_EVENTS.notAuthenticated, showDialog);
-      scope.$on(AUTH_EVENTS.sessionTimeout, showDialog)
+      scope.$on(AUTH_EVENTS.sessionTimeout, showDialog);
+      scope.$on(AUTH_EVENTS.loginSuccess, hideDialog);
     }
   };
 })

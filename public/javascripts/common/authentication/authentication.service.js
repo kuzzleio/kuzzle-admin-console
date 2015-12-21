@@ -37,5 +37,13 @@ angular.module('kuzzle.authentication')
       authorizedRoles.indexOf(Session.userRole) !== -1);
   };
 
+  authService.setNextRoute = function (nextRoute) {
+    this.nextRoute = nextRoute;
+  }
+
+  authService.getNextRoute = function () {
+    return this.nextRoute;
+  }
+
   return authService;
 }])
