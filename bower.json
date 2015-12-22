@@ -28,7 +28,7 @@
     "json-formatter": "~0.4.0",
     "angular-ui-router": "~0.2.15",
     "angular-loading-bar": "~0.8.0",
-    "angular-ui-ace": "bower",
+    "angular-ui-ace": "0.2.3",
     "angular-schema-form": "~0.8.12",
     "angular-schema-form-bootstrap": "~0.2.0",
     "leaflet": "0.7.x",
