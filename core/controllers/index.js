@@ -7,4 +7,9 @@ router.get('/', function(req, res) {
   res.render('index', {layout: 'default'});
 });
 
+router.get('/logged', function(req, res) {
+  return res.render('layouts/logged');
+});
+
+
 module.exports = router;
