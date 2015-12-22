@@ -36,20 +36,55 @@ angular.module('kuzzle', [
     });
   }])
 
-  .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', function ($rootScope, AUTH_EVENTS, AuthService) {
+  .config(['$stateProvider', '$urlMatcherFactoryProvider', '$urlRouterProvider', function ($stateProvider, $urlMatcherFactoryProvider, $urlRouterProvider) {
+    $stateProvider
+      .state('logged', {
+        url: '',
+        views: {
+          "wrappedView": { templateUrl: '/logged' }
+        },
+        data: {
+          requiresAuthentication: true
+        }
+      })
+      .state('404', {
+        views: {
+          "wrappedView": { templateUrl: '<h1>404, bitch!</h1>' }
+        }
+      })
+      .state('login', {
+        url: '/login',
+        views: {
+          "wrappedView": { templateUrl: '/login/form' }
+        }
+      });
+      // $urlRouterProvider.otherwise("/404/");
+//     $urlMatcherFactoryProvider.strictMode(false);
+  }])
+
+  .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
+    // TODO put this into a global controller
+    $rootScope.$on(AUTH_EVENTS.notAuthenticated, function () {
+      $state.go('login');
+    });
+
+    $rootScope.$on('$stateNotFound', function(event) {
+      $state.go('404');
+    });
+
     $rootScope.$on('$stateChangeStart', function (event, next) {
       var authorizedRoles = null;
-      if (next.data) authorizedRoles = next.data.authorizedRoles;
+      if (!next.data)
+        return;
+      authorizedRoles = next.data.authorizedRoles;
 
-      if (authorizedRoles && !AuthService.isAuthorized(authorizedRoles)) {
-        event.preventDefault();
-        AuthService.setNextRoute(next.name);
-        if (AuthService.isAuthenticated()) {
-          // user is not allowed
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-        } else {
-          // user is not logged in
+      if (next.data.requiresAuthentication) {
+        if (!AuthService.isAuthenticated()) {
+          event.preventDefault();
+          AuthService.setNextRoute(next.name);
           $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+
+          return;
         }
       }
     })

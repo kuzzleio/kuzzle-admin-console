@@ -26,10 +26,12 @@ angular.module('kuzzle.authentication')
   };
 
   authService.isAuthenticated = function () {
+    // TODO ask Kuzzle here
     return !!Session.userId;
   };
 
   authService.isAuthorized = function (authorizedRoles) {
+    // TODO ask Kuzzle here
     if (!angular.isArray(authorizedRoles)) {
       authorizedRoles = [authorizedRoles];
     }

@@ -4,11 +4,12 @@ angular.module('kuzzle.authentication')
     username: '',
     password: ''
   };
+
   $scope.login = function (credentials) {
     AuthService.login(credentials).then(function (user) {
       $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
       if (AuthService.getNextRoute()) {
-        $state.go(AuthService.getNextRoute(), null, {reload: false, notify: true});
+        $state.go(AuthService.getNextRoute(), null, {reload: true, notify: true});
       }
     }, function () {
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
