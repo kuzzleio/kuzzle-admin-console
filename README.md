@@ -7,9 +7,9 @@
 
 This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
 
-![image](https://github.com/kuzzleio/kuzzle-bo/doc/images/storage.png)
+![image](https://raw.githubusercontent.com/kuzzleio/kuzzle-bo/master/docs/images/storage.png)
 ---
-![image](https://github.com/kuzzleio/kuzzle-bo/doc/images/realtime.png)
+![image](https://raw.githubusercontent.com/kuzzleio/kuzzle-bo/master/docs/images/realtime.png)
 
 # About Kuzzle
 
