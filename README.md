@@ -7,6 +7,10 @@
 
 This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
 
+![image](https://github.com/kuzzleio/kuzzle-bo/doc/images/storage.png)
+---
+![image](https://github.com/kuzzleio/kuzzle-bo/doc/images/realtime.png)
+
 # About Kuzzle
 
 For UI and linked objects developers, Kuzzle is an open-source solution that handles all the data management
@@ -46,7 +50,7 @@ The container name is in the last column.
 # Running Tests
 
     $ npm test
-    
+
 Because functional tests need to be done in a running Kuzzle environment, it is recommended to run these tests from a Kuzzle container.
 
 Using Compose:

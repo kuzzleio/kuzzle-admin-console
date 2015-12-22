@@ -17,7 +17,7 @@ kuzzle:
 
 kuzzleBo:
   image: kuzzleio/bo
-  command: /run-test.sh
+  command: /run-debug.sh
   volumes:
     - "..:/var/app"
     - "../features/kuzzle-config.js:/var/app/public/javascripts/config.js"

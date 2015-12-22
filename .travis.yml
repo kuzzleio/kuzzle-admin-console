@@ -13,7 +13,8 @@ before_install:
  - sudo service docker restart ; sleep 10
 
 script:
-  - docker-compose -f docker-compose/test.yml run kuzzle
+  - docker-compose -f docker-compose/test.yml run kuzzle -d
+  - docker logs dockercompose_kuzzleBo_1
 
 notifications:
   webhooks:

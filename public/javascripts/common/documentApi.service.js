@@ -110,12 +110,12 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           });
         },
 
-        create: function (collection, document, notify) {
+        create: function (collection, id, document, notify) {
           var deferred = $q.defer();
 
           kuzzleSdk
             .dataCollectionFactory(collection)
-            .createDocument(document, {updateIfExist: true}, function (error, result) {
+            .createDocument(id, document, {updateIfExist: true}, function (error, result) {
               if (error) {
                 if (notify) {
                   notification.error('Error during document creation. Please retry.');
