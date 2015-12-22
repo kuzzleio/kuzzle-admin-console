@@ -74,19 +74,12 @@ angular.module('kuzzle.storage')
                       closeOnClick: false
                     });
                   });
-
-                  console.log('body', $scope.document.body);
-                  console.log('schema', $scope.schema);
                 })
                 .catch(function (error) {
                   $scope.notFoundError = true;
                   console.error(error);
                   return false;
                 });
-            }
-            else {
-              console.log('body', $scope.document.body);
-              console.log('schema', $scope.schema);
             }
           });
 

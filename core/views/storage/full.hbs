@@ -36,7 +36,7 @@
                 <div class="form-group">
                     <label>id</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Optional" ng-model="document.id" ng-disabled="isEdit" ng-blur="documentExists()"/>
+                        <input type="text" id="id" class="form-control" placeholder="Optional" ng-model="document.id" ng-disabled="isEdit" ng-blur="documentExists()"/>
                         <div class="input-group-addon">
                             <span ng-if="isLoading">
                                 <span class="fa fa-spinner fa-spin"></span>
@@ -73,8 +73,8 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="btn btn-success control" ng-if="exists" ng-click="update()">Update</button>
-                    <button type="submit" class="btn btn-success control" ng-if="!exists" ng-click="create()">Create</button>
+                    <button id="update" type="submit" class="btn btn-success control" ng-if="exists" ng-click="update()">Update</button>
+                    <button id="create" type="submit" class="btn btn-success control" ng-if="!exists" ng-click="create()">Create</button>
 
                     <a href class="control" ng-click="goToList()">List</a>
                 </div>
