@@ -1,6 +1,7 @@
 kuzzle:
   image: kuzzleio/kuzzle
-  command: /run-debug.sh
+  volumes:
+    - "../features/fixtures.json:/fixtures.json"
   ports:
     - "7512:7512"
     - "8080:8080"
@@ -9,15 +10,17 @@ kuzzle:
     - elasticsearch
     - redis
   environment:
-    - LIKE_A_VIRGIN
-    - FIXTURES
+    - LIKE_A_VIRGIN=1
+    - FIXTURES=/fixtures.json
     - DEFAULT_MAPPING
     - FEATURE_COVERAGE
 
 kuzzleBo:
   image: kuzzleio/bo
+  command: /run-debug.sh
   volumes:
     - "..:/var/app"
+    - "../features/kuzzle-config.js:/var/app/public/javascripts/config.js"
   ports:
     - "3000:3000"
     - "8082:8080"

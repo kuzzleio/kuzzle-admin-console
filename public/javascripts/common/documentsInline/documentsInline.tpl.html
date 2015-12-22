@@ -24,7 +24,7 @@
                         <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
                         </span>
                         <ul class="dropdown-menu">
-                            <li><a href ng-click="delete($index)" title="Delete this document"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
+                            <li><a href ng-click="delete(document)" title="Delete this document" class="delete-document"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
                         </ul>
                     </div>
                     <div class="col-sm-2 icons" ng-show="!document.isDeleted && document.isEdit">
@@ -32,7 +32,7 @@
                         <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument(document)" title="Cancel modifications"></span>
                     </div>
                     <div class="col-sm-2 icons" ng-show="document.isDeleted">
-                        <a href ng-click="cancelDelete(document)" title="Cancel the deletion">Cancel</a>
+                        <a href ng-click="cancelDelete(document)" title="Cancel the deletion" class="cancel-delete-document">Cancel</a>
                     </div>
                 </div>
             </div>
