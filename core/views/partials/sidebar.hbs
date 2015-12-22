@@ -11,7 +11,7 @@
             </a>
             <ul id="menu-rt" class="collapse" ng-class="{ in: ('realtime.*.*' | includedByState) }">
                 <li ui-sref-active="active">
-                    <a ui-sref="realtime.watch-data"><i class="fa fa-list-alt"></i> Watch data</a>
+                    <a ui-sref="logged.realtime.watch-data"><i class="fa fa-list-alt"></i> Watch data</a>
                 </li>
             </ul>
         </li>
@@ -23,10 +23,10 @@
             </a>
             <ul id="menu-storage" class="collapse" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
                 <li ng-class="{ active: ('storage.*.*' | includedByState) }">
-                    <a ui-sref="storage.browse"><i class="fa fa-list-alt"></i> Browse data</a>
+                    <a ui-sref="logged.storage.browse"><i class="fa fa-list-alt"></i> Browse data</a>
                 </li>
                 <li ng-class="{ active: ('collection.*.*' | includedByState) }">
-                    <a ui-sref="collection.browse"><i class="fa fa-table"></i> Browse collection</a>
+                    <a ui-sref="logged.collection.browse"><i class="fa fa-table"></i> Browse collection</a>
                 </li>
             </ul>
         </li>

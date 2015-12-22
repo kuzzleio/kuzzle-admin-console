@@ -3,25 +3,25 @@ angular.module('kuzzle.collection')
   .config(['$stateProvider', function ($stateProvider) {
 
     $stateProvider
-      .state('collection', {
+      .state('logged.collection', {
         url: '/collection',
         views: {
           "bodyView": { templateUrl: '/collection' }
         }
       })
-      .state('collection.browse', {
+      .state('logged.collection.browse', {
         url: '/browse',
         views: {
           "mainView": { templateUrl: '/collection/browse' }
         }
       })
-      .state('collection.create', {
+      .state('logged.collection.create', {
         url: '/create?newCollection',
         views: {
           "mainView": { templateUrl: '/collection/create' }
         }
       })
-      .state('collection.full', {
+      .state('logged.collection.full', {
         url: '/:collection',
         views: {
           "mainView": { templateUrl: '/collection/full' }
