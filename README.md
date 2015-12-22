@@ -31,7 +31,7 @@ If you want to communicate with Kuzzle in Stomp or AMQ, you probably want to add
 
 **Note:** For more information about how to install Kuzzle, you can check [this documentation](https://github.com/kuzzleio/kuzzle/blob/master/docs/installation.md)
 
-## With docker with an existing running Kuzzle
+## With docker with an already running Kuzzle
 
 You can run the back office using the Kuzzle BO image with a link to your Kuzzle instance
 
