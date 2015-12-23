@@ -22,7 +22,7 @@
                                             type="text"
                                             ng-model="search"
                                             placeholder="Collection name"
-                                            uib-typeahead="collection for collection in collections | filter:$viewValue"
+                                            uib-typeahead="collection.name for collection in collections | filter:$viewValue"
                                             typeahead-min-length="0"
                                             class="form-control" />
                                 </div>
@@ -37,11 +37,11 @@
                         <div class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
                             <div class="panel-heading">
                                 <h3 class="panel-title">
-                                    <span class="collection-name" ng-bind="collection" ui-sref="collection.full({collection: collection})" title="Go to full view"></span>
+                                    <span class="collection-name" ng-bind="collection.name" ui-sref="collection.full({collection: collection.name})" title="Go to full view"></span>
 
                                     <span class="pull-right">
-                                        <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})" title="Go to full view"></span>
-                                        <span class="glyphicon glyphicon-th-list" ui-sref="storage.browse.documents({collection: collection})" title="Go to documents list"></span>
+                                        <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection.name})" title="Go to full view"></span>
+                                        <span class="glyphicon glyphicon-th-list" ui-sref="storage.browse.documents({collection: collection.name})" title="Go to documents list"></span>
                                         <cog-options-collection
                                                 collection="collection"
                                                 can-edit="false"

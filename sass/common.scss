@@ -139,6 +139,11 @@ h2.select-collection {
         }
         cursor: pointer;
         a {
+          i {
+            padding-right: 5px;
+            color: #848484;
+          }
+
           padding: 8px 0 8px 10px;
 
           &.external-link {

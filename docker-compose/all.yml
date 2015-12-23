@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.3.0
+  image: kuzzleio/kuzzle:0.7.2
   ports:
     - "7512:7512"
   links:

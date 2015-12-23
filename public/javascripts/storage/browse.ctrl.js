@@ -14,7 +14,9 @@ angular.module('kuzzle.storage')
       $scope.init = function () {
         collectionApi.list()
           .then(function (response) {
-            $scope.collections = response;
+            $scope.collections = response.stored.map(function (collection) {
+              return {name: collection};
+            });
           })
           .catch(function (error) {
             console.error(error);
@@ -26,7 +28,7 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onSelectCollection = function (collection) {
-        $state.go('storage.browse.documents', {collection: collection, advancedFilter: null, basicFilter: null});
+        $state.go('storage.browse.documents', {collection: collection.name, advancedFilter: null, basicFilter: null});
       };
 
       /**

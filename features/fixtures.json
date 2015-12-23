@@ -1,8 +1,8 @@
 {
   "kuzzle-bo-test": [
-    { "index" : {"_type": "test", "_id": "ghopper"}},
+    { "create" : {"_type": "kuzzle-bo-test", "_id": "ghopper"}},
     { "username": "ghopper", "name": {"first": "Grace", "last": "Hopper"} },
-    { "index" : {"_type": "test", "_id": "alovelace"}},
+    { "create" : {"_type": "kuzzle-bo-test", "_id": "alovelace"}},
     { "username": "alovelace", "name": {"first": "Ada", "last": "Lovelace"} }
   ]
 }

@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle
+  image: kuzzleio/kuzzle:0.7.2
   command: /run-debug.sh
   ports:
     - "7512:7512"
