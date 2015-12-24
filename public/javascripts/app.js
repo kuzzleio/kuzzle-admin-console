@@ -38,6 +38,13 @@ angular.module('kuzzle', [
 
   .config(['$stateProvider', '$urlMatcherFactoryProvider', '$urlRouterProvider', function ($stateProvider, $urlMatcherFactoryProvider, $urlRouterProvider) {
     $urlMatcherFactoryProvider.strictMode(false);
+
+    $urlRouterProvider.otherwise(function ($injector) {
+        $injector.invoke(['$state', function ($state) {
+          $state.go('404');
+        }])
+    });
+
     $stateProvider
       .state('logged', {
         url: '',
@@ -50,7 +57,7 @@ angular.module('kuzzle', [
       })
       .state('404', {
         views: {
-          "wrappedView": { templateUrl: '<h1>404, bitch!</h1>' }
+          "wrappedView": { templateUrl: '/404' }
         }
       })
       .state('login', {
@@ -59,7 +66,7 @@ angular.module('kuzzle', [
           "wrappedView": { templateUrl: '/login/form' }
         }
       });
-      // $urlRouterProvider.otherwise("/404/");
+
   }])
 
   .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
