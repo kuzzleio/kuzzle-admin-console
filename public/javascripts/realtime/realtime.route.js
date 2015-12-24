@@ -4,6 +4,7 @@ angular.module('kuzzle.realtime')
 
     $stateProvider
       .state('realtime', {
+        parent: 'logged',
         url: '/realtime',
         views: {
           "bodyView": { templateUrl: '/realtime' }

@@ -4,6 +4,7 @@ angular.module('kuzzle.storage')
 
     $stateProvider
       .state('storage', {
+        parent: 'logged',
         url: '/storage',
         views: {
           "bodyView": { templateUrl: '/storage' }
