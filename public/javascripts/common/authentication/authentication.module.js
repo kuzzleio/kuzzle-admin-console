@@ -1,1 +1,1 @@
-angular.module('kuzzle.authentication', []);
+angular.module('kuzzle.authentication', ['ngCookies']);

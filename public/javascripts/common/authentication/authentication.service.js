@@ -13,7 +13,7 @@ angular.module('kuzzle.authentication')
               user: {
                 id: 'luca',
                 role: 'admin',
-              }
+              },
             }
           });
         }, 1000);
@@ -27,7 +27,8 @@ angular.module('kuzzle.authentication')
 
   authService.isAuthenticated = function () {
     // TODO ask Kuzzle here
-    return !!Session.userId;
+    Session.resumeFromCookie();
+    return !!Session.id;
   };
 
   authService.isAuthorized = function (authorizedRoles) {
