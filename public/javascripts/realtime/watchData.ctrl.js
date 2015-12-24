@@ -36,7 +36,7 @@ angular.module('kuzzle.realtime')
       try {
         filters = filterTools.getFiltersFromUrl($stateParams, $scope.forms.comparators);
       } catch (e) {
-        $state.go('logged.realtime.watch-data', {basicFilter: null}, {reload: false, notify: false});
+        $state.go('realtime.watch-data', {basicFilter: null}, {reload: false, notify: false});
       }
 
       if (filters.basicFilter){
@@ -52,7 +52,7 @@ angular.module('kuzzle.realtime')
 
     $scope.onSelectCollection = function (collection) {
       $scope.forms.collection = collection;
-      $state.go('logged.realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
+      $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
     }
 
     /**
@@ -60,7 +60,7 @@ angular.module('kuzzle.realtime')
      * @param collection
      */
     $scope.onCreateCollection = function (collection) {
-      $state.go('logged.collection.create', {newCollection: collection});
+      $state.go('collection.create', {newCollection: collection});
     };
 
     /**
@@ -68,7 +68,7 @@ angular.module('kuzzle.realtime')
      */
     $scope.onDeleteCollection = function () {
       setTimeout(function () {
-        $state.go('logged.realtime.watch-data', {collection: null}, {reload: true});
+        $state.go('realtime.watch-data', {collection: null}, {reload: true});
       }, 1000);
     };
 
@@ -77,7 +77,7 @@ angular.module('kuzzle.realtime')
      */
     $scope.onEmptyCollection = function () {
       setTimeout(function () {
-        $state.go('logged.realtime.watch-data', {collection: $scope.forms.collection}, {reload: true});
+        $state.go('realtime.watch-data', {collection: $scope.forms.collection}, {reload: true});
       }, 1000);
     };
 
@@ -189,12 +189,12 @@ angular.module('kuzzle.realtime')
       if (Object.keys(filterTools.formatBasicFilter(basicFilter, true)).length !== 0) {
         filter = decodeURIComponent(angular.toJson(basicFilter));
       }
-      $state.go('logged.realtime.watch-data', {basicFilter: filter, advancedFilter: null}, {reload: false, notify: false});
+      $state.go('realtime.watch-data', {basicFilter: filter, advancedFilter: null}, {reload: false, notify: false});
     };
 
     var setAdvancedFilterInUrl = function (advancedFilter) {
       var filter = decodeURIComponent(advancedFilter);
-      $state.go('logged.realtime.watch-data', {advancedFilter: filter, basicFilter: null}, {reload: false, notify: false});
+      $state.go('realtime.watch-data', {advancedFilter: filter, basicFilter: null}, {reload: false, notify: false});
     };
 
     var serializeBasicFilter = function (basicFilter) {

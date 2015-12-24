@@ -11,13 +11,13 @@
                 </div>
                 <div ng-if="!canEdit">
                     <div class="col-sm-1 pull-right">
-                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="logged.storage.full({collection: collection, id: document._id})">
+                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})">
                         </span>
                     </div>
                 </div>
                 <div ng-if="canEdit">
                     <div class="col-sm-2 icons" ng-show="!document.isDeleted && !document.isEdit">
-                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="logged.storage.full({collection: collection, id: document._id})" title="Go to full view">
+                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})" title="Go to full view">
                         </span>
                         <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
                         </span>

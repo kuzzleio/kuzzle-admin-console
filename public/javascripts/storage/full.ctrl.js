@@ -169,7 +169,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $state.go('logged.storage.browse.documents', {collection: $stateParams.collection}, {reload: false});
+        $state.go('storage.browse.documents', {collection: $stateParams.collection}, {reload: false});
       };
 
       /**

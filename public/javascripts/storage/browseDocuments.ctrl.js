@@ -71,7 +71,7 @@ angular.module('kuzzle.storage')
         try {
           filters = filterTools.getFiltersFromUrl($stateParams, $scope.comparators);
         } catch (e) {
-          $state.go('logged.storage.browse.documents', {basicFilter: null}, {reload: false});
+          $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
         }
 
         if (filters.basicFilter){
@@ -173,11 +173,11 @@ angular.module('kuzzle.storage')
         if (Object.keys(filterTools.formatBasicFilter(basicFilter)).length !== 0) {
           filter = decodeURIComponent(angular.toJson(basicFilter));
         }
-        $state.go('logged.storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
+        $state.go('storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
       }
 
       var setAdvancedFilterInUrl = function (advancedFilter) {
         var filter = decodeURIComponent(advancedFilter);
-        $state.go('logged.storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
+        $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
       }
   }]);

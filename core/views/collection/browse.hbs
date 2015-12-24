@@ -4,7 +4,7 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="row create">
             <div class="col-sm-5">
-                <button type="button" class="btn btn-success"  ui-sref="logged.collection.create">Add collection</button>
+                <button type="button" class="btn btn-success"  ui-sref="collection.create">Add collection</button>
             </div>
         </div>
 
@@ -37,11 +37,11 @@
                         <div class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
                             <div class="panel-heading">
                                 <h3 class="panel-title">
-                                    <span class="collection-name" ng-bind="collection" ui-sref="logged.collection.full({collection: collection})" title="Go to full view"></span>
+                                    <span class="collection-name" ng-bind="collection" ui-sref="collection.full({collection: collection})" title="Go to full view"></span>
 
                                     <span class="pull-right">
-                                        <span class="glyphicon glyphicon-eye-open" ui-sref="logged.collection.full({collection: collection})" title="Go to full view"></span>
-                                        <span class="glyphicon glyphicon-th-list" ui-sref="logged.storage.browse.documents({collection: collection})" title="Go to documents list"></span>
+                                        <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection})" title="Go to full view"></span>
+                                        <span class="glyphicon glyphicon-th-list" ui-sref="storage.browse.documents({collection: collection})" title="Go to documents list"></span>
                                         <cog-options-collection
                                                 collection="collection"
                                                 can-edit="false"
