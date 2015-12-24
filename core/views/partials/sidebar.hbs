@@ -30,5 +30,17 @@
                 </li>
             </ul>
         </li>
+        <li>
+            <a href="javascript:;" data-toggle="collapse" data-target="#menu-user" href>
+                <i class="fa fa-user"></i>
+                Users management
+                <i class="fa fa-fw fa-caret-down"></i>
+            </a>
+            <ul id="menu-user" class="collapse" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
+                <li ng-class="{ active: ('role.*.*' | includedByState) }">
+                    <a ui-sref="role.browse"><i class="fa fa-list-alt"></i> Browse roles</a>
+                </li>
+            </ul>
+        </li>
     </ul>
 </div>

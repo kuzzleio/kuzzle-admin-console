@@ -1,0 +1,39 @@
+<div ng-if="!canEdit">
+    <div class="col-sm-1 pull-right">
+        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})"></span>
+    </div>
+</div>
+
+<div ng-if="canEdit">
+    <div class="col-sm-2 icons" ng-show="!document.isDeleted && !document.isEdit">
+        <a class="edit-document edit glyphicon glyphicon-eye-open"
+              ng-href="{{buildUrlFull(document)}}" title="Go to full view">
+        </a>
+
+        <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
+        </span>
+        <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
+                        </span>
+        <ul class="dropdown-menu">
+            <li ng-if="canClone">
+                <a href ng-click="clone()" title="Clone this document" class="clone-document">
+                    <span class="fa fa-files-o"></span>
+                    Clone
+                </a>
+            </li>
+            <li>
+                <a href ng-click="delete()" title="Delete this document" class="delete-document">
+                    <span class="glyphicon glyphicon-trash"></span>
+                    Delete
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-2 icons" ng-show="!document.isDeleted && document.isEdit">
+        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument(document)" title="Save modifications"></span>
+        <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument(document)" title="Cancel modifications"></span>
+    </div>
+    <div class="col-sm-2 icons" ng-show="document.isDeleted" ng-if="canCancelDelete">
+        <a href ng-click="cancelDelete(document)" title="Cancel the deletion" class="cancel-delete-document">Cancel</a>
+    </div>
+</div>

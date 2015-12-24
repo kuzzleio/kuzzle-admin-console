@@ -7,6 +7,7 @@ angular.module('kuzzle', [
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',
+  'kuzzle.role',
   'kuzzle.collectionApi',
   'kuzzle.documentsInline',
   'kuzzle.cogOptionsCollection',

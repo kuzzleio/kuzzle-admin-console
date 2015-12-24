@@ -26,50 +26,6 @@
   }
 
   .browse-documents {
-
-    .documents .panel {
-      margin-bottom: 5px;
-
-      &.deleted {
-        background-color: #EBCCCC;
-        border-color: rgba(255, 0, 0, 0.29);
-      }
-
-      .panel-body {
-        padding-bottom: 10px;
-        padding-top: 10px;
-
-        .icons {
-          text-align: right;
-          color: rgba(0, 74, 81, 0.79);
-        }
-
-        .ace_editor {
-          height: 250px;
-        }
-
-        .edit-document {
-          cursor: pointer;
-          margin-right: 4px;
-        }
-
-        .json-formatter-row {
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-        }
-        .json-formatter-row:first-child > a:first-child > .thumbnail-text {
-          opacity: .5;
-        }
-
-        ul {
-          span {
-            margin-right: 10px;
-          }
-        }
-      }
-    }
-
     .total-documents {
       margin-top: 10px;
       color: #777;
