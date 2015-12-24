@@ -1,7 +1,7 @@
 /* SASS has a weird way of importing regular CSS files.
   http://stackoverflow.com/questions/7111610/import-regular-css-file-in-scss-file */
 @import "lib/sb-admin";
-@import "mixin";
+@import "mixins";
 
 body {
     background-color: #F3F3F3;
@@ -139,6 +139,11 @@ h2.select-collection {
         }
         cursor: pointer;
         a {
+          i {
+            padding-right: 5px;
+            color: #848484;
+          }
+
           padding: 8px 0 8px 10px;
 
           &.external-link {

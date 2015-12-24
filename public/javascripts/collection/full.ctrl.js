@@ -55,7 +55,10 @@ angular.module('kuzzle.collection')
             }
 
             $window.history.back();
-          });
+          })
+          .catch(function (error) {
+            console.error(error);
+          })
       };
 
       $scope.cancel = function () {

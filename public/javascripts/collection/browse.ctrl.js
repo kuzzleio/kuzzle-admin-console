@@ -7,7 +7,9 @@ angular.module('kuzzle.collection')
     $scope.init = function () {
       collectionApi.list()
         .then(function (response) {
-          $scope.collections = response;
+          $scope.collections = response.stored.map(function (collection) {
+            return {name: collection};
+          });
         })
         .catch(function (error) {
           console.error(error);

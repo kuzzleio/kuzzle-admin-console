@@ -6,12 +6,13 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.initConfig({
-    jshint: {
-      all: ['Gruntfile.js', 'test/**/*.js', 'features/**/*.js']
-    },
-    eslint: {
-      src: ['core/**/*.js']
-    },
+    /** ADD REAL TESTS ON SOURCE **/
+    //jshint: {
+    //  all: ['Gruntfile.js', 'test/**/*.js', 'features/**/*.js']
+    //},
+    //eslint: {
+    //  src: ['core/**/*.js']
+    //},
     sass: {
       dist: {
         files: [{
@@ -28,6 +29,4 @@ module.exports = function (grunt) {
       tasks: ['sass']
     }
   });
-
-  grunt.registerTask('default', ['jshint', 'eslint']);
 };

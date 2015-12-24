@@ -74,19 +74,12 @@ angular.module('kuzzle.storage')
                       closeOnClick: false
                     });
                   });
-
-                  console.log('body', $scope.document.body);
-                  console.log('schema', $scope.schema);
                 })
                 .catch(function (error) {
                   $scope.notFoundError = true;
                   console.error(error);
                   return false;
                 });
-            }
-            else {
-              console.log('body', $scope.document.body);
-              console.log('schema', $scope.schema);
             }
           });
 
@@ -115,7 +108,11 @@ angular.module('kuzzle.storage')
             }
 
             $scope.exists = false;
-          });
+          })
+          .catch(function () {
+            // If there is no document matching the id
+            $scope.isLoading = false;
+          })
       };
 
       /**
@@ -129,7 +126,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        documentApi.create($scope.collection, document, true)
+        documentApi.create($scope.collection, $scope.document.id, document, true)
           .then(function (response) {
             if ($scope.another) {
               $state.reload();

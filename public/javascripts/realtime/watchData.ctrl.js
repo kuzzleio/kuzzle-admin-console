@@ -24,13 +24,26 @@ angular.module('kuzzle.realtime')
       $scope.forms = watchDataForms;
       collectionApi.list()
         .then(function (response) {
-          if (Array.isArray(response))
-            $scope.forms.collections = response;
-          else {
-            angular.extend($scope.forms.collections, [], response.stored, response.realtime);
-          }
+          var
+            collections = response.realtime.map(function (collection) {
+              return {name: collection, realtime: true};
+            });
+
+          response.stored.forEach(function (collection) {
+            var index = collections.indexOf(collection);
+            if (index !== -1) {
+              collections[index] = {name: collection, realtime: false, stored: true};
+              return true;
+            }
+
+            collections.push({name: collection, stored: true});
+          });
+
+          $scope.forms.collections = collections;
+          debugger;
         });
       $scope.forms.collection = $stateParams.collection;
+
 
       var filters = {};
       try {
@@ -51,9 +64,9 @@ angular.module('kuzzle.realtime')
     };
 
     $scope.onSelectCollection = function (collection) {
-      $scope.forms.collection = collection;
-      $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
-    }
+      $scope.forms.collection = collection.name;
+      $state.go('realtime.watch-data', {collection: collection.name, advancedFilter: null, basicFilter: null});
+    };
 
     /**
      * Redirect to the collection creation when the user click on link "New collection"

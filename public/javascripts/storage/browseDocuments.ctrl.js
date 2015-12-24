@@ -174,7 +174,7 @@ angular.module('kuzzle.storage')
           filter = decodeURIComponent(angular.toJson(basicFilter));
         }
         $state.go('storage.browse.documents', {basicFilter: filter, advancedFilter: null}, {reload: false});
-      }
+      };
 
       var setAdvancedFilterInUrl = function (advancedFilter) {
         var filter = decodeURIComponent(advancedFilter);
