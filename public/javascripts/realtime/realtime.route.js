@@ -11,13 +11,10 @@ angular.module('kuzzle.realtime')
         }
       })
       .state('realtime.watch-data', {
-        url: '/watch-data/:collection?basicFilter&advancedFilter',
+        url: '/:collection?basicFilter&advancedFilter',
         views: {
           "mainView": { templateUrl: '/realtime/watch-data' }
         },
-        data: {
-        //   authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
-        }
+        data: {}
       })
-
   }]);

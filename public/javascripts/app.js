@@ -37,6 +37,7 @@ angular.module('kuzzle', [
   }])
 
   .config(['$stateProvider', '$urlMatcherFactoryProvider', '$urlRouterProvider', function ($stateProvider, $urlMatcherFactoryProvider, $urlRouterProvider) {
+    $urlMatcherFactoryProvider.strictMode(false);
     $stateProvider
       .state('logged', {
         url: '',
@@ -59,7 +60,6 @@ angular.module('kuzzle', [
         }
       });
       // $urlRouterProvider.otherwise("/404/");
-//     $urlMatcherFactoryProvider.strictMode(false);
   }])
 
   .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
