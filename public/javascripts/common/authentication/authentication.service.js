@@ -53,6 +53,9 @@ angular.module('kuzzle.authentication')
   };
 
   authService.setNextRoute = function (nextRoute) {
+    if (nextRoute == 'login')
+      nextRoute = "logged";
+
     this.nextRoute = nextRoute;
   }
 

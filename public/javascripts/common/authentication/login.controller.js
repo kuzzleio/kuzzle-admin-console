@@ -10,6 +10,8 @@ angular.module('kuzzle.authentication')
       $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
       if (AuthService.getNextRoute()) {
         $state.go(AuthService.getNextRoute(), null, {reload: true, notify: true});
+      } else {
+        $state.go('logged', null, {reload: true, notify: true});
       }
     }, function () {
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);

@@ -63,7 +63,7 @@ angular.module('kuzzle', [
       .state('login', {
         url: '/login',
         views: {
-          "wrappedView": { templateUrl: '/login/form' }
+          "wrappedView": { templateUrl: '/login' }
         }
       });
 
