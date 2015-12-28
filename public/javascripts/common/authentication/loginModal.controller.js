@@ -19,7 +19,7 @@ angular.module('kuzzle.authentication')
     if (modalInstance)
       modalInstance.close();
   };
-  $scope.$on(AUTH_EVENTS.notAuthenticated, showDialog);
+
   $scope.$on(AUTH_EVENTS.sessionTimeout, showDialog);
   $scope.$on(AUTH_EVENTS.loginSuccess, hideDialog);
 }]);

@@ -2,17 +2,27 @@ angular.module('kuzzle.authentication')
 .service('Session', ['$cookies', function ($cookies) {
   var COOKIE_KEY = 'authToken';
 
-  this.create = function (sessionId, userId, userRole) {
-    this.id = sessionId;
-    this.userId = userId;
-    this.userRole = userRole;
+  this.session = {
+    id: '',
+    userId: '',
+    userRole: '',
+  };
 
-    $cookies.put(COOKIE_KEY, this.id);
+  this.create = function (sessionId, userId, userRole) {
+    this.session.id = sessionId;
+    this.session.userId = userId;
+    this.session.userRole = userRole;
+
+    $cookies.put(COOKIE_KEY, JSON.stringify({
+      id: this.session.id,
+      userId: this.session.userId,
+      userRole: this.session.userRole,
+    }));
   };
   this.destroy = function () {
-    this.id = null;
-    this.userId = null;
-    this.userRole = null;
+    this.session.id = null;
+    this.session.userId = null;
+    this.session.userRole = null;
 
     $cookies.remove(COOKIE_KEY);
   };
@@ -21,6 +31,10 @@ angular.module('kuzzle.authentication')
     if (!$cookies.get(COOKIE_KEY))
       return;
 
-    this.create($cookies.get(COOKIE_KEY));
+    var sessionFromCookie = JSON.parse($cookies.get(COOKIE_KEY));
+
+    this.session.id = sessionFromCookie.id;
+    this.session.userId = sessionFromCookie.userId;
+    this.session.userRole = sessionFromCookie.userRole;
   }
 }])

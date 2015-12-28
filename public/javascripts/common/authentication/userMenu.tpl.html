@@ -1,10 +1,10 @@
 <span ng-if="username">
   <span class="username">Hello {{username}}</span>
   &nbsp;
-  <a href ng-click="onLogoutClick" title="Logout"><span class="glyphicon glyphicon-off"></span></a>
+  <a href ng-click="doLogout()" title="Logout"><span class="glyphicon glyphicon-off"></span></a>
 </span>
 <span ng-if="!username" class="username">
-  <a href ng-click="onLoginClick">
+  <a href ng-click="doLogin()">
     Login
   </a>
 </span>

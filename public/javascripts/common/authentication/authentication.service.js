@@ -1,5 +1,5 @@
 angular.module('kuzzle.authentication')
-.factory('AuthService', ['$q', '$http', 'Session', function ($q, $http, Session) {
+.factory('AuthService', ['$q', '$http', 'Session', '$rootScope', 'AUTH_EVENTS', function ($q, $http, Session, $rootScope, AUTH_EVENTS) {
   var authService = {};
 
   authService.login = function (credentials) {
@@ -25,10 +25,22 @@ angular.module('kuzzle.authentication')
       });
   };
 
+  authService.logout = function () {
+    return $q(function(resolve, reject) {
+        setTimeout(function() {
+          resolve();
+        }, 1000);
+      })
+      .then(function (res) {
+        Session.destroy();
+        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      });
+  }
+
   authService.isAuthenticated = function () {
     // TODO ask Kuzzle here
     Session.resumeFromCookie();
-    return !!Session.id;
+    return !!Session.session.id;
   };
 
   authService.isAuthorized = function (authorizedRoles) {

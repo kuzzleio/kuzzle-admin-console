@@ -2,7 +2,7 @@
     {{>head}}
 
     <body ng-app="kuzzle">
-        <div id="wrapper" ui-view="wrappedView"></div>
+        <div id="wrapper" ui-view="wrappedView" ng-controller="MainAppController" ng-init="init()"></div>
 
     {{> notifications }}
     {{> scripts }}
