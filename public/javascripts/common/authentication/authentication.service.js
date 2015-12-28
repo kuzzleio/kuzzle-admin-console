@@ -11,7 +11,7 @@ angular.module('kuzzle.authentication')
             data: {
               id: '39i2q3jwp9uf034tjhpwifj0394ut',
               user: {
-                id: 'luca',
+                id: credentials.username,
                 role: 'admin',
               },
             }
