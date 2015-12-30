@@ -4,8 +4,8 @@ Feature: Test browse data pages
 
   @createIndex
   Background:
-    Given I entered the app
-    And I am authenticated
+    Given I go to the login page
+    And I authenticate
 
   @cleanDb
   Scenario: Display data list when a collection is selected

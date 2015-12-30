@@ -65,6 +65,12 @@ angular.module('kuzzle', [
         views: {
           "wrappedView": { templateUrl: '/login' }
         }
+      })
+      .state('logout', {
+        url: '/logout',
+        onEnter: function (AuthService) {
+          AuthService.logout();
+        }
       });
 
   }])
