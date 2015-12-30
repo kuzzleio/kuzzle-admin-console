@@ -2,6 +2,7 @@ Feature: Test browse data pages
   As a user
   I want to browse data, access to full view, delete, edit, ...
 
+  @createIndex
   Background:
     Given I entered the app
     And I am authenticated
