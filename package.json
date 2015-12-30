@@ -4,7 +4,7 @@
   "description": "Official back office for manage and monitor your Kuzzle",
   "main": "app.js",
   "scripts": {
-    "test": "./node_modules/.bin/cucumber.js",
+    "test": "node ./waitForKuzzle.js && sleep 2 && ./node_modules/.bin/cucumber.js",
     "start": "node ./bin/www"
   },
   "keywords": [
