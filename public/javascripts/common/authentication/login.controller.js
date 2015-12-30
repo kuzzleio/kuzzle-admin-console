@@ -20,7 +20,7 @@ angular.module('kuzzle.authentication')
   };
 })
 .controller('LoginController', function ($scope, $rootScope, $state, AUTH_EVENTS, AuthService) {
-  $scope.message = '';
+  $scope.message = 'This login page is not effective yet. Providing ANY non-empty credentials will grant you the Administrator privileges.';
   $scope.credentials = {
     username: '',
     password: ''
