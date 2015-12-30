@@ -3,6 +3,7 @@ var
   storage = require('./controllers/storage'),
   collection = require('./controllers/collection'),
   realtime = require('./controllers/realtime');
+  login = require('./controllers/login');
 
 module.exports = {
 
@@ -11,6 +12,7 @@ module.exports = {
     app.use('/storage', storage);
     app.use('/collection', collection);
     app.use('/realtime', realtime);
+    app.use('/login', login);
   }
 
 };

@@ -26,7 +26,12 @@ module.exports = function (grunt) {
     },
     watch: {
       files: 'sass/*.scss',
-      tasks: ['sass']
+      tasks: ['sass'],
+      options: {
+        livereload: true
+      }
     }
   });
+
+  grunt.registerTask('default', ["sass"]);
 };

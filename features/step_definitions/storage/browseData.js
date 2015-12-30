@@ -60,7 +60,7 @@ module.exports = function () {
     })
   });
 
-  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
+  this.Then(/^I am on page for edit document "([^"]*)"$/, {timeout: 20 * 1000}, function (id, callback) {
     this.visit('#/storage/' + this.collection + '/'+ id, callback);
   });
 };

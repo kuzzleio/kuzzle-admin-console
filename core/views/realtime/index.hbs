@@ -1,1 +1,37 @@
-<div ui-view="mainView" class="view-fade h100 posrel"></div>
+<div  class="view-fade h100 posrel">
+  <headline title="Realtime" subtitle="watch data"></headline>
+
+  <div class="watch-data-container" ng-controller="WatchDataCtrl" ng-init="init()">
+
+    <div class="filters-log-container">
+      <div class="filters-container">
+        <h2 class="select-collection">
+            Collection
+            <drop-down-search
+                label=""
+                selected="forms.collection"
+                create-label="New collection"
+                items="forms.collections"
+                current-item="forms.collection"
+                on-click-create="onCreateCollection(collection)"
+                on-click-item="onSelectCollection(item)"
+                placeholder="Find a collection"
+                select-volatile-collections="true">
+            </drop-down-search>
+
+            <div class="btn-group" ng-if="forms.collection">
+                <cog-options-collection
+                  collection="forms.collection"
+                  can-edit="true"
+                  after-delete="onDeleteCollection()"
+                  after-empty="onEmptyCollection()">
+                </cog-options-collection>
+            </div>
+        </h2>
+
+        <div ui-view="mainView"></div>
+      </div>
+      <div class="log-spacer"></div>
+    </div>
+  </div>
+</div>

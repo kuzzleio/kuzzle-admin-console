@@ -1,74 +1,41 @@
-<headline title="Realtime" subtitle="watch data"></headline>
-
-<div class="watch-data-container" ng-controller="WatchDataCtrl" ng-init="init()">
-
-  <div class="filters-log-container">
-    <div class="filters-container">
-      <h2 class="select-collection">
-          Collection
-          <drop-down-search
-              label=""
-              selected="forms.collection"
-              create-label="New collection"
-              items="forms.collections"
-              current-item="forms.collection"
-              on-click-create="onCreateCollection(collection)"
-              on-click-item="onSelectCollection(item)"
-              placeholder="Find a collection"
-              select-volatile-collections="true">
-          </drop-down-search>
-
-          <div class="btn-group" ng-if="forms.collection">
-              <cog-options-collection
+<div class="panel panel-default filters" ng-if="forms.collection">
+    <div class="panel-body">
+        <filters
+                dsl-doc-url="https://github.com/kuzzleio/kuzzle/blob/master/docs/filters.md"
+                add-group-label="Add group"
+                filters="forms.filter"
                 collection="forms.collection"
-                can-edit="true"
-                after-delete="onDeleteCollection()"
-                after-empty="onEmptyCollection()">
-              </cog-options-collection>
-          </div>
-      </h2>
-        <div class="panel panel-default filters" ng-if="forms.collection">
-            <div class="panel-body">
-                <filters
-                        dsl-doc-url="https://github.com/kuzzleio/kuzzle/blob/master/docs/filters.md"
-                        add-group-label="Add group"
-                        filters="forms.filter"
-                        collection="forms.collection"
-                        comparators="forms.comparators"
-                        search-type="forms.searchType"
-                        subscribed="forms.subscribed"
-                        is-realtime="true">
-                </filters>
+                comparators="forms.comparators"
+                search-type="forms.searchType"
+                subscribed="forms.subscribed"
+                is-realtime="true">
+        </filters>
 
-                <div class="form-group">
-                    <button type="submit" class="btn btn-default" ng-click="subscribe()" ng-disabled="subscribed">Subscribe &nbsp;<span class="glyphicon glyphicon-play"><span></button>
-                    <button type="submit" class="btn btn-default" ng-click="unsubscribe()" ng-disabled="!subscribed">Unsubscribe&nbsp;<span class="glyphicon glyphicon-pause"><span></button>
-                    <button class="btn btn-link" ng-click="resetFilters()">Clear</button>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default publish" ng-if="forms.collection">
-          <div class="panel-body">
-            <label>Publish <small>a volatile message</small></label>
-            <form name="forms.publish">
-              <div class="form-group">
-                <p class="text-danger" ng-show="error" ng-bind="error"></p>
-                <json-edit content="forms.messageToPublish"></json-edit>
-              </div>
-              <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(forms.messageToPublish)">
-                Publish &nbsp; <span class="glyphicon glyphicon-send"></span>
-              </button>
-            </form>
-          </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default" ng-click="subscribe()" ng-disabled="subscribed">Subscribe &nbsp;<span class="glyphicon glyphicon-play"><span></button>
+            <button type="submit" class="btn btn-default" ng-click="unsubscribe()" ng-disabled="!subscribed">Unsubscribe&nbsp;<span class="glyphicon glyphicon-pause"><span></button>
+            <button class="btn btn-link" ng-click="resetFilters()">Clear</button>
         </div>
     </div>
-    <div class="log-spacer">
-      <messages
-        class="fixed-right message-log"
-        collection="forms.collection"
-        messages="forms.messages"
-        init-messages="clearMessages()">
-      </messages>
-    </div>
+</div>
+<div class="panel panel-default publish" ng-if="forms.collection">
+  <div class="panel-body">
+    <label>Publish <small>a volatile message</small></label>
+    <form name="forms.publish">
+      <div class="form-group">
+        <p class="text-danger" ng-show="error" ng-bind="error"></p>
+        <json-edit content="forms.messageToPublish"></json-edit>
+      </div>
+      <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(forms.messageToPublish)">
+        Publish &nbsp; <span class="glyphicon glyphicon-send"></span>
+      </button>
+    </form>
   </div>
 </div>
+
+<messages
+  class="fixed-right message-log"
+  collection="forms.collection"
+  messages="forms.messages"
+  init-messages="clearMessages()">
+</messages>

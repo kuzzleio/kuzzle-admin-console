@@ -1,0 +1,13 @@
+<div id="wrapper">
+  {{>menubar}}
+
+  <div id="page-wrapper">
+      <div ng-controller="LoginModalCtrl"></div>
+      <div id="loading-bar-wrapper">
+          <div></div>
+      </div>
+      <div class="container-fluid">
+          <div class="view-fade h100" ui-view="bodyView"></div>
+      </div>
+  </div>
+</div>
