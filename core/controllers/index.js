@@ -4,7 +4,10 @@ var
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', {layout: 'default'});
+  res.render('index', {
+    layout: 'default',
+    development: !!process.env.DEVELOPMENT
+  });
 });
 
 router.get('/logged', function(req, res) {
