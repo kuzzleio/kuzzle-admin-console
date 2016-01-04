@@ -19,6 +19,7 @@ angular.module('kuzzle.documentsInline', [
         collection: '=',
         role: '=',
         profile: '=',
+        user: '=',
         canEdit: '='
       },
       controller: 'DocumentsInlineCtrl',
