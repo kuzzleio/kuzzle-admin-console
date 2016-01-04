@@ -1,0 +1,18 @@
+<div class="role-browse" ng-controller="ProfileBrowseCtrl" ng-init="init()">
+    <headline title="Profiles" subtitle="Browse profiles"></headline>
+    <div class="container">
+        <div class="row whitespace-top">
+            <div class="col-sm-12">
+                <div class="row create">
+                    <button type="button" class="btn btn-success"  ui-sref="profile.create">Add profile</button>
+                </div>
+
+                <documents-inline documents="profiles" profile="true" can-edit="true"></documents-inline>
+            </div>
+
+            <div class="col-sm-9" ng-if="profiles.length === 0">
+                <p>There is no profile in this database.</p>
+            </div>
+        </div>
+    </div>
+</div>
