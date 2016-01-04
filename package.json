@@ -11,6 +11,10 @@
     "kuzzle",
     "backoffice"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kuzzleio/kuzzle-bo.git"
+  },
   "author": "Kuzzle Team",
   "license": "Apache-2.0",
   "dependencies": {
