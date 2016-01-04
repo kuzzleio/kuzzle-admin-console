@@ -2,15 +2,27 @@
   background-color: #FFFFFF;
   border-color: #E6E6E6;
 
-  .navbar-brand {
-    padding: 10px 15px;
+  .navbar-header {
+    width: 100%;
+    padding: 0 10px;
   }
+
+  .navbar-brand {
+    padding: 10px 0;
+    img {
+      height: 30px;
+    }
+  }
+
   .navbar-toggle {
     background-color: #333;
   }
-  img {
-    height: 30px;
+
+  user-menu {
+    padding-top: 16px;
+    float: right;
   }
+
 }
 #sidebar {
   .side-nav {

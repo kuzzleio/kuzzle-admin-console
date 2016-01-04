@@ -22,8 +22,11 @@ kuzzleBo:
     - "3000:3000"
     - "8082:8080"
     - "9876:9876"
+    - "35729:35729"
   links:
     - kuzzle
+  environment:
+    - DEVELOPMENT
 
 redis:
   image: redis:3.0.2

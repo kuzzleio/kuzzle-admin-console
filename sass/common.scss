@@ -132,7 +132,7 @@ h2.select-collection {
       overflow: hidden;
     }
     .dropdown-menu {
-      width: 200px;
+      min-width: 200px;
       li {
         form {
           margin-bottom: 0;
@@ -144,7 +144,7 @@ h2.select-collection {
             color: #848484;
           }
 
-          padding: 8px 0 8px 10px;
+          padding: 8px;
 
           &.external-link {
             padding: 5px 0 5px 10px;

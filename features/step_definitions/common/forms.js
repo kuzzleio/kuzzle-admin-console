@@ -3,7 +3,7 @@ module.exports = function () {
     this.browser.fill('#' + id, value);
   });
 
-  this.Then(/^I click on "([^"]*)" button$/, function (id, callback) {
+  this.Then(/^I click on "([^"]*)" button$/, {timeout: 20 * 1000}, function (id, callback) {
     this.browser.pressButton('#' + id, () => {
       setTimeout(() => {
         callback();

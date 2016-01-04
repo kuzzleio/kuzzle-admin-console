@@ -43,6 +43,7 @@ angular.module('kuzzle.realtime')
         });
       $scope.forms.collection = $stateParams.collection;
 
+
       var filters = {};
       try {
         filters = filterTools.getFiltersFromUrl($stateParams, $scope.forms.comparators);
@@ -62,8 +63,13 @@ angular.module('kuzzle.realtime')
     };
 
     $scope.onSelectCollection = function (collection) {
-      $scope.forms.collection = collection;
-      $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
+      if (typeof collection == "object" && collection.name) {
+        $scope.forms.collection = collection.name;
+        $state.go('realtime.watch-data', {collection: collection.name, advancedFilter: null, basicFilter: null});
+      } else if (typeof collection == "string") {
+        $scope.forms.collection = collection;
+        $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
+      }
     };
 
     /**

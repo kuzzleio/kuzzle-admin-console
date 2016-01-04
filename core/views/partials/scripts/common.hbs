@@ -1,3 +1,7 @@
+{{#if development}}
+  <script src="//localhost:35729/livereload.js"></script>
+{{/if}}
+<script type="text/javascript" src="/javascripts/common/mainApp.controller.js"></script>
 <script type="text/javascript" src="/javascripts/common/kuzzleSdk.service.js"></script>
 <script type="text/javascript" src="/javascripts/common/documentApi.service.js"></script>
 <script type="text/javascript" src="/javascripts/common/collectionApi.service.js"></script>
@@ -18,3 +22,12 @@
 <script type="text/javascript" src="/javascripts/common/documentsInline/documentsInline.directive.js"></script>
 <script type="text/javascript" src="/javascripts/common/documentsInline/documentToolbar.directive.js"></script>
 <script type="text/javascript" src="/javascripts/common/documentsInline/roleToolbar.directive.js"></script>
+
+<script type="text/javascript" src="/javascripts/common/authentication/authentication.module.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/authentication.service.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/session.service.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/userRoles.const.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/authEvents.const.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/login.controller.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/loginModal.controller.js"></script>
+<script type="text/javascript" src="/javascripts/common/authentication/userMenu.directive.js"></script>

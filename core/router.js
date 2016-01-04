@@ -3,7 +3,8 @@ var
   storage = require('./controllers/storage'),
   collection = require('./controllers/collection'),
   realtime = require('./controllers/realtime'),
-  role = require('./controllers/role');
+  role = require('./controllers/role'),
+  login = require('./controllers/login');
 
 module.exports = {
 
@@ -13,6 +14,7 @@ module.exports = {
     app.use('/collection', collection);
     app.use('/realtime', realtime);
     app.use('/role', role);
+    app.use('/login', login);
   }
 
 };

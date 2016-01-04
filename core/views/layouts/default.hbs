@@ -2,18 +2,7 @@
     {{>head}}
 
     <body ng-app="kuzzle">
-        <div id="wrapper">
-            {{>menubar}}
-
-            <div id="page-wrapper">
-                <div id="loading-bar-wrapper">
-                    <div></div>
-                </div>
-                <div class="container-fluid">
-                    <div class="view-fade h100" ui-view="bodyView"></div>
-                </div>
-            </div>
-        </div>
+        <div ui-view="wrappedView" ng-controller="MainAppController" ng-init="init()"></div>
 
     {{> notifications }}
     {{> scripts }}

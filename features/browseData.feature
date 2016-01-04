@@ -2,6 +2,10 @@ Feature: Test browse data pages
   As a user
   I want to browse data, access to full view, delete, edit, ...
 
+  @createIndex
+  Background:
+    Given I go to the login page
+    And I authenticate
 
   @cleanDb
   Scenario: Display data list when a collection is selected
