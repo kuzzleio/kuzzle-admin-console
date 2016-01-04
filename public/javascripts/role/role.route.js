@@ -4,6 +4,7 @@ angular.module('kuzzle.role')
 
     $stateProvider
       .state('role', {
+        parent: 'logged',
         url: '/role',
         views: {
           "bodyView": { templateUrl: '/role' }
