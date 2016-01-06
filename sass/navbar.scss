@@ -37,6 +37,15 @@
           color: #fff;
         }
       }
+      &.bottom {
+        position: absolute;
+        &.gitter {
+          bottom: 0;
+        }
+        &.issue {
+          bottom: 50px;
+        }
+      }
       a {
         &:hover {
           background-color: rgba(0, 0, 0, 0.1) !important;
