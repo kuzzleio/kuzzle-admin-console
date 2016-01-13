@@ -39,11 +39,11 @@
       }
       &.bottom {
         position: absolute;
-        &.gitter {
-          bottom: 0;
-        }
-        &.issue {
-          bottom: 50px;
+        bottom: 0;
+
+        &.menu-help > a, &.menu-help > a::hover {
+          background-color: #45b29d!important;
+          color: #fff;
         }
       }
       a {
@@ -55,6 +55,15 @@
           padding-right: 5px;
         }
       }
+    }
+    &.side-nav > li > ul > li > ul {
+      padding:0;
+    }
+    &.side-nav > li > ul > li > ul > li > a {
+        display: block;
+        padding: 10px 15px 10px 61px;
+        text-decoration: none;
+        color: #999;
     }
   }
 }
