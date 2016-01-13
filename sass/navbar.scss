@@ -56,9 +56,12 @@
         }
       }
     }
+    &.side-nav > li > ul > li > ul {
+      padding:0;
+    }
     &.side-nav > li > ul > li > ul > li > a {
         display: block;
-        padding: 10px 15px 10px 15px;
+        padding: 10px 15px 10px 61px;
         text-decoration: none;
         color: #999;
     }
