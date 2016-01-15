@@ -46,10 +46,15 @@ router.post('/search', function (req, res) {
     params = req.body,
     filter = params.filter,
     collection = params.collection,
+    index = params.index,
     globalFilter;
 
   if (!collection) {
     return res.json({error: true, message: 'collection is missing'});
+  }
+
+  if (!index) {
+    return res.json({error: true, message: 'index is missing'});
   }
 
   if (queryParams.page) {
@@ -83,7 +88,7 @@ router.post('/search', function (req, res) {
   globalFilter = _.extend(pagination, globalFilter);
 
   kuzzle
-    .dataCollectionFactory(collection)
+    .dataCollectionFactory(index, collection)
     .advancedSearchPromise(globalFilter)
     .then(function (response) {
       return res.json({documents: response.documents, total: response.total, limit: limit});

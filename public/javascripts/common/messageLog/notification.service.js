@@ -3,16 +3,16 @@ angular.module('kuzzle.realtime')
   return {
     notificationToMessage: function (notification) {
       var messageItem = {
-        id:  notification._id,
+        id:  notification.result._id,
         text: '',
         icon: 'file',
         class: '',
-        source:  notification._source,
+        source:  notification.result._source,
         expanded: false,
         canEdit: true
       };
 
-      switch (notification.action) {
+      switch (notification.result.action) {
         case 'publish':
           messageItem.text = 'Received volatile message';
           messageItem.icon = 'send';

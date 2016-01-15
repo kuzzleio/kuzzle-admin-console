@@ -24,7 +24,8 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             },
             data: {
               filter: filter,
-              collection: collection
+              collection: collection,
+              index: 'mainindex'
             }
           });
         },
