@@ -4,6 +4,7 @@ var
   collection = require('./controllers/collection'),
   realtime = require('./controllers/realtime'),
   role = require('./controllers/role'),
+  profile = require('./controllers/profile'),
   login = require('./controllers/login');
 
 module.exports = {
@@ -14,6 +15,8 @@ module.exports = {
     app.use('/collection', collection);
     app.use('/realtime', realtime);
     app.use('/role', role);
+    app.use('/profile', profile);
+
     app.use('/login', login);
   }
 

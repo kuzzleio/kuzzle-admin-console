@@ -23,6 +23,12 @@
                         after-delete="afterDelete()"
                         document="document">
                 </role-toolbar>
+                <profile-toolbar
+                        ng-if="profile"
+                        can-edit="canEdit"
+                        after-delete="afterDelete()"
+                        document="document">
+                </profile-toolbar>
             </div>
 
         </div>
