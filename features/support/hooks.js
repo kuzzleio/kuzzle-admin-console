@@ -13,6 +13,15 @@ var hooks = function () {
   this.Before('@cleanDb', function (scenario, callback) {
     initCollection.call(this, callback);
   });
+
+  this.After('@unsubscribe', function (scenario, callback) {
+    this.browser.pressButton('.filters button.btn-unsubscribe', callback);
+
+    if (this.currentRoom) {
+      this.currentRoom.unsubscribe();
+      this.currentRoom = null;
+    }
+  })
 };
 
 var initIndex = function (callback) {

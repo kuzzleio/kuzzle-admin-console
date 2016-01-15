@@ -5,7 +5,7 @@
 
 # Kuzzle BO
 
-(Works with Kuzzle version 0.7.x)
+(Works with Kuzzle version 0.9.x)
 
 This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
 

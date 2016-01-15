@@ -37,6 +37,15 @@
           color: #fff;
         }
       }
+      &.bottom {
+        position: absolute;
+        bottom: 0;
+
+        &.menu-help > a, &.menu-help > a::hover {
+          background-color: #45b29d!important;
+          color: #fff;
+        }
+      }
       a {
         &:hover {
           background-color: rgba(0, 0, 0, 0.1) !important;
@@ -46,6 +55,15 @@
           padding-right: 5px;
         }
       }
+    }
+    &.side-nav > li > ul > li > ul {
+      padding:0;
+    }
+    &.side-nav > li > ul > li > ul > li > a {
+        display: block;
+        padding: 10px 15px 10px 61px;
+        text-decoration: none;
+        color: #999;
     }
   }
 }

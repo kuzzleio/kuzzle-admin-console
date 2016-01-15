@@ -1,8 +1,9 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.7.2
+  image: kuzzleio/kuzzle:0.9.3
   command: /run-debug.sh
   ports:
     - "7512:7512"
+    - "7511:7511"
     - "8080:8080"
     - "8081:8081"
   links:

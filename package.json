@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-bo",
-  "version": "1.0.0",
+  "version": "0.3.0",
   "description": "Official back office for manage and monitor your Kuzzle",
   "main": "app.js",
   "scripts": {
@@ -11,6 +11,10 @@
     "kuzzle",
     "backoffice"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kuzzleio/kuzzle-bo.git"
+  },
   "author": "Kuzzle Team",
   "license": "Apache-2.0",
   "dependencies": {
@@ -19,7 +23,7 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "express-handlebars": "^2.0.1",
-    "kuzzle-sdk": "1.1.0",
+    "kuzzle-sdk": "^1.1.0",
     "lodash": "^3.10.1",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
