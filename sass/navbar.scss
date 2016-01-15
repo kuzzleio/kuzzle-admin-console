@@ -1,6 +1,16 @@
+/* color defs */
+$sidebar-bg-color: #263238;
+$sidebar-text-color: #fff;
+
+$menubar-bg-color: #fff;
+$menubar-border-color: #e6e6e6;
+
+$green: #00747E;
+
+
 .menubar {
-  background-color: #FFFFFF;
-  border-color: #E6E6E6;
+  background-color: $menubar-bg-color;
+  border-color: $menubar-border-color;
 
   .navbar-header {
     width: 100%;
@@ -15,7 +25,7 @@
   }
 
   .navbar-toggle {
-    background-color: #333;
+    background-color: darken($menubar-bg-color, 66%);
   }
 
   user-menu {
@@ -25,31 +35,57 @@
 
 }
 #sidebar {
+  .fa.clear {
+    color: transparent!important;
+  }
   .side-nav {
-    background-color: #263238;
+
+    background-color: $sidebar-bg-color;
+
+    a[aria-expanded="true"] > i.fa-caret-down::before,
+    a.in > i.fa-caret-down::before {
+      content: "\f0d8"!important;
+    }
+
+    & > li > a {
+      text-align:center;
+      font-size: 1.2em;
+      font-variant: small-caps;
+      background: lighten( $sidebar-bg-color, 15% );
+      color: $sidebar-text-color;
+      margin-bottom: 1px;
+
+/*
+
+      &[aria-expanded="true"] {
+        background-color: $green;
+        color: $sidebar-text-color!important;
+        &::hover {
+          background-color: $green!important;
+          color: $sidebar-text-color!important;
+        }
+      }
+*/
+    }
 
     li {
-      &.active {
-        background-color: #45b29d;
 
+      &.active {
+        background-color: $green;
+        color: $sidebar-text-color!important;
         a {
-          background-color: #45b29d;
-          color: #fff;
+          background-color: $green;
+          color: $sidebar-text-color!important;
         }
       }
       &.bottom {
         position: absolute;
         bottom: 0;
-
-        &.menu-help > a, &.menu-help > a::hover {
-          background-color: #45b29d!important;
-          color: #fff;
-        }
       }
       a {
         &:hover {
           background-color: rgba(0, 0, 0, 0.1) !important;
-          color: #fff;
+          color: $sidebar-text-color;
         }
         i {
           padding-right: 5px;
@@ -63,7 +99,7 @@
         display: block;
         padding: 10px 15px 10px 61px;
         text-decoration: none;
-        color: #999;
+        color: darken($sidebar-text-color, 30%);
     }
   }
 }
