@@ -29,6 +29,12 @@
                         after-delete="afterDelete()"
                         document="document">
                 </profile-toolbar>
+                <user-toolbar
+                        ng-if="user"
+                        can-edit="canEdit"
+                        after-delete="afterDelete()"
+                        document="document">
+                </user-toolbar>
             </div>
 
         </div>

@@ -10,6 +10,7 @@ angular.module('kuzzle', [
   'kuzzle.realtime',
   'kuzzle.role',
   'kuzzle.profile',
+  'kuzzle.user',
   'kuzzle.collectionApi',
   'kuzzle.documentsInline',
   'kuzzle.cogOptionsCollection',

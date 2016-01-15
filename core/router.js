@@ -5,6 +5,7 @@ var
   realtime = require('./controllers/realtime'),
   role = require('./controllers/role'),
   profile = require('./controllers/profile'),
+  user = require('./controllers/user'),
   login = require('./controllers/login');
 
 module.exports = {
@@ -16,7 +17,7 @@ module.exports = {
     app.use('/realtime', realtime);
     app.use('/role', role);
     app.use('/profile', profile);
-
+    app.use('/user', user);
     app.use('/login', login);
   }
 

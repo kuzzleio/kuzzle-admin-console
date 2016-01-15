@@ -43,6 +43,9 @@
                 <li ng-class="{ active: ('profile.*.*' | includedByState) }">
                     <a ui-sref="profile.browse"><i class="fa fa-list-alt"></i> Browse profiles</a>
                 </li>
+                <li ng-class="{ active: ('user.*.*' | includedByState) }">
+                    <a ui-sref="user.browse"><i class="fa fa-users"></i> Browse users</a>
+                </li>
             </ul>
         </li>
         <li class="bottom menu-help">

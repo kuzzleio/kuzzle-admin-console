@@ -1,0 +1,32 @@
+<div class="row edit-collection" ng-controller="UserFullCtrl" ng-init="init('{{action}}')">
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            User <small>{{action}}</small>
+        </h1>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
+        <p>There is no user matching the id <strong ng-bind="user">null</strong>.</p>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
+
+        <form>
+            <div class="form-group">
+                <label for="name">User id</label>
+                <input type="text" class="form-control" ng-model="user.name" id="name" ng-disabled="isEdit">
+            </div>
+            <div class="form-group">
+                <label for="name">User content</label>
+                <json-edit content="user.body"></json-edit>
+            </div>
+
+            <div class="actions-group">
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="update(true)">Create</button>
+                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
+                <a class="control" ng-click="cancel()">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+</div>
