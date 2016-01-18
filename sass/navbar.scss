@@ -1,11 +1,12 @@
 /* color defs */
+$green: #00747E;
+$dark-green: #004B52;
+
 $sidebar-bg-color: #263238;
 $sidebar-text-color: #fff;
 
 $menubar-bg-color: #fff;
 $menubar-border-color: #e6e6e6;
-
-$green: #00747E;
 
 
 .menubar {
@@ -56,9 +57,15 @@ $green: #00747E;
       text-align:center;
       font-size: 1.2em;
       font-variant: small-caps;
-      background: lighten( $sidebar-bg-color, 15% );
+      background: $dark-green;
       color: $sidebar-text-color;
       margin-bottom: 1px;
+      &:hover {
+        background-color: lighten($dark-green, 10%)!important;
+      }
+      &:focus {
+        background-color: $dark-green!important;
+      }
     }
 
     & > li > ul > li > a {
@@ -102,9 +109,10 @@ $green: #00747E;
         position: absolute;
         bottom: 0;
       }
+
       a {
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.1) !important;
+        &:hover, &:focus {
+          background-color: darker($green, 50%) !important;
           color: $sidebar-text-color;
         }
         i {
