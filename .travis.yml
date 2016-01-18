@@ -16,7 +16,7 @@ notifications:
     urls:
     - https://webhooks.gitter.im/e/8e145155fbaaf37cffea
     on_success: change
-    on_failure: always
+    on_failure: change
     on_start: never
   email: false
   slack:
