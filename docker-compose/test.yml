@@ -4,6 +4,7 @@ kuzzle:
     - "../features/fixtures.json:/fixtures.json"
   ports:
     - "7512:7512"
+    - "7511:7511"
     - "8080:8080"
     - "8081:8081"
   links:
