@@ -97,7 +97,7 @@ module.exports = function () {
   });
 
   this.Given(/^I create a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/_create';
+    var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/_create';
 
     request({
       method: 'POST',
@@ -120,7 +120,7 @@ module.exports = function () {
   });
 
   this.Given(/^I publish a volatile message$/, {timeout: 20 * 1000}, function (callback) {
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection;
+    var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection;
 
     request({
       method: 'POST',
@@ -146,7 +146,7 @@ module.exports = function () {
       return;
     }
 
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
+    var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
 
     request({
       method: 'PUT',
@@ -172,7 +172,7 @@ module.exports = function () {
       return;
     }
 
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
+    var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
 
     request({
       method: 'DELETE',
