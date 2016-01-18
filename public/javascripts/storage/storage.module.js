@@ -4,7 +4,7 @@ angular.module('kuzzle.storage', [
   'kuzzle.jsonEdit',
   'kuzzle.schema',
   'kuzzle.documentApi',
-  'kuzzle.dropDownSearch',
+  'kuzzle.storageDropDownSearch',
   'kuzzle.leaflet',
   'kuzzle.filters',
   'kuzzle.addAttribute'

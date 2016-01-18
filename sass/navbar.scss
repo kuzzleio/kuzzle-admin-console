@@ -47,6 +47,11 @@ $green: #00747E;
       content: "\f0d8"!important;
     }
 
+    a[aria-expanded="true"] > i.fa-caret-up::before,
+    a.in > i.fa-caret-up::before {
+      content: "\f0d7"!important;
+    }
+
     & > li > a {
       text-align:center;
       font-size: 1.2em;
@@ -54,18 +59,33 @@ $green: #00747E;
       background: lighten( $sidebar-bg-color, 15% );
       color: $sidebar-text-color;
       margin-bottom: 1px;
+    }
 
-/*
-
-      &[aria-expanded="true"] {
-        background-color: $green;
-        color: $sidebar-text-color!important;
-        &::hover {
-          background-color: $green!important;
-          color: $sidebar-text-color!important;
+    & > li > ul > li > a {
+      padding-left: 15px!important;
+    }
+    & #select-index {
+      padding-left: 15px;
+      width: 100%;
+      & > button {
+        width: 192px;
+        & > span {
+          display: inline-block;
+          width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
       }
-*/
+      & > .dropdown-menu {
+        left: 15px;
+        min-width: 192px;
+        & .search {
+          padding-left: 5px;
+          & input {
+            width: 97%;
+          }
+        }
+      }
     }
 
     li {
@@ -97,7 +117,7 @@ $green: #00747E;
     }
     &.side-nav > li > ul > li > ul > li > a {
         display: block;
-        padding: 10px 15px 10px 61px;
+        padding: 10px 15px 10px 38px;
         text-decoration: none;
         color: darken($sidebar-text-color, 30%);
     }

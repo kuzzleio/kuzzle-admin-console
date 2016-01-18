@@ -27,8 +27,17 @@
                 </li>
 
 
-                <li>
-                    <a href>dropdown</a>
+                <li ng-controller="indexesCtrl">
+                  <indexes-drop-down-search
+                      label=""
+                      selected="stateParams.index"
+                      create-label="New index"
+                      items="indexes"
+                      current-item="stateParams.index"
+                      on-click-create="onCreateIndex(index)"
+                      on-click-item="onSelectIndex(item)"
+                      placeholder="Find an index">
+                  </indexes-drop-down-search>
                 </li>
 
 
@@ -109,14 +118,14 @@
             <a href="javascript:;" data-toggle="collapse" data-target="#menu-help" href>
                 <i class="fa fa-question pull-left"></i> 
                 Help and feedback
-                <i class="fa fa-fw fa-caret-down pull-right"></i>
+                <i class="fa fa-fw fa-caret-up pull-right"></i>
             </a>
             <ul id="menu-help" class="collapse">
                 <li>
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-doc" href>
                         <i class="fa fa-book"></i> 
                         Read the doc
-                        <i class="fa fa-fw fa-caret-down pull-right"></i>
+                        <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
                     <ul id="menu-help-doc" class="collapse">
                         <li>
@@ -137,7 +146,7 @@
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-issue" href>
                         <i class="fa fa-github"></i> 
                         Create an issue
-                        <i class="fa fa-fw fa-caret-down pull-right"></i>
+                        <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
                     <ul id="menu-help-issue" class="collapse">
                         <li>

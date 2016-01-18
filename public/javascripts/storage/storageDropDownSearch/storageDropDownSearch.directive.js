@@ -1,4 +1,4 @@
-angular.module('kuzzle.dropDownSearch', [])
+angular.module('kuzzle.storageDropDownSearch', [])
   .controller('DropDownSearchCtrl', ['$scope', function ($scope) {
     $scope.isOpen = false;
 
@@ -12,7 +12,7 @@ angular.module('kuzzle.dropDownSearch', [])
       $scope.onClickItem({item: $scope.selected});
     }
   }])
-  .directive('dropDownSearch', function () {
+  .directive('storageDropDownSearch', function () {
     return {
       restrict: 'E',
       scope: {
@@ -28,6 +28,6 @@ angular.module('kuzzle.dropDownSearch', [])
         selectVolatileCollections: '='
       },
       controller: "DropDownSearchCtrl",
-      templateUrl: '/javascripts/storage/dropDownSearch/dropDownSearch.tpl.html'
+      templateUrl: '/javascripts/storage/storageDropDownSearch/storageDropDownSearch.tpl.html'
     }
   });

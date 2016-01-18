@@ -1,0 +1,28 @@
+<div class="row edit-index" ng-controller="indexesCtrl" ng-init="init('{{action}}')">
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            Index <small>{{action}}</small>
+        </h1>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
+        <p>There is no index matching the index <strong ng-bind="index"></strong>.</p>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
+
+        <form>
+            <div class="form-group">
+                <label for="name">Index name</label>
+                <input type="text" class="form-control" ng-model="index.name" id="name" ng-disabled="isEdit">
+            </div>
+
+            <div class="actions-group">
+                <button type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="update(true)">Create</button>
+                <button type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
+                <a class="control" ng-click="cancel()">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+</div>
