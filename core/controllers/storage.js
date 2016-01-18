@@ -104,11 +104,16 @@ router.post('/deleteById', function (req, res) {
   var
     id = req.body.id,
     collection = req.body.collection,
+    index = req.body.index,
     buffer = req.body.buffer,
     clientId = req.body.clientId;
 
   if (!id) {
     return res.json({error: true, message: 'No id provided'});
+  }
+
+  if (!index) {
+    return res.json({error: true, message: 'No index provided'});
   }
 
   if (!collection) {
@@ -121,7 +126,7 @@ router.post('/deleteById', function (req, res) {
 
   if (!buffer) {
     return kuzzle
-      .dataCollectionFactory(collection)
+      .dataCollectionFactory(index, collection)
       .deleteDocumentPromise(id)
       .then(function () {
         return res.json({error: false});
@@ -131,11 +136,11 @@ router.post('/deleteById', function (req, res) {
       });
   }
 
-  bufferCancel.add('deleteById', clientId, collection, id, true);
-  bufferCancel.delayExecution('deleteById', clientId, collection, id, function () {
+  bufferCancel.add('deleteById', clientId, index, collection, id, true);
+  bufferCancel.delayExecution('deleteById', clientId, index, collection, id, function () {
 
     kuzzle
-      .dataCollectionFactory(collection)
+      .dataCollectionFactory(index, collection)
       .deleteDocumentPromise(id);
   });
 
@@ -147,10 +152,15 @@ router.post('/cancel-deleteById', function (req, res) {
   var
     id = req.body.id,
     collection = req.body.collection,
+    index = req.body.index,
     clientId = req.body.clientId;
 
   if (!id) {
     return res.json({error: true, message: 'No id provided'});
+  }
+
+  if (!index) {
+    return res.json({error: true, message: 'No index provided'});
   }
 
   if (!collection) {
@@ -161,7 +171,7 @@ router.post('/cancel-deleteById', function (req, res) {
     return res.json({error: true, message: 'No clientId provided'});
   }
 
-  bufferCancel.cancel('deleteById', clientId, collection, id);
+  bufferCancel.cancel('deleteById', clientId, index, collection, id);
   return res.json({error: false});
 });
 

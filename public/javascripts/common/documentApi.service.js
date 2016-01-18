@@ -91,7 +91,8 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           var data = {
             collection: collection,
             id: id,
-            clientId: clientId
+            clientId: clientId,
+            index: 'mainindex'
           };
 
           if (buffer) {
@@ -107,7 +108,8 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           return $http.post('/storage/cancel-deleteById', {
             collection: collection,
             id: id,
-            clientId: clientId
+            clientId: clientId,
+            index: 'mainindex'
           });
         },
 
