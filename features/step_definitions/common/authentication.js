@@ -16,11 +16,7 @@ module.exports = function () {
   });
 
   this.Given(/^I click the logout button$/, function (callback) {
-    try {
-      this.browser.clickLink('user-menu .logout-btn', callback);
-    }
-    catch (e) {
-    }
+    this.browser.clickLink('user-menu .logout-btn', callback);
   });
 
   this.Then(/^I see the login page$/, function() {
