@@ -27,7 +27,7 @@ var hooks = function () {
 var initIndex = function (callback) {
   request({
     method: 'PUT',
-    uri: kuzzleUrl + '/api/v1.0/' + this.index
+    uri: kuzzleUrl + '/api/1.0/' + this.index
     }, (error) => {
       if (error) {
         console.log('Error creating '+ this.index + ' on ' + kuzzleUrl + ': ' + error);
@@ -42,7 +42,7 @@ var initIndex = function (callback) {
 var initCollection = function (callback) {
   request({
     method: 'DELETE',
-    uri: kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection
+    uri: kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection
   }, (error) => {
     if (error) {
       console.log('Error deleting '+ this.collection + ': ' + error);
@@ -51,7 +51,7 @@ var initCollection = function (callback) {
     request({
       method: 'POST',
       header: {'Content-Type': 'application/json'},
-      uri: kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/_bulk',
+      uri: kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/_bulk',
       body: fixtures[this.index][this.collection],
       json: true
     }, (error) => {
