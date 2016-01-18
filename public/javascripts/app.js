@@ -53,7 +53,7 @@ angular.module('kuzzle', [
         url: '',
         views: {
           wrappedView: { templateUrl: '/logged' },
-          bodyView: { templateUrl: '/dashboard' }
+          'bodyView@logged': { templateUrl: '/dashboard' }
         },
         data: {
           requiresAuthentication: true
