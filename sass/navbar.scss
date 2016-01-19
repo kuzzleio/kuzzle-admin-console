@@ -1,6 +1,17 @@
+/* color defs */
+$green: #00747E;
+$dark-green: #004B52;
+
+$sidebar-bg-color: #263238;
+$sidebar-text-color: #fff;
+
+$menubar-bg-color: #fff;
+$menubar-border-color: #e6e6e6;
+
+
 .menubar {
-  background-color: #FFFFFF;
-  border-color: #E6E6E6;
+  background-color: $menubar-bg-color;
+  border-color: $menubar-border-color;
 
   .navbar-header {
     width: 100%;
@@ -15,7 +26,7 @@
   }
 
   .navbar-toggle {
-    background-color: #333;
+    background-color: darken($menubar-bg-color, 66%);
   }
 
   user-menu {
@@ -25,31 +36,84 @@
 
 }
 #sidebar {
+  .fa.clear {
+    color: transparent!important;
+  }
   .side-nav {
-    background-color: #263238;
+
+    background-color: $sidebar-bg-color;
+
+    a[aria-expanded="true"] > i.fa-caret-down::before,
+    a.in > i.fa-caret-down::before {
+      content: "\f0d8"!important;
+    }
+
+    a[aria-expanded="true"] > i.fa-caret-up::before,
+    a.in > i.fa-caret-up::before {
+      content: "\f0d7"!important;
+    }
+
+    & > li > a {
+      text-align:center;
+      font-size: 1.2em;
+      font-variant: small-caps;
+      background: $dark-green;
+      color: $sidebar-text-color;
+      margin-bottom: 1px;
+      &:hover {
+        background-color: lighten($dark-green, 10%)!important;
+      }
+      &:focus {
+        background-color: $dark-green!important;
+      }
+    }
+
+    & > li > ul > li > a {
+      padding-left: 15px!important;
+    }
+    & #select-index {
+      padding-left: 15px;
+      width: 100%;
+      & > button {
+        width: 192px;
+        & > span {
+          display: inline-block;
+          width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+      & > .dropdown-menu {
+        left: 15px;
+        min-width: 192px;
+        & .search {
+          padding-left: 5px;
+          & input {
+            width: 97%;
+          }
+        }
+      }
+    }
 
     li {
-      &.active {
-        background-color: #45b29d;
 
+      &.active {
+        background-color: $green;
+        color: $sidebar-text-color!important;
         a {
-          background-color: #45b29d;
-          color: #fff;
+          background-color: $green;
+          color: $sidebar-text-color!important;
         }
       }
       &.bottom {
         position: absolute;
         bottom: 0;
-
-        &.menu-help > a, &.menu-help > a::hover {
-          background-color: #45b29d!important;
-          color: #fff;
-        }
       }
+
       a {
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.1) !important;
-          color: #fff;
+        &:hover, &:focus {
+          background-color: darker($green, 50%) !important;
+          color: $sidebar-text-color;
         }
         i {
           padding-right: 5px;
@@ -61,9 +125,9 @@
     }
     &.side-nav > li > ul > li > ul > li > a {
         display: block;
-        padding: 10px 15px 10px 61px;
+        padding: 10px 15px 10px 38px;
         text-decoration: none;
-        color: #999;
+        color: darken($sidebar-text-color, 30%);
     }
   }
 }
