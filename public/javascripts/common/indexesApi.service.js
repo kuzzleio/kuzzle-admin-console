@@ -10,8 +10,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
       return {
         list: function (notify) {
           var deferred = $q.defer();
-
-          kuzzleSdk.listIndexes(function (error, indexes) {
+          kuzzleSdk.query('', 'read', 'listIndexes', {controller: 'read', action: 'listIndexes', body: {}}, function (error, indexes) {
             if (error) {
               if (notify) {
                 notification.error('Error during indexes listing... Please reload page.');
@@ -71,9 +70,12 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         },
         select: function (index, notify) {
         	var deferred = $q.defer();
-        	kuzzleSdk.setDefaultIndex(index)
-          notification.success(index + ' selected !');
-        	return deferred.promise;
+        	//kuzzleSdk.setDefaultIndex(index)
+          if (notify) {
+            notification.success(index + ' selected !');
+          }
+        	deferred.resolve(index);
+          return deferred.promise;
         }
       }
     }]);

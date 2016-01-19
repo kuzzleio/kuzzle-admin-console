@@ -27,10 +27,9 @@
                 </li>
 
 
-                <li ng-controller="indexesCtrl">
+                <li ng-controller="indexesCtrl" ng-init="init()">
                   <indexes-drop-down-search
-                      label=""
-                      selected="stateParams.index"
+                      selected="selected"
                       create-label="New index"
                       items="indexes"
                       current-item="stateParams.index"

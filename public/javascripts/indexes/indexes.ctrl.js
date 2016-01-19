@@ -9,12 +9,14 @@ angular.module('kuzzle.indexes')
     function ($scope, $http, $stateParams, $state, indexesApi) {
 
       $scope.index = '';
+      $scope.indexes = [];
+      $scope.selected = false;
       $scope.stateParams = $stateParams;
 
       $scope.init = function () {
         indexesApi.list(true)
           .then(function (response) {
-            $scope.indexes = response.stored.map(function (index) {
+            $scope.indexes = response.indexes.map(function (index) {
               return {name: index};
             });
           })
@@ -28,7 +30,10 @@ angular.module('kuzzle.indexes')
        * @param index
        */
       $scope.onSelectIndex = function (index) {
-        indexesApi.select(index, true);
+        indexesApi.select(index.name, true)
+          .then(function(name) {
+            $scope.index = $scope.selected = name;
+          })
       };
 
       /**
