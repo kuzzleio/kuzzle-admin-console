@@ -5,6 +5,8 @@ angular.module('kuzzle', [
   'kuzzle.authentication',
   'kuzzle.basicFilter',
   'kuzzle.filters',
+  'kuzzle.headline',
+  'kuzzle.widget',
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',

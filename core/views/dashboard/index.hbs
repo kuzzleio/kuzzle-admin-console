@@ -2,157 +2,88 @@
     <div class="dashboard-container" ng-controller="DashboardCtrl" ng-init="init()">
         <headline title="Dashboard" subtitle="server state"></headline>
         <div class="row whitespace-top">
-            <div class="col-sm-4" ng-if="inArray('serverInfo', widgets) !== -1">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="row">
-                            <div class="col-sm-12 list-server-properties">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">
-                                            Server Info
-                                            <span class="pull-right">
-                                                <span class="glyphicon glyphicon-remove" ui-sref="collection.full({collection: collection.name})" ng-click="closeWidget('serverInfo')" title="Close"></span>
-                                            </span>
-                                        </h3>
-                                    </div>
-                                    <div class="panel-body">Server Information</div>
-                                    <table class="table">
-                                        <tbody>
-                                        <tr>
-                                            <th>Component</th>
-                                            <th>Information</th>
-                                        </tr>
-                                        <tr>
-                                            <td>Uptime</td>
-                                            <td ng-bind="serverInfo.kuzzle.uptime"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Kuzzle version</td>
-                                            <td ng-bind="serverInfo.kuzzle.version"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Node version</td>
-                                            <td ng-bind="serverInfo.kuzzle.nodeVersion"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Used memory</td>
-                                            <td ng-bind="Math.round(serverInfo.kuzzle.memoryUsed / 1024 / 1024) + ' Mb'"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Free memory</td>
-                                            <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.free / 1024 / 1024) + ' Mb'"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total memory</td>
-                                            <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.total / 1024 / 1024) + ' Mb'"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cpu count</td>
-                                            <td ng-bind="serverInfo.kuzzle.system.cpus.length"></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-lg-12">
+                <div class="row ">
                 </div>
             </div>
-            <div class="col-sm-4" ng-if="inArray('pluginInfo', widgets) !== -1">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="row">
-                            <div class="col-sm-12 list-server-properties">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">
-                                            Plugins
-                                            <span class="pull-right">
-                                                <span class="glyphicon glyphicon-remove" ng-click="closeWidget('pluginInfo')" title="Go to full view"></span>
-                                            </span>
-                                        </h3>
-                                    </div>
-                                    <div class="panel-body">Installed plugins</div>
-                                    <table class="table">
-                                        <tbody>
-                                        <tr>
-                                            <th>Plugin</th>
-                                            <th>Version</th>
-                                            <th>Activated</th>
-                                        </tr>
-                                        <tr ng-repeat="(key, plugin) in serverInfo.kuzzle.plugins">
-                                            <td ng-bind="plugin.name"></td>
-                                            <td ng-bind="plugin.version || 'N/A'"></td>
-                                            <td><span
-                                                    ng-class="{ 'glyphicon glyphicon-ok': plugin.activated, 'glyphicon glyphicon-remove': !plugin.activated }"></span>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4" ng-if="inArray('apiInfo', widgets) !== -1">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="row">
-                            <div class="col-sm-12 list-server-properties">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">
-                                            API routes
-                                            <span class="pull-right">
-                                                <span class="glyphicon glyphicon-remove" ng-click="closeWidget('apiInfo')" title="Go to full view"></span>
-                                            </span>
-                                        </h3>
-                                    </div>
-                                    <div class="panel-body">Server information</div>
-                                    <table class="table">
-                                        <tbody>
-                                        <tr>
-                                            <th>Controller</th>
-                                            <th>Action</th>
-                                        </tr>
-                                        <tr ng-repeat="(controller, routes) in serverInfo.kuzzle.api.routes">
-                                            <td ng-bind="controller"></td>
-                                            <td><span ng-repeat="route in routes" ng-bind="route + ' '"></span></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4" ng-if="inArray('statInfo', widgets) !== -1">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="row">
-                            <div class="col-sm-12 list-server-properties">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">
-                                            Statistics
-                                            <span class="pull-right">
-                                                <span class="glyphicon glyphicon-remove" href="javascript:;" ng-click="closeWidget('statInfo')"></span>
-                                            </span>
-                                        </h3>
-                                    </div>
-                                    <div class="panel-body">
-                                        <div id="chart_div"></div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="row whitespace-top">
+            <widget title="Server Information" name="serverInfo" widgets="widgets">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Component</th>
+                        <th>Information</th>
+                    </tr>
+                    <tr>
+                        <td>Uptime</td>
+                        <td ng-bind="serverInfo.kuzzle.uptime"></td>
+                    </tr>
+                    <tr>
+                        <td>Kuzzle version</td>
+                        <td ng-bind="serverInfo.kuzzle.version"></td>
+                    </tr>
+                    <tr>
+                        <td>Node version</td>
+                        <td ng-bind="serverInfo.kuzzle.nodeVersion"></td>
+                    </tr>
+                    <tr>
+                        <td>Used memory</td>
+                        <td ng-bind="Math.round(serverInfo.kuzzle.memoryUsed / 1024 / 1024) + ' Mb'"></td>
+                    </tr>
+                    <tr>
+                        <td>Free memory</td>
+                        <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.free / 1024 / 1024) + ' Mb'"></td>
+                    </tr>
+                    <tr>
+                        <td>Total memory</td>
+                        <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.total / 1024 / 1024) + ' Mb'"></td>
+                    </tr>
+                    <tr>
+                        <td>Cpu count</td>
+                        <td ng-bind="serverInfo.kuzzle.system.cpus.length"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </widget>
+            <widget title="Plugin Information" name="pluginInfo" widgets="widgets">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Plugin</th>
+                        <th>Version</th>
+                        <th>Activated</th>
+                    </tr>
+                    <tr ng-repeat="(key, plugin) in serverInfo.kuzzle.plugins">
+                        <td ng-bind="plugin.name"></td>
+                        <td ng-bind="plugin.version || 'N/A'"></td>
+                        <td>
+                            <span ng-class="{ 'glyphicon glyphicon-ok': plugin.activated, 'glyphicon glyphicon-remove': !plugin.activated }"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </widget>
+            <widget title="API Information" name="apiInfo" widgets="widgets">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Controller</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr ng-repeat="(controller, routes) in serverInfo.kuzzle.api.routes">
+                        <td ng-bind="controller"></td>
+                        <td><span ng-repeat="route in routes" ng-bind="route + ' '"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </widget>
+            <widget title="Statistics" name="statInfo" widgets="widgets">
+                <div id="statistics_graph"></div>
+            </widget>
+            <widget title="Resources usage" name="resourceInfo" widgets="widgets">
+                <div id="resources_gauge"></div>
+            </widget>
         </div>
     </div>
 </div>
