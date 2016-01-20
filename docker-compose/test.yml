@@ -17,8 +17,8 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo
-  command: /run-test.sh
+  image: kuzzleio/bo-test
+  #command: /run.sh
   volumes:
     - "..:/var/app"
     - "../features/kuzzle-config.js:/var/app/public/javascripts/config.js"
@@ -28,6 +28,8 @@ kuzzleBo:
     - "9876:9876"
   links:
     - kuzzle
+  environment:
+      - DEBUG_PHANTOM
 
 redis:
   image: redis:3.0.2
