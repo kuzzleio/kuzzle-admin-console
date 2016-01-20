@@ -5,7 +5,7 @@ angular.module('kuzzle.collection')
     $stateProvider
       .state('collection', {
         parent: 'logged',
-        url: '/collection',
+        url: '/:index/collection',
         views: {
           "bodyView": { templateUrl: '/collection' }
         }

@@ -7,7 +7,8 @@ angular.module('kuzzle.indexesDropDownSearch', [])
       $scope.selected = $scope.search;
       $scope.search = '';
       $scope.onClickItem({item: $scope.selected});
-    }
+    };
+
   }])
   .directive('indexesDropDownSearch', function () {
     return {

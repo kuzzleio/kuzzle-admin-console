@@ -12,6 +12,9 @@ angular.module('kuzzle.storage')
       $scope.stateParams = $stateParams;
 
       $scope.init = function () {
+        if ($stateParams.index === undefined) {
+          $state.go('404');
+        }
         collectionApi.list()
           .then(function (response) {
             $scope.collections = response.stored.map(function (collection) {

@@ -10,7 +10,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
       return {
         list: function (notify) {
           var deferred = $q.defer();
-          kuzzleSdk.query('', 'read', 'listIndexes', {controller: 'read', action: 'listIndexes', body: {}}, function (error, indexes) {
+          kuzzleSdk.listIndexes(function (error, indexes) {
             if (error) {
               if (notify) {
                 notification.error('Error during indexes listing... Please reload page.');
@@ -26,11 +26,11 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         },
         create: function (index, notify) {
         	var deferred = $q.defer();
-        	kuzzleSdk.query('', 'admin', 'createIndex', {
+        	kuzzleSdk.query({
             controller: 'admin',
             action: 'createIndex',
             index: index
-          }, function (error, result) {
+          }, {}, {}, function (error, result) {
           	if (error) {
               if (notify) {
                 notification.error('Error during index creation. Please retry.');
@@ -45,6 +45,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           	return deferred.resolve(result);
            });
+          return deferred.promise;
         },
         delete: function (index, notify) {
         	var deferred = $q.defer();
@@ -70,7 +71,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         },
         select: function (index, notify) {
         	var deferred = $q.defer();
-        	//kuzzleSdk.setDefaultIndex(index)
+        	kuzzleSdk.setDefaultIndex(index);
           if (notify) {
             notification.success(index + ' selected !');
           }

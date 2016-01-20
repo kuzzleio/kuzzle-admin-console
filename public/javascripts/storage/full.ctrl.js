@@ -47,6 +47,10 @@ angular.module('kuzzle.storage')
        * @param action Can be 'edit' or 'create'
        */
       $scope.init = function (action) {
+        
+        if ($stateParams.index === undefined) {
+          $state.go('404');
+        }
 
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {

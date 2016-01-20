@@ -8,7 +8,7 @@
   <ul class="dropdown-menu">
     <li class="search">
       <form ng-submit="onPressEnter()">
-        <input class="form-control" type="text" placeholder="{{placeholder}}" ng-model="search"/>
+        <input class="form-control" type="text" placeholder="{{placeholder}}" ng-model="search" ng-bind="search"/>
       </form>
     </li>
     <li class="divider"></li>
@@ -18,7 +18,7 @@
     <li class="divider"></li>
     <li ng-class="{active: item === currentItem}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})">
       <a>
-        <span ng-bind="item.name"></span>
+        <span ng-bind="item"></span>
       </a>
     </li>
   </ul>
