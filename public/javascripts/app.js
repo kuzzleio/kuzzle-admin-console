@@ -1,28 +1,30 @@
 angular.module('kuzzle', [
-  'ui.router',
-  'ui.bootstrap',
-  'jsonFormatter',
-  'kuzzle.authentication',
-  'kuzzle.basicFilter',
-  'kuzzle.filters',
-  'kuzzle.headline',
-  'kuzzle.widget',
-  'kuzzle.storage',
-  'kuzzle.collection',
-  'kuzzle.realtime',
-  'kuzzle.dashboard',
-  'kuzzle.collectionApi',
-  'kuzzle.serverApi',
-  'kuzzle.documentsInline',
-  'kuzzle.cogOptionsCollection',
-  'angular-loading-bar',
-  'ngAnimate',
-  'kuzzle.uid',
-  'ui-notification',
-  'kuzzle.bufferCancel',
-  'kuzzle.previousState',
-  'kuzzle.unsubscribeOnPageChange'
-])
+    'ui.router',
+    'ui.bootstrap',
+    'jsonFormatter',
+    'kuzzle.authentication',
+    'kuzzle.basicFilter',
+    'kuzzle.filters',
+    'kuzzle.headline',
+    'kuzzle.widget',
+    'kuzzle.gauge',
+    'kuzzle.chart',
+    'kuzzle.storage',
+    'kuzzle.collection',
+    'kuzzle.realtime',
+    'kuzzle.dashboard',
+    'kuzzle.collectionApi',
+    'kuzzle.serverApi',
+    'kuzzle.documentsInline',
+    'kuzzle.cogOptionsCollection',
+    'angular-loading-bar',
+    'ngAnimate',
+    'kuzzle.uid',
+    'ui-notification',
+    'kuzzle.bufferCancel',
+    'kuzzle.previousState',
+    'kuzzle.unsubscribeOnPageChange'
+  ])
 
   .config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
@@ -54,8 +56,8 @@ angular.module('kuzzle', [
       .state('logged', {
         url: '',
         views: {
-          wrappedView: { templateUrl: '/logged' },
-          'bodyView@logged': { templateUrl: '/dashboard' }
+          wrappedView: {templateUrl: '/logged'},
+          'bodyView@logged': {templateUrl: '/dashboard'}
         },
         data: {
           requiresAuthentication: true
@@ -63,13 +65,13 @@ angular.module('kuzzle', [
       })
       .state('404', {
         views: {
-          wrappedView: { templateUrl: '/404' }
+          wrappedView: {templateUrl: '/404'}
         }
       })
       .state('login', {
         url: '/login',
         views: {
-          wrappedView: { templateUrl: '/login' }
+          wrappedView: {templateUrl: '/login'}
         }
       })
       .state('logout', {
@@ -86,7 +88,7 @@ angular.module('kuzzle', [
       $state.go('login');
     });
 
-    $rootScope.$on('$stateNotFound', function(event) {
+    $rootScope.$on('$stateNotFound', function (event) {
       $state.go('404');
     });
 

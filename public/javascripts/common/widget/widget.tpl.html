@@ -1,16 +1,8 @@
-<div class="col-sm-4" ng-if="isWidgetSelected(name)">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="row">
-                <div class="col-sm-12 dashboard-widget">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{{title}}</h3>
-                        </div>
-                        <div class="panel-body" ng-transclude></div>
-                    </div>
-                </div>
-            </div>
+<div class="dashboard-widget" ng-if="isWidgetSelected(name)">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{title}}</h3>
         </div>
+        <div class="panel-body" ng-transclude></div>
     </div>
 </div>

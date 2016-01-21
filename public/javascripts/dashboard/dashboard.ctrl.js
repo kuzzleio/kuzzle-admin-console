@@ -7,7 +7,7 @@ angular.module('kuzzle.dashboard')
       'use strict';
 
       $scope.Math = window.Math;
-      $scope.timeFrame = 600 * 1000;
+      $scope.timeFrame = 86400 * 1000;
       $scope.widgets = [
         'serverInfo',
         'pluginInfo',
@@ -15,16 +15,25 @@ angular.module('kuzzle.dashboard')
         'statInfo',
         'resourceInfo'
       ];
+      $scope.memoryPercent = 0;
+      $scope.cpuPercent = 0;
+      $scope.statisticSeries = [];
+      $scope.newStatValue = [];
 
       $scope.init = function () {
-        if (isOneWidgetSelected(['statInfo', 'resourceInfo']) && typeof google.visualization === 'undefined') {
-          google.charts.load('current', {packages: ['corechart', 'line', 'gauge']});
-        }
         if ($scope.isWidgetSelected('statInfo')) {
           serverApi.getNowTimestamp()
             .then(function (response) {
               $scope.nowTimestamp = response;
-              $scope.refreshStatistics();
+              return serverApi.getStatistics($scope.nowTimestamp - $scope.timeFrame);
+            })
+            .then(function (response) {
+              $scope.statisticSeries = arrangeStatistics(response);
+              return serverApi.getNowTimestamp();
+            })
+            .then(function (response) {
+              $scope.nowTimestamp = response;
+              $timeout($scope.refreshStatistics, 5000);
             });
         }
         if (isOneWidgetSelected(['serverInfo', 'pluginInfo', 'apiInfo', 'resourceInfo'])) {
@@ -39,25 +48,23 @@ angular.module('kuzzle.dashboard')
               $scope.previousServerInfo = $scope.serverInfo;
             }
             $scope.serverInfo = response;
-            drawGraph();
+            $scope.memoryPercent = computeMemoryUsePercent();
+            $scope.cpuPercent = computeCpuUsePercent();
             $timeout($scope.refreshServerInfo, 2000);
           });
       };
 
-      $scope.refreshStatistics = function (userAction) {
-        if (typeof userAction === 'undefined') {
-          userAction = false;
-        }
-        serverApi.getStatistics($scope.nowTimestamp - $scope.timeFrame)
+      $scope.refreshStatistics = function () {
+        serverApi.getStatistics()
           .then(function (response) {
-            $scope.statistics = response;
-            drawGraph();
+            var temp = arrangeStatistics(response);
+            if ($scope.newStatValue.length === 0 || $scope.newStatValue[0].data[0][0] !== temp[0].data[0][0]) {
+              $scope.newStatValue = temp;
+            }
             serverApi.getNowTimestamp()
               .then(function (response) {
                 $scope.nowTimestamp = response;
-                if (!userAction) {
-                  $timeout($scope.refreshStatistics, 2000);
-                }
+                $timeout($scope.refreshStatistics, 5000);
               });
           });
       };
@@ -79,80 +86,33 @@ angular.module('kuzzle.dashboard')
       /** PRIVATE METHODS **/
 
       var inArray = jQuery.inArray;
-      var grep = jQuery.grep;
 
-      var flattenStatistics = function (statistics) {
-        var dataArray = [];
-        var statisticProperties = ['x', 'connections', 'completedRequests', 'failedRequests', 'ongoingRequests'];
-        var property = '';
-
+      var arrangeStatistics = function (statistics) {
+        var series = [
+          {name: 'Connections', data: []},
+          {name: 'Completed', data: []},
+          {name: 'Failed', data: []},
+          {name: 'Ongoing', data: []}
+        ];
+        var statisticProperties = ['connections', 'completedRequests', 'failedRequests', 'ongoingRequests'];
 
         for (var i = 0; i < statistics.length; i++) {
-          dataArray[i] = [i * 10, 0, 0, 0, 0];
-          for (var item = 1; item < statisticProperties.length; item++) {
-            property = statisticProperties[item];
-            if (
-              statistics[i].hasOwnProperty(property)
-            ) {
+          var timestamp = new Date(statistics[i].timestamp);
+          for (var item = 0; item < statisticProperties.length; item++) {
+            var current = 0;
+            var property = statisticProperties[item];
+            if (statistics[i].hasOwnProperty(property)) {
               for (var protocol in statistics[i][property]) {
-                if (statistics[i][property].hasOwnProperty(protocol) &&
-                  statistics[i][property][protocol] !== null) {
-                  dataArray[i][item] += statistics[i][property][protocol];
+                if (statistics[i][property].hasOwnProperty(protocol) && statistics[i][property][protocol] !== null) {
+                  current += statistics[i][property][protocol];
                 }
               }
-            } else {
-              dataArray[i][item] = 0;
             }
+            series[item].data.push([(timestamp).getTime(), current]);
           }
+
         }
-        return dataArray;
-      };
-
-      var drawTrendlines = function () {
-        if ($scope.isWidgetSelected('statInfo') && typeof $scope.statistics !== 'undefined') {
-          var statisticData = new google.visualization.DataTable();
-          statisticData.addColumn('number', 'X');
-          statisticData.addColumn('number', 'Connections');
-          statisticData.addColumn('number', 'Completed');
-          statisticData.addColumn('number', 'Failed');
-          statisticData.addColumn('number', 'Ongoing');
-
-          statisticData.addRows(flattenStatistics($scope.statistics));
-
-          var statisticOptions = {
-            tooltip: {isHtml: true},
-            hAxis: {
-              title: 'Time (seconds)'
-            },
-            vAxis: {
-              title: 'Number of requests'
-            },
-            colors: ['#00FF00', '#007329', '#AB0D06', '#0000FF']
-          };
-
-          var statisticChart = new google.visualization.LineChart(document.getElementById('statistics_graph'));
-          statisticChart.draw(statisticData, statisticOptions);
-        }
-        if ($scope.isWidgetSelected('resourceInfo') && typeof $scope.serverInfo !== 'undefined') {
-          var memory = computeMemoryUsePercent();
-          var cpu = computeCpuUsePercent();
-          var resourceData = google.visualization.arrayToDataTable([
-            ['Label', 'Value'],
-            ['Memory', memory],
-            ['CPU', cpu]
-          ]);
-
-          var resourceOptions = {
-            width: 400, height: 250,
-            redFrom: 90, redTo: 100,
-            yellowFrom: 75, yellowTo: 90,
-            minorTicks: 5
-          };
-
-          var resourceChart = new google.visualization.Gauge(document.getElementById('resources_gauge'));
-
-          resourceChart.draw(resourceData, resourceOptions);
-        }
+        return series;
       };
 
       var computeMemoryUsePercent = function () {
@@ -207,9 +167,5 @@ angular.module('kuzzle.dashboard')
           }
         }
         return false;
-      };
-
-      var drawGraph = function () {
-        google.charts.setOnLoadCallback(drawTrendlines);
       };
     }]);

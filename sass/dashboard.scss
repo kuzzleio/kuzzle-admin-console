@@ -1,24 +1,32 @@
 .dashboard-container {
-  .headline-actions {
-    float: right;
-    display: inline;
+  *, *:before, *:after {box-sizing:  border-box !important;}
 
-    .glyphicon {
-      cursor: pointer;
-      font-size: 0.8em;
-      margin-right: 5px;
-    }
+  .panel {
   }
+
+  .dashboard-row {
+    -moz-column-width: 24em;
+    -webkit-column-width: 24em;
+    -moz-column-gap: 1em;
+    -webkit-column-gap:1em;
+  }
+
   .dashboard-widget {
     .panel {
-      margin-bottom: 10px;
       background-color: #fff;
       box-shadow: 0 0 0 #000;
       border-color: #eee;
       border-bottom: 2px solid #e4eaec;
       border-radius: 3px;
+      display: inline-block;
+      margin: .5em;
+      padding:  0;
+      width:98%;
 
       .panel-heading {
+        background-color: #00757f;
+        border: none;
+        padding: 10px 15px;
 
         .panel-title {
           font-size: 1.2em;
@@ -31,6 +39,16 @@
           }
         }
       }
+    }
+    .gauge {
+      min-width: 310px;
+      max-width: 400px;
+      height: 300px;
+      margin: 0 auto;
+    }
+    .chart {
+      height: 400px;
+      min-width: 310px;
     }
   }
 }
