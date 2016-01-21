@@ -12,7 +12,8 @@ module.exports = function () {
     this.browser.waitForElementByCss('button[type="submit"]', 1000)
       .then(() => {
         callback();
-      }, (error) => {
+      })
+      .then(null, (error) => {
         this.takeScreenshot('login-button')
           .fin(() => {
             callback.fail(error);
