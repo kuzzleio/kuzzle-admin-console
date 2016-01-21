@@ -106,6 +106,7 @@ exports.config = {
     cucumberOpts: {
         require: [
           './features/step_definitions/common/authentication.js',
+          './features/step_definitions/storage/browseData.js',
           './features/support/hooks.js'
         ],
         // Enable this config to treat undefined definitions as warnings.

@@ -19,6 +19,7 @@ module.exports = function () {
       .setValue('[name=username]', c.username)
       .setValue('[name=password]', c.password)
       .click('[type=submit]')
+      .pause(1000)
       .call(callback)
   });
 
@@ -64,32 +65,19 @@ module.exports = function () {
         assert.equal(text,  'Hello ' + c.username, 'username in user-menu does not match the one provided for authentication');
       })
       .call(callback);
-
-
-    //this.browser.assert.url({ hash: '#/' }, 'wrong url');
-    //var cookieContent = this.browser.getCookie(c.authCookieName);
-    //var sessionObject = JSON.parse(decodeURIComponent(cookieContent));
-    //
-    //this.browser.assert.evaluate(!!sessionObject.id + ' == true;', true,
-    //  'session has no ID');
-    //this.browser.assert.evaluate('"' + sessionObject.userId + '";', c.username,
-    //  'username in session does not match the one provided for authentication');
-    //this.browser.assert.text('user-menu .username', 'Hello ' + c.username,
-    //  'username in user-menu does not match the one provided for authentication');
   });
 
   this.Then(/^I am logged out$/, function (callback) {
     browser
+      .pause(1000)
       .getCookie(c.authCookieName)
       .then(cookie => {
-        console.log(cookie);
-        //var sessionObject = JSON.parse(decodeURIComponent(cookie));
+        assert(!cookie, 'Session cookie was not destroyed');
+      })
+      .waitForExist('user-menu .username', 500, true)
+      .then((doesNotExist) => {
+        assert(doesNotExist, 'User menu is still present on the page. Expected not to be on the login page')
       })
       .call(callback);
-
-    //var cookieContent = this.browser.getCookie(c.authCookieName);
-    //
-    //this.browser.assert.evaluate(!!cookieContent + ' == false;', true,
-    //  'session cookie was not destroyed');
   });
 };
