@@ -22,9 +22,6 @@ docker-compose-custom.yml
 # vagrant
 /.vagrant
 
-# Tests
-features/screenshots/*.png
-
 # Other
 .DS_STORE
 *#
