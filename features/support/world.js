@@ -1,7 +1,6 @@
 var
   wd = require('wd'),
-  // Because wd.remotePromise just doesn't work ....
-  remote = wd.remote(),
+  remote = wd.promiseRemote(),
   fixtures = require('../fixtures.json'),
   config = require('./config.js'),
   Kuzzle = require('kuzzle-sdk'),
@@ -31,16 +30,18 @@ exports.World = function World(callback) {
   this.kuzzle = new Kuzzle(kuzzleUrl, this.index);
 
   // run the callback when we are done do cucumber knows we are ready
-  this.browser.init({browserName: 'firefox'}, function () {
-    this.browser.windowSize('current', 1024, 768, function () {
-      callback();
+  this.browser.init({browserName: 'firefox'})
+    .then(() => {
+      return this.browser.windowSize('current', 1024, 768);
     })
-  }.bind(this));
+    .then(() => {
+      callback();
+    });
 
 
   /* DEFINE SHORTCUTS */
   this.visit = function (url) {
-    return q.ninvoke(this.browser, 'get', this.baseUrl + url);
+    return this.browser.get(this.baseUrl + url);
   };
 
   this.takeScreenshot = function (id) {
@@ -50,7 +51,7 @@ exports.World = function World(callback) {
       id = Math.random();
     }
 
-    q.ninvoke(this.browser, 'takeScreenshot')
+    this.browser.takeScreenshot()
       .then((data) => {
         fs.writeFile('features/screenshots/' + id + '.png', data, 'base64', function () {
           return deferred.resolve();
@@ -59,18 +60,4 @@ exports.World = function World(callback) {
 
     return deferred.promise;
   };
-
-  this.waitForElementByCss = function (element, timeout) {
-    var deferred = q.defer();
-
-    this.browser.waitForElementByCss(element, timeout, function (error) {
-      if (error) {
-        return deferred.reject(error);
-      }
-
-      deferred.resolve()
-    });
-
-    return deferred.promise;
-  }
 };

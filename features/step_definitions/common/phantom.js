@@ -9,12 +9,11 @@ module.exports = function () {
   });
 
   this.Then(/^I have a login button$/, function(callback) {
-    this.waitForElementByCss('button[type="submit"]', 1000)
+    this.browser.waitForElementByCss('button[type="submit"]', 1000)
       .then(() => {
         callback();
-      })
-      .catch((error) => {
-        this.takeScreenshot('test4')
+      }, (error) => {
+        this.takeScreenshot('login-button')
           .fin(() => {
             callback.fail(error);
           });
