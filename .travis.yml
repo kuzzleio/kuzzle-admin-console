@@ -10,7 +10,7 @@ before_install:
   - sudo mv docker-compose-bin /usr/local/bin/docker-compose
   - sudo service docker restart ; sleep 10
 script:
-  - docker-compose -f docker-compose/test.yml run kuzzleBo
+  - docker-compose -f docker-compose/test-travis.yml run kuzzleBo
 notifications:
   webhooks:
     urls:

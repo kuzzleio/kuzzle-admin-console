@@ -4,6 +4,7 @@ Feature: Test authentication
 
   Scenario: Log a user in when she provides correct credentials
     Given I go to the login page
+    Then I see the login page
     And I authenticate
     Then I am authenticated
 

@@ -1,4 +1,5 @@
 var c = require('../../support/config.js');
+var assert = require('assert');
 
 module.exports = function () {
   this.Given(/^I go to the login page$/, function (callback) {
@@ -18,7 +19,7 @@ module.exports = function () {
       .setValue('[name=username]', c.username)
       .setValue('[name=password]', c.password)
       .click('[type=submit]')
-      .call(callback);
+      .call(callback)
   });
 
   this.Given(/^I click the logout button$/, function (callback) {
@@ -29,43 +30,40 @@ module.exports = function () {
 
   this.Then(/^I see the login page$/, function(callback) {
     browser
-      .getUrl().then(url => {
-        if (url !== this.baseUrl + '/#/login') {
-          callback.fail('wrong url');
-        }
+      .isVisible('input[name=username]')
+      .then((isVisible) => {
+        assert(isVisible, 'Element username is not visible');
       })
-      .isVisible('input[name=username]').then((isVisible) => {
-        if (!isVisible) {
-          callback.fail('Element username not visible');
-        }
+      .isVisible('input[name=password]')
+      .then((isVisible) => {
+        assert(isVisible, 'Element password is not visible');
       })
-      .isVisible('input[name=password]').then((isVisible) => {
-        if (!isVisible) {
-          callback.fail('Element password not visible');
-        }
-      })
-      .isVisible('button[type=submit]').then((isVisible) => {
-        if (!isVisible) {
-          callback.fail('Button submit not visible');
-        }
+      .isVisible('button[type=submit]')
+      .then((isVisible) => {
+        assert(isVisible, 'Element submit is not visible');
       })
       .call(callback);
   });
 
   this.Then(/^I am authenticated$/, function (callback) {
     browser
-      .getUrl().then(url => {
-        if (url !== this.baseUrl + '/#/') {
-          callback.fail('wrong url');
-        }
-      })
-      .getCookie(c.authCookieName).then(cookie => {
-        var sessionObject = JSON.parse(decodeURIComponent(cookie));
+      .waitForExist('.menubar.navbar', 2000)
+      .getCookie(c.authCookieName)
+      .then(cookie => {
+        var sessionObject;
 
-        console.log(sessionObject);
+        assert(cookie, 'Cookie is not set');
+        sessionObject = JSON.parse(decodeURIComponent(cookie.value));
+
+        assert(sessionObject.id, 'session has no ID');
+        assert(sessionObject.userId, 'username in session does not match the one provided for authentication');
+      })
+      .waitForText('user-menu .username', 500)
+      .getText('user-menu .username')
+      .then(text => {
+        assert.equal(text,  'Hello ' + c.username, 'username in user-menu does not match the one provided for authentication');
       })
       .call(callback);
-
 
 
     //this.browser.assert.url({ hash: '#/' }, 'wrong url');
@@ -82,12 +80,8 @@ module.exports = function () {
 
   this.Then(/^I am logged out$/, function (callback) {
     browser
-      .getUrl().then(url => {
-        if (url !== this.baseUrl + '/#/login') {
-          return callback.fail('wrong url');
-        }
-      })
-      .getCookie(c.authCookieName).then(cookie => {
+      .getCookie(c.authCookieName)
+      .then(cookie => {
         console.log(cookie);
         //var sessionObject = JSON.parse(decodeURIComponent(cookie));
       })
