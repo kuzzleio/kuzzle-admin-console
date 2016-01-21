@@ -6,12 +6,7 @@ var
 
 var hooks = function () {
 
-  this.After(function (callback) {
-        console.log('after hook');
-        callback();
-    });
   this.Before('@dummyBefore', function (scenario, callback) {
-    console.log('dummy hook');
     callback();
   });
 

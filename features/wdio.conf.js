@@ -24,7 +24,7 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        './features/phantom.feature'
+        './authentication.feature'
     ],
     // Patterns to exclude.
     exclude: [
@@ -105,7 +105,7 @@ exports.config = {
     // If you are using Cucumber you need to specify where your step definitions are located.
     cucumberOpts: {
         require: [
-          './features/step_definitions/common/phantom.js',
+          './features/step_definitions/common/authentication.js',
           './features/support/hooks.js'
         ],
         // Enable this config to treat undefined definitions as warnings.

@@ -32,19 +32,8 @@ module.exports = function (grunt) {
       options: {
         livereload: true
       }
-    },
-    phantom: {
-      cucumber: {}
-    },
-    cucumberjs: {
-      files: 'features/phantom.feature',
-        options: {
-        steps: 'features/step_definitions/common/phantom.js',
-        format: 'pretty'
-      }
     }
   });
 
-  grunt.registerTask('test', ['phantom', 'cucumberjs']);
   grunt.registerTask('default', ["sass"]);
 };
