@@ -6,10 +6,6 @@ var
 
 var hooks = function () {
 
-  this.Before('@dummyBefore', function (scenario, callback) {
-    callback();
-  });
-
   this.Before('@createIndex', function (scenario, callback) {
     initIndex.call(this, callback);
   });
