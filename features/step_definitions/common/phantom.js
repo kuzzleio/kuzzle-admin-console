@@ -1,21 +1,20 @@
 module.exports = function () {
-  this.World = require('../../support/world.js').World;
 
   this.Given(/^I go to the login page$/, function (callback) {
-    this.visit('#/login')
-      .fin(() => {
-        callback();
-      });
+    browser
+      .url(this.baseUrl + '#/login')
+      .call(callback);
   });
 
   this.Then(/^I have a login button$/, function(callback) {
-    this.browser.waitForElementByCss('button[type="submit"]', 1000)
+    browser
+      .waitForVisible('button[type="submit"]', 5000)
       .then(() => {
         callback();
       })
       .then(null, (error) => {
-        this.takeScreenshot('login-button')
-          .fin(() => {
+        browser.saveScreenshot('./login-btn.png')
+          .then(() => {
             callback.fail(error);
           });
       });
