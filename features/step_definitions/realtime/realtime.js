@@ -41,10 +41,12 @@ module.exports = function () {
       .call(callback)
   });
 
-  // this.Given(/^I unsubscribe from the collection$/, {timeout: 20 * 1000}, function (callback) {
-  //   this.browser.pressButton('.filters button.btn-unsubscribe', callback);
-  // });
-  //
+  this.Given(/^I unsubscribe from the collection$/, function (callback) {
+    browser
+      .click('.filters button.btn-unsubscribe')
+      .call(callback)
+  });
+
   this.Then(/^I am subscribed$/, function (callback) {
     browser
       .waitForText('messages ul.message-list li.message-item:last-child code.document-id', 500)
@@ -145,95 +147,56 @@ module.exports = function () {
   });
 
   this.Given(/^I create a persistent document$/, function (callback) {
-    var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/_create';
-
     world.kuzzle
       .dataCollectionFactory(world.collection)
-      .createDocumentPromise('toto', testDocument)
+      .createDocumentPromise(testDocument)
       .then((response) => {
-        console.log(response);
-        // assert(response.result, 'Expected Kuzzle response to contain a result');
-        world.currentDocumentId = response._id;
+        world.currentDocumentId = response.id;
         callback();
       })
       .catch((error) => {
-        console.log(error);
+        console.log('Error creating new document', error);
+        callback.fail();
       });
-
-    // request({
-    //   method: 'POST',
-    //   uri: url,
-    //   body: testDocument,
-    //   json: true
-    // }, (error, response, body) => {
-    //   if (error) {
-    //     throw new Error('Error creating new document on  '+ url + ': ' + error);
-    //   }
-    //
-    //   world.currentDocumentId = body.result._id;
-    //
-    //   setTimeout(() => {
-    //     callback();
-    //   }, 1000);
-    // });
   });
 
   this.Given(/^I publish a volatile message$/, function (callback) {
-    var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection;
-
-    request({
-      method: 'POST',
-      uri: url,
-      body: testDocument,
-      json: true
-    }, (error, response, body) => {
-      if (error) {
-        throw new Error('Error publishing volatile message on  '+ url + ': ' + error);
-      }
+    world.kuzzle
+      .dataCollectionFactory(world.collection)
+      .publishMessage(world.currentDocumentId, testDocument);
 
       setTimeout(() => {
         callback();
-      }, 1000);
-    });
+      }, 200);
   });
 
    this.Given(/^I update a persistent document$/, function (callback) {
      assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-     var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/' + world.currentDocumentId;
-
-     request({
-       method: 'PUT',
-       uri: url,
-       body: updatedTestDocument,
-       json: true
-       }, error => {
-         if (error) {
-           throw new Error('Error updating new document on  '+ url + ': ' + error);
-         }
-
-         setTimeout(() => {
-           callback();
-         }, 1000);
+     world.kuzzle
+       .dataCollectionFactory(world.collection)
+       .updateDocumentPromise(world.currentDocumentId, updatedTestDocument)
+       .then((response) => {
+         callback();
+       })
+       .catch((error) => {
+         console.log('Error updating document', error);
+         callback.fail();
        });
    });
 
   this.Given(/^I delete a persistent document$/, function (callback) {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-    var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/' + world.currentDocumentId;
-
-    request({
-      method: 'DELETE',
-      uri: url
-      }, (error, response, body) => {
-        if (error) {
-          throw new Error('Error deleting new document on  '+ url + ': ' + error);
-        }
-
-        setTimeout(() => {
-          callback();
-        }, 1000);
+    world.kuzzle
+      .dataCollectionFactory(world.collection)
+      .deleteDocumentPromise(world.currentDocumentId)
+      .then((response) => {
+        callback();
+      })
+      .catch((error) => {
+        console.log('Error deleting document', error);
+        callback.fail();
       });
   });
 
