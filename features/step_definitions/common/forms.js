@@ -1,3 +1,5 @@
+var assert = require('assert');
+
 module.exports = function () {
   this.Then(/^I fill the input "([^"]*)" with "([^"]*)"$/, function (id, value, callback) {
     browser

@@ -33,6 +33,8 @@ Feature: Test browse data pages
     And I fill the input "last" with "last-bar"
     And I fill the input "username" with "username-bar"
     And I click on "create" button
+    # Wait 1sec for let ES index the new doc
+    Then I'm waiting 1 sec
     Given I am on browse data page for a collection
     Then I have a list with "3" elements
 
@@ -45,11 +47,11 @@ Feature: Test browse data pages
     And I delete the last element in list
     Given I am on browse data page for a collection
     Then I have a list with "1" elements
-#
-#  @cleanDb
-#  Scenario: Edit a document
-#    Given I am on page for edit document "alovelace"
-#    Then I fill the input "username" with "foo"
-#    And I click on "update" button
-#    Given I am on page for edit document "alovelace"
-#    Then the field "username" has the value "foo"
+
+  @cleanDb
+  Scenario: Edit a document
+    Given I am on page for edit document "alovelace"
+    Then I fill the input "username" with "foo"
+    And I click on "update" button
+    Given I am on page for edit document "alovelace"
+    Then the field "username" has the value "foo"

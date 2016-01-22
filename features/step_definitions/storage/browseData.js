@@ -54,9 +54,10 @@ module.exports = function () {
    });
 
 
-  this.Then(/^I delete the last element in list and I cancel$/, {timeout: 20 * 1000}, function (callback) {
+  this.Then(/^I delete the last element in list and I cancel$/, function (callback) {
     browser
-      .waitForVisible('documents-inline', 1000)
+      .waitForVisible('documents-inline :last-child .panel .edit.dropdown-toggle', 1000)
+      .click('documents-inline :last-child .panel .edit.dropdown-toggle')
       .click('documents-inline :last-child .panel .delete-document')
       .waitForVisible('documents-inline :last-child .panel .cancel-delete-document', 1000)
       .click('documents-inline :last-child .panel .cancel-delete-document')
@@ -68,19 +69,23 @@ module.exports = function () {
       });
   });
 
-   this.Then(/^I delete the last element in list$/, {timeout: 20 * 1000}, function (callback) {
-     browser
-       .waitForVisible('documents-inline', 1000)
-       .click('documents-inline :last-child .panel .delete-document')
-       .call(() => {
-         // wait 5sec because we buffer delete for 5sec
-         setTimeout(() => {
-           callback();
-         }, 5000);
-       });
-   });
-  //
-  // this.Then(/^I am on page for edit document "([^"]*)"$/, {timeout: 20 * 1000}, function (id, callback) {
-  //   this.visit('#/storage/' + this.collection + '/'+ id, callback);
-  // });
+  this.Then(/^I delete the last element in list$/, function (callback) {
+    browser
+      .waitForVisible('documents-inline :last-child .panel .edit.dropdown-toggle', 1000)
+      .click('documents-inline :last-child .panel .edit.dropdown-toggle')
+      .click('documents-inline :last-child .panel .delete-document')
+      .call(() => {
+        // wait 5sec because we buffer delete for 5sec
+        setTimeout(() => {
+          callback();
+        }, 5000);
+      });
+  });
+
+  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
+    browser
+      .url('/#/storage/' + world.collection + '/'+ id)
+      .waitForVisible('.edit-id')
+      .call(callback)
+  });
 };
