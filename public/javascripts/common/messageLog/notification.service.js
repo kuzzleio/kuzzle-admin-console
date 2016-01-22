@@ -2,7 +2,6 @@ angular.module('kuzzle.realtime')
 .service('notification', [function () {
   return {
     notificationToMessage: function (notification) {
-      console.log(notification);
       var messageItem = {
         id:  notification.result._id,
         text: '',
