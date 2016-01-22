@@ -1,5 +1,5 @@
-angular.module('kuzzle.indexesDropDownSearch', [])
-  .controller('indexesDropDownSearchCtrl', [
+angular.module('kuzzle.collectionsDropDownSearch', [])
+  .controller('collectionsDropDownSearchCtrl', [
     '$scope',
     'indexesApi',
     function ($scope, indexesApi) {
@@ -8,15 +8,17 @@ angular.module('kuzzle.indexesDropDownSearch', [])
       $scope.index = indexesApi.get();
 
       $scope.onPressEnter = function () {
+        if (!$scope.selectVolatileCollections)
+          return;
+
         $scope.isOpen = false;
         $scope.selected = $scope.search;
         $scope.search = '';
         $scope.onClickItem({item: $scope.selected});
       };
-
     }
   ])
-  .directive('indexesDropDownSearch', function () {
+  .directive('collectionsDropDownSearch', function () {
     return {
       restrict: 'E',
       scope: {
@@ -28,9 +30,10 @@ angular.module('kuzzle.indexesDropDownSearch', [])
         items: '=',
         onClickItem: '&',
         currentItem: '=',
-        placeholder: '@'
+        placeholder: '@',
+        selectVolatileCollections: '='
       },
-      controller: 'indexesDropDownSearchCtrl',
-      templateUrl: '/javascripts/indexes/indexesDropDownSearch/indexesDropDownSearch.tpl.html'
+      controller: 'collectionsDropDownSearchCtrl',
+      templateUrl: '/javascripts/collection/collectionsDropDownSearch/collectionsDropDownSearch.tpl.html'
     };
   });

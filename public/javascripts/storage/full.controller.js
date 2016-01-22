@@ -11,7 +11,8 @@ angular.module('kuzzle.storage')
     'schema',
     'previousState',
     '$window',
-    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window) {
+    'indexesApi',
+    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, indexesApi) {
 
       // Define the schema collection. Allow to display a JSON representation into a form
       $scope.schema = {};
@@ -47,10 +48,17 @@ angular.module('kuzzle.storage')
        * @param action Can be 'edit' or 'create'
        */
       $scope.init = function (action) {
-        
-        if ($stateParams.index === undefined) {
-          $state.go('404');
-        }
+
+        indexesApi.list()
+          .then(function(indexes) {
+            if (indexes.indexOf($stateParams.index) === -1) {
+              $state.go('404');
+            }
+            else {
+              indexesApi.set($stateParams.index);
+            }
+          });
+
 
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
@@ -116,7 +124,7 @@ angular.module('kuzzle.storage')
           .catch(function () {
             // If there is no document matching the id
             $scope.isLoading = false;
-          })
+          });
       };
 
       /**
@@ -141,7 +149,7 @@ angular.module('kuzzle.storage')
           })
           .catch(function (error) {
             console.error(error);
-          })
+          });
       };
 
       /**
@@ -273,7 +281,7 @@ angular.module('kuzzle.storage')
           document = $scope.document.body;
         }
 
-        return document
+        return document;
       };
 
       /**

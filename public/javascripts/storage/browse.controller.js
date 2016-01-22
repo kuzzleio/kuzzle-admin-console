@@ -6,15 +6,24 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'collectionApi',
-    function ($scope, $http, $stateParams, $state, collectionApi) {
-
+    'indexesApi',
+    function ($scope, $http, $stateParams, $state, collectionApi, indexesApi) {
+      var v = indexesApi.list();
       $scope.collections = [];
       $scope.stateParams = $stateParams;
 
+
       $scope.init = function () {
-        if ($stateParams.index === undefined) {
-          $state.go('404');
-        }
+        indexesApi.list()
+          .then(function(indexes) {
+            if (indexes.indexOf($stateParams.index) === -1) {
+              $state.go('404');
+            }
+            else {
+              indexesApi.set($stateParams.index);
+            }
+          });
+
         collectionApi.list()
           .then(function (response) {
             $scope.collections = response.stored.map(function (collection) {

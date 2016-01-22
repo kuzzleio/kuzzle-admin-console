@@ -1,9 +1,9 @@
 <div class="modal-header">
-    <h3 class="modal-title"><strong>Empty</strong> collection <span ng-bind="collection"></span></h3>
+    <h3 class="modal-title"><strong>Empty</strong> collection <span ng-bind="collection.name"></span></h3>
 </div>
 <div class="modal-body">
     <p>This action CANNOT be undone.</p>
-    <p>This will permanently <strong>empty</strong> the collection <strong ng-bind="collection"></strong>.</p>
+    <p>This will permanently <strong>empty</strong> the collection <strong ng-bind="collection.name"></strong>.</p>
     <p></p>
     <p>Please type in the name of the collection to confirm.</p>
 
@@ -13,7 +13,7 @@
 </div>
 <div class="modal-footer">
     <div class="actions-group">
-        <button class="btn btn-danger control" type="button" ng-click="empty()" ng-disabled="collection !== emptyName">
+        <button class="btn btn-danger control" type="button" ng-click="empty()" ng-disabled="collection.name !== emptyName">
             Empty the collection
         </button>
         <a class="control" ng-click="cancelModal()">Cancel</a>

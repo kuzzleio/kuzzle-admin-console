@@ -23,12 +23,12 @@ angular.module('kuzzle.realtime')
         {field: null, equal: comparators[0], value: null}
       ]
     }];
-  }
+  };
 
   return {
     getInitialBasicFilter: function () {
-        return initialBasicFilter();
-      },
+      return initialBasicFilter();
+    },
     getInitialAdvancedFilter: function () {
       return '';
     },
@@ -44,5 +44,5 @@ angular.module('kuzzle.realtime')
     documents: [],
     messageToPublish: '',
     messages: [firstMessage]
-  }
+  };
 }]);

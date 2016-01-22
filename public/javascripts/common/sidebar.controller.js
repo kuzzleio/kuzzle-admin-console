@@ -1,26 +1,28 @@
-angular.module('kuzzle.indexes')
+angular.module('kuzzle')
 
-  .controller('indexesCtrl', [
+  .controller('sidebarCtrl', [
     '$scope',
     '$http',
     '$stateParams',
     '$state',
     'indexesApi',
     '$window',
-    'Notification',    
-    function ($scope, $http, $stateParams, $state, indexesApi, $window, notification) {
+    '$log',
+    function ($scope, $http, $stateParams, $state, indexesApi, $window, $log) {
 
-      $scope.index = '';
+      $scope.index = indexesApi.get();
       $scope.indexes = [];
       $scope.selected = false;
       $scope.stateParams = $stateParams;
 
       $scope.init = function () {
-        $scope.index = $scope.selected = $stateParams.index;
+        $scope.selected = $scope.index = $stateParams.index;
+
         if ($stateParams.index !== undefined) {
           indexesApi.select($stateParams.index);
         }
-        indexesApi.list(true)
+
+        indexesApi.list(true, true)
           .then(function (indexes) {
             $scope.indexes = indexes;
             if (indexes.indexOf($stateParams.index) === -1 && $stateParams.index !== undefined) {
@@ -28,20 +30,7 @@ angular.module('kuzzle.indexes')
             }
           })
           .catch(function (error) {
-            console.error(error);
-          });
-      };
-
-      /**
-       * Try to create an index
-       */
-
-      $scope.create = function () {
-        var index = $scope.index;
-        indexesApi.create(index, true)
-          .then(function(index){
-            $scope.index = '';
-            $window.history.back();
+            $log.error(error);
           });
       };
 
@@ -53,8 +42,9 @@ angular.module('kuzzle.indexes')
         indexesApi.select(index, true)
           .then(function(name) {
             $scope.index = $scope.selected = name;
-            $state.go('collection.browse', {index: name});
-          })
+            indexesApi.set($scope.index);
+            $state.transitionTo($state.current, {index: name});
+          });
       };
 
       /**
