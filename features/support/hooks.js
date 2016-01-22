@@ -36,17 +36,22 @@ var hooks = function () {
 };
 
 var initIndex = function (callback) {
-  var query = {
-    controller: 'admin',
-    action: 'createIndex',
-    index: world.index
-  };
+  var
+    query = {
+      controller: 'admin',
+      action: 'createIndex',
+      index: world.index
+    },
+    timeoutCallback = function () {
+      setTimeout(() => {
+        callback();
+      }, 1000)
+    };
+
   world.kuzzle
     .queryPromise(query, {})
-    .then(callback)
-    .catch(() => {
-      callback()
-    })
+    .then(timeoutCallback)
+    .catch(timeoutCallback);
 };
 
 var initCollection = function (callback) {
@@ -56,18 +61,21 @@ var initCollection = function (callback) {
     index: world.index
   };
 
+  var timeoutCallback = function () {
+    setTimeout(() => {
+      callback();
+    }, 1000)
+  };
+
   world.kuzzle
-    .dataCollectionFactory(world.index)
+    .dataCollectionFactory(world.collection)
     .deletePromise()
     .then(() => {
       return world.kuzzle
         .queryPromise(query, fixtures[world.index][world.collection])
     })
-    .then(callback)
-    .catch(() => {
-      callback();
-    })
-
+    .then(timeoutCallback)
+    .catch(timeoutCallback);
 };
 
 module.exports = hooks;
