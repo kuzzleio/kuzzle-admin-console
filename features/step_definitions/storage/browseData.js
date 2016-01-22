@@ -85,7 +85,7 @@ module.exports = function () {
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
       .url('/#/storage/' + world.collection + '/'+ id)
-      .waitForVisible('.edit-id')
+      .waitForVisible('.edit-id', 1000)
       .call(callback)
   });
 };
