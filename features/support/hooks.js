@@ -14,10 +14,12 @@ var hooks = function () {
   });
 
   this.Before('@createIndex', function (scenario, callback) {
+    console.log('@createIndex');
     initIndex.call(this, callback);
   });
 
   this.Before('@cleanDb', function (scenario, callback) {
+    console.log('@cleanDb');
     initCollection.call(this, callback);
   });
 
