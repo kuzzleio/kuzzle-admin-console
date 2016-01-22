@@ -12,10 +12,10 @@ Feature: Test browse data pages
     Given I am on browse data page for a collection
     Then I have a list with "2" elements
 
-#  Scenario: Button create a document
-#    Given I am on browse data page for a collection
-#    When I click on create document button
-#    Then I am on url corresponding to document full view's route
+  Scenario: Button create a document
+    Given I am on browse data page for a collection
+    When I click on create document button
+    Then I am on url corresponding to document full view's route
 #
 #  Scenario: Form for create a new document is well displayed
 #    Given I am on document full view's route

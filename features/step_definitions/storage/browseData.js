@@ -20,21 +20,20 @@ module.exports = function () {
       .call(callback);
   });
 
-  //this.When(/^I click on create document button$/, function (callback) {
-  //  browser
-  //    .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
-  //    .call(callback);
-  //});
-  //
-  //this.Then(/^I am on url corresponding to document full view's route$/, function () {
-  //  this.browser.assert.url(this.baseUrl + '#/storage/' + this.collection + '/add');
-  //
-  //  browser
-  //    .getUrl()
-  //    .then(url => {
-  //
-  //    })
-  //});
+  this.When(/^I click on create document button$/, function (callback) {
+    browser
+      .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
+      .call(callback);
+  });
+
+  this.Then(/^I am on url corresponding to document full view's route$/, function (callback) {
+    browser
+      .getUrl()
+      .then(url => {
+        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/add');
+      })
+      .call(callback);
+  });
   //
   // this.Given(/^I am on document full view's route$/, function (callback) {
   //   this.visit('#/storage/' + this.collection + '/add', callback);
