@@ -55,12 +55,6 @@ var initIndex = function (callback) {
 };
 
 var initCollection = function (callback) {
-  var query = {
-    controller: 'bulk',
-    action: 'import',
-    index: world.index
-  };
-
   var timeoutCallback = function () {
     setTimeout(() => {
       callback();
@@ -71,11 +65,25 @@ var initCollection = function (callback) {
     .dataCollectionFactory(world.collection)
     .deletePromise()
     .then(() => {
-      return world.kuzzle
-        .queryPromise(query, fixtures[world.index][world.collection])
+      return bulk()
     })
     .then(timeoutCallback)
-    .catch(timeoutCallback);
+    .catch(() => {
+      return bulk();
+    })
+    .then(timeoutCallback)
+};
+
+var bulk = function () {
+  var query = {
+    controller: 'bulk',
+    action: 'import',
+    index: world.index,
+    collection: world.collection
+  };
+
+  return world.kuzzle
+    .queryPromise(query, {body: fixtures[world.index][world.collection]})
 };
 
 module.exports = hooks;
