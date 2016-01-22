@@ -8,18 +8,17 @@ var
 var hooks = function () {
 
   this.Before('@createIndex', function (scenario, callback) {
-    console.log('@createIndex');
     initIndex.call(this, callback);
   });
 
   this.Before('@cleanDb', function (scenario, callback) {
-    console.log('@cleanDb');
-
     initCollection.call(this, callback);
   });
 
   this.After('@unsubscribe', function (scenario, callback) {
-    browser.pressButton('.filters button.btn-unsubscribe', callback);
+    browser
+      .click('.filters button.btn-unsubscribe')
+      .call(callback);
 
     if (world.currentRoom) {
       world.currentRoom.unsubscribe();
