@@ -20,10 +20,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  // this.Then(/^I see the collection selector$/, function () {
-  //   this.browser.assert.element('h2.select-collection drop-down-search');
-  // });
-  //
   this.Then(/^I click on the collection selector$/, function (callback) {
     browser
       .pause(500)
@@ -32,10 +28,6 @@ module.exports = function () {
       .call(callback)
   });
 
-  // this.Then(/^I see my collections$/, function () {
-  //   this.browser.assert.text('drop-down-search ul li:last-child', this.collection);
-  // });
-  //
   this.Given(/^I click on a collection$/, function (callback) {
     browser
       .waitForVisible('drop-down-search .dropdown-toggle', 1000)
@@ -107,31 +99,87 @@ module.exports = function () {
       })
       .call(callback)
   });
-  //
-  // this.Then(/^I receive the notification that the document has been deleted$/, function () {
-  //   if (!this.currentDocumentId) {
-  //     callback(new Error('Expected to have the id of the current document'));
-  //     return;
-  //   }
-  //
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-deleted-doc', 'Deleted document');
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
-  // });
-  //
-  // this.Then(/^I receive the notification about the volatile message$/, function () {
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-volatile', 'Received volatile message');
-  // });
-  //
-  // this.Then(/^I receive the notification about the new user entering the room$/, function () {
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-user', 'A new user is listening to this room');
-  // });
-  //
-  // this.Then(/^I receive the notification about the user leaving the room$/, function () {
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-user', 'A user exited this room');
-  // });
-  //
+
+  this.Then(/^I receive the notification that the document has been deleted$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-deleted-doc')
+      .then(text => {
+        assert.equal(text, 'Deleted document');
+      })
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
+  });
+
+  this.Then(/^I receive the notification about the volatile message$/, function (callback) {
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-volatile')
+      .then(text => {
+        assert.equal(text, 'Received volatile message');
+      })
+      .call(callback)
+  });
+
+  this.Then(/^I receive the notification about the new user joining the room$/, function (callback) {
+    browser
+      .waitForExist('messages ul.message-list li.message-item:last-child span.message-user', 2000)
+      .getText('messages ul.message-list li.message-item:last-child span.message-user')
+      .then(text => {
+        assert.equal(text, 'A new user is listening to this room');
+      })
+      .call(callback)
+  });
+
+  this.Then(/^I receive the notification about the user leaving the room$/, function (callback) {
+    browser
+      .waitForExist('messages ul.message-list li.message-item:last-child span.message-user', 2000)
+      .getText('messages ul.message-list li.message-item:last-child span.message-user')
+      .then(text => {
+        assert.equal(text, 'A user exited this room');
+      })
+      .call(callback)
+  });
+
   this.Given(/^I create a persistent document$/, function (callback) {
     var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/_create';
+
+    world.kuzzle
+      .dataCollectionFactory(world.collection)
+      .createDocumentPromise('toto', testDocument)
+      .then((response) => {
+        console.log(response);
+        // assert(response.result, 'Expected Kuzzle response to contain a result');
+        world.currentDocumentId = response._id;
+        callback();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    // request({
+    //   method: 'POST',
+    //   uri: url,
+    //   body: testDocument,
+    //   json: true
+    // }, (error, response, body) => {
+    //   if (error) {
+    //     throw new Error('Error creating new document on  '+ url + ': ' + error);
+    //   }
+    //
+    //   world.currentDocumentId = body.result._id;
+    //
+    //   setTimeout(() => {
+    //     callback();
+    //   }, 1000);
+    // });
+  });
+
+  this.Given(/^I publish a volatile message$/, function (callback) {
+    var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection;
 
     request({
       method: 'POST',
@@ -140,10 +188,8 @@ module.exports = function () {
       json: true
     }, (error, response, body) => {
       if (error) {
-        throw new Error('Error creating new document on  '+ url + ': ' + error);
+        throw new Error('Error publishing volatile message on  '+ url + ': ' + error);
       }
-
-      world.currentDocumentId = body.result._id;
 
       setTimeout(() => {
         callback();
@@ -151,27 +197,6 @@ module.exports = function () {
     });
   });
 
-  // this.Given(/^I publish a volatile message$/, {timeout: 20 * 1000}, function (callback) {
-  //   var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection;
-  //
-  //   request({
-  //     method: 'POST',
-  //     uri: url,
-  //     body: testDocument,
-  //     json: true
-  //   }, (error, response, body) => {
-  //     if (error){
-  //       console.log('Error publishing volatile message on  '+ url + ': ' + error);
-  //       callback(new Error('Error publishing volatile message on  '+ url + ': ' + error));
-  //       return;
-  //     }
-  //
-  //     setTimeout(() => {
-  //       callback();
-  //     }, 1000);
-  //   });
-  // });
-  //
    this.Given(/^I update a persistent document$/, function (callback) {
      assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
@@ -192,45 +217,40 @@ module.exports = function () {
          }, 1000);
        });
    });
-  //
-  // this.Given(/^I delete a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-  //   if (!this.currentDocumentId) {
-  //     callback(new Error('Expected to have the id of the current document'));
-  //     return;
-  //   }
-  //
-  //   var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
-  //
-  //   request({
-  //     method: 'DELETE',
-  //     uri: url
-  //     }, (error, response, body) => {
-  //       if (error){
-  //         console.log('Error deleting new document on  '+ url + ': ' + error);
-  //         callback(new Error('Error deleting new document on  '+ url + ': ' + error));
-  //         return;
-  //       }
-  //
-  //       setTimeout(() => {
-  //         callback();
-  //       }, 1000);
-  //     });
-  // });
-  //
-  // this.Given(/^Someone subscribes to my room$/, function (callback) {
-  //   this.currentRoom = this.kuzzle.dataCollectionFactory(this.collection).subscribe({}, function (error, result) {});
-  //
-  //   setTimeout(() => {
-  //     callback();
-  //   }, 200);
-  // });
-  //
-  // this.Given(/^Someone unsubscribes from the room$/, function (callback) {
-  //   this.currentRoom.unsubscribe();
-  //
-  //   setTimeout(() => {
-  //     this.currentRoom = null;
-  //     callback();
-  //   }, 200);
-  // });
+
+  this.Given(/^I delete a persistent document$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/' + world.currentDocumentId;
+
+    request({
+      method: 'DELETE',
+      uri: url
+      }, (error, response, body) => {
+        if (error) {
+          throw new Error('Error deleting new document on  '+ url + ': ' + error);
+        }
+
+        setTimeout(() => {
+          callback();
+        }, 1000);
+      });
+  });
+
+  this.Given(/^Someone subscribes to my room$/, function (callback) {
+    world.currentRoom = world.kuzzle.dataCollectionFactory(world.collection).subscribe({}, function (error, result) {});
+
+    setTimeout(() => {
+      callback();
+    }, 1000);
+  });
+
+  this.Given(/^Someone unsubscribes from the room$/, function (callback) {
+    world.currentRoom.unsubscribe();
+
+    setTimeout(() => {
+      this.currentRoom = null;
+      callback();
+    }, 200);
+  });
 };

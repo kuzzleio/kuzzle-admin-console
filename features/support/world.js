@@ -14,7 +14,7 @@ var World = {
   currentDocumentId: undefined,
   currentRoom: undefined,
   kuzzleUrl: kuzzleUrl,
-  kuzzle: new Kuzzle(kuzzleUrl, index),
+  kuzzle: new Kuzzle(kuzzleUrl, { defaultIndex: index }),
   baseUrl: wdio.config.baseUrl
 };
 
