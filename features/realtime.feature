@@ -22,7 +22,7 @@ Feature: Test realtime watch data pages
 
   @cleanDb @unsubscribe
   Scenario: Once subscribed, I receive notifications about document creations
-    #Given I clear the message log
+    Given I clear the message log
     And I create a persistent document
     Then I'm waiting 1 sec
     Then I receive the notification that the document has been created

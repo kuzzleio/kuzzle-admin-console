@@ -2,6 +2,7 @@ angular.module('kuzzle.realtime')
 .service('notification', [function () {
   return {
     notificationToMessage: function (notification) {
+      console.log(notification);
       var messageItem = {
         id:  notification.result._id,
         text: '',
@@ -12,7 +13,7 @@ angular.module('kuzzle.realtime')
         canEdit: true
       };
 
-      switch (notification.result.action) {
+      switch (notification.action) {
         case 'publish':
           messageItem.text = 'Received volatile message';
           messageItem.icon = 'send';

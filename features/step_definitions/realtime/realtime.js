@@ -84,7 +84,7 @@ module.exports = function () {
     browser
       .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
       .then(text => {
-        assert.equal(text, 'Created document');
+        assert.equal(text, 'Created new document');
       })
       .getText('messages ul.message-list li.message-item:last-child code.document-id')
       .then(text => {

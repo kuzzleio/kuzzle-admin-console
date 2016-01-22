@@ -6,6 +6,13 @@ var
   world = require('./world.js');
 
 var hooks = function () {
+
+  this.registerHandler('BeforeFeatures', function (event, callback) {
+    browser
+      .setViewportSize({width: 1920, height: 1080})
+      .call(callback);
+  });
+
   this.Before('@createIndex', function (scenario, callback) {
     console.log('@createIndex');
     initIndex.call(this, callback);
