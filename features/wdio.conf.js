@@ -25,7 +25,7 @@ exports.config = {
     //
     specs: [
       './features/authentication.feature',
-      // './features/realtime.feature'
+      './features/realtime.feature'
     ],
     // Patterns to exclude.
     exclude: [
@@ -109,11 +109,11 @@ exports.config = {
           './features/step_definitions/common/authentication.js',
           './features/step_definitions/common/forms.js',
           './features/step_definitions/storage/browseData.js',
-          // './features/step_definitions/realtime/realtime.js',
+           './features/step_definitions/realtime/realtime.js',
           './features/support/hooks.js'
         ],
         // Enable this config to treat undefined definitions as warnings.
-        ignoreUndefinedDefinitions: false,
+        //ignoreUndefinedDefinitions: false,
         // run only certain scenarios annotated by tags
         // tags: ['foo', 'bar']
     },
