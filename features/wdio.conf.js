@@ -55,7 +55,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: silent | verbose | command | data | result | error
-  logLevel: 'verbose',
+  logLevel: 'error',
   //
   // Enables colors for log output.
   coloredLogs: true,
