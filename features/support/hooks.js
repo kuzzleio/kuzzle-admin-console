@@ -36,45 +36,38 @@ var hooks = function () {
 };
 
 var initIndex = function (callback) {
-  request({
-    method: 'PUT',
-    uri: kuzzleUrl + '/api/1.0/' + world.index
-    }, (error) => {
-      if (error) {
-        console.log('Error creating '+ world.index + ' on ' + kuzzleUrl + ': ' + error);
-      }
-
-      setTimeout(() => {
-        callback();
-      }, 1000);
-    });
+  var query = {
+    controller: 'admin',
+    action: 'createIndex',
+    index: world.index
+  };
+  world.kuzzle
+    .queryPromise(query, {})
+    .then(callback)
+    .catch(() => {
+      callback()
+    })
 };
 
 var initCollection = function (callback) {
-  request({
-    method: 'DELETE',
-    uri: kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection
-  }, (error) => {
-    if (error) {
-      console.log('Error deleting '+ world.collection + ': ' + error);
-    }
+  var query = {
+    controller: 'bulk',
+    action: 'import',
+    index: world.index
+  };
 
-    request({
-      method: 'POST',
-      header: {'Content-Type': 'application/json'},
-      uri: kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/_bulk',
-      body: fixtures[world.index][world.collection],
-      json: true
-    }, (error) => {
-      if (error) {
-        console.log('Error bulk-importing fixtures' + error);
-      }
-
-      setTimeout(() => {
-        callback();
-      }, 1000);
+  world.kuzzle
+    .dataCollectionFactory(world.index)
+    .deletePromise()
+    .then(() => {
+      return world.kuzzle
+        .queryPromise(query, fixtures[world.index][world.collection])
     })
-  })
+    .then(callback)
+    .catch(() => {
+      callback();
+    })
+
 };
 
 module.exports = hooks;
