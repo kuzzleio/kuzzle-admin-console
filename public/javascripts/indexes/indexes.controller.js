@@ -23,6 +23,7 @@ angular.module('kuzzle.indexes')
         indexesApi.create(index, true)
           .then(function(index) {
             $scope.index = index;
+            $scope.$emit('indexChanged');
             $window.history.back();
           });
       };

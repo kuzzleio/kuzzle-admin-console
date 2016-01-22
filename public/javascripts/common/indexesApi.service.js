@@ -18,26 +18,21 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         get: function() {
           return currentIndex;
         },
-        list: function (notify, refresh) {
+        list: function (notify) {
           var deferred = $q.defer();
 
-          if (!refresh || currentIndexes.length === 0) {
-            kuzzleSdk.listIndexes(function (error, indexes) {
-              if (error) {
-                if (notify) {
-                  notification.error('Error during indexes listing... Please reload page.');
-                }
-
-                return deferred.reject({error: true, message: error});
+          kuzzleSdk.listIndexes(function (error, indexes) {
+            if (error) {
+              if (notify) {
+                notification.error('Error during indexes listing... Please reload page.');
               }
 
-              currentIndexes = indexes;
-              return deferred.resolve(indexes);
-            });
-          }
-          else {
-            deferred.resolve(currentIndexes);
-          }
+              return deferred.reject({error: true, message: error});
+            }
+
+            currentIndexes = indexes;
+            deferred.resolve(indexes);
+          });
 
           return deferred.promise;
         },

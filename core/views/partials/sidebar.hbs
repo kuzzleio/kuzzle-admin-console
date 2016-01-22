@@ -17,7 +17,7 @@
 
         <!-- Data -->
         <li>
-            <a href data-toggle="collapse" data-target="#menu-data" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
+            <a href data-toggle="collapse" data-target="#menu-data" ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
                 <i class="fa fa-database pull-left"></i>
                 Data
                 <i class="fa fa-fw fa-caret-down pull-right"></i>
@@ -25,7 +25,7 @@
             <ul 
                 id="menu-data" 
                 class="collapse" 
-                ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
+                ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
             >
 
                 <!-- Indexes -->
@@ -37,7 +37,7 @@
 
                 <li>
                     <indexes-drop-down-search
-                        selected="selected"
+                        selected="index"
                         create-label="New index"
                         items="indexes"
                         current-item="index"
@@ -46,6 +46,8 @@
                         placeholder="Find an index">
                     </indexes-drop-down-search>
                 </li>
+
+                <li class="divider"></li>
                 <!-- / Indexes -->
 
 

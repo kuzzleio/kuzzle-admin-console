@@ -1,11 +1,8 @@
 angular.module('kuzzle.indexesDropDownSearch', [])
   .controller('indexesDropDownSearchCtrl', [
     '$scope',
-    'indexesApi',
-    function ($scope, indexesApi) {
+    function ($scope) {
       $scope.isOpen = false;
-
-      $scope.index = indexesApi.get();
 
       $scope.onPressEnter = function () {
         $scope.isOpen = false;
@@ -13,7 +10,6 @@ angular.module('kuzzle.indexesDropDownSearch', [])
         $scope.search = '';
         $scope.onClickItem({item: $scope.selected});
       };
-
     }
   ])
   .directive('indexesDropDownSearch', function () {

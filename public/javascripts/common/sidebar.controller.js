@@ -10,13 +10,10 @@ angular.module('kuzzle')
     '$log',
     function ($scope, $http, $stateParams, $state, indexesApi, $window, $log) {
 
-      $scope.index = indexesApi.get();
-      $scope.indexes = [];
-      $scope.selected = false;
       $scope.stateParams = $stateParams;
 
       $scope.init = function () {
-        $scope.selected = $scope.index = $stateParams.index;
+        $scope.index = $stateParams.index;
 
         if ($stateParams.index !== undefined) {
           indexesApi.select($stateParams.index);
@@ -41,7 +38,7 @@ angular.module('kuzzle')
       $scope.onSelectIndex = function (index) {
         indexesApi.select(index, true)
           .then(function(name) {
-            $scope.index = $scope.selected = name;
+            $scope.index = name;
             indexesApi.set($scope.index);
             $state.transitionTo($state.current, {index: name});
           });
@@ -52,6 +49,7 @@ angular.module('kuzzle')
        * @param index
        */
       $scope.onCreateIndex = function (index) {
+        $scope.$emit('indexChanged');
         $state.go('indexes.create', {newIndex: index});
       };
 
@@ -60,7 +58,9 @@ angular.module('kuzzle')
        */
       $scope.onDeleteIndex = function () {
         setTimeout(function () {
+          $scope.$emit('indexChanged');
           $state.go('', {}, {reload: true});
         }, 1000);
       };
-  }]);
+    }
+  ]);
