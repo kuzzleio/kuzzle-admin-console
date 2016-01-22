@@ -26,7 +26,9 @@ module.exports = function () {
   //
   this.Then(/^I click on the collection selector$/, function (callback) {
     browser
+      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
       .click('drop-down-search .dropdown-toggle')
+      .pause(500)
       .call(callback)
   });
 
@@ -76,16 +78,13 @@ module.exports = function () {
       .call(callback);
   });
 
-  // this.Then(/^I receive the notification that the document has been created$/, function () {
-  //   if (!this.currentDocumentId) {
-  //     callback(new Error('Expected to have the id of the current document'));
-  //     return;
-  //   }
-  //
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-created-updated-doc', 'Created new document');
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
-  // });
-  //
+  this.Then(/^I receive the notification that the document has been created$/, function () {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    // browser.assert.text('messages ul.message-list li.message-item:last-child span.message-created-updated-doc', 'Created new document');
+    // browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
+  });
+
   // this.Then(/^I receive the notification that the document has been updated$/, function () {
   //   if (!this.currentDocumentId) {
   //     callback(new Error('Expected to have the id of the current document'));
@@ -118,29 +117,29 @@ module.exports = function () {
   //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-user', 'A user exited this room');
   // });
   //
-  // this.Given(/^I create a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-  //   var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/_create';
-  //
-  //   request({
-  //     method: 'POST',
-  //     uri: url,
-  //     body: testDocument,
-  //     json: true
-  //   }, (error, response, body) => {
-  //     if (error){
-  //       console.log('Error creating new document on  '+ url + ': ' + error);
-  //       callback(new Error('Error creating new document on  '+ url + ': ' + error));
-  //       return;
-  //     }
-  //
-  //     this.currentDocumentId = body.result._id;
-  //
-  //     setTimeout(() => {
-  //       callback();
-  //     }, 1000);
-  //   });
-  // });
-  //
+  this.Given(/^I create a persistent document$/, function (callback) {
+    var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/_create';
+
+    request({
+      method: 'POST',
+      uri: url,
+      body: testDocument,
+      json: true
+    }, (error, response, body) => {
+      if (error){
+        console.log('Error creating new document on  '+ url + ': ' + error);
+        callback(new Error('Error creating new document on  '+ url + ': ' + error));
+        return;
+      }
+
+      world.currentDocumentId = body.result._id;
+
+      setTimeout(() => {
+        callback();
+      }, 1000);
+    });
+  });
+
   // this.Given(/^I publish a volatile message$/, {timeout: 20 * 1000}, function (callback) {
   //   var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection;
   //
