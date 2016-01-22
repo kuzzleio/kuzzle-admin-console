@@ -65,13 +65,13 @@ var initCollection = function (callback) {
     .dataCollectionFactory(world.collection)
     .deletePromise()
     .then(() => {
-      return bulk()
+      bulk()
+        .then(timeoutCallback);
     })
-    .then(timeoutCallback)
     .catch(() => {
-      return bulk();
+      bulk()
+        .then(timeoutCallback);
     })
-    .then(timeoutCallback)
 };
 
 var bulk = function () {
