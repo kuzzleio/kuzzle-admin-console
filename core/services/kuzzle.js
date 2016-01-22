@@ -4,7 +4,7 @@ var
 
 module.exports = function () {
   if (!kuzzle) {
-    kuzzle = new Kuzzle('http://kuzzle:7512', 'mainindex');
+    kuzzle = new Kuzzle('http://kuzzle:7512');
   }
 
   return kuzzle;

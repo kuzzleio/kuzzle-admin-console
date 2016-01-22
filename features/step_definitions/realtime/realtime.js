@@ -1,9 +1,9 @@
 var
   request = require('request'),
+  assert = require('assert'),
   Kuzzle = require('kuzzle-sdk'),
   fixtures = require('../../fixtures.json'),
-  config = require('../../support/config.js'),
-  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
+  world = require('../../support/world.js'),
   testDocument = {
     type: 'testDocument',
     text: 'yo!'
@@ -15,191 +15,201 @@ var
 
 module.exports = function () {
   this.Given(/^I go to the realtime page$/, function (callback) {
-    this.visit('#/realtime', callback);
-  });
-
-  this.Then(/^I see the collection selector$/, function () {
-    this.browser.assert.element('h2.select-collection drop-down-search');
+    browser
+      .url('/#/realtime')
+      .call(callback);
   });
 
   this.Then(/^I click on the collection selector$/, function (callback) {
-    this.browser.pressButton('drop-down-search .dropdown-toggle', callback);
-  });
-
-  this.Then(/^I see my collections$/, function () {
-    this.browser.assert.text('drop-down-search ul li:last-child', this.collection);
+    browser
+      .pause(500)
+      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
+      .click('drop-down-search .dropdown-toggle')
+      .call(callback)
   });
 
   this.Given(/^I click on a collection$/, function (callback) {
-    this.browser.clickLink('drop-down-search ul li:last-child a', callback);
+    browser
+      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
+      .click('drop-down-search ul li:last-child a')
+      .call(callback)
   });
 
-  this.Given(/^I subscribe to the collection events$/, {timeout: 20 * 1000}, function (callback) {
-    this.browser.pressButton('.filters button.btn-subscribe', callback);
+  this.Given(/^I subscribe to the collection events$/, function (callback) {
+    browser
+      .click('.filters button.btn-subscribe')
+      .call(callback)
   });
 
-  this.Given(/^I unsubscribe from the collection$/, {timeout: 20 * 1000}, function (callback) {
-    this.browser.pressButton('.filters button.btn-unsubscribe', callback);
+  this.Given(/^I unsubscribe from the collection$/, function (callback) {
+    browser
+      .click('.filters button.btn-unsubscribe')
+      .call(callback)
   });
 
-  this.Then(/^I see that I am subscribed$/, function () {
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.collection);
+  this.Then(/^I am subscribed$/, function (callback) {
+    browser
+      .waitForText('messages ul.message-list li.message-item:last-child code.document-id', 500)
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.collection);
+      })
+      .call(callback);
   });
 
-  this.Given(/^I clear the message log$/, {timeout: 20 * 1000}, function (callback) {
-    this.browser.pressButton('messages button.btn-clear', callback);
+  this.Given(/^I clear the message log$/, function (callback) {
+    browser
+      .click('messages button.btn-clear')
+      .call(callback);
   });
 
-  this.Then(/^The message log is empty$/, function () {
-    this.browser.assert.elements('messages ul.message-list li.message-item', {exactly: 0});
+  this.Then(/^The message log is empty$/, function (callback) {
+    browser
+      .elements('messages ul.message-list li.message-item')
+      .then((response) => {
+        assert.equal(response.value.length, 0, "The message log is not empty");
+      })
+      .call(callback);
   });
 
-  this.Then(/^I receive the notification that the document has been created$/, function () {
-    if (!this.currentDocumentId) {
-      callback(new Error('Expected to have the id of the current document'));
-      return;
-    }
+  this.Then(/^I receive the notification that the document has been created$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-created-updated-doc', 'Created new document');
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
+      .then(text => {
+        assert.equal(text, 'Created new document');
+      })
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
   });
 
-  this.Then(/^I receive the notification that the document has been updated$/, function () {
-    if (!this.currentDocumentId) {
-      callback(new Error('Expected to have the id of the current document'));
-      return;
-    }
+  this.Then(/^I receive the notification that the document has been updated$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-created-updated-doc', 'Updated document');
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
+      .then(text => {
+        assert.equal(text, 'Updated document');
+      })
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
   });
 
-  this.Then(/^I receive the notification that the document has been deleted$/, function () {
-    if (!this.currentDocumentId) {
-      callback(new Error('Expected to have the id of the current document'));
-      return;
-    }
+  this.Then(/^I receive the notification that the document has been deleted$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-deleted-doc', 'Deleted document');
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-deleted-doc')
+      .then(text => {
+        assert.equal(text, 'Deleted document');
+      })
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
   });
 
-  this.Then(/^I receive the notification about the volatile message$/, function () {
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-volatile', 'Received volatile message');
+  this.Then(/^I receive the notification about the volatile message$/, function (callback) {
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-volatile')
+      .then(text => {
+        assert.equal(text, 'Received volatile message');
+      })
+      .call(callback)
   });
 
-  this.Then(/^I receive the notification about the new user entering the room$/, function () {
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-user', 'A new user is listening to this room');
+  this.Then(/^I receive the notification about the new user joining the room$/, function (callback) {
+    browser
+      .waitForExist('messages ul.message-list li.message-item:last-child span.message-user', 2000)
+      .getText('messages ul.message-list li.message-item:last-child span.message-user')
+      .then(text => {
+        assert.equal(text, 'A new user is listening to this room');
+      })
+      .call(callback)
   });
 
-  this.Then(/^I receive the notification about the user leaving the room$/, function () {
-    this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-user', 'A user exited this room');
+  this.Then(/^I receive the notification about the user leaving the room$/, function (callback) {
+    browser
+      .waitForExist('messages ul.message-list li.message-item:last-child span.message-user', 2000)
+      .getText('messages ul.message-list li.message-item:last-child span.message-user')
+      .then(text => {
+        assert.equal(text, 'A user exited this room');
+      })
+      .call(callback)
   });
 
-  this.Given(/^I create a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/_create';
-
-    request({
-      method: 'POST',
-      uri: url,
-      body: testDocument,
-      json: true
-    }, (error, response, body) => {
-      if (error){
-        console.log('Error creating new document on  '+ url + ': ' + error);
-        callback(new Error('Error creating new document on  '+ url + ': ' + error));
-        return;
-      }
-
-      this.currentDocumentId = body.result._id;
-
-      setTimeout(() => {
+  this.Given(/^I create a persistent document$/, function (callback) {
+    world.kuzzle
+      .dataCollectionFactory(world.collection)
+      .createDocumentPromise(testDocument)
+      .then((response) => {
+        world.currentDocumentId = response.id;
         callback();
-      }, 1000);
-    });
-  });
-
-  this.Given(/^I publish a volatile message$/, {timeout: 20 * 1000}, function (callback) {
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection;
-
-    request({
-      method: 'POST',
-      uri: url,
-      body: testDocument,
-      json: true
-    }, (error, response, body) => {
-      if (error){
-        console.log('Error publishing volatile message on  '+ url + ': ' + error);
-        callback(new Error('Error publishing volatile message on  '+ url + ': ' + error));
-        return;
-      }
-
-      setTimeout(() => {
-        callback();
-      }, 1000);
-    });
-  });
-
-  this.Given(/^I update a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-    if (!this.currentDocumentId) {
-      callback(new Error('Expected to have the id of the current document'));
-      return;
-    }
-
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
-
-    request({
-      method: 'PUT',
-      uri: url,
-      body: updatedTestDocument,
-      json: true
-      }, (error, response, body) => {
-        if (error){
-          console.log('Error updating new document on  '+ url + ': ' + error);
-          callback(new Error('Error updating new document on  '+ url + ': ' + error));
-          return;
-        }
-
-        setTimeout(() => {
-          callback();
-        }, 1000);
+      })
+      .catch((error) => {
+        console.log('Error creating new document', error);
+        callback.fail();
       });
   });
 
-  this.Given(/^I delete a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-    if (!this.currentDocumentId) {
-      callback(new Error('Expected to have the id of the current document'));
-      return;
-    }
+  this.Given(/^I publish a volatile message$/, function (callback) {
+    world.kuzzle
+      .dataCollectionFactory(world.collection)
+      .publishMessage(world.currentDocumentId, testDocument);
 
-    var url = kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
+      setTimeout(() => {
+        callback();
+      }, 200);
+  });
 
-    request({
-      method: 'DELETE',
-      uri: url
-      }, (error, response, body) => {
-        if (error){
-          console.log('Error deleting new document on  '+ url + ': ' + error);
-          callback(new Error('Error deleting new document on  '+ url + ': ' + error));
-          return;
-        }
+   this.Given(/^I update a persistent document$/, function (callback) {
+     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-        setTimeout(() => {
-          callback();
-        }, 1000);
+     world.kuzzle
+       .dataCollectionFactory(world.collection)
+       .updateDocumentPromise(world.currentDocumentId, updatedTestDocument)
+       .then((response) => {
+         callback();
+       })
+       .catch((error) => {
+         console.log('Error updating document', error);
+         callback.fail();
+       });
+   });
+
+  this.Given(/^I delete a persistent document$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    world.kuzzle
+      .dataCollectionFactory(world.collection)
+      .deleteDocumentPromise(world.currentDocumentId)
+      .then((response) => {
+        callback();
+      })
+      .catch((error) => {
+        console.log('Error deleting document', error);
+        callback.fail();
       });
   });
 
   this.Given(/^Someone subscribes to my room$/, function (callback) {
-    this.currentRoom = this.kuzzle.dataCollectionFactory(this.collection).subscribe({}, function (error, result) {});
+    world.currentRoom = world.kuzzle.dataCollectionFactory(world.collection).subscribe({}, function (error, result) {});
 
     setTimeout(() => {
       callback();
-    }, 200);
+    }, 1000);
   });
 
   this.Given(/^Someone unsubscribes from the room$/, function (callback) {
-    this.currentRoom.unsubscribe();
+    world.currentRoom.unsubscribe();
 
     setTimeout(() => {
       this.currentRoom = null;

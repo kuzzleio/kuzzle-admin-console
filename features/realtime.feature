@@ -13,7 +13,7 @@ Feature: Test realtime watch data pages
 
   @cleanDb @unsubscribe
   Scenario: I can subscribe to a collection
-    Then I see that I am subscribed
+    Then I am subscribed
 
   @cleanDb @unsubscribe
   Scenario: I can clear the message log
@@ -50,7 +50,7 @@ Feature: Test realtime watch data pages
   Scenario: Once subscribed, I receive notifications about users joining the room
     Given I clear the message log
     And Someone subscribes to my room
-    Then I receive the notification about the new user entering the room
+    Then I receive the notification about the new user joining the room
 
   @cleanDb @unsubscribe
   Scenario: Once subscribed, I receive notifications about users leaving the room
