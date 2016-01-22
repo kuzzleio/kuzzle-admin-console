@@ -1,23 +1,40 @@
-var async = require('async');
+var
+  assert = require('assert'),
+  world = require('../../support/world.js');
 
 module.exports = function () {
   this.Given(/^I am on browse data page for a collection$/, function (callback) {
     browser
-      .url('/#/storage/browse')
+      .url('/#/storage/browse/' + world.collection)
       .call(callback);
   });
 
-  // this.Then(/^I have a list with "([\d]*)" elements$/, function (count) {
-  //   this.browser.assert.elements('documents-inline .document-id', { exactly: parseInt(count) });
-  // });
+  this.Then(/^I have a list with "([\d]*)" elements$/, function (count, callback) {
+    browser
+      .waitForVisible('documents-inline', 1000)
+      .saveScreenshot('./features/errorShots/test.png')
+      .elements('documents-inline .document-id')
+      .then(elements => {
+        assert.equal(elements.value.length, parseInt(count), 'Must have ' + count + ' elements, get ' + elements.value.length)
+      })
+      .call(callback);
+  });
+
+  //this.When(/^I click on create document button$/, function (callback) {
+  //  browser
+  //    .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
+  //    .call(callback);
+  //});
   //
-  // this.When(/^I click on create document button$/, function (callback) {
-  //   this.browser.pressButton('[ng-controller="StorageBrowseDocumentsCtrl"] .create button', callback);
-  // });
+  //this.Then(/^I am on url corresponding to document full view's route$/, function () {
+  //  this.browser.assert.url(this.baseUrl + '#/storage/' + this.collection + '/add');
   //
-  // this.Then(/^I am on url corresponding to document full view's route$/, function () {
-  //   this.browser.assert.url(this.baseUrl + '#/storage/' + this.collection + '/add');
-  // });
+  //  browser
+  //    .getUrl()
+  //    .then(url => {
+  //
+  //    })
+  //});
   //
   // this.Given(/^I am on document full view's route$/, function (callback) {
   //   this.visit('#/storage/' + this.collection + '/add', callback);

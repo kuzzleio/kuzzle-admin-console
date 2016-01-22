@@ -48,7 +48,7 @@ module.exports = function () {
 
   this.Then(/^I am authenticated$/, function (callback) {
     browser
-      .waitForExist('.menubar.navbar', 2000)
+      .waitForVisible('.menubar.navbar', 2000)
       .getCookie(c.authCookieName)
       .then(cookie => {
         var sessionObject;

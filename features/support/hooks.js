@@ -7,6 +7,12 @@ var
 
 var hooks = function () {
 
+  this.registerHandler('BeforeFeatures', function (event, callback) {
+    browser
+      .setViewportSize({width: 1024, height: 768})
+      .call(callback);
+  });
+
   this.Before('@createIndex', function (scenario, callback) {
     initIndex.call(this, callback);
   });
