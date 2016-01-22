@@ -24,7 +24,8 @@ exports.config = {
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
     specs: [
-        './features/authentication.feature'
+      './features/authentication.feature',
+      // './features/realtime.feature'
     ],
     // Patterns to exclude.
     exclude: [
@@ -106,7 +107,9 @@ exports.config = {
     cucumberOpts: {
         require: [
           './features/step_definitions/common/authentication.js',
+          './features/step_definitions/common/forms.js',
           './features/step_definitions/storage/browseData.js',
+          // './features/step_definitions/realtime/realtime.js',
           './features/support/hooks.js'
         ],
         // Enable this config to treat undefined definitions as warnings.

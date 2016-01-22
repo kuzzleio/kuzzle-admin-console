@@ -1,63 +1,17 @@
 var
-  wd = require('wd'),
-  remote = wd.promiseRemote(),
   fixtures = require('../fixtures.json'),
   config = require('./config.js'),
-  Kuzzle = require('kuzzle-sdk'),
-  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
-  q = require('q'),
-  fs = require('fs');
+  Kuzzle = require('kuzzle-sdk');
 
-// log status output from web driver
-if (process.env.DEBUG_PHANTOM) {
-  remote.on('status', function(info){
-    console.log('\x1b[36m%s\x1b[0m', info);
-  });
-
-  // log commands from web driver
-  remote.on('command', function(meth, path, data){
-    console.log(' > \x1b[33m%s\x1b[0m: %s', meth, path, data || '');
-  });
-}
-
-exports.World = function World(callback) {
-  this.browser = remote;
-  this.baseUrl = 'http://localhost:3000/';
-  this.index = Object.keys(fixtures)[0];
-  this.collection = Object.keys(fixtures[this.index])[0];
-  this.currentDocumentId = undefined;
-  this.currentRoom = undefined;
-  this.kuzzle = new Kuzzle(kuzzleUrl, this.index);
-
-  // run the callback when we are done do cucumber knows we are ready
-  this.browser.init({browserName: 'firefox'})
-    .then(() => {
-      return this.browser.windowSize('current', 1024, 768);
-    })
-    .then(() => {
-      callback();
-    });
-
-
-  /* DEFINE SHORTCUTS */
-  this.visit = function (url) {
-    return this.browser.get(this.baseUrl + url);
-  };
-
-  this.takeScreenshot = function (id) {
-    var deferred = q.defer();
-
-    if (!id) {
-      id = Math.random();
-    }
-
-    this.browser.takeScreenshot()
-      .then((data) => {
-        fs.writeFile('features/screenshots/' + id + '.png', data, 'base64', function () {
-          return deferred.resolve();
-        })
-      });
-
-    return deferred.promise;
-  };
+var index = Object.keys(fixtures)[0];
+var collection = Object.keys(fixtures[index])[0];
+var World = {
+  index: index,
+  collection: collection,
+  currentDocumentId: undefined,
+  currentRoom: undefined,
+  kuzzleUrl: 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
+  kuzzle: new Kuzzle(World.kuzzleUrl, World.index)
 };
+
+module.exports = World;
