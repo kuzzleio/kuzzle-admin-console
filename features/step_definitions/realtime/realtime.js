@@ -1,5 +1,6 @@
 var
   request = require('request'),
+  assert = require('assert'),
   Kuzzle = require('kuzzle-sdk'),
   fixtures = require('../../fixtures.json'),
   world = require('../../support/world.js'),
@@ -35,6 +36,7 @@ module.exports = function () {
   //
   this.Given(/^I click on a collection$/, function (callback) {
     browser
+      .waitForVisible('drop-down-search ul.dropdown-menu', 1000)
       .click('drop-down-search ul li:last-child a')
       .call(callback)
   });
@@ -49,22 +51,31 @@ module.exports = function () {
   //   this.browser.pressButton('.filters button.btn-unsubscribe', callback);
   // });
   //
-  // this.Then(/^I am subscribed$/, function () {
-  //   .waitForText('messages ul.message-list li.message-item:last-child code.document-id', 500)
-  //   .getText('messages ul.message-list li.message-item:last-child code.document-id')
-  //   then(text => {
-  //     assert.equal(text, world.collection);
-  //   });
-  // });
+  this.Then(/^I am subscribed$/, function (callback) {
+    browser
+      .waitForText('messages ul.message-list li.message-item:last-child code.document-id', 500)
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.collection);
+      })
+      .call(callback);
+  });
 
-  // this.Given(/^I clear the message log$/, {timeout: 20 * 1000}, function (callback) {
-  //   this.browser.pressButton('messages button.btn-clear', callback);
-  // });
-  //
-  // this.Then(/^The message log is empty$/, function () {
-  //   this.browser.assert.elements('messages ul.message-list li.message-item', {exactly: 0});
-  // });
-  //
+  this.Given(/^I clear the message log$/, function (callback) {
+    browser
+      .click('messages button.btn-clear')
+      .call(callback);
+  });
+
+  this.Then(/^The message log is empty$/, function (callback) {
+    browser
+      .elements('messages ul.message-list li.message-item')
+      .then((response) => {
+        assert.equal(response.value.length, 0, "The message log is not empty");
+      })
+      .call(callback);
+  });
+
   // this.Then(/^I receive the notification that the document has been created$/, function () {
   //   if (!this.currentDocumentId) {
   //     callback(new Error('Expected to have the id of the current document'));

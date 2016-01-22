@@ -13,13 +13,13 @@ Feature: Test realtime watch data pages
 
   @cleanDb @unsubscribe
   Scenario: I can subscribe to a collection
-    #Then I am subscribed
+    Then I am subscribed
 
-#  @cleanDb @unsubscribe
-#  Scenario: I can clear the message log
-#    Given I clear the message log
-#    Then The message log is empty
-#
+  @cleanDb @unsubscribe
+  Scenario: I can clear the message log
+    Given I clear the message log
+    Then The message log is empty
+
 #  @cleanDb @unsubscribe
 #  Scenario: Once subscribed, I receive notifications about document creations
 #    Given I clear the message log
