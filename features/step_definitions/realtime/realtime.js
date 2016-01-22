@@ -26,9 +26,9 @@ module.exports = function () {
   //
   this.Then(/^I click on the collection selector$/, function (callback) {
     browser
+      .pause(500)
       .waitForVisible('drop-down-search .dropdown-toggle', 1000)
       .click('drop-down-search .dropdown-toggle')
-      .pause(500)
       .call(callback)
   });
 
@@ -38,7 +38,7 @@ module.exports = function () {
   //
   this.Given(/^I click on a collection$/, function (callback) {
     browser
-      .waitForVisible('drop-down-search ul.dropdown-menu', 1000)
+      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
       .click('drop-down-search ul li:last-child a')
       .call(callback)
   });
@@ -78,22 +78,35 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I receive the notification that the document has been created$/, function () {
+  this.Then(/^I receive the notification that the document has been created$/, function (callback) {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
-    // browser.assert.text('messages ul.message-list li.message-item:last-child span.message-created-updated-doc', 'Created new document');
-    // browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
+      .then(text => {
+        assert.equal(text, 'Created document');
+      })
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
   });
 
-  // this.Then(/^I receive the notification that the document has been updated$/, function () {
-  //   if (!this.currentDocumentId) {
-  //     callback(new Error('Expected to have the id of the current document'));
-  //     return;
-  //   }
-  //
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child span.message-created-updated-doc', 'Updated document');
-  //   this.browser.assert.text('messages ul.message-list li.message-item:last-child code.document-id', this.currentDocumentId);
-  // });
+  this.Then(/^I receive the notification that the document has been updated$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    browser
+      .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
+      .then(text => {
+        assert.equal(text, 'Updated document');
+      })
+      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .then(text => {
+        assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
+  });
   //
   // this.Then(/^I receive the notification that the document has been deleted$/, function () {
   //   if (!this.currentDocumentId) {
@@ -126,10 +139,8 @@ module.exports = function () {
       body: testDocument,
       json: true
     }, (error, response, body) => {
-      if (error){
-        console.log('Error creating new document on  '+ url + ': ' + error);
-        callback(new Error('Error creating new document on  '+ url + ': ' + error));
-        return;
+      if (error) {
+        throw new Error('Error creating new document on  '+ url + ': ' + error);
       }
 
       world.currentDocumentId = body.result._id;
@@ -161,31 +172,26 @@ module.exports = function () {
   //   });
   // });
   //
-  // this.Given(/^I update a persistent document$/, {timeout: 20 * 1000}, function (callback) {
-  //   if (!this.currentDocumentId) {
-  //     callback(new Error('Expected to have the id of the current document'));
-  //     return;
-  //   }
-  //
-  //   var url = kuzzleUrl + '/api/1.0/' + this.index + '/' + this.collection + '/' + this.currentDocumentId;
-  //
-  //   request({
-  //     method: 'PUT',
-  //     uri: url,
-  //     body: updatedTestDocument,
-  //     json: true
-  //     }, (error, response, body) => {
-  //       if (error){
-  //         console.log('Error updating new document on  '+ url + ': ' + error);
-  //         callback(new Error('Error updating new document on  '+ url + ': ' + error));
-  //         return;
-  //       }
-  //
-  //       setTimeout(() => {
-  //         callback();
-  //       }, 1000);
-  //     });
-  // });
+   this.Given(/^I update a persistent document$/, function (callback) {
+     assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+     var url = world.kuzzleUrl + '/api/1.0/' + world.index + '/' + world.collection + '/' + world.currentDocumentId;
+
+     request({
+       method: 'PUT',
+       uri: url,
+       body: updatedTestDocument,
+       json: true
+       }, error => {
+         if (error) {
+           throw new Error('Error updating new document on  '+ url + ': ' + error);
+         }
+
+         setTimeout(() => {
+           callback();
+         }, 1000);
+       });
+   });
   //
   // this.Given(/^I delete a persistent document$/, {timeout: 20 * 1000}, function (callback) {
   //   if (!this.currentDocumentId) {

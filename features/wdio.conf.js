@@ -25,8 +25,8 @@ exports.config = {
   //
   specs: [
     //'./features/authentication.feature',
-    //'./features/realtime.feature',
-    './features/browseData.feature',
+    './features/realtime.feature',
+    //'./features/browseData.feature',
   ],
   // Patterns to exclude.
   exclude: [
@@ -129,8 +129,7 @@ exports.config = {
   // will wait until that promise got resolved to continue.
   //
   // Gets executed before all workers get launched.
-  onPrepare: function() {
-    // do something
+  onPrepare: function(browser) {
   },
   //
   // Gets executed before test execution begins. At this point you will have access to all global

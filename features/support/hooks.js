@@ -6,13 +6,6 @@ var
   world = require('./world.js');
 
 var hooks = function () {
-
-  this.registerHandler('BeforeFeatures', function (event, callback) {
-    browser
-      .setViewportSize({width: 1024, height: 768})
-      .call(callback);
-  });
-
   this.Before('@createIndex', function (scenario, callback) {
     console.log('@createIndex');
     initIndex.call(this, callback);
@@ -32,7 +25,7 @@ var hooks = function () {
       world.currentRoom.unsubscribe();
       world.currentRoom = null;
     }
-  })
+  });
 };
 
 var initIndex = function (callback) {
