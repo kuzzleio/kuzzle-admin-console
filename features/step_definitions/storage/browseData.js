@@ -11,7 +11,7 @@ module.exports = function () {
 
   this.Then(/^I have a list with "([\d]*)" elements$/, function (count, callback) {
     browser
-      .waitForVisible('documents-inline', 1000)
+      .waitForVisible('documents-inline .row', 1000)
       .elements('documents-inline .document-id')
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count), 'Must have ' + count + ' elements, get ' + elements.value.length)
@@ -65,7 +65,7 @@ module.exports = function () {
         // wait 5sec because we buffer delete for 5sec
         setTimeout(() => {
           callback();
-        }, 5000);
+        }, 6000);
       });
   });
 
@@ -78,7 +78,7 @@ module.exports = function () {
         // wait 5sec because we buffer delete for 5sec
         setTimeout(() => {
           callback();
-        }, 5000);
+        }, 6000);
       });
   });
 
