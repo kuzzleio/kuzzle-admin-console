@@ -112,9 +112,8 @@ exports.config = {
       './features/step_definitions/storage/browseData.js',
       './features/step_definitions/realtime/realtime.js',
       './features/step_definitions/common/wait.js',
-      './features/support/hooks.js',
-      './features/support/timer.js'
-    ],
+      './features/support/hooks.js'
+    ]
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,
     // run only certain scenarios annotated by tags

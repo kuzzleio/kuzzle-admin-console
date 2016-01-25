@@ -1,5 +1,5 @@
 <div class="row documents" ng-repeat="document in documents">
-    <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
+    <div id={{document._id}} class="panel panel-default" ng-class="{deleted: document.isDeleted}">
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-1 document-id ellipsis" uib-popover="{{document._id}}" popover-placement="top" popover-animation="false">
@@ -11,15 +11,15 @@
                 </div>
                 <div ng-if="!canEdit">
                     <div class="col-sm-1 pull-right">
-                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})">
+                        <span class="edit-document full-view glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})">
                         </span>
                     </div>
                 </div>
                 <div ng-if="canEdit">
                     <div class="col-sm-2 icons" ng-show="!document.isDeleted && !document.isEdit">
-                        <span class="edit-document edit glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})" title="Go to full view">
+                        <span class="edit-document full-view glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})" title="Go to full view">
                         </span>
-                        <span class="edit-document edit glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
+                        <span class="edit-document edit-inline glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
                         </span>
                         <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
                         </span>

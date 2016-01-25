@@ -3,9 +3,9 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.Given(/^I am on browse data page for a collection$/, function (callback) {
+  this.Given(/^I am on browse data page$/, function (callback) {
     browser
-      .url('/#/storage/browse/' + world.collection)
+      .url('/#/storage/browse')
       .call(callback);
   });
 
@@ -35,7 +35,7 @@ module.exports = function () {
       .call(callback);
   });
 
-   this.Given(/^I am on document full view's route$/, function (callback) {
+   this.Given(/^I am on page for create document$/, function (callback) {
      browser
        .url('/#/storage/' + world.collection + '/add')
        .call(callback);
@@ -87,5 +87,49 @@ module.exports = function () {
       .url('/#/storage/' + world.collection + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .call(callback)
+  });
+
+  this.Then(/^I choose the collection "([^"]*)"$/, function (collection, callback) {
+    browser
+      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
+      .pause(500)
+      .click('drop-down-search .dropdown-toggle')
+      .click('drop-down-search ul li:last-child a')
+      .call(callback);
+  });
+
+  this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
+    browser
+      .waitForVisible('documents-inline #' + id + ' .full-view', 1000)
+      .click('documents-inline #' + id + ' .full-view')
+      .call(callback);
+  });
+
+  this.Then(/^the current URL corresponds to the "([^"]*)" full document page$/, function (id, callback) {
+    browser
+      .waitForVisible('.edit-id')
+      .getUrl()
+      .then(url => {
+        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/' + id);
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on edit-inline button of "([^"]*)" document$/, function (id, callback) {
+    browser
+      .waitForVisible('documents-inline #' + id + ' .edit-inline', 1000)
+      .click('documents-inline #' + id + ' .edit-inline')
+      .call(callback);
+  });
+
+  this.Then(/^a text area for document "([^"]*)" is displayed$/, function (id, callback) {
+    browser
+      .waitForVisible('documents-inline #' + id + ' json-edit textarea', 1000)
+      .saveScreenshot('./features/errorShots/test.png')
+      .getText('documents-inline #' + id + ' json-edit .ace_scroller .ace_text-layer .ace_line:nth-child(2)')
+      .then(text => {
+        assert.equal(text, '"username": "'+ id +'",');
+      })
+      .call(callback);
   });
 };

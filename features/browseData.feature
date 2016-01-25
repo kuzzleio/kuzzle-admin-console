@@ -9,16 +9,24 @@ Feature: Test browse data pages
 
   @cleanDb
   Scenario: Display data list when a collection is selected
-    Given I am on browse data page for a collection
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
     Then I have a list with "2" elements
 
+  Scenario: Button access full view
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
+    When I click on link to access to "alovelace" full document page
+    Then the current URL corresponds to the "alovelace" full document page
+
   Scenario: Button create a document
-    Given I am on browse data page for a collection
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
     When I click on create document button
     Then the current URL corresponds to the add document page
 
   Scenario: Form for create a new document is well displayed
-    Given I am on document full view's route
+    Given I am on page for create document
     Then I have an id input
     And I have a form with fieldset "name" with field "first"
     And I have a form with fieldset "name" with field "last"
@@ -26,7 +34,7 @@ Feature: Test browse data pages
 
   @cleanDb
   Scenario: Create a new document
-    Given I am on document full view's route
+    Given I am on page for create document
     Then I'm waiting for the element with class "edit-id"
     Then I fill the input "id" with "foo"
     And I fill the input "first" with "first-bar"
@@ -35,17 +43,32 @@ Feature: Test browse data pages
     And I click on "create" button
     # Wait 1sec for let ES index the new doc
     Then I'm waiting 1 sec
-    Given I am on browse data page for a collection
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
     Then I have a list with "3" elements
 
   @cleanDb
+  Scenario: Create document and stay on form
+    Given I am on page for create document
+    Then I'm waiting for the element with class "edit-id"
+    Then I fill the input "id" with "foo"
+    And I fill the input "first" with "first-bar"
+    And I fill the input "last" with "last-bar"
+    And I fill the input "username" with "username-bar"
+    And I check the checkbox with class "create-another"
+    And I click on "create" button
+    Then the current URL corresponds to the add document page
+
+  @cleanDb
   Scenario: Delete a document
-    Given I am on browse data page for a collection
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
     Then I have a list with "2" elements
     And I delete the last element in list and I cancel
     Then I have a list with "2" elements
     And I delete the last element in list
-    Given I am on browse data page for a collection
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
     Then I have a list with "1" elements
 
   @cleanDb
@@ -55,3 +78,10 @@ Feature: Test browse data pages
     And I click on "update" button
     Given I am on page for edit document "alovelace"
     Then the field "username" has the value "foo"
+
+  @cleanDb
+  Scenario: Edit inline a document
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
+    Then I click on edit-inline button of "alovelace" document
+    Then a text area for document "alovelace" is displayed
