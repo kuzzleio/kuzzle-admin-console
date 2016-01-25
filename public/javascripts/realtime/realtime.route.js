@@ -7,14 +7,14 @@ angular.module('kuzzle.realtime')
         parent: 'logged',
         url: '/realtime',
         views: {
-          "bodyView": { templateUrl: '/realtime' }
+          bodyView: { templateUrl: '/realtime' }
         }
       })
       .state('realtime.watch-data', {
         url: '/:collection?basicFilter&advancedFilter',
         views: {
-          "mainView": { templateUrl: '/realtime/watch-data' }
+          mainView: { templateUrl: '/realtime/watch-data' }
         },
         data: {}
-      })
+      });
   }]);

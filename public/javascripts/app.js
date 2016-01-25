@@ -1,33 +1,33 @@
 angular.module('kuzzle', [
-    'ui.router',
-    'ui.bootstrap',
-    'jsonFormatter',
-    'kuzzle.authentication',
-    'kuzzle.basicFilter',
-    'kuzzle.filters',
-    'kuzzle.headline',
-    'kuzzle.widget',
-    'kuzzle.gauge',
-    'kuzzle.chart',
-    'kuzzle.storage',
-    'kuzzle.collection',
-    'kuzzle.realtime',
-    'kuzzle.dashboard',
-    'kuzzle.collectionApi',
-    'kuzzle.serverApi',
-    'kuzzle.documentsInline',
-    'kuzzle.cogOptionsCollection',
-    'angular-loading-bar',
-    'ngAnimate',
-    'kuzzle.uid',
-    'ui-notification',
-    'kuzzle.bufferCancel',
-    'kuzzle.previousState',
-    'kuzzle.unsubscribeOnPageChange'
-  ])
+  'ui.router',
+  'ui.bootstrap',
+  'jsonFormatter',
+  'kuzzle.authentication',
+  'kuzzle.basicFilter',
+  'kuzzle.filters',
+  'kuzzle.headline',
+  'kuzzle.widget',
+  'kuzzle.gauge',
+  'kuzzle.chart',
+  'kuzzle.storage',
+  'kuzzle.collection',
+  'kuzzle.realtime',
+  'kuzzle.dashboard',
+  'kuzzle.collectionApi',
+  'kuzzle.serverApi',
+  'kuzzle.documentsInline',
+  'kuzzle.cogOptionsCollection',
+  'angular-loading-bar',
+  'ngAnimate',
+  'kuzzle.uid',
+  'ui-notification',
+  'kuzzle.bufferCancel',
+  'kuzzle.previousState',
+  'kuzzle.unsubscribeOnPageChange'
+])
 
   .config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   }])
 
   .config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
@@ -47,7 +47,6 @@ angular.module('kuzzle', [
 
     $urlRouterProvider.otherwise(function ($injector) {
       $injector.invoke(['$state', function ($state) {
-        console.log($state);
         $state.go('404');
       }]);
     });
@@ -94,8 +93,9 @@ angular.module('kuzzle', [
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
       var authorizedRoles = null;
-      if (!next.data)
+      if (!next.data) {
         return;
+      }
       authorizedRoles = next.data.authorizedRoles;
 
       if (next.data.requiresAuthentication) {

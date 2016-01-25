@@ -57,5 +57,5 @@ angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuz
       },
       controller: 'cogOptionsCollectionCtrl',
       templateUrl: '/javascripts/common/cogOptionsCollection/cogOptionsCollection.tpl.html'
-    }
+    };
   }]);

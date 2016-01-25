@@ -112,7 +112,7 @@ angular.module('kuzzle.storage')
           .catch(function () {
             // If there is no document matching the id
             $scope.isLoading = false;
-          })
+          });
       };
 
       /**
@@ -137,7 +137,7 @@ angular.module('kuzzle.storage')
           })
           .catch(function (error) {
             console.error(error);
-          })
+          });
       };
 
       /**
@@ -202,7 +202,7 @@ angular.module('kuzzle.storage')
         $state.reload();
         message.then(function (notificationScope) {
           notificationScope.kill(true);
-        })
+        });
       };
 
       /** PRIVATE **/
@@ -269,7 +269,7 @@ angular.module('kuzzle.storage')
           document = $scope.document.body;
         }
 
-        return document
+        return document;
       };
 
       /**

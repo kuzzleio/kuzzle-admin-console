@@ -35,7 +35,7 @@ angular.module('kuzzle.authentication')
         Session.destroy();
         $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       });
-  }
+  };
 
   authService.isAuthenticated = function () {
     // TODO ask Kuzzle here
@@ -53,15 +53,16 @@ angular.module('kuzzle.authentication')
   };
 
   authService.setNextRoute = function (nextRoute) {
-    if (nextRoute == 'login')
-      nextRoute = "logged";
+    if (nextRoute === 'login') {
+      nextRoute = 'logged';
+    }
 
     this.nextRoute = nextRoute;
-  }
+  };
 
   authService.getNextRoute = function () {
     return this.nextRoute;
-  }
+  };
 
   return authService;
-}])
+}]);

@@ -18,7 +18,7 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
 
           properties[attribute] = {
             type: type
-          }
+          };
         }
 
         if (value.properties) {
@@ -63,7 +63,7 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
 
             schema = {
               title: collection,
-              type: "object",
+              type: 'object',
               properties: {},
               disableSuccessState: true
             };

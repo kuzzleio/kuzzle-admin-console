@@ -51,7 +51,7 @@ angular.module('schemaForm')
           }
         };
       }
-    }
+    };
   }])
   .run(['$templateCache', '$http', function($templateCache, $http) {
     $http.get('javascripts/storage/customFormDecorators/leaflet/location.tpl.html', {cache: $templateCache});
