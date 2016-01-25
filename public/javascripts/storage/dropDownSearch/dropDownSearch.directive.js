@@ -3,14 +3,15 @@ angular.module('kuzzle.dropDownSearch', [])
     $scope.isOpen = false;
 
     $scope.onPressEnter = function () {
-      if (!$scope.selectVolatileCollections)
+      if (!$scope.selectVolatileCollections) {
         return;
+      }
 
       $scope.isOpen = false;
       $scope.selected = $scope.search;
       $scope.search = '';
       $scope.onClickItem({item: $scope.selected});
-    }
+    };
   }])
   .directive('dropDownSearch', function () {
     return {
@@ -27,7 +28,7 @@ angular.module('kuzzle.dropDownSearch', [])
         placeholder: '@',
         selectVolatileCollections: '='
       },
-      controller: "DropDownSearchCtrl",
+      controller: 'DropDownSearchCtrl',
       templateUrl: '/javascripts/storage/dropDownSearch/dropDownSearch.tpl.html'
-    }
+    };
   });

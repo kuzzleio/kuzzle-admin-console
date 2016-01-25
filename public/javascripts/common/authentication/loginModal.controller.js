@@ -16,8 +16,9 @@ angular.module('kuzzle.authentication')
     });
   };
   var hideDialog = function () {
-    if (modalInstance)
+    if (modalInstance) {
       modalInstance.close();
+    }
   };
 
   $scope.$on(AUTH_EVENTS.sessionTimeout, showDialog);

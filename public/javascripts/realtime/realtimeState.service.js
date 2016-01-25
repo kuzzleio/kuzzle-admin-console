@@ -23,7 +23,7 @@ angular.module('kuzzle.realtime')
         {field: null, equal: comparators[0], value: null}
       ]
     }];
-  }
+  };
 
   return {
     getInitialBasicFilter: function () {
@@ -44,5 +44,5 @@ angular.module('kuzzle.realtime')
     documents: [],
     messageToPublish: '',
     messages: [firstMessage]
-  }
+  };
 }]);

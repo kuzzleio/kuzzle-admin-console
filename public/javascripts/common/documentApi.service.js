@@ -140,11 +140,11 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         publishMessage: function (collection, content) {
           kuzzleSdk
             .dataCollectionFactory(collection)
-            .publishMessage(content)
+            .publishMessage(content);
         },
 
         unsubscribeRoom: function (room) {
           room.unsubscribe();
         }
-      }
+      };
     }]);

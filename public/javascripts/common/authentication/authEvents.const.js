@@ -6,4 +6,4 @@ angular.module('kuzzle.authentication')
   sessionTimeout: 'auth-session-timeout',
   notAuthenticated: 'auth-not-authenticated',
   notAuthorized: 'auth-not-authorized'
-})
+});

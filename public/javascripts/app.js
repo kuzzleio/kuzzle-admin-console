@@ -21,7 +21,7 @@ angular.module('kuzzle', [
 ])
 
   .config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   }])
 
   .config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
@@ -42,14 +42,14 @@ angular.module('kuzzle', [
     $urlRouterProvider.otherwise(function ($injector) {
         $injector.invoke(['$state', function ($state) {
           $state.go('404');
-        }])
+        }]);
     });
 
     $stateProvider
       .state('logged', {
         url: '',
         views: {
-          "wrappedView": { templateUrl: '/logged' }
+          wrappedView: { templateUrl: '/logged' }
         },
         data: {
           requiresAuthentication: true
@@ -57,13 +57,13 @@ angular.module('kuzzle', [
       })
       .state('404', {
         views: {
-          "wrappedView": { templateUrl: '/404' }
+          wrappedView: { templateUrl: '/404' }
         }
       })
       .state('login', {
         url: '/login',
         views: {
-          "wrappedView": { templateUrl: '/login' }
+          wrappedView: { templateUrl: '/login' }
         }
       })
       .state('logout', {
@@ -87,8 +87,9 @@ angular.module('kuzzle', [
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
       var authorizedRoles = null;
-      if (!next.data)
+      if (!next.data) {
         return;
+      }
       authorizedRoles = next.data.authorizedRoles;
 
       if (next.data.requiresAuthentication) {
@@ -100,5 +101,5 @@ angular.module('kuzzle', [
           return;
         }
       }
-    })
+    });
   }]);

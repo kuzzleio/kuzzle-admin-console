@@ -3,7 +3,7 @@ angular.module('kuzzle.jsonEdit', ['ui.ace'])
   .controller('AceCtrl', ['$scope', function ($scope) {
     $scope.aceLoaded = function (editor) {
       editor.$blockScrolling = Infinity;
-    }
+    };
   }])
 
   .directive('jsonEdit', [function () {
@@ -17,5 +17,5 @@ angular.module('kuzzle.jsonEdit', ['ui.ace'])
                     'mode: \'json\',' +
                     'onLoad: aceLoaded' +
                   '}" ng-model="content"></div>'
-      }
+      };
   }]);

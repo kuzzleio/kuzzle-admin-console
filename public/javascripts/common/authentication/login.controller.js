@@ -28,7 +28,7 @@ angular.module('kuzzle.authentication')
 
   $scope.login = function (credentials) {
     if (!credentials || !credentials.username || !credentials.password) {
-      $scope.message = "Please, provide a valid username and password.";
+      $scope.message = 'Please, provide a valid username and password.';
       return;
     }
 
@@ -40,8 +40,8 @@ angular.module('kuzzle.authentication')
         $state.go('logged', null, {reload: true, notify: true});
       }
     }, function () {
-      $scope.message = "Sorry, the credentials you provided seem to be incorrect.";
+      $scope.message = 'Sorry, the credentials you provided seem to be incorrect.';
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     });
   };
-})
+});

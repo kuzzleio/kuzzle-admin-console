@@ -71,7 +71,7 @@ angular.module('kuzzle.leaflet', [])
         });
         maps[mapId].markers = [];
       }
-    }
+    };
   }])
 
   .directive('leaflet', ['leaflet', function (leaflet) {
@@ -136,7 +136,7 @@ angular.module('kuzzle.leaflet', [])
           if (scope.zoom) {
             leaflet.setZoom(scope.mapId, scope.zoom);
           }
-        }
+        };
       }
-    }
+    };
   }]);
