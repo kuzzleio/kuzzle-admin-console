@@ -4,7 +4,7 @@ var
 
 module.exports = {
   timer: 5000,
-  add: function (fn, clientId, collection, id, exclude) {
+  add: function (fn, clientId, index, collection, id, exclude) {
     var self = this;
 
     if (!buffer[fn]) {
@@ -23,9 +23,9 @@ module.exports = {
     }
 
     // By default, we add an entry but the function (fn) is not already canceled by the user
-    buffer[fn][clientId][collection + '-' + id] = false;
+    buffer[fn][clientId][index + '-' + collection + '-' + id] = false;
   },
-  cancel: function (fn, clientId, collection, id) {
+  cancel: function (fn, clientId, index, collection, id) {
     if (!buffer[fn]) {
       return false;
     }
@@ -34,9 +34,10 @@ module.exports = {
       return false;
     }
 
-    buffer[fn][clientId][collection + '-' + id] = true;
+    this.removeIdExcluded(id);
+    buffer[fn][clientId][index + '-' + collection + '-' + id] = true;
   },
-  clean: function (fn, clientId, collection, id) {
+  clean: function (fn, clientId, index, collection, id) {
     if (!buffer[fn]) {
       return false;
     }
@@ -45,15 +46,15 @@ module.exports = {
       return false;
     }
 
-    if (buffer[fn][clientId][collection + '-' + id] === undefined) {
+    if (buffer[fn][clientId][index + '-' + collection + '-' + id] === undefined) {
       return false;
     }
 
     this.removeIdExcluded(id);
 
-    delete buffer[fn][clientId][collection + '-' + id];
+    delete buffer[fn][clientId][index + '-' + collection + '-' + id];
   },
-  isCanceled: function (fn, clientId, collection, id) {
+  isCanceled: function (fn, clientId, index, collection, id) {
     if (!buffer[fn]) {
       return false;
     }
@@ -62,21 +63,21 @@ module.exports = {
       return false;
     }
 
-    if (buffer[fn][clientId][collection + '-' + id]) {
+    if (buffer[fn][clientId][index + '-' + collection + '-' + id]) {
       return true;
     }
   },
-  delayExecution: function (fn, clientId, collection, id, cb) {
+  delayExecution: function (fn, clientId, index, collection, id, cb) {
     var self = this;
 
     setTimeout(function () {
-      if (self.isCanceled(fn, clientId, collection, id)) {
-        self.clean(fn, clientId, collection, id);
+      if (self.isCanceled(fn, clientId, index, collection, id)) {
+        self.clean(fn, clientId, index, collection, id);
         return false;
       }
 
-      self.clean(fn, clientId, collection, id);
       cb();
+      self.clean(fn, clientId, index, collection, id);
 
     }, self.timer);
   },
