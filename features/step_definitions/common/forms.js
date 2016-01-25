@@ -4,13 +4,13 @@ module.exports = function () {
   this.Then(/^I fill the input "([^"]*)" with "([^"]*)"$/, function (id, value, callback) {
     browser
       .setValue('#' + id, value)
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I click on "([^"]*)" button$/, function (id, callback) {
     browser
       .click('#' + id)
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^the field "([^"]*)" has the value "([^"]*)"$/, function (id, value, callback) {
