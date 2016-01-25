@@ -7,32 +7,32 @@ angular.module('kuzzle.storage')
         parent: 'logged',
         url: '/storage',
         views: {
-          "bodyView": { templateUrl: '/storage' }
+          bodyView: { templateUrl: '/storage' }
         }
       })
       .state('storage.browse', {
         url: '/browse',
         views: {
-          "mainView": { templateUrl: '/storage/browse' }
+          mainView: { templateUrl: '/storage/browse' }
         }
       })
       .state('storage.browse.documents', {
         url: '/:collection?basicFilter&advancedFilter',
         views: {
-          "subView": { templateUrl: '/storage/browse-documents' }
+          subView: { templateUrl: '/storage/browse-documents' }
         }
       })
       .state('storage.create', {
         url: '/:collection/add',
         views: {
-          "mainView": { templateUrl: '/storage/create' }
+          mainView: { templateUrl: '/storage/create' }
         }
       })
       .state('storage.full', {
         url: '/:collection/:id',
         views: {
-          "mainView": { templateUrl: '/storage/full' }
+          mainView: { templateUrl: '/storage/full' }
         }
-      })
+      });
 
   }]);

@@ -4,6 +4,6 @@ angular.module('kuzzle.notification', ['ui-notification'])
 
     $scope.close = function () {
 
-    }
+    };
 
   }]);

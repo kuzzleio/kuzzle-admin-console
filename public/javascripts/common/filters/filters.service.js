@@ -121,7 +121,6 @@ angular.module('kuzzle.filters')
             filters = JSON.parse(decodeURIComponent(params.basicFilter));
           } catch (e) {
             throw e;
-            return false;
           }
 
           filters = filters.map(function (group) {
@@ -161,7 +160,7 @@ angular.module('kuzzle.filters')
           return JSON.parse(advancedFilter);
         }
         catch (e) {
-          return {}
+          return {};
         }
       },
       formatBasicFilter: function (basicFilter, isRealtime) {

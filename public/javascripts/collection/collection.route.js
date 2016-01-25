@@ -7,25 +7,25 @@ angular.module('kuzzle.collection')
         parent: 'logged',
         url: '/collection',
         views: {
-          "bodyView": { templateUrl: '/collection' }
+          bodyView: { templateUrl: '/collection' }
         }
       })
       .state('collection.browse', {
         url: '/browse',
         views: {
-          "mainView": { templateUrl: '/collection/browse' }
+          mainView: { templateUrl: '/collection/browse' }
         }
       })
       .state('collection.create', {
         url: '/create?newCollection',
         views: {
-          "mainView": { templateUrl: '/collection/create' }
+          mainView: { templateUrl: '/collection/create' }
         }
       })
       .state('collection.full', {
         url: '/:collection',
         views: {
-          "mainView": { templateUrl: '/collection/full' }
+          mainView: { templateUrl: '/collection/full' }
         }
-      })
+      });
   }]);

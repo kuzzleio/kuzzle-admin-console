@@ -12,5 +12,5 @@ angular.module('kuzzle.authentication')
       doLogout: '&',
       doLogin: '&'
     }
-  }
+  };
 });

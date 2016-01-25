@@ -128,7 +128,7 @@ angular.module('kuzzle.storage')
           })
           .catch(function (error) {
             console.error(error);
-          })
+          });
       };
 
       /**
@@ -163,7 +163,7 @@ angular.module('kuzzle.storage')
           $scope.searchType.advanced = true;
         }
         else {
-          $scope.searchType.basic = true
+          $scope.searchType.basic = true;
         }
       };
 
@@ -179,5 +179,5 @@ angular.module('kuzzle.storage')
       var setAdvancedFilterInUrl = function (advancedFilter) {
         var filter = decodeURIComponent(advancedFilter);
         $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
-      }
+      };
   }]);

@@ -4,4 +4,4 @@ angular.module('kuzzle.authentication')
   admin: 'admin',
   editor: 'editor',
   guest: 'guest'
-})
+});

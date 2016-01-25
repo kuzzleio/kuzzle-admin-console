@@ -8,7 +8,7 @@ angular.module('kuzzle')
   function ($rootScope, $scope, Auth, Session, AUTH_EVENTS) {
   $scope.init = function () {
     Session.resumeFromCookie();
-  }
+  };
 
   $scope.session = Session.session;
 
