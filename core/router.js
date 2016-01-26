@@ -4,7 +4,7 @@ var
   collection = require('./controllers/collection'),
   realtime = require('./controllers/realtime'),
   login = require('./controllers/login'),
-  indexes = require('./controllers/indexes');
+  indexes = require('./controllers/indexes'),
   dashboard = require('./controllers/dashboard');
 
 module.exports = {
