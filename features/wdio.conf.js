@@ -26,7 +26,8 @@ exports.config = {
   specs: [
     './features/authentication.feature',
     './features/realtime.feature',
-    './features/browseData.feature'
+    './features/browseData.feature',
+    './features/dashboard.feature'
   ],
   // Patterns to exclude.
   exclude: [
@@ -107,14 +108,17 @@ exports.config = {
   // If you are using Cucumber you need to specify where your step definitions are located.
   cucumberOpts: {
     require: [
+      './features/support/hooks.js',
+      './features/support/timer.js',
+
       './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',
-      './features/step_definitions/storage/browseData.js',
-      './features/step_definitions/realtime/realtime.js',
       './features/step_definitions/common/wait.js',
-      './features/support/hooks.js',
-      './features/support/timer.js'
-    ],
+
+      './features/step_definitions/storage/browseData.js',
+      './features/step_definitions/dashboard/dashboard.js',
+      './features/step_definitions/realtime/realtime.js'
+    ]
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,
     // run only certain scenarios annotated by tags
