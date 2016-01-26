@@ -1,5 +1,6 @@
 angular.module('kuzzle.headline', [])
   .directive('headline', function () {
+    'use strict';
     return {
       restrict: 'E',
       scope: {

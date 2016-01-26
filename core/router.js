@@ -3,7 +3,8 @@ var
   storage = require('./controllers/storage'),
   collection = require('./controllers/collection'),
   realtime = require('./controllers/realtime'),
-  login = require('./controllers/login');
+  login = require('./controllers/login'),
+  dashboard = require('./controllers/dashboard');
 
 module.exports = {
 
@@ -13,6 +14,7 @@ module.exports = {
     app.use('/collection', collection);
     app.use('/realtime', realtime);
     app.use('/login', login);
+    app.use('/dashboard', dashboard);
   }
 
 };
