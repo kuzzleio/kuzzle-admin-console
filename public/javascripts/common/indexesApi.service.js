@@ -9,9 +9,12 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
       var
         cache,
-        service = this,
-        selectedIndex,
-        indexes;
+        service = this;
+
+      service.data = {
+        selectedIndex: null,
+        indexes: null
+      };
 
       /**
        * Manage internal index cache
@@ -19,14 +22,14 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
        */
       cache = {
         set: function(result) {
-          indexes = result;
-          return indexes;
+          service.data.indexes = result;
+          return service.data.indexes;
         },
         add: function(index) {
-          indexes.push(index);
+          service.data.indexes.push(index);
         },
         remove: function(index) {
-          indexes.splice(indexes.indexOf(index), 1);
+          service.data.indexes.splice(service.data.indexes.indexOf(index), 1);
         }
       };
 
@@ -59,7 +62,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
        * @returns {Promise}
        */
       service.list = function () {
-        return (indexes) ? $q.when(indexes) : getIndexes();
+        return (service.data.indexes) ? $q.when(service.data.indexes) : getIndexes();
       };
 
       /**
@@ -68,26 +71,25 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
        * @returns {*}
        */
       service.selectedIndex = function () {
-        return selectedIndex;
+        return service.data.selectedIndex;
       };
 
       /**
        *
        * @returns {promise}
        */
-      service.isSelectedIndexValid = function(validateIndex) {
+      service.isSelectedIndexValid = function(index, notify) {
         var deferred = $q.defer();
 
         service.list()
           .then(function(result) {
-            var isIndexValid = (selectedIndex && result.indexOf(selectedIndex) !== -1);
+            var isIndexValid = (index && result.indexOf(index) !== -1);
 
-            if (!isIndexValid && validateIndex) {
-              Notification.error('Index "' + selectedIndex + '" does not exist');
+            if (!isIndexValid && notify) {
+              Notification.error('Index "' + index + '" does not exist');
 
               service.select();
               $rootScope.$broadcast('indexChanged');
-              $state.go('indexes.browse');
             }
 
             deferred.resolve(isIndexValid);
@@ -172,7 +174,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
       service.select = function (index) {
         if (index) kuzzleSdk.setDefaultIndex(index);
 
-        selectedIndex = index;
+        service.data.selectedIndex = index;
 
         return this;
       };

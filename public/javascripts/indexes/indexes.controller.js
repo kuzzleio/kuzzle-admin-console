@@ -2,40 +2,21 @@ angular.module('kuzzle.indexes')
 
   .controller('IndexesCtrl', [
     '$scope',
-    '$rootScope',
     '$stateParams',
     '$state',
     'indexesApi',
     '$window',
-    function ($scope, $rootScope, $stateParams, $state, indexesApi, $window) {
-      /**
-       * Reload scope
-       */
-      function loadIndexes() {
-        $scope.selectedIndex = indexesApi.selectedIndex();
-
-        return indexesApi.list()
-          .then(function(result) {
-            $scope.indexes = result;
-          });
-      }
-
+    function ($scope, $stateParams, $state, indexesApi, $window) {
 
       $scope.init = function () {
-        if ($stateParams.index) {
-          indexesApi.select($stateParams.index);
-        }
+        $scope.indexData = indexesApi.data;
 
-        loadIndexes();
-
-        $scope.$on('indexChanged', function(event, args) {
-          loadIndexes();
-        });
+        indexesApi.list();
       };
+
 
       $scope.browseCollection = function(index) {
         indexesApi.select(index);
-        $rootScope.$broadcast('indexChanged');
 
         $state.go('collection.browse', {index: index});
       };
@@ -46,8 +27,6 @@ angular.module('kuzzle.indexes')
       $scope.createIndex = function (index) {
         indexesApi.create(index, true)
           .then(function() {
-            $rootScope.$broadcast('indexChanged');
-
             $window.history.back();
           });
       };
@@ -59,7 +38,6 @@ angular.module('kuzzle.indexes')
        */
       $scope.onSelectIndex = function (index) {
         indexesApi.select(index);
-        $rootScope.$broadcast('indexChanged');
 
         $state.transitionTo($state.current, {index: index});
       };
@@ -69,7 +47,6 @@ angular.module('kuzzle.indexes')
        * @param name
        */
       $scope.onCreateIndex = function (name) {
-        $rootScope.$broadcast('indexChanged');
         $state.go('indexes.create', {newIndex: name});
       };
 
@@ -78,7 +55,6 @@ angular.module('kuzzle.indexes')
        */
       $scope.onDeleteIndex = function () {
         setTimeout(function () {
-          $rootScope.$broadcast('indexChanged');
           $state.go('', {}, {reload: true});
         }, 1000);
       };

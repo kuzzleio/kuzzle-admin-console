@@ -41,9 +41,9 @@
 
                 <li>
                     <indexes-drop-down-search
-                        selected-index="selectedIndex"
+                        selected-index="indexData.selectedIndex"
                         create-label="New index"
-                        items="indexes"
+                        items="indexData.indexes"
                         on-click-create="onCreateIndex(name)"
                         on-click-item="onSelectIndex(item)"
                         placeholder="Find an index">
@@ -55,7 +55,7 @@
 
 
                 <!-- Persisted data -->
-                <li ng-show="selectedIndex">
+                <li ng-show="indexData.selectedIndex">
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-storage" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
                         <i class="fa fa-database"></i>
                         Storage
@@ -63,10 +63,10 @@
                     </a>
                     <ul id="menu-storage" class="collapse" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
                         <li ng-class="{ active: ('storage.*.*' | includedByState) }">
-                            <a ui-sref="storage.browse({index: selectedIndex})"><i class="fa fa-list-alt"></i> Browse data</a>
+                            <a ui-sref="storage.browse({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Browse data</a>
                         </li>
                         <li ng-class="{ active: ('collection.*.*' | includedByState) }">
-                            <a ui-sref="collection.browse({index: selectedIndex})"><i class="fa fa-table"></i> Browse collection</a>
+                            <a ui-sref="collection.browse({index: indexData.selectedIndex})"><i class="fa fa-table"></i> Browse collection</a>
                         </li>
                     </ul>
                 </li>
@@ -75,7 +75,7 @@
 
 
                 <!-- Real-time data -->
-                <li ng-show="selectedIndex">
+                <li ng-show="indexData.selectedIndex">
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-rt" ng-class="{ in: ('realtime.*.*' | includedByState) }">
                         <i class="glyphicon glyphicon-time"></i>
                         Realtime
@@ -83,7 +83,7 @@
                     </a>
                     <ul id="menu-rt" class="collapse" ng-class="{ in: ('realtime.*.*' | includedByState) }">
                         <li ng-class="{ active: ('realtime.*.*' | includedByState) }">
-                            <a ui-sref="realtime.watch-data({index: selectedIndex})"><i class="fa fa-list-alt"></i> Watch data</a>
+                            <a ui-sref="realtime.watch-data({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Watch data</a>
                         </li>
                     </ul>
                 </li>

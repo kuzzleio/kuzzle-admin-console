@@ -4,22 +4,15 @@ angular.module('kuzzle.realtime')
     '$scope',
     'collectionApi',
     'documentApi',
-    'notification',
+    'messageNotification',
     'watchDataForms',
     '$state',
     '$stateParams',
     'filters',
-    'indexesApi',
-    'notification',
     'Notification',
-    '$rootScope',
-    function (
-      $scope, collectionApi, documentApi, notificationTools,
-      watchDataForms, $state, $stateParams, filterTools, indexesApi,
-      notification, Notification, $rootScope
-    ) {
+    'indexesApi',
+    function ($scope, collectionApi, documentApi, messageNotification, watchDataForms, $state, $stateParams, filterTools, notification, indexesApi) {
       var
-        filters = {},
         MAX_LOG_SIZE = 100,
         warning = {
           alreadyDisplayed: false,
@@ -30,11 +23,7 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = false;
 
       $scope.init = function () {
-        indexesApi.isSelectedIndexValid(true);
-
         $scope.forms = watchDataForms;
-        $scope.forms.collection = $stateParams.collection;
-
         collectionApi.list()
           .then(function (response) {
             var
@@ -54,14 +43,17 @@ angular.module('kuzzle.realtime')
 
             $scope.forms.collections = collections;
           });
+        $scope.forms.collection = $stateParams.collection;
 
+
+        var filters = {};
         try {
           filters = filterTools.getFiltersFromUrl($stateParams, $scope.forms.comparators);
         } catch (e) {
           $state.go('realtime.watch-data', {basicFilter: null}, {reload: false, notify: false});
         }
 
-        if (filters.basicFilter) {
+        if (filters.basicFilter){
           $scope.forms.filter.basicFilter = filters.basicFilter;
           setSearchType(false);
         } else if (filters.advancedFilter) {
@@ -76,20 +68,18 @@ angular.module('kuzzle.realtime')
         if (typeof collection === 'object' && collection.name) {
           $scope.forms.collection = collection.name;
           $state.go('realtime.watch-data', {collection: collection.name, advancedFilter: null, basicFilter: null});
-        }
-        else if (typeof collection === 'string') {
+        } else if (typeof collection === 'string') {
           $scope.forms.collection = collection;
           $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
         }
       };
 
       /**
-       * Redirect to the collection creation when the user click on link 'New collection'
+       * Redirect to the collection creation when the user click on link "New collection"
        * @param collection
-       * @param index
        */
-      $scope.onCreateCollection = function (collection, index) {
-        $state.go('collection.create', {newCollection: collection, index: index});
+      $scope.onCreateCollection = function (collection) {
+        $state.go('collection.create', {newCollection: collection});
       };
 
       /**
@@ -115,8 +105,9 @@ angular.module('kuzzle.realtime')
       };
 
       $scope.subscribe = function () {
-        if (!$scope.forms.collection)
+        if (!$scope.forms.collection) {
           return;
+        }
 
         $scope.subscribed = true;
         var filter = {};
@@ -141,7 +132,7 @@ angular.module('kuzzle.realtime')
 
           addNotification(notification);
           phase = $scope.$root.$$phase;
-          if (phase !== '$apply' && phase !== '$digest') {
+          if(phase !== '$apply' && phase !== '$digest') {
             $scope.$apply();
           }
         });
@@ -170,11 +161,13 @@ angular.module('kuzzle.realtime')
         try {
           documentApi.publishMessage($scope.forms.collection, JSON.parse(message));
           $scope.forms.error = '';
-        }
-        catch (e) {
+        } catch (e) {
           $scope.forms.error = e.message;
-          if (e.lineNumber)
+          if (e.lineNumber) {
             $scope.forms.error += ' on line ' + e.lineNumber;
+          }
+        } finally {
+
         }
       };
 
@@ -188,12 +181,12 @@ angular.module('kuzzle.realtime')
           $scope.forms.searchType.advanced = true;
         }
         else {
-          $scope.forms.searchType.basic = true
+          $scope.forms.searchType.basic = true;
         }
       };
 
       var addNotification = function (notification) {
-        $scope.forms.messages.push(notificationTools.notificationToMessage(notification));
+        $scope.forms.messages.push(messageNotification.notificationToMessage(notification));
 
         if ($scope.forms.messages.length > MAX_LOG_SIZE) {
           $scope.forms.messages.shift();
@@ -237,7 +230,6 @@ angular.module('kuzzle.realtime')
         }
 
         if (Date.now() - warning.lastTime < 10) {
-          console.log('warning');
           warning.count++;
         }
 
@@ -248,11 +240,10 @@ angular.module('kuzzle.realtime')
           notification.warning(
             {
               message:  '<p>You have too many messages for this subscription.</p>' +
-                        '<p>The display can be slow, try to specify a filter for reduce the amount of messages.</p>',
+              '<p>The display can be slow, try to specify a filter for reduce the amount of messages.</p>',
               delay: null
             }
           );
         }
       };
-    }
-  ]);
+    }]);

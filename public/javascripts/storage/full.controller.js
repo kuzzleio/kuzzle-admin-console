@@ -48,8 +48,6 @@ angular.module('kuzzle.storage')
        * @param action Can be 'edit' or 'create'
        */
       $scope.init = function (action) {
-        indexesApi.isSelectedIndexValid(true);
-
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
             $scope.schema = schema;
