@@ -16,22 +16,22 @@ var
 module.exports = function () {
   this.Given(/^I go to the realtime page$/, function (callback) {
     browser
-      .url('/#/realtime')
+      .url('/#/' + world.index + '/realtime')
       .call(callback);
   });
 
   this.Then(/^I click on the collection selector$/, function (callback) {
     browser
       .pause(500)
-      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
-      .click('drop-down-search .dropdown-toggle')
+      .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
+      .click('collections-drop-down-search .dropdown-toggle')
       .call(callback)
   });
 
   this.Given(/^I click on a collection$/, function (callback) {
     browser
-      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
-      .click('drop-down-search ul li:last-child a')
+      .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
+      .click('collections-drop-down-search ul li:last-child a')
       .call(callback)
   });
 

@@ -5,7 +5,7 @@ var
 module.exports = function () {
   this.Given(/^I am on browse data page for a collection$/, function (callback) {
     browser
-      .url('/#/storage/browse/' + world.collection)
+      .url('/#/' + world.index + '/storage/browse/' + world.collection)
       .call(callback);
   });
 
@@ -30,14 +30,14 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/add');
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/add');
       })
       .call(callback);
   });
 
    this.Given(/^I am on document full view's route$/, function (callback) {
      browser
-       .url('/#/storage/' + world.collection + '/add')
+       .url('/#/' + world.index + '/storage/' + world.collection + '/add')
        .call(callback);
    });
 
@@ -84,7 +84,7 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .url('/#/storage/' + world.collection + '/'+ id)
+      .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .call(callback)
   });
