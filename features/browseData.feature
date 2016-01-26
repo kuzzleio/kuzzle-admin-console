@@ -13,6 +13,15 @@ Feature: Test browse data pages
     Then I choose the collection "kuzzle-bo-test"
     Then I have a list with "2" elements
 
+  Scenario: Search display online document matches the filter
+    Given I am on browse data page
+    Then I choose the collection "kuzzle-bo-test"
+    Then I have a list with "2" elements
+    Then I fill the input "filter-field" with "username"
+    Then I fill the input "filter-value" with "alovelace"
+    And I click on "submit-filter" button
+    Then I have a list with "1" elements
+
   Scenario: Button access full view
     Given I am on browse data page
     Then I choose the collection "kuzzle-bo-test"
@@ -22,7 +31,7 @@ Feature: Test browse data pages
   Scenario: Button create a document
     Given I am on browse data page
     Then I choose the collection "kuzzle-bo-test"
-    When I click on create document button
+    When I click on add document button
     Then the current URL corresponds to the add document page
 
   Scenario: Form for create a new document is well displayed

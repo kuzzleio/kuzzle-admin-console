@@ -19,7 +19,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.When(/^I click on create document button$/, function (callback) {
+  this.When(/^I click on add document button$/, function (callback) {
     browser
       .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
       .call(callback);
