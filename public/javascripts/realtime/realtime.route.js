@@ -1,19 +1,19 @@
 angular.module('kuzzle.realtime')
 
-  .config(['$stateProvider', function ($stateProvider) {
+  .config(['$stateProvider', 'USER_ROLES', function ($stateProvider, USER_ROLES) {
 
     $stateProvider
       .state('realtime', {
         parent: 'logged',
         url: '/:index/realtime',
         views: {
-          'bodyView': { templateUrl: '/realtime' }
+          bodyView: { templateUrl: '/realtime' }
         }
       })
       .state('realtime.watch-data', {
         url: '/:collection?basicFilter&advancedFilter',
         views: {
-          'mainView': { templateUrl: '/realtime/watch-data' }
+          mainView: { templateUrl: '/realtime/watch-data' }
         },
         data: {}
       });

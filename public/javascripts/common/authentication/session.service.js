@@ -28,8 +28,9 @@ angular.module('kuzzle.authentication')
   };
 
   this.resumeFromCookie = function () {
-    if (!$cookies.get(COOKIE_KEY))
+    if (!$cookies.get(COOKIE_KEY)) {
       return;
+    }
 
     var sessionFromCookie = JSON.parse($cookies.get(COOKIE_KEY));
 

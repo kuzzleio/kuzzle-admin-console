@@ -17,7 +17,7 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
       modal = $uibModal.open({
         templateUrl: 'javascripts/storage/addAttribute/addAttributeModal.tpl.html',
         scope: $scope
-      })
+      });
     };
 
     $scope.cancelModal = function () {
@@ -124,7 +124,7 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
       paths = path.split('.');
 
       for (i = 0; i < paths.length; ++i) {
-        if (current[paths[i]].properties == undefined) {
+        if (current[paths[i]].properties === undefined) {
           return current[paths[i]];
         }
         else {
@@ -148,7 +148,7 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
       paths = path.split('.');
 
       for (i = 0; i < paths.length; ++i) {
-        if (current[paths[i]] == undefined) {
+        if (current[paths[i]] === undefined) {
           return current[paths[i]];
         }
         else {
@@ -170,5 +170,5 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
       },
       templateUrl: 'javascripts/storage/addAttribute/addAttribute.tpl.html',
       controller: 'AddAttributeCtrl'
-    }
+    };
   }]);

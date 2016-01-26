@@ -54,7 +54,7 @@ angular.module('kuzzle.documentsInline', [
                 }
 
                 bufferCancel.clean('deleteById', $scope.collection, document._id);
-              }, bufferCancel.timer)
+              }, bufferCancel.timer);
             }
           });
       };
@@ -66,7 +66,7 @@ angular.module('kuzzle.documentsInline', [
             if (!response.data.error) {
               document.isDeleted = false;
             }
-          })
+          });
       };
   }])
 
@@ -80,5 +80,5 @@ angular.module('kuzzle.documentsInline', [
       },
       controller: 'DocumentsInlineCtrl',
       templateUrl: '/javascripts/common/documentsInline/documentsInline.tpl.html'
-    }
+    };
   });

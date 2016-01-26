@@ -61,7 +61,7 @@ angular.module('kuzzle.collection')
           })
           .catch(function (error) {
             console.error(error);
-          })
+          });
       };
 
       $scope.cancel = function () {

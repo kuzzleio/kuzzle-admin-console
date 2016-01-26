@@ -3,9 +3,9 @@ angular.module('kuzzle.headline', [])
     return {
       restrict: 'E',
       scope: {
-        title: "@",
-        subtitle: "@"
+        title: '@',
+        subtitle: '@'
       },
       templateUrl: '/javascripts/common/headline/headline.tpl.html'
-    }
+    };
   });

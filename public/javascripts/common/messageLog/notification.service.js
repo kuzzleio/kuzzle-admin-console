@@ -1,5 +1,5 @@
 angular.module('kuzzle.realtime')
-.service('notification', [function () {
+.service('messageNotification', [function () {
   return {
     notificationToMessage: function (notification) {
       var messageItem = {
@@ -12,7 +12,7 @@ angular.module('kuzzle.realtime')
         canEdit: true
       };
 
-      switch (notification.result.action) {
+      switch (notification.action) {
         case 'publish':
           messageItem.text = 'Received volatile message';
           messageItem.icon = 'send';
@@ -23,10 +23,10 @@ angular.module('kuzzle.realtime')
         case 'createOrUpdate':
           messageItem.icon = 'file';
 
-          if (notification.state == 'done') {
+          if (notification.state === 'done') {
             messageItem.text = 'Created new document';
             messageItem.class = 'message-created-updated-doc';
-          } else if (notification.state == 'pending') {
+          } else if (notification.state === 'pending') {
             messageItem.text = 'Creating new document';
             messageItem.class = 'message-pending';
           }
@@ -41,10 +41,10 @@ angular.module('kuzzle.realtime')
         case 'delete':
           messageItem.icon = 'remove';
           messageItem.canEdit = false;
-          if (notification.state == 'done') {
+          if (notification.state === 'done') {
             messageItem.text = 'Deleted document';
             messageItem.class = 'message-deleted-doc';
-          } else if (notification.state == 'pending') {
+          } else if (notification.state === 'pending') {
             messageItem.text = 'Deleting document';
             messageItem.class = 'message-pending';
           }
@@ -67,10 +67,10 @@ angular.module('kuzzle.realtime')
         break;
 
         default:
-          throw "Unknown notification";
+          throw 'Unknown notification';
       }
 
       return messageItem;
     }
-  }
+  };
 }]);

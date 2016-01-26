@@ -204,7 +204,7 @@ angular.module('kuzzle.storage')
         $state.reload();
         message.then(function (notificationScope) {
           notificationScope.kill(true);
-        })
+        });
       };
 
       /** PRIVATE **/
