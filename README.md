@@ -26,6 +26,7 @@ Kuzzle features are accessible through a secured API. It can be used through a l
 
 You can use the default `docker-compose.yml` which will run all Kuzzle stack and the BO.
 
+    $ docker pull kuzzleio/bo
     $ docker-compose up
 
 If you want to customize which service to launch or if you don't want to clone the repo, you can create your own docker-compose.yml file.
@@ -37,6 +38,7 @@ If you want to communicate with Kuzzle in Stomp or AMQ, you probably want to add
 
 You can run the back office using the Kuzzle BO image with a link to your Kuzzle instance
 
+    $ docker pull kuzzleio/bo
     $ docker run --link my-kuzzle-container-name:kuzzle -p 3000:3000 kuzzleio/bo
 
 Where `my-kuzzle-container-name` is the container name where your Kuzzle is running. If you are in trouble for get your container name you can retrieve it with
@@ -58,6 +60,7 @@ Because functional tests need to be done in a running Kuzzle environment, it is 
 Using Compose:
 
 ```
+    $ docker pull kuzzleio/bo
     $ docker-compose -f docker-compose/test.yml up
 ```
 
