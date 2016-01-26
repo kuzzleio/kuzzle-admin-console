@@ -11,7 +11,13 @@ angular.module('kuzzle.realtime')
     'filters',
     'indexesApi',
     'notification',
-    function ($scope, collectionApi, documentApi, notificationTools, watchDataForms, $state, $stateParams, filterTools, indexesApi, notification) {
+    'Notification',
+    '$rootScope',
+    function (
+      $scope, collectionApi, documentApi, notificationTools,
+      watchDataForms, $state, $stateParams, filterTools, indexesApi,
+      notification, Notification, $rootScope
+    ) {
       var
         filters = {},
         MAX_LOG_SIZE = 100,
@@ -24,19 +30,10 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = false;
 
       $scope.init = function () {
+        indexesApi.isSelectedIndexValid(true);
+
         $scope.forms = watchDataForms;
         $scope.forms.collection = $stateParams.collection;
-
-        indexesApi.list()
-          .then(function(indexes) {
-            if (indexes.indexOf($stateParams.index) === -1) {
-              $state.go('404');
-            }
-            else {
-              indexesApi.set($stateParams.index);
-            }
-          });
-
 
         collectionApi.list()
           .then(function (response) {

@@ -1,4 +1,4 @@
-<div class="row edit-index" ng-controller="indexesCtrl" ng-init="init('{{action}}')">
+<div class="row edit-index" ng-controller="IndexesCtrl" ng-init="init('{{action}}')">
     <div class="col-sm-12 headline">
         <h1 class="page-header">
             Index <small>{{action}}</small>
@@ -10,7 +10,7 @@
         <form>
             <div class="form-group">
                 <label for="name">Index name</label>
-                <input type="text" class="form-control" ng-model="index" id="name" ng-disabled="isEdit">
+                <input type="text" class="form-control" ng-bind="name" ng-model="name" id="name" ng-disabled="isEdit">
             </div>
 
             <div class="actions-group">

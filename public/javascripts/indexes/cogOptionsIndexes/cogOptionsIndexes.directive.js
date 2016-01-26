@@ -7,7 +7,6 @@ angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle
     function ($scope, $uibModal, $state, indexesApi) {
       var modal;
 
-      console.log($scope);
 
       $scope.openModalDeleteIndex = function () {
         modal = $uibModal.open({
@@ -27,28 +26,12 @@ angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle
        * Delete the entire collection
        */
       $scope.delete = function () {
-        indexesApi.delete($scope.index.name, true);
+        indexesApi.delete($scope.index, true);
         modal.dismiss('cancel');
 
-        if ($scope.afterDelete) {
-          $scope.afterDelete();
+        if ($scope.onDeleteIndex) {
+          $scope.onDeleteIndex();
         }
-      };
-
-      /**
-       * Empty/flush the collection
-       */
-      $scope.empty = function () {
-        indexesApi.empty($scope.index.name, true);
-        modal.dismiss('cancel');
-
-        if ($scope.afterEmpty) {
-          $scope.afterEmpty();
-        }
-      };
-
-      $scope.cancelModal = function () {
-        modal.dismiss('cancel');
       };
     }
   ])
@@ -58,8 +41,7 @@ angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle
       scope: {
         canEdit: '=',
         index: '=',
-        afterDelete: '&',
-        afterEmpty: '&'
+        afterDelete: '&'
       },
       controller: 'cogOptionsIndexesCtrl',
       templateUrl: '/javascripts/indexes/cogOptionsIndexes/cogOptionsIndexes.tpl.html'

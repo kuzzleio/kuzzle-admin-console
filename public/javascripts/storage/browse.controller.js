@@ -8,21 +8,12 @@ angular.module('kuzzle.storage')
     'collectionApi',
     'indexesApi',
     function ($scope, $http, $stateParams, $state, collectionApi, indexesApi) {
-      var v = indexesApi.list();
       $scope.collections = [];
       $scope.stateParams = $stateParams;
 
 
       $scope.init = function () {
-        indexesApi.list()
-          .then(function(indexes) {
-            if (indexes.indexOf($stateParams.index) === -1) {
-              $state.go('404');
-            }
-            else {
-              indexesApi.set($stateParams.index);
-            }
-          });
+        indexesApi.isSelectedIndexValid(true);
 
         collectionApi.list()
           .then(function (response) {

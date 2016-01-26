@@ -5,8 +5,6 @@ angular.module('kuzzle.collectionsDropDownSearch', [])
     function ($scope, indexesApi) {
       $scope.isOpen = false;
 
-      $scope.index = indexesApi.get();
-
       $scope.onPressEnter = function () {
         if (!$scope.selectVolatileCollections)
           return;

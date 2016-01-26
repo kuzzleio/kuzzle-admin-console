@@ -1,7 +1,6 @@
 var
   express = require('express'),
-  router = express.Router(),
-  _ = require('lodash');
+  router = express.Router();
 
 router.get('/', function(req, res) {
   return res.render('indexes/index');

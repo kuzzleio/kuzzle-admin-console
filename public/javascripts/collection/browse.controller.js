@@ -11,9 +11,8 @@ angular.module('kuzzle.collection')
       $scope.collections = null;
 
       $scope.init = function () {
-        if (indexesApi.get() === null) {
-          $state.go('404');
-        }
+        indexesApi.isSelectedIndexValid(true);
+
         collectionApi.list()
           .then(function (response) {
             $scope.collections = response.stored.map(function (collection) {

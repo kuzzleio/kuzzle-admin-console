@@ -1,4 +1,4 @@
-<div class="indexes-browse" ng-controller="IndexesBrowseCtrl" ng-init="init()">
+<div class="indexes-browse" ng-controller="IndexesCtrl" ng-init="init()">
   <headline title="Storage" subtitle="Browse indexes"></headline>
   <div class="row whitespace-top">
     <div class="col-sm-8 col-sm-offset-2">
@@ -22,7 +22,7 @@
                                         type="text"
                                         ng-model="search"
                                         placeholder="Index name"
-                                        uib-typeahead="index.name for index in indexes | filter:$viewValue"
+                                        uib-typeahead="index for index in indexes | filter:$viewValue"
                                         typeahead-min-length="0"
                                         class="form-control" />
                                 </div>
@@ -37,11 +37,10 @@
                         <div class="panel panel-primary" ng-repeat="index in indexes | orderBy | filter:search">
                             <div class="panel-heading">
                                 <h3 class="panel-title">
-                                    <span class="index-name" ng-bind="index.name" ui-sref="indexes.full({index: index.name})" title="Go to full view"></span>
+                                    <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Go to full view"></span>
 
                                     <span class="pull-right">
-                                        <span class="glyphicon glyphicon-eye-open" ui-sref="indexes.full({index: index.name})" title="Go to full view"></span>
-                                        <span class="glyphicon glyphicon-th-list" ui-sref="collection.browse({index: index.name})" title="Go to collections list"></span>
+                                        <span class="glyphicon glyphicon-th-list" ng-click="browseCollection(index)" title="Go to collections list"></span>
                                         <cog-options-indexes
                                             index="index"
                                             can-edit="false"

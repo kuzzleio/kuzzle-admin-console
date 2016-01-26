@@ -6,9 +6,9 @@ angular.module('kuzzle.indexesDropDownSearch', [])
 
       $scope.onPressEnter = function () {
         $scope.isOpen = false;
-        $scope.selected = $scope.search;
+        $scope.selectedIndex = $scope.name;
         $scope.search = '';
-        $scope.onClickItem({item: $scope.selected});
+        $scope.onClickItem({item: $scope.selectedIndex});
       };
     }
   ])
@@ -17,13 +17,12 @@ angular.module('kuzzle.indexesDropDownSearch', [])
       restrict: 'E',
       scope: {
         label: '@',
-        selected: '=',
+        selectedIndex: '=',
         createLabel: '@',
         createLink: '@',
         onClickCreate: '&',
         items: '=',
         onClickItem: '&',
-        currentItem: '=',
         placeholder: '@'
       },
       controller: 'indexesDropDownSearchCtrl',

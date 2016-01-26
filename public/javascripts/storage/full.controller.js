@@ -48,17 +48,7 @@ angular.module('kuzzle.storage')
        * @param action Can be 'edit' or 'create'
        */
       $scope.init = function (action) {
-
-        indexesApi.list()
-          .then(function(indexes) {
-            if (indexes.indexOf($stateParams.index) === -1) {
-              $state.go('404');
-            }
-            else {
-              indexesApi.set($stateParams.index);
-            }
-          });
-
+        indexesApi.isSelectedIndexValid(true);
 
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
