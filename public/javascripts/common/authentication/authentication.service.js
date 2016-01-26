@@ -1,28 +1,24 @@
 angular.module('kuzzle.authentication')
-.factory('AuthService', ['$q', '$http', 'Session', '$rootScope', 'AUTH_EVENTS', function ($q, $http, Session, $rootScope, AUTH_EVENTS) {
+.factory('AuthService', ['$q', '$http', 'Session', '$rootScope', 'AUTH_EVENTS', 'kuzzleSdk',
+  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle) {
   var authService = {};
 
   authService.login = function (credentials) {
-      // $http
-      // .post('/login', credentials)
-    return $q(function(resolve, reject) {
-        setTimeout(function() {
-          resolve({
-            data: {
-              id: '39i2q3jwp9uf034tjhpwifj0394ut',
-              user: {
-                id: credentials.username,
-                role: 'admin',
-              },
-            }
-          });
-        }, 1000);
-      })
-      .then(function (res) {
-        Session.create(res.data.id, res.data.user.id,
-                       res.data.user.role);
-        return res.data.user;
-      });
+    var deferred = $q.defer();
+
+    kuzzle.login('local', {
+      username: credentials.username,
+      password: credentials.password
+    }, "1h", function (err, res) {
+      console.log(err, res);
+      if (err) {
+        deferred.reject(err)
+      } else {
+        deferred.resolve(true);
+      }
+    });
+
+    return deferred.promise;
   };
 
   authService.logout = function () {
@@ -38,18 +34,19 @@ angular.module('kuzzle.authentication')
   };
 
   authService.isAuthenticated = function () {
-    // TODO ask Kuzzle here
-    Session.resumeFromCookie();
-    return !!Session.session.id;
+    return !!kuzzle.jwtToken;
+    // return true;
   };
 
   authService.isAuthorized = function (authorizedRoles) {
-    // TODO ask Kuzzle here
-    if (!angular.isArray(authorizedRoles)) {
-      authorizedRoles = [authorizedRoles];
-    }
-    return (authService.isAuthenticated() &&
-      authorizedRoles.indexOf(Session.userRole) !== -1);
+    // // TODO ask Kuzzle here
+    // if (!angular.isArray(authorizedRoles)) {
+    //   authorizedRoles = [authorizedRoles];
+    // }
+    // return (authService.isAuthenticated() &&
+    //   authorizedRoles.indexOf(Session.userRole) !== -1);
+
+    return true;
   };
 
   authService.setNextRoute = function (nextRoute) {

@@ -19,6 +19,7 @@ angular.module('kuzzle.authentication')
       userRole: this.session.userRole,
     }));
   };
+  
   this.destroy = function () {
     this.session.id = null;
     this.session.userId = null;

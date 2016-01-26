@@ -39,7 +39,7 @@ angular.module('kuzzle.authentication')
       } else {
         $state.go('logged', null, {reload: true, notify: true});
       }
-    }, function () {
+    }, function (error) {
       $scope.message = 'Sorry, the credentials you provided seem to be incorrect.';
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     });
