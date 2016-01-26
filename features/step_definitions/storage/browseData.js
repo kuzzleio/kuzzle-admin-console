@@ -125,11 +125,22 @@ module.exports = function () {
   this.Then(/^a text area for document "([^"]*)" is displayed$/, function (id, callback) {
     browser
       .waitForVisible('documents-inline #' + id + ' json-edit textarea', 1000)
-      .saveScreenshot('./features/errorShots/test.png')
       .getText('documents-inline #' + id + ' json-edit .ace_scroller .ace_text-layer .ace_line:nth-child(2)')
       .then(text => {
         assert.equal(text, '"username": "'+ id +'",');
       })
+      .call(callback);
+  });
+
+  this.Then(/^I click on add attribute button$/, function (callback) {
+    browser
+      .click('add-attribute button')
+      .call(callback);
+  });
+
+  this.Then(/^I add the new attribute$/, function (callback) {
+    browser
+      .click('.modal-footer .add-attribute')
       .call(callback);
   });
 };

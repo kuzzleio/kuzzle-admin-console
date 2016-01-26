@@ -60,6 +60,20 @@ Feature: Test browse data pages
     Then the current URL corresponds to the add document page
 
   @cleanDb
+  Scenario: Edit schema on document creation
+    Given I am on page for edit document "alovelace"
+    Then I have an input with id "id"
+    And I have an input with id "first"
+    And I have an input with id "last"
+    And I have an input with id "username"
+    Then I click on add attribute button
+    And I fill the input "new-attribute-name" with "myNewField"
+    And I select in "new-attribute-type" the text "String"
+    And I select in "new-attribute-after" the text "Root document"
+    Then I add the new attribute
+    And I have an input with id "myNewField"
+
+  @cleanDb
   Scenario: Delete a document
     Given I am on browse data page
     Then I choose the collection "kuzzle-bo-test"
