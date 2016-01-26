@@ -1,13 +1,13 @@
 angular.module('kuzzle.collectionsDropDownSearch', [])
   .controller('collectionsDropDownSearchCtrl', [
     '$scope',
-    'indexesApi',
-    function ($scope, indexesApi) {
+    function ($scope) {
       $scope.isOpen = false;
 
       $scope.onPressEnter = function () {
-        if (!$scope.selectVolatileCollections)
+        if (!$scope.selectVolatileCollections) {
           return;
+        }
 
         $scope.isOpen = false;
         $scope.selected = $scope.search;

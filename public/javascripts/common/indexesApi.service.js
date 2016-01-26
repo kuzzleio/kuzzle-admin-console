@@ -172,7 +172,9 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
        * @returns {service}
        */
       service.select = function (index) {
-        if (index) kuzzleSdk.setDefaultIndex(index);
+        if (index) {
+          kuzzleSdk.setDefaultIndex(index);
+        }
 
         service.data.selectedIndex = index;
 
