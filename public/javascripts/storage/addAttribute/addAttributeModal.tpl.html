@@ -9,11 +9,11 @@
 
         <div class="form-group">
             <label>Field name</label>
-            <input class="form-control" type="text" ng-model="newField.name" required>
+            <input id="new-attribute-name" class="form-control" type="text" ng-model="newField.name" required>
         </div>
         <div class="form-group">
             <label>Attribute type</label>
-            <select class="form-control" ng-model="newField.type" required>
+            <select id="new-attribute-type" class="form-control" ng-model="newField.type" required>
                 <option value="string">String</option>
                 <option value="number">Number</option>
                 <option value="object">Fieldset</option>
@@ -22,14 +22,14 @@
         </div>
         <div class="form-group">
             <label>After attribute</label>
-            <select class="form-control" ng-options="attribute as attribute for attribute in listAttributes" ng-model="newField.after">
+            <select id="new-attribute-after" class="form-control" ng-options="attribute as attribute for attribute in listAttributes" ng-model="newField.after">
             </select>
         </div>
     </form>
 </div>
 <div class="modal-footer">
     <div class="actions-group">
-        <button class="btn btn-default control" type="button" ng-click="addAttribute()">
+        <button class="btn btn-default control add-attribute" type="button" ng-click="addAttribute()">
             Add attribute
         </button>
         <a class="control" ng-click="cancelModal()">Cancel</a>
