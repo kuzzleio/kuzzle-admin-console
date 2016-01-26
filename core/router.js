@@ -5,6 +5,7 @@ var
   realtime = require('./controllers/realtime'),
   login = require('./controllers/login'),
   indexes = require('./controllers/indexes');
+  dashboard = require('./controllers/dashboard');
 
 module.exports = {
 
@@ -15,6 +16,7 @@ module.exports = {
     app.use('/realtime', realtime);
     app.use('/login', login);
     app.use('/indexes', indexes);
+    app.use('/dashboard', dashboard);
   }
 
 };
