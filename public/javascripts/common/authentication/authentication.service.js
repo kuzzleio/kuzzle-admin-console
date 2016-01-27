@@ -1,11 +1,21 @@
 angular.module('kuzzle.authentication')
-.factory('AuthService', ['$q', '$http', 'Session', '$rootScope', 'AUTH_EVENTS', function ($q, $http, Session, $rootScope, AUTH_EVENTS) {
-  var authService = {};
+.factory('AuthService', [
+  '$q',
+  '$http',
+  'Session',
+  '$rootScope',
+  'AUTH_EVENTS',
+  'indexesApi',
+  function ($q, $http, Session, $rootScope, AUTH_EVENTS, indexesApi) {
+    var authService = {};
 
-  authService.login = function (credentials) {
-      // $http
-      // .post('/login', credentials)
-    return $q(function(resolve, reject) {
+    authService.login = function (credentials) {
+        // $http
+        // .post('/login', credentials)
+      return $q(function(resolve, reject) {
+        // Reset index selection
+        indexesApi.select(null);
+
         setTimeout(function() {
           resolve({
             data: {
@@ -13,7 +23,7 @@ angular.module('kuzzle.authentication')
               user: {
                 id: credentials.username,
                 role: 'admin',
-              },
+              }
             }
           });
         }, 1000);
@@ -23,10 +33,10 @@ angular.module('kuzzle.authentication')
                        res.data.user.role);
         return res.data.user;
       });
-  };
+    };
 
-  authService.logout = function () {
-    return $q(function(resolve, reject) {
+    authService.logout = function () {
+      return $q(function(resolve, reject) {
         setTimeout(function() {
           resolve();
         }, 1000);
@@ -35,34 +45,35 @@ angular.module('kuzzle.authentication')
         Session.destroy();
         $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       });
-  };
+    };
 
-  authService.isAuthenticated = function () {
-    // TODO ask Kuzzle here
-    Session.resumeFromCookie();
-    return !!Session.session.id;
-  };
+    authService.isAuthenticated = function () {
+      // TODO ask Kuzzle here
+      Session.resumeFromCookie();
+      return !!Session.session.id;
+    };
 
-  authService.isAuthorized = function (authorizedRoles) {
-    // TODO ask Kuzzle here
-    if (!angular.isArray(authorizedRoles)) {
-      authorizedRoles = [authorizedRoles];
-    }
-    return (authService.isAuthenticated() &&
-      authorizedRoles.indexOf(Session.userRole) !== -1);
-  };
+    authService.isAuthorized = function (authorizedRoles) {
+      // TODO ask Kuzzle here
+      if (!angular.isArray(authorizedRoles)) {
+        authorizedRoles = [authorizedRoles];
+      }
+      return (authService.isAuthenticated() &&
+        authorizedRoles.indexOf(Session.userRole) !== -1);
+    };
 
-  authService.setNextRoute = function (nextRoute) {
-    if (nextRoute === 'login') {
-      nextRoute = 'logged';
-    }
+    authService.setNextRoute = function (nextRoute) {
+      if (nextRoute === 'login') {
+        nextRoute = 'logged';
+      }
 
-    this.nextRoute = nextRoute;
-  };
+      this.nextRoute = nextRoute;
+    };
 
-  authService.getNextRoute = function () {
-    return this.nextRoute;
-  };
+    authService.getNextRoute = function () {
+      return this.nextRoute;
+    };
 
-  return authService;
-}]);
+    return authService;
+  }
+]);

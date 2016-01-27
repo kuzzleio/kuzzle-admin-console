@@ -5,6 +5,7 @@ Feature: Test dashboard page
   Background:
     Given I go to the login page
     And I authenticate
+    Then I am authenticated
 
   Scenario: Display widgets
     Given I am on dashboard page

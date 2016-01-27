@@ -34,11 +34,11 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
       };
 
       /**
-       * Get existing indexes in kuzzle
+       * Return indexes' list
        *
        * @returns {promise}
        */
-      function getIndexes() {
+      service.list = function () {
         var deferred = $q.defer();
 
         kuzzleSdk.listIndexes(function (error, result) {
@@ -54,15 +54,6 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         });
 
         return deferred.promise;
-      }
-
-      /**
-       * Return indexes' list (use cache if set)
-       *
-       * @returns {Promise}
-       */
-      service.list = function () {
-        return (service.data.indexes) ? $q.when(service.data.indexes) : getIndexes();
       };
 
       /**

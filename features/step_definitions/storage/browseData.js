@@ -3,10 +3,17 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.Given(/^I am on browse data page for a collection$/, function (callback) {
-    browser
-      .url('/#/' + world.index + '/storage/browse/' + world.collection)
-      .call(callback);
+  this.Given(/^I am on browse data page for a ?(bad)* collection$/, function (bad, callback) {
+    if (bad) {
+      browser
+        .url('/#/fakeindex/storage/browse/' + world.collection)
+        .call(callback);
+    }
+    else {
+      browser
+        .url('/#/' + world.index + '/storage/browse/' + world.collection)
+        .call(callback);
+    }
   });
 
   this.Then(/^I have a list with "([\d]*)" elements$/, function (count, callback) {
@@ -84,7 +91,10 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
+      .pause(1000)
       .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
+      .pause(1000)
+      .getHTML('body', function(html) {console.log(html)})
       .waitForVisible('form fieldset', 1000)
       .call(callback)
   });

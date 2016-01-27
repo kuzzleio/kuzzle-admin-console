@@ -51,6 +51,7 @@ module.exports = function () {
   this.Then(/^I have "([^"]*)" chart elements in "([^"]*)" widget$/, function (count, widgetName, callback) {
     browser
       .waitForVisible('widget[name="' + widgetName + '"]', 1000)
+      .pause(1000)
       .elements('widget[name="' + widgetName + '"] .chart div.highcharts-container')
       .then(elements => {
         assert(elements.value.length >= count, 'Must have ' + count + ' chart elements in ' + widgetName + ' widget, get ' + elements.value.length);

@@ -16,8 +16,6 @@ angular.module('kuzzle.indexes')
 
 
       $scope.browseCollection = function(index) {
-        indexesApi.select(index);
-
         $state.go('collection.browse', {index: index});
       };
 
@@ -27,7 +25,7 @@ angular.module('kuzzle.indexes')
       $scope.createIndex = function (index) {
         indexesApi.create(index, true)
           .then(function() {
-            $window.history.back();
+            $state.go('indexes.browse');
           });
       };
 

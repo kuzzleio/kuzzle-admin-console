@@ -6,11 +6,16 @@ Feature: Test browse data pages
   Background:
     Given I go to the login page
     And I authenticate
+    Then I am authenticated
 
   @cleanDb
   Scenario: Display data list when a collection is selected
     Given I am on browse data page for a collection
     Then I have a list with "2" elements
+
+  Scenario: I will be redirected to indexes browse page if i try to select an wrong collection
+    Given I am on browse data page for a bad collection
+    Then I am on manage index page
 
   Scenario: Button create a document
     Given I am on browse data page for a collection
@@ -53,5 +58,8 @@ Feature: Test browse data pages
     Given I am on page for edit document "alovelace"
     Then I fill the input "username" with "foo"
     And I click on "update" button
+
+  # @todo: warning, we can't switch page inside a scenario without re-logging
+  Scenario: I can retrieve an edited document with modifications
     Given I am on page for edit document "alovelace"
     Then the field "username" has the value "foo"

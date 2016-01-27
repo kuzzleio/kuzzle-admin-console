@@ -1,4 +1,4 @@
-<div class="modal-header">
+<div class="modal-header" id="modal-delete-index">
     <h3 class="modal-title"><strong>Delete</strong> index <span ng-bind="index"></span></h3>
 </div>
 <div class="modal-body">
@@ -8,12 +8,12 @@
     <p>Please type in the name of the index to confirm.</p>
 
     <form>
-        <input class="form-control" type="text" ng-model="deleteName">
+        <input class="form-control" type="text" ng-model="deleteName" id="modal-delete-index-name">
     </form>
 </div>
 <div class="modal-footer">
     <div class="actions-group">
-        <button class="btn btn-danger control" type="button" ng-click="delete()" ng-disabled="index !== deleteName">
+        <button class="btn btn-danger control" type="button" id="modal-delete-index-delete" ng-click="delete()" ng-disabled="index !== deleteName">
             I really want to remove this index
         </button>
         <a class="control" ng-click="cancelModal()">Cancel</a>
