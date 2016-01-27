@@ -3,17 +3,15 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.Given(/^I am on browse data page for a ?(bad)* collection$/, function (bad, callback) {
-    if (bad) {
-      browser
-        .url('/#/fakeindex/storage/browse/' + world.collection)
-        .call(callback);
-    }
-    else {
-      browser
-        .url('/#/' + world.index + '/storage/browse/' + world.collection)
-        .call(callback);
-    }
+  this.Given(/^I am on browse data page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/storage/browse')
+      .call(callback);
+  });
+  this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
+    browser
+      .url('/#/notexist/storage/browse')
+      .call(callback);
   });
 
   this.Then(/^I have a list with "([\d]*)" elements$/, function (count, callback) {
@@ -26,7 +24,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.When(/^I click on create document button$/, function (callback) {
+  this.When(/^I click on add document button$/, function (callback) {
     browser
       .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
       .call(callback);
@@ -42,7 +40,7 @@ module.exports = function () {
       .call(callback);
   });
 
-   this.Given(/^I am on document full view's route$/, function (callback) {
+   this.Given(/^I am on page for create document$/, function (callback) {
      browser
        .url('/#/' + world.index + '/storage/' + world.collection + '/add')
        .call(callback);
@@ -91,11 +89,63 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .pause(1000)
       .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
-      .pause(1000)
-      .getHTML('body', function(html) {console.log(html)})
       .waitForVisible('form fieldset', 1000)
       .call(callback)
+  });
+
+  this.Then(/^I choose the collection "([^"]*)"$/, function (collection, callback) {
+    browser
+      .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
+      .pause(500)
+      .click('collections-drop-down-search .dropdown-toggle')
+      .click('collections-drop-down-search ul li:last-child a')
+      .call(callback);
+  });
+
+  this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
+    browser
+      .waitForVisible('documents-inline #' + id + ' .full-view', 1000)
+      .click('documents-inline #' + id + ' .full-view')
+      .call(callback);
+  });
+
+  this.Then(/^the current URL corresponds to the "([^"]*)" full document page$/, function (id, callback) {
+    browser
+      .waitForVisible('.edit-id')
+      .getUrl()
+      .then(url => {
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/' + id);
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on edit-inline button of "([^"]*)" document$/, function (id, callback) {
+    browser
+      .waitForVisible('documents-inline #' + id + ' .edit-inline', 1000)
+      .click('documents-inline #' + id + ' .edit-inline')
+      .call(callback);
+  });
+
+  this.Then(/^a text area for document "([^"]*)" is displayed$/, function (id, callback) {
+    browser
+      .waitForVisible('documents-inline #' + id + ' json-edit textarea', 1000)
+      .getText('documents-inline #' + id + ' json-edit .ace_scroller .ace_text-layer .ace_line:nth-child(2)')
+      .then(text => {
+        assert.equal(text, '"username": "'+ id +'",');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on add attribute button$/, function (callback) {
+    browser
+      .click('add-attribute button')
+      .call(callback);
+  });
+
+  this.Then(/^I add the new attribute$/, function (callback) {
+    browser
+      .click('.modal-footer .add-attribute')
+      .call(callback);
   });
 };

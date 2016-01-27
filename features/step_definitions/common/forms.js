@@ -24,10 +24,30 @@ module.exports = function () {
       .call(callback);
   });
 
+
   this.Then(/^I have input "([^"]*)"$/, function (field, callback) {
     browser
       .waitForVisible('input[id="' + field + '"]', 1000)
       .call(callback);
+  });
+
+  this.Then(/^I check the checkbox with class "([^"]*)"$/, function (cssClass, callback) {
+    browser
+      .waitForVisible('input[type=checkbox].' + cssClass, 1000)
+      .click('input[type=checkbox].' + cssClass)
+      .call(callback);
+  });
+
+  this.Then(/^I have an input with id "([^"]*)"$/, function (id, callback) {
+    browser
+      .waitForVisible('input#' + id, 1000)
+      .call(callback)
+  });
+
+  this.Then(/^I select in "([^"]*)" the text "([^"]*)"$/, function (id, text, callback) {
+    browser
+      .selectByVisibleText('#' + id, text)
+      .call(callback)
   });
 
   this.Then(/^I can see "([^"]*)" modal$/, function(id, callback) {

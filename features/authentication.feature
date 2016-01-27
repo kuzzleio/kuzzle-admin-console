@@ -17,5 +17,5 @@ Feature: Test authentication
 
   Scenario: The not authentified user is denied to visit an authenticated page
     Given I go to the logout page
-    And I am on browse data page for a collection
+    And I am on browse data page
     Then I see the login page

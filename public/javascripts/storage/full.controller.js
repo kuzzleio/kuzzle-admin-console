@@ -31,7 +31,9 @@ angular.module('kuzzle.storage')
       $scope.isLoading = false;
 
       // Checkbox on form. If is set to true, when the user click on 'create', the document is created and the form is reinitialized.
-      $scope.another = false;
+      $scope.option = {
+        another: false
+      };
 
       // Document itself. Loaded from server if we are in edition
       $scope.document = {id: $stateParams.id, body: {}, json: null};
@@ -117,7 +119,7 @@ angular.module('kuzzle.storage')
 
       /**
        * Triggered when user click on Create button.
-       * The document is persisted to Kuzzle. If `$scope.another` is set to true, the form is reloaded
+       * The document is persisted to Kuzzle. If `$scope.option.another` is set to true, the form is reloaded
        */
       $scope.create = function () {
         var document = getDocumentBody();
@@ -128,7 +130,7 @@ angular.module('kuzzle.storage')
 
         documentApi.create($scope.collection, $scope.document.id, document, true)
           .then(function (response) {
-            if ($scope.another) {
+            if ($scope.option.another) {
               $state.reload();
             }
 
