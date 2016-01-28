@@ -29,7 +29,8 @@ Feature: Test browse data pages
 
   Scenario: Button access full view
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     When I click on link to access to "alovelace" full document page
     Then the current URL corresponds to the "alovelace" full document page
 

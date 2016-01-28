@@ -25,6 +25,7 @@ var hooks = function () {
 
   this.After('@unsubscribe', function (scenario, callback) {
     browser
+      .waitForVisible('.filters button.btn-unsubscribe', 1000)
       .click('.filters button.btn-unsubscribe')
       .call(callback);
 

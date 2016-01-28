@@ -30,6 +30,7 @@ module.exports = function () {
 
   this.Given(/^I click on a collection$/, function (callback) {
     browser
+      .pause(500)
       .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
       .click('collections-drop-down-search ul li:last-child a')
       .call(callback)
@@ -37,12 +38,14 @@ module.exports = function () {
 
   this.Given(/^I subscribe to the collection events$/, function (callback) {
     browser
+      .waitForVisible('.filters button.btn-subscribe', 1000)
       .click('.filters button.btn-subscribe')
       .call(callback)
   });
 
   this.Given(/^I unsubscribe from the collection$/, function (callback) {
     browser
+      .waitForVisible('.filters button.btn-unsubscribe', 1000)
       .click('.filters button.btn-unsubscribe')
       .call(callback)
   });
