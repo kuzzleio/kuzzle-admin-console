@@ -17,7 +17,7 @@ angular.module('kuzzle')
       message: 'Successfully reconnected to the Kuzzle server.',
       delay: 3500
     });
-  }
+  };
 
   var onDisconnected = function () {
     var reconnectMsg = (kuzzle.autoReconnect) ?
@@ -33,7 +33,7 @@ angular.module('kuzzle')
     currentNotification = (kuzzle.autoReconnect) ?
       Notification.warning(notificationCfg) :
       Notification.error(notificationCfg);
-  }
+  };
 
   $scope.init = function () {
     Session.resumeFromCookie();
