@@ -11,7 +11,8 @@ Feature: Test browse data pages
   @cleanDb
   Scenario: Display data list when a collection is selected
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     Then I have a list with "2" elements
 
   Scenario: I will be redirected to indexes browse page if i try to select an wrong collection
@@ -20,7 +21,8 @@ Feature: Test browse data pages
 
   Scenario: Search display online document matches the filter
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     Then I have a list with "2" elements
     Then I fill the input "filter-field" with "username"
     Then I fill the input "filter-value" with "alovelace"
@@ -36,7 +38,8 @@ Feature: Test browse data pages
 
   Scenario: Button create a document
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     When I click on add document button
     Then the current URL corresponds to the add document page
 
@@ -59,7 +62,8 @@ Feature: Test browse data pages
     # Wait 1sec for let ES index the new doc
     Then I'm waiting 1 sec
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     Then I have a list with "3" elements
 
   @cleanDb
@@ -91,13 +95,15 @@ Feature: Test browse data pages
   @cleanDb
   Scenario: Delete a document
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     Then I have a list with "2" elements
     And I delete the last element in list and I cancel
     Then I have a list with "2" elements
     And I delete the last element in list
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     Then I have a list with "1" elements
 
   @cleanDb
@@ -114,6 +120,7 @@ Feature: Test browse data pages
   @cleanDb
   Scenario: Edit inline a document
     Given I am on browse data page
-    Then I choose the collection "kuzzle-bo-test"
+    Then I click on the collection selector
+    Then I click on a collection
     Then I click on edit-inline button of "alovelace" document
     Then a text area for document "alovelace" is displayed

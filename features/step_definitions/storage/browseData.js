@@ -94,17 +94,6 @@ module.exports = function () {
       .call(callback)
   });
 
-  this.Then(/^I choose the collection "([^"]*)"$/, function (collection, callback) {
-    browser
-      .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
-      .pause(500)
-      .click('collections-drop-down-search .dropdown-toggle')
-      .pause(500)
-      .waitForVisible('collections-drop-down-search  ul li:last-child a', 1000)
-      .click('collections-drop-down-search ul li:last-child a')
-      .call(callback);
-  });
-
   this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
     browser
       .waitForVisible('documents-inline #' + id + ' .full-view', 1000)

@@ -5,7 +5,8 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
     '$state',
     'Notification',
     '$rootScope',
-    function (kuzzleSdk, $q, $state, Notification, $rootScope) {
+    '$location',
+    function (kuzzleSdk, $q, $state, Notification, $rootScope, $location) {
 
       var
         cache,

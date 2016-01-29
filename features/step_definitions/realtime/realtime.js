@@ -22,8 +22,8 @@ module.exports = function () {
 
   this.Then(/^I click on the collection selector$/, function (callback) {
     browser
-      .pause(500)
       .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
+      .pause(5000)
       .click('collections-drop-down-search .dropdown-toggle')
       .call(callback)
   });

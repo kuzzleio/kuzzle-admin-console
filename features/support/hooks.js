@@ -15,7 +15,12 @@ var hooks = function () {
 
   this.Before('@createIndex', function (scenario, callback) {
     console.log('@createIndex');
-    initIndex.call(this, callback);
+
+    removeIndex(function() {
+      initIndex(function() {
+        callback();
+      })
+    })
   });
 
   this.Before('@cleanDb', function (scenario, callback) {
@@ -41,6 +46,25 @@ var initIndex = function (callback) {
     query = {
       controller: 'admin',
       action: 'createIndex',
+      index: world.index
+    },
+    timeoutCallback = function () {
+      setTimeout(() => {
+        callback();
+      }, 1000)
+    };
+
+  world.kuzzle
+    .queryPromise(query, {})
+    .then(timeoutCallback)
+    .catch(timeoutCallback);
+};
+
+var removeIndex = function (callback) {
+  var
+    query = {
+      controller: 'admin',
+      action: 'deleteIndex',
       index: world.index
     },
     timeoutCallback = function () {
