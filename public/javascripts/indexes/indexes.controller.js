@@ -35,9 +35,14 @@ angular.module('kuzzle.indexes')
        * @param index
        */
       $scope.onSelectIndex = function (index) {
-        indexesApi.select(index);
+        indexesApi.isSelectedIndexValid(index)
+          .then(function (exist) {
+            if (exist) {
+              indexesApi.select(index);
 
-        $state.transitionTo($state.current, {index: index});
+              $state.transitionTo($state.current, {index: index});
+            }
+          });
       };
 
       /**

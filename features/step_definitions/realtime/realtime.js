@@ -30,8 +30,8 @@ module.exports = function () {
 
   this.Given(/^I click on a collection$/, function (callback) {
     browser
-      .waitForVisible('drop-down-search ul li:last-child a', 4000)
-      .click('drop-down-search ul li:last-child a')
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 4000)
+      .click('collections-drop-down-search .dropdown-menu li:last-child a')
       .call(callback)
   });
 
