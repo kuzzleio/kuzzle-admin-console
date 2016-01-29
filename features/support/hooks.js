@@ -16,9 +16,17 @@ var hooks = function () {
   this.Before('@createIndex', function (scenario, callback) {
     console.log('@createIndex');
 
+    var timeoutCallback = function () {
+      setTimeout(function() {
+        callback();
+      }, 2000)
+    };
+
     removeIndex(function() {
       initIndex(function() {
-        callback();
+        bulk()
+        .then(timeoutCallback)
+        .catch(timeoutCallback);
       })
     })
   });
