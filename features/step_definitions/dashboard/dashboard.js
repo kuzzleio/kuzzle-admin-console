@@ -31,6 +31,7 @@ module.exports = function () {
   this.Then(/^I have "([^"]*)" table line elements in "([^"]*)" widget$/, function (count, widgetName, callback) {
     browser
       .waitForVisible('widget[name="' + widgetName + '"]', 1000)
+      .pause(1000)
       .elements('widget[name="' + widgetName + '"] .panel-body table tr')
       .then(elements => {
         assert.equal(elements.value.length, count, 'Must have ' + count + ' table line elements in ' + widgetName + ' widget, get ' + elements.value.length);
@@ -41,6 +42,7 @@ module.exports = function () {
   this.Then(/^I have at least "([^"]*)" table line elements in "([^"]*)" widget$/, function (count, widgetName, callback) {
     browser
       .waitForVisible('widget[name="' + widgetName + '"]', 1000)
+      .pause(1000)
       .elements('widget[name="' + widgetName + '"] .panel-body table tr')
       .then(elements => {
         assert(elements.value.length >= count, 'Must have ' + count + ' table line elements in ' + widgetName + ' widget, get ' + elements.value.length);
