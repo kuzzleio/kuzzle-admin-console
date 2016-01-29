@@ -6,15 +6,12 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'collectionApi',
-    'indexesApi',
-    function ($scope, $http, $stateParams, $state, collectionApi, indexesApi) {
+    function ($scope, $http, $stateParams, $state, collectionApi) {
       $scope.collections = [];
       $scope.stateParams = $stateParams;
 
 
       $scope.init = function () {
-        indexesApi.isSelectedIndexValid(true);
-
         collectionApi.list()
           .then(function (response) {
             $scope.collections = response.stored.map(function (collection) {

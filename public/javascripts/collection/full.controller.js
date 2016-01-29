@@ -9,8 +9,7 @@ angular.module('kuzzle.collection')
     'previousState',
     '$window',
     'Notification',
-    'indexesApi',
-    function ($scope, $stateParams, collectionApi, $state, schema, previousState, $window, notification, indexesApi) {
+    function ($scope, $stateParams, collectionApi, $state, schema, previousState, $window, notification) {
 
       $scope.isEdit = false;
       $scope.collection = {
@@ -19,8 +18,6 @@ angular.module('kuzzle.collection')
       };
 
       $scope.init = function (action) {
-        indexesApi.isSelectedIndexValid(true);
-
         if (action === 'edit') {
           $scope.isEdit = true;
 
