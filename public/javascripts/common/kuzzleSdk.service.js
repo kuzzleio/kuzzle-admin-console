@@ -7,5 +7,8 @@ angular.module('kuzzle.kuzzleSdk', [])
     return $location.$$host + ':7512';
   }])
   .factory('kuzzleSdk', ['kuzzleUrl', function (kuzzleUrl) {
-    return new Kuzzle(kuzzleUrl, {defaultIndex: 'mainindex'});
+    return new Kuzzle(kuzzleUrl, {
+      defaultIndex: 'mainindex',
+      offlineMode: 'auto'
+    });
   }]);
