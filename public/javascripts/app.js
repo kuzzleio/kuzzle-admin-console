@@ -81,6 +81,14 @@ angular.module('kuzzle', [
       $state.go('login');
     });
 
+    $rootScope.$on(AUTH_EVENTS.loginSuccess, function () {
+      if (AuthService.getNextRoute()) {
+        $state.go(AuthService.getNextRoute(), null, {reload: true, notify: true});
+      } else {
+        $state.go('logged', null, {reload: true, notify: true});
+      }
+    });
+
     $rootScope.$on('$stateNotFound', function(event) {
       $state.go('404');
     });
@@ -96,9 +104,6 @@ angular.module('kuzzle', [
         if (!AuthService.isAuthenticated()) {
           event.preventDefault();
           AuthService.setNextRoute(next.name);
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-
-          return;
         }
       }
     });

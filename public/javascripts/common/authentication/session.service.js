@@ -3,40 +3,45 @@ angular.module('kuzzle.authentication')
   var COOKIE_KEY = 'authToken';
 
   this.session = {
-    id: '',
-    userId: '',
-    userRole: '',
+    jwtToken: null,
+    userId: null,
+    userRoles: [],
   };
 
-  this.create = function (sessionId, userId, userRole) {
-    this.session.id = sessionId;
+  this.create = function (jwtToken, userId, userRoles) {
+    this.session.jwtToken = jwtToken;
     this.session.userId = userId;
-    this.session.userRole = userRole;
+    // this.session.userRoles = userRoles;
 
     $cookies.put(COOKIE_KEY, JSON.stringify({
-      id: this.session.id,
+      jwtToken: this.session.jwtToken,
       userId: this.session.userId,
-      userRole: this.session.userRole,
+      // userRoles: this.session.userRoles,
     }));
   };
-  
+
+  this.addRoles = function () {
+    // TODO implement this.
+  };
+
   this.destroy = function () {
-    this.session.id = null;
+    this.session.jwtToken = null;
     this.session.userId = null;
-    this.session.userRole = null;
+    this.session.userRoles = [];
 
     $cookies.remove(COOKIE_KEY);
   };
 
   this.resumeFromCookie = function () {
     if (!$cookies.get(COOKIE_KEY)) {
-      return;
+      return false;
     }
 
     var sessionFromCookie = JSON.parse($cookies.get(COOKIE_KEY));
 
-    this.session.id = sessionFromCookie.id;
+    this.session.jwtToken = sessionFromCookie.jwtToken;
     this.session.userId = sessionFromCookie.userId;
-    this.session.userRole = sessionFromCookie.userRole;
+    // this.session.userRoles = sessionFromCookie.userRoles;
+    return true;
   };
 }]);

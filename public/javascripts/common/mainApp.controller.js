@@ -6,10 +6,6 @@ angular.module('kuzzle')
   'Session',
   'AUTH_EVENTS',
   function ($rootScope, $scope, Auth, Session, AUTH_EVENTS) {
-  $scope.init = function () {
-    Session.resumeFromCookie();
-  };
-
   $scope.session = Session.session;
 
   $scope.doLogin = function () {

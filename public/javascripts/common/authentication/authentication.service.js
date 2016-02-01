@@ -3,6 +3,18 @@ angular.module('kuzzle.authentication')
   function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle) {
   var authService = {};
 
+  var onLoginSuccess = function () {
+    console.log('Authentication succeeded!');
+    // TODO: put kuzzle.whoAmI() here
+    Session.create(kuzzle.jwtToken);
+    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+  };
+
+  var onLoginFailed = function (err) {
+    console.log('Authentication error.', err.message);
+    $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
+  }
+
   authService.login = function (credentials) {
     var deferred = $q.defer();
 
@@ -10,10 +22,11 @@ angular.module('kuzzle.authentication')
       username: credentials.username,
       password: credentials.password
     }, "1h", function (err, res) {
-      console.log(err, res);
       if (err) {
-        deferred.reject(err)
+        onLoginFailed(err)
+        deferred.reject(err);
       } else {
+        onLoginSuccess();
         deferred.resolve(true);
       }
     });
@@ -34,8 +47,31 @@ angular.module('kuzzle.authentication')
   };
 
   authService.isAuthenticated = function () {
-    return !!kuzzle.jwtToken;
-    // return true;
+    var deferred = $q.defer();
+
+    if (kuzzle.jwtToken) {
+      return true;
+    }
+
+    if (Session.resumeFromCookie()) {
+      console.log('Login from cookie');
+
+      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      return; // kuzzle.checkToken is not availeble yet.
+
+      kuzzle.checkToken(Session.session.jwtToken)
+      .then(function () {
+        kuzzle.setJwtToken(Session.session.jwtToken);
+        onLoginSuccess(Session.session.jwtToken)
+      })
+      .catch(function (err) {
+        onLoginFailed(err);
+        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      });
+    } else {
+      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      return false;
+    }
   };
 
   authService.isAuthorized = function (authorizedRoles) {
