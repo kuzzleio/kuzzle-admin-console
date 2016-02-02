@@ -4,8 +4,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('gruntify-eslint');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-cucumber');
-  grunt.loadNpmTasks('grunt-phantom');
 
   grunt.initConfig({
     /** ADD REAL TESTS ON SOURCE **/
