@@ -1,1 +1,3 @@
-angular.module('kuzzle.collection', []);
+angular.module('kuzzle.collection', [
+  'kuzzle.indexesApi'
+]);

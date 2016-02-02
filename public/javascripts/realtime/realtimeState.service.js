@@ -27,8 +27,8 @@ angular.module('kuzzle.realtime')
 
   return {
     getInitialBasicFilter: function () {
-        return initialBasicFilter();
-      },
+      return initialBasicFilter();
+    },
     getInitialAdvancedFilter: function () {
       return '';
     },

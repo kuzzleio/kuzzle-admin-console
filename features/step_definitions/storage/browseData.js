@@ -5,7 +5,12 @@ var
 module.exports = function () {
   this.Given(/^I am on browse data page$/, function (callback) {
     browser
-      .url('/#/storage/browse')
+      .url('/#/' + world.index + '/storage/browse')
+      .call(callback);
+  });
+  this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
+    browser
+      .url('/#/notexist/storage/browse')
       .call(callback);
   });
 
@@ -30,14 +35,14 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/add');
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/add');
       })
       .call(callback);
   });
 
    this.Given(/^I am on page for create document$/, function (callback) {
      browser
-       .url('/#/storage/' + world.collection + '/add')
+       .url('/#/' + world.index + '/storage/' + world.collection + '/add')
        .call(callback);
    });
 
@@ -84,18 +89,9 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .url('/#/storage/' + world.collection + '/'+ id)
+      .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .call(callback)
-  });
-
-  this.Then(/^I choose the collection "([^"]*)"$/, function (collection, callback) {
-    browser
-      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
-      .pause(500)
-      .click('drop-down-search .dropdown-toggle')
-      .click('drop-down-search ul li:last-child a')
-      .call(callback);
   });
 
   this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
@@ -110,7 +106,7 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/' + id);
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/' + id);
       })
       .call(callback);
   });

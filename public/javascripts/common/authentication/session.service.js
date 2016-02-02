@@ -5,7 +5,7 @@ angular.module('kuzzle.authentication')
   this.session = {
     id: '',
     userId: '',
-    userRole: '',
+    userRole: ''
   };
 
   this.create = function (sessionId, userId, userRole) {

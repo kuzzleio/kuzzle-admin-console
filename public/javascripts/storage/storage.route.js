@@ -5,10 +5,21 @@ angular.module('kuzzle.storage')
     $stateProvider
       .state('storage', {
         parent: 'logged',
-        url: '/storage',
+        url: '/:index/storage',
         views: {
           bodyView: { templateUrl: '/storage' }
         },
+        index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+          indexesApi.isSelectedIndexValid($stateParams.index, true)
+            .then(function (exist) {
+              if (!exist) {
+                $state.go('indexes.browse');
+              }
+              else {
+                indexesApi.select($stateParams.index);
+              }
+            });
+        }],
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([

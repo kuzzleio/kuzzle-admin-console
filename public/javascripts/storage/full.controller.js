@@ -11,7 +11,8 @@ angular.module('kuzzle.storage')
     'schema',
     'previousState',
     '$window',
-    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window) {
+    'indexesApi',
+    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, indexesApi) {
 
       // Define the schema collection. Allow to display a JSON representation into a form
       $scope.schema = {};
@@ -49,7 +50,6 @@ angular.module('kuzzle.storage')
        * @param action Can be 'edit' or 'create'
        */
       $scope.init = function (action) {
-
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
             $scope.schema = schema;
