@@ -29,6 +29,6 @@ angular.module('kuzzle.dropDownSearch', [])
         selectVolatileCollections: '='
       },
       controller: 'DropDownSearchCtrl',
-      templateUrl: '/javascripts/storage/dropDownSearch/dropDownSearch.tpl.html'
+      templateUrl: '/javascripts/common/dropDownSearch/dropDownSearch.tpl.html'
     };
   });

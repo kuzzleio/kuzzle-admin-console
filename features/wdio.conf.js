@@ -109,7 +109,6 @@ exports.config = {
   cucumberOpts: {
     require: [
       './features/support/hooks.js',
-      './features/support/timer.js',
 
       './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',

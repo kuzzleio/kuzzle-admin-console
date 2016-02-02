@@ -3,27 +3,20 @@ angular.module('kuzzle', [
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
-  'kuzzle.basicFilter',
-  'kuzzle.filters',
   'kuzzle.headline',
-  'kuzzle.widget',
-  'kuzzle.gauge',
-  'kuzzle.chart',
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',
   'kuzzle.dashboard',
   'kuzzle.collectionApi',
   'kuzzle.serverApi',
-  'kuzzle.documentsInline',
-  'kuzzle.cogOptionsCollection',
   'angular-loading-bar',
   'ngAnimate',
   'kuzzle.uid',
   'ui-notification',
-  'kuzzle.bufferCancel',
   'kuzzle.previousState',
-  'kuzzle.unsubscribeOnPageChange'
+  'kuzzle.unsubscribeOnPageChange',
+  'oc.lazyLoad'
 ])
 
   .config(['$httpProvider', function ($httpProvider) {
@@ -60,6 +53,15 @@ angular.module('kuzzle', [
         },
         data: {
           requiresAuthentication: true
+        },
+        resolve: {
+          loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
+            return $ocLazyLoad.load([
+              '/javascripts/common/chart/chart.directive.js',
+              '/javascripts/common/gauge/gauge.directive.js',
+              '/javascripts/common/widget/widget.directive.js'
+            ]);
+          }]
         }
       })
       .state('404', {
@@ -87,16 +89,14 @@ angular.module('kuzzle', [
       $state.go('login');
     });
 
-    $rootScope.$on('$stateNotFound', function (event) {
+    $rootScope.$on('$stateNotFound', function () {
       $state.go('404');
     });
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
-      var authorizedRoles = null;
       if (!next.data) {
         return;
       }
-      authorizedRoles = next.data.authorizedRoles;
 
       if (next.data.requiresAuthentication) {
         if (!AuthService.isAuthenticated()) {

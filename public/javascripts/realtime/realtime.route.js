@@ -1,6 +1,6 @@
 angular.module('kuzzle.realtime')
 
-  .config(['$stateProvider', 'USER_ROLES', function ($stateProvider, USER_ROLES) {
+  .config(['$stateProvider', function ($stateProvider) {
 
     $stateProvider
       .state('realtime', {
@@ -8,6 +8,28 @@ angular.module('kuzzle.realtime')
         url: '/realtime',
         views: {
           bodyView: { templateUrl: '/realtime' }
+        },
+        resolve: {
+          loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
+            return $ocLazyLoad.load([
+              '/javascripts/common/dropDownSearch/dropDownSearch.directive.js',
+              '/javascripts/common/cogOptionsCollection/cogOptionsCollection.directive.js',
+              '/javascripts/common/bufferCancel.service.js',
+              '/javascripts/realtime/watchData.ctrl.js',
+              '/javascripts/realtime/messageLog/messageLog.directive.js',
+              '/javascripts/realtime/messageLog/notification.service.js',
+              '/javascripts/realtime/realtimeState.service.js',
+              '/bower_components/angular-scroll-glue/src/scrollglue.js',
+              '/javascripts/common/basicFilter/basicFilter.directive.js',
+              '/javascripts/common/filters/filters.module.js'
+            ])
+              .then(function () {
+                return $ocLazyLoad.load([
+                  '/javascripts/common/filters/filters.directive.js',
+                  '/javascripts/common/filters/filters.service.js'
+                ]);
+              });
+          }]
         }
       })
       .state('realtime.watch-data', {

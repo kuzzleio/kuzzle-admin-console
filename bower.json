@@ -35,7 +35,8 @@
     "kuzzle-sdk": "1.3.2",
     "angular-scroll-glue": "~2.0.6",
     "angular-cookies": "~1.4.8",
-    "highcharts": "4.2.1"
+    "highcharts": "4.2.1",
+    "oclazyload": "~1.0.9"
   },
   "resolutions": {
     "angular": "1.4.9"

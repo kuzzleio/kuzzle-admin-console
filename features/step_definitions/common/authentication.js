@@ -19,6 +19,7 @@ module.exports = function () {
       .setValue('[name=username]', c.username)
       .setValue('[name=password]', c.password)
       .click('[type=submit]')
+      .waitForVisible('.navbar-brand', 3000)
       .pause(1000)
       .call(callback)
   });

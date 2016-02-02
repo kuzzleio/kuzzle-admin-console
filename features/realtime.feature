@@ -5,10 +5,16 @@ Feature: Test realtime watch data pages
   @createIndex
   Background:
     Given I go to the login page
+    Then I take a screenshot "test0"
     And I authenticate
+    Then I am authenticated
+    Then I'm waiting 2 sec
     Given I go to the realtime page
+    Then I take a screenshot "test1"
     And I click on the collection selector
+    Then I take a screenshot "test2"
     Given I click on a collection
+    Then I take a screenshot "test3"
     And I subscribe to the collection events
 
   @cleanDb @unsubscribe
