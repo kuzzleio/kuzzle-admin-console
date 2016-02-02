@@ -37,5 +37,5 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('default', ['sass']);
-  grunt.registerTask('linter', ['eslint', 'jshint'])
+  grunt.registerTask('linter', ['eslint', 'jshint']);
 };
