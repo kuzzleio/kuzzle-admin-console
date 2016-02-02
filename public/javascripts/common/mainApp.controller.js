@@ -11,7 +11,7 @@ angular.module('kuzzle')
     kuzzle.addListener('jwtTokenExpired', function () {
       $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
     });
-  }
+  };
 
   $scope.session = Session.session;
 

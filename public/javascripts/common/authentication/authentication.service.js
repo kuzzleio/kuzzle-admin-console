@@ -13,7 +13,7 @@ angular.module('kuzzle.authentication')
   var onLoginFailed = function (err) {
     console.log('Authentication error.', err.message);
     $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
-  }
+  };
 
   authService.login = function (credentials) {
     var deferred = $q.defer();
@@ -21,9 +21,9 @@ angular.module('kuzzle.authentication')
     kuzzle.login('local', {
       username: credentials.username,
       password: credentials.password
-    }, "1h", function (err, res) {
+    }, '1h', function (err, res) {
       if (err) {
-        onLoginFailed(err)
+        onLoginFailed(err);
         deferred.reject(err);
       } else {
         onLoginSuccess();
@@ -59,15 +59,15 @@ angular.module('kuzzle.authentication')
       $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       return; // kuzzle.checkToken is not availeble yet.
 
-      kuzzle.checkToken(Session.session.jwtToken)
-      .then(function () {
-        kuzzle.setJwtToken(Session.session.jwtToken);
-        onLoginSuccess(Session.session.jwtToken)
-      })
-      .catch(function (err) {
-        onLoginFailed(err);
-        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-      });
+      // kuzzle.checkToken(Session.session.jwtToken)
+      // .then(function () {
+      //   kuzzle.setJwtToken(Session.session.jwtToken);
+      //   onLoginSuccess(Session.session.jwtToken);
+      // })
+      // .catch(function (err) {
+      //   onLoginFailed(err);
+      //   $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      // });
     } else {
       $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       return false;
