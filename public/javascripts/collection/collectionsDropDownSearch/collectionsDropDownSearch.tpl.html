@@ -13,7 +13,7 @@
     </li>
     <li class="divider"></li>
     <li>
-      <a class="external-link" ng-click="onClickCreate({collection: search})" ng-bind="createLabel"></a>
+      <a class="external-link" ng-click="onClickCreate({collection: search, index: index})" ng-bind="createLabel"></a>
     </li>
     <li class="divider"></li>
     <li ng-class="{active: item === currentItem}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})">

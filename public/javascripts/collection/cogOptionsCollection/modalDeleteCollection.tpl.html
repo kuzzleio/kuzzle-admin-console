@@ -1,9 +1,9 @@
 <div class="modal-header">
-    <h3 class="modal-title"><strong>Delete</strong> collection <span ng-bind="collection"></span></h3>
+    <h3 class="modal-title"><strong>Delete</strong> collection <span ng-bind="collection.name"></span></h3>
 </div>
 <div class="modal-body">
     <p>This action CANNOT be undone.</p>
-    <p>This will permanently <strong>delete</strong> the collection <strong ng-bind="collection"></strong> (data AND schema).</p>
+    <p>This will permanently <strong>delete</strong> the collection <strong ng-bind="collection.name"></strong> (data AND schema).</p>
     <p></p>
     <p>Please type in the name of the collection to confirm.</p>
 
@@ -13,7 +13,7 @@
 </div>
 <div class="modal-footer">
     <div class="actions-group">
-        <button class="btn btn-danger control" type="button" ng-click="delete()" ng-disabled="collection !== deleteName">
+        <button class="btn btn-danger control" type="button" ng-click="delete()" ng-disabled="collection.name !== deleteName">
             I really want to remove this collection
         </button>
         <a class="control" ng-click="cancelModal()">Cancel</a>

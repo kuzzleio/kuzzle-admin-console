@@ -7,17 +7,16 @@
       <div class="filters-container">
         <h2 class="select-collection">
             Collection
-            <drop-down-search
+            <collections-drop-down-search
                 label=""
-                selected="forms.collection"
+                selected="stateParams.collection"
                 create-label="New collection"
                 items="forms.collections"
-                current-item="forms.collection"
-                on-click-create="onCreateCollection(collection)"
+                current-item="stateParams.collection"
+                on-click-create="onCreateCollection(collection, index)"
                 on-click-item="onSelectCollection(item)"
-                placeholder="Find a collection"
-                select-volatile-collections="true">
-            </drop-down-search>
+                placeholder="Find a collection">
+            </collections-drop-down-search>
 
             <div class="btn-group" ng-if="forms.collection">
                 <cog-options-collection

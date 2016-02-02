@@ -5,9 +5,22 @@ angular.module('kuzzle.collection')
     $stateProvider
       .state('collection', {
         parent: 'logged',
-        url: '/collection',
+        url: '/:index/collection',
         views: {
           bodyView: { templateUrl: '/collection' }
+        },
+        resolve: {
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index, true)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('indexes.browse');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
+              });
+          }]
         }
       })
       .state('collection.browse', {

@@ -15,7 +15,20 @@ var hooks = function () {
 
   this.Before('@createIndex', function (scenario, callback) {
     console.log('@createIndex');
-    initIndex.call(this, callback);
+
+    var timeoutCallback = function () {
+      setTimeout(function() {
+        callback();
+      }, 2000)
+    };
+
+    removeIndex(function() {
+      initIndex(function() {
+        bulk()
+        .then(timeoutCallback)
+        .catch(timeoutCallback);
+      })
+    })
   });
 
   this.Before('@cleanDb', function (scenario, callback) {
@@ -25,6 +38,7 @@ var hooks = function () {
 
   this.After('@unsubscribe', function (scenario, callback) {
     browser
+      .waitForVisible('.filters button.btn-unsubscribe', 1000)
       .click('.filters button.btn-unsubscribe')
       .call(callback);
 
@@ -40,6 +54,25 @@ var initIndex = function (callback) {
     query = {
       controller: 'admin',
       action: 'createIndex',
+      index: world.index
+    },
+    timeoutCallback = function () {
+      setTimeout(() => {
+        callback();
+      }, 1000)
+    };
+
+  world.kuzzle
+    .queryPromise(query, {})
+    .then(timeoutCallback)
+    .catch(timeoutCallback);
+};
+
+var removeIndex = function (callback) {
+  var
+    query = {
+      controller: 'admin',
+      action: 'deleteIndex',
       index: world.index
     },
     timeoutCallback = function () {

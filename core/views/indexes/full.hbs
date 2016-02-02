@@ -1,0 +1,23 @@
+<div class="row edit-index" ng-controller="IndexesCtrl" ng-init="init('{{action}}')">
+    <div class="col-sm-12 headline">
+        <h1 class="page-header">
+            Index <small>{{action}}</small>
+        </h1>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1">
+
+        <form>
+            <div class="form-group">
+                <label for="name">Index name</label>
+                <input type="text" class="form-control" ng-bind="name" ng-model="name" id="name" ng-disabled="isEdit">
+            </div>
+
+            <div class="actions-group">
+                <button type="submit" id="create" class="btn btn-success control" ng-if="!isEdit" ng-click="createIndex(name)">Create</button>
+                <a class="control" ng-click="cancel()">Cancel</a>
+            </div>
+        </form>
+
+    </div>
+</div>
