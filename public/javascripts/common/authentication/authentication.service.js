@@ -52,12 +52,11 @@ angular.module('kuzzle.authentication')
     if (Session.resumeFromCookie()) {
       console.log('Login from cookie');
 
-      return false; // kuzzle.checkToken is not availeble yet.
-
       // kuzzle.checkToken(Session.session.jwtToken)
       // .then(function () {
-      //   kuzzle.setJwtToken(Session.session.jwtToken);
-      //   onLoginSuccess(Session.session.jwtToken);
+      kuzzle.setJwtToken(Session.session.jwtToken);
+      onLoginSuccess(Session.session.jwtToken);
+      return true;
       // })
       // .catch(function (err) {
       //   onLoginFailed(err);
