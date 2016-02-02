@@ -23,14 +23,14 @@ module.exports = function () {
   this.Then(/^I click on the collection selector$/, function (callback) {
     browser
       .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
-      .pause(5000)
+      .pause(1000)
       .click('collections-drop-down-search .dropdown-toggle')
       .call(callback)
   });
 
   this.Given(/^I click on a collection$/, function (callback) {
     browser
-      .waitForVisible('collections-drop-down-search .dropdown-menu', 4000)
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
       .click('collections-drop-down-search .dropdown-menu li:last-child a')
       .call(callback)
   });
