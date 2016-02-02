@@ -84,6 +84,7 @@ angular.module('kuzzle', [
     $rootScope.$on(AUTH_EVENTS.loginSuccess, function () {
       if (AuthService.getNextRoute()) {
         $state.go(AuthService.getNextRoute(), null, {reload: true, notify: true});
+        AuthService.nextRoute = null;
       } else {
         $state.go('logged', null, {reload: true, notify: true});
       }
