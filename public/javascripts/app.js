@@ -97,11 +97,7 @@ angular.module('kuzzle', [
       $state.go('login');
     });
 
-<<<<<<< HEAD
     $rootScope.$on('$stateNotFound', function () {
-=======
-    $rootScope.$on('$stateNotFound', function(event) {
->>>>>>> origin/master
       $state.go('404');
     });
 
