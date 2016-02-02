@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle
+  image: kuzzleio/kuzzle:0.13.3
   command: /run-debug.sh
   volumes:
     - "../userFixtures.json:/fixtures.json"
