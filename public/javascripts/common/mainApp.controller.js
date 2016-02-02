@@ -5,7 +5,14 @@ angular.module('kuzzle')
   'AuthService',
   'Session',
   'AUTH_EVENTS',
-  function ($rootScope, $scope, Auth, Session, AUTH_EVENTS) {
+  'kuzzleSdk',
+  function ($rootScope, $scope, Auth, Session, AUTH_EVENTS, kuzzle) {
+  $scope.init = function () {
+    kuzzle.addListener('jwtTokenExpired', function () {
+      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+    });
+  }
+
   $scope.session = Session.session;
 
   $scope.doLogin = function () {
