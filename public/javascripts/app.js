@@ -8,6 +8,8 @@ angular.module('kuzzle', [
   'kuzzle.collection',
   'kuzzle.realtime',
   'kuzzle.dashboard',
+  'kuzzle.bufferCancel',
+  'kuzzle.documentApi',
   'kuzzle.collectionApi',
   'kuzzle.serverApi',
   'angular-loading-bar',

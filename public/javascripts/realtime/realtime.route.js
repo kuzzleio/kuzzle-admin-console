@@ -14,7 +14,6 @@ angular.module('kuzzle.realtime')
             return $ocLazyLoad.load([
               '/javascripts/common/dropDownSearch/dropDownSearch.directive.js',
               '/javascripts/common/cogOptionsCollection/cogOptionsCollection.directive.js',
-              '/javascripts/common/bufferCancel.service.js',
               '/javascripts/realtime/watchData.ctrl.js',
               '/javascripts/realtime/messageLog/messageLog.directive.js',
               '/javascripts/realtime/messageLog/notification.service.js',

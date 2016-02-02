@@ -40,7 +40,6 @@ angular.module('kuzzle.storage')
             return $ocLazyLoad.load([
               '/javascripts/common/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
-              '/javascripts/common/bufferCancel.service.js',
               '/javascripts/common/basicFilter/basicFilter.directive.js',
               '/javascripts/common/filters/filters.module.js'
             ])
