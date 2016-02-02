@@ -19,7 +19,6 @@ angular.module('kuzzle.realtime')
               '/javascripts/realtime/messageLog/messageLog.directive.js',
               '/javascripts/realtime/messageLog/notification.service.js',
               '/javascripts/realtime/realtimeState.service.js',
-              '/bower_components/angular-scroll-glue/src/scrollglue.js',
               '/javascripts/common/basicFilter/basicFilter.directive.js',
               '/javascripts/common/filters/filters.module.js'
             ])
