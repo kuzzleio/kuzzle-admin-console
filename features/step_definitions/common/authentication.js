@@ -56,8 +56,7 @@ module.exports = function () {
         assert(cookie, 'Cookie is not set');
         sessionObject = JSON.parse(decodeURIComponent(cookie.value));
 
-        assert(sessionObject.id, 'session has no ID');
-        assert(sessionObject.userId, 'username in session does not match the one provided for authentication');
+        assert(sessionObject.jwtToken, 'session has no jwtToken');
       })
       .waitForText('user-menu .username', 500)
       .getText('user-menu .username')
