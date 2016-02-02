@@ -14,5 +14,8 @@
   "env": {
     "node": true
   },
+  "globals": {
+    "angular": 1
+  },
   "extends": "eslint:recommended"
 }
