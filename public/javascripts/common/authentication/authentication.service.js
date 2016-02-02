@@ -35,15 +35,11 @@ angular.module('kuzzle.authentication')
   };
 
   authService.logout = function () {
-    return $q(function(resolve, reject) {
-        setTimeout(function() {
-          resolve();
-        }, 1000);
-      })
-      .then(function (res) {
+    kuzzle.logout(function (res) {
         Session.destroy();
+        this.nextRoute = null;
         $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-      });
+      }.bind(this));
   };
 
   authService.isAuthenticated = function () {
