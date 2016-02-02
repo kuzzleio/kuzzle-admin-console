@@ -31,8 +31,8 @@ angular.module('kuzzle.collection')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/collection/browse.ctrl.js',
-              '/javascripts/common/cogOptionsCollection/cogOptionsCollection.directive.js'
+              '/javascripts/collection/browse.controller.js',
+              '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js'
             ]);
           }]
         }
@@ -45,7 +45,7 @@ angular.module('kuzzle.collection')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/collection/full.ctrl.js'
+              '/javascripts/collection/full.controller.js'
             ]);
           }]
         }
@@ -58,7 +58,7 @@ angular.module('kuzzle.collection')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/collection/full.ctrl.js'
+              '/javascripts/collection/full.controller.js'
             ]);
           }]
         }

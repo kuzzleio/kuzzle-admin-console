@@ -9,24 +9,13 @@ angular.module('kuzzle.realtime')
         views: {
           bodyView: { templateUrl: '/realtime' }
         },
-        index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-          indexesApi.isSelectedIndexValid($stateParams.index, true)
-            .then(function (exist) {
-              if (!exist) {
-                $state.go('indexes.browse');
-              }
-              else {
-                indexesApi.select($stateParams.index);
-              }
-            });
-        }],
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad
               .load([
-                '/javascripts/common/dropDownSearch/dropDownSearch.directive.js',
+                '/javascripts/collection/collectionsDropDownSearch/collectionsDropDownSearch.directive.js',
                 '/javascripts/common/cogOptionsCollection/cogOptionsCollection.directive.js',
-                '/javascripts/realtime/watchData.ctrl.js',
+                '/javascripts/realtime/watchData.controller.js',
                 '/javascripts/realtime/messageLog/messageLog.directive.js',
                 '/javascripts/realtime/messageLog/notification.service.js',
                 '/javascripts/realtime/realtimeState.service.js',
@@ -39,6 +28,17 @@ angular.module('kuzzle.realtime')
                     '/javascripts/common/filters/filters.directive.js',
                     '/javascripts/common/filters/filters.service.js'
                   ]);
+              });
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index, true)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('indexes.browse');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
               });
           }]
         }

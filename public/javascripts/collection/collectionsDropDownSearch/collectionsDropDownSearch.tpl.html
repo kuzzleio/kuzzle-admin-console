@@ -1,4 +1,4 @@
-<div class="btn-group" uib-dropdown is-open="isOpen">
+<div class="btn-group collections-drop-down-search" uib-dropdown is-open="isOpen">
   <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span ng-if="selected">
       <span ng-if="label"><span ng-bind="label"></span>: </span><strong ng-bind="selected"></strong> <span class="caret"></span>
@@ -16,7 +16,7 @@
       <a class="external-link" ng-click="onClickCreate({collection: search, index: index})" ng-bind="createLabel"></a>
     </li>
     <li class="divider"></li>
-    <li ng-class="{active: item === currentItem}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})">
+    <li ng-class="{active: item.name === selected}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})">
       <a>
         <i class="fa fa-database collection-type" ng-if="item.stored"></i>
         <i class="glyphicon glyphicon-send collection-type" ng-if="item.realtime"></i>

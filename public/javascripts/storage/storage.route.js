@@ -9,22 +9,22 @@ angular.module('kuzzle.storage')
         views: {
           bodyView: { templateUrl: '/storage' }
         },
-        index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-          indexesApi.isSelectedIndexValid($stateParams.index, true)
-            .then(function (exist) {
-              if (!exist) {
-                $state.go('indexes.browse');
-              }
-              else {
-                indexesApi.select($stateParams.index);
-              }
-            });
-        }],
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/common/dropDownSearch/dropDownSearch.directive.js'
+              '/javascripts/collection/collectionsDropDownSearch/collectionsDropDownSearch.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index, true)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('indexes.browse');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
+              });
           }]
         }
       })
@@ -36,7 +36,7 @@ angular.module('kuzzle.storage')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/storage/browse.ctrl.js'
+              '/javascripts/storage/browse.controller.js'
             ]);
           }]
         }
@@ -49,14 +49,14 @@ angular.module('kuzzle.storage')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/common/cogOptionsCollection/cogOptionsCollection.directive.js',
+              '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
               '/javascripts/common/basicFilter/basicFilter.directive.js',
               '/javascripts/common/filters/filters.module.js'
             ])
               .then(function () {
                 return $ocLazyLoad.load([
-                  '/javascripts/storage/browseDocuments.ctrl.js',
+                  '/javascripts/storage/browseDocuments.controller.js',
                   '/javascripts/common/filters/filters.directive.js',
                   '/javascripts/common/filters/filters.service.js'
                 ]);
@@ -73,7 +73,7 @@ angular.module('kuzzle.storage')
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/storage/addAttribute/addAttribute.directive.js',
-              '/javascripts/storage/full.ctrl.js',
+              '/javascripts/storage/full.controller.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js'
@@ -90,7 +90,7 @@ angular.module('kuzzle.storage')
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/storage/addAttribute/addAttribute.directive.js',
-              '/javascripts/storage/full.ctrl.js',
+              '/javascripts/storage/full.controller.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js'
