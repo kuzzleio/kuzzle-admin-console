@@ -14,6 +14,7 @@ angular.module('kuzzle')
   };
 
   $scope.session = Session.session;
+  $scope.auth = Auth;
 
   $scope.doLogin = function () {
     $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);

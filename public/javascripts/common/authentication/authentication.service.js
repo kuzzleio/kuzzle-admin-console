@@ -56,8 +56,7 @@ angular.module('kuzzle.authentication')
     if (Session.resumeFromCookie()) {
       console.log('Login from cookie');
 
-      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-      return; // kuzzle.checkToken is not availeble yet.
+      return false; // kuzzle.checkToken is not availeble yet.
 
       // kuzzle.checkToken(Session.session.jwtToken)
       // .then(function () {
@@ -69,7 +68,6 @@ angular.module('kuzzle.authentication')
       //   $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       // });
     } else {
-      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       return false;
     }
   };

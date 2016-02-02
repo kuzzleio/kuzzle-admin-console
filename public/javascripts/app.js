@@ -104,6 +104,7 @@ angular.module('kuzzle', [
         if (!AuthService.isAuthenticated()) {
           event.preventDefault();
           AuthService.setNextRoute(next.name);
+          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
         }
       }
     });

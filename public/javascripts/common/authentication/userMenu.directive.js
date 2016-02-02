@@ -8,6 +8,7 @@ angular.module('kuzzle.authentication')
     templateUrl: 'javascripts/common/authentication/userMenu.tpl.html',
     controller: 'UserMenuCtrl',
     scope: {
+      logged: '=',
       username: '=',
       doLogout: '&',
       doLogin: '&'
