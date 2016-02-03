@@ -72,16 +72,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I am on collection browse page$/, function (callback) {
-    browser
-      .pause(1000)
-      .getUrl()
-      .then(function(url) {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/collection/browse');
-      })
-      .call(callback);
-  });
-
   this.Then(/^I click on create index button$/, function (callback) {
     browser
       .waitForVisible('.indexes-browse', 1000)

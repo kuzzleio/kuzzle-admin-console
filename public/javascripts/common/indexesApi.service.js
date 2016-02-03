@@ -23,7 +23,10 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
        */
       cache = {
         set: function(result) {
-          service.data.indexes = result;
+          service.data.indexes = result.filter(function (index) {
+            return (index !== '%kuzzle');
+          });
+
           return service.data.indexes;
         },
         add: function(index) {

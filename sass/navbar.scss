@@ -53,23 +53,51 @@ $menubar-border-color: #e6e6e6;
       content: "\f0d7"!important;
     }
 
+    /** First level in menu */
     & > li > a {
-      text-align:center;
       font-size: 1.1em;
-      background: $dark-green;
       color: $sidebar-text-color;
-      margin-bottom: 1px;
-      &:hover {
-        background-color: lighten($dark-green, 10%)!important;
+      &.in {
+        border-bottom: solid 1px opacify($dark-green, 0.9);
       }
-      &:focus {
-        background-color: $dark-green!important;
+    }
+    & > li.active > a {
+      background: none;
+    }
+
+    /** low level in menu **/
+    .submenu {
+      padding-left: 10px;
+      background-color: transparentize($dark-green, 0.7);
+
+      & > li > a {
+        padding-left: 15px;
+        color: darken($sidebar-text-color, 15%);
+
+        &.in {
+          color: $sidebar-text-color;
+        }
+      }
+
+      ul.submenu2 {
+        padding:0;
+
+        li {
+          &.active {
+            a {
+              color: $sidebar-text-color;
+            }
+          }
+          a {
+            display: block;
+            padding: 10px 15px 10px 38px;
+            text-decoration: none;
+            color: darken($sidebar-text-color, 15%);
+          }
+        }
       }
     }
 
-    & > li > ul > li > a {
-      padding-left: 15px!important;
-    }
     & #select-index {
       padding-left: 15px;
       width: 100%;
@@ -97,11 +125,8 @@ $menubar-border-color: #e6e6e6;
     li {
 
       &.active {
-        background-color: $green;
-        color: $sidebar-text-color!important;
         a {
-          background-color: $green;
-          color: $sidebar-text-color!important;
+          color: $sidebar-text-color;
         }
       }
       &.bottom {
@@ -110,23 +135,18 @@ $menubar-border-color: #e6e6e6;
       }
 
       a {
-        &:hover, &:focus {
-          background-color: darker($green, 50%) !important;
+        &:hover {
+          background: none;
           color: $sidebar-text-color;
+        }
+        &:focus {
+          background: none;
+          color: #999;
         }
         i {
           padding-right: 5px;
         }
       }
-    }
-    &.side-nav > li > ul > li > ul {
-      padding:0;
-    }
-    &.side-nav > li > ul > li > ul > li > a {
-        display: block;
-        padding: 10px 15px 10px 38px;
-        text-decoration: none;
-        color: darken($sidebar-text-color, 30%);
     }
   }
 }

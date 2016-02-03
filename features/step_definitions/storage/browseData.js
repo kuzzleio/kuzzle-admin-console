@@ -139,4 +139,28 @@ module.exports = function () {
       .click('.modal-footer .add-attribute')
       .call(callback);
   });
+
+  this.Then(/^I am on collection browse page$/, function (callback) {
+    browser
+      .waitForVisible('.storage-browse .create', 1000)
+      .getUrl()
+      .then(url => {
+        assert(url,  world.baseUrl + '/#/' + world.index + '/browse');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on the first collection in browse document page$/, function (callback) {
+    browser
+      .pause(500)
+      .waitForVisible('span.collection-name:first-of-type', 1000)
+      .click('span.collection-name:first-of-type')
+      .call(callback);
+  });
+
+  this.Given(/^I am on browse document page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/storage/' + world.collection)
+      .call(callback);
+  });
 };

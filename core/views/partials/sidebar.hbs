@@ -26,13 +26,13 @@
                 ng-controller="IndexesCtrl"
                 ng-init="init()"
                 id="menu-data" 
-                class="collapse" 
+                class="collapse submenu"
                 ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
             >
 
                 <!-- Indexes -->
                 <li>
-                    <a ui-sref="indexes.browse">
+                    <a ui-sref="indexes.browse" ng-class="{ in: ('indexes.browse' | includedByState) }">
                         <i class="fa fa-database"></i> Manage indexes
                     </a>
                 </li>
@@ -61,7 +61,7 @@
                         Storage
                         <i class="fa fa-fw fa-caret-down pull-right"></i>
                     </a>
-                    <ul id="menu-storage" class="collapse" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
+                    <ul id="menu-storage" class="collapse submenu2" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
                         <li ng-class="{ active: ('storage.*.*' | includedByState) }">
                             <a ui-sref="storage.browse({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Browse data</a>
                         </li>
@@ -81,7 +81,7 @@
                         Realtime
                         <i class="fa fa-fw fa-caret-down pull-right"></i>
                     </a>
-                    <ul id="menu-rt" class="collapse" ng-class="{ in: ('realtime.*.*' | includedByState) }">
+                    <ul id="menu-rt" class="collapse submenu2" ng-class="{ in: ('realtime.*.*' | includedByState) }">
                         <li ng-class="{ active: ('realtime.*.*' | includedByState) }">
                             <a ui-sref="realtime.watch-data({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Watch data</a>
                         </li>
@@ -135,14 +135,14 @@
                 Help and feedback
                 <i class="fa fa-fw fa-caret-up pull-right"></i>
             </a>
-            <ul id="menu-help" class="collapse">
+            <ul id="menu-help" class="collapse submenu">
                 <li>
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-doc">
                         <i class="fa fa-book"></i> 
                         Read the doc
                         <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
-                    <ul id="menu-help-doc" class="collapse">
+                    <ul id="menu-help-doc" class="collapse submenu2">
                         <li>
                             <a href="https://github.com/kuzzleio/kuzzle/blob/0.7.2/docs/README.md" target="_blank"><i class="fa fa-book"></i> Kuzzle</a>
                         </li>
@@ -163,7 +163,7 @@
                         Create an issue
                         <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
-                    <ul id="menu-help-issue" class="collapse">
+                    <ul id="menu-help-issue" class="collapse submenu2">
                         <li>
                             <a href="https://github.com/kuzzleio/kuzzle/issues/new" target="_blank"><i class="fa fa-github"></i> Kuzzle</a>
                         </li>

@@ -50,3 +50,11 @@ Feature: Test multi index features
     Then The button "modal-delete-index-delete" is not disabled
     And I click on "modal-delete-index-delete" button
     Then I can see "1" indexes in list
+
+  Scenario: I can access to collection and to browse data quickly
+    Given I go to manage index page
+    Then I click on the first index in manage index page
+    Then I am on collection browse page
+    Then I click on the first collection in browse document page
+    Then I am on browse document page
+
