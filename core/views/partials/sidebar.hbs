@@ -32,7 +32,7 @@
 
                 <!-- Indexes -->
                 <li>
-                    <a ui-sref="indexes.browse">
+                    <a ui-sref="indexes.browse" ng-class="{ in: ('indexes.browse' | includedByState) }">
                         <i class="fa fa-database"></i> Manage indexes
                     </a>
                 </li>

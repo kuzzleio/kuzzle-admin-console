@@ -72,6 +72,8 @@ $menubar-border-color: #e6e6e6;
 
       & > li > a {
         padding-left: 15px;
+        color: darken($sidebar-text-color, 15%);
+
         &.in {
           color: $sidebar-text-color;
         }
@@ -90,7 +92,7 @@ $menubar-border-color: #e6e6e6;
             display: block;
             padding: 10px 15px 10px 38px;
             text-decoration: none;
-            color: darken($sidebar-text-color, 30%);
+            color: darken($sidebar-text-color, 15%);
           }
         }
       }
