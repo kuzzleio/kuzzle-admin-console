@@ -72,6 +72,27 @@ $menubar-border-color: #e6e6e6;
 
       & > li > a {
         padding-left: 15px;
+        &.in {
+          color: $sidebar-text-color;
+        }
+      }
+
+      ul.submenu2 {
+        padding:0;
+
+        li {
+          &.active {
+            a {
+              color: $sidebar-text-color;
+            }
+          }
+          a {
+            display: block;
+            padding: 10px 15px 10px 38px;
+            text-decoration: none;
+            color: darken($sidebar-text-color, 30%);
+          }
+        }
       }
     }
 
@@ -124,15 +145,6 @@ $menubar-border-color: #e6e6e6;
           padding-right: 5px;
         }
       }
-    }
-    &.side-nav > li > ul > li > ul {
-      padding:0;
-    }
-    &.side-nav > li > ul > li > ul > li > a {
-        display: block;
-        padding: 10px 15px 10px 38px;
-        text-decoration: none;
-        color: darken($sidebar-text-color, 30%);
     }
   }
 }

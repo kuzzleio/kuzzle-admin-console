@@ -78,7 +78,7 @@ Feature: Test browse data pages
     And I click on "create" button
     Then the current URL corresponds to the add document page
 
-  @cleanDb @test
+  @cleanDb
   Scenario: Edit schema on document creation
     Given I am on page for edit document "alovelace"
     Then I have an input with id "id"

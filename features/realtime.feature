@@ -9,7 +9,6 @@ Feature: Test realtime watch data pages
     Then I am authenticated
     Given I go to the realtime page
     And I click on the collection selector
-    Then I take a screenshot "test0"
     Given I click on a collection
     And I subscribe to the collection events
 
