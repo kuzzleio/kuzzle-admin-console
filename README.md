@@ -47,6 +47,36 @@ Where `my-kuzzle-container-name` is the container name where your Kuzzle is runn
 
 The container name is in the last column.
 
+## Without docker with an already running Kuzzle
+
+### Prerequisites
+
+* A properly installed [nodeJs](https://nodejs.org/en/download/package-manager/) **version 4** or upper
+* Last version of [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
+* Last version of [RubyGems](https://rubygems.org/pages/download)
+
+### First step
+
+You'll need to clone the back-office repository then install the dependencies and compile the css files:
+
+	$ git clone https://github.com/kuzzleio/kuzzle-bo.git && cd kuzzle-bo
+	$ gem install sass
+	$ npm install grunt -g
+	$ npm install bower -g
+	$ npm install 
+	$ bower install --config.interactive=false
+	$ grunt sass
+
+### Second step
+
+Launch the back-office server:
+
+	$ npm start
+
+or launch it with [pm2](http://pm2.keymetrics.io/)
+
+	$ pm2 start ./bin/www --name 'kuzzle-bo'
+
 **Note:**
 * If you want to debug, you also have to expose the port 8080
 * For more information about how to install Kuzzle, you can check [this documentation](https://github.com/kuzzleio/kuzzle/blob/master/docs/installation.md)
