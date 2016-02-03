@@ -72,6 +72,17 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.Then(/^I receive the notification that the document is being created$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    browser
+      .getText('messages ul.message-list li.message-item:first-child span.message-pending')
+      .then(text => {
+        assert.equal(text, 'Creating new document');
+      })
+      .call(callback)
+  });
+
   this.Then(/^I receive the notification that the document has been created$/, function (callback) {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
@@ -98,6 +109,17 @@ module.exports = function () {
       .getText('messages ul.message-list li.message-item:last-child code.document-id')
       .then(text => {
         assert.equal(text, world.currentDocumentId);
+      })
+      .call(callback)
+  });
+
+  this.Then(/^I receive the notification that the document is being deleted$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    browser
+      .getText('messages ul.message-list li.message-item:first-child span.message-pending')
+      .then(text => {
+        assert.equal(text, 'Deleting document');
       })
       .call(callback)
   });

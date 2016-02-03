@@ -5,10 +5,16 @@ angular.module('kuzzle', [
   'kuzzle.authentication',
   'kuzzle.basicFilter',
   'kuzzle.filters',
+  'kuzzle.headline',
+  'kuzzle.widget',
+  'kuzzle.gauge',
+  'kuzzle.chart',
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',
+  'kuzzle.dashboard',
   'kuzzle.collectionApi',
+  'kuzzle.serverApi',
   'kuzzle.documentsInline',
   'kuzzle.cogOptionsCollection',
   'angular-loading-bar',
@@ -40,16 +46,17 @@ angular.module('kuzzle', [
     $urlMatcherFactoryProvider.strictMode(false);
 
     $urlRouterProvider.otherwise(function ($injector) {
-        $injector.invoke(['$state', function ($state) {
-          $state.go('404');
-        }]);
+      $injector.invoke(['$state', function ($state) {
+        $state.go('404');
+      }]);
     });
 
     $stateProvider
       .state('logged', {
         url: '',
         views: {
-          wrappedView: { templateUrl: '/logged' }
+          wrappedView: {templateUrl: '/logged'},
+          'bodyView@logged': {templateUrl: '/dashboard'}
         },
         data: {
           requiresAuthentication: true
@@ -57,13 +64,13 @@ angular.module('kuzzle', [
       })
       .state('404', {
         views: {
-          wrappedView: { templateUrl: '/404' }
+          wrappedView: {templateUrl: '/404'}
         }
       })
       .state('login', {
         url: '/login',
         views: {
-          wrappedView: { templateUrl: '/login' }
+          wrappedView: {templateUrl: '/login'}
         }
       })
       .state('logout', {
@@ -72,7 +79,6 @@ angular.module('kuzzle', [
           AuthService.logout();
         }
       });
-
   }])
 
   .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
