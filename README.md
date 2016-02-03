@@ -5,7 +5,7 @@
 
 # Kuzzle BO
 
-(Works with Kuzzle version 0.11.x)
+(Works with Kuzzle version 0.13.x)
 
 This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
 
@@ -61,8 +61,8 @@ You'll need to clone the back-office repository then install the dependencies an
 
 	$ git clone https://github.com/kuzzleio/kuzzle-bo.git && cd kuzzle-bo
 	$ gem install sass
-	$ npm install grunt
-	$ npm install bower
+	$ npm install grunt -g
+	$ npm install bower -g
 	$ npm install 
 	$ bower install --config.interactive=false
 	$ grunt sass
