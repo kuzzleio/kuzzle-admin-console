@@ -76,35 +76,40 @@ angular.module('kuzzle', [
   }])
 
   .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
-    // TODO put this into a global controller
+    $rootScope.$on('$stateNotFound', function(event) {
+      $state.go('404');
+    });
+
     $rootScope.$on(AUTH_EVENTS.notAuthenticated, function () {
       $state.go('login');
     });
 
     $rootScope.$on(AUTH_EVENTS.loginSuccess, function () {
-      if (AuthService.getNextRoute()) {
-        $state.go(AuthService.getNextRoute(), null, {reload: true, notify: true});
+      var next = AuthService.getNextRoute();
+      if (next) {
+        $state.go(next.name, next.params, {reload: true, notify: true});
         AuthService.nextRoute = null;
       } else {
         $state.go('logged', null, {reload: true, notify: true});
       }
     });
 
-    $rootScope.$on('$stateNotFound', function(event) {
-      $state.go('404');
-    });
-
-    $rootScope.$on('$stateChangeStart', function (event, next) {
+    $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
       var authorizedRoles = null;
-      if (!next.data) {
+      if (!toState.data) {
         return;
       }
-      authorizedRoles = next.data.authorizedRoles;
+      authorizedRoles = toState.data.authorizedRoles;
 
-      if (next.data.requiresAuthentication) {
-        if (!AuthService.isAuthenticated()) {
+      if (toState.data.requiresAuthentication) {
+        var auth = AuthService.isAuthenticated();
+
+        if (auth !== true) {
           event.preventDefault();
-          AuthService.setNextRoute(next.name);
+          AuthService.setNextRoute(toState.name, toParams);
+        }
+
+        if (auth === false) {
           $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
         }
       }

@@ -43,8 +43,6 @@ angular.module('kuzzle.authentication')
   };
 
   authService.isAuthenticated = function () {
-    var deferred = $q.defer();
-
     if (kuzzle.jwtToken) {
       return true;
     }
@@ -52,19 +50,25 @@ angular.module('kuzzle.authentication')
     if (Session.resumeFromCookie()) {
       console.log('Login from cookie');
 
-      // kuzzle.checkToken(Session.session.jwtToken)
-      // .then(function () {
-      kuzzle.setJwtToken(Session.session.jwtToken);
-      onLoginSuccess(Session.session.jwtToken);
-      return true;
-      // })
-      // .catch(function (err) {
-      //   onLoginFailed(err);
-      //   $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-      // });
-    } else {
-      return false;
+      var deferred = $q.defer();
+
+      kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
+        if (error || response.result.valid === false) {
+          onLoginFailed(err);
+          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+          deferred.reject(false);
+          return;
+        }
+
+        kuzzle.setJwtToken(Session.session.jwtToken);
+        onLoginSuccess(Session.session.jwtToken);
+        deferred.resolve(true);
+      });
+
+      return deferred.promise;
     }
+
+    return false;
   };
 
   authService.isAuthorized = function (authorizedRoles) {
@@ -78,12 +82,15 @@ angular.module('kuzzle.authentication')
     return true;
   };
 
-  authService.setNextRoute = function (nextRoute) {
-    if (nextRoute === 'login') {
-      nextRoute = 'logged';
+  authService.setNextRoute = function (routeName, routeParams) {
+    if (routeName === 'login') {
+      routeName = 'logged';
     }
 
-    this.nextRoute = nextRoute;
+    this.nextRoute = {
+      name: routeName,
+      params: routeParams
+    };
   };
 
   authService.getNextRoute = function () {
