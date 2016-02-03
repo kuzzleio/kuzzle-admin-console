@@ -19,7 +19,7 @@ Feature: Test browse data pages
     Given I am on browse data page with an wrong index
     Then I am on manage index page
 
-  Scenario: Search display online document matches the filter
+  Scenario: Search display only document matches the filter
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on a collection
