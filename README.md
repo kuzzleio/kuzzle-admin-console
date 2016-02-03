@@ -52,7 +52,7 @@ The container name is in the last column.
 ### Prerequisites
 
 * A properly installed [nodeJs](https://nodejs.org/en/download/package-manager/) **version 4** or upper
-* Las version of [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
+* Last version of [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
 * Last version of [RubyGems](https://rubygems.org/pages/download)
 
 ### First step
@@ -60,6 +60,9 @@ The container name is in the last column.
 You'll need to clone the back-office repository then install the dependencies and compile the css files:
 
 	$ git clone https://github.com/kuzzleio/kuzzle-bo.git && cd kuzzle-bo
+	$ gem install sass
+	$ npm install grunt
+	$ npm install bower
 	$ npm install 
 	$ bower install --config.interactive=false
 	$ grunt sass
