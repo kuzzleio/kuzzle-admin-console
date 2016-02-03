@@ -9,6 +9,7 @@ angular.module('kuzzle.collection')
     function ($scope, $state, $log, collectionApi, indexesApi) {
 
       $scope.collections = null;
+      $scope.index = indexesApi.data.selectedIndex;
 
       $scope.init = function () {
         collectionApi.list()
