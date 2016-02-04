@@ -32,7 +32,7 @@
     "angular-schema-form": "~0.8.12",
     "angular-schema-form-bootstrap": "~0.2.0",
     "leaflet": "0.7.x",
-    "kuzzle-sdk": "git://github.com/kuzzleio/sdk-javascript.git#KUZ-386-check-token",
+    "kuzzle-sdk": "git://github.com/kuzzleio/sdk-javascript.git#KUZ-378-whoami",
     "angular-scroll-glue": "~2.0.6",
     "angular-cookies": "~1.4.8",
     "highcharts": "4.2.1"

@@ -5,31 +5,41 @@ angular.module('kuzzle.authentication')
   this.session = {
     jwtToken: null,
     userId: null,
-    userRoles: [],
+    userProfile: null,
   };
 
-  this.create = function (jwtToken, userId, userRoles) {
+  this.create = function (jwtToken, userId, userProfile) {
     this.session.jwtToken = jwtToken;
     this.session.userId = userId;
-    // this.session.userRoles = userRoles;
+    this.session.userProfile = userProfile;
 
-    $cookies.put(COOKIE_KEY, JSON.stringify({
-      jwtToken: this.session.jwtToken,
-      userId: this.session.userId,
-      // userRoles: this.session.userRoles,
-    }));
+    this.saveToCookie();
   };
 
-  this.addRoles = function () {
-    // TODO implement this.
+  this.setProfile = function (profile) {
+    this.session.userProfile = profile;
+    this.saveToCookie();
+  };
+
+  this.setUserId = function (id) {
+    this.session.userId = id;
+    this.saveToCookie();
   };
 
   this.destroy = function () {
     this.session.jwtToken = null;
     this.session.userId = null;
-    this.session.userRoles = [];
+    this.session.userProfile = null;
 
     $cookies.remove(COOKIE_KEY);
+  };
+
+  this.saveToCookie = function () {
+    $cookies.put(COOKIE_KEY, JSON.stringify({
+      jwtToken: this.session.jwtToken,
+      userId: this.session.userId,
+      userProfile: this.session.userProfile,
+    }));
   };
 
   this.resumeFromCookie = function () {
@@ -41,7 +51,7 @@ angular.module('kuzzle.authentication')
 
     this.session.jwtToken = sessionFromCookie.jwtToken;
     this.session.userId = sessionFromCookie.userId;
-    // this.session.userRoles = sessionFromCookie.userRoles;
+    this.session.userProfile = sessionFromCookie.userProfile;
     return true;
   };
 }]);

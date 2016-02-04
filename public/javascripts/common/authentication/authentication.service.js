@@ -5,7 +5,20 @@ angular.module('kuzzle.authentication')
 
   var onLoginSuccess = function () {
     console.log('Authentication succeeded!');
-    // TODO: put kuzzle.whoAmI() here
+    kuzzle.whoAmI(function (err, res) {
+      if (err || !res.result) {
+        console.log('Unable to retrieve user information', err);
+        return;
+      }
+
+      if (res.result._id) {
+        Session.setUserId(res.result._id);
+      }
+
+      if (res.result._source.profile) {
+        Session.setProfile(res.result._source.profile);
+      }
+    });
     Session.create(kuzzle.jwtToken);
     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
   };
