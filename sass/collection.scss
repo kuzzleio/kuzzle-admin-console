@@ -4,6 +4,7 @@
   }
 }
 
+.list-indexes,
 .list-collections {
   .panel {
     margin-bottom: 10px;
@@ -24,6 +25,7 @@
         font-weight: bold;
         color: #656565;
 
+        .index-name,
         .collection-name {
           cursor: pointer;
         }

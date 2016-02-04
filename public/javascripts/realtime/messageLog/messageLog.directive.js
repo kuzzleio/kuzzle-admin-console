@@ -1,4 +1,7 @@
-angular.module('kuzzle.messageLog')
+angular.module('kuzzle.messageLog', [
+    'luegg.directives'
+  ])
+
   .controller('messageLogCtrl', ['$scope', function ($scope) {
     $scope.clearMessages = function () {
       $scope.initMessages();
@@ -16,6 +19,6 @@ angular.module('kuzzle.messageLog')
         initMessages: '&'
       },
       controller: 'messageLogCtrl',
-      templateUrl: '/javascripts/common/messageLog/messageLog.tpl.html'
+      templateUrl: '/javascripts/realtime/messageLog/messageLog.tpl.html'
     };
   });

@@ -27,7 +27,8 @@ exports.config = {
     './features/authentication.feature',
     './features/realtime.feature',
     './features/browseData.feature',
-    './features/dashboard.feature'
+    './features/dashboard.feature',
+    './features/indexes.feature'
   ],
   // Patterns to exclude.
   exclude: [
@@ -109,7 +110,6 @@ exports.config = {
   cucumberOpts: {
     require: [
       './features/support/hooks.js',
-      './features/support/timer.js',
 
       './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',
@@ -118,7 +118,8 @@ exports.config = {
 
       './features/step_definitions/storage/browseData.js',
       './features/step_definitions/dashboard/dashboard.js',
-      './features/step_definitions/realtime/realtime.js'
+      './features/step_definitions/realtime/realtime.js',
+      './features/step_definitions/indexes/indexes.js'
     ]
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,

@@ -1,49 +1,148 @@
-<div id="sidebar" class="navbar-collapse navbar-ex1-collapse collapse" aria-expanded="false" style="height: 1px;">
+<div
+    ng-controller="SidebarCtrl"
+    ng-init="init()"
+    id="sidebar"
+    class="navbar-collapse navbar-ex1-collapse collapse"
+    aria-expanded="false"
+    style="height: 1px;"
+>
     <ul class="nav navbar-nav side-nav">
         <li ui-sref-active="active">
-            <a ui-sref="logged"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+            <a ui-sref="logged">
+                <i class="fa fa-fw fa-dashboard pull-left"></i>
+                    Dashboard
+                <i class="fa fa-fw fa-caret-down pull-right clear"></i>
+            </a>
         </li>
+
+        <!-- Data -->
         <li>
-            <a href="javascript:;" data-toggle="collapse" data-target="#menu-rt" href>
-                <i class="glyphicon glyphicon-time"></i>
-                Realtime
-                <i class="fa fa-fw fa-caret-down" ng-class="{ 'fa-caret-down': ('realtime.*.*' | includedByState) }"></i>
+            <a href data-toggle="collapse" data-target="#menu-data" ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
+                <i class="fa fa-database pull-left"></i>
+                Data
+                <i class="fa fa-fw fa-caret-down pull-right"></i>
             </a>
-            <ul id="menu-rt" class="collapse" ng-class="{ in: ('realtime.*.*' | includedByState) }">
-                <li ui-sref-active="active">
-                    <a ui-sref="realtime.watch-data"><i class="fa fa-list-alt"></i> Watch data</a>
-                </li>
-            </ul>
-        </li>
-        <li>
-            <a href="javascript:;" data-toggle="collapse" data-target="#menu-storage" href>
-                <i class="fa fa-database"></i>
-                Storage
-                <i class="fa fa-fw fa-caret-down"></i>
-            </a>
-            <ul id="menu-storage" class="collapse" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
-                <li ng-class="{ active: ('storage.*.*' | includedByState) }">
-                    <a ui-sref="storage.browse"><i class="fa fa-list-alt"></i> Browse data</a>
-                </li>
-                <li ng-class="{ active: ('collection.*.*' | includedByState) }">
-                    <a ui-sref="collection.browse"><i class="fa fa-table"></i> Browse collection</a>
-                </li>
-            </ul>
-        </li>
-        <li class="bottom menu-help">
-            <a href="javascript:;" data-toggle="collapse" data-target="#menu-help" href>
-                <i class="fa fa-question"></i> 
-                Help and feedback
-                <i class="fa fa-fw fa-caret-down"></i>
-            </a>
-            <ul id="menu-help" class="collapse">
+            <ul
+                ng-controller="IndexesCtrl"
+                ng-init="init()"
+                id="menu-data" 
+                class="collapse submenu"
+                ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
+            >
+
+                <!-- Indexes -->
                 <li>
-                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-doc" href>
+                    <a ui-sref="indexes.browse" ng-class="{ in: ('indexes.browse' | includedByState) }">
+                        <i class="fa fa-database"></i> Manage indexes
+                    </a>
+                </li>
+
+                <li class="divider"></li>
+
+                <li>
+                    <indexes-drop-down-search
+                        selected-index="indexData.selectedIndex"
+                        create-label="New index"
+                        items="indexData.indexes"
+                        on-click-create="onCreateIndex(name)"
+                        on-click-item="onSelectIndex(item)"
+                        placeholder="Find an index">
+                    </indexes-drop-down-search>
+                </li>
+
+                <li class="divider"></li>
+                <!-- / Indexes -->
+
+
+                <!-- Persisted data -->
+                <li ng-show="indexData.selectedIndex">
+                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-storage" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
+                        <i class="fa fa-database"></i>
+                        Storage
+                        <i class="fa fa-fw fa-caret-down pull-right"></i>
+                    </a>
+                    <ul id="menu-storage" class="collapse submenu2" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
+                        <li ng-class="{ active: ('storage.*.*' | includedByState) }">
+                            <a ui-sref="storage.browse({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Browse data</a>
+                        </li>
+                        <li ng-class="{ active: ('collection.*.*' | includedByState) }">
+                            <a ui-sref="collection.browse({index: indexData.selectedIndex})"><i class="fa fa-table"></i> Browse collection</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- / Persisted data -->
+
+
+
+                <!-- Real-time data -->
+                <li ng-show="indexData.selectedIndex">
+                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-rt" ng-class="{ in: ('realtime.*.*' | includedByState) }">
+                        <i class="glyphicon glyphicon-time"></i>
+                        Realtime
+                        <i class="fa fa-fw fa-caret-down pull-right"></i>
+                    </a>
+                    <ul id="menu-rt" class="collapse submenu2" ng-class="{ in: ('realtime.*.*' | includedByState) }">
+                        <li ng-class="{ active: ('realtime.*.*' | includedByState) }">
+                            <a ui-sref="realtime.watch-data({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Watch data</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- / Real-time data -->
+            </ul>
+        </li>
+        <!-- / Data -->
+
+
+        <!-- Plugins -->
+        <li>
+            <a href data-toggle="collapse" data-target="#menu-plugins">
+                <i class="fa fa-puzzle-piece pull-left"></i>
+                Plugins
+                <i class="fa fa-fw fa-caret-down pull-right"></i>
+            </a>      
+            <ul 
+                id="menu-plugins" 
+                class="collapse" 
+                ng-class="{ in: ('data.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
+            >
+                <li></li>
+            </ul>
+        </li>
+        <!-- / Plugins -->
+
+        <!-- Security -->
+        <li>
+            <a href data-toggle="collapse" data-target="#menu-security">
+                <i class="fa fa-shield pull-left"></i>
+                Security
+                <i class="fa fa-fw fa-caret-down pull-right"></i>
+            </a>      
+            <ul 
+                id="menu-security" 
+                class="collapse" 
+                ng-class="{ in: ('data.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
+            >
+                <li></li>
+            </ul>
+        </li>
+        <!-- / Security -->
+
+
+        <!-- Help and feedback -->
+        <li class="bottom menu-help">
+            <a href="javascript:;" data-toggle="collapse" data-target="#menu-help">
+                <i class="fa fa-question pull-left"></i> 
+                Help and feedback
+                <i class="fa fa-fw fa-caret-up pull-right"></i>
+            </a>
+            <ul id="menu-help" class="collapse submenu">
+                <li>
+                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-doc">
                         <i class="fa fa-book"></i> 
                         Read the doc
-                        <i class="fa fa-fw fa-caret-down"></i>
+                        <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
-                    <ul id="menu-help-doc" class="collapse">
+                    <ul id="menu-help-doc" class="collapse submenu2">
                         <li>
                             <a href="https://github.com/kuzzleio/kuzzle/blob/0.7.2/docs/README.md" target="_blank"><i class="fa fa-book"></i> Kuzzle</a>
                         </li>
@@ -59,12 +158,12 @@
                     <a href="mailto:feedback@kuzzle.io"><i class="fa fa-commenting-o"></i> Give your feedback</a>
                 </li>
                 <li>
-                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-issue" href>
+                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-issue">
                         <i class="fa fa-github"></i> 
                         Create an issue
-                        <i class="fa fa-fw fa-caret-down"></i>
+                        <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
-                    <ul id="menu-help-issue" class="collapse">
+                    <ul id="menu-help-issue" class="collapse submenu2">
                         <li>
                             <a href="https://github.com/kuzzleio/kuzzle/issues/new" target="_blank"><i class="fa fa-github"></i> Kuzzle</a>
                         </li>
@@ -75,5 +174,7 @@
                 </li>
             </ul>
         </li>
+        <!-- / Help and feedback -->
+
     </ul>
 </div>

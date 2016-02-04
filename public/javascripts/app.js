@@ -3,27 +3,24 @@ angular.module('kuzzle', [
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
-  'kuzzle.basicFilter',
-  'kuzzle.filters',
   'kuzzle.headline',
-  'kuzzle.widget',
-  'kuzzle.gauge',
-  'kuzzle.chart',
+  'kuzzle.indexes',
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',
   'kuzzle.dashboard',
+  'kuzzle.bufferCancel',
+  'kuzzle.documentApi',
+  'kuzzle.indexesApi',
   'kuzzle.collectionApi',
   'kuzzle.serverApi',
-  'kuzzle.documentsInline',
-  'kuzzle.cogOptionsCollection',
   'angular-loading-bar',
   'ngAnimate',
   'kuzzle.uid',
   'ui-notification',
-  'kuzzle.bufferCancel',
   'kuzzle.previousState',
-  'kuzzle.unsubscribeOnPageChange'
+  'kuzzle.unsubscribeOnPageChange',
+  'oc.lazyLoad'
 ])
 
   .config(['$httpProvider', function ($httpProvider) {
@@ -46,31 +43,40 @@ angular.module('kuzzle', [
     $urlMatcherFactoryProvider.strictMode(false);
 
     $urlRouterProvider.otherwise(function ($injector) {
-      $injector.invoke(['$state', function ($state) {
-        $state.go('404');
-      }]);
+        $injector.invoke(['$state', function ($state) {
+          $state.go('404');
+        }]);
     });
 
     $stateProvider
       .state('logged', {
         url: '',
         views: {
-          wrappedView: {templateUrl: '/logged'},
+          wrappedView: { templateUrl: '/logged' },
           'bodyView@logged': {templateUrl: '/dashboard'}
         },
         data: {
           requiresAuthentication: true
+        },
+        resolve: {
+          loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
+            return $ocLazyLoad.load([
+              '/javascripts/common/chart/chart.directive.js',
+              '/javascripts/common/gauge/gauge.directive.js',
+              '/javascripts/common/widget/widget.directive.js'
+            ]);
+          }]
         }
       })
       .state('404', {
         views: {
-          wrappedView: {templateUrl: '/404'}
+          wrappedView: { templateUrl: '/404' }
         }
       })
       .state('login', {
         url: '/login',
         views: {
-          wrappedView: {templateUrl: '/login'}
+          wrappedView: { templateUrl: '/login' }
         }
       })
       .state('logout', {
@@ -79,6 +85,7 @@ angular.module('kuzzle', [
           AuthService.logout();
         }
       });
+
   }])
 
   .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
@@ -100,12 +107,11 @@ angular.module('kuzzle', [
       }
     });
 
+
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
-      var authorizedRoles = null;
       if (!toState.data) {
         return;
       }
-      authorizedRoles = toState.data.authorizedRoles;
 
       if (toState.data.requiresAuthentication) {
         var auth = AuthService.isAuthenticated();

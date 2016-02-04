@@ -50,7 +50,6 @@ angular.module('kuzzle.leaflet', [])
           fitBounds.push(marker._latlng);
         });
 
-        console.log(fitBounds);
         this.setFitBounds(mapId, fitBounds);
         this.setZoom(mapId, zoom || 5);
       },

@@ -6,6 +6,7 @@ Feature: Test realtime watch data pages
   Background:
     Given I go to the login page
     And I authenticate
+    Then I am authenticated
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on a collection

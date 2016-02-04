@@ -1,5 +1,5 @@
 angular.module('kuzzle.authentication')
-.directive('formAutofillFix', function ($timeout) {
+.directive('formAutofillFix', ['$timeout', function ($timeout) {
   return function (scope, element, attrs) {
     element.prop('method', 'post');
     if (attrs.ngSubmit) {
@@ -18,8 +18,14 @@ angular.module('kuzzle.authentication')
       });
     }
   };
-})
-.controller('LoginController', function ($scope, $rootScope, $state, AUTH_EVENTS, AuthService) {
+}])
+.controller('LoginController', [
+  '$scope',
+  '$rootScope',
+  '$state',
+  'AUTH_EVENTS',
+  'AuthService',
+  function ($scope, $rootScope, $state, AUTH_EVENTS, AuthService) {
   $scope.credentials = {
     username: '',
     password: ''
@@ -36,4 +42,4 @@ angular.module('kuzzle.authentication')
       $scope.message = 'Sorry, the credentials you provided seem to be incorrect.';
     });
   };
-});
+}]);

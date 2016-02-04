@@ -1,0 +1,26 @@
+<div id="select-index" class="btn-group indexes-drop-down-search" uib-dropdown is-open="isOpen">
+  <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span ng-if="selectedIndex">
+      <strong ng-bind="selectedIndex"></strong> <span class="caret"></span>
+    </span>
+    <span ng-if="!selectedIndex">Select an index</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li class="search">
+      <form ng-submit="onPressEnter()">
+        <input class="form-control" type="text" placeholder="{{placeholder}}" ng-model="name" ng-bind="name"/>
+      </form>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a class="external-link" ng-click="onClickCreate({name: name}); name = ''" ng-bind="createLabel"></a>
+    </li>
+    <li class="divider"></li>
+    <li ng-class="{active: item === selectedIndex}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})">
+      <a>
+        <span ng-bind="item"></span>
+      </a>
+    </li>
+  </ul>
+</div>
+

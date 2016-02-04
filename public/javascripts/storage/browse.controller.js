@@ -7,9 +7,9 @@ angular.module('kuzzle.storage')
     '$state',
     'collectionApi',
     function ($scope, $http, $stateParams, $state, collectionApi) {
-
       $scope.collections = [];
       $scope.stateParams = $stateParams;
+
 
       $scope.init = function () {
         collectionApi.list()

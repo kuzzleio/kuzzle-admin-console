@@ -5,7 +5,12 @@ var
 module.exports = function () {
   this.Given(/^I am on browse data page$/, function (callback) {
     browser
-      .url('/#/storage/browse')
+      .url('/#/' + world.index + '/storage/browse')
+      .call(callback);
+  });
+  this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
+    browser
+      .url('/#/notexist/storage/browse')
       .call(callback);
   });
 
@@ -30,14 +35,14 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/add');
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/add');
       })
       .call(callback);
   });
 
    this.Given(/^I am on page for create document$/, function (callback) {
      browser
-       .url('/#/storage/' + world.collection + '/add')
+       .url('/#/' + world.index + '/storage/' + world.collection + '/add')
        .call(callback);
    });
 
@@ -84,18 +89,9 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .url('/#/storage/' + world.collection + '/'+ id)
+      .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .call(callback)
-  });
-
-  this.Then(/^I choose the collection "([^"]*)"$/, function (collection, callback) {
-    browser
-      .waitForVisible('drop-down-search .dropdown-toggle', 1000)
-      .pause(500)
-      .click('drop-down-search .dropdown-toggle')
-      .click('drop-down-search ul li:last-child a')
-      .call(callback);
   });
 
   this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
@@ -110,7 +106,7 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/storage/' + world.collection + '/' + id);
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/' + id);
       })
       .call(callback);
   });
@@ -141,6 +137,30 @@ module.exports = function () {
   this.Then(/^I add the new attribute$/, function (callback) {
     browser
       .click('.modal-footer .add-attribute')
+      .call(callback);
+  });
+
+  this.Then(/^I am on collection browse page$/, function (callback) {
+    browser
+      .waitForVisible('.storage-browse .create', 1000)
+      .getUrl()
+      .then(url => {
+        assert(url,  world.baseUrl + '/#/' + world.index + '/browse');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on the first collection in browse document page$/, function (callback) {
+    browser
+      .pause(500)
+      .waitForVisible('span.collection-name:first-of-type', 1000)
+      .click('span.collection-name:first-of-type')
+      .call(callback);
+  });
+
+  this.Given(/^I am on browse document page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/storage/' + world.collection)
       .call(callback);
   });
 };

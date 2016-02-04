@@ -32,10 +32,11 @@
     "angular-schema-form": "~0.8.12",
     "angular-schema-form-bootstrap": "~0.2.0",
     "leaflet": "0.7.x",
-    "kuzzle-sdk": "git://github.com/kuzzleio/sdk-javascript.git#KUZ-378-whoami",
+    "kuzzle-sdk": "1.5.0",
     "angular-scroll-glue": "~2.0.6",
     "angular-cookies": "~1.4.8",
-    "highcharts": "4.2.1"
+    "highcharts": "4.2.1",
+    "oclazyload": "~1.0.9"
   },
   "resolutions": {
     "angular": "1.4.9"
