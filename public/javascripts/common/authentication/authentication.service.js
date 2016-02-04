@@ -11,7 +11,9 @@ angular.module('kuzzle.authentication')
   };
 
   var onLoginFailed = function (err) {
-    console.log('Authentication error.', err.message);
+    if (err) {
+      console.log('Authentication error.', err.message);
+    }
     $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
   };
 
@@ -54,7 +56,7 @@ angular.module('kuzzle.authentication')
 
       kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
         if (error || response.result.valid === false) {
-          onLoginFailed(err);
+          onLoginFailed(error);
           $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
           deferred.reject(false);
           return;
