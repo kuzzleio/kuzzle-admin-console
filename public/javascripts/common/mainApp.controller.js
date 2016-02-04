@@ -42,7 +42,7 @@ function ($rootScope, $scope, Auth, Session, AUTH_EVENTS, Notification, kuzzle) 
     kuzzle.addListener('reconnected', onConnected);
     kuzzle.addListener('disconnected', onDisconnected);
     kuzzle.addListener('jwtTokenExpired', function () {
-      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      $rootScope.$broadcast(AUTH_EVENTS.sessionTimeout);
     });
   };
 
