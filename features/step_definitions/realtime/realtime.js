@@ -223,7 +223,7 @@ module.exports = function () {
   });
 
   this.Given(/^Someone subscribes to my room$/, function (callback) {
-    world.currentRoom = world.kuzzle.dataCollectionFactory(world.collection).subscribe({}, function (error, result) {});
+    world.currentRoom = world.kuzzle.dataCollectionFactory(world.index, world.collection).subscribe({}, function (error, result) {});
 
     setTimeout(() => {
       callback();
