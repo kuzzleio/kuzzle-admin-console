@@ -11,7 +11,6 @@ angular.module('kuzzle.authentication')
     var authService = {};
 
     var onLoginSuccess = function () {
-      console.log('Authentication succeeded!');
       kuzzle.whoAmI(function (err, res) {
         if (err || !res.result) {
           console.log('Unable to retrieve user information', err);
@@ -71,8 +70,6 @@ angular.module('kuzzle.authentication')
       }
 
       if (Session.resumeFromCookie()) {
-        console.log('Login from cookie');
-
         var deferred = $q.defer();
 
         kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
