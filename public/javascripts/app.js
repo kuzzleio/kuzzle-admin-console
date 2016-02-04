@@ -107,7 +107,6 @@ angular.module('kuzzle', [
       }
     });
 
-
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
       if (!toState.data) {
         return;
@@ -123,6 +122,15 @@ angular.module('kuzzle', [
 
         if (auth === false) {
           $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+        }
+
+        // Is this disgusting? (if it has then, it's a promise...)
+        if (auth.then) {
+          auth.then(function () {
+
+          }).catch(function () {
+            $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+          });
         }
       }
     });

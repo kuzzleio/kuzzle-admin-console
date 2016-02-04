@@ -70,14 +70,11 @@ angular.module('kuzzle.authentication')
       }
 
       if (Session.resumeFromCookie()) {
-        // There is too much eventful spaghetti here. Let's leverage the power
-        // of promises and get rid of this $broadcast shit.
         var deferred = $q.defer();
 
         kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
           if (error || response.result.valid === false) {
             onLoginFailed(error);
-            $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
             deferred.reject(false);
             return;
           }
