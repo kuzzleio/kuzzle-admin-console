@@ -65,29 +65,34 @@ angular.module('kuzzle.authentication')
     };
 
     authService.isAuthenticated = function () {
+      var deferred = $q.defer();
+
       if (kuzzle.jwtToken) {
-        return true;
+        deferred.resolve(true);
+      } else {
+        if (Session.resumeFromCookie()) {
+          kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
+            if (error || response.result.valid === false) {
+              onLoginFailed(error);
+              deferred.reject({
+                type: 'NOT_AUTHENTICATED',
+                message: 'Found invalid token in cookie. Not authenticated.'});
+              return;
+            }
+
+            kuzzle.setJwtToken(Session.session.jwtToken);
+            onLoginSuccess(Session.session.jwtToken);
+            deferred.resolve(true);
+          });
+        } else {
+          deferred.reject({
+            type: 'NOT_AUTHENTICATED',
+            message: 'No JWT Token and no cookie found. Not authenticated.'
+          });
+        }
       }
 
-      if (Session.resumeFromCookie()) {
-        var deferred = $q.defer();
-
-        kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
-          if (error || response.result.valid === false) {
-            onLoginFailed(error);
-            deferred.reject(false);
-            return;
-          }
-
-          kuzzle.setJwtToken(Session.session.jwtToken);
-          onLoginSuccess(Session.session.jwtToken);
-          deferred.resolve(true);
-        });
-
-        return deferred.promise;
-      }
-
-      return false;
+      return deferred.promise;
     };
 
     authService.isAuthorized = function (authorizedRoles) {

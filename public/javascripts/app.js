@@ -55,9 +55,6 @@ angular.module('kuzzle', [
           wrappedView: { templateUrl: '/logged' },
           'bodyView@logged': {templateUrl: '/dashboard'}
         },
-        data: {
-          requiresAuthentication: true
-        },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
@@ -65,6 +62,9 @@ angular.module('kuzzle', [
               '/javascripts/common/gauge/gauge.directive.js',
               '/javascripts/common/widget/widget.directive.js'
             ]);
+          }],
+          authenticated: ['AuthService', function (Auth, $state) {
+            return Auth.isAuthenticated();
           }]
         }
       })
@@ -101,37 +101,16 @@ angular.module('kuzzle', [
       var next = AuthService.getNextRoute();
       if (next) {
         $state.go(next.name, next.params, {reload: true, notify: true});
-        AuthService.nextRoute = null;
       } else {
         $state.go('logged', null, {reload: true, notify: true});
       }
+      AuthService.nextRoute = null;
     });
 
-    $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
-      if (!toState.data) {
-        return;
-      }
-
-      if (toState.data.requiresAuthentication) {
-        var auth = AuthService.isAuthenticated();
-
-        if (auth !== true) {
-          event.preventDefault();
-          AuthService.setNextRoute(toState.name, toParams);
-        }
-
-        if (auth === false) {
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-        }
-
-        // Is this disgusting? (if it has then, it's a promise...)
-        if (auth.then) {
-          auth.then(function () {
-
-          }).catch(function () {
-            $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-          });
-        }
+    $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
+      if (error.type === 'NOT_AUTHENTICATED') {
+        AuthService.setNextRoute(toState.name, toParams);
+        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       }
     });
   }]);
