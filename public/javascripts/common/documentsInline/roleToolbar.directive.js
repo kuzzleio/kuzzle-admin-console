@@ -16,7 +16,7 @@ angular.module('kuzzle.documentsInline')
 
       $scope.editDocument = function () {
 
-        $scope.document.json = $filter('json')($scope.document.body);
+        $scope.document.json = $filter('json')($scope.document.content);
         $scope.document.isEdit = true;
       };
 
@@ -24,10 +24,10 @@ angular.module('kuzzle.documentsInline')
         var role = {};
 
         try {
-          $scope.document.body = JSON.parse($scope.document.json);
+          $scope.document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          role = {name: $scope.document._id, body: $scope.document.body};
+          role = {name: $scope.document.id, content: $scope.document.content};
           roleApi.update(role, true, false);
         }
         catch (e) {
@@ -48,7 +48,7 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.confirmDelete = function () {
-        roleApi.deleteById($scope.document._id, true)
+        roleApi.deleteById($scope.document.id, true)
           .then(function () {
             $scope.cancelModal();
             $scope.afterDelete();
@@ -56,16 +56,16 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.clone = function () {
-        var body = '';
+        var content = '';
 
         try {
-          body = JSON.stringify($scope.document.body);
+          content = JSON.stringify($scope.document.content);
         }
         catch (e) {
           console.error(e);
         }
 
-        $state.go('role.create', {body: body});
+        $state.go('role.create', {content: content});
       };
 
       $scope.cancelModal = function () {

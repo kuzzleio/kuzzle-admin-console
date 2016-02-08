@@ -27,7 +27,7 @@ angular.module('kuzzle.role')
         }
       })
       .state('role.create', {
-        url: '/add?body',
+        url: '/add?content',
         views: {
           "mainView": { templateUrl: '/role/create' }
         },
