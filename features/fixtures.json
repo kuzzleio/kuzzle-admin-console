@@ -13,7 +13,8 @@
       {
         "_id": "test",
         "profile": "admin",
-        "password": "8c4a804f73b8969c4526c82b28b72b036220e447"
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
       }
     ]
   }
