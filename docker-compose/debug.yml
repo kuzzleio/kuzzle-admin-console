@@ -1,6 +1,8 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.13.2
+  image: kuzzleio/kuzzle:0.15.1
   command: /run-debug.sh
+  volumes:
+    - "../features/fixtures.json:/fixtures.json"
   ports:
     - "7512:7512"
     - "7511:7511"
@@ -11,7 +13,7 @@ kuzzle:
     - redis
   environment:
     - LIKE_A_VIRGIN
-    - FIXTURES
+    - FIXTURES=/fixtures.json
     - DEFAULT_MAPPING
     - FEATURE_COVERAGE
 

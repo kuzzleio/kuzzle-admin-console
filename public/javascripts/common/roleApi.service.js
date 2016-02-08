@@ -10,20 +10,28 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function () {
           var deferred = $q.defer();
 
-          deferred.resolve([{
-            _id: 'toto',
-            body: {index: {'tutu': {'*': true}}}
-          }]);
+          kuzzleSdk.security.searchRoles({}, function (error, roles) {
+            if (error) {
+              deferred.reject(error);
+              return;
+            }
+
+            deferred.resolve(roles.documents);
+          });
 
           return deferred.promise;
         },
         get: function (id) {
           var deferred = $q.defer();
 
-          deferred.resolve({
-            _id: 'toto',
-            body: {index: {'tutu': {'*': true}}}
-          });
+          kuzzleSdk.security.getRole(id, function (error, role) {
+            if (error) {
+              deferred.reject(error);
+              return;
+            }
+
+            deferred.resolve(role);
+          })
 
           return deferred.promise;
         },
@@ -42,33 +50,36 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             messageSuccess = 'Role updated !';
           }
 
-          //kuzzleSdk
-          //  .dataCollectionFactory(collection.name)
-          //  .putMapping(collection.schema, function (error) {
-              var error = false; // to delete
-              if (error) {
-                if (notify) {
-                  notification.error(messageError);
-                }
-
-                deferred.reject({error: true, message: error});
-                return deferred.promise; // to delete
-              }
-
+          role.save(function (error, result) {
+            if (error) {
               if (notify) {
-                notification.success(messageSuccess);
+                notification.error(messageError);
               }
 
-              deferred.resolve({error: false});
-            //});
+              deferred.reject({error: true, message: error});
+              return;
+            }
+
+            if (notify) {
+              notification.success(messageSuccess);
+            }
+
+            deferred.resolve(result);
+          })
 
           return deferred.promise;
         },
         deleteById: function (id, notify) {
           var deferred = $q.defer();
 
-          deferred.resolve({error: false});
-          notification.success('Role deleted!');
+          kuzzleSdk.deleteRole(id, function (error, result) {
+            if (error) {
+              notification.error('Error deleting role');
+              return;
+            }
+
+            notification.success('Role deleted!');
+          });
 
           return deferred.promise;
         }

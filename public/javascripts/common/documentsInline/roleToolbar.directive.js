@@ -73,7 +73,7 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.buildUrlFull = function (document) {
-        return $state.href('role.full', {role: document._id});
+        return $state.href('role.full', {role: document.id});
       };
   }])
   .directive('roleToolbar', [function () {

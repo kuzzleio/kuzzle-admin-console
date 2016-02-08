@@ -15,18 +15,18 @@ angular.module('kuzzle.role')
       $scope.notFoundError = false;
       $scope.role = {
         name: $stateParams.role,
-        body: ''
+        content: ''
       };
 
       $scope.init = function (action) {
-        var body;
+        var content;
 
         if (action === 'edit') {
           $scope.isEdit = true;
 
           roleApi.get($scope.role.name)
             .then(function (response) {
-              $scope.role.body = angular.toJson(response.body, 4);
+              $scope.role.content = angular.toJson(response.content, 4);
             })
             .catch(function () {
               $scope.notFoundError = true;
@@ -34,8 +34,8 @@ angular.module('kuzzle.role')
         }
         else {
           try {
-            body = JSON.parse($stateParams.body);
-            $scope.role.body = angular.toJson(body, 4);
+            content = JSON.parse($stateParams.content);
+            $scope.role.content = angular.toJson(content, 4);
           }
           catch (e) {
           }
@@ -54,12 +54,12 @@ angular.module('kuzzle.role')
       $scope.update = function (isCreate) {
         var role = {
           name: $scope.role.name,
-          body: {}
+          content: {}
         };
 
-        if ($scope.role.body) {
+        if ($scope.role.content) {
           try {
-            role.body = JSON.parse($scope.role.body);
+            role.content = JSON.parse($scope.role.content);
           }
           catch (e) {
             notification.error('Error parsing the role content.');
