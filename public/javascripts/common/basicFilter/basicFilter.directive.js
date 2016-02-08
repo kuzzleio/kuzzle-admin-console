@@ -82,5 +82,5 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
       },
       controller: 'BasicFilterCtrl',
       templateUrl: '/javascripts/common/basicFilter/basicFilter.tpl.html'
-    }
+    };
   });

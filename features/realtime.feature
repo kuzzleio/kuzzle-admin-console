@@ -6,6 +6,7 @@ Feature: Test realtime watch data pages
   Background:
     Given I go to the login page
     And I authenticate
+    Then I am authenticated
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on a collection
@@ -13,7 +14,7 @@ Feature: Test realtime watch data pages
 
   @cleanDb @unsubscribe
   Scenario: I can subscribe to a collection
-    Then I see that I am subscribed
+    Then I am subscribed
 
   @cleanDb @unsubscribe
   Scenario: I can clear the message log
@@ -24,7 +25,8 @@ Feature: Test realtime watch data pages
   Scenario: Once subscribed, I receive notifications about document creations
     Given I clear the message log
     And I create a persistent document
-    Then I receive the notification that the document has been created
+    Then I receive the notification that the document is being created
+    And I receive the notification that the document has been created
 
   @cleanDb @unsubscribe
   Scenario: Once subscribed, I receive notifications about document updates
@@ -38,7 +40,8 @@ Feature: Test realtime watch data pages
     Given I create a persistent document
     And I clear the message log
     And I delete a persistent document
-    Then I receive the notification that the document has been deleted
+    Then I receive the notification that the document is being deleted
+    And I receive the notification that the document has been deleted
 
   @cleanDb @unsubscribe
   Scenario: Once subscribed, I receive notifications about volatile messages
@@ -50,7 +53,7 @@ Feature: Test realtime watch data pages
   Scenario: Once subscribed, I receive notifications about users joining the room
     Given I clear the message log
     And Someone subscribes to my room
-    Then I receive the notification about the new user entering the room
+    Then I receive the notification about the new user joining the room
 
   @cleanDb @unsubscribe
   Scenario: Once subscribed, I receive notifications about users leaving the room

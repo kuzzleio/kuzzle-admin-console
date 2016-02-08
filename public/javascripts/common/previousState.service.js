@@ -11,7 +11,7 @@ angular.module('kuzzle.previousState', [])
       get: function () {
         return previous;
       }
-    }
+    };
   }]);
 
 angular.module('kuzzle.previousState').run(['previousState', function ($previousState) {}]);

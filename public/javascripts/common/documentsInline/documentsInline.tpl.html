@@ -1,5 +1,5 @@
 <div class="row documents" ng-repeat="document in documents">
-    <div class="panel panel-default" ng-class="{deleted: document.isDeleted}">
+    <div id={{document._id}} class="panel panel-default" ng-class="{deleted: document.isDeleted}">
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-1 document-id ellipsis" uib-popover="{{document._id}}" popover-placement="top" popover-animation="false">
@@ -9,7 +9,6 @@
                     <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
                     <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
                 </div>
-
                 <document-toolbar
                         ng-if="collection"
                         can-edit="canEdit"

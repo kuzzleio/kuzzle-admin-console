@@ -1,6 +1,17 @@
+/* color defs */
+$green: #00747E;
+$dark-green: #004B52;
+
+$sidebar-bg-color: #263238;
+$sidebar-text-color: #fff;
+
+$menubar-bg-color: #fff;
+$menubar-border-color: #e6e6e6;
+
+
 .menubar {
-  background-color: #FFFFFF;
-  border-color: #E6E6E6;
+  background-color: $menubar-bg-color;
+  border-color: $menubar-border-color;
 
   .navbar-header {
     width: 100%;
@@ -15,7 +26,7 @@
   }
 
   .navbar-toggle {
-    background-color: #333;
+    background-color: darken($menubar-bg-color, 66%);
   }
 
   user-menu {
@@ -25,45 +36,117 @@
 
 }
 #sidebar {
+  .fa.clear {
+    color: transparent!important;
+  }
   .side-nav {
-    background-color: #263238;
+
+    background-color: $sidebar-bg-color;
+
+    a[aria-expanded="true"] > i.fa-caret-down::before,
+    a.in > i.fa-caret-down::before {
+      content: "\f0d8"!important;
+    }
+
+    a[aria-expanded="true"] > i.fa-caret-up::before,
+    a.in > i.fa-caret-up::before {
+      content: "\f0d7"!important;
+    }
+
+    /** First level in menu */
+    & > li > a {
+      font-size: 1.1em;
+      color: $sidebar-text-color;
+      &.in {
+        border-bottom: solid 1px opacify($dark-green, 0.9);
+      }
+    }
+    & > li.active > a {
+      background: none;
+    }
+
+    /** low level in menu **/
+    .submenu {
+      padding-left: 10px;
+      background-color: transparentize($dark-green, 0.7);
+
+      & > li > a {
+        padding-left: 15px;
+        color: darken($sidebar-text-color, 15%);
+
+        &.in {
+          color: $sidebar-text-color;
+        }
+      }
+
+      ul.submenu2 {
+        padding:0;
+
+        li {
+          &.active {
+            a {
+              color: $sidebar-text-color;
+            }
+          }
+          a {
+            display: block;
+            padding: 10px 15px 10px 38px;
+            text-decoration: none;
+            color: darken($sidebar-text-color, 15%);
+          }
+        }
+      }
+    }
+
+    & #select-index {
+      padding-left: 15px;
+      width: 100%;
+      & > button {
+        width: 192px;
+        & > span {
+          display: inline-block;
+          width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+      }
+      & > .dropdown-menu {
+        left: 15px;
+        min-width: 192px;
+        & .search {
+          padding-left: 5px;
+          & input {
+            width: 97%;
+          }
+        }
+      }
+    }
 
     li {
-      &.active {
-        background-color: #45b29d;
 
+      &.active {
         a {
-          background-color: #45b29d;
-          color: #fff;
+          color: $sidebar-text-color;
         }
       }
       &.bottom {
         position: absolute;
         bottom: 0;
-
-        &.menu-help > a, &.menu-help > a::hover {
-          background-color: #45b29d!important;
-          color: #fff;
-        }
       }
+
       a {
         &:hover {
-          background-color: rgba(0, 0, 0, 0.1) !important;
-          color: #fff;
+          background: none;
+          color: $sidebar-text-color;
+        }
+        &:focus {
+          background: none;
+          color: #999;
         }
         i {
           padding-right: 5px;
         }
       }
-    }
-    &.side-nav > li > ul > li > ul {
-      padding:0;
-    }
-    &.side-nav > li > ul > li > ul > li > a {
-        display: block;
-        padding: 10px 15px 10px 61px;
-        text-decoration: none;
-        color: #999;
     }
   }
 }

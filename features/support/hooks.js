@@ -2,68 +2,121 @@ var
   request = require('request'),
   config = require('./config.js'),
   fixtures = require('../fixtures.json'),
-  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort;
+  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
+  world = require('./world.js');
 
 var hooks = function () {
 
+  this.registerHandler('BeforeFeatures', function (event, callback) {
+    browser
+      .setViewportSize({width: 1920, height: 1080})
+      .call(callback);
+  });
+
   this.Before('@createIndex', function (scenario, callback) {
-    initIndex.call(this, callback);
+    console.log('@createIndex');
+
+    var timeoutCallback = function () {
+      setTimeout(function() {
+        callback();
+      }, 2000)
+    };
+
+    removeIndex(function() {
+      initIndex(function() {
+        bulk()
+        .then(timeoutCallback)
+        .catch(timeoutCallback);
+      })
+    })
   });
 
   this.Before('@cleanDb', function (scenario, callback) {
+    console.log('@cleanDb');
     initCollection.call(this, callback);
   });
 
   this.After('@unsubscribe', function (scenario, callback) {
-    this.browser.pressButton('.filters button.btn-unsubscribe', callback);
+    browser
+      .waitForVisible('.filters button.btn-unsubscribe', 1000)
+      .click('.filters button.btn-unsubscribe')
+      .call(callback);
 
-    if (this.currentRoom) {
-      this.currentRoom.unsubscribe();
-      this.currentRoom = null;
+    if (world.currentRoom) {
+      world.currentRoom.unsubscribe();
+      world.currentRoom = null;
     }
-  })
+  });
 };
 
 var initIndex = function (callback) {
-  request({
-    method: 'PUT',
-    uri: kuzzleUrl + '/api/v1.0/' + this.index
-    }, (error) => {
-      if (error) {
-        console.log('Error creating '+ this.index + ' on ' + kuzzleUrl + ': ' + error);
-      }
-
+  var
+    query = {
+      controller: 'admin',
+      action: 'createIndex',
+      index: world.index
+    },
+    timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000);
-    });
+      }, 1000)
+    };
+
+  world.kuzzle
+    .queryPromise(query, {})
+    .then(timeoutCallback)
+    .catch(timeoutCallback);
+};
+
+var removeIndex = function (callback) {
+  var
+    query = {
+      controller: 'admin',
+      action: 'deleteIndex',
+      index: world.index
+    },
+    timeoutCallback = function () {
+      setTimeout(() => {
+        callback();
+      }, 1000)
+    };
+
+  world.kuzzle
+    .queryPromise(query, {})
+    .then(timeoutCallback)
+    .catch(timeoutCallback);
 };
 
 var initCollection = function (callback) {
-  request({
-    method: 'DELETE',
-    uri: kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection
-  }, (error) => {
-    if (error) {
-      console.log('Error deleting '+ this.collection + ': ' + error);
-    }
+  var timeoutCallback = function () {
+    setTimeout(() => {
+      callback();
+    }, 1000)
+  };
 
-    request({
-      method: 'POST',
-      header: {'Content-Type': 'application/json'},
-      uri: kuzzleUrl + '/api/v1.0/' + this.index + '/' + this.collection + '/_bulk',
-      body: fixtures[this.index][this.collection],
-      json: true
-    }, (error) => {
-      if (error) {
-        console.log('Error bulk-importing fixtures' + error);
-      }
-
-      setTimeout(() => {
-        callback();
-      }, 1000);
+  world.kuzzle
+    .dataCollectionFactory(world.collection)
+    .deletePromise()
+    .then(() => {
+      bulk()
+        .then(timeoutCallback);
     })
-  })
+    .catch(() => {
+      bulk()
+        .then(timeoutCallback);
+    })
+};
+
+var bulk = function () {
+  var query = {
+    controller: 'bulk',
+    action: 'import',
+    index: world.index,
+    collection: world.collection
+  };
+
+  return world.kuzzle
+    .queryPromise(query, {body: fixtures[world.index][world.collection]})
 };
 
 module.exports = hooks;

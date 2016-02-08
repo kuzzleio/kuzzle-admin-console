@@ -10,7 +10,7 @@ before_install:
   - sudo mv docker-compose-bin /usr/local/bin/docker-compose
   - sudo service docker restart ; sleep 10
 script:
-  - docker-compose -f docker-compose/test.yml run kuzzleBo
+  - docker-compose -f docker-compose/test-travis.yml run kuzzleBo
 notifications:
   webhooks:
     urls:
@@ -21,3 +21,6 @@ notifications:
   email: false
   slack:
     secure: du8002kSePzwE9Anaa4mCts0MWT4rn7rBbFUvpNYcBJI3V91ikWTNV6ZTlMwGY9KhLHJu5NE2PORy2kFcJr+Ovwra5zQkU8tB4/3H3s7yBL/ajWxEzokzC9kwgHfaG4QG+0xOPOW2fdQIk+R6Owet7HWfzDrsbigZSMs+RxGl+mgg7Bkx85T53cP0oYTkn6Kriw6yp0urEU7rh6CRx1z8QNXgVHExeCArrFBnQKwzMZzUGUCnrg1mP7UGqlwYmWGyuMNYPm4MTRhv5oGxaSIjnsd4IlD+zbcqKMZWsWs9N9E61iXyiyCXLDpLueUo3Jm+ztLeTl3UBYRQoTUcFCCglM3oIbWJT74Im02JrkG5M6WzaKRLdZPnR8RKulnuKOliw2uhn3+R828nL/T+CnfkfQyAcXk/EjmUGdtWHG4SDR6oemffA86TKR/0RFNyJ+WMIhODjACfCt0E59VY6yRtCt0oBAWtQD7HXCjxB/l1LWc4gwIM3e8mf0Pzf/wnYHAtD47xUbJqWBr3gdiaOia6SSe6aRE0FXVdAdWyGwR7hQIOSpWTw2Xb5he5zTDbBQFzBqdIcOPN/k7jGMDQAbnfmUnFz4MSSGLf4pqbVZf4SBZd5byL+rB6rt64n9xJk6yMA0ViMYEoWj5jWolK8KBu9XHafw34O9Edpd9Jg2m4+s=
+    on_success: never
+    on_failure: always
+    on_start: never

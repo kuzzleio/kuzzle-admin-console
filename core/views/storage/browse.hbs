@@ -5,7 +5,7 @@
         <div class="col-sm-12">
           <h2 class="select-collection">
               Collection
-              <drop-down-search
+              <collections-drop-down-search
                   label=""
                   selected="stateParams.collection"
                   create-label="New collection"
@@ -14,7 +14,7 @@
                   on-click-create="onCreateCollection(collection)"
                   on-click-item="onSelectCollection(item)"
                   placeholder="Find a collection">
-              </drop-down-search>
+              </collections-drop-down-search>
 
               <div class="btn-group" ng-if="stateParams.collection">
                   <cog-options-collection

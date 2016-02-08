@@ -3,28 +3,31 @@ angular.module('kuzzle', [
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
-  'kuzzle.basicFilter',
-  'kuzzle.filters',
+  'kuzzle.headline',
+  'kuzzle.indexes',
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',
   'kuzzle.role',
   'kuzzle.profile',
   'kuzzle.user',
+  'kuzzle.dashboard',
+  'kuzzle.bufferCancel',
+  'kuzzle.documentApi',
+  'kuzzle.indexesApi',
   'kuzzle.collectionApi',
-  'kuzzle.documentsInline',
-  'kuzzle.cogOptionsCollection',
+  'kuzzle.serverApi',
   'angular-loading-bar',
   'ngAnimate',
   'kuzzle.uid',
   'ui-notification',
-  'kuzzle.bufferCancel',
   'kuzzle.previousState',
-  'kuzzle.unsubscribeOnPageChange'
+  'kuzzle.unsubscribeOnPageChange',
+  'oc.lazyLoad'
 ])
 
   .config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   }])
 
   .config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
@@ -45,28 +48,38 @@ angular.module('kuzzle', [
     $urlRouterProvider.otherwise(function ($injector) {
         $injector.invoke(['$state', function ($state) {
           $state.go('404');
-        }])
+        }]);
     });
 
     $stateProvider
       .state('logged', {
         url: '',
         views: {
-          "wrappedView": { templateUrl: '/logged' }
+          wrappedView: { templateUrl: '/logged' },
+          'bodyView@logged': {templateUrl: '/dashboard'}
         },
         data: {
           requiresAuthentication: true
+        },
+        resolve: {
+          loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
+            return $ocLazyLoad.load([
+              '/javascripts/common/chart/chart.directive.js',
+              '/javascripts/common/gauge/gauge.directive.js',
+              '/javascripts/common/widget/widget.directive.js'
+            ]);
+          }]
         }
       })
       .state('404', {
         views: {
-          "wrappedView": { templateUrl: '/404' }
+          wrappedView: { templateUrl: '/404' }
         }
       })
       .state('login', {
         url: '/login',
         views: {
-          "wrappedView": { templateUrl: '/login' }
+          wrappedView: { templateUrl: '/login' }
         }
       })
       .state('logout', {
@@ -84,15 +97,14 @@ angular.module('kuzzle', [
       $state.go('login');
     });
 
-    $rootScope.$on('$stateNotFound', function(event) {
+    $rootScope.$on('$stateNotFound', function () {
       $state.go('404');
     });
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
-      var authorizedRoles = null;
-      if (!next.data)
+      if (!next.data) {
         return;
-      authorizedRoles = next.data.authorizedRoles;
+      }
 
       if (next.data.requiresAuthentication) {
         if (!AuthService.isAuthenticated()) {
@@ -103,5 +115,5 @@ angular.module('kuzzle', [
           return;
         }
       }
-    })
+    });
   }]);

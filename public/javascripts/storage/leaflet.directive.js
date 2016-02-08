@@ -50,7 +50,6 @@ angular.module('kuzzle.leaflet', [])
           fitBounds.push(marker._latlng);
         });
 
-        console.log(fitBounds);
         this.setFitBounds(mapId, fitBounds);
         this.setZoom(mapId, zoom || 5);
       },
@@ -71,7 +70,7 @@ angular.module('kuzzle.leaflet', [])
         });
         maps[mapId].markers = [];
       }
-    }
+    };
   }])
 
   .directive('leaflet', ['leaflet', function (leaflet) {
@@ -136,7 +135,7 @@ angular.module('kuzzle.leaflet', [])
           if (scope.zoom) {
             leaflet.setZoom(scope.mapId, scope.zoom);
           }
-        }
+        };
       }
-    }
+    };
   }]);

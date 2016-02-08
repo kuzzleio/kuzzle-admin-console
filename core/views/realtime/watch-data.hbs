@@ -1,14 +1,14 @@
 <div class="panel panel-default filters" ng-if="forms.collection">
     <div class="panel-body">
         <filters
-                dsl-doc-url="https://github.com/kuzzleio/kuzzle/blob/master/docs/filters.md"
-                add-group-label="Add group"
-                filters="forms.filter"
-                collection="forms.collection"
-                comparators="forms.comparators"
-                search-type="forms.searchType"
-                subscribed="forms.subscribed"
-                is-realtime="true">
+            dsl-doc-url="https://github.com/kuzzleio/kuzzle/blob/master/docs/filters.md"
+            add-group-label="Add group"
+            filters="forms.filter"
+            collection="forms.collection"
+            comparators="forms.comparators"
+            search-type="forms.searchType"
+            subscribed="forms.subscribed"
+            is-realtime="true">
         </filters>
 
         <div class="form-group">
@@ -34,6 +34,7 @@
 </div>
 
 <messages
+  ng-if="forms.collection"
   class="fixed-right message-log"
   collection="forms.collection"
   messages="forms.messages"

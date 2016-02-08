@@ -106,56 +106,64 @@ input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
     border-color: #FA787E;
 }
 
+h2.select-index,
 h2.select-collection {
   color: #828282;
 }
 
+.select-index,
 .select-collection {
   text-align: center;
+}
 
-  li.active a {
-    background-color: #528186;
-
-    &:focus {
-      background-color: #528186;
-    }
-    &:hover {
-      color: #fff;
-      background-color: #6C9A9E;
-    }
+.collections-drop-down-search, #select-index {
+  button {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
+  .dropdown-menu {
+    min-width: 200px;
+    li {
+      form {
+        margin-bottom: 0;
+      }
+      cursor: pointer;
+      a {
+        i {
+          padding-right: 5px;
+          color: #848484;
+        }
 
-  drop-down-search {
-    button {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
+        padding: 8px;
+
+        &.external-link {
+          padding: 5px 0 5px 10px;
+          text-decoration: underline;
+          color: #215C9C;
+        }
+        &.external-link:hover {
+          padding: 5px 0 5px 10px;
+          text-decoration: underline;
+          color: #215C9C;
+          background-color: #f5f5f5;
+        }
+        &:hover {
+          color: #262626;
+          text-decoration: none;
+          background-color: #f5f5f5;
+        }
+      }
+      &.active a {
+        background-color: #528186;
+        &:hover {
+          color: #fff;
+          background-color: #6C9A9E;
+        }
+      }
     }
-    .dropdown-menu {
-      min-width: 200px;
-      li {
-        form {
-          margin-bottom: 0;
-        }
-        cursor: pointer;
-        a {
-          i {
-            padding-right: 5px;
-            color: #848484;
-          }
-
-          padding: 8px;
-
-          &.external-link {
-            padding: 5px 0 5px 10px;
-            text-decoration: underline;
-            color: #215C9C;
-          }
-        }
-      }
-      .search {
-        padding: 5px;
-      }
+    .search {
+      padding: 5px;
     }
   }
 }

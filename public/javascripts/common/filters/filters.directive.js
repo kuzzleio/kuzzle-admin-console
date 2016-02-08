@@ -9,10 +9,12 @@ angular.module('kuzzle.filters')
     };
 
     $scope.doSearch = function () {
-      if ($scope.searchType.basic)
+      if ($scope.searchType.basic) {
         $scope.basicSearch();
-      else if ($scope.searchType.advanced)
+      }
+      else if ($scope.searchType.advanced) {
         $scope.advancedSearch();
+      }
     };
 
     $scope.fillAdvancedSearchWithBasic = function () {
@@ -46,5 +48,5 @@ angular.module('kuzzle.filters')
       },
       controller: 'FiltersCtrl',
       templateUrl: '/javascripts/common/filters/filters.tpl.html'
-    }
+    };
   }]);

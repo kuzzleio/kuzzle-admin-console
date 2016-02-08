@@ -5,7 +5,7 @@
 
 # Kuzzle BO
 
-(Works with Kuzzle version 0.9.x)
+(Works with Kuzzle version 0.13.x)
 
 This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
 
@@ -24,9 +24,10 @@ Kuzzle features are accessible through a secured API. It can be used through a l
 
 ## With docker, from scratch
 
-You can use the `docker-compose/all.yml` which will run all Kuzzle stack and the BO.
+You can use the default `docker-compose.yml` which will run all Kuzzle stack and the BO.
 
-    $ docker-compose -f docker-compose/all.yml up
+    $ docker pull kuzzleio/bo
+    $ docker-compose up
 
 If you want to customize which service to launch or if you don't want to clone the repo, you can create your own docker-compose.yml file.
 If you want to communicate with Kuzzle in Stomp or AMQ, you probably want to add a service rabbitMQ.
@@ -37,6 +38,7 @@ If you want to communicate with Kuzzle in Stomp or AMQ, you probably want to add
 
 You can run the back office using the Kuzzle BO image with a link to your Kuzzle instance
 
+    $ docker pull kuzzleio/bo
     $ docker run --link my-kuzzle-container-name:kuzzle -p 3000:3000 kuzzleio/bo
 
 Where `my-kuzzle-container-name` is the container name where your Kuzzle is running. If you are in trouble for get your container name you can retrieve it with
@@ -44,6 +46,36 @@ Where `my-kuzzle-container-name` is the container name where your Kuzzle is runn
     $ docker ps | grep kuzzleio/kuzzle
 
 The container name is in the last column.
+
+## Without docker with an already running Kuzzle
+
+### Prerequisites
+
+* A properly installed [nodeJs](https://nodejs.org/en/download/package-manager/) **version 4** or upper
+* Last version of [Ruby](https://www.ruby-lang.org/en/documentation/installation/)
+* Last version of [RubyGems](https://rubygems.org/pages/download)
+
+### First step
+
+You'll need to clone the back-office repository then install the dependencies and compile the css files:
+
+	$ git clone https://github.com/kuzzleio/kuzzle-bo.git && cd kuzzle-bo
+	$ gem install sass
+	$ npm install grunt -g
+	$ npm install bower -g
+	$ npm install 
+	$ bower install --config.interactive=false
+	$ grunt sass
+
+### Second step
+
+Launch the back-office server:
+
+	$ npm start
+
+or launch it with [pm2](http://pm2.keymetrics.io/)
+
+	$ pm2 start ./bin/www --name 'kuzzle-bo'
 
 **Note:**
 * If you want to debug, you also have to expose the port 8080
@@ -58,6 +90,7 @@ Because functional tests need to be done in a running Kuzzle environment, it is 
 Using Compose:
 
 ```
+    $ docker pull kuzzleio/bo
     $ docker-compose -f docker-compose/test.yml up
 ```
 

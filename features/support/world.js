@@ -1,23 +1,31 @@
 var
-  zombie = require('zombie'),
+  World,
   fixtures = require('../fixtures.json'),
   config = require('./config.js'),
-  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort;
+  Kuzzle = require('kuzzle-sdk'),
+  wdio = require('../wdio.conf.js'),
 
-function World() {
-  this.browser = new zombie();
-  this.baseUrl = 'http://localhost:3000/';
-  this.index = Object.keys(fixtures)[0];
-  this.collection = Object.keys(fixtures[this.index])[0];
-  this.currentDocumentId = undefined;
-  this.currentRoom = undefined;
-  this.kuzzle = new Kuzzle(kuzzleUrl, this.index);
+  index = Object.keys(fixtures)[0],
+  collection = Object.keys(fixtures[index])[0],
+  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
+  documents = {};
 
-  this.visit = function (url, callback) {
-    this.browser.visit(this.baseUrl + url, callback);
-  };
-}
 
-module.exports = function() {
-  this.World = World;
+// documents['ghopper'] = { ... }
+documents[fixtures[index]['kuzzle-bo-test'][0].index._id] = fixtures[index]['kuzzle-bo-test'][1];
+// documents['alovelace'] = { ... }
+documents[fixtures[index]['kuzzle-bo-test'][2].index._id] = fixtures[index]['kuzzle-bo-test'][3];
+
+
+World = {
+  index: index,
+  collection: collection,
+  currentDocumentId: undefined,
+  currentRoom: undefined,
+  kuzzleUrl: kuzzleUrl,
+  kuzzle: new Kuzzle(kuzzleUrl, { defaultIndex: index }),
+  baseUrl: wdio.config.baseUrl,
+  documents: documents
 };
+
+module.exports = World;

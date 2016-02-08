@@ -7,12 +7,15 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     /** ADD REAL TESTS ON SOURCE **/
-    //jshint: {
-    //  all: ['Gruntfile.js', 'test/**/*.js', 'features/**/*.js']
-    //},
-    //eslint: {
-    //  src: ['core/**/*.js']
-    //},
+    jshint: {
+      all: ['public/javascripts/**/*.js'],
+      options: {
+        jshintrc: './.jshintrc'
+      }
+    },
+    eslint: {
+      src: ['core/**/*.js']
+    },
     sass: {
       dist: {
         files: [{
@@ -33,5 +36,6 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('default', ["sass"]);
+  grunt.registerTask('default', ['sass']);
+  grunt.registerTask('linter', ['eslint', 'jshint'])
 };

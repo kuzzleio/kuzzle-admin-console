@@ -40,5 +40,5 @@ angular.module('kuzzle.bufferCancel', [])
           return true;
         }
       }
-    }
+    };
   });

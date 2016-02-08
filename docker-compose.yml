@@ -1,6 +1,26 @@
+kuzzle:
+  image: kuzzleio/kuzzle:0.13.2
+  ports:
+    - "7512:7512"
+    - "7511:7511"
+  links:
+    - elasticsearch
+    - redis
+  environment:
+    - LIKE_A_VIRGIN
+    - FIXTURES
+    - DEFAULT_MAPPING
+    - FEATURE_COVERAGE
+
 kuzzleBo:
   image: kuzzleio/bo
-  volumes:
-    - ".:/var/app"
   ports:
     - "3000:3000"
+  links:
+    - kuzzle
+
+redis:
+  image: redis:3.0.2
+
+elasticsearch:
+  image: elasticsearch:1.5.2

@@ -6,7 +6,9 @@ var
   role = require('./controllers/role'),
   profile = require('./controllers/profile'),
   user = require('./controllers/user'),
-  login = require('./controllers/login');
+  login = require('./controllers/login'),
+  indexes = require('./controllers/indexes'),
+  dashboard = require('./controllers/dashboard');
 
 module.exports = {
 
@@ -19,6 +21,8 @@ module.exports = {
     app.use('/profile', profile);
     app.use('/user', user);
     app.use('/login', login);
+    app.use('/indexes', indexes);
+    app.use('/dashboard', dashboard);
   }
 
 };
