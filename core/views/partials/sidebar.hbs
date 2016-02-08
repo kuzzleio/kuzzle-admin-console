@@ -117,21 +117,7 @@
                 Security
                 <i class="fa fa-fw fa-caret-down pull-right"></i>
             </a>
-            <ul
-                id="menu-security"
-                class="collapse"
-                ng-class="{ in: ('data.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
-            >
-                <li></li>
-            </ul>
-        </li>
-        <li>
-            <a href="javascript:;" data-toggle="collapse" data-target="#menu-user" href>
-                <i class="fa fa-user"></i>
-                Security
-                <i class="fa fa-fw fa-caret-down"></i>
-            </a>
-            <ul id="menu-user" class="collapse" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
+            <ul id="menu-security" class="collapse" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
                 <li ng-class="{ active: ('role.*.*' | includedByState) }">
                     <a ui-sref="role.browse"><i class="fa fa-list-alt"></i> Roles</a>
                 </li>
