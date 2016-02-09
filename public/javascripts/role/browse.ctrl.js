@@ -6,6 +6,10 @@ angular.module('kuzzle.role')
     $scope.collection = 'roles';
 
     $scope.init = function () {
+      $scope.loadRoles();
+    };
+
+    $scope.loadRoles = function () {
       roleApi.list()
         .then(function (response) {
           $scope.roles = response;

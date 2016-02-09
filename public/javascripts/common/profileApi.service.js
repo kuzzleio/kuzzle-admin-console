@@ -10,24 +10,32 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function () {
           var deferred = $q.defer();
 
-          deferred.resolve([{
-            _id: 'toto',
-            body: {roles: ["titi", "tata"]}
-          }]);
+          kuzzleSdk.security.searchProfiles({}, function (error, profiles) {
+            if (error) {
+              deferred.reject(error);
+              return;
+            }
+
+            deferred.resolve(profiles);
+          });
 
           return deferred.promise;
         },
         get: function (id) {
           var deferred = $q.defer();
 
-          deferred.resolve({
-            _id: 'toto',
-            body: {roles: ["titi", "tata"]}
+          kuzzleSdk.security.getProfile(id, function (error, profile) {
+            if (error) {
+              deferred.reject(error);
+              return;
+            }
+
+            deferred.resolve(profile);
           });
 
           return deferred.promise;
         },
-        update: function (role, notify, isCreate) {
+        update: function (profile, notify, isCreate) {
           var
             deferred = $q.defer(),
             messageSuccess,
@@ -40,6 +48,8 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           else {
             messageError = 'Error during profile update. Please retry.';
             messageSuccess = 'Profile updated !';
+            profile = kuzzleSdk.security.createProfile(
+              profile.id, profile, {replaceIfExists: true});
           }
 
           //kuzzleSdk

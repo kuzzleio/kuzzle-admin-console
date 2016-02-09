@@ -10,13 +10,13 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function () {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchRoles({}, function (error, roles) {
+          kuzzleSdk.security.searchRoles({}, function (error, response) {
             if (error) {
               deferred.reject(error);
               return;
             }
 
-            deferred.resolve(roles.documents);
+            deferred.resolve(response.roles);
           });
 
           return deferred.promise;
@@ -44,13 +44,12 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           if (isCreate) {
             messageError = 'Error during role creation. Please retry.';
             messageSuccess = 'Role created !';
-          }
-          else {
+          } else {
             messageError = 'Error during role update. Please retry.';
             messageSuccess = 'Role updated !';
           }
 
-          role.save(function (error, result) {
+          kuzzleSdk.security.createRole(role.name, role.content, {replaceIfExist: true}, function (error, role) {
             if (error) {
               if (notify) {
                 notification.error(messageError);
@@ -64,21 +63,31 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               notification.success(messageSuccess);
             }
 
-            deferred.resolve(result);
-          })
+            // We wait 1s to ensure Elastic Search properly indexes the new
+            // role.
+            setTimeout(function () {
+              deferred.resolve(role);
+            }, 1000);
+          });
 
           return deferred.promise;
         },
         deleteById: function (id, notify) {
           var deferred = $q.defer();
 
-          kuzzleSdk.deleteRole(id, function (error, result) {
+          kuzzleSdk.security.deleteRole(id, function (error, result) {
             if (error) {
               notification.error('Error deleting role');
+              deferred.reject(error);
               return;
             }
 
             notification.success('Role deleted!');
+            // We wait 1s to ensure Elastic Search properly update the indexes
+            // after the deletion.
+            setTimeout(function () {
+              deferred.resolve();
+            }, 1000);
           });
 
           return deferred.promise;
