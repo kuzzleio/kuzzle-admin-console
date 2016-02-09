@@ -6,5 +6,16 @@
       { "index" : {"_id": "alovelace"}},
       { "username": "alovelace", "name": {"first": "Ada", "last": "Lovelace"} }
     ]
+  },
+  "%kuzzle": {
+    "users": [
+      { "create": { "_id": "test" } },
+      {
+        "_id": "test",
+        "profile": "admin",
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      }
+    ]
   }
 }
