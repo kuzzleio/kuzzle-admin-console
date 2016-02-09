@@ -102,7 +102,7 @@
             </a>
             <ul
                 id="menu-plugins"
-                class="collapse"
+                class="collapse submenu"
                 ng-class="{ in: ('data.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
             >
                 <li></li>
@@ -117,7 +117,7 @@
                 Security
                 <i class="fa fa-fw fa-caret-down pull-right"></i>
             </a>
-            <ul id="menu-security" class="collapse" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
+            <ul id="menu-security" class="collapse submenu" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
                 <li ng-class="{ active: ('role.*.*' | includedByState) }">
                     <a ui-sref="role.browse"><i class="fa fa-list-alt"></i> Roles</a>
                 </li>
