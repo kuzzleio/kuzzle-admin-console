@@ -27,7 +27,7 @@ angular.module('kuzzle.profile')
         }
       })
       .state('profile.create', {
-        url: '/add?body',
+        url: '/add?content',
         views: {
           "mainView": { templateUrl: '/profile/create' }
         },
