@@ -70,6 +70,6 @@ angular.module('kuzzle.role')
         roleApi.update($scope.role, true, isCreate)
           .then(function () {
             $state.go('role.browse');
-          })
-      }
+          });
+      };
     }]);

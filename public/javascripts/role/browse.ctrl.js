@@ -14,5 +14,4 @@ angular.module('kuzzle.role')
           console.error(error);
         });
     };
-
   }]);

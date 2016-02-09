@@ -31,7 +31,7 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             }
 
             deferred.resolve(role);
-          })
+          });
 
           return deferred.promise;
         },
@@ -83,5 +83,5 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         }
-      }
+      };
     }]);
