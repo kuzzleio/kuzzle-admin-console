@@ -7,7 +7,7 @@ angular.module('kuzzle')
   'AUTH_EVENTS',
   'Notification',
   'kuzzleSdk',
-  function ($rootScope, $scope, Auth, Session, AUTH_EVENTS, Notification, kuzzle) {
+function ($rootScope, $scope, Auth, Session, AUTH_EVENTS, Notification, kuzzle) {
   var currentNotification = null;
 
   var onConnected = function () {
@@ -35,13 +35,16 @@ angular.module('kuzzle')
       Notification.error(notificationCfg);
   };
 
+  $scope.session = Session.session;
+  $scope.auth = Auth;
+
   $scope.init = function () {
-    Session.resumeFromCookie();
     kuzzle.addListener('reconnected', onConnected);
     kuzzle.addListener('disconnected', onDisconnected);
+    kuzzle.addListener('jwtTokenExpired', function () {
+      $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+    });
   };
-
-  $scope.session = Session.session;
 
   $scope.doLogin = function () {
     $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);

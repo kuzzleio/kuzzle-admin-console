@@ -1,9 +1,9 @@
-<span ng-if="username">
+<span ng-if="logged">
   <span class="username">Hello {{username}}</span>
   &nbsp;
   <a href ng-click="doLogout()" class="logout-btn" title="Logout"><span class="glyphicon glyphicon-off"></span></a>
 </span>
-<span ng-if="!username" class="username">
+<span ng-if="!logged" class="username">
   <a href ng-click="doLogin()">
     Login
   </a>

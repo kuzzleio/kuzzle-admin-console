@@ -11,7 +11,7 @@
             <img src="https://raw.githubusercontent.com/kuzzleio/kuzzle/master/docs/images/logo.png" />
         </a>
 
-        <user-menu username="session.userId" do-login="doLogin()" do-logout="doLogout()"></user-menu>
+        <user-menu logged="auth.isAuthenticated()" username="session.userId" do-login="doLogin()" do-logout="doLogout()"></user-menu>
 
     </div>
     {{!--

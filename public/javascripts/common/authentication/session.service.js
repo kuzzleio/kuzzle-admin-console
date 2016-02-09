@@ -3,39 +3,55 @@ angular.module('kuzzle.authentication')
   var COOKIE_KEY = 'authToken';
 
   this.session = {
-    id: '',
-    userId: '',
-    userRole: ''
+    jwtToken: null,
+    userId: null,
+    userProfile: null,
   };
 
-  this.create = function (sessionId, userId, userRole) {
-    this.session.id = sessionId;
+  this.create = function (jwtToken, userId, userProfile) {
+    this.session.jwtToken = jwtToken;
     this.session.userId = userId;
-    this.session.userRole = userRole;
+    this.session.userProfile = userProfile;
 
-    $cookies.put(COOKIE_KEY, JSON.stringify({
-      id: this.session.id,
-      userId: this.session.userId,
-      userRole: this.session.userRole,
-    }));
+    this.saveToCookie();
   };
+
+  this.setProfile = function (profile) {
+    this.session.userProfile = profile;
+    this.saveToCookie();
+  };
+
+  this.setUserId = function (id) {
+    this.session.userId = id;
+    this.saveToCookie();
+  };
+
   this.destroy = function () {
-    this.session.id = null;
+    this.session.jwtToken = null;
     this.session.userId = null;
-    this.session.userRole = null;
+    this.session.userProfile = null;
 
     $cookies.remove(COOKIE_KEY);
   };
 
+  this.saveToCookie = function () {
+    $cookies.put(COOKIE_KEY, JSON.stringify({
+      jwtToken: this.session.jwtToken,
+      userId: this.session.userId,
+      userProfile: this.session.userProfile,
+    }));
+  };
+
   this.resumeFromCookie = function () {
     if (!$cookies.get(COOKIE_KEY)) {
-      return;
+      return false;
     }
 
     var sessionFromCookie = JSON.parse($cookies.get(COOKIE_KEY));
 
-    this.session.id = sessionFromCookie.id;
+    this.session.jwtToken = sessionFromCookie.jwtToken;
     this.session.userId = sessionFromCookie.userId;
-    this.session.userRole = sessionFromCookie.userRole;
+    this.session.userProfile = sessionFromCookie.userProfile;
+    return true;
   };
 }]);
