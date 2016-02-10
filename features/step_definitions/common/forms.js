@@ -69,4 +69,19 @@ module.exports = function () {
       })
       .call(callback);
   });
+
+  this.Then(/^The input "([^"]*)" is ?(not)* disabled$/, function (name, not, callback) {
+    browser
+    browser
+      .getAttribute('input[id="' + name +'"]', 'disabled')
+      .then(function(value) {
+        if (not) {
+          assert.equal(value, null)
+        }
+        else {
+          assert.equal(value, 'true')
+        }
+      })
+      .call(callback);
+  })
 };
