@@ -21,19 +21,13 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        get: function (id, hydrated) {
+        get: function (id, hydrate) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.getProfile(id, function (error, profile) {
+          kuzzleSdk.security.getProfile(id, hydrate, function (error, profile) {
             if (error) {
               deferred.reject(error);
               return;
-            }
-
-            if (!hydrated) {
-              profile.content.roles = profile.content.roles.map(function (role) {
-                return role.id;
-              });
             }
 
             deferred.resolve(profile);
