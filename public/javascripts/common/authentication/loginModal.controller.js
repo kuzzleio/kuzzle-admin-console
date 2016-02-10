@@ -1,5 +1,11 @@
 angular.module('kuzzle.authentication')
-.controller('LoginModalCtrl', ['$scope', '$uibModal', '$log', 'AUTH_EVENTS', function ($scope, $uibModal, $log, AUTH_EVENTS) {
+.controller('LoginModalCtrl', [
+  '$scope',
+  '$uibModal',
+  '$log',
+  'AUTH_EVENTS',
+  'AuthService',
+function ($scope, $uibModal, $log, AUTH_EVENTS, Auth) {
   var modalInstance = null;
 
   var showDialog = function (nextState) {
@@ -14,13 +20,17 @@ angular.module('kuzzle.authentication')
         }
       }
     });
+    modalInstance.result.then(null, function () {
+      // Triggered when the backdrop is clicked
+      Auth.logout();
+    });
   };
-  var hideDialog = function () {
+  var onLoginSuccess = function () {
     if (modalInstance) {
-      modalInstance.close();
+      modalInstance.close(true);
     }
   };
 
   $scope.$on(AUTH_EVENTS.sessionTimeout, showDialog);
-  $scope.$on(AUTH_EVENTS.loginSuccess, hideDialog);
+  $scope.$on(AUTH_EVENTS.loginSuccess, onLoginSuccess);
 }]);
