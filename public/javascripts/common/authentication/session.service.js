@@ -13,17 +13,17 @@ angular.module('kuzzle.authentication')
     this.session.userId = userId;
     this.session.userProfile = userProfile;
 
-    this.saveToCookie();
+    this.persist();
   };
 
   this.setProfile = function (profile) {
     this.session.userProfile = profile;
-    this.saveToCookie();
+    this.persist();
   };
 
   this.setUserId = function (id) {
     this.session.userId = id;
-    this.saveToCookie();
+    this.persist();
   };
 
   this.destroy = function () {
@@ -34,7 +34,7 @@ angular.module('kuzzle.authentication')
     $cookies.remove(COOKIE_KEY);
   };
 
-  this.saveToCookie = function () {
+  this.persist = function () {
     $cookies.put(COOKIE_KEY, JSON.stringify({
       jwtToken: this.session.jwtToken,
       userId: this.session.userId,

@@ -91,6 +91,7 @@ module.exports = function () {
     browser
       .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
       .waitForVisible('form fieldset', 1000)
+      .pause(500)
       .call(callback)
   });
 
