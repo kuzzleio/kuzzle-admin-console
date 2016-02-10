@@ -30,6 +30,12 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               return;
             }
 
+            if (!hydrated) {
+              profile.content.roles = profile.content.roles.map(function (role) {
+                return role.id;
+              });
+            }
+
             deferred.resolve(profile);
           });
 
@@ -55,9 +61,6 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             profile.content,
             {replaceIfExist: true},
             function(error, result) {
-
-              console.log(error, result);
-
               if (error) {
                 if (notify) {
                   notification.error(messageError);

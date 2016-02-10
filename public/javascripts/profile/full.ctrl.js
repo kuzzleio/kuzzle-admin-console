@@ -38,6 +38,7 @@ angular.module('kuzzle.profile')
             $scope.profile.content = angular.toJson(content, 4);
           }
           catch (e) {
+            console.log(e);
           }
         }
       };
@@ -52,13 +53,6 @@ angular.module('kuzzle.profile')
       };
 
       $scope.update = function (isCreate) {
-        var profile = {
-          id: $scope.profile.id,
-          body: {}
-        };
-
-        console.log($scope.profile);
-
         if ($scope.profile.content) {
           try {
             $scope.profile.content = JSON.parse($scope.profile.content);
@@ -72,6 +66,6 @@ angular.module('kuzzle.profile')
         profileApi.update($scope.profile, true, isCreate)
           .then(function () {
             $state.go('profile.browse');
-          })
-      }
+          });
+      };
     }]);

@@ -2,6 +2,7 @@ angular.module('kuzzle.profile')
 
   .controller('ProfileBrowseCtrl', ['$scope', 'profileApi', function ($scope, profileApi) {
 
+    $scope.total = null;
     $scope.profiles = null;
 
     $scope.init = function () {
@@ -15,4 +16,5 @@ angular.module('kuzzle.profile')
         });
     };
 
+    $scope.$on('$viewContentLoaded', $scope.init);
   }]);
