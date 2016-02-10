@@ -52,7 +52,7 @@ angular.module('kuzzle.documentsInline')
           .then(function () {
             $scope.cancelModal();
             $scope.afterDelete();
-          })
+          });
       };
 
       $scope.clone = function () {
@@ -86,5 +86,5 @@ angular.module('kuzzle.documentsInline')
       },
       controller: 'UserToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
-    }
+    };
   }]);

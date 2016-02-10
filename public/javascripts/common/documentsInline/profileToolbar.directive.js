@@ -85,5 +85,5 @@ angular.module('kuzzle.documentsInline')
       },
       controller: 'ProfileToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
-    }
+    };
   }]);

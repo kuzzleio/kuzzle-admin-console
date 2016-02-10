@@ -46,7 +46,7 @@ angular.module('kuzzle.documentsInline')
                 }
 
                 bufferCancel.clean('deleteById', $scope.collection, $scope.document._id);
-              }, bufferCancel.timer)
+              }, bufferCancel.timer);
             }
           });
       };
@@ -58,7 +58,7 @@ angular.module('kuzzle.documentsInline')
             if (!response.data.error) {
               document.isDeleted = false;
             }
-          })
+          });
       };
 
       $scope.buildUrlFull = function (document) {
@@ -76,5 +76,5 @@ angular.module('kuzzle.documentsInline')
       },
       controller: 'DocumentToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
-    }
+    };
   }]);

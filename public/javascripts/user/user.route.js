@@ -7,13 +7,13 @@ angular.module('kuzzle.user')
         parent: 'logged',
         url: '/user',
         views: {
-          "bodyView": { templateUrl: '/user' }
+          'bodyView': { templateUrl: '/user' }
         }
       })
       .state('user.browse', {
         url: '/browse',
         views: {
-          "mainView": { templateUrl: '/user/browse' }
+          'mainView': { templateUrl: '/user/browse' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -22,14 +22,14 @@ angular.module('kuzzle.user')
               '/javascripts/common/documentsInline/documentsInline.directive.js',
               '/javascripts/common/documentsInline/userToolbar.directive.js',
               '/javascripts/user/browse.ctrl.js'
-            ])
+            ]);
           }]
         }
       })
       .state('user.create', {
         url: '/add?body',
         views: {
-          "mainView": { templateUrl: '/user/create' }
+          'mainView': { templateUrl: '/user/create' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -45,7 +45,7 @@ angular.module('kuzzle.user')
       .state('user.full', {
         url: '/:user',
         views: {
-          "mainView": { templateUrl: '/user/full' }
+          'mainView': { templateUrl: '/user/full' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -57,6 +57,6 @@ angular.module('kuzzle.user')
             ]);
           }]
         }
-      })
+      });
 
   }]);

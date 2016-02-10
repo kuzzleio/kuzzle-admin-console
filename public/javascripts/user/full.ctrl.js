@@ -70,6 +70,6 @@ angular.module('kuzzle.user')
         userApi.update($scope.user, true, isCreate)
           .then(function () {
             $state.go('user.browse');
-          })
-      }
+          });
+      };
     }]);

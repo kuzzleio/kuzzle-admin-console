@@ -82,5 +82,5 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         }
-      }
+      };
     }]);

@@ -41,7 +41,7 @@ angular.module('kuzzle.documentsInline', [
 
       $scope.afterDelete = function (document) {
         $scope.documents.splice($scope.documents.indexOf(document), 1);
-      }
+      };
 
       $scope.delete = function (document) {
         var index = $scope.documents.indexOf(document);
