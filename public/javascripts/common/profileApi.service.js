@@ -10,7 +10,7 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function () {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchProfiles({}, function (error, profiles) {
+          kuzzleSdk.security.searchProfiles({from: 0, size: 10000}, function (error, profiles) {
             if (error) {
               deferred.reject(error);
               return;
@@ -21,7 +21,7 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        get: function (id) {
+        get: function (id, hydrated) {
           var deferred = $q.defer();
 
           kuzzleSdk.security.getProfile(id, function (error, profile) {
@@ -48,29 +48,32 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           else {
             messageError = 'Error during profile update. Please retry.';
             messageSuccess = 'Profile updated !';
-            profile = kuzzleSdk.security.createProfile(
-              profile.id, profile, {replaceIfExists: true});
           }
 
-          //kuzzleSdk
-          //  .dataCollectionFactory(collection.name)
-          //  .putMapping(collection.schema, function (error) {
-              var error = false; // to delete
+          kuzzleSdk.security.createProfile(
+            profile.id,
+            profile.content,
+            {replaceIfExist: true},
+            function(error, result) {
+
+              console.log(error, result);
+
               if (error) {
                 if (notify) {
                   notification.error(messageError);
                 }
 
                 deferred.reject({error: true, message: error});
-                return deferred.promise; // to delete
+                return;
               }
 
               if (notify) {
                 notification.success(messageSuccess);
               }
 
-              deferred.resolve({error: false});
-            //});
+              deferred.resolve(result);
+            }
+          );
 
           return deferred.promise;
         },

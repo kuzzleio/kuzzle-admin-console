@@ -10,19 +10,27 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function () {
           var deferred = $q.defer();
 
-          deferred.resolve([{
-            _id: 'toto',
-            body: {profile: 'admin'}
-          }]);
+          kuzzleSdk.security.searchUsers({from: 0, size: 10000}, function (error, response) {
+            if (error) {
+              deferred.reject(error);
+              return;
+            }
+
+            deferred.resolve(response.roles);
+          });
 
           return deferred.promise;
         },
         get: function (id) {
           var deferred = $q.defer();
 
-          deferred.resolve({
-            _id: 'toto',
-            body: {profile: 'admin'}
+          kuzzleSdk.security.getUser(id, function (error, role) {
+            if (error) {
+              deferred.reject(error);
+              return;
+            }
+
+            deferred.resolve(role);
           });
 
           return deferred.promise;

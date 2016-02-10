@@ -16,7 +16,7 @@ angular.module('kuzzle.documentsInline')
 
       $scope.editDocument = function () {
 
-        $scope.document.json = $filter('json')($scope.document.body);
+        $scope.document.json = $filter('json')($scope.document.content);
         $scope.document.isEdit = true;
       };
 
@@ -24,14 +24,13 @@ angular.module('kuzzle.documentsInline')
         var profile = {};
 
         try {
-          $scope.document.body = JSON.parse($scope.document.json);
+          $scope.document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          profile = {name: $scope.document._id, body: $scope.document.body};
+          profile = $scope.document;
           profileApi.update(profile, true, false);
         }
         catch (e) {
-          console.error(e);
           notification.error('Error parsing role.');
         }
       };
@@ -48,24 +47,24 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.confirmDelete = function () {
-        profileApi.deleteById($scope.document._id, true)
+        profileApi.deleteById($scope.document.id, true)
           .then(function () {
             $scope.cancelModal();
             $scope.afterDelete();
-          })
+          });
       };
 
       $scope.clone = function () {
-        var body = '';
+        var content = '';
 
         try {
-          body = JSON.stringify($scope.document.body);
+          content = JSON.stringify($scope.document.content);
         }
         catch (e) {
           console.error(e);
         }
 
-        $state.go('profile.create', {body: body});
+        $state.go('profile.create', {content: content});
       };
 
       $scope.cancelModal = function () {
@@ -73,7 +72,7 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.buildUrlFull = function (document) {
-        return $state.href('profile.full', {profile: document._id});
+        return $state.href('profile.full', {profile: document.id});
       };
   }])
   .directive('profileToolbar', [function () {

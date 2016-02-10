@@ -14,19 +14,19 @@ angular.module('kuzzle.profile')
       $scope.isEdit = false;
       $scope.notFoundError = false;
       $scope.profile = {
-        name: $stateParams.profile,
-        body: ''
+        id: $stateParams.profile,
+        content: ''
       };
 
       $scope.init = function (action) {
-        var body;
+        var content;
 
         if (action === 'edit') {
           $scope.isEdit = true;
 
-          profileApi.get($scope.profile.name)
+          profileApi.get($scope.profile.id)
             .then(function (response) {
-              $scope.profile.body = angular.toJson(response.body, 4);
+              $scope.profile.content = angular.toJson(response.content, 4);
             })
             .catch(function () {
               $scope.notFoundError = true;
@@ -34,8 +34,8 @@ angular.module('kuzzle.profile')
         }
         else {
           try {
-            body = JSON.parse($stateParams.body);
-            $scope.profile.body = angular.toJson(body, 4);
+            content = JSON.parse($stateParams.content);
+            $scope.profile.content = angular.toJson(content, 4);
           }
           catch (e) {
           }
@@ -52,14 +52,16 @@ angular.module('kuzzle.profile')
       };
 
       $scope.update = function (isCreate) {
-        var role = {
-          name: $scope.profile.name,
+        var profile = {
+          id: $scope.profile.id,
           body: {}
         };
 
-        if ($scope.profile.body) {
-          try {
+        console.log($scope.profile);
 
+        if ($scope.profile.content) {
+          try {
+            $scope.profile.content = JSON.parse($scope.profile.content);
           }
           catch (e) {
             notification.error('Error parsing the role content.');

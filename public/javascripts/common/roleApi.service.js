@@ -10,7 +10,7 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function () {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchRoles({}, function (error, response) {
+          kuzzleSdk.security.searchRoles({from: 0, size: 10000}, function (error, response) {
             if (error) {
               deferred.reject(error);
               return;

@@ -7,7 +7,8 @@ angular.module('kuzzle.profile')
     $scope.init = function () {
       profileApi.list()
         .then(function (response) {
-          $scope.profiles = response;
+          $scope.total = response.total;
+          $scope.profiles = response.profiles;
         })
         .catch(function (error) {
           console.error(error);

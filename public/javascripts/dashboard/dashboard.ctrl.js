@@ -50,6 +50,7 @@ angular.module('kuzzle.dashboard')
             $scope.serverInfo = response;
             $scope.memoryPercent = computeMemoryUsePercent();
             $scope.cpuPercent = computeCpuUsePercent();
+
             $timeout($scope.refreshServerInfo, 2000);
           });
       };

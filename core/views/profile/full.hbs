@@ -6,7 +6,7 @@
     </div>
 
     <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
-        <p>There is no profile matching the name <strong ng-bind="profile">null</strong>.</p>
+        <p>There is no profile matching the name <strong ng-bind="profile.id">null</strong>.</p>
     </div>
 
     <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
@@ -14,11 +14,11 @@
         <form>
             <div class="form-group">
                 <label for="name">Profile name</label>
-                <input type="text" class="form-control" ng-model="profile.name" id="name" ng-disabled="isEdit">
+                <input type="text" class="form-control" ng-model="profile.id" id="name" ng-disabled="isEdit">
             </div>
             <div class="form-group">
                 <label for="name">Profile content</label>
-                <json-edit content="profile.body"></json-edit>
+                <json-edit content="profile.content"></json-edit>
             </div>
 
             <div class="actions-group">

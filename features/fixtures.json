@@ -8,15 +8,6 @@
     ]
   },
   "%kuzzle": {
-    "users": [
-      { "create": { "_id": "test" } },
-      {
-        "_id": "test",
-        "profile": "admin",
-        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
-        "clearPassword": "test"
-      }
-    ],
     "roles": [
       { "create": { "_id": "role1" } },
       {
@@ -33,8 +24,42 @@
                 }
               }
             }
+          },
+          "*": {
+            "collections": {
+              "*": {
+                "controllers": {
+                  "auth": {
+                    "actions": {
+                      "logout": true,
+                      "getCurrentUser": true
+                    }
+                  }
+                }
+              }
+            }
           }
         }
+      }
+    ],
+    "profiles": [
+      { "create": { "_id": "myprofile" } },
+      {
+        "roles": ["role1"]
+      }
+    ],
+    "users": [
+      { "create": { "_id": "test" } },
+      {
+        "profile": "admin",
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      },
+      { "create": { "_id": "test1" } },
+      {
+        "profile": "myprofile",
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
       }
     ]
   }
