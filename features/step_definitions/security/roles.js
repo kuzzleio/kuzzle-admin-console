@@ -164,7 +164,13 @@ module.exports = function () {
       .waitForVisible('.ui-notification')
       .getText('.ui-notification .message')
       .then(text => {
-        assert.equal(text, 'Role updated !');
+        var textToSearch = 'Role updated !';
+        if (typeof text == 'string') {
+          assert.equal(text, textToSearch);
+        }
+        if (typeof text == 'object' && Array.isArray(text)) {
+          assert(text.indexOf(textToSearch) >= 0);
+        }
       })
       .call(callback);
     });
