@@ -16,16 +16,16 @@ angular.module('kuzzle.dashboard', [
 
       /* eslint-disable quotes */
       if (seconds < 60) {
-        dateFormat = "s's'";
+        dateFormat = 's\'s\'';
       }
       else if (seconds < (60*60)) {
-        dateFormat = "m'm' s's'";
+        dateFormat = 'm\'m\' s\'s\'';
       }
       else if (seconds < (60*60*24)) {
-        dateFormat = "h'h' m'm' s's'";
+        dateFormat = 'h\'h\' m\'m\' s\'s\'';
       }
       else {
-        dateFormat = "d'd' h'h' m'm'";
+        dateFormat = 'd\'d\' h\'h\' m\'m\'';
       }
       /* eslint-enable quotes */
 
