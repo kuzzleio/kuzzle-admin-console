@@ -51,7 +51,7 @@ angular.module('kuzzle.documentsInline')
         roleApi.deleteById($scope.document.id, true)
           .then(function () {
             $scope.cancelModal();
-            $scope.afterDelete();
+            $scope.afterDelete({document: $scope.document});
           });
       };
 
