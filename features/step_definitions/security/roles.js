@@ -98,10 +98,14 @@ module.exports = function () {
       .pause(500)
       .getUrl()
       .then(url => {
-        var urlRegexp = new RegExp(world.baseUrl + '/#/role/browse$', 'g');
-        assert(url.match(urlRegexp));
+        var expectedUrl = world.baseUrl + '/#/role/browse$';
+        var urlRegexp = new RegExp(expectedUrl, 'g');
+        assert(
+          url.match(urlRegexp),
+          'Expected url to be ' + expectedUrl + ', found ' + url
+        );
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I am on the full view edit role page$/, function (callback) {
@@ -109,10 +113,14 @@ module.exports = function () {
       .pause(500)
       .getUrl()
       .then(url => {
-        var urlRegexp = new RegExp(world.baseUrl + '/#/role/[A-Za-z0-9_]+', 'g');
-        assert(url.match(urlRegexp));
+        var expectedUrl = world.baseUrl + '/#/role/';
+        var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I am on the add role page$/, function (callback) {
@@ -120,10 +128,14 @@ module.exports = function () {
       .pause(500)
       .getUrl()
       .then(url => {
-        var urlRegexp = new RegExp(world.baseUrl + '/#/role/add/?[A-Za-z0-9_]*', 'g');
-        assert(url.match(urlRegexp));
+          var expectedUrl = world.baseUrl + '/#/role/add/';
+        var urlRegexp = new RegExp(expectedUrl + '?[A-Za-z0-9_-]*', 'g');
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I ?(do not)* see "([^$]*)" in the roles list$/, function (not, roleName, callback) {
