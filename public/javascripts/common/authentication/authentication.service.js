@@ -13,7 +13,6 @@ angular.module('kuzzle.authentication')
 
     var onLoginSuccess = function () {
       kuzzle.whoAmI(function (err, res) {
-        console.log(res);
         if (err || !res) {
           console.log('Unable to retrieve user information', err);
           return;
