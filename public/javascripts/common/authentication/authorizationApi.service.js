@@ -24,7 +24,27 @@ angular.module('kuzzle.authorization', [])
           }, false);
         },
         canCreateCollection: function (index) {
+          var userProfile = session.user.content.profile;
+          if (!index) {
+            throw new Error('[canCreateCollection] Missing argument');
+          }
 
+          if (!hasUser(session.user) || !hasRole(session.user)) {
+            return false;
+          }
+
+          return userProfile.content.roles.reduce(function(accumulator, role) {
+            var roleIndexes = role.content.indexes;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              if ((index === indexIdentifier || indexIdentifier === '*' && index !== kuzzleCoreIndex)) {
+
+                return indexAccumulator || !!roleIndexes[indexIdentifier].collections._canCreate;
+              }
+              return indexAccumulator;
+            }, false);
+
+            return accumulator || roleHasCollectionCreate;
+          }, false);
         },
         canDeleteIndex: function (index) {
         },
