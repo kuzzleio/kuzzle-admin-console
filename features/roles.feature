@@ -54,3 +54,5 @@ Feature: Test the roles CRUD page
     And I do not see the deleted role in the roles list
 
   Scenario: The user is unable to edit an unexisting role.
+    When I go to the full view of an unexisting Role
+    Then I see a message saying the role does not exist

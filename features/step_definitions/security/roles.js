@@ -12,6 +12,12 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I go to the full view of an unexisting Role$/, function (callback) {
+    browser
+      .url('/#/role/non-existing')
+      .call(callback);
+  });
+
   this.When(/^I click the full view edit button of the first role$/, function (callback) {
     browser
       .waitForVisible('documents-inline .row:first-child .icons a.edit-document.full-view', 1000)
@@ -62,7 +68,7 @@ module.exports = function () {
       .waitForVisible('#modal-delete-role input', 1000)
       .setValue('#modal-delete-role input', this.deletedRoleName)
       .call(callback);
-  })
+  });
 
   this.When(/^I confirm the deletion$/, function (callback) {
     browser
@@ -136,26 +142,39 @@ module.exports = function () {
       .then(el => {
         if (typeof el == 'string') {
           if (not) {
-            assert.notEqual(el, roleName);
+            assert.notEqual(el, roleName, 'Expected not to find ' + roleName + ' in list');
           } else {
-            assert.equal(el, roleName);
+            assert.equal(el, roleName, 'Expected to find ' + roleName + ' in list, found ' + el);
           }
         }
         if (typeof el == 'object' && Array.isArray(el)) {
           if (not) {
-            assert(el.indexOf(roleName) === -1);
+            assert(el.indexOf(roleName) === -1, 'Expected not to find ' + roleName + ' in list');
           } else {
-            assert(el.indexOf(roleName) >= 0);
+            assert(el.indexOf(roleName) >= 0, 'Expected to find ' + roleName + ' in list ' + el);
           }
         }
       })
-      .call(callback)
-  }
+      .call(callback);
+  };
 
   this.Then(/^I see the inline editor of the first role$/, function (callback) {
     browser
       .waitForVisible('documents-inline .row:first-child json-edit', 1000)
-      .call(callback)
+      .call(callback);
+  });
+
+  this.Then(/^I see a message saying the role does not exist$/, function (callback) {
+    browser
+      .waitForVisible('.role-not-found', 1000)
+      .getText('.role-not-found')
+      .then(text => {
+        assert(
+          text.match(/^There is no role matching the name ([\w-]+)\.$/),
+          'Expected error message, found ' + text
+        );
+      })
+      .call(callback);
   });
 
   this.Then(/^I get a successful update notification$/, function (callback) {
@@ -166,10 +185,10 @@ module.exports = function () {
       .then(text => {
         var textToSearch = 'Role updated !';
         if (typeof text == 'string') {
-          assert.equal(text, textToSearch);
+          assert.equal(text, textToSearch, 'Expected to receive a successful notification, found ' + text);
         }
         if (typeof text == 'object' && Array.isArray(text)) {
-          assert(text.indexOf(textToSearch) >= 0);
+          assert(text.indexOf(textToSearch) >= 0, 'Expected to receive a successful notification, found ' + text);
         }
       })
       .call(callback);
