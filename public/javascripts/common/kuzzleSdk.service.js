@@ -7,7 +7,7 @@ angular.module('kuzzle.kuzzleSdk', [])
     return $location.$$host + ':7512';
   }])
   .factory('kuzzleCoreIndex', function() {
-    if (typeof config !== 'undefined' && config.kuzzleUrl) {
+    if (typeof config !== 'undefined' && config.kuzzleCoreIndex) {
       return config.kuzzleCoreIndex;
     }
 
