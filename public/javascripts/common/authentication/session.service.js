@@ -6,6 +6,7 @@ angular.module('kuzzle.authentication')
     jwtToken: null,
     userId: null,
     userProfile: null,
+    user: null
   };
 
   this.create = function (jwtToken, userId, userProfile) {
@@ -18,7 +19,6 @@ angular.module('kuzzle.authentication')
 
   this.setProfile = function (profile) {
     this.session.userProfile = profile;
-    this.persist();
   };
 
   this.setUserId = function (id) {
@@ -26,19 +26,22 @@ angular.module('kuzzle.authentication')
     this.persist();
   };
 
+  this.setUser = function (user) {
+    this.user = user;
+  };
+
   this.destroy = function () {
     this.session.jwtToken = null;
     this.session.userId = null;
     this.session.userProfile = null;
+    this.session.user = null;
 
     $cookies.remove(COOKIE_KEY);
   };
 
   this.persist = function () {
     $cookies.put(COOKIE_KEY, JSON.stringify({
-      jwtToken: this.session.jwtToken,
-      userId: this.session.userId,
-      userProfile: this.session.userProfile,
+      jwtToken: this.session.jwtToken
     }));
   };
 
@@ -50,8 +53,6 @@ angular.module('kuzzle.authentication')
     var sessionFromCookie = JSON.parse($cookies.get(COOKIE_KEY));
 
     this.session.jwtToken = sessionFromCookie.jwtToken;
-    this.session.userId = sessionFromCookie.userId;
-    this.session.userProfile = sessionFromCookie.userProfile;
     return true;
   };
 }]);

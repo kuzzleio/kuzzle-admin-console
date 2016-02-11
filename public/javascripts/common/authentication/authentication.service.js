@@ -12,17 +12,19 @@ angular.module('kuzzle.authentication')
 
     var onLoginSuccess = function () {
       kuzzle.whoAmI(function (err, res) {
-        if (err || !res.result) {
+        console.log(res);
+        if (err || !res) {
           console.log('Unable to retrieve user information', err);
           return;
         }
 
-        if (res.result._id) {
-          Session.setUserId(res.result._id);
+        if (res.id) {
+          Session.setUserId(res.id);
         }
 
-        if (res.result._source.profile) {
-          Session.setProfile(res.result._source.profile);
+        if (res.content.profile) {
+          Session.setProfile(res.content.profile);
+          Session.setUser(res);
         }
       });
       Session.create(kuzzle.jwtToken);
