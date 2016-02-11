@@ -8,34 +8,23 @@ angular.module('kuzzle.authorization', [])
       };
 
       var hasUser = function (user) {
-        return session.user.id;
+        return !!user.id;
       };
 
       return {
-        canReadIndex: function (index) {
+        canCreateIndex: function () {
           var userProfile = session.user.content.profile;
-          if (!index) {
-            throw '[canReadIndex] Missing argument';
-          }
 
           if (!hasUser(session.user) || !hasRole(session.user)) {
             return false;
           }
 
           return userProfile.content.roles.reduce(function(accumulator, role) {
-            var roleIndexes = role.content.indexes;
-            var roleHasIndexRead = Object.keys(roleIndexes).reduce(function(indexAccumulator, indexIdentifier) {
-              if ((index === indexIdentifier || indexIdentifier === '*' && index !== kuzzleCoreIndex)) {
-
-                return indexAccumulator || !!roleIndexes[indexIdentifier]._canRead;
-              }
-              return indexAccumulator;
-            },false);
-
-            return accumulator || !!roleHasIndexRead;
+            return accumulator || !!role.content.indexes._canCreate;
           }, false);
         },
-        canReadCollection: function (index, collection) {
+        canCreateCollection: function (index) {
+
         },
         canDeleteIndex: function (index) {
         },

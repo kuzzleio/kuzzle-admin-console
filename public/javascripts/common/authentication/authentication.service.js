@@ -26,7 +26,6 @@ angular.module('kuzzle.authentication')
         if (res.content.profile) {
           Session.setProfile(res.content.profile);
           Session.setUser(res);
-          console.log(authorization.canReadIndex('bla'));
         }
       });
       Session.create(kuzzle.jwtToken);
