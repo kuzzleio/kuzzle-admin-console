@@ -7,7 +7,8 @@ angular.module('kuzzle.authentication')
   'AUTH_EVENTS',
   'kuzzleSdk',
   'indexesApi',
-  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi) {
+  'authorizationApi',
+  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi, authorization) {
     var authService = {};
 
     var onLoginSuccess = function () {
@@ -25,6 +26,7 @@ angular.module('kuzzle.authentication')
         if (res.content.profile) {
           Session.setProfile(res.content.profile);
           Session.setUser(res);
+          console.log(authorization.canReadIndex('bla'));
         }
       });
       Session.create(kuzzle.jwtToken);
