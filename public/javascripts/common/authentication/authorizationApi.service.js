@@ -13,18 +13,15 @@ angular.module('kuzzle.authorization', [])
 
       return {
         canCreateIndex: function () {
-          var userProfile = session.user.content.profile;
-
           if (!hasUser(session.user) || !hasRole(session.user)) {
             return false;
           }
 
-          return userProfile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
             return accumulator || !!role.content.indexes._canCreate;
           }, false);
         },
         canCreateCollection: function (index) {
-          var userProfile = session.user.content.profile;
           if (!index) {
             throw new Error('[canCreateCollection] Missing argument');
           }
@@ -33,7 +30,7 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return userProfile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
             var roleIndexes = role.content.indexes;
             var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
               if ((index === indexIdentifier || indexIdentifier === '*' && index !== kuzzleCoreIndex)) {
@@ -60,7 +57,9 @@ angular.module('kuzzle.authorization', [])
     }]);
 
 /*
-content.roles[...].content.indexes[...].canRead
+content.roles[...].content.indexes.canCreate
 content.roles[...].content.indexes[...].canDelete
+ content.roles[...].content.indexes[...].collections.canCreate
+ content.roles[...].content.indexes[...].collections[...].canDelete
 content.roles[...].content.indexes[...].collections[...].controllers[...].actions[...]
 */
