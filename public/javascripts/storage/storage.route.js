@@ -51,12 +51,12 @@ angular.module('kuzzle.storage')
             return $ocLazyLoad.load([
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
-              '/javascripts/common/documentsInline/documentToolbar.directive.js',
               '/javascripts/common/basicFilter/basicFilter.directive.js',
               '/javascripts/common/filters/filters.module.js'
             ])
               .then(function () {
                 return $ocLazyLoad.load([
+                  '/javascripts/common/documentsInline/documentToolbar.directive.js',
                   '/javascripts/storage/browseDocuments.controller.js',
                   '/javascripts/common/filters/filters.directive.js',
                   '/javascripts/common/filters/filters.service.js'
