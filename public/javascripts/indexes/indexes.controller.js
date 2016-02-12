@@ -9,7 +9,7 @@ angular.module('kuzzle.indexes')
     function ($scope, $stateParams, $state, indexesApi, $window) {
 
       $scope.init = function () {
-        $scope.canCreateIndex = authorization.canCreateIndex();
+        $scope.canCreateIndex = $scope.authorizationApi.canCreateIndex();
         $scope.indexData = indexesApi.data;
 
         indexesApi.list();
