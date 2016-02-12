@@ -7,8 +7,7 @@ angular.module('kuzzle.authentication')
   'AUTH_EVENTS',
   'kuzzleSdk',
   'indexesApi',
-  'authorizationApi',
-  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi, authorization) {
+  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi) {
     var authService = {};
 
     var onLoginSuccess = function () {
