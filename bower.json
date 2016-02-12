@@ -32,7 +32,7 @@
     "angular-schema-form": "~0.8.12",
     "angular-schema-form-bootstrap": "~0.2.0",
     "leaflet": "0.7.x",
-    "kuzzle-sdk": "kuz-343-security-object",
+    "kuzzle-sdk": "1.6.1",
     "angular-scroll-glue": "~2.0.6",
     "angular-cookies": "~1.4.8",
     "highcharts": "4.2.1",
