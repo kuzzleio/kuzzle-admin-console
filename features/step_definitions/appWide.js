@@ -13,7 +13,7 @@ module.exports = function () {
 
   this.Then(/^I get a disconnection notification$/, function (callback) {
     browser
-      pause(1000)
+      .pause(1000)
       .waitForVisible('.ui-notification h3')
       .getText('.ui-notification h3')
       .then(text => {

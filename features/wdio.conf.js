@@ -28,7 +28,8 @@ exports.config = {
     './features/realtime.feature',
     './features/browseData.feature',
     './features/dashboard.feature',
-    './features/indexes.feature'
+    './features/indexes.feature',
+    './features/roles.feature'
   ],
   // Patterns to exclude.
   exclude: [
@@ -115,11 +116,13 @@ exports.config = {
       './features/step_definitions/common/forms.js',
       './features/step_definitions/common/screenshot.js',
       './features/step_definitions/common/wait.js',
+      './features/step_definitions/common/documentsInline.js',
 
       './features/step_definitions/storage/browseData.js',
       './features/step_definitions/dashboard/dashboard.js',
       './features/step_definitions/realtime/realtime.js',
-      './features/step_definitions/indexes/indexes.js'
+      './features/step_definitions/indexes/indexes.js',
+      './features/step_definitions/security/roles.js'
     ]
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,

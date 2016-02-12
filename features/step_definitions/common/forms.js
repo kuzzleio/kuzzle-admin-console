@@ -69,4 +69,34 @@ module.exports = function () {
       })
       .call(callback);
   });
+
+  this.Then(/^The input "([^"]*)" is ?(not)* disabled$/, function (name, not, callback) {
+    browser
+    browser
+      .getAttribute('input[id="' + name +'"]', 'disabled')
+      .then(function(value) {
+        if (not) {
+          assert.equal(value, null);
+        }
+        else {
+          assert.equal(value, 'true');
+        }
+      })
+      .call(callback);
+  });
+
+  this.Then(/^The input "([^"]*)" is ?(not)* empty$/, function (name, not, callback) {
+    browser
+    browser
+      .getText('input[id="' + name +'"]')
+      .then(function(value) {
+        if (not) {
+          assert(value);
+        }
+        else {
+          assert(!value);
+        }
+      })
+      .call(callback);
+  });
 };

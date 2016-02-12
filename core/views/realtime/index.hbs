@@ -9,13 +9,14 @@
             Collection
             <collections-drop-down-search
                 label=""
-                selected="stateParams.collection"
+                selected="forms.collection"
                 create-label="New collection"
                 items="forms.collections"
-                current-item="stateParams.collection"
+                current-item="forms.collection"
                 on-click-create="onCreateCollection(collection, index)"
                 on-click-item="onSelectCollection(item)"
-                placeholder="Find a collection">
+                placeholder="Find a collection"
+                select-volatile-collections="true">
             </collections-drop-down-search>
 
             <div class="btn-group" ng-if="forms.collection">

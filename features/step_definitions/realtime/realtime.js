@@ -25,28 +25,43 @@ module.exports = function () {
       .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
       .pause(1000)
       .click('collections-drop-down-search .dropdown-toggle')
-      .call(callback)
+      .call(callback);
   });
 
   this.Given(/^I click on a collection$/, function (callback) {
+    var selectedCollection = null;
+
     browser
       .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
+      .getText('collections-drop-down-search .dropdown-menu li:last-child a')
+      .then(text => {
+        selectedCollection = text;
+      })
       .click('collections-drop-down-search .dropdown-menu li:last-child a')
-      .call(callback)
+      .pause(200)
+      .getText('collections-drop-down-search .dropdown-toggle')
+      .then(text => {
+        assert.equal(
+          text,
+          selectedCollection,
+          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
+        );
+      })
+      .call(callback);
   });
 
   this.Given(/^I subscribe to the collection events$/, function (callback) {
     browser
       .waitForVisible('.filters button.btn-subscribe', 1000)
       .click('.filters button.btn-subscribe')
-      .call(callback)
+      .call(callback);
   });
 
   this.Given(/^I unsubscribe from the collection$/, function (callback) {
     browser
       .waitForVisible('.filters button.btn-unsubscribe', 1000)
       .click('.filters button.btn-unsubscribe')
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I am subscribed$/, function (callback) {
@@ -69,7 +84,7 @@ module.exports = function () {
     browser
       .elements('messages ul.message-list li.message-item')
       .then((response) => {
-        assert.equal(response.value.length, 0, "The message log is not empty");
+        assert.equal(response.value.length, 0, 'The message log is not empty');
       })
       .call(callback);
   });
@@ -82,7 +97,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, 'Creating new document');
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification that the document has been created$/, function (callback) {
@@ -97,7 +112,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, world.currentDocumentId);
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification that the document has been updated$/, function (callback) {
@@ -112,7 +127,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, world.currentDocumentId);
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification that the document is being deleted$/, function (callback) {
@@ -123,7 +138,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, 'Deleting document');
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification that the document has been deleted$/, function (callback) {
@@ -138,7 +153,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, world.currentDocumentId);
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification about the volatile message$/, function (callback) {
@@ -147,7 +162,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, 'Received volatile message');
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification about the new user joining the room$/, function (callback) {
@@ -157,7 +172,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, 'A new user is listening to this room');
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I receive the notification about the user leaving the room$/, function (callback) {
@@ -167,7 +182,7 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, 'A user exited this room');
       })
-      .call(callback)
+      .call(callback);
   });
 
   this.Given(/^I create a persistent document$/, function (callback) {

@@ -5,7 +5,7 @@
                 <!-- title col -->
                 <!-- collection/documents -->
                 <div class="col-sm-2 document-id ellipsis"
-                     ng-show="collection"
+                     ng-if="collection"
                      uib-popover="{{document._id}}" popover-placement="top" popover-animation="false">
                     <span title="Display the whole ID" ng-bind="document._id"></span>
                 </div>
@@ -13,17 +13,17 @@
 
                 <!-- roles -->
                 <div class="col-sm-2 document-id ellipsis"
-                     ng-show="role">
+                     ng-if="role">
                     <span title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
                 <!-- /roles -->
 
                 <!-- profiles -->
-                <div class="col-sm-1 document-id ellipsis" ng-show="profile">
+                <div class="col-sm-1 document-id ellipsis" ng-if="profile">
                     <span class="" title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
 
-                <div class="col-sm-1" ng-show="profile">
+                <div class="col-sm-1" ng-if="profile">
                     <div class="btn-group-vertical btn-group-xs">
                         <button type="button" class="btn btn-default"
                                 ng-repeat="role in document.content.roles"
@@ -34,11 +34,11 @@
                 <!-- /profiles -->
 
                 <!-- users -->
-                <div class="col-sm-1 document-id ellipsis" ng-show="user">
+                <div class="col-sm-1 document-id ellipsis" ng-if="user">
                     <span title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
 
-                <div class="col-sm-1" ng-show="user">
+                <div class="col-sm-1" ng-if="user">
                     <div class="btn-group-vertical btn-group-xs">
                         <button type="button" class="btn btn-default"
                                 ui-sref="profile.full({profile: document.content.profile})"
@@ -50,8 +50,8 @@
 
                 <!-- edit col -->
                 <div class="col-sm-8">
-                    <json-formatter open="0" json="document.body" ng-show="!document.isEdit && collection"></json-formatter>
-                    <json-formatter open="0" json="document.content" ng-show="!document.isEdit && (role || profile || user)"></json-formatter>
+                    <json-formatter open="0" json="document.body" ng-if="!document.isEdit && collection"></json-formatter>
+                    <json-formatter open="0" json="document.content" ng-if="!document.isEdit && (role || profile || user)"></json-formatter>
 
                     <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
                 </div>
@@ -67,7 +67,7 @@
                 <role-toolbar
                         ng-if="role"
                         can-edit="canEdit"
-                        after-delete="afterDelete()"
+                        after-delete="afterDelete(document)"
                         document="document">
                 </role-toolbar>
                 <profile-toolbar
