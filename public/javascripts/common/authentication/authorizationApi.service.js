@@ -21,6 +21,31 @@ angular.module('kuzzle.authorization', [])
             return accumulator || !!role.content.indexes._canCreate;
           }, false);
         },
+        hasRightsOnIndex: function (index) {
+          if (!index) {
+            throw new Error('[hasRightsOnIndex] Missing argument');
+          }
+
+          if (!hasUser(session.user) || !hasRole(session.user)) {
+            return false;
+          }
+
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+            var roleIndexes = role.content.indexes;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              if ((index === indexIdentifier ||
+                indexIdentifier === '*' &&
+                index !== kuzzleCoreIndex) &&
+                indexIdentifier.charAt(0) !== '_'
+              ) {
+                return true;
+              }
+              return indexAccumulator;
+            }, false);
+
+            return accumulator || roleHasCollectionCreate;
+          }, false);
+        },
         canCreateCollection: function (index) {
           if (!index) {
             throw new Error('[canCreateCollection] Missing argument');
