@@ -1,8 +1,18 @@
 angular.module('kuzzle.role')
 
+  .config(['JSONFormatterConfigProvider', function (JSONFormatterConfigProvider) {
+    JSONFormatterConfigProvider.hoverPreviewEnabled = true;
+    JSONFormatterConfigProvider.hoverPreviewArrayCount = 5;
+  }])
+
   .controller('RoleBrowseCtrl', ['$scope', 'roleApi', function ($scope, roleApi) {
 
-    $scope.roles = null;
+    // Manage pagination
+    $scope.currentPage = 1;
+    $scope.total = 0;
+    $scope.limit = 10000;
+
+    $scope.roles = [];
     $scope.collection = 'roles';
 
     $scope.init = function () {
@@ -10,7 +20,7 @@ angular.module('kuzzle.role')
     };
 
     $scope.loadRoles = function () {
-      roleApi.list()
+      roleApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
         .then(function (response) {
           $scope.roles = response;
         })
@@ -18,4 +28,6 @@ angular.module('kuzzle.role')
           console.error(error);
         });
     };
+
+    $scope.$on('$viewContentLoaded', $scope.init);
   }]);

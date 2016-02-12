@@ -7,10 +7,12 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
     '$q',
     function (kuzzleSdk, $http, notification, $q) {
       return {
-        list: function () {
+        list: function (from, size) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchProfiles({from: 0, size: 10000}, function (error, profiles) {
+          kuzzleSdk.security.searchProfiles({from: from, size: size}, function (error, profiles) {
+
+            console.log(profiles);
             if (error) {
               deferred.reject(error);
               return;
@@ -68,7 +70,11 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
                 notification.success(messageSuccess);
               }
 
-              deferred.resolve(result);
+              // We wait 1s to ensure Elastic Search properly indexes the new
+              // profile.
+              setTimeout(function () {
+                deferred.resolve(result);
+              }, 1000);
             }
           );
 
@@ -82,5 +88,5 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         }
-      }
+      };
     }]);

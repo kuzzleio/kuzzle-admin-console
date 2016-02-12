@@ -7,35 +7,37 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
     '$q',
     function (kuzzleSdk, $http, notification, $q) {
       return {
-        list: function () {
+        list: function (from, size) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchUsers({from: 0, size: 10000}, function (error, response) {
+          kuzzleSdk.security.searchUsers({from: from, size: size}, function (error, response) {
             if (error) {
               deferred.reject(error);
               return;
             }
 
-            deferred.resolve(response.roles);
+            deferred.resolve(response);
           });
 
           return deferred.promise;
         },
-        get: function (id) {
+        get: function (id, hydrate) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.getUser(id, function (error, role) {
+          kuzzleSdk.security.getUser(id, hydrate, function (error, user) {
             if (error) {
               deferred.reject(error);
               return;
             }
+            console.log("get", user);
 
-            deferred.resolve(role);
+            deferred.resolve(user);
           });
 
           return deferred.promise;
         },
-        update: function (role, notify, isCreate) {
+        update: function (user, notify, isCreate) {
+          console.log('update', user);
           var
             deferred = $q.defer(),
             messageSuccess,
@@ -50,25 +52,31 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             messageSuccess = 'User updated !';
           }
 
-          //kuzzleSdk
-          //  .dataCollectionFactory(collection.name)
-          //  .putMapping(collection.schema, function (error) {
-              var error = false; // to delete
+          kuzzleSdk.security.createUser(
+            user.id,
+            user.content,
+            {replaceIfExist: true},
+            function(error, result) {
               if (error) {
                 if (notify) {
                   notification.error(messageError);
                 }
 
                 deferred.reject({error: true, message: error});
-                return deferred.promise; // to delete
+                return;
               }
 
               if (notify) {
                 notification.success(messageSuccess);
               }
 
-              deferred.resolve({error: false});
-            //});
+              // We wait 1s to ensure Elastic Search properly indexes the new
+              // user.
+              setTimeout(function () {
+                deferred.resolve(result);
+              }, 1000);
+            }
+          );
 
           return deferred.promise;
         },
@@ -80,5 +88,5 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         }
-      }
+      };
     }]);

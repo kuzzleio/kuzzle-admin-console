@@ -14,19 +14,19 @@ angular.module('kuzzle.user')
       $scope.isEdit = false;
       $scope.notFoundError = false;
       $scope.user = {
-        name: $stateParams.user,
-        body: ''
+        id: $stateParams.user,
+        content: ''
       };
 
       $scope.init = function (action) {
-        var body;
+        var content;
 
         if (action === 'edit') {
           $scope.isEdit = true;
 
-          userApi.get($scope.user.name)
+          userApi.get($scope.user.id)
             .then(function (response) {
-              $scope.user.body = angular.toJson(response.body, 4);
+              $scope.user.content = angular.toJson(response.content, 4);
             })
             .catch(function () {
               $scope.notFoundError = true;
@@ -34,10 +34,11 @@ angular.module('kuzzle.user')
         }
         else {
           try {
-            body = JSON.parse($stateParams.body);
-            $scope.user.body = angular.toJson(body, 4);
+            content = JSON.parse($stateParams.content);
+            $scope.user.content = angular.toJson(content, 4);
           }
           catch (e) {
+            console.log(e);
           }
         }
       };
@@ -52,14 +53,14 @@ angular.module('kuzzle.user')
       };
 
       $scope.update = function (isCreate) {
-        var role = {
-          name: $scope.user.name,
-          body: {}
+        var user = {
+          id: $scope.user.id,
+          content: {}
         };
 
-        if ($scope.user.body) {
+        if ($scope.user.content) {
           try {
-            role.body = JSON.parse($scope.user.body);
+            user.content = JSON.parse($scope.user.content);
           }
           catch (e) {
             notification.error('Error parsing the user content.');
@@ -67,9 +68,9 @@ angular.module('kuzzle.user')
           }
         }
 
-        userApi.update($scope.user, true, isCreate)
+        userApi.update(user, true, isCreate)
           .then(function () {
             $state.go('user.browse');
-          })
-      }
+          });
+      };
     }]);

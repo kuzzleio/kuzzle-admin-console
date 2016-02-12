@@ -15,6 +15,7 @@ angular.module('kuzzle.dashboard', [
       date = new Date(0, 0, 0).setSeconds(seconds);
 
       /* eslint-disable quotes */
+      /* jshint ignore:start */
       if (seconds < 60) {
         dateFormat = "s's'";
       }
@@ -28,6 +29,7 @@ angular.module('kuzzle.dashboard', [
         dateFormat = "d'd' h'h' m'm'";
       }
       /* eslint-enable quotes */
+      /* jshint ignore:end */
 
       return $filter('date')(date, dateFormat);
     };

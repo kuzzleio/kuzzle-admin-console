@@ -1,9 +1,9 @@
 <div class="modal-header">
-    <h3 class="modal-title"><strong>Delete</strong> user <span ng-bind="document._id"></span></h3>
+    <h3 class="modal-title"><strong>Delete</strong> user <span ng-bind="document.id"></span></h3>
 </div>
 <div class="modal-body">
     <p>This action CANNOT be undone.</p>
-    <p>This will permanently <strong>delete</strong> the user <strong ng-bind="document._id"></strong>.</p>
+    <p>This will permanently <strong>delete</strong> the user <strong ng-bind="document.id"></strong>.</p>
     <p></p>
     <p>Please type in the id of the user to confirm.</p>
 
@@ -13,7 +13,7 @@
 </div>
 <div class="modal-footer">
     <div class="actions-group">
-        <button class="btn btn-danger control" type="button" ng-click="confirmDelete()" ng-disabled="document._id !== deleteName">
+        <button class="btn btn-danger control" type="button" ng-click="confirmDelete()" ng-disabled="document.id !== deleteName">
             I really want to remove this user
         </button>
         <a class="control" ng-click="cancelModal()">Cancel</a>

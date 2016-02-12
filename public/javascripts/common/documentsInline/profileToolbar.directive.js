@@ -74,7 +74,8 @@ angular.module('kuzzle.documentsInline')
       $scope.buildUrlFull = function (document) {
         return $state.href('profile.full', {profile: document.id});
       };
-  }])
+    }
+  ])
   .directive('profileToolbar', [function () {
     return {
       restrict: 'E',
@@ -85,5 +86,5 @@ angular.module('kuzzle.documentsInline')
       },
       controller: 'ProfileToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
-    }
+    };
   }]);

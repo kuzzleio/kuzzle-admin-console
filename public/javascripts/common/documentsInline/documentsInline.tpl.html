@@ -3,17 +3,22 @@
         <div class="panel-body">
             <div class="row">
                 <!-- title col -->
+                <!-- collection/documents -->
                 <div class="col-sm-2 document-id ellipsis"
                      ng-show="collection"
                      uib-popover="{{document._id}}" popover-placement="top" popover-animation="false">
                     <span title="Display the whole ID" ng-bind="document._id"></span>
                 </div>
+                <!-- /collection/documents -->
 
+                <!-- roles -->
                 <div class="col-sm-2 document-id ellipsis"
                      ng-show="role">
                     <span title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
+                <!-- /roles -->
 
+                <!-- profiles -->
                 <div class="col-sm-1 document-id ellipsis" ng-show="profile">
                     <span class="" title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
@@ -26,12 +31,21 @@
                                 ng-bind="role"></button>
                     </div>
                 </div>
+                <!-- /profiles -->
 
-                <div class="col-sm-2 document-id ellipsis"
-                     ng-show="user"
-                     uib-popover="{{document.content.profile}}" popover-placement="right" popover-animation="false">
+                <!-- users -->
+                <div class="col-sm-1 document-id ellipsis" ng-show="user">
                     <span title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
+
+                <div class="col-sm-1" ng-show="user">
+                    <div class="btn-group-vertical btn-group-xs">
+                        <button type="button" class="btn btn-default"
+                                ui-sref="profile.full({profile: document.content.profile})"
+                                ng-bind="document.content.profile"></button>
+                    </div>
+                </div>
+                <!-- users -->
                 <!-- /title col -->
 
                 <!-- edit col -->

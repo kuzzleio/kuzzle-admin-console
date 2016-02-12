@@ -60,6 +60,6 @@ angular.module('kuzzle.role')
             ]);
           }]
         }
-      })
+      });
 
   }]);

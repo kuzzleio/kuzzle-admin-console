@@ -53,9 +53,14 @@ angular.module('kuzzle.profile')
       };
 
       $scope.update = function (isCreate) {
+        var profile = {
+          id: $scope.profile.id,
+          content: {}
+        };
+
         if ($scope.profile.content) {
           try {
-            $scope.profile.content = JSON.parse($scope.profile.content);
+            profile.content = JSON.parse($scope.profile.content);
           }
           catch (e) {
             notification.error('Error parsing the role content.');
@@ -63,7 +68,7 @@ angular.module('kuzzle.profile')
           }
         }
 
-        profileApi.update($scope.profile, true, isCreate)
+        profileApi.update(profile, true, isCreate)
           .then(function () {
             $state.go('profile.browse');
           });

@@ -16,7 +16,7 @@ angular.module('kuzzle.documentsInline')
 
       $scope.editDocument = function () {
 
-        $scope.document.json = $filter('json')($scope.document.body);
+        $scope.document.json = $filter('json')($scope.document.content);
         $scope.document.isEdit = true;
       };
 
@@ -24,10 +24,10 @@ angular.module('kuzzle.documentsInline')
         var user = {};
 
         try {
-          $scope.document.body = JSON.parse($scope.document.json);
+          $scope.document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          user = {name: $scope.document._id, body: $scope.document.body};
+          user = {id: $scope.document.id, content: $scope.document.content};
           userApi.update(user, true, false);
         }
         catch (e) {
@@ -48,24 +48,24 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.confirmDelete = function () {
-        userApi.deleteById($scope.document._id, true)
+        userApi.deleteById($scope.document.id, true)
           .then(function () {
             $scope.cancelModal();
             $scope.afterDelete();
-          })
+          });
       };
 
       $scope.clone = function () {
-        var body = '';
+        var content = '';
 
         try {
-          body = JSON.stringify($scope.document.body);
+          content = JSON.stringify($scope.document.content);
         }
         catch (e) {
           console.error(e);
         }
 
-        $state.go('user.create', {body: body});
+        $state.go('user.create', {body: content});
       };
 
       $scope.cancelModal = function () {
@@ -73,9 +73,10 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.buildUrlFull = function (document) {
-        return $state.href('user.full', {user: document._id});
+        return $state.href('user.full', {user: document.id});
       };
-  }])
+    }
+  ])
   .directive('userToolbar', [function () {
     return {
       restrict: 'E',
@@ -86,5 +87,5 @@ angular.module('kuzzle.documentsInline')
       },
       controller: 'UserToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
-    }
+    };
   }]);
