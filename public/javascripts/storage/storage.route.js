@@ -36,7 +36,8 @@ angular.module('kuzzle.storage')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/storage/browse.controller.js'
+              '/javascripts/storage/browse.controller.js',
+              '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js'
             ]);
           }]
         }
