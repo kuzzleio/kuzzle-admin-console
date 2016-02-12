@@ -8,13 +8,12 @@ angular.module('kuzzle')
     'indexesApi',
     '$window',
     '$log',
-    'authorizationApi',
-    function ($scope, $http, $stateParams, $state, indexesApi, $window, $log, authorization) {
+    function ($scope, $http, $stateParams, $state, indexesApi, $window, $log) {
       $scope.init = function () {
       };
 
       $scope.hasRightsOnIndex = function (index) {
-        return authorization.hasRightsOnIndex(index);
+        return $scope.authorizationApi.hasRightsOnIndex(index);
       };
     }
   ]);
