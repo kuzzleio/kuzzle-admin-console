@@ -25,7 +25,7 @@
             <ul
                 ng-controller="IndexesCtrl"
                 ng-init="init()"
-                id="menu-data" 
+                id="menu-data"
                 class="collapse submenu"
                 ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
             >
@@ -99,10 +99,10 @@
                 <i class="fa fa-puzzle-piece pull-left"></i>
                 Plugins
                 <i class="fa fa-fw fa-caret-down pull-right"></i>
-            </a>      
-            <ul 
-                id="menu-plugins" 
-                class="collapse" 
+            </a>
+            <ul
+                id="menu-plugins"
+                class="collapse submenu"
                 ng-class="{ in: ('data.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
             >
                 <li></li>
@@ -116,13 +116,17 @@
                 <i class="fa fa-shield pull-left"></i>
                 Security
                 <i class="fa fa-fw fa-caret-down pull-right"></i>
-            </a>      
-            <ul 
-                id="menu-security" 
-                class="collapse" 
-                ng-class="{ in: ('data.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
-            >
-                <li></li>
+            </a>
+            <ul id="menu-security" class="collapse submenu" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
+                <li ng-class="{ active: ('role.*.*' | includedByState) }">
+                    <a ui-sref="role.browse"><i class="fa fa-list-alt"></i> Roles</a>
+                </li>
+                <li ng-class="{ active: ('profile.*.*' | includedByState) }">
+                    <a ui-sref="profile.browse"><i class="fa fa-list-alt"></i> Profiles</a>
+                </li>
+                <li ng-class="{ active: ('user.*.*' | includedByState) }">
+                    <a ui-sref="user.browse"><i class="fa fa-users"></i> Users</a>
+                </li>
             </ul>
         </li>
         <!-- / Security -->
@@ -131,14 +135,14 @@
         <!-- Help and feedback -->
         <li class="bottom menu-help">
             <a href="javascript:;" data-toggle="collapse" data-target="#menu-help">
-                <i class="fa fa-question pull-left"></i> 
+                <i class="fa fa-question pull-left"></i>
                 Help and feedback
                 <i class="fa fa-fw fa-caret-up pull-right"></i>
             </a>
             <ul id="menu-help" class="collapse submenu">
                 <li>
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-doc">
-                        <i class="fa fa-book"></i> 
+                        <i class="fa fa-book"></i>
                         Read the doc
                         <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>
@@ -159,7 +163,7 @@
                 </li>
                 <li>
                     <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-issue">
-                        <i class="fa fa-github"></i> 
+                        <i class="fa fa-github"></i>
                         Create an issue
                         <i class="fa fa-fw fa-caret-up pull-right"></i>
                     </a>

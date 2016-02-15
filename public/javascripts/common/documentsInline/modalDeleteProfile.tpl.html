@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <h3 class="modal-title"><strong>Delete</strong> profile <span ng-bind="document.id"></span></h3>
+</div>
+<div class="modal-body">
+    <p>This action CANNOT be undone.</p>
+    <p>This will permanently <strong>delete</strong> the profile <strong ng-bind="document.id"></strong>.</p>
+    <p></p>
+    <p>Please type in the name of the profile to confirm.</p>
+
+    <form>
+        <input class="form-control" type="text" ng-model="deleteName">
+    </form>
+</div>
+<div class="modal-footer">
+    <div class="actions-group">
+        <button class="btn btn-danger control" type="button" ng-click="confirmDelete()" ng-disabled="document.id !== deleteName">
+            I really want to remove this profile
+        </button>
+        <a class="control" ng-click="cancelModal()">Cancel</a>
+    </div>
+</div>

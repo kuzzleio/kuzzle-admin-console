@@ -1,34 +1,85 @@
 <div class="row documents" ng-repeat="document in documents">
-    <div id={{document.id}} class="panel panel-default" ng-class="{deleted: document.isDeleted}">
+    <div id="{{document.id}}" class="panel panel-default" ng-class="{deleted: document.isDeleted}">
         <div class="panel-body">
             <div class="row">
-                <div class="col-sm-1 document-id ellipsis" uib-popover="{{document.id}}" popover-placement="top" popover-animation="false">
+                <!-- title col -->
+                <!-- collection/documents -->
+                <div class="col-sm-2 document-id ellipsis"
+                     ng-if="collection"
+                     uib-popover="{{document.id}}" popover-placement="top" popover-animation="false">
                     <span title="Display the whole ID" ng-bind="document.id"></span>
                 </div>
-                <div class="col-sm-9">
-                    <json-formatter open="0" json="document.content" ng-show="!document.isEdit"></json-formatter>
+                <!-- /collection/documents -->
+
+                <!-- roles -->
+                <div class="col-sm-2 document-id ellipsis"
+                     ng-if="role">
+                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                </div>
+                <!-- /roles -->
+
+                <!-- profiles -->
+                <div class="col-sm-1 document-id ellipsis" ng-if="profile">
+                    <span class="" title="Display the whole ID" ng-bind="document.id"></span>
+                </div>
+
+                <div class="col-sm-1" ng-if="profile">
+                    <div class="btn-group-vertical btn-group-xs">
+                        <button type="button" class="btn btn-default"
+                                ng-repeat="role in document.content.roles"
+                                ui-sref="role.full({role: role})"
+                                ng-bind="role">
+                        </button>
+                    </div>
+                </div>
+                <!-- /profiles -->
+
+                <!-- users -->
+                <div class="col-sm-1 document-id ellipsis" ng-if="user">
+                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                </div>
+
+                <div class="col-sm-1" ng-if="user">
+                    <div class="btn-group-vertical btn-group-xs">
+                        <button type="button" class="btn btn-default"
+                                ui-sref="profile.full({profile: document.content.profile})"
+                                ng-bind="document.content.profile"></button>
+                    </div>
+                </div>
+                <!-- users -->
+                <!-- /title col -->
+                <!-- edit col -->
+                <div class="col-sm-8">
+                    <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
                     <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
                 </div>
-                <div>
-                    <div class="col-sm-2 icons" ng-show="!document.isDeleted && !document.isEdit">
-                        <span class="edit-document full-view glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document.id})" title="Go to full view">
-                        </span>
-                        <span ng-if="canEdit" class="edit-document edit-inline glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
-                        </span>
-                        <span ng-if="canDelete" class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
-                        </span>
-                        <ul ng-if="canDelete" class="dropdown-menu">
-                            <li><a href ng-click="delete(document)" title="Delete this document" class="delete-document"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-sm-2 icons" ng-show="!document.isDeleted && document.isEdit">
-                        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument(document)" title="Save modifications"></span>
-                        <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument(document)" title="Cancel modifications"></span>
-                    </div>
-                    <div class="col-sm-2 icons" ng-show="document.isDeleted">
-                        <a href ng-click="cancelDelete(document)" title="Cancel the deletion" class="cancel-delete-document">Cancel</a>
-                    </div>
-                </div>
+                <!-- /edit col -->
+
+                <document-toolbar
+                        ng-if="collection"
+                        can-edit="canEdit"
+                        document="document"
+                        after-delete="afterDelete()"
+                        collection="collection">
+                </document-toolbar>
+                <role-toolbar
+                        ng-if="role"
+                        can-edit="canEdit"
+                        after-delete="afterDelete(document)"
+                        document="document">
+                </role-toolbar>
+                <profile-toolbar
+                        ng-if="profile"
+                        can-edit="canEdit"
+                        after-delete="afterDelete()"
+                        document="document">
+                </profile-toolbar>
+                <user-toolbar
+                        ng-if="user"
+                        can-edit="canEdit"
+                        after-delete="afterDelete()"
+                        document="document">
+                </user-toolbar>
             </div>
 
         </div>

@@ -29,11 +29,11 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           if (isCreate) {
             messageError = 'Error during collection creation. Please retry.';
-            messageSuccess = 'Collection created !';
+            messageSuccess = 'Collection created!';
           }
           else {
             messageError = 'Error during collection update. Please retry.';
-            messageSuccess = 'Collection updated !';
+            messageSuccess = 'Collection updated!';
           }
 
           kuzzleSdk
@@ -71,7 +71,7 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               }
 
               if (notify) {
-                notification.success('Collection deleted !');
+                notification.success('Collection deleted!');
               }
 
               return deferred.resolve({error: false});
@@ -94,7 +94,7 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               }
 
               if (notify) {
-                notification.success('Collection was truncated !');
+                notification.success('Collection was truncated!');
               }
 
               return deferred.resolve({error: false});

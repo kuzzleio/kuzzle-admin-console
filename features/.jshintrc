@@ -1,0 +1,6 @@
+{
+	"extends": "../.jshintrc",
+	"esversion": 6,
+	"eqeqeq": false,
+	"asi": false
+}

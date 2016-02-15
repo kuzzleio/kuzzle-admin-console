@@ -1,0 +1,1 @@
+angular.module('kuzzle.profile', ['kuzzle.profileApi']);

@@ -11,7 +11,7 @@
                     </tr>
                     <tr>
                         <td>Uptime</td>
-                        <td ng-bind="serverInfo.kuzzle.uptime"></td>
+                        <td ng-bind="serverInfo.kuzzle.uptime | secondsToDateTime"></td>
                     </tr>
                     <tr>
                         <td>Kuzzle version</td>

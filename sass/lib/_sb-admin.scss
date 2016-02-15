@@ -61,10 +61,7 @@ body {
 }
 
 .top-nav>li>a:hover,
-.top-nav>li>a:focus,
-.top-nav>.open>a,
-.top-nav>.open>a:hover,
-.top-nav>.open>a:focus {
+.top-nav>.open>a {
     color: #fff;
     background-color: #000;
 }
@@ -132,8 +129,7 @@ ul.alert-dropdown {
         width: 225px;
     }
 
-    .side-nav li a:hover,
-    .side-nav li a:focus {
+    .side-nav li a:hover {
         outline: none;
         background-color: #000;
     }

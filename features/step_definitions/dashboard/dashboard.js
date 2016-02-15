@@ -1,11 +1,22 @@
 var
+  world = require('../../support/world.js'),
   assert = require('assert');
 
 module.exports = function () {
   this.Given(/^I am on dashboard page$/, function (callback) {
     browser
-      .url('/#/')
-      .call(callback);
+      .getUrl()
+      .then(url => {
+        if (url.match(world.baseUrl + '/#/')) {
+          browser
+            .call(callback);
+        } else {
+          browser
+            .url('/#/')
+            .pause(500)
+            .call(callback);
+        }
+      });
   });
 
   this.Then(/^I have a display of "([\d]+)" widgets$/, function (count, callback) {
@@ -15,6 +26,7 @@ module.exports = function () {
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count), 'Must have ' + count + ' widgets, get ' + elements.value.length);
       })
+      .pause(1500)
       .call(callback);
   });
 

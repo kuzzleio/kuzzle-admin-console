@@ -35,7 +35,10 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onCreateCollection = function (collection) {
-        $state.go('collection.create', {index: $stateParams.index, newCollection: collection});
+        $state.go('collection.create', {
+          index: $stateParams.index,
+          newCollection: collection
+        });
       };
 
       /**
@@ -52,7 +55,10 @@ angular.module('kuzzle.storage')
        */
       $scope.onEmptyCollection = function () {
         setTimeout(function () {
-          $state.go('storage.browse.documents', {index: $stateParams.index, collection: $stateParams.collection}, {reload: true});
+          $state.go('storage.browse.documents', {
+            collection: $stateParams.collection,
+            index: $stateParams.index
+          }, {reload: true});
         }, 1000);
       };
   }]);

@@ -62,16 +62,16 @@ angular.module('kuzzle.authentication')
 
     authService.logout = function () {
       kuzzle.logout(function (res) {
-          Session.destroy();
-          this.nextRoute = null;
-          $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-        }.bind(this));
+        Session.destroy();
+        this.nextRoute = null;
+        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+      }.bind(this));
     };
 
     authService.isAuthenticated = function () {
       var deferred = $q.defer();
 
-      if (kuzzle.jwtToken) {
+      if (kuzzle.getJwtToken()) {
         deferred.resolve(true);
       } else {
         if (Session.resumeFromCookie()) {

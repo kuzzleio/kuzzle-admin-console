@@ -38,13 +38,13 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
       }
 
       nestedProperties = getNestedProperties($scope.schema.properties, $scope.newField.after);
-      nestedBody = getNestedBody($scope.document.body, $scope.newField.after);
+      nestedBody = getNestedBody($scope.document.content, $scope.newField.after);
 
       nestedProperties[$scope.newField.name] = {};
       nestedProperties[$scope.newField.name].type = $scope.newField.type;
 
-      if (!$scope.document.body) {
-        $scope.document.body = {};
+      if (!$scope.document.content) {
+        $scope.document.content = {};
       }
 
       switch ($scope.newField.type) {
@@ -72,7 +72,7 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
           break;
       }
 
-      $scope.document.json = angular.toJson($scope.document.body, 4);
+      $scope.document.json = angular.toJson($scope.document.content, 4);
       $scope.refreshForm();
 
       modal.dismiss('cancel');

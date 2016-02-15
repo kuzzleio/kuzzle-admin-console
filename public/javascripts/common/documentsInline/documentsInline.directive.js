@@ -4,7 +4,6 @@ angular.module('kuzzle.documentsInline', [
   'kuzzle.bufferCancel',
   'ui-notification'
 ])
-
   .controller('DocumentsInlineCtrl', [
     '$scope',
     '$filter',
@@ -40,6 +39,10 @@ angular.module('kuzzle.documentsInline', [
         document.isEdit = false;
       };
 
+      $scope.afterDelete = function (document) {
+        $scope.documents.splice($scope.documents.indexOf(document), 1);
+      };
+
       $scope.delete = function (document) {
         var index = $scope.documents.indexOf(document);
 
@@ -60,7 +63,7 @@ angular.module('kuzzle.documentsInline', [
       };
 
       $scope.cancelDelete = function (document) {
-        documentApi.cancelDeleteById($scope.collection,document._id)
+        documentApi.cancelDeleteById($scope.collection, document._id)
           .then(function (response) {
 
             if (!response.data.error) {
@@ -68,16 +71,19 @@ angular.module('kuzzle.documentsInline', [
             }
           });
       };
-  }])
-
+    }
+  ])
   .directive('documentsInline', function () {
     return {
       restrict: 'E',
       scope: {
         documents: '=',
         collection: '=',
-        canEdit: '=',
-        canDelete: '='
+        canDelete: '=',
+        role: '=',
+        profile: '=',
+        user: '=',
+        canEdit: '='
       },
       controller: 'DocumentsInlineCtrl',
       templateUrl: '/javascripts/common/documentsInline/documentsInline.tpl.html'
