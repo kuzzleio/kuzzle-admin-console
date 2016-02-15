@@ -24,7 +24,7 @@ angular.module('kuzzle.profile')
         if (action === 'edit') {
           $scope.isEdit = true;
 
-          profileApi.get($scope.profile.id)
+          profileApi.get($scope.profile.id, false)
             .then(function (response) {
               $scope.profile.content = angular.toJson(response.content, 4);
             })

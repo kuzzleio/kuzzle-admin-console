@@ -10,7 +10,7 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function (from, size) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchProfiles({from: from, size: size}, function (error, profiles) {
+          kuzzleSdk.security.searchProfiles({from: from, size: size}, {hydrate: false}, function (error, profiles) {
 
             console.log(profiles);
             if (error) {
@@ -26,7 +26,7 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         get: function (id, hydrate) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.getProfile(id, hydrate, function (error, profile) {
+          kuzzleSdk.security.getProfile(id, {hydrate: hydrate}, function (error, profile) {
             if (error) {
               deferred.reject(error);
               return;

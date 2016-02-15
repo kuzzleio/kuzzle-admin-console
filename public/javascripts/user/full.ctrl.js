@@ -24,7 +24,7 @@ angular.module('kuzzle.user')
         if (action === 'edit') {
           $scope.isEdit = true;
 
-          userApi.get($scope.user.id)
+          userApi.get($scope.user.id, false)
             .then(function (response) {
               $scope.user.content = angular.toJson(response.content, 4);
             })

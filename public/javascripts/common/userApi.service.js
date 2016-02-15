@@ -10,7 +10,7 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         list: function (from, size) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.searchUsers({from: from, size: size}, function (error, response) {
+          kuzzleSdk.security.searchUsers({from: from, size: size}, {hydrate: false}, function (error, response) {
             if (error) {
               deferred.reject(error);
               return;
@@ -24,12 +24,11 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         get: function (id, hydrate) {
           var deferred = $q.defer();
 
-          kuzzleSdk.security.getUser(id, hydrate, function (error, user) {
+          kuzzleSdk.security.getUser(id, {hydrate: hydrate}, function (error, user) {
             if (error) {
               deferred.reject(error);
               return;
             }
-            console.log("get", user);
 
             deferred.resolve(user);
           });

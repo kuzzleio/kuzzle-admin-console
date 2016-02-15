@@ -13,16 +13,16 @@ angular.module('kuzzle.documentsInline')
       $scope.canClone = false;
 
       $scope.editDocument = function () {
-        $scope.document.json = $filter('json')($scope.document.body);
+        $scope.document.json = $filter('json')($scope.document.content);
         $scope.document.isEdit = true;
       };
 
       $scope.saveEditDocument = function () {
         try {
-          $scope.document.body = JSON.parse($scope.document.json);
+          $scope.document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          documentApi.update($scope.collection, $scope.document._id, $scope.document.body, true);
+          documentApi.update($scope.collection, $scope.document.id, $scope.document.content, true);
         }
         catch (e) {
           console.error(e);
@@ -35,24 +35,24 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.delete = function () {
-        documentApi.deleteById($scope.collection, $scope.document._id, true)
+        documentApi.deleteById($scope.collection, $scope.document.id, true)
           .then(function (response) {
             if (!response.data.error) {
               $scope.document.isDeleted = true;
 
               $timeout(function () {
-                if (!bufferCancel.isCanceled('deleteById', $scope.collection, $scope.document._id)) {
+                if (!bufferCancel.isCanceled('deleteById', $scope.collection, $scope.document.id)) {
                   $scope.afterDelete({document: $scope.document});
                 }
 
-                bufferCancel.clean('deleteById', $scope.collection, $scope.document._id);
+                bufferCancel.clean('deleteById', $scope.collection, $scope.document.id);
               }, bufferCancel.timer);
             }
           });
       };
 
       $scope.cancelDelete = function (document) {
-        documentApi.cancelDeleteById($scope.collection,document._id)
+        documentApi.cancelDeleteById($scope.collection,document.id)
           .then(function (response) {
 
             if (!response.data.error) {
@@ -62,7 +62,7 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.buildUrlFull = function (document) {
-        return $state.href('storage.full', {collection: $scope.collection, id: document._id});
+        return $state.href('storage.full', {collection: $scope.collection, id: document.id});
       };
     }
   ])

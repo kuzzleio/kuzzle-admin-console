@@ -5,7 +5,7 @@ angular.module('kuzzle.authentication')
   this.session = {
     jwtToken: null,
     userId: null,
-    userProfile: null,
+    userProfile: null
   };
 
   this.create = function (jwtToken, userId, userProfile) {
@@ -38,7 +38,7 @@ angular.module('kuzzle.authentication')
     $cookies.put(COOKIE_KEY, JSON.stringify({
       jwtToken: this.session.jwtToken,
       userId: this.session.userId,
-      userProfile: this.session.userProfile,
+      userProfile: this.session.userProfile
     }));
   };
 

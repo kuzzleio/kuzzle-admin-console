@@ -12,11 +12,11 @@ angular.module('kuzzle.authentication')
 
     var onLoginSuccess = function () {
       kuzzle.whoAmI(function (err, res) {
-        if (err || !res.result) {
+        if (err || !res.content) {
           console.log('Unable to retrieve user information', err);
           return;
         }
-        Session.create(kuzzle.getJwtToken(), res.result._id, res.result._source.profile);
+        Session.create(kuzzle.getJwtToken(), res.id, res.content.profile);
       });
     };
 
