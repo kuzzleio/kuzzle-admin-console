@@ -77,7 +77,8 @@ angular.module('kuzzle.storage')
               '/javascripts/storage/full.controller.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
-              '/javascripts/storage/leaflet.directive.js'
+              '/javascripts/storage/leaflet.directive.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }
@@ -94,7 +95,8 @@ angular.module('kuzzle.storage')
               '/javascripts/storage/full.controller.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
-              '/javascripts/storage/leaflet.directive.js'
+              '/javascripts/storage/leaflet.directive.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }

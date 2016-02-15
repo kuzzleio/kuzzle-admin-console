@@ -1,7 +1,7 @@
 <div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
 
     <div class="row create">
-        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})">Add document</button>
+        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})" ng-if="canCreateDocument">Add document</button>
     </div>
 
     <div class="row">
@@ -27,7 +27,7 @@
         <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
     </div>
 
-    <documents-inline documents="documents" collection="collection" can-edit="true"></documents-inline>
+    <documents-inline documents="documents" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
 
     <div class="row total-documents"  ng-show="documents.length != 0">
         <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>

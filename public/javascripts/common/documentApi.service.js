@@ -2,11 +2,14 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
   .service('documentApi', [
     'kuzzleSdk',
+    '$stateParams',
     '$http',
     'uid',
     'Notification',
     'bufferCancel',
-    '$q', function (kuzzleSdk, $http, uid, notification, bufferCancel, $q) {
+    '$q',
+    'authorizationApi',
+    function (kuzzleSdk, $stateParams, $http, uid, notification, bufferCancel, $q, authorization) {
       var
         clientId = uid.new();
 
@@ -72,11 +75,15 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         },
 
         subscribeId: function (collection, id, cb) {
-          return kuzzleSdk
-            .dataCollectionFactory(collection)
-            .subscribe({ids: {values: [id]}}, {subscribeToSelf: false}, function (error, result) {
-              cb(result);
-            });
+          if (authorization.canDoAction($stateParams.index, collection, 'subscribe', 'on') &&
+            authorization.canDoAction($stateParams.index, collection, 'subscribe', 'off')) {
+            return kuzzleSdk
+              .dataCollectionFactory(collection)
+              .subscribe({ids: {values: [id]}}, {subscribeToSelf: false}, function (error, result) {
+                cb(result);
+              });
+          }
+          return false;
         },
 
         subscribeFilter: function (collection, filters, cb) {

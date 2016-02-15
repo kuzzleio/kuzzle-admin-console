@@ -10,12 +10,10 @@ angular.module('kuzzle.jsonEdit', ['ui.ace'])
       return {
         restrict: 'E',
         scope: {
-          content: '='
+          content: '=',
+          canEdit: '='
         },
         controller: 'AceCtrl',
-        template: '<div ui-ace="{' +
-                    'mode: \'json\',' +
-                    'onLoad: aceLoaded' +
-                  '}" ng-model="content"></div>'
+        templateUrl: '/javascripts/common/jsonEdit/jsonEdit.tpl.html'
       };
   }]);

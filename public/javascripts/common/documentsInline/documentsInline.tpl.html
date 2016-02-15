@@ -9,21 +9,15 @@
                     <json-formatter open="0" json="document.body" ng-show="!document.isEdit"></json-formatter>
                     <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
                 </div>
-                <div ng-if="!canEdit">
-                    <div class="col-sm-1 pull-right">
-                        <span class="edit-document full-view glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})">
-                        </span>
-                    </div>
-                </div>
-                <div ng-if="canEdit">
+                <div>
                     <div class="col-sm-2 icons" ng-show="!document.isDeleted && !document.isEdit">
                         <span class="edit-document full-view glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document._id})" title="Go to full view">
                         </span>
-                        <span class="edit-document edit-inline glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
+                        <span ng-if="canEdit" class="edit-document edit-inline glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
                         </span>
-                        <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
+                        <span ng-if="canDelete" class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
                         </span>
-                        <ul class="dropdown-menu">
+                        <ul ng-if="canDelete" class="dropdown-menu">
                             <li><a href ng-click="delete(document)" title="Delete this document" class="delete-document"><span class="glyphicon glyphicon-trash"></span>Delete</a></li>
                         </ul>
                     </div>

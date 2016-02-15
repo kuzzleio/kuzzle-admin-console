@@ -7,7 +7,7 @@
     style="height: 1px;"
 >
     <ul class="nav navbar-nav side-nav">
-        <li ui-sref-active="active">
+        <li ui-sref-active="active" ng-if="canGetServerInfo || canGetStats">
             <a ui-sref="logged">
                 <i class="fa fa-fw fa-dashboard pull-left"></i>
                     Dashboard
@@ -16,7 +16,7 @@
         </li>
 
         <!-- Data -->
-        <li>
+        <li ng-if="canShowDataDongle()">
             <a href data-toggle="collapse" data-target="#menu-data" ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
                 <i class="fa fa-database pull-left"></i>
                 Data
@@ -93,7 +93,7 @@
         <!-- / Data -->
 
 
-        <!-- Plugins -->
+        <!-- Plugins
         <li>
             <a href data-toggle="collapse" data-target="#menu-plugins">
                 <i class="fa fa-puzzle-piece pull-left"></i>
@@ -108,7 +108,7 @@
                 <li></li>
             </ul>
         </li>
-        <!-- / Plugins -->
+        / Plugins -->
 
         <!-- Security -->
         <li ng-if="hasRightsOnIndex('%kuzzle')">
