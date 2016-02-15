@@ -80,7 +80,7 @@ angular.module('kuzzle.storage')
           $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
         }
 
-        if (filters.basicFilter){
+        if (filters.basicFilter) {
           $scope.filter.basicFilter = filters.basicFilter;
           setSearchType(false);
         } else if (filters.advancedFilter) {

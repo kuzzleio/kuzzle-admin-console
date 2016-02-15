@@ -183,15 +183,8 @@ angular.module('kuzzle.realtime')
       /** PRIVATE METHODS **/
 
       var setSearchType = function (isAdvanced) {
-        $scope.forms.searchType.basic = false;
-        $scope.forms.searchType.advanced = false;
-
-        if (isAdvanced) {
-          $scope.forms.searchType.advanced = true;
-        }
-        else {
-          $scope.forms.searchType.basic = true;
-        }
+        $scope.forms.searchType.basic = !isAdvanced;
+        $scope.forms.searchType.advanced = isAdvanced;
       };
 
       var addNotification = function (notification) {

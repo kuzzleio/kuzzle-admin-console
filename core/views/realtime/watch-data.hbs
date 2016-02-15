@@ -23,7 +23,7 @@
     <label>Publish <small>a volatile message</small></label>
     <form name="forms.publish">
       <div class="form-group">
-        <p class="text-danger" ng-show="error" ng-bind="error"></p>
+        <p class="text-danger" ng-show="forms.error" ng-bind="forms.error"></p>
         <json-edit content="forms.messageToPublish" can-edit="true"></json-edit>
       </div>
       <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(forms.messageToPublish)">
