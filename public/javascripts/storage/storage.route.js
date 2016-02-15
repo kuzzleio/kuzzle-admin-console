@@ -53,7 +53,8 @@ angular.module('kuzzle.storage')
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
               '/javascripts/common/basicFilter/basicFilter.directive.js',
-              '/javascripts/common/filters/filters.module.js'
+              '/javascripts/common/filters/filters.module.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ])
               .then(function () {
                 return $ocLazyLoad.load([
