@@ -19,8 +19,11 @@
 
               <div class="btn-group" ng-if="stateParams.collection">
                   <cog-options-collection
+                    current-index="stateParams.index"
                     collection="stateParams.collection"
-                    can-edit="true"
+                    can-edit="canEditCollection"
+                    can-delete="canDeleteCollection"
+                    can-empty="canEmptyCollection"
                     after-delete="onDeleteCollection()"
                     after-empty="onEmptyCollection()">
                   </cog-options-collection>
