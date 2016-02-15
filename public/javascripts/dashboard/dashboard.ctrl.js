@@ -1,12 +1,17 @@
 angular.module('kuzzle.dashboard')
   .controller('DashboardCtrl', [
     '$scope',
-    'serverApi',
+    '$window',
     '$timeout',
-    function ($scope, serverApi, $timeout) {
+    'serverApi',
+    function ($scope, $window, $timeout, serverApi) {
       'use strict';
+      var timer = {
+        serverInfo: null,
+        statistics: null
+      };
 
-      $scope.Math = window.Math;
+      $scope.Math = $window.Math;
       $scope.timeFrame = 86400 * 1000;
       $scope.widgets = [
         'serverInfo',
@@ -19,6 +24,11 @@ angular.module('kuzzle.dashboard')
       $scope.cpuPercent = 0;
       $scope.statisticSeries = [];
       $scope.newStatValue = [];
+
+      $scope.$on('$destroy', function() {
+        $timeout.cancel(timer.serverInfo);
+        $timeout.cancel(timer.statistics);
+      });
 
       $scope.init = function () {
         if ($scope.isWidgetSelected('statInfo')) {
@@ -33,11 +43,11 @@ angular.module('kuzzle.dashboard')
             })
             .then(function (response) {
               $scope.nowTimestamp = response;
-              $timeout($scope.refreshStatistics, 5000);
+              timer.statistics = $timeout($scope.refreshStatistics, 5000);
             });
         }
         if (isOneWidgetSelected(['serverInfo', 'pluginInfo', 'apiInfo', 'resourceInfo'])) {
-          $scope.refreshServerInfo();
+          timer.serverInfo = $scope.refreshServerInfo();
         }
       };
 
@@ -50,7 +60,7 @@ angular.module('kuzzle.dashboard')
             $scope.serverInfo = response;
             $scope.memoryPercent = computeMemoryUsePercent();
             $scope.cpuPercent = computeCpuUsePercent();
-            $timeout($scope.refreshServerInfo, 2000);
+            timer.serverInfo = $timeout($scope.refreshServerInfo, 2000);
           });
       };
 
@@ -64,13 +74,13 @@ angular.module('kuzzle.dashboard')
             serverApi.getNowTimestamp()
               .then(function (response) {
                 $scope.nowTimestamp = response;
-                $timeout($scope.refreshStatistics, 5000);
+                timer.statistics = $timeout($scope.refreshStatistics, 5000);
               });
           });
       };
 
       $scope.isWidgetSelected = function (widgetName) {
-        return inArray(widgetName, $scope.widgets) !== -1;
+        return $scope.widgets.indexOf(widgetName) !== -1;
       };
 
       $scope.reloadWidgets = function () {
@@ -84,8 +94,6 @@ angular.module('kuzzle.dashboard')
       };
 
       /** PRIVATE METHODS **/
-
-      var inArray = jQuery.inArray;
 
       var arrangeStatistics = function (statistics) {
         var series = [

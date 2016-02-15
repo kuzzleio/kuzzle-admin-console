@@ -62,7 +62,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               }
 
               if (notify) {
-                notification.success('Document updated !');
+                notification.success('Document updated!');
               }
 
               return deferred.resolve({error: false});
@@ -128,7 +128,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               }
 
               if (notify) {
-                notification.success('Document created !');
+                notification.success('Document created!');
               }
 
               return deferred.resolve({error: false, id: result.id});

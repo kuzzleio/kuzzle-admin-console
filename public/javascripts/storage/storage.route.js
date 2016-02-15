@@ -56,6 +56,7 @@ angular.module('kuzzle.storage')
             ])
               .then(function () {
                 return $ocLazyLoad.load([
+                  '/javascripts/common/documentsInline/documentToolbar.directive.js',
                   '/javascripts/storage/browseDocuments.controller.js',
                   '/javascripts/common/filters/filters.directive.js',
                   '/javascripts/common/filters/filters.service.js'

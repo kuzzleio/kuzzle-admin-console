@@ -36,7 +36,7 @@ angular.module('kuzzle.storage')
       };
 
       // Document itself. Loaded from server if we are in edition
-      $scope.document = {id: $stateParams.id, body: {}, json: null};
+      $scope.document = {id: $stateParams.id, content: {}, json: null};
 
       var
         message = null;
@@ -176,7 +176,7 @@ angular.module('kuzzle.storage')
        */
       $scope.switchView = function (view) {
         if (view === 'json') {
-          $scope.document.json = angular.toJson($scope.document.body, 4);
+          $scope.document.json = angular.toJson($scope.document.content, 4);
         }
         else {
           try {
@@ -268,7 +268,7 @@ angular.module('kuzzle.storage')
           }
         }
         else {
-          document = $scope.document.body;
+          document = $scope.document.content;
         }
 
         return document;
@@ -280,8 +280,8 @@ angular.module('kuzzle.storage')
       var refreshFormWithJson = function () {
         var schema;
 
-        $scope.document.body = JSON.parse($scope.document.json);
-        schema = getUpdatedSchema($scope.document, 'body');
+        $scope.document.content = JSON.parse($scope.document.json);
+        schema = getUpdatedSchema($scope.document, 'content');
         $scope.schema = angular.merge(schema, $scope.schema);
         $scope.$broadcast('schemaFormRedraw');
       };

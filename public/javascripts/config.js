@@ -6,5 +6,6 @@
  * @type {{kuzzleUrl: string}}
  */
 var config = {
-  kuzzleUrl: null
+  kuzzleUrl: null,
+  kuzzleCoreIndex: '%kuzzle'
 };

@@ -55,6 +55,7 @@ angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuz
       restrict: 'E',
       scope: {
         collection: '=',
+        index: '=',
         canEdit: '=',
         afterDelete: '&',
         afterEmpty: '&'
