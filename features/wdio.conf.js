@@ -29,7 +29,8 @@ exports.config = {
     './features/browseData.feature',
     './features/dashboard.feature',
     './features/indexes.feature',
-    './features/roles.feature'
+    './features/roles.feature',
+    './features/profiles.feature'
   ],
   // Patterns to exclude.
   exclude: [
@@ -122,7 +123,8 @@ exports.config = {
       './features/step_definitions/dashboard/dashboard.js',
       './features/step_definitions/realtime/realtime.js',
       './features/step_definitions/indexes/indexes.js',
-      './features/step_definitions/security/roles.js'
+      './features/step_definitions/security/roles.js',
+      './features/step_definitions/security/profiles.js'
     ]
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,
