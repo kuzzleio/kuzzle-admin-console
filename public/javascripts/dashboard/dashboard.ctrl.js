@@ -3,7 +3,8 @@ angular.module('kuzzle.dashboard')
     '$scope',
     'serverApi',
     '$timeout',
-    function ($scope, serverApi, $timeout) {
+    'authorizationApi',
+    function ($scope, serverApi, $timeout, authorization) {
       'use strict';
 
       $scope.Math = window.Math;
@@ -21,7 +22,11 @@ angular.module('kuzzle.dashboard')
       $scope.newStatValue = [];
 
       $scope.init = function () {
-        if ($scope.isWidgetSelected('statInfo')) {
+        $scope.canGetServerInfo = authorization.canDoAction('foobar', 'foobar', 'read', 'serverInfo');
+        $scope.canGetStats = authorization.canDoAction('foobar', 'foobar', 'admin', 'getStats') &&
+          authorization.canDoAction('foobar', 'foobar', 'admin', 'getLastStats') &&
+          authorization.canDoAction('foobar', 'foobar', 'read', 'now');
+        if ($scope.isWidgetSelected('statInfo') && $scope.canGetStats) {
           serverApi.getNowTimestamp()
             .then(function (response) {
               $scope.nowTimestamp = response;
@@ -36,7 +41,7 @@ angular.module('kuzzle.dashboard')
               $timeout($scope.refreshStatistics, 5000);
             });
         }
-        if (isOneWidgetSelected(['serverInfo', 'pluginInfo', 'apiInfo', 'resourceInfo'])) {
+        if (isOneWidgetSelected(['serverInfo', 'pluginInfo', 'apiInfo', 'resourceInfo']) && $scope.canGetServerInfo) {
           $scope.refreshServerInfo();
         }
       };

@@ -8,74 +8,182 @@ angular.module('kuzzle.authorization', [])
       };
 
       var hasUser = function (user) {
-        return session.user.id;
+        return !!user.id;
       };
 
       return {
-        canReadIndex: function (index) {
-          var userProfile = session.user.content.profile;
+        canCreateIndex: function () {
+          if (!hasUser(session.user) || !hasRole(session.user)) {
+            return false;
+          }
+
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+            return accumulator || !!role.content.indexes._canCreate;
+          }, false);
+        },
+        hasRightsOnIndex: function (index) {
           if (!index) {
-            throw '[canReadIndex] Missing argument';
+            throw new Error('[hasRightsOnIndex] Missing argument');
           }
 
           if (!hasUser(session.user) || !hasRole(session.user)) {
             return false;
           }
 
-          return userProfile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
             var roleIndexes = role.content.indexes;
-            var roleHasIndexRead = Object.keys(roleIndexes).reduce(function(indexAccumulator, indexIdentifier) {
-              if ((index === indexIdentifier || indexIdentifier === '*' && index !== kuzzleCoreIndex)) {
-
-                return indexAccumulator || !!roleIndexes[indexIdentifier]._canRead;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              if ((index === indexIdentifier ||
+                indexIdentifier === '*' &&
+                index !== kuzzleCoreIndex) &&
+                indexIdentifier.charAt(0) !== '_'
+              ) {
+                return true;
               }
               return indexAccumulator;
-            },false);
+            }, false);
 
-            return accumulator || !!roleHasIndexRead;
+            return accumulator || roleHasCollectionCreate;
           }, false);
         },
-        canReadCollection: function (index, collection) {
+        canCreateCollection: function (index) {
+          if (!index) {
+            throw new Error('[canCreateCollection] Missing argument');
+          }
+
+          if (!hasUser(session.user) || !hasRole(session.user)) {
+            return false;
+          }
+
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+            var roleIndexes = role.content.indexes;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              if ((index === indexIdentifier ||
+                indexIdentifier === '*' &&
+                index !== kuzzleCoreIndex) &&
+                indexIdentifier.charAt(0) !== '_'
+              ) {
+                return indexAccumulator || !!roleIndexes[indexIdentifier].collections._canCreate;
+              }
+              return indexAccumulator;
+            }, false);
+
+            return accumulator || roleHasCollectionCreate;
+          }, false);
         },
         canDeleteIndex: function (index) {
-        },
-        canDeleteCollection: function (index, collection) {
-          var userProfile = session.user.content.profile;
-          if (!index || !collection) {
-            throw '[canDeleteCollection] Missing argument';
+          if (!index) {
+            throw new Error('[canDeleteIndex] Missing argument');
           }
 
           if (!hasUser(session.user) || !hasRole(session.user)) {
             return false;
           }
 
-          return userProfile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
             var roleIndexes = role.content.indexes;
-            var roleHasIndex = Object.keys(roleIndexes).reduce(function(indexAccumulator, indexIdentifier) {
-              if ((index === indexIdentifier || indexIdentifier === '*' && index !== kuzzleCoreIndex)) {
-                var indexCollections = roleIndexes[indexIdentifier].collections;
-                var collectionHasDelete = Object.keys(indexCollections).reduce(function (collectionAccumulator, collectionIdentifier) {
-                    if (collection === collectionIdentifier || collectionIdentifier === '*') {
-                      return collectionAccumulator || !!indexCollections[collectionIdentifier]._canDelete;
-                    }
-                    return collectionAccumulator;
-                }, false);
-                return indexAccumulator || !!collectionHasDelete;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              var roleIndex = roleIndexes[indexIdentifier];
+              if ((index === indexIdentifier ||
+                indexIdentifier === '*' &&
+                index !== kuzzleCoreIndex) &&
+                indexIdentifier.charAt(0) !== '_'
+              ) {
+                return indexAccumulator || !!roleIndex._canDelete;
               }
               return indexAccumulator;
-            },false);
-            return accumulator || !!roleHasIndex;
+            }, false);
+
+            return accumulator || roleHasCollectionCreate;
           }, false);
         },
-        canUseController: function (index, collection, controller) {
+        canDeleteCollection: function (index, collection) {
+          if (!index || !collection) {
+            throw new Error('[canDeleteCollection] Missing argument');
+          }
+
+          if (!hasUser(session.user) || !hasRole(session.user)) {
+            return false;
+          }
+
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+            var roleIndexes = role.content.indexes;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              var roleIndex = roleIndexes[indexIdentifier];
+              if ((index === indexIdentifier ||
+                indexIdentifier === '*' &&
+                index !== kuzzleCoreIndex) &&
+                indexIdentifier.charAt(0) !== '_'
+              ) {
+                var hasCollectionDelete = Object.keys(roleIndex.collections).reduce(function (collectionAccumulator, collectionIdentifier) {
+                  if (collection === collectionIdentifier || collectionIdentifier === '*') {
+                    return collectionAccumulator || !!roleIndex.collections[collectionIdentifier]._canDelete;
+                  }
+                  return collectionAccumulator;
+                }, false);
+
+                return indexAccumulator || hasCollectionDelete;
+              }
+              return indexAccumulator;
+            }, false);
+
+            return accumulator || roleHasCollectionCreate;
+          }, false);
         },
         canDoAction: function (index, collection, controller, action) {
+          if (!index || !collection || !controller || !action) {
+            throw new Error('[canDeleteCollection] Missing argument');
+          }
+
+          if (!hasUser(session.user) || !hasRole(session.user)) {
+            return false;
+          }
+
+          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+            var roleIndexes = role.content.indexes;
+            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
+              var roleIndex = roleIndexes[indexIdentifier];
+              if ((index === indexIdentifier ||
+                indexIdentifier === '*' &&
+                index !== kuzzleCoreIndex) &&
+                indexIdentifier.charAt(0) !== '_'
+              ) {
+                var hasCollectionRight = Object.keys(roleIndex.collections).reduce(function (collectionAccumulator, collectionIdentifier) {
+                  var currentCollection = roleIndex.collections[collectionIdentifier];
+                  if ((collection === collectionIdentifier ||
+                    collectionIdentifier === '*') &&
+                    collectionIdentifier.charAt(0) !== '_'
+                  ) {
+                    var hasControllerRight = Object.keys(currentCollection.controllers).reduce(function (controllerAccumulator, controllerIdentifier) {
+                      var currentController = currentCollection.controllers[controllerIdentifier];
+                      if (controller === controllerIdentifier || controllerIdentifier === '*') {
+                        var hasActionRight = Object.keys(currentController.actions).reduce(function (actionAccumulator, actionIdentifier) {
+                          if ((action === actionIdentifier || actionIdentifier === '*')) {
+                            if (typeof currentController.actions[actionIdentifier] === 'function') {
+                              return true;
+                            }
+                            return actionAccumulator || !!currentController.actions[actionIdentifier];
+                          }
+                          return controllerAccumulator;
+                        }, false);
+                        return controllerAccumulator || !!hasActionRight;
+                      }
+                      return controllerAccumulator;
+                    }, false);
+                    return collectionAccumulator || hasControllerRight;
+                  }
+                  return collectionAccumulator;
+                }, false);
+                return indexAccumulator || hasCollectionRight;
+              }
+              return indexAccumulator;
+            }, false);
+            return accumulator || roleHasCollectionCreate;
+          }, false);
         }
       };
     }]);
 
 /*
-content.roles[...].content.indexes[...].canRead
-content.roles[...].content.indexes[...].canDelete
 content.roles[...].content.indexes[...].collections[...].controllers[...].actions[...]
 */

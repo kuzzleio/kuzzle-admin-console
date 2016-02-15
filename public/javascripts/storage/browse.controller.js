@@ -6,7 +6,8 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'collectionApi',
-    function ($scope, $http, $stateParams, $state, collectionApi) {
+    'authorizationApi',
+    function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
       $scope.collections = [];
       $scope.stateParams = $stateParams;
 
@@ -28,7 +29,7 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onSelectCollection = function (collection) {
-        $state.go('storage.browse.documents', {collection: collection.name, advancedFilter: null, basicFilter: null});
+        $state.go('storage.browse.documents', {index: $stateParams.index, collection: collection.name, advancedFilter: null, basicFilter: null});
       };
 
       /**
@@ -36,7 +37,7 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onCreateCollection = function (collection) {
-        $state.go('collection.create', {newCollection: collection});
+        $state.go('collection.create', {index: $stateParams.index, newCollection: collection});
       };
 
       /**
@@ -44,7 +45,7 @@ angular.module('kuzzle.storage')
        */
       $scope.onDeleteCollection = function () {
         setTimeout(function () {
-          $state.go('storage.browse', {}, {reload: true});
+          $state.go('storage.browse', {index: $stateParams.index}, {reload: true});
         }, 1000);
       };
 
@@ -53,7 +54,7 @@ angular.module('kuzzle.storage')
        */
       $scope.onEmptyCollection = function () {
         setTimeout(function () {
-          $state.go('storage.browse.documents', {collection: $stateParams.collection}, {reload: true});
+          $state.go('storage.browse.documents', {index: $stateParams.index, collection: $stateParams.collection}, {reload: true});
         }, 1000);
       };
   }]);

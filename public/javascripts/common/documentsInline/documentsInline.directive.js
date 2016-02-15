@@ -76,7 +76,8 @@ angular.module('kuzzle.documentsInline', [
       scope: {
         documents: '=',
         collection: '=',
-        canEdit: '='
+        canEdit: '=',
+        canDelete: '='
       },
       controller: 'DocumentsInlineCtrl',
       templateUrl: '/javascripts/common/documentsInline/documentsInline.tpl.html'

@@ -2,7 +2,7 @@
     <div class="dashboard-container" ng-controller="DashboardCtrl" ng-init="init()">
         <headline title="Dashboard" subtitle="server state"></headline>
         <div class="whitespace-top dashboard-row">
-            <widget title="Server Information" name="serverInfo" widgets="widgets">
+            <widget title="Server Information" name="serverInfo" widgets="widgets" ng-if="canGetServerInfo">
                 <table class="table">
                     <tbody>
                     <tr>
@@ -40,7 +40,7 @@
                     </tbody>
                 </table>
             </widget>
-            <widget title="Plugin Information" name="pluginInfo" widgets="widgets">
+            <widget title="Plugin Information" name="pluginInfo" widgets="widgets" ng-if="canGetServerInfo">
                 <table class="table">
                     <tbody>
                     <tr>
@@ -58,7 +58,7 @@
                     </tbody>
                 </table>
             </widget>
-            <widget title="API Information" name="apiInfo" widgets="widgets">
+            <widget title="API Information" name="apiInfo" widgets="widgets" ng-if="canGetServerInfo">
                 <table class="table">
                     <tbody>
                     <tr>
@@ -67,15 +67,15 @@
                     </tr>
                     <tr ng-repeat="(controller, routes) in serverInfo.kuzzle.api.routes">
                         <td ng-bind="controller"></td>
-                        <td><span ng-repeat="route in routes" ng-bind="route + ' '"></span></td>
+                        <td><span ng-repeat="route in routes"><span ng-bind="route"></span> </span></td>
                     </tr>
                     </tbody>
                 </table>
             </widget>
-            <widget title="Statistics" name="statInfo" widgets="widgets">
+            <widget title="Statistics" name="statInfo" widgets="widgets" ng-if="canGetStats">
                 <chart ylabel="Requests" series="statisticSeries" newvalue="newStatValue"></chart>
             </widget>
-            <widget title="Resources usage" name="resourceInfo" widgets="widgets">
+            <widget title="Resources usage" name="resourceInfo" widgets="widgets" ng-if="canGetServerInfo">
                 <gauge label="Cpu" value="cpuPercent"></gauge>
                 <gauge label="Memory" value="memoryPercent"></gauge>
             </widget>

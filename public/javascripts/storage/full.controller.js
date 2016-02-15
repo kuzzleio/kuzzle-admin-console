@@ -11,8 +11,8 @@ angular.module('kuzzle.storage')
     'schema',
     'previousState',
     '$window',
-    'indexesApi',
-    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, indexesApi) {
+    'authorizationApi',
+    function ($scope, $http, documentApi, $stateParams, $state, notification, schema, previousState, $window, authorization) {
 
       // Define the schema collection. Allow to display a JSON representation into a form
       $scope.schema = {};
@@ -50,9 +50,11 @@ angular.module('kuzzle.storage')
        * @param action Can be 'edit' or 'create'
        */
       $scope.init = function (action) {
+        $scope.canEditDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'createOrReplace');
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
             $scope.schema = schema;
+            $scope.schema.readonly = !$scope.canEditDocument;
 
             if (action === 'edit') {
               $scope.isEdit = true;
@@ -168,7 +170,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $state.go('storage.browse.documents', {collection: $stateParams.collection}, {reload: false});
+        $state.go('storage.browse.documents', {index: $stateParams.index, collection: $stateParams.collection}, {reload: false});
       };
 
       /**

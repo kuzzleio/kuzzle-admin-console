@@ -7,11 +7,10 @@ angular.module('kuzzle.authentication')
   'AUTH_EVENTS',
   'kuzzleSdk',
   'indexesApi',
-  'authorizationApi',
-  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi, authorization) {
+  function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi) {
     var authService = {};
 
-    var onLoginSuccess = function () {
+    var onLoginSuccess = function (broadcastEvent) {
       kuzzle.whoAmI(function (err, res) {
         if (err || !res) {
           console.log('Unable to retrieve user information', err);
@@ -25,11 +24,13 @@ angular.module('kuzzle.authentication')
         if (res.content.profile) {
           Session.setProfile(res.content.profile);
           Session.setUser(res);
-          console.log(authorization.canReadIndex('bla'));
         }
       });
       Session.create(kuzzle.jwtToken);
-      $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+
+      if (broadcastEvent) {
+        $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+      }
     };
 
     var onLoginFailed = function (err) {
@@ -51,7 +52,7 @@ angular.module('kuzzle.authentication')
           onLoginFailed(err);
           deferred.reject(err);
         } else {
-          onLoginSuccess();
+          onLoginSuccess(true);
           deferred.resolve(true);
         }
       });
@@ -84,7 +85,7 @@ angular.module('kuzzle.authentication')
             }
 
             kuzzle.setJwtToken(Session.session.jwtToken);
-            onLoginSuccess(Session.session.jwtToken);
+            onLoginSuccess(false);
             deferred.resolve(true);
           });
         } else {
