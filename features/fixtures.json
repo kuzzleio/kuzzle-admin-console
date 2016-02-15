@@ -82,6 +82,25 @@
       { "create": { "_id": "role-for-tests" } },
       {
         "indexes": {
+          "*": {
+            "collections": {
+              "*": {
+                "controllers": {
+                  "auth": {
+                    "actions": {
+                      "getCurrentUser": true
+                    }
+                  },
+                  "read": {
+                    "actions": {
+                      "listIndexes": true,
+                      "listCollections": true
+                    }
+                  }
+                }
+              }
+            }
+          },
           "mainindex": {
             "collections": {
               "readonly-collection": {
@@ -148,6 +167,10 @@
       { "create": { "_id": "myprofile" } },
       {
         "roles": ["role1"]
+      },
+      { "create": { "_id": "profile-for-tests" } },
+      {
+        "roles": ["role-for-tests"]
       }
     ],
     "users": [
@@ -160,6 +183,12 @@
       { "create": { "_id": "test1" } },
       {
         "profile": "myprofile",
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      },
+      { "create": { "_id": "userfortests" } },
+      {
+        "profile": "profile-for-tests",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       }
