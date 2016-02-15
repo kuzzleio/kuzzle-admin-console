@@ -5,12 +5,16 @@ Feature: Test the roles CRUD page
     And I authenticate
     Then I am authenticated
 
-  @mytest
   Scenario: Existing roles appear in the list on the main page.
     When I go on the browse profiles page
     Then I have a list with "1" elements
 
-  @mytest
+  Scenario: The user is able to access the associated roles' profile
+    When I go on the browse profiles page
+    Then I can see the roles list associated to a profile
+    And I click on the first role on the roles list associated to a profile
+    Then I am on the full view edit role page
+
   Scenario: The user is able to edit a role using the detailed view.
     When I go on the browse profiles page
     And I click the full view edit button of the last profiles
@@ -18,7 +22,6 @@ Feature: Test the roles CRUD page
     And I have input "id"
     And The input "id" is disabled
 
-  @mytest
   Scenario: The user is able to edit a profile using the inline view.
     When I go on the browse profiles page
     And I click the inline edit button of the last profile
@@ -26,7 +29,6 @@ Feature: Test the roles CRUD page
     When I click the save button of the last profile
     Then I get a successful updated profile notification
 
-  @mytest
   Scenario: The user is able to create a new profile.
     When I go on the browse profiles page
     And I click the add profile button
@@ -35,7 +37,6 @@ Feature: Test the roles CRUD page
     And The input "id" is not disabled
     And The input "id" is empty
 
-  @mytest
   Scenario: The user is able to clone a profile.
     When I go on the browse profiles page
     And I click the clone button of the last profile
@@ -49,7 +50,6 @@ Feature: Test the roles CRUD page
     And I see "newProfile" in the profile list
 
   # Should we prevent the deletion of profiles that are used by existing users?
-  @mytest
   Scenario: The user is able to delete a role.
     When I go on the browse profiles page
     And I click the delete button of the last profile
@@ -59,7 +59,6 @@ Feature: Test the roles CRUD page
     Then I am on the browse profiles page
     And I do not see the deleted profile in the profiles list
 
-  @mytest
   Scenario: The user is unable to edit an unexisting profile.
     When I go to the full view of an unexisting profile
     Then I see a message saying the profile does not exist

@@ -27,7 +27,7 @@ angular.module('kuzzle.user')
         }
       })
       .state('user.create', {
-        url: '/add?body',
+        url: '/add?content',
         views: {
           'mainView': { templateUrl: '/user/create' }
         },
