@@ -69,7 +69,7 @@
                         </label>
                     </div>
 
-                    <button ng-if="canEditDocument" id="update" type="submit" class="btn btn-success control" ng-if="exists" ng-click="update()">Update</button>
+                    <button ng-if="canEditDocument && exists" id="update" type="submit" class="btn btn-success control" ng-click="update()">Update</button>
                     <button id="create" type="submit" class="btn btn-success control" ng-if="!exists" ng-click="create()">Create</button>
 
                     <a href class="control" ng-click="goToList()">List</a>

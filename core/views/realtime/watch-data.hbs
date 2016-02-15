@@ -1,4 +1,4 @@
-<div class="panel panel-default filters" ng-if="forms.collection">
+<div class="panel panel-default filters" ng-if="forms.collection && canSubscribe">
     <div class="panel-body">
         <filters
             dsl-doc-url="https://github.com/kuzzleio/kuzzle/blob/master/docs/filters.md"
@@ -18,13 +18,13 @@
         </div>
     </div>
 </div>
-<div class="panel panel-default publish" ng-if="forms.collection">
+<div class="panel panel-default publish" ng-if="forms.collection && canPublish">
   <div class="panel-body">
     <label>Publish <small>a volatile message</small></label>
     <form name="forms.publish">
       <div class="form-group">
         <p class="text-danger" ng-show="error" ng-bind="error"></p>
-        <json-edit content="forms.messageToPublish"></json-edit>
+        <json-edit content="forms.messageToPublish" can-edit="true"></json-edit>
       </div>
       <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(forms.messageToPublish)">
         Publish &nbsp; <span class="glyphicon glyphicon-send"></span>
@@ -34,7 +34,7 @@
 </div>
 
 <messages
-  ng-if="forms.collection"
+  ng-if="forms.collection && canSubscribe"
   class="fixed-right message-log"
   collection="forms.collection"
   messages="forms.messages"

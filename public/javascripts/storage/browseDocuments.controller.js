@@ -73,8 +73,6 @@ angular.module('kuzzle.storage')
         $scope.canEditDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'createOrReplace');
         $scope.canDeleteDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'delete');
 
-        console.log($scope.canReadDocument);
-
         var filters = {};
         try {
           filters = filterTools.getFiltersFromUrl($stateParams, $scope.comparators);

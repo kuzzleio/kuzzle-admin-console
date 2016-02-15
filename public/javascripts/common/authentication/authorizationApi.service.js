@@ -183,7 +183,3 @@ angular.module('kuzzle.authorization', [])
         }
       };
     }]);
-
-/*
-content.roles[...].content.indexes[...].collections[...].controllers[...].actions[...]
-*/
