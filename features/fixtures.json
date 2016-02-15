@@ -5,6 +5,26 @@
       { "username": "ghopper", "name": {"first": "Grace", "last": "Hopper"} },
       { "index" : {"_id": "alovelace"}},
       { "username": "alovelace", "name": {"first": "Ada", "last": "Lovelace"} }
+    ],
+    "private-collection": [
+      { "index" : {"_id": "the-ring"}},
+      { "username": "the-ring", "description": "Everybody wants me." }
+    ],
+    "readonly-collection": [
+      { "index" : {"_id": "light"}},
+      { "username": "light", "description": "Nobody can touch me." }
+    ],
+    "editable-collection": [
+      { "index" : {"_id": "hipster"}},
+      { "username": "hipster", "description": "Fashion can edit me." }
+    ],
+    "emptiable-collection": [
+      { "index" : {"_id": "wc"}},
+      { "username": "wc", "description": "You can flush me." }
+    ],
+    "deletable-collection": [
+      { "index" : {"_id": "nutella"}},
+      { "username": "nutella", "description": "You can make me disappear." }
     ]
   },
   "%kuzzle": {
@@ -33,6 +53,88 @@
                     "actions": {
                       "logout": true,
                       "getCurrentUser": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      { "create": { "_id": "only-public-collections" } },
+      {
+        "indexes": {
+          "mainindex": {
+            "collections": {
+              "kuzzle-bo-test": {
+                "controllers": {
+                  "*": {
+                    "actions": {
+                      "*": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      { "create": { "_id": "role-for-tests" } },
+      {
+        "indexes": {
+          "mainindex": {
+            "collections": {
+              "readonly-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true
+                    }
+                  }
+                }
+              },
+              "editable-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true
+                    }
+                  },
+                  "admin": {
+                    "actions": {
+                      "updateMapping": true
+                    }
+                  }
+                }
+              },
+              "emptiable-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true
+                    }
+                  },
+                  "admin": {
+                    "actions": {
+                      "truncateCollection": true
+                    }
+                  }
+                }
+              },
+              "deletable-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true
+                    }
+                  },
+                  "admin": {
+                    "actions": {
+                      "deleteCollection": true
                     }
                   }
                 }
