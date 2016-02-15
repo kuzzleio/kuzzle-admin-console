@@ -22,6 +22,7 @@ angular.module('kuzzle.realtime')
         };
 
       $scope.subscribed = false;
+      $scope.stateParams = $stateParams;
 
       $scope.init = function () {
         $scope.canSubscribe = false;
