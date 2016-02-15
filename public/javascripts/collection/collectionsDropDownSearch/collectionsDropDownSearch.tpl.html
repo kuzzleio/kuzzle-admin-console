@@ -12,7 +12,7 @@
       </form>
     </li>
     <li class="divider"></li>
-    <li>
+    <li ng-if="canCreateCollection">
       <a class="external-link" ng-click="onClickCreate({collection: search, index: index})" ng-bind="createLabel"></a>
     </li>
     <li class="divider"></li>
