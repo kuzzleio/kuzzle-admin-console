@@ -14,14 +14,14 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I authenticate$/, function (callback) {
+  this.Given(/^I authenticate as "([^"]*)"$/, function (username, callback) {
     browser
       .setValue('[name=username]', c.username)
       .setValue('[name=password]', c.password)
       .click('[type=submit]')
       .waitForVisible('.navbar-brand', 3000)
       .pause(1000)
-      .call(callback)
+      .call(callback);
   });
 
   this.Given(/^I click the logout button$/, function (callback) {
