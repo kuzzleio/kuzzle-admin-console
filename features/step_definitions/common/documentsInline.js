@@ -2,7 +2,7 @@ var
   assert = require('assert');
 
 module.exports = function () {
-  this.Then(/^I have a list with "([\d]*)" elements$/, function (count, callback) {
+  this.Then(/^I have a list with "([\d]*)" element[s]?$/, function (count, callback) {
     browser
       .waitForVisible('documents-inline .row', 1000)
       .elements('documents-inline .document-id')

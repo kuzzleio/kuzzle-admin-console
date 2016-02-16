@@ -82,9 +82,13 @@
       { "create": { "_id": "role-for-tests" } },
       {
         "indexes": {
+          "_canCreate": false,
           "*": {
+            "_canDelete": false,
             "collections": {
+              "_canCreate": false,
               "*": {
+                "_canDelete": false,
                 "controllers": {
                   "auth": {
                     "actions": {
@@ -156,6 +160,7 @@
                 }
               },
               "deletable-collection": {
+                "_canDelete": true,
                 "controllers": {
                   "read": {
                     "actions": {
