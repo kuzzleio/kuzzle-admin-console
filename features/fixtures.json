@@ -88,7 +88,10 @@
                 "controllers": {
                   "auth": {
                     "actions": {
-                      "getCurrentUser": true
+                      "getCurrentUser": true,
+                      "login": true,
+                      "logout": true,
+                      "checkToken": true
                     }
                   },
                   "read": {
@@ -103,6 +106,15 @@
           },
           "mainindex": {
             "collections": {
+              "*": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "listCollections": true
+                    }
+                  }
+                }
+              },
               "readonly-collection": {
                 "controllers": {
                   "read": {
