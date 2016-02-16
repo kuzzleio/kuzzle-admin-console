@@ -13,8 +13,8 @@ Feature: Test the roles CRUD page
     When I go on the browse roles page
     And I click the full view edit button of the first role
     Then I am on the full view edit role page
-    And I have input "id"
-    And The input "id" is disabled
+    And I have input "role-id"
+    And The input "role-id" is disabled
 
   Scenario: The user is able to edit a role using the inline view.
     When I go on the browse roles page
@@ -27,18 +27,18 @@ Feature: Test the roles CRUD page
     When I go on the browse roles page
     And I click the add role button
     Then I am on the add role page
-    And I have input "id"
-    And The input "id" is not disabled
-    And The input "id" is empty
+    And I have input "role-id"
+    And The input "role-id" is not disabled
+    And The input "role-id" is empty
 
   Scenario: The user is able to clone a role.
     When I go on the browse roles page
     And I click the clone button of the first role
     Then I am on the add role page
-    And I have input "id"
-    And The input "id" is not disabled
-    And The input "id" is empty
-    When I fill the input "id" with "newRole"
+    And I have input "role-id"
+    And The input "role-id" is not disabled
+    And The input "role-id" is empty
+    When I fill the input "role-id" with "newRole"
     And I click the create button
     Then I am on the browse roles page
     And I see "newRole" in the roles list

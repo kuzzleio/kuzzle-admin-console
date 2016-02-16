@@ -22,8 +22,8 @@ Feature: Test the users CRUD page
     When I go on the browse users page
     And I click the full view edit button of the last users
     Then I am on the full view edit users page
-    And I have input "id"
-    And The input "id" is disabled
+    And I have input "user-id"
+    And The input "user-id" is disabled
 
   @mytest
   Scenario: The user is able to edit an user using the inline view.
@@ -38,18 +38,18 @@ Feature: Test the users CRUD page
     When I go on the browse users page
     And I click the add user button
     Then I am on the add user page
-    And I have input "id"
-    And The input "id" is not disabled
-    And The input "id" is empty
+    And I have input "user-id"
+    And The input "user-id" is not disabled
+    And The input "user-id" is empty
 
   @mytest
   Scenario: The user is able to clone an user.
     When I go on the browse users page
     And I click the clone button of the last user
     Then I am on the add user page
-    And I have input "id"
-    And The input "id" is not disabled
-    And The input "id" is empty
+    And I have input "user-id"
+    And The input "user-id" is not disabled
+    And The input "user-id" is empty
     When I fill the input "id" with "newUser"
     And I click the create button
     Then I am on the browse users page

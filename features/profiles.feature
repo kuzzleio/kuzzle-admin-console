@@ -19,8 +19,8 @@ Feature: Test the roles CRUD page
     When I go on the browse profiles page
     And I click the full view edit button of the last profiles
     Then I am on the full view edit profiles page
-    And I have input "id"
-    And The input "id" is disabled
+    And I have input "profile-id"
+    And The input "profile-id" is disabled
 
   Scenario: The user is able to edit a profile using the inline view.
     When I go on the browse profiles page
@@ -33,17 +33,17 @@ Feature: Test the roles CRUD page
     When I go on the browse profiles page
     And I click the add profile button
     Then I am on the add profile page
-    And I have input "id"
-    And The input "id" is not disabled
-    And The input "id" is empty
+    And I have input "profile-id"
+    And The input "profile-id" is not disabled
+    And The input "profile-id" is empty
 
   Scenario: The user is able to clone a profile.
     When I go on the browse profiles page
     And I click the clone button of the last profile
     Then I am on the add profile page
-    And I have input "id"
-    And The input "id" is not disabled
-    And The input "id" is empty
+    And I have input "profile-id"
+    And The input "profile-id" is not disabled
+    And The input "profile-id" is empty
     When I fill the input "id" with "newProfile"
     And I click the create button
     Then I am on the browse profiles page
