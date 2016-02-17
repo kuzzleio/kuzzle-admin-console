@@ -5,7 +5,7 @@ Feature: Test browse data pages
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "test" with password "test"
     Then I am authenticated
 
   @cleanDb

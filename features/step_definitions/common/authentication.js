@@ -14,10 +14,10 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I authenticate as "([^"]*)"$/, function (username, callback) {
+  this.Given(/^I authenticate as "([^"]*)" with password "([^"]*)"$/, function (username, password, callback) {
     browser
-      .setValue('[name=username]', c.username)
-      .setValue('[name=password]', c.password)
+      .setValue('[name=username]', username)
+      .setValue('[name=password]', password)
       .click('[type=submit]')
       .waitForVisible('.navbar-brand', 3000)
       .pause(1000)

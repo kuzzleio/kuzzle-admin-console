@@ -5,12 +5,12 @@ Feature: Test authentication
   Scenario: Log a user in when she provides correct credentials
     Given I go to the login page
     Then I see the login page
-    And I authenticate
+    And I authenticate as "test" with password "test"
     Then I am authenticated
 
   Scenario: The user is logged out when she presses the logout button
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "test" with password "test"
     Then I am authenticated
     And I click the logout button
     Then I am logged out

@@ -2,7 +2,7 @@ Feature: Test the profiles CRUD page
 
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "test" with password "test"
     Then I am authenticated
 
   Scenario: Existing profiles appear in the list on the main page.

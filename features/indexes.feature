@@ -5,7 +5,7 @@ Feature: Test multi index features
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate  as "test" with password "test"
     Then I am authenticated
 
   @cleanDb
@@ -57,4 +57,3 @@ Feature: Test multi index features
     Then I am on collection browse page
     Then I click on the first collection in browse document page
     Then I am on browse document page
-
