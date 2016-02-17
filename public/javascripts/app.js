@@ -11,7 +11,7 @@ angular.module('kuzzle', [
   'kuzzle.role',
   'kuzzle.profile',
   'kuzzle.user',
-  'kuzzle.dashboard',
+  'kuzzle.metrics',
   'kuzzle.bufferCancel',
   'kuzzle.documentApi',
   'kuzzle.indexesApi',
@@ -56,7 +56,7 @@ angular.module('kuzzle', [
         url: '',
         views: {
           wrappedView: { templateUrl: '/logged' },
-          'bodyView@logged': {templateUrl: '/dashboard'}
+          'bodyView@logged': {templateUrl: '/metrics'}
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {

@@ -1,14 +1,14 @@
-.dashboard-container {
+.metrics-container {
   *, *:before, *:after {box-sizing:  border-box !important;}
 
-  .dashboard-row {
+  .metrics-row {
     -moz-column-width: 24em;
     -webkit-column-width: 24em;
     -moz-column-gap: 1em;
     -webkit-column-gap:1em;
   }
 
-  .dashboard-widget {
+  .metrics-widget {
     .panel {
       background-color: #fff;
       box-shadow: 0 0 0 #000;
