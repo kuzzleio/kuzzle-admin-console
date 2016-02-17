@@ -67,6 +67,7 @@ module.exports = function () {
     browser
       .waitForVisible('#modal-delete-role input', 1000)
       .setValue('#modal-delete-role input', this.deletedRoleName)
+      .pause(500)
       .call(callback);
   });
 

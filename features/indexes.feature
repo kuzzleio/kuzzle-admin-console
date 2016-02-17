@@ -5,7 +5,7 @@ Feature: Test multi index features
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate  as "test" with password "test"
+    And I authenticate as "test" with password "test"
     Then I am authenticated
 
   @cleanDb
