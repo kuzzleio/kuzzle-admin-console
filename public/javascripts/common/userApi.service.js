@@ -82,8 +82,24 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         deleteById: function (id, notify) {
           var deferred = $q.defer();
 
-          deferred.resolve({error: false});
-          notification.success('User deleted!');
+          kuzzleSdk.security.deleteUser(id, function (error, result) {
+            if (error) {
+              deferred.reject(error);
+
+              if (notify) {
+                console.log(error);
+                notification.error('Error during user deletion. Please retry.');
+              }
+            }
+            else {
+              deferred.resolve({error: false});
+
+              if (notify) {
+                notification.success('User deleted!');
+              }
+            }
+          });
+
 
           return deferred.promise;
         }

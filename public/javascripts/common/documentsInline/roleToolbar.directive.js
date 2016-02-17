@@ -27,7 +27,7 @@ angular.module('kuzzle.documentsInline')
           $scope.document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          role = {name: $scope.document.id, content: $scope.document.content};
+          role = {id: $scope.document.id, content: $scope.document.content};
           roleApi.update(role, true, false);
         }
         catch (e) {

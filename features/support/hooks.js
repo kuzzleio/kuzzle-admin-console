@@ -19,7 +19,7 @@ var hooks = function () {
     var timeoutCallback = function () {
       setTimeout(function() {
         callback();
-      }, 2000)
+      }, 2000);
     };
 
     removeIndex(function() {
@@ -27,8 +27,8 @@ var hooks = function () {
         bulk()
         .then(timeoutCallback)
         .catch(timeoutCallback);
-      })
-    })
+      });
+    });
   });
 
   this.Before('@cleanDb', function (scenario, callback) {
@@ -59,7 +59,7 @@ var initIndex = function (callback) {
     timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000)
+      }, 1000);
     };
 
   world.kuzzle
@@ -78,7 +78,7 @@ var removeIndex = function (callback) {
     timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000)
+      }, 1000);
     };
 
   world.kuzzle
@@ -91,7 +91,7 @@ var initCollection = function (callback) {
   var timeoutCallback = function () {
     setTimeout(() => {
       callback();
-    }, 1000)
+    }, 1000);
   };
 
   world.kuzzle
@@ -104,7 +104,7 @@ var initCollection = function (callback) {
     .catch(() => {
       bulk()
         .then(timeoutCallback);
-    })
+    });
 };
 
 var bulk = function () {
@@ -116,7 +116,7 @@ var bulk = function () {
   };
 
   return world.kuzzle
-    .queryPromise(query, {body: fixtures[world.index][world.collection]})
+    .queryPromise(query, {body: fixtures[world.index][world.collection]});
 };
 
 module.exports = hooks;

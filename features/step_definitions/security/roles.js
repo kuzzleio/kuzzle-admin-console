@@ -189,7 +189,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I get a successful update notification$/, function (callback) {
+  this.Then(/^I get a successful updated role notification$/, function (callback) {
     browser
       .pause(500)
       .waitForVisible('.ui-notification')

@@ -14,7 +14,7 @@ angular.module('kuzzle.role')
       $scope.isEdit = false;
       $scope.notFoundError = false;
       $scope.role = {
-        name: $stateParams.role,
+        id: $stateParams.role,
         content: ''
       };
 
@@ -24,7 +24,7 @@ angular.module('kuzzle.role')
         if (action === 'edit') {
           $scope.isEdit = true;
 
-          roleApi.get($scope.role.name)
+          roleApi.get($scope.role.id)
             .then(function (response) {
               $scope.role.content = angular.toJson(response.content, 4);
             })
@@ -53,7 +53,7 @@ angular.module('kuzzle.role')
 
       $scope.update = function (isCreate) {
         var role = {
-          name: $scope.role.name,
+          id: $scope.role.id,
           content: {}
         };
 

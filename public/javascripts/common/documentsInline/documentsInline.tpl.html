@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="col-sm-1" ng-if="profile">
-                    <div class="btn-group-vertical btn-group-xs">
+                    <div class="btn-group-vertical btn-group-xs roles-list">
                         <button type="button" class="btn btn-default"
                                 ng-repeat="role in document.content.roles"
                                 ui-sref="role.full({role: role})"
@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="col-sm-1" ng-if="user">
-                    <div class="btn-group-vertical btn-group-xs">
+                    <div class="btn-group-vertical btn-group-xs profiles-list">
                         <button type="button" class="btn btn-default"
                                 ui-sref="profile.full({profile: document.content.profile})"
                                 ng-bind="document.content.profile"></button>
@@ -59,7 +59,7 @@
                         ng-if="collection"
                         can-edit="canEdit"
                         document="document"
-                        after-delete="afterDelete()"
+                        after-delete="afterDelete(document)"
                         collection="collection">
                 </document-toolbar>
                 <role-toolbar
@@ -71,13 +71,13 @@
                 <profile-toolbar
                         ng-if="profile"
                         can-edit="canEdit"
-                        after-delete="afterDelete()"
+                        after-delete="afterDelete(document)"
                         document="document">
                 </profile-toolbar>
                 <user-toolbar
                         ng-if="user"
                         can-edit="canEdit"
-                        after-delete="afterDelete()"
+                        after-delete="afterDelete(document)"
                         document="document">
                 </user-toolbar>
             </div>

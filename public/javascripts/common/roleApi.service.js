@@ -49,7 +49,7 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             messageSuccess = 'Role updated !';
           }
 
-          kuzzleSdk.security.createRole(role.name, role.content, {replaceIfExist: true}, function (error, role) {
+          kuzzleSdk.security.createRole(role.id, role.content, {replaceIfExist: true}, function (error, role) {
             if (error) {
               if (notify) {
                 notification.error(messageError);

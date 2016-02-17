@@ -83,8 +83,25 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         deleteById: function (id, notify) {
           var deferred = $q.defer();
 
-          deferred.resolve({error: false});
-          notification.success('Profile deleted!');
+          kuzzleSdk.security.deleteProfile(id, function (error, result) {
+            if (error) {
+              deferred.reject(error);
+
+              if (notify) {
+                console.log(error);
+                notification.error('Error during profile deletion. Please retry.');
+              }
+            }
+            else {
+
+              deferred.resolve({error: false});
+
+              if (notify) {
+                notification.success('Profile deleted!');
+              }
+            }
+          });
+
 
           return deferred.promise;
         }

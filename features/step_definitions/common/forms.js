@@ -41,13 +41,13 @@ module.exports = function () {
   this.Then(/^I have an input with id "([^"]*)"$/, function (id, callback) {
     browser
       .waitForVisible('input#' + id, 1000)
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I select in "([^"]*)" the text "([^"]*)"$/, function (id, text, callback) {
     browser
       .selectByVisibleText('#' + id, text)
-      .call(callback)
+      .call(callback);
   });
 
   this.Then(/^I can see "([^"]*)" modal$/, function(id, callback) {
@@ -61,17 +61,16 @@ module.exports = function () {
       .getAttribute('#' + id, 'disabled')
       .then(function(value) {
         if (not) {
-          assert.equal(value, null)
+          assert.equal(value, null);
         }
         else {
-          assert.equal(value, 'true')
+          assert.equal(value, 'true');
         }
       })
       .call(callback);
   });
 
   this.Then(/^The input "([^"]*)" is ?(not)* disabled$/, function (name, not, callback) {
-    browser
     browser
       .getAttribute('input[id="' + name +'"]', 'disabled')
       .then(function(value) {
@@ -86,7 +85,6 @@ module.exports = function () {
   });
 
   this.Then(/^The input "([^"]*)" is ?(not)* empty$/, function (name, not, callback) {
-    browser
     browser
       .getText('input[id="' + name +'"]')
       .then(function(value) {
