@@ -17,13 +17,16 @@
                   placeholder="Find a collection">
               </collections-drop-down-search>
 
-              <div class="btn-group" ng-if="stateParams.collection && stateParams.index">
+              <div class="btn-group" ng-if="stateParams.collection && stateParams.index && showCog">
                   <cog-options-collection
                     current-index="stateParams.index"
                     collection="stateParams.collection"
                     can-edit="true"
                     after-delete="onDeleteCollection()"
-                    after-empty="onEmptyCollection()">
+                    after-empty="onEmptyCollection()"
+                    can-delete="canDeleteCollection"
+                    can-empty="canEmptyCollection"
+                    can-edit="canEditCollection" >
                   </cog-options-collection>
               </div>
           </h2>
