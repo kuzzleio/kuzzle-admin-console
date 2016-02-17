@@ -27,7 +27,9 @@ module.exports = function () {
   });
   this.When(/^I click on the cog$/, function (callback) {
     browser
-      .click('.select-collection cog-options-collection')
+      // This is quite worrying: I have to click on the deepest element if I
+      // want something to happen.
+      .click('.select-collection cog-options-collection span.dropdown small.dropdown')
       .call(callback);
   });
 
@@ -170,12 +172,27 @@ module.exports = function () {
       .waitForVisible('.select-collection cog-options-collection .dropdown-menu', 1000)
       .getText('.select-collection cog-options-collection .dropdown-menu li')
       .then(text => {
-        if (!not) {
-          assert(tools.queryMatchesText(itemName, text),
-            'Expected to find menu item' + itemName + ', but found none.');
-        } else {
+        if (not) {
           assert(!tools.queryMatchesText(itemName, text),
             'Expected not to find menu item' + itemName + ', but found one.');
+        } else {
+          assert(tools.queryMatchesText(itemName, text),
+            'Expected to find menu item' + itemName + ', but found none.');
+        }
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I ?(do not)? see the cog$/, function (not, callback) {
+    browser
+      .elements('.select-collection cog-options-collection')
+      .then(elements => {
+        if (not) {
+          assert(elements.value.length === 0,
+            'Expected not to find the cog, but found one.');
+        } else {
+          assert(elements.value.length !== 0,
+            'Expected to find the cog, but found none.');
         }
       })
       .call(callback);
