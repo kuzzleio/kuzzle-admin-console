@@ -105,7 +105,8 @@ module.exports = function () {
       .waitForVisible('.list-indexes', 1000)
       .elements('.list-indexes .panel')
       .then(function(elements) {
-        assert.equal(elements.value.length, nb);
+        assert.equal(elements.value.length, nb,
+          'Expected ' + nb + ' indexes. Found ' + elements.value.length);
       })
       .call(callback);
   });

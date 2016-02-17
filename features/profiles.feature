@@ -1,11 +1,11 @@
-Feature: Test the roles CRUD page
+Feature: Test the profiles CRUD page
 
   Background:
     Given I go to the login page
     And I authenticate
     Then I am authenticated
 
-  Scenario: Existing roles appear in the list on the main page.
+  Scenario: Existing profiles appear in the list on the main page.
     When I go on the browse profiles page
     Then I have a list with "1" elements
 
@@ -44,7 +44,7 @@ Feature: Test the roles CRUD page
     And I have input "profile-id"
     And The input "profile-id" is not disabled
     And The input "profile-id" is empty
-    When I fill the input "id" with "newProfile"
+    When I fill the input "profile-id" with "newProfile"
     And I click the create button
     Then I am on the browse profiles page
     And I see "newProfile" in the profile list
