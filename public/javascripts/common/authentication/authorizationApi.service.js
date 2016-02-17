@@ -17,7 +17,7 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
             return accumulator || !!role.content.indexes._canCreate;
           }, false);
         },
@@ -30,20 +30,16 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
             var roleIndexes = role.content.indexes;
-            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
-              if ((index === indexIdentifier ||
-                indexIdentifier === '*' &&
-                index !== kuzzleCoreIndex) &&
-                indexIdentifier.charAt(0) !== '_'
-              ) {
-                return true;
-              }
-              return indexAccumulator;
-            }, false);
 
-            return accumulator || roleHasCollectionCreate;
+            if (roleIndexes[index]) {
+              return true;
+            } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
+              return true;
+            } else {
+              return accumulator;
+            }
           }, false);
         },
         canCreateCollection: function (index) {
@@ -55,20 +51,16 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
             var roleIndexes = role.content.indexes;
-            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
-              if ((index === indexIdentifier ||
-                indexIdentifier === '*' &&
-                index !== kuzzleCoreIndex) &&
-                indexIdentifier.charAt(0) !== '_'
-              ) {
-                return indexAccumulator || !!roleIndexes[indexIdentifier].collections._canCreate;
-              }
-              return indexAccumulator;
-            }, false);
 
-            return accumulator || roleHasCollectionCreate;
+            if (roleIndexes[index]) {
+              return roleIndexes[index].collections._canCreate;
+            } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
+              return roleIndexes['*'].collections._canCreate;
+            } else {
+              return accumulator;
+            }
           }, false);
         },
         canDeleteIndex: function (index) {
@@ -80,21 +72,15 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
+          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
             var roleIndexes = role.content.indexes;
-            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
-              var roleIndex = roleIndexes[indexIdentifier];
-              if ((index === indexIdentifier ||
-                indexIdentifier === '*' &&
-                index !== kuzzleCoreIndex) &&
-                indexIdentifier.charAt(0) !== '_'
-              ) {
-                return indexAccumulator || !!roleIndex._canDelete;
-              }
-              return indexAccumulator;
-            }, false);
-
-            return accumulator || roleHasCollectionCreate;
+            if (roleIndexes[index]) {
+              return roleIndexes[index]._canDelete;
+            } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
+              return roleIndexes['*']._canDelete;
+            } else {
+              return accumulator;
+            }
           }, false);
         },
         canDeleteCollection: function (index, collection) {
@@ -106,31 +92,33 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
-            var roleIndexes = role.content.indexes;
-            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
-              var roleIndex = roleIndexes[indexIdentifier];
-              if ((index === indexIdentifier ||
-                indexIdentifier === '*' &&
-                index !== kuzzleCoreIndex) &&
-                indexIdentifier.charAt(0) !== '_'
-              ) {
-                var hasCollectionDelete = Object.keys(roleIndex.collections).reduce(function (collectionAccumulator, collectionIdentifier) {
-                  if (collection === collectionIdentifier || collectionIdentifier === '*') {
-                    return collectionAccumulator || !!roleIndex.collections[collectionIdentifier]._canDelete;
-                  }
-                  return collectionAccumulator;
-                }, false);
+          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
+            var roleIndexes = role.content.indexes,
+              currentIndex;
 
-                return indexAccumulator || hasCollectionDelete;
-              }
-              return indexAccumulator;
-            }, false);
+            if (roleIndexes[index]) {
+              currentIndex = roleIndexes[index];
+            } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
+              currentIndex = roleIndexes['*'];
+            } else {
+              return accumulator;
+            }
 
-            return accumulator || roleHasCollectionCreate;
+            if (currentIndex.collections[collection]) {
+              return accumulator || currentIndex.collections[collection]._canDelete;
+            } else if (currentIndex.collections['*']) {
+              return accumulator || currentIndex.collections['*'];
+            } else {
+              return accumulator;
+            }
           }, false);
         },
         canDoAction: function (index, collection, controller, action) {
+          var
+            roleIndexes,
+            currentIndex,
+            currentCollection,
+            currentController;
           if (!index || !collection || !controller || !action) {
             throw new Error('[canDeleteCollection] Missing argument');
           }
@@ -139,46 +127,39 @@ angular.module('kuzzle.authorization', [])
             return false;
           }
 
-          return session.user.content.profile.content.roles.reduce(function(accumulator, role) {
-            var roleIndexes = role.content.indexes;
-            var roleHasCollectionCreate = Object.keys(roleIndexes).reduce(function (indexAccumulator, indexIdentifier) {
-              var roleIndex = roleIndexes[indexIdentifier];
-              if ((index === indexIdentifier ||
-                indexIdentifier === '*' &&
-                index !== kuzzleCoreIndex) &&
-                indexIdentifier.charAt(0) !== '_'
-              ) {
-                var hasCollectionRight = Object.keys(roleIndex.collections).reduce(function (collectionAccumulator, collectionIdentifier) {
-                  var currentCollection = roleIndex.collections[collectionIdentifier];
-                  if ((collection === collectionIdentifier ||
-                    collectionIdentifier === '*') &&
-                    collectionIdentifier.charAt(0) !== '_'
-                  ) {
-                    var hasControllerRight = Object.keys(currentCollection.controllers).reduce(function (controllerAccumulator, controllerIdentifier) {
-                      var currentController = currentCollection.controllers[controllerIdentifier];
-                      if (controller === controllerIdentifier || controllerIdentifier === '*') {
-                        var hasActionRight = Object.keys(currentController.actions).reduce(function (actionAccumulator, actionIdentifier) {
-                          if ((action === actionIdentifier || actionIdentifier === '*')) {
-                            if (typeof currentController.actions[actionIdentifier] === 'function') {
-                              return true;
-                            }
-                            return actionAccumulator || !!currentController.actions[actionIdentifier];
-                          }
-                          return controllerAccumulator;
-                        }, false);
-                        return controllerAccumulator || !!hasActionRight;
-                      }
-                      return controllerAccumulator;
-                    }, false);
-                    return collectionAccumulator || hasControllerRight;
-                  }
-                  return collectionAccumulator;
-                }, false);
-                return indexAccumulator || hasCollectionRight;
-              }
-              return indexAccumulator;
-            }, false);
-            return accumulator || roleHasCollectionCreate;
+          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
+            roleIndexes = role.content.indexes;
+
+            if (roleIndexes[index]) {
+              currentIndex = roleIndexes[index];
+            } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
+              currentIndex = roleIndexes['*'];
+            } else {
+              return accumulator;
+            }
+
+            if (currentIndex.collections[collection]) {
+              currentCollection = currentIndex.collections[collection];
+            } else if (currentIndex.collections['*']) {
+              currentCollection = currentIndex.collections['*'];
+            } else {
+              return accumulator;
+            }
+
+            if (currentCollection.controllers[controller]) {
+              currentController = currentCollection.controllers[controller];
+            } else if (currentCollection.controllers['*']) {
+              currentController = currentCollection.controllers['*'];
+            } else {
+              return accumulator;
+            }
+            if (currentController.actions[action]) {
+              return accumulator || currentController.actions[action];
+            } else if (currentController.actions['*']) {
+              return accumulator || currentController.actions['*'];
+            } else {
+              return accumulator;
+            }
           }, false);
         }
       };

@@ -47,7 +47,7 @@ Feature: Test all the actions that are not allowed by rights
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
-    Then I don't see the add document button
+    Then I do not see the add document button
 
   @cleanDb @browseData
   Scenario: I can't edit document inline in collection "readonly-collection"
@@ -55,7 +55,7 @@ Feature: Test all the actions that are not allowed by rights
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
     Then I have a list with "1" element
-    Then I don't see the edit pencil of the document in position "1"
+    Then I do not see the edit pencil of the document in position "1"
 
   @cleanDb @browseData
   Scenario: I can't delete document in collection "readonly-collection"
@@ -63,21 +63,21 @@ Feature: Test all the actions that are not allowed by rights
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
     Then I have a list with "1" element
-    Then I don't see the cogwheel of the document in position "1"
+    Then I do not see the cogwheel of the document in position "1"
 
   @cleanDb @unsubscribe @realtime
   Scenario: I can't subscribe
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on collection "private-collection"
-    And I can't see filter form
+    And I can not see filter form
 
   @realtime
   Scenario: I can't publish
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on collection "private-collection"
-    And I can't see publish form
+    And I can not see publish form
 
   @dashboard
   Scenario: I see an empty dashboard

@@ -203,7 +203,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I don't see the add document button$/, function (callback) {
+  this.Then(/^I do not see the add document button$/, function (callback) {
     browser
       .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
       .then(function(isExisting) {
@@ -212,7 +212,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I don't see the edit pencil of the document in position "([^"]*)"$/, function (position, callback) {
+  this.Then(/^I do not see the edit pencil of the document in position "([^"]*)"$/, function (position, callback) {
     browser
       .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] document-toolbar span.edit-inline')
       .then(function(isExisting) {
@@ -221,7 +221,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I don't see the cogwheel of the document in position "([^"]*)"$/, function (position, callback) {
+  this.Then(/^I do not see the cogwheel of the document in position "([^"]*)"$/, function (position, callback) {
     browser
       .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] document-toolbar span.dropdown-toggle')
       .then(function(isExisting) {
