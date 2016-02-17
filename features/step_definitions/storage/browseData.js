@@ -1,6 +1,6 @@
 var
   assert = require('assert'),
-  tools = require('../../support/tools.js'),
+  wdioWrappers = require('../../support/wdioWrappers.js'),
   world = require('../../support/world.js');
 
 module.exports = function () {
@@ -173,10 +173,10 @@ module.exports = function () {
       .getText('.select-collection cog-options-collection .dropdown-menu li')
       .then(text => {
         if (not) {
-          assert(!tools.queryMatchesText(itemName, text),
+          assert(!wdioWrappers.queryMatchesText(itemName, text),
             'Expected not to find menu item' + itemName + ', but found one.');
         } else {
-          assert(tools.queryMatchesText(itemName, text),
+          assert(wdioWrappers.queryMatchesText(itemName, text),
             'Expected to find menu item' + itemName + ', but found none.');
         }
       })
