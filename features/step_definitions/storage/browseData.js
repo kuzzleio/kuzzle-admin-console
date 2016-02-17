@@ -246,4 +246,14 @@ module.exports = function () {
       })
       .call(callback);
   });
+
+  this.Then(/^I do not see the Add Collection button$/, function (callback) {
+    browser
+      .elements('.create .btn-collection-add')
+      .then(elements => {
+        assert(elements.value.length === 0,
+          'Expected not to find the Add collection button, but found one.');
+      })
+      .call(callback);
+  });
 };
