@@ -65,7 +65,7 @@ angular.module('kuzzle.documentsInline')
           console.error(e);
         }
 
-        $state.go('user.create', {body: content});
+        $state.go('user.create', {content: content});
       };
 
       $scope.cancelModal = function () {

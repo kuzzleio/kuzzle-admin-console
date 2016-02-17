@@ -1,11 +1,11 @@
-<div class="row edit-collection" ng-controller="RoleFullCtrl" ng-init="init('{{action}}')">
+<div class="row edit-collection" ng-controller="ProfileFullCtrl" ng-init="init('{{action}}')">
     <div class="col-sm-12 headline">
         <h1 class="page-header">
             Profiles <small>{{action}}</small>
         </h1>
     </div>
 
-    <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
+    <div class="col-sm-10 col-sm-offset-1 profile-not-found" ng-if="notFoundError">
         <p>There is no profile matching the name <strong ng-bind="profile.id">null</strong>.</p>
     </div>
 
@@ -13,8 +13,8 @@
 
         <form>
             <div class="form-group">
-                <label for="name">Profile name</label>
-                <input type="text" class="form-control" ng-model="profile.id" id="name" ng-disabled="isEdit">
+                <label for="profile-id">Profile name</label>
+                <input type="text" class="form-control" ng-model="profile.id" id="profile-id" ng-disabled="isEdit">
             </div>
             <div class="form-group">
                 <label for="name">Profile content</label>

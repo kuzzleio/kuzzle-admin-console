@@ -1,6 +1,6 @@
 angular.module('kuzzle.profile')
 
-  .controller('RoleFullCtrl', [
+  .controller('ProfileFullCtrl', [
     '$scope',
     '$stateParams',
     'profileApi',

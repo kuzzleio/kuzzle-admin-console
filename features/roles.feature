@@ -13,32 +13,32 @@ Feature: Test the roles CRUD page
     When I go on the browse roles page
     And I click the full view edit button of the first role
     Then I am on the full view edit role page
-    And I have input "name"
-    And The input "name" is disabled
+    And I have input "role-id"
+    And The input "role-id" is disabled
 
   Scenario: The user is able to edit a role using the inline view.
     When I go on the browse roles page
     And I click the inline edit button of the first role
     Then I see the inline editor of the first role
     When I click the save button of the first role
-    Then I get a successful update notification
+    Then I get a successful updated role notification
 
   Scenario: The user is able to create a new role.
     When I go on the browse roles page
     And I click the add role button
     Then I am on the add role page
-    And I have input "name"
-    And The input "name" is not disabled
-    And The input "name" is empty
+    And I have input "role-id"
+    And The input "role-id" is not disabled
+    And The input "role-id" is empty
 
   Scenario: The user is able to clone a role.
     When I go on the browse roles page
     And I click the clone button of the first role
     Then I am on the add role page
-    And I have input "name"
-    And The input "name" is not disabled
-    And The input "name" is empty
-    When I fill the input "name" with "newRole"
+    And I have input "role-id"
+    And The input "role-id" is not disabled
+    And The input "role-id" is empty
+    When I fill the input "role-id" with "newRole"
     And I click the create button
     Then I am on the browse roles page
     And I see "newRole" in the roles list
