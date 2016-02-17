@@ -1,5 +1,6 @@
 var
   assert = require('assert'),
+  tools = require('../../support/tools.js'),
   world = require('../../support/world.js');
 
 module.exports = function () {
@@ -13,10 +14,19 @@ module.exports = function () {
       .url('/#/notexist/storage/browse')
       .call(callback);
   });
-
+  this.Given(/^I go to collection browse page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/collection/browse')
+      .call(callback);
+  });
   this.When(/^I click on add document button$/, function (callback) {
     browser
       .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
+      .call(callback);
+  });
+  this.When(/^I click on the cog$/, function (callback) {
+    browser
+      .click('.select-collection cog-options-collection')
       .call(callback);
   });
 
@@ -82,7 +92,7 @@ module.exports = function () {
       .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .pause(500)
-      .call(callback)
+      .call(callback);
   });
 
   this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
@@ -136,7 +146,7 @@ module.exports = function () {
       .waitForVisible('.storage-browse .create', 1000)
       .getUrl()
       .then(url => {
-        assert(url,  world.baseUrl + '/#/' + world.index + '/browse');
+        assert(url,  world.baseUrl + '/#/' + world.index + '/collection/browse');
       })
       .call(callback);
   });
@@ -152,6 +162,22 @@ module.exports = function () {
   this.Given(/^I am on browse document page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/storage/' + world.collection)
+      .call(callback);
+  });
+
+  this.Then(/^I ?(do not)? see the "([^"]*)" menu item$/, function (not, itemName, callback) {
+    browser
+      .waitForVisible('.select-collection cog-options-collection .dropdown-menu', 1000)
+      .getText('.select-collection cog-options-collection .dropdown-menu li')
+      .then(text => {
+        if (!not) {
+          assert(tools.queryMatchesText(itemName, text),
+            'Expected to find menu item' + itemName + ', but found none.');
+        } else {
+          assert(!tools.queryMatchesText(itemName, text),
+            'Expected not to find menu item' + itemName + ', but found one.');
+        }
+      })
       .call(callback);
   });
 };

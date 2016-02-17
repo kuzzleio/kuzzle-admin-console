@@ -31,7 +31,8 @@ exports.config = {
     './features/indexes.feature',
     './features/roles.feature',
     './features/profiles.feature',
-    './features/users.feature'
+    './features/users.feature',
+    './features/notAllowed.feature'
   ],
   // Patterns to exclude.
   exclude: [

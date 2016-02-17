@@ -1,9 +1,41 @@
 Feature: Test all the actions that are not allowed by rights
 
-  Scenario: I do not see the button if I cannot create a new collection
+  Background:
+  Given I go to the login page
+  And I authenticate as "userfortests" with password "test"
+  Then I am authenticated
+
+  Scenario: I do not see the Add Collection button if I have no right
+    When I go to collection browse page
+    Then I do not see the Add Collection button
+
+  @myTest
   Scenario: I am able to empty a collection only if I have the right to
+    When I am on browse data page
+    And I click on the collection selector
+    And I click on a collection
+    And I click on the cog
+    Then I do not see the "Empty" menu item
+
   Scenario: I am able to edit a collection only if I have the right to
+    When I am on browse data page
+    And I click on the collection selector
+    And I click on a collection
+    And I click on the cog
+    Then I do not see the Edit menu item
+
   Scenario: I am able to delete a collection only if I have the right to
+    When I am on browse data page
+    And I click on the collection selector
+    And I click on a collection
+    And I click on the cog
+    Then I do not see the Delete menu item
+
+  Scenario: I do not see the cog if I have no rights on the collection
+    When I am on browse data page
+    And I click on the collection selector
+    And I click on a collection
+    Then I do not see the cog
 
   Scenario: I don't see Add Collection
   Scenario: I don't see Add index
@@ -52,5 +84,3 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: Api widget
 
   Scenario: Empty dashboard
-
-
