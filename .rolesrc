@@ -1,0 +1,86 @@
+{
+  "admin": {
+    "_id": "admin",
+    "indexes": {
+      "_canCreate": true,
+      "*": {
+      "_canDelete": true,
+      "collections": {
+        "_canCreate": true,
+        "*": {
+          "_canDelete": true,
+          "controllers": {
+            "*": {
+              "actions": {
+                "*": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "%kuzzle": {
+        "_canDelete": false,
+        "collections": {
+          "_canCreate": true,
+          "*": {
+            "_canDelete": false,
+            "controllers": {
+              "*": {
+                "actions": {
+                  "*": true
+                  }
+                }
+              }
+            }
+          }
+      }
+    }
+  },
+  "anonymous": {
+    "_id": "anonymous",
+    "indexes": {
+      "_canCreate": false,
+      "*": {
+        "_canDelete": false,
+        "collections": {
+          "_canCreate": false,
+          "*": {
+            "_canDelete": false,
+            "controllers": {
+              "auth": {
+                "actions": {
+                  "login": true,
+                  "getCurrentUser": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "default": {
+    "_id": "default",
+    "indexes": {
+      "_canCreate": false,
+      "*": {
+        "_canDelete": false,
+        "collections": {
+          "_canCreate": false,
+          "*": {
+            "_canDelete": false,
+            "controllers": {
+              "auth": {
+                "actions": {
+                  "logout": true,
+                  "getCurrentUser": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

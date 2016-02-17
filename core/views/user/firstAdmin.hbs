@@ -1,0 +1,50 @@
+<div id="loading-bar-wrapper">
+  <div></div>
+</div>
+
+<div class="view-fade container login-page">
+  <div class="row">
+    <div class="col-xs-4 col-xs-push-4">
+      <img src="https://raw.githubusercontent.com/kuzzleio/kuzzle/master/docs/images/logo.png" class="img-responsive" />
+      <div class="login-container">
+
+        <iframe src="/login/sink" name="sink" style="display:none"></iframe>
+
+        <form name="loginForm"
+              action="/login/sink" target="sink" method="post"
+              ng-controller="FirstAdminController"
+              ng-submit="createFirstAdmin(credentials)"
+              novalidate fa-form-autofill-fix>
+
+          <h3>First admin account creation</h3>
+          <p>Your Kuzzle server does not have any admin account yet.<br>This form allows you to create one.</p>
+
+          <div ng-if="message" ng-bind="message" class="alert alert-warning"></div>
+
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Username"
+                   ng-model="credentials.username" required>
+            <p class="help-block">Tip: avoid to use "admin" or "root" as a username.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="password_a">Password</label>
+            <input type="password" name="password_a" class="form-control" placeholder="Password"
+                   ng-model="credentials.password_a" required>
+            <p class="help-block">Tip: mix lowercase and uppcase letters, digits and special chars. Avoid using spaces or tabs.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="password_b">Password (confirmation)</label>
+            <input type="password" name="password_b" class="form-control" placeholder="Password"
+                   ng-model="credentials.password_b" required>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Create the account</button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

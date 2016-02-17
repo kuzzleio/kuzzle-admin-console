@@ -3,6 +3,7 @@ angular.module('kuzzle', [
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
+  'kuzzle.firstAdmin',
   'kuzzle.headline',
   'kuzzle.indexes',
   'kuzzle.storage',
