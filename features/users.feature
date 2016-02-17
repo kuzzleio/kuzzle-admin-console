@@ -50,7 +50,7 @@ Feature: Test the users CRUD page
     And I have input "user-id"
     And The input "user-id" is not disabled
     And The input "user-id" is empty
-    When I fill the input "id" with "newUser"
+    When I fill the input "user-id" with "newUser"
     And I click the create button
     Then I am on the browse users page
     And I see "newUser" in the user list
