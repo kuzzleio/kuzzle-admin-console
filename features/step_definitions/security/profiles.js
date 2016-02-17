@@ -7,24 +7,31 @@ var
 searchProfileList = function (not, profileName, callback) {
   browser
     .waitForVisible('documents-inline .row.documents .document-id span', 1000)
-    .getText('documents-inline .row.documents .document-id span')
-    .then(el => {
-      if (typeof el == 'string') {
-        if (not) {
-          assert.notEqual(el, profileName, 'Expected not to find ' + profileName + ' in list');
-        } else {
-          assert.equal(el, profileName, 'Expected to find ' + profileName + ' in list, found ' + el);
+    .then(() => {
+      browser
+      .getText('documents-inline .row.documents .document-id span')
+      .then(el => {
+        if (typeof el == 'string') {
+          if (not) {
+            assert.notEqual(el, profileName, 'Expected not to find ' + profileName + ' in list');
+          } else {
+            assert.equal(el, profileName, 'Expected to find ' + profileName + ' in list, found ' + el);
+          }
         }
-      }
-      if (typeof el == 'object' && Array.isArray(el)) {
-        if (not) {
-          assert(el.indexOf(profileName) === -1, 'Expected not to find ' + profileName + ' in list');
-        } else {
-          assert(el.indexOf(profileName) >= 0, 'Expected to find ' + profileName + ' in list ' + el);
+        if (typeof el == 'object' && Array.isArray(el)) {
+          if (not) {
+            assert(el.indexOf(profileName) === -1, 'Expected not to find ' + profileName + ' in list');
+          } else {
+            assert(el.indexOf(profileName) >= 0, 'Expected to find ' + profileName + ' in list ' + el);
+          }
         }
+      })
+      .call(callback);
+    }, error => {
+      if (not) {
+        browser.call(callback);
       }
-    })
-    .call(callback);
+    });
 };
 
 module.exports = function () {
