@@ -255,4 +255,12 @@ module.exports = function () {
       callback();
     }, 200);
   });
+
+  this.Given(/^I can't see filter form$/, function (callback) {
+    callback.pending();
+  });
+
+  this.Given(/^I can't see publish form$/, function (callback) {
+    callback.pending();
+  });
 };

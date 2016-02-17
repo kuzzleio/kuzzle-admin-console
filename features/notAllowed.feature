@@ -42,45 +42,46 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: I can't delete an index
   Scenario: I can see security dongle
 
-  @cleanDb
+  @cleanDb @browseData
   Scenario: I can create document only if I have the right to
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
     Then I don't see the add document button
 
-  @cleanDb
-  Scenario: I can't edit document in collection "readonly-collection"
+  @cleanDb @browseData
+  Scenario: I can't edit document inline in collection "readonly-collection"
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
     Then I have a list with "1" element
-    Then I can't edit the document in position "1"
+    Then I don't see the edit pencil of the document in position "1"
 
-  @cleanDb
+  @cleanDb @browseData
   Scenario: I can't delete document in collection "readonly-collection"
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
     Then I have a list with "1" element
-    Then I can't delete the document in position "1"
+    Then I don't see the cogwheel of the document in position "1"
 
-  @cleanDb @unsubscribe
+  @cleanDb @unsubscribe @realtime
   Scenario: I can't subscribe
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on collection "private-collection"
     And I can't see filter form
 
-
+  @realtime
   Scenario: I can't publish
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on collection "private-collection"
     And I can't see publish form
 
-  Scenario: Stat widget
+  @dashboard
+  Scenario: I see an empty dashboard
 
-  Scenario: Api widget
+  @dashboard
+  Scenario: I don't have dashboard link in sidebar
 
-  Scenario: Empty dashboard

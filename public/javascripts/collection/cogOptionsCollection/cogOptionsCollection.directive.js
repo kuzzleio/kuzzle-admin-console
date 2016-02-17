@@ -8,19 +8,23 @@ angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuz
     function ($scope, $uibModal, $state, collectionApi, authorization) {
       var modal;
 
-      $scope.canDelete = authorization.canDeleteCollection($scope.currentIndex, $scope.collection);
-      $scope.canEdit = authorization.canDoAction(
-        $scope.currentIndex,
-        $scope.collection,
-        'admin',
-        'updateMapping'
-      );
-      $scope.canEmpty = authorization.canDoAction(
-        $scope.currentIndex,
-        $scope.collection,
-        'admin',
-        'truncateCollection'
-      );
+      if (!$scope.collection || !$scope.currentIndex) {
+        $scope.canDelete = $scope.canEdit = $scope.canEmpty = false;
+      } else {
+        $scope.canDelete = authorization.canDeleteCollection($scope.currentIndex, $scope.collection);
+        $scope.canEdit = authorization.canDoAction(
+          $scope.currentIndex,
+          $scope.collection,
+          'admin',
+          'updateMapping'
+        );
+        $scope.canEmpty = authorization.canDoAction(
+          $scope.currentIndex,
+          $scope.collection,
+          'admin',
+          'truncateCollection'
+        );
+      }
       $scope.showCog = $scope.canDelete || $scope.canEdit || $scope.canEmpty;
 
       $scope.openModalDeleteCollection = function () {

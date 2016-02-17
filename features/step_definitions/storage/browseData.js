@@ -9,6 +9,7 @@ module.exports = function () {
       .url('/#/' + world.index + '/storage/browse')
       .call(callback);
   });
+
   this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
     browser
       .url('/#/notexist/storage/browse')
@@ -40,7 +41,7 @@ module.exports = function () {
       .call(callback);
   });
 
-   this.Given(/^I am on page for create document$/, function (callback) {
+  this.Given(/^I am on page for create document$/, function (callback) {
      browser
        .url('/#/' + world.index + '/storage/' + world.collection + '/add')
        .call(callback);
@@ -52,12 +53,11 @@ module.exports = function () {
       .call(callback);
   });
 
-   this.Then(/^I have a form with fieldset "([^"]*)" with field "([^"]*)"$/, function (fieldset, field, callback) {
+  this.Then(/^I have a form with fieldset "([^"]*)" with field "([^"]*)"$/, function (fieldset, field, callback) {
      browser
        .waitForVisible('[ng-controller="StorageFullCtrl"] fieldset input[ng-model="model[\'' + fieldset + '\'][\''+ field + '\']"]', 1000)
        .call(callback);
    });
-
 
   this.Then(/^I delete the last element in list and I cancel$/, function (callback) {
     browser
@@ -177,6 +177,55 @@ module.exports = function () {
           assert(!tools.queryMatchesText(itemName, text),
             'Expected not to find menu item' + itemName + ', but found one.');
         }
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on collection "([^"]+)"$/, function (collectionName, callback) {
+    var selectedCollection = null;
+
+    browser
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
+      .getText('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .then(text => {
+        selectedCollection = text;
+      })
+      .click('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .pause(200)
+      .getText('collections-drop-down-search .dropdown-toggle')
+      .then(text => {
+        assert.equal(
+          text,
+          selectedCollection,
+          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I don't see the add document button$/, function (callback) {
+    browser
+      .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Add document button must not be displayed');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I don't see the edit pencil of the document in position "([^"]*)"$/, function (position, callback) {
+    browser
+      .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] document-toolbar span.edit-inline')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Document edit pencil must not be displayed');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I don't see the cogwheel of the document in position "([^"]*)"$/, function (position, callback) {
+    browser
+      .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] document-toolbar span.dropdown-toggle')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Document cogwheel must not be displayed');
       })
       .call(callback);
   });
