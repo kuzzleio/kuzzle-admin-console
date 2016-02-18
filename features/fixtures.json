@@ -90,7 +90,7 @@
               }
             }
           },
-          "mainindex": {
+          "kuzzle-bo-testindex": {
             "collections": {
               "*": {
                 "controllers": {
