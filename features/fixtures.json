@@ -114,6 +114,8 @@
                 "controllers": {
                   "read": {
                     "actions": {
+                      "search": true,
+                      "get": true,
                       "listCollections": true
                     }
                   }
@@ -124,7 +126,8 @@
                   "read": {
                     "actions": {
                       "search": true,
-                      "get": true
+                      "get": true,
+                      "listCollections": true
                     }
                   }
                 }
@@ -134,7 +137,8 @@
                   "read": {
                     "actions": {
                       "search": true,
-                      "get": true
+                      "get": true,
+                      "listCollections": true
                     }
                   },
                   "admin": {
@@ -149,7 +153,8 @@
                   "read": {
                     "actions": {
                       "search": true,
-                      "get": true
+                      "get": true,
+                      "listCollections": true
                     }
                   },
                   "admin": {
@@ -165,7 +170,8 @@
                   "read": {
                     "actions": {
                       "search": true,
-                      "get": true
+                      "get": true,
+                      "listCollections": true
                     }
                   },
                   "admin": {

@@ -28,28 +28,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I click on a collection$/, function (callback) {
-    var selectedCollection = null;
-
-    browser
-      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
-      .getText('collections-drop-down-search .dropdown-menu li:last-child a')
-      .then(text => {
-        selectedCollection = text;
-      })
-      .click('collections-drop-down-search .dropdown-menu li:last-child a')
-      .pause(200)
-      .getText('collections-drop-down-search .dropdown-toggle')
-      .then(text => {
-        assert.equal(
-          text,
-          selectedCollection,
-          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
-        );
-      })
-      .call(callback);
-  });
-
   this.Given(/^I subscribe to the collection events$/, function (callback) {
     browser
       .waitForVisible('.filters button.btn-subscribe', 1000)

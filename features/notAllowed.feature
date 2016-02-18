@@ -9,32 +9,32 @@ Feature: Test all the actions that are not allowed by rights
     When I go to collection browse page
     Then I do not see the Add Collection button
 
-  @myTest
+
   Scenario: I am able to empty a collection only if I have the right to
     When I am on browse data page
     And I click on the collection selector
-    And I click on a collection
+    And I click on the collection named "deletable-collection"
     And I click on the cog
     Then I do not see the "Empty" menu item
 
   Scenario: I am able to edit a collection only if I have the right to
     When I am on browse data page
     And I click on the collection selector
-    And I click on a collection
+    And I click on the collection named "deletable-collection"
     And I click on the cog
-    Then I do not see the Edit menu item
+    Then I do not see the "Edit" menu item
 
   Scenario: I am able to delete a collection only if I have the right to
     When I am on browse data page
     And I click on the collection selector
-    And I click on a collection
+    And I click on the collection named "editable-collection"
     And I click on the cog
-    Then I do not see the Delete menu item
+    Then I do not see the "Delete" menu item
 
   Scenario: I do not see the cog if I have no rights on the collection
     When I am on browse data page
     And I click on the collection selector
-    And I click on a collection
+    And I click on the collection named "readonly-collection"
     Then I do not see the cog
 
   Scenario: I don't see Add Collection

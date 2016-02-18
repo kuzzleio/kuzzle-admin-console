@@ -6,10 +6,12 @@ angular.module('kuzzle.collection')
     '$log',
     'collectionApi',
     'indexesApi',
-    function ($scope, $state, $log, collectionApi, indexesApi) {
+    'authorizationApi',
+    function ($scope, $state, $log, collectionApi, indexesApi, authorization) {
 
       $scope.collections = null;
       $scope.index = indexesApi.data.selectedIndex;
+      $scope.canCreateCollection = authorization.canCreateCollection($scope.index);
 
       $scope.init = function () {
         collectionApi.list()

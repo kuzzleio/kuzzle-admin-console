@@ -6,7 +6,8 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'collectionApi',
-    function ($scope, $http, $stateParams, $state, collectionApi) {
+    'authorizationApi',
+    function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
       $scope.collections = [];
       $scope.stateParams = $stateParams;
 
@@ -27,6 +28,21 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onSelectCollection = function (collection) {
+        $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection.name);
+        $scope.canEditCollection = authorization.canDoAction(
+          $stateParams.index,
+          collection.name,
+          'admin',
+          'updateMapping'
+        );
+        $scope.canEmptyCollection = authorization.canDoAction(
+          $stateParams.index,
+          collection.name,
+          'admin',
+          'truncateCollection'
+        );
+
+        $scope.showCog = $scope.canDeleteCollection || $scope.canEditCollection || $scope.canEmptyCollection;
         $state.go('storage.browse.documents', {index: $stateParams.index, collection: collection.name, advancedFilter: null, basicFilter: null});
       };
 
