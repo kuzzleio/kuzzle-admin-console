@@ -9,7 +9,8 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
     'bufferCancel',
     '$q',
     'authorizationApi',
-    function (kuzzleSdk, $stateParams, $http, uid, notification, bufferCancel, $q, authorization) {
+    'indexesApi',
+    function (kuzzleSdk, $stateParams, $http, uid, notification, bufferCancel, $q, authorization, indexesApi) {
       var
         clientId = uid.new();
 
@@ -28,7 +29,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             data: {
               filter: filter,
               collection: collection,
-              index: 'mainindex'
+              index: indexesApi.data.selectedIndex
             }
           });
         },
@@ -99,7 +100,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             collection: collection,
             id: id,
             clientId: clientId,
-            index: 'mainindex'
+            index: indexesApi.data.selectedIndex
           };
 
           if (buffer) {
@@ -116,7 +117,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             collection: collection,
             id: id,
             clientId: clientId,
-            index: 'mainindex'
+            index: indexesApi.data.selectedIndex
           });
         },
 

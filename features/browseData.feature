@@ -5,7 +5,7 @@ Feature: Test browse data pages
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate as "test" with password "test"
+    And I authenticate as "admin"
     Then I am authenticated
 
   @cleanDb
@@ -78,7 +78,6 @@ Feature: Test browse data pages
     And I click on "create" button
     Then the current URL corresponds to the add document page
 
-  @cleanDb
   Scenario: Edit schema on document creation
     Given I am on page for edit document "alovelace"
     Then I have an input with id "id"
@@ -111,13 +110,9 @@ Feature: Test browse data pages
     Given I am on page for edit document "alovelace"
     Then I fill the input "username" with "foo"
     And I click on "update" button
-
-  # @todo: warning, we can't switch page inside a scenario without re-logging
-  Scenario: I can retrieve an edited document with modifications
     Given I am on page for edit document "alovelace"
     Then the field "username" has the value "foo"
 
-  @cleanDb
   Scenario: Edit inline a document
     Given I am on browse data page
     Then I click on the collection selector

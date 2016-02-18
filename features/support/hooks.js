@@ -10,30 +10,19 @@ var hooks = function () {
   this.registerHandler('BeforeFeatures', function (event, callback) {
     browser
       .setViewportSize({width: 1920, height: 1080})
-      .call(callback);
-  });
-
-  this.Before('@createIndex', function (scenario, callback) {
-    console.log('@createIndex');
-
-    var timeoutCallback = function () {
-      setTimeout(function() {
-        callback();
-      }, 2000);
-    };
-
-    removeIndex(function() {
-      initIndex(function() {
-        bulk()
-        .then(timeoutCallback)
-        .catch(timeoutCallback);
+      .call(() => {
+        cleanDb(callback);
       });
-    });
   });
 
-  this.Before('@cleanDb', function (scenario, callback) {
+  this.After('@cleanDb', function (scenario, callback) {
     console.log('@cleanDb');
-    initCollection.call(this, callback);
+    cleanDb(callback);
+  });
+
+  this.After('@cleanSecurity', function (scenario, callback) {
+    console.log('@cleanSecurity');
+    cleanSecurity.call(this, callback);
   });
 
   this.After('@unsubscribe', function (scenario, callback) {
@@ -46,6 +35,22 @@ var hooks = function () {
       world.currentRoom.unsubscribe();
       world.currentRoom = null;
     }
+  });
+};
+
+var cleanDb = function (callback) {
+  var timeoutCallback = function () {
+    setTimeout(function() {
+      callback();
+    }, 2000);
+  };
+
+  removeIndex(function() {
+    initIndex(function() {
+      bulk()
+        .then(timeoutCallback)
+        .catch(timeoutCallback);
+    });
   });
 };
 
@@ -87,26 +92,6 @@ var removeIndex = function (callback) {
     .catch(timeoutCallback);
 };
 
-var initCollection = function (callback) {
-  var timeoutCallback = function () {
-    setTimeout(() => {
-      callback();
-    }, 1000);
-  };
-
-  world.kuzzle
-    .dataCollectionFactory(world.collection)
-    .deletePromise()
-    .then(() => {
-      bulk()
-        .then(timeoutCallback);
-    })
-    .catch(() => {
-      bulk()
-        .then(timeoutCallback);
-    });
-};
-
 var bulk = function () {
   var query = {
     controller: 'bulk',
@@ -117,6 +102,92 @@ var bulk = function () {
 
   return world.kuzzle
     .queryPromise(query, {body: fixtures[world.index][world.collection]});
+};
+
+var cleanSecurity = function (callback) {
+  world.kuzzle
+    .listIndexesPromise()
+    .then(indexes => {
+      if (indexes.indexOf('%kuzzle') === -1) {
+        return q.reject(new ReferenceError('%kuzzle index not found'));
+      }
+    })
+    .then(() => {
+      var query = {
+        controller: 'write',
+        action: 'deleteByQuery',
+        index: '%kuzzle',
+        collection: 'users'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: { filter: { regexp: { _uid: 'users.' + world.idPrefix + '.*' } } }});
+    })
+    .then(() => {
+      var query = {
+        controller: 'write',
+        action: 'deleteByQuery',
+        index: '%kuzzle',
+        collection: 'profiles'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: { filter: { regexp: { _uid: 'profiles.' + world.idPrefix + '.*' } } }});
+    })
+    .then(() => {
+      var query = {
+        controller: 'write',
+        action: 'deleteByQuery',
+        index: '%kuzzle',
+        collection: 'roles'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: {filter: { regexp: { _uid: 'roles.' + world.idPrefix + '.*' } } }});
+    })
+    .then(() => {
+      var query = {
+        controller: 'bulk',
+        action: 'import',
+        index: '%kuzzle',
+        collection: 'roles'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: fixtures['%kuzzle']['roles']});
+    })
+    .then(() => {
+      var query = {
+        controller: 'bulk',
+        action: 'import',
+        index: '%kuzzle',
+        collection: 'profiles'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: fixtures['%kuzzle']['profiles']});
+    })
+    .then(() => {
+      var query = {
+        controller: 'bulk',
+        action: 'import',
+        index: '%kuzzle',
+        collection: 'users'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: fixtures['%kuzzle']['users']});
+    })
+    .then(() => {
+      callback();
+    })
+    .catch(error => {
+      if (error instanceof ReferenceError && error.message === '%kuzzle index not found') {
+        // The %kuzzle index is not created yet. Is not a problem if the tests are run for the first time.
+        callback();
+      }
+      callback(error);
+    });
 };
 
 module.exports = hooks;

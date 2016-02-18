@@ -2,13 +2,12 @@ Feature: Test all the actions that are not allowed by rights
 
   Background:
   Given I go to the login page
-  And I authenticate as "userfortests" with password "test"
+  And I authenticate as "standard"
   Then I am authenticated
 
   Scenario: I do not see the Add Collection button if I have no right
     When I go to collection browse page
     Then I do not see the Add Collection button
-
 
   Scenario: I am able to empty a collection only if I have the right to
     When I am on browse data page
@@ -42,14 +41,14 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: I can't delete an index
   Scenario: I can see security dongle
 
-  @cleanDb @browseData
+  @browseData
   Scenario: I can create document only if I have the right to
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on collection "readonly-collection"
     Then I do not see the add document button
 
-  @cleanDb @browseData
+  @browseData
   Scenario: I can't edit document inline in collection "readonly-collection"
     Given I am on browse data page
     Then I click on the collection selector
@@ -57,7 +56,7 @@ Feature: Test all the actions that are not allowed by rights
     Then I have a list with "1" element
     Then I do not see the edit pencil of the document in position "1"
 
-  @cleanDb @browseData
+  @browseData
   Scenario: I can't delete document in collection "readonly-collection"
     Given I am on browse data page
     Then I click on the collection selector

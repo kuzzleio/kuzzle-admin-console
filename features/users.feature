@@ -2,7 +2,7 @@ Feature: Test the users CRUD page
 
   Background:
     Given I go to the login page
-    And I authenticate as "test" with password "test"
+    And I authenticate as "admin"
     Then I am authenticated
 
   Scenario: Existing profiles appear in the list on the main page.
@@ -22,6 +22,7 @@ Feature: Test the users CRUD page
     And I have input "user-id"
     And The input "user-id" is disabled
 
+  @cleanSecurity
   Scenario: The user is able to edit an user using the inline view.
     When I go on the browse users page
     And I click the inline edit button of the last user
@@ -29,6 +30,7 @@ Feature: Test the users CRUD page
     When I click the save button of the last user
     Then I get a successful updated user notification
 
+  @cleanSecurity
   Scenario: The user is able to create a new user.
     When I go on the browse users page
     And I click the add user button
@@ -37,7 +39,7 @@ Feature: Test the users CRUD page
     And The input "user-id" is not disabled
     And The input "user-id" is empty
 
-  @myTest
+  @cleanSecurity
   Scenario: The user is able to clone a user and delete it.
     When I go on the browse users page
     And I click the clone button of the last user

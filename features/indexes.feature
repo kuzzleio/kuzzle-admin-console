@@ -8,7 +8,6 @@ Feature: Test multi index features
     And I authenticate as "test" with password "test"
     Then I am authenticated
 
-  @cleanDb
   Scenario: I can select an index with the index selector in sidebar
     Given I go to manage index page
     Then No index is selected

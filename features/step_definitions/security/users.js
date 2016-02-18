@@ -75,7 +75,6 @@ module.exports = function () {
     browser
       .waitForVisible('documents-inline .row.documents:last-child .icons .edit-document.edit-inline', 1000)
       .click('documents-inline .row.documents:last-child .icons .edit-document.edit-inline')
-      .saveScreenshot('./features/errorShots/test.png')
       .call(callback);
   });
 

@@ -2,7 +2,7 @@ Feature: Test the profiles CRUD page
 
   Background:
     Given I go to the login page
-    And I authenticate as "test" with password "test"
+    And I authenticate as "admin"
     Then I am authenticated
 
   Scenario: Existing profiles appear in the list on the main page.
@@ -29,6 +29,7 @@ Feature: Test the profiles CRUD page
     When I click the save button of the last profile
     Then I get a successful updated profile notification
 
+  @cleanSecurity
   Scenario: The user is able to create a new profile.
     When I go on the browse profiles page
     And I click the add profile button
@@ -37,6 +38,7 @@ Feature: Test the profiles CRUD page
     And The input "profile-id" is not disabled
     And The input "profile-id" is empty
 
+  @cleanSecurity
   Scenario: The user is able to clone a profile and delete it.
     When I go on the browse profiles page
     And I click the clone button of the last profile
@@ -48,8 +50,12 @@ Feature: Test the profiles CRUD page
     And I click the create button
     Then I am on the browse profiles page
     And I see "newProfile" in the profile list
-    # Should we prevent the deletion of profiles that are used by existing users?
-    And I click the delete button of the profile "newProfile"
+
+  # Should we prevent the deletion of profiles that are used by existing users?
+  @cleanSecurity
+  Scenario: The user is able to delete a role.
+    When I go on the browse profiles page
+    And I click the delete button of the profile "kuzzle-bo-dummy"
     Then I can see "modal-delete-profile" modal
     When I fill the confirmation modal with the name of the deleted profile
     And I confirm the deletion

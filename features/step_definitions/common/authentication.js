@@ -1,5 +1,7 @@
-var c = require('../../support/config.js');
-var assert = require('assert');
+var
+  c = require('../../support/config.js'),
+  assert = require('assert'),
+  world = require('../../support/world');
 
 module.exports = function () {
   this.Given(/^I go to the login page$/, function (callback) {
@@ -14,10 +16,15 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I authenticate as "([^"]*)" with password "([^"]*)"$/, function (username, password, callback) {
+  this.Given(/^I authenticate as "([^"]*)"$/, function (user, callback) {
+
+    if (!world.users.hasOwnProperty(user)) {
+      throw new Error(`User ${user} not exists in world`);
+    }
+
     browser
-      .setValue('[name=username]', username)
-      .setValue('[name=password]', password)
+      .setValue('[name=username]', world.users[user]._id)
+      .setValue('[name=password]', world.users[user].clearPassword)
       .click('[type=submit]')
       .waitForVisible('.navbar-brand', 3000)
       .pause(1000)

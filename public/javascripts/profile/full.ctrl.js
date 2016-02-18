@@ -38,7 +38,7 @@ angular.module('kuzzle.profile')
             $scope.profile.content = angular.toJson(content, 4);
           }
           catch (e) {
-            console.log(e);
+            console.error(e);
           }
         }
       };

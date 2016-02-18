@@ -1,5 +1,5 @@
 {
-  "mainindex": {
+  "kuzzle-bo-testindex": {
     "kuzzle-bo-test": [
       { "index" : {"_id": "ghopper"}},
       { "username": "ghopper", "name": {"first": "Grace", "last": "Hopper"} },
@@ -29,7 +29,7 @@
   },
   "%kuzzle": {
     "roles": [
-      { "create": { "_id": "role1" } },
+      { "create": { "_id": "kuzzle-bo-dummy" } },
       {
         "indexes": {
           "fakeIndex1": {
@@ -61,25 +61,7 @@
           }
         }
       },
-      { "create": { "_id": "only-public-collections" } },
-      {
-        "indexes": {
-          "mainindex": {
-            "collections": {
-              "kuzzle-bo-test": {
-                "controllers": {
-                  "*": {
-                    "actions": {
-                      "*": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      { "create": { "_id": "role-for-tests" } },
+      { "create": { "_id": "kuzzle-bo-standard" } },
       {
         "indexes": {
           "_canCreate": false,
@@ -187,31 +169,34 @@
       }
     ],
     "profiles": [
-      { "create": { "_id": "myprofile" } },
+      { "create": { "_id": "kuzzle-bo-dummy" } },
       {
-        "roles": ["role1"]
+        "roles": ["kuzzle-bo-dummy"]
       },
-      { "create": { "_id": "profile-for-tests" } },
+      { "create": { "_id": "kuzzle-bo-standard" } },
       {
-        "roles": ["role-for-tests"]
+        "roles": ["kuzzle-bo-standard"]
       }
     ],
     "users": [
-      { "create": { "_id": "test" } },
+      { "create": { "_id": "kuzzle-bo-admin" } },
       {
+        "_id": "kuzzle-bo-admin",
         "profile": "admin",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
-      { "create": { "_id": "test1" } },
+      { "create": { "_id": "kuzzle-bo-dummy" } },
       {
-        "profile": "myprofile",
+        "_id": "kuzzle-bo-dummy",
+        "profile": "kuzzle-bo-dummy",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
-      { "create": { "_id": "userfortests" } },
+      { "create": { "_id": "kuzzle-bo-standard" } },
       {
-        "profile": "profile-for-tests",
+        "_id": "kuzzle-bo-standard",
+        "profile": "kuzzle-bo-standard",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       }

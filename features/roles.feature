@@ -2,7 +2,7 @@ Feature: Test the roles CRUD page
 
   Background:
     Given I go to the login page
-    And I authenticate as "test" with password "test"
+    And I authenticate as "admin"
     Then I am authenticated
 
   Scenario: Existing roles appear in the list on the main page.
@@ -16,6 +16,7 @@ Feature: Test the roles CRUD page
     And I have input "role-id"
     And The input "role-id" is disabled
 
+  @cleanSecurity
   Scenario: The user is able to edit a role using the inline view.
     When I go on the browse roles page
     And I click the inline edit button of the first role
@@ -23,6 +24,7 @@ Feature: Test the roles CRUD page
     When I click the save button of the first role
     Then I get a successful updated role notification
 
+  @cleanSecurity
   Scenario: The user is able to create a new role.
     When I go on the browse roles page
     And I click the add role button
@@ -31,6 +33,7 @@ Feature: Test the roles CRUD page
     And The input "role-id" is not disabled
     And The input "role-id" is empty
 
+  @cleanSecurity
   Scenario: The user is able to clone a role.
     When I go on the browse roles page
     And I click the clone button of the first role
@@ -44,6 +47,7 @@ Feature: Test the roles CRUD page
     And I see "newRole" in the roles list
 
   # Should we prevent the deletion of roles that are used by existing profiles?
+  @cleanSecurity
   Scenario: The user is able to delete a role.
     When I go on the browse roles page
     And I click the delete button of the first role

@@ -13,7 +13,7 @@ angular.module('kuzzle.authentication')
     var onLoginSuccess = function (broadcastEvent) {
       kuzzle.whoAmI(function (err, res) {
         if (err || !res) {
-          console.log('Unable to retrieve user information', err);
+          console.error('Unable to retrieve user information', err);
           return;
         }
 
@@ -35,7 +35,7 @@ angular.module('kuzzle.authentication')
 
     var onLoginFailed = function (err) {
       if (err) {
-        console.log('Authentication error.', err.message);
+        console.error('Authentication error.', err.message);
       }
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     };
