@@ -62,11 +62,9 @@ angular.module('kuzzle.authorization', [])
             }
             roleIndexes = role.content.indexes;
 
-            if (!roleIndexes[index].collections) {
-              return accumulator;
-            } else if (roleIndexes[index]) {
+            if (roleIndexes[index]) {
               return accumulator ||
-                typeof roleIndexes[index].collections !== 'undefined' ||
+                typeof roleIndexes[index].collections === 'undefined' ||
                 typeof roleIndexes[index].collections._canCreate === 'undefined' ||
                 !!roleIndexes[index].collections._canCreate;
             } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
