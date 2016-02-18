@@ -39,6 +39,16 @@
             <div class="row whitespace-top">
               <div class="col-sm-12">
                 <div ui-view="mainView"></div>
+                <div class="row" ng-if="!stateParams.collection">
+                  <span class="select-collection-helper helper-realtime">
+                    Select a collection here <i class="glyphicon glyphicon-arrow-up"></i>
+                  </span>
+                  <div class="col-sm-4 col-sm-offset-4 text-center" style="
+                        margin-top: 200px;
+                        opacity: 0.4;">
+                    <h3>Select a collection to continue</h3>
+                  </div>
+                </div>
 
                 <messages
                         class="fixed-right message-log"
