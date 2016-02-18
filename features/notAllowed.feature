@@ -86,5 +86,6 @@ Feature: Test all the actions that are not allowed by rights
     Then I have a display of "0" widgets
 
   @dashboard
-  Scenario: I don't have dashboard link in sidebar
+  Scenario: I do not have dashboard link in sidebar
+    Then I do not see the sidebar dashboard link
 

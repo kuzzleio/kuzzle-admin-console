@@ -92,4 +92,14 @@ module.exports = function () {
       })
       .then(callback);
   });
+
+  this.Then(/^I do not see the sidebar dashboard link$/, function(callback) {
+    browser
+      .waitForVisible('#sidebar')
+      .isExisting('#sidebar .fa-dashboard')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Dashboard sidebar link shall not be displayed');
+      })
+      .call(callback);
+  });
 };
