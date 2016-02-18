@@ -79,13 +79,13 @@ Feature: Test all the actions that are not allowed by rights
     Given I click on collection "private-collection"
     And I can not see publish form
 
-  @dashboard
-  Scenario: I see an empty dashboard
-    Given I am on dashboard page
-    And I see the page title "Dashboard"
+  @metrics
+  Scenario: I see an empty metrics
+    Given I am on metrics page
+    And I see the page title "System metrics"
     Then I have a display of "0" widgets
 
-  @dashboard
-  Scenario: I do not have dashboard link in sidebar
-    Then I do not see the sidebar dashboard link
+  @metrics
+  Scenario: I do not have metrics link in sidebar
+    Then I do not see the sidebar metrics link
 

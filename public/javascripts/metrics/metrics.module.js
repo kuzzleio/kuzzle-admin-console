@@ -1,4 +1,4 @@
-angular.module('kuzzle.dashboard', [
+angular.module('kuzzle.metrics', [
   'kuzzle.authentication'
 ])
   .filter('secondsToDateTime', function($filter) {

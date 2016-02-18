@@ -1,5 +1,5 @@
-angular.module('kuzzle.dashboard')
-  .controller('DashboardCtrl', [
+angular.module('kuzzle.metrics')
+  .controller('MetricsCtrl', [
     '$scope',
     '$window',
     'serverApi',

@@ -3,7 +3,7 @@ var
   assert = require('assert');
 
 module.exports = function () {
-  this.Given(/^I am on dashboard page$/, function (callback) {
+  this.Given(/^I am on metrics page$/, function (callback) {
     browser
       .getUrl()
       .then(url => {
@@ -21,7 +21,7 @@ module.exports = function () {
 
   this.Then(/^I have a display of "([\d]+)" widgets$/, function (count, callback) {
     browser
-      .waitForVisible('.dashboard-row', 1000)
+      .waitForVisible('.metrics-row', 1000)
       .elements('widget')
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count), 'Must have ' + count + ' widgets, get ' + elements.value.length);
@@ -85,7 +85,7 @@ module.exports = function () {
 
   this.Then(/^I see the page title "([^"]+)"$/, function(title, callback) {
     browser
-      .waitForVisible('.dashboard-container headline')
+      .waitForVisible('.metrics-container headline')
       .getAttribute('.dashboard-container headline', 'title')
       .then(function(value) {
         assert.deepEqual(value, title);
@@ -93,12 +93,12 @@ module.exports = function () {
       .then(callback);
   });
 
-  this.Then(/^I do not see the sidebar dashboard link$/, function(callback) {
+  this.Then(/^I do not see the sidebar metrics link$/, function(callback) {
     browser
       .waitForVisible('#sidebar')
-      .isExisting('#sidebar .fa-dashboard')
+      .isExisting('#sidebar .fa-metrics')
       .then(function(isExisting) {
-        assert(!isExisting, 'Dashboard sidebar link shall not be displayed');
+        assert(!isExisting, 'System metrics sidebar link shall not be displayed');
       })
       .call(callback);
   });

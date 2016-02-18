@@ -1,7 +1,7 @@
 <div class="view-fade h100 posrel">
-    <div class="dashboard-container" ng-controller="DashboardCtrl" ng-init="init()">
-        <headline title="Dashboard" subtitle="server state"></headline>
-        <div class="whitespace-top dashboard-row">
+    <div class="metrics-container" ng-controller="MetricsCtrl" ng-init="init()">
+        <headline title="System metrics" subtitle="server state"></headline>
+        <div class="whitespace-top metrics-row">
             <widget title="Server Information" name="serverInfo" widgets="widgets" ng-if="canGetServerInfo">
                 <table class="table">
                     <tbody>
