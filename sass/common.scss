@@ -193,5 +193,10 @@ headline > div {
 
   h1 {
     margin: 0 10px 0 5px;
+    color: #004B52;
+
+    small {
+      color: rgba(0, 75, 82, 0.75);
+    }
   }
 }
