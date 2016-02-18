@@ -8,7 +8,7 @@ module.exports = function () {
   this.When(/^I go on the browse roles page$/, function (callback) {
     browser
       .url('/#/role/browse')
-      .waitForVisible('button.btn-success', 1000)
+      .pause(300)
       .call(callback);
   });
 
