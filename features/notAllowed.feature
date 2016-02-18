@@ -81,6 +81,9 @@ Feature: Test all the actions that are not allowed by rights
 
   @dashboard
   Scenario: I see an empty dashboard
+    Given I am on dashboard page
+    And I see the page title "Dashboard"
+    Then I have a display of "0" widgets
 
   @dashboard
   Scenario: I don't have dashboard link in sidebar

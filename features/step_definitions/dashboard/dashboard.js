@@ -82,4 +82,14 @@ module.exports = function () {
       })
       .call(callback);
   });
+
+  this.Then(/^I see the page title "([^"]+)"$/, function(title, callback) {
+    browser
+      .waitForVisible('.dashboard-container headline')
+      .getAttribute('.dashboard-container headline', 'title')
+      .then(function(value) {
+        assert.deepEqual(value, title);
+      })
+      .then(callback);
+  });
 };
