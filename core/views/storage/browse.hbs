@@ -1,7 +1,7 @@
 <div class="storage-browse" ng-controller="StorageBrowseCtrl" ng-init="init()">
   <headline title="Storage" subtitle="Browse data"></headline>
   <div class="container">
-    <div class="row">
+    <div class="row pull-right" style="margin-top: -63px;">
         <div class="col-sm-12">
           <h2 class="select-collection">
               Collection
@@ -28,14 +28,19 @@
           </h2>
         </div>
     </div>
-
     <div class="row" ng-if="stateParams.collection">
-        <div class="col-sm-12">
-            <div ui-view="subView" class="view-fade"></div>
-        </div>
+      <div class="col-sm-12">
+        <div class="container">
+          <div class="row whitespace-top">
+            <div class="col-sm-12">
+              <div ui-view="subView" class="view-fade"></div>
+            </div>
 
-        <div class="col-sm-9" ng-if="collections.length === 0">
-            <p>There is no collection in this database</p>
+            <div class="col-sm-12" ng-if="collections.length === 0">
+                <p>There is no collection in this database</p>
+            </div>
+          </div>
+        </div>
         </div>
     </div>
   </div>

@@ -8,7 +8,7 @@
 >
     <ul class="nav navbar-nav side-nav">
         <li ui-sref-active="active">
-            <a ui-sref="logged">
+            <a ui-sref="logged"  ng-class="{ in: ('logged.metrics' | includedByState) }">
                 <i class="fa fa-fw fa-area-chart pull-left"></i>
                     System metrics
                 <i class="fa fa-fw fa-caret-down pull-right clear"></i>
@@ -93,7 +93,7 @@
         <!-- / Data -->
 
 
-        <!-- Plugins -->
+        <!-- Plugins ->
         <li>
             <a href data-toggle="collapse" data-target="#menu-plugins">
                 <i class="fa fa-puzzle-piece pull-left"></i>
@@ -108,11 +108,11 @@
                 <li></li>
             </ul>
         </li>
-        <!-- / Plugins -->
+        <-- / Plugins -->
 
         <!-- Security -->
         <li>
-            <a href data-toggle="collapse" data-target="#menu-security">
+            <a href data-toggle="collapse" data-target="#menu-security" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
                 <i class="fa fa-shield pull-left"></i>
                 Security
                 <i class="fa fa-fw fa-caret-down pull-right"></i>

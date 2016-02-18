@@ -3,11 +3,17 @@
     <div class="container">
         <div class="row whitespace-top">
             <div class="col-sm-12">
-                <div class="row create">
+                <div class="create">
                     <button type="button" class="btn btn-success"  ui-sref="profile.create">Add profile</button>
                 </div>
 
-                <documents-inline documents="profiles" profile="true" can-edit="true"></documents-inline>
+              <div class="container">
+                <div class="row whitespace-top">
+                  <div class="col-sm-12">
+                    <documents-inline documents="profiles" profile="true" can-edit="true"></documents-inline>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="col-sm-9" ng-if="profiles.length === 0">

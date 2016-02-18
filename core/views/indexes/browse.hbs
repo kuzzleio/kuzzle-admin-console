@@ -1,65 +1,68 @@
 <div class="indexes-browse" ng-controller="IndexesCtrl" ng-init="init()">
   <headline title="Storage" subtitle="Browse indexes"></headline>
-  <div class="row whitespace-top">
-    <div class="col-sm-8 col-sm-offset-2">
-        <div class="row create">
-            <div class="col-sm-5">
-                <button type="button" class="btn btn-success"  ui-sref="indexes.create">Add index</button>
-            </div>
-        </div>
 
-        <div class="row" ng-if="indexData.indexes.length !== 0">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-sm-12 index-filter">
+  <div class="container">
+    <div class="row whitespace-top">
+      <div class="col-sm-12">
+          <div class="row create">
+              <div class="col-sm-5">
+                  <button type="button" class="btn btn-success"  ui-sref="indexes.create">Add index</button>
+              </div>
+          </div>
 
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                <div class="form-group">
-                                    <label for="filter">Indexes filter</label>
-                                    <input
-                                        id="filter"
-                                        type="text"
-                                        ng-model="search"
-                                        placeholder="Index name"
-                                        uib-typeahead="index for index in indexData.indexes | filter:$viewValue"
-                                        typeahead-min-length="0"
-                                        class="form-control" />
-                                </div>
-                            </div>
-                        </div>
+          <div class="row" ng-if="indexData.indexes.length !== 0">
+              <div class="col-sm-12">
+                  <div class="row">
+                      <div class="col-sm-12 index-filter">
 
-                    </div>
-                </div>
+                          <div class="panel panel-default">
+                              <div class="panel-body">
+                                  <div class="form-group">
+                                      <label for="filter">Indexes filter</label>
+                                      <input
+                                          id="filter"
+                                          type="text"
+                                          ng-model="search"
+                                          placeholder="Index name"
+                                          uib-typeahead="index for index in indexData.indexes | filter:$viewValue"
+                                          typeahead-min-length="0"
+                                          class="form-control" />
+                                  </div>
+                              </div>
+                          </div>
 
-                <div class="row">
-                    <div class="col-sm-12 list-indexes">
-                        <div class="panel panel-primary" ng-repeat="index in indexData.indexes | orderBy | filter:search">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
-                                    <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Go to full view"></span>
+                      </div>
+                  </div>
 
-                                    <span class="pull-right">
-                                        <span class="glyphicon glyphicon-th-list" ng-click="browseCollection(index)" title="Go to collections list"></span>
-                                        <cog-options-indexes
-                                            index="index"
-                                            can-edit="false"
-                                            after-delete="afterDelete(index)">
-                                        </cog-options-indexes>
-                                    </span>
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                  <div class="row">
+                      <div class="col-sm-12 list-indexes">
+                          <div class="panel panel-primary" ng-repeat="index in indexData.indexes | orderBy | filter:search">
+                              <div class="panel-heading">
+                                  <h3 class="panel-title">
+                                      <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Go to full view"></span>
 
-        <div class="row">
-            <div class="col-sm-12" ng-if="indexData.indexes.length === 0">
-                <p>There is no indexes in this database</p>
-            </div>
-        </div>
+                                      <span class="pull-right">
+                                          <span class="glyphicon glyphicon-th-list" ng-click="browseCollection(index)" title="Go to collections list"></span>
+                                          <cog-options-indexes
+                                              index="index"
+                                              can-edit="false"
+                                              after-delete="afterDelete(index)">
+                                          </cog-options-indexes>
+                                      </span>
+                                  </h3>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="row">
+              <div class="col-sm-12" ng-if="indexData.indexes.length === 0">
+                  <p>There is no indexes in this database</p>
+              </div>
+          </div>
+      </div>
     </div>
   </div>
 </div>

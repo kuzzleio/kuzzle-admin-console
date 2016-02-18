@@ -3,6 +3,7 @@
     overflow-y: auto;
 ">
   <button
+    ng-if="collection"
     class="pull-right btn btn-default btn-clear"
     ng-click="initMessages()"
     style="margin: 10px 20px;
@@ -11,7 +12,8 @@
       right: 0;">
     Clear
   </button>
-  <ul class="message-list">
+  <ul class="message-list"
+      ng-if="collection">
     <li class="message-item" ng-repeat="(index, message) in messages">
       <span class="{{message.class}}">
         <span class="glyphicon glyphicon-{{message.icon}}"></span>&nbsp;

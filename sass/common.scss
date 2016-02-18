@@ -84,23 +84,29 @@ div.view-fade {
 }
 
 .document-id {
-  &.ellipsis {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    margin-left: 4px;
-    margin-right: -4px;
+  span {
+    background-color: #EFEFEF;
+    border: 1px solid rgba(43, 43, 43, 0.04);
+    border-radius: 4px;
+    padding: 2px 6px 2px 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #004B52;
+    display: block;
+
+    &.ellipsis {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-left: -5px;
+      margin-right: -4px;
+    }
   }
-
-  background-color: #EFEFEF;
-  border: 1px solid rgba(43, 43, 43, 0.04);
-  border-radius: 4px;
-  padding: 2px 6px 2px 6px;
-  cursor: pointer;
-  font-size: 0.9em;
-  color: #004B52;
 }
-
+.profiles-list,
+.roles-list {
+  display: block;
+}
 /* FORM */
 input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
     border-color: #FA787E;
@@ -165,5 +171,27 @@ h2.select-collection {
     .search {
       padding: 5px;
     }
+  }
+}
+
+* {
+  border-radius: 0 !important;
+}
+.container {
+  width: 100%;
+}
+.container-fluid {
+  padding:0;
+  margin:0;
+}
+headline > div {
+  background: #FFFFFF;
+  box-shadow: 0 4px 2px -1px rgba(0,0,0,0.1) inset;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(38, 50, 56, 0.36);
+
+  h1 {
+    margin: 0 10px 0 5px;
   }
 }

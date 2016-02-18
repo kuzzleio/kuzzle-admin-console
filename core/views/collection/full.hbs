@@ -1,15 +1,12 @@
-<div class="row edit-collection" ng-controller="CollectionFullCtrl" ng-init="init('{{action}}')">
-    <div class="col-sm-12 headline">
-        <h1 class="page-header">
-            Collection <small>{{action}}</small>
-        </h1>
-    </div>
-
-    <div class="col-sm-10 col-sm-offset-1" ng-if="notFoundError">
+<div class="edit-collection" ng-controller="CollectionFullCtrl" ng-init="init('{{action}}')">
+  <headline title="Collection" subtitle="{{action}}"></headline>
+  <div class="container">
+    <div class="row whitespace-top">
+      <div class="col-sm-12" ng-if="notFoundError">
         <p>There is no document matching the collection <strong ng-bind="collection"></strong>.</p>
-    </div>
+      </div>
 
-    <div class="col-sm-10 col-sm-offset-1" ng-if="!notFoundError">
+      <div class="col-sm-12" ng-if="!notFoundError">
 
         <form>
             <div class="form-group">
@@ -28,5 +25,7 @@
             </div>
         </form>
 
+      </div>
     </div>
+  </div>
 </div>

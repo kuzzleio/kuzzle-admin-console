@@ -1,84 +1,88 @@
 <div class="view-fade h100 posrel">
-    <div class="metrics-container" ng-controller="MetricsCtrl" ng-init="init()">
-        <headline title="System metrics" subtitle="server state"></headline>
-        <div class="whitespace-top metrics-row">
-            <widget title="Server Information" name="serverInfo" widgets="widgets">
-                <table class="table">
-                    <tbody>
-                    <tr>
-                        <th>Component</th>
-                        <th>Information</th>
-                    </tr>
-                    <tr>
-                        <td>Uptime</td>
-                        <td ng-bind="serverInfo.kuzzle.uptime | secondsToDateTime"></td>
-                    </tr>
-                    <tr>
-                        <td>Kuzzle version</td>
-                        <td ng-bind="serverInfo.kuzzle.version"></td>
-                    </tr>
-                    <tr>
-                        <td>Node version</td>
-                        <td ng-bind="serverInfo.kuzzle.nodeVersion"></td>
-                    </tr>
-                    <tr>
-                        <td>Used memory</td>
-                        <td ng-bind="Math.round(serverInfo.kuzzle.memoryUsed / 1024 / 1024) + ' Mb'"></td>
-                    </tr>
-                    <tr>
-                        <td>Free memory</td>
-                        <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.free / 1024 / 1024) + ' Mb'"></td>
-                    </tr>
-                    <tr>
-                        <td>Total memory</td>
-                        <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.total / 1024 / 1024) + ' Mb'"></td>
-                    </tr>
-                    <tr>
-                        <td>Cpu count</td>
-                        <td ng-bind="serverInfo.kuzzle.system.cpus.length"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </widget>
-            <widget title="Plugin Information" name="pluginInfo" widgets="widgets">
-                <table class="table">
-                    <tbody>
-                    <tr>
-                        <th>Plugin</th>
-                        <th>Version</th>
-                        <th>Activated</th>
-                    </tr>
-                    <tr ng-repeat="(key, plugin) in serverInfo.kuzzle.plugins">
-                        <td ng-bind="plugin.name"></td>
-                        <td ng-bind="plugin.version || 'N/A'"></td>
-                        <td>
-                            <span ng-class="{ 'glyphicon glyphicon-ok': plugin.activated, 'glyphicon glyphicon-remove': !plugin.activated }"></span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </widget>
-            <widget title="API Information" name="apiInfo" widgets="widgets">
-                <table class="table">
-                    <tbody>
-                    <tr>
-                        <th>Controller</th>
-                        <th>Actions</th>
-                    </tr>
-                    <tr ng-repeat="(controller, routes) in serverInfo.kuzzle.api.routes">
-                        <td ng-bind="controller"></td>
-                        <td><span ng-repeat="route in routes" ng-bind="route + ' '"></span></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </widget>
-            <widget title="Statistics" name="statInfo" widgets="widgets">
-                <chart ylabel="Requests" series="statisticSeries" newvalue="newStatValue"></chart>
-            </widget>
-            <widget title="Resources usage" name="resourceInfo" widgets="widgets">
-                <gauge label="Cpu" value="cpuPercent"></gauge>
-                <gauge label="Memory" value="memoryPercent"></gauge>
-            </widget>
+  <div class="metrics-container" ng-controller="MetricsCtrl" ng-init="init()">
+    <headline title="System metrics" subtitle="server state"></headline>
+    <div class="container">
+      <div class="whitespace-top metrics-row">
+        <div class="col-sm-12">
+          <widget title="Server Information" name="serverInfo" widgets="widgets">
+              <table class="table">
+                  <tbody>
+                  <tr>
+                      <th>Component</th>
+                      <th>Information</th>
+                  </tr>
+                  <tr>
+                      <td>Uptime</td>
+                      <td ng-bind="serverInfo.kuzzle.uptime | secondsToDateTime"></td>
+                  </tr>
+                  <tr>
+                      <td>Kuzzle version</td>
+                      <td ng-bind="serverInfo.kuzzle.version"></td>
+                  </tr>
+                  <tr>
+                      <td>Node version</td>
+                      <td ng-bind="serverInfo.kuzzle.nodeVersion"></td>
+                  </tr>
+                  <tr>
+                      <td>Used memory</td>
+                      <td ng-bind="Math.round(serverInfo.kuzzle.memoryUsed / 1024 / 1024) + ' Mb'"></td>
+                  </tr>
+                  <tr>
+                      <td>Free memory</td>
+                      <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.free / 1024 / 1024) + ' Mb'"></td>
+                  </tr>
+                  <tr>
+                      <td>Total memory</td>
+                      <td ng-bind="Math.round(serverInfo.kuzzle.system.memory.total / 1024 / 1024) + ' Mb'"></td>
+                  </tr>
+                  <tr>
+                      <td>Cpu count</td>
+                      <td ng-bind="serverInfo.kuzzle.system.cpus.length"></td>
+                  </tr>
+                  </tbody>
+              </table>
+          </widget>
+          <widget title="Plugin Information" name="pluginInfo" widgets="widgets">
+              <table class="table">
+                  <tbody>
+                  <tr>
+                      <th>Plugin</th>
+                      <th>Version</th>
+                      <th>Activated</th>
+                  </tr>
+                  <tr ng-repeat="(key, plugin) in serverInfo.kuzzle.plugins">
+                      <td ng-bind="plugin.name"></td>
+                      <td ng-bind="plugin.version || 'N/A'"></td>
+                      <td>
+                          <span ng-class="{ 'glyphicon glyphicon-ok': plugin.activated, 'glyphicon glyphicon-remove': !plugin.activated }"></span>
+                      </td>
+                  </tr>
+                  </tbody>
+              </table>
+          </widget>
+          <widget title="API Information" name="apiInfo" widgets="widgets">
+              <table class="table">
+                  <tbody>
+                  <tr>
+                      <th>Controller</th>
+                      <th>Actions</th>
+                  </tr>
+                  <tr ng-repeat="(controller, routes) in serverInfo.kuzzle.api.routes">
+                      <td ng-bind="controller"></td>
+                      <td><span ng-repeat="route in routes" ng-bind="route + ' '"></span></td>
+                  </tr>
+                  </tbody>
+              </table>
+          </widget>
+          <widget title="Statistics" name="statInfo" widgets="widgets">
+              <chart ylabel="Requests" series="statisticSeries" newvalue="newStatValue"></chart>
+          </widget>
+          <widget title="Resources usage" name="resourceInfo" widgets="widgets">
+              <gauge label="Cpu" value="cpuPercent"></gauge>
+              <gauge label="Memory" value="memoryPercent"></gauge>
+          </widget>
         </div>
+      </div>
     </div>
+  </div>
 </div>

@@ -60,7 +60,7 @@ angular.module('kuzzle.metrics')
             $scope.serverInfo = response;
             $scope.memoryPercent = computeMemoryUsePercent();
             $scope.cpuPercent = computeCpuUsePercent();
-            timer.serverInfo = $timeout($scope.refreshServerInfo, 2000);
+            timer.serverInfo = $timeout($scope.refreshServerInfo, 1000);
           });
       };
 
