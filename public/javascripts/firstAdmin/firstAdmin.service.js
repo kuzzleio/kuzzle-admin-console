@@ -13,7 +13,7 @@ angular.module('kuzzle.firstAdmin')
 
       return $http({
         method: 'POST',
-        url: 'http://localhost:3000/user/firstAdmin',
+        url: '/user/firstAdmin',
         data: data
       });
 
