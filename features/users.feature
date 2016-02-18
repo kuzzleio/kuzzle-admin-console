@@ -8,7 +8,7 @@ Feature: Test the users CRUD page
   @mytest
   Scenario: Existing profiles appear in the list on the main page.
     When I go on the browse users page
-    Then I have a list with "2" elements
+    Then I have a list with at least "2" elements
 
   @mytest
   Scenario: The user is able to access the associated profile's user

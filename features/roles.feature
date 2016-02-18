@@ -7,7 +7,7 @@ Feature: Test the roles CRUD page
 
   Scenario: Existing roles appear in the list on the main page.
     When I go on the browse roles page
-    Then I have a list with "1" elements
+    Then I have a list with at least "1" element
 
   Scenario: The user is able to edit a role using the detailed view.
     When I go on the browse roles page

@@ -7,7 +7,7 @@ Feature: Test the profiles CRUD page
 
   Scenario: Existing profiles appear in the list on the main page.
     When I go on the browse profiles page
-    Then I have a list with "1" elements
+    Then I have a list with at least "1" elements
 
   Scenario: The user is able to access the associated roles' profile
     When I go on the browse profiles page
