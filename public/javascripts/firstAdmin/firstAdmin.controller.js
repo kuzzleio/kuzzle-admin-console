@@ -60,6 +60,7 @@ angular.module('kuzzle.firstAdmin')
     },
     function (error) {
       $scope.message = 'Something really wrong just happend... look at the console...';
+      console.log(error);
     });
   };
 }]);

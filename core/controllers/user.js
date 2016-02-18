@@ -72,36 +72,28 @@ var createAdminUser = (username, password) => {
 router.post('/firstAdmin', function (req, res) {
 
   createAdminUser(req.body.username, req.body.password)
-    .then(() => {
-      console.log(1);
+    .then(function () {
       return resetProfile('default', 'default');
     })
-    .then(() => {
-       console.log(2);
+    .then(function () {
      return resetProfile('admin', 'admin');
     })
-    .then(() => {
-      console.log(3);
+    .then(function () {
       return resetProfile('anonymous', 'anonymous');
     })
-    .then(() => {
-      console.log(4);
+    .then(function () {
       return resetRole('default')
     })
-    .then(() => {
-      console.log(5);
+    .then(function () {
       return resetRole('admin');
     })
-    .then(() => {
-      console.log(6);
+    .then(function () {
       return resetRole('anonymous');
     })
-    .then(() => {
-      console.log(7);
+    .then(function () {
       res.status(200).end();
     })
-    .catch((err) => {
-      console.log(8);
+    .catch(function (err) {
       res.status(err.statusCode).end();
     });
 
