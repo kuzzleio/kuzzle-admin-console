@@ -8,7 +8,7 @@ var
   user = require('./controllers/user'),
   login = require('./controllers/login'),
   indexes = require('./controllers/indexes'),
-  dashboard = require('./controllers/dashboard');
+  metrics = require('./controllers/metrics');
 
 module.exports = {
 
@@ -22,7 +22,7 @@ module.exports = {
     app.use('/user', user);
     app.use('/login', login);
     app.use('/indexes', indexes);
-    app.use('/dashboard', dashboard);
+    app.use('/metrics', metrics);
   }
 
 };

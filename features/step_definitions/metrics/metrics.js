@@ -2,7 +2,7 @@ var
   assert = require('assert');
 
 module.exports = function () {
-  this.Given(/^I am on dashboard page$/, function (callback) {
+  this.Given(/^I am on metrics page$/, function (callback) {
     browser
       .url('/#/')
       .call(callback);
@@ -10,7 +10,7 @@ module.exports = function () {
 
   this.Then(/^I have a display of "([\d]+)" widgets$/, function (count, callback) {
     browser
-      .waitForVisible('.dashboard-row', 1000)
+      .waitForVisible('.metrics-row', 1000)
       .elements('widget')
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count), 'Must have ' + count + ' widgets, get ' + elements.value.length);
