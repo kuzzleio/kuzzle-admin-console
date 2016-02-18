@@ -9,11 +9,11 @@ router.get('/', function(req, res) {
     uri: 'http://kuzzle:7511/api/1.0/%25kuzzle/roles/admin',
     json: true
   })
-    .then(function (response) {
+    .then(function () {
       // we can access to the admin role, so no admin account have been created yet
       return res.render('user/firstAdmin');
     })
-    .catch(function (err) {
+    .catch(function () {
       // We got 401 HTTP error: the first admin has already been created !
       return res.render('login/index');
     });

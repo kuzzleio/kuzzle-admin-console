@@ -31,7 +31,7 @@ router.get('/full', function (req, res) {
 
 // first admin creation
 
-var resetRole = (roleId) => {
+var resetRole = function (roleId) {
   return request({
     method: 'PUT',
     uri: 'http://kuzzle:7511/api/1.0/roles/' + roleId,
@@ -40,7 +40,7 @@ var resetRole = (roleId) => {
   });
 };
 
-var resetProfile = (profileId, roleId) => {
+var resetProfile = function (profileId, roleId) {
   var data = {
       _id: profileId,
       roles: [ roleId ]
@@ -54,7 +54,7 @@ var resetProfile = (profileId, roleId) => {
   });  
 };
 
-var createAdminUser = (username, password) => {
+var createAdminUser = function (username, password) {
   var data = {
     _id: username,
     password: password,
