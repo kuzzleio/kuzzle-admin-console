@@ -3,7 +3,6 @@ angular.module('kuzzle', [
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
-  'kuzzle.firstAdmin',
   'kuzzle.headline',
   'kuzzle.indexes',
   'kuzzle.storage',
@@ -81,6 +80,15 @@ angular.module('kuzzle', [
         url: '/login',
         views: {
           wrappedView: { templateUrl: '/login' }
+        },
+        resolve: {
+          loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
+            return $ocLazyLoad.load([
+              '/javascripts/firstAdmin/firstAdmin.module.js',
+              '/javascripts/firstAdmin/firstAdmin.service.js',
+              '/javascripts/firstAdmin/firstAdmin.controller.js'
+            ]);
+          }]
         }
       })
       .state('logout', {

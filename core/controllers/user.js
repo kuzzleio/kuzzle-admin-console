@@ -72,7 +72,7 @@ var createAdminUser = (username, password) => {
 router.post('/firstAdmin', function (req, res) {
 
   createAdminUser(req.body.username, req.body.password)
-    .then(() =>{
+    .then(() => {
       console.log(1);
       return resetProfile('default', 'default');
     })

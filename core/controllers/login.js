@@ -9,7 +9,7 @@ router.get('/', function(req, res) {
     uri: 'http://kuzzle:7511/api/1.0/%25kuzzle/roles/admin',
     json: true
   })
-    .then((response) =>{
+    .then((response) => {
       // we can access to the admin role, so no admin account have been created yet
       return res.render('user/firstAdmin');
     })
