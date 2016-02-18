@@ -42,8 +42,8 @@ var resetRole = function (roleId) {
 
 var resetProfile = function (profileId, roleId) {
   var data = {
-      _id: profileId,
-      roles: [ roleId ]
+    _id: profileId,
+    roles: [ roleId ]
   };
 
   return request({
@@ -76,13 +76,13 @@ router.post('/firstAdmin', function (req, res) {
       return resetProfile('default', 'default');
     })
     .then(function () {
-     return resetProfile('admin', 'admin');
+      return resetProfile('admin', 'admin');
     })
     .then(function () {
       return resetProfile('anonymous', 'anonymous');
     })
     .then(function () {
-      return resetRole('default')
+      return resetRole('default');
     })
     .then(function () {
       return resetRole('admin');
@@ -96,8 +96,6 @@ router.post('/firstAdmin', function (req, res) {
     .catch(function (err) {
       res.status(err.statusCode).end();
     });
-
 });
 
 module.exports = router;
-

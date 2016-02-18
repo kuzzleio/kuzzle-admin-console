@@ -6,7 +6,7 @@ var
 router.get('/', function(req, res) {
   request({
     method: 'GET',
-    uri: 'http://kuzzle:7511/api/1.0/%25kuzzle/roles/admin',
+    uri: 'http://kuzzle:7511/api/1.0/roles/admin',
     json: true
   })
     .then(function () {
