@@ -106,8 +106,6 @@ var bulk = function () {
     promises.push(world.kuzzle.queryPromise(query, {body: fixtures[world.index][collection]}));
   });
 
-  console.log('bulk', world.collections);
-
   return q.all(promises);
 };
 
