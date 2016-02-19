@@ -51,6 +51,52 @@ angular.module('kuzzle.role')
         $window.history.back();
       };
 
+      $scope.create = function () {
+        var role = {
+          id: $scope.role.id,
+          content: {}
+        };
+
+        if ($scope.role.content) {
+          try {
+            role.content = JSON.parse($scope.role.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        roleApi.createOrReplace(role, true, true)
+          .then(function () {
+            $state.go('role.browse');
+          });
+      };
+
+      $scope.replace = function () {
+        var role = {
+          id: $scope.role.id,
+          content: {}
+        };
+
+        if ($scope.role.content) {
+          try {
+            role.content = JSON.parse($scope.role.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        if ($window.confirm('You are about to replace role "' + $scope.role.id + '", are you sure ?')) {
+          roleApi.createOrReplace(role, true, false)
+            .then(function () {
+              $state.go('role.browse');
+            });
+        }
+      };
+
       $scope.update = function (isCreate) {
         var role = {
           id: $scope.role.id,
@@ -67,7 +113,7 @@ angular.module('kuzzle.role')
           }
         }
 
-        roleApi.update(role, true, isCreate)
+        roleApi.update(role, true)
           .then(function () {
             $state.go('role.browse');
           });

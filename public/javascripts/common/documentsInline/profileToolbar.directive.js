@@ -27,8 +27,8 @@ angular.module('kuzzle.documentsInline')
           $scope.document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          profile = $scope.document;
-          profileApi.update(profile, true, false);
+          profile = {id: $scope.document.id, content: $scope.document.content};
+          profileApi.update(profile, true);
         }
         catch (e) {
           notification.error('Error parsing role.');

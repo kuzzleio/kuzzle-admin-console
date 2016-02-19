@@ -28,7 +28,7 @@ angular.module('kuzzle.documentsInline')
           $scope.document.isEdit = false;
 
           role = {id: $scope.document.id, content: $scope.document.content};
-          roleApi.update(role, true, false);
+          roleApi.update(role, true);
         }
         catch (e) {
           console.error(e);

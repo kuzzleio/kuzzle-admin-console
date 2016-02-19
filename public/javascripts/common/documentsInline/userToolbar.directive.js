@@ -28,7 +28,7 @@ angular.module('kuzzle.documentsInline')
           $scope.document.isEdit = false;
 
           user = {id: $scope.document.id, content: $scope.document.content};
-          userApi.update(user, true, false);
+          userApi.update(user, true);
         }
         catch (e) {
           console.error(e);

@@ -20,9 +20,14 @@ angular.module('kuzzle.profile')
             return $ocLazyLoad.load([
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
-              '/javascripts/common/documentsInline/profileToolbar.directive.js',
               '/javascripts/profile/browse.ctrl.js'
-            ]);
+            ])
+              .then(function () {
+                return $ocLazyLoad
+                  .load([
+                    '/javascripts/common/documentsInline/profileToolbar.directive.js'
+                  ]);
+              });
           }]
         }
       })

@@ -52,7 +52,7 @@ angular.module('kuzzle.user')
         $window.history.back();
       };
 
-      $scope.update = function (isCreate) {
+      $scope.create = function () {
         var user = {
           id: $scope.user.id,
           content: {}
@@ -68,9 +68,55 @@ angular.module('kuzzle.user')
           }
         }
 
-        userApi.update(user, true, isCreate)
+        userApi.createOrReplace(user, true, true)
           .then(function () {
             $state.go('user.browse');
           });
+      };
+
+      $scope.update = function () {
+        var user = {
+          id: $scope.user.id,
+          content: {}
+        };
+
+        if ($scope.user.content) {
+          try {
+            user.content = JSON.parse($scope.user.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the user content.');
+            return false;
+          }
+        }
+
+        userApi.update(user, true)
+          .then(function () {
+            $state.go('user.browse');
+          });
+      };
+
+      $scope.replace = function () {
+        var user = {
+          id: $scope.user.id,
+          content: {}
+        };
+
+        if ($scope.user.content) {
+          try {
+            user.content = JSON.parse($scope.user.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the user content.');
+            return false;
+          }
+        }
+
+        if ($window.confirm('You are about to replace user "' + $scope.user.id + '", are you sure ?')) {
+          userApi.createOrReplace(user, true, false)
+            .then(function () {
+              $state.go('user.browse');
+            });
+        }
       };
     }]);
