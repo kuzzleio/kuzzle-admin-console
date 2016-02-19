@@ -6,7 +6,7 @@ var
   wdio = require('../wdio.conf.js'),
 
   index = Object.keys(fixtures)[0],
-  collection = Object.keys(fixtures[index])[0],
+  collections = Object.keys(fixtures[index]),
   kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
   documents = {},
   users = {};
@@ -23,7 +23,7 @@ users['standard'] = fixtures['%kuzzle']['users'][5];
 
 World = {
   index: index,
-  collection: collection,
+  collections: collections,
   currentDocumentId: undefined,
   currentRoom: undefined,
   kuzzleUrl: kuzzleUrl,

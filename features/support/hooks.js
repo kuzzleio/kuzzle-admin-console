@@ -2,7 +2,7 @@ var
   request = require('request'),
   config = require('./config.js'),
   fixtures = require('../fixtures.json'),
-  kuzzleUrl = 'http://' + config.kuzzleHost + ':' + config.kuzzlePort,
+  q = require('q'),
   world = require('./world.js');
 
 var hooks = function () {
@@ -93,15 +93,22 @@ var removeIndex = function (callback) {
 };
 
 var bulk = function () {
-  var query = {
-    controller: 'bulk',
-    action: 'import',
-    index: world.index,
-    collection: world.collection
-  };
+  var promises = [];
 
-  return world.kuzzle
-    .queryPromise(query, {body: fixtures[world.index][world.collection]});
+  world.collections.forEach(collection => {
+    var query = {
+      controller: 'bulk',
+      action: 'import',
+      index: world.index,
+      collection: collection
+    };
+
+    promises.push(world.kuzzle.queryPromise(query, {body: fixtures[world.index][collection]}));
+  });
+
+  console.log('bulk', world.collections);
+
+  return q.all(promises);
 };
 
 var cleanSecurity = function (callback) {
