@@ -40,7 +40,65 @@
             }
           }
         }
+      },
+      { "update": { "_id": "anonymous", "_index": "%kuzzle" } },
+      { "doc": { 
+        "indexes": {
+          "_canCreate": false,
+          "*": {
+            "_canDelete": false,
+            "collections": {
+              "_canCreate": false,
+              "*": {
+                "_canDelete": false,
+                "controllers": {
+                  "*": {
+                    "actions": {
+                      "*": false
+                    }
+                  },
+                  "auth": {
+                    "actions": {
+                      "login": true,
+                      "getCurrentUser": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
+      },
+      { "update": { "_id": "default", "_index": "%kuzzle" } },
+      { "doc": { 
+        "indexes": {
+          "_canCreate": false,
+          "*": {
+            "_canDelete": false,
+            "collections": {
+              "_canCreate": false,
+              "*": {
+                "_canDelete": false,
+                "controllers": {
+                  "*": {
+                    "actions": {
+                      "*": false
+                    }
+                  },
+                  "auth": {
+                    "actions": {
+                      "login": true,
+                      "getCurrentUser": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      } 
     ],
     "profiles": [
       { "create": { "_id": "myprofile" } },
