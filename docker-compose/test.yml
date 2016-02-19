@@ -11,7 +11,7 @@ kuzzle:
     - elasticsearch
     - redis
   environment:
-    - LIKE_A_VIRGIN=1
+    - LIKE_A_VIRGIN
     - FIXTURES=/fixtures.json
     - DEFAULT_MAPPING
     - FEATURE_COVERAGE

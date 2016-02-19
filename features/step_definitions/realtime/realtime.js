@@ -235,10 +235,20 @@ module.exports = function () {
   });
 
   this.Given(/^I can not see filter form$/, function (callback) {
-    callback.pending();
+    browser
+      .isExisting('[ng-controller="WatchDataCtrl"] div.filters')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Watch data filters shall not be displayed');
+      })
+      .call(callback);
   });
 
   this.Given(/^I can not see publish form$/, function (callback) {
-    callback.pending();
+    browser
+      .isExisting('[ng-controller="WatchDataCtrl"] div.publish')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Watch data publish section shall not be displayed');
+      })
+      .call(callback);
   });
 };

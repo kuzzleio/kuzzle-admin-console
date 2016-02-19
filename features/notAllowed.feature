@@ -43,45 +43,45 @@ Feature: Test all the actions that are not allowed by rights
 
   @browseData
   Scenario: I can create document only if I have the right to
-    Given I am on browse data page
-    Then I click on the collection selector
-    Then I click on collection "readonly-collection"
+    When I am on browse data page
+    When I click on the collection selector
+    Given I click on collection "private-collection"
     Then I do not see the add document button
 
   @browseData
   Scenario: I can't edit document inline in collection "readonly-collection"
-    Given I am on browse data page
-    Then I click on the collection selector
-    Then I click on collection "readonly-collection"
+    When I am on browse data page
+    When I click on the collection selector
+    Given I click on collection "private-collection"
     Then I have a list with "1" element
     Then I do not see the edit pencil of the document in position "1"
 
   @browseData
   Scenario: I can't delete document in collection "readonly-collection"
-    Given I am on browse data page
-    Then I click on the collection selector
-    Then I click on collection "readonly-collection"
+    When I am on browse data page
+    When I click on the collection selector
+    Given I click on collection "private-collection"
     Then I have a list with "1" element
     Then I do not see the cogwheel of the document in position "1"
 
-  @cleanDb @unsubscribe @realtime
-  Scenario: I can't subscribe
-    Given I go to the realtime page
-    And I click on the collection selector
+  @realtime
+  Scenario: I can not subscribe
+    When I go to the realtime page
+    When I click on the collection selector
     Given I click on collection "private-collection"
-    And I can not see filter form
+    Then I can not see filter form
 
   @realtime
-  Scenario: I can't publish
-    Given I go to the realtime page
-    And I click on the collection selector
+  Scenario: I can not publish
+    When I go to the realtime page
+    When I click on the collection selector
     Given I click on collection "private-collection"
-    And I can not see publish form
+    Then I can not see publish form
 
   @metrics
   Scenario: I see an empty metrics
-    Given I am on metrics page
-    And I see the page title "System metrics"
+    When I am on metrics page
+    Given I see the page title "System metrics"
     Then I have a display of "0" widgets
 
   @metrics
