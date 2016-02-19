@@ -16,7 +16,7 @@
       <a class="external-link" ng-click="onClickCreate({collection: search, index: index})" ng-bind="createLabel"></a>
     </li>
     <li class="divider"></li>
-    <li ng-class="{active: item.name === selected}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})" name="{{item.name}}">
+    <li id="collection-{{item.name}}" ng-class="{active: item.name === selected}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})" name="{{item.name}}">
       <a>
         <i class="fa fa-database collection-type" ng-if="item.stored"></i>
         <i class="glyphicon glyphicon-send collection-type" ng-if="item.realtime"></i>

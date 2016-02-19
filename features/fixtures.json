@@ -29,7 +29,7 @@
   },
   "%kuzzle": {
     "roles": [
-      { "create": { "_id": "kuzzle-bo-dummy" } },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "indexes": {
           "fakeIndex1": {
@@ -61,7 +61,7 @@
           }
         }
       },
-      { "create": { "_id": "kuzzle-bo-standard" } },
+      { "index": { "_id": "kuzzle-bo-standard" } },
       {
         "indexes": {
           "_canCreate": false,
@@ -109,7 +109,16 @@
                     "actions": {
                       "search": true,
                       "get": true,
+                      "listIndexes": true,
                       "listCollections": true
+                    }
+                  },
+                  "auth": {
+                    "actions": {
+                      "getCurrentUser": true,
+                      "login": true,
+                      "logout": true,
+                      "checkToken": true
                     }
                   }
                 }
@@ -169,31 +178,31 @@
       }
     ],
     "profiles": [
-      { "create": { "_id": "kuzzle-bo-dummy" } },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "roles": ["kuzzle-bo-dummy"]
       },
-      { "create": { "_id": "kuzzle-bo-standard" } },
+      { "index": { "_id": "kuzzle-bo-standard" } },
       {
         "roles": ["kuzzle-bo-standard"]
       }
     ],
     "users": [
-      { "create": { "_id": "kuzzle-bo-admin" } },
+      { "index": { "_id": "kuzzle-bo-admin" } },
       {
         "_id": "kuzzle-bo-admin",
         "profile": "admin",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
-      { "create": { "_id": "kuzzle-bo-dummy" } },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "_id": "kuzzle-bo-dummy",
         "profile": "kuzzle-bo-dummy",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
-      { "create": { "_id": "kuzzle-bo-standard" } },
+      { "index": { "_id": "kuzzle-bo-standard" } },
       {
         "_id": "kuzzle-bo-standard",
         "profile": "kuzzle-bo-standard",

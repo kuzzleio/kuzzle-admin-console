@@ -86,7 +86,7 @@ module.exports = function () {
   this.Then(/^I see the page title "([^"]+)"$/, function(title, callback) {
     browser
       .waitForVisible('.metrics-container headline')
-      .getAttribute('.dashboard-container headline', 'title')
+      .getAttribute('.metrics-container headline', 'title')
       .then(function(value) {
         assert.deepEqual(value, title);
       })
