@@ -47,7 +47,7 @@ module.exports = function () {
       .waitForText('messages ul.message-list li.message-item:last-child code.document-id', 500)
       .getText('messages ul.message-list li.message-item:last-child code.document-id')
       .then(text => {
-        assert.equal(text, world.collection);
+        assert(world.collections.indexOf(text) !== -1, 'The collection ' + text + ' is not in fixtures');
       })
       .call(callback);
   });
@@ -165,7 +165,7 @@ module.exports = function () {
 
   this.Given(/^I create a persistent document$/, function (callback) {
     world.kuzzle
-      .dataCollectionFactory(world.collection)
+      .dataCollectionFactory(world.collections[0])
       .createDocumentPromise(testDocument)
       .then((response) => {
         world.currentDocumentId = response.id;
@@ -179,7 +179,7 @@ module.exports = function () {
 
   this.Given(/^I publish a volatile message$/, function (callback) {
     world.kuzzle
-      .dataCollectionFactory(world.collection)
+      .dataCollectionFactory(world.collections[0])
       .publishMessage(world.currentDocumentId, testDocument);
 
       setTimeout(() => {
@@ -191,7 +191,7 @@ module.exports = function () {
      assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
      world.kuzzle
-       .dataCollectionFactory(world.collection)
+       .dataCollectionFactory(world.collections[0])
        .updateDocumentPromise(world.currentDocumentId, updatedTestDocument)
        .then((response) => {
          callback();
@@ -206,7 +206,7 @@ module.exports = function () {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
     world.kuzzle
-      .dataCollectionFactory(world.collection)
+      .dataCollectionFactory(world.collections[0])
       .deleteDocumentPromise(world.currentDocumentId)
       .then((response) => {
         callback();
@@ -218,7 +218,7 @@ module.exports = function () {
   });
 
   this.Given(/^Someone subscribes to my room$/, function (callback) {
-    world.currentRoom = world.kuzzle.dataCollectionFactory(world.index, world.collection).subscribe({}, function (error, result) {});
+    world.currentRoom = world.kuzzle.dataCollectionFactory(world.index, world.collections[0]).subscribe({}, function (error, result) {});
 
     setTimeout(() => {
       callback();

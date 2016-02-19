@@ -38,14 +38,14 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/add');
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/add');
       })
       .call(callback);
   });
 
   this.Given(/^I am on page for create document$/, function (callback) {
      browser
-       .url('/#/' + world.index + '/storage/' + world.collection + '/add')
+       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
        .call(callback);
    });
 
@@ -91,7 +91,7 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
+      .url('/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .pause(500)
       .call(callback);
@@ -109,7 +109,7 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/' + id);
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/' + id);
       })
       .call(callback);
   });
@@ -163,7 +163,7 @@ module.exports = function () {
 
   this.Given(/^I am on browse document page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/storage/' + world.collection)
+      .url('/#/' + world.index + '/storage/' + world.collections[0])
       .call(callback);
   });
 
