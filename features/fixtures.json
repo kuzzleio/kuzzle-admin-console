@@ -91,8 +91,11 @@
             }
           },
           "kuzzle-bo-testindex": {
+            "_canDelete": false,
             "collections": {
+              "_canCreate": false,
               "*": {
+                "_canDelete": false,
                 "controllers": {
                   "read": {
                     "actions": {
