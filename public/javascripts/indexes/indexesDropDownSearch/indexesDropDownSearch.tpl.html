@@ -1,10 +1,16 @@
-<div id="select-index" class="btn-group indexes-drop-down-search" uib-dropdown is-open="isOpen">
-  <button type="button" class="btn btn-default dropdown-toggle" uib-dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span ng-if="selectedIndex">
-      <strong ng-bind="selectedIndex"></strong> <span class="caret"></span>
+<div id="select-index" class="indexes-drop-down-search" uib-dropdown is-open="isOpen">
+
+  <a uib-dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span ng-if="selectedIndex" class="indexes-selector-label">
+      <i class="fa fa-database pull-left"></i> <span ng-bind="selectedIndex"></span>
     </span>
-    <span ng-if="!selectedIndex">Select an index</span>
-  </button>
+
+    <span ng-if="!selectedIndex" class="indexes-selector-label must-select">
+      <i class="fa fa-database pull-left"></i> select a working index
+    </span>
+  </a>
+
+
   <ul class="dropdown-menu">
     <li class="search">
       <form ng-submit="onPressEnter()">

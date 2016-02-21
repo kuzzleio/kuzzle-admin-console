@@ -6,9 +6,9 @@ angular.module('kuzzle')
     '$stateParams',
     '$state',
     'indexesApi',
-    '$window',
-    '$log',
-    function ($scope, $http, $stateParams, $state, indexesApi, $window, $log) {
-      $scope.init = function () {};
+    function ($scope, $http, $stateParams, $state, indexesApi) {
+      $scope.indexData = indexesApi.data;
+
+      indexesApi.list();
     }
   ]);

@@ -7,20 +7,20 @@
                 <div class="col-sm-2 document-id ellipsis"
                      ng-if="collection"
                      uib-popover="{{document.id}}" popover-placement="top" popover-animation="false">
-                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                    <strong title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
                 <!-- /collection/documents -->
 
                 <!-- roles -->
                 <div class="col-sm-2 document-id ellipsis"
                      ng-if="role">
-                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                    <strong title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
                 <!-- /roles -->
 
                 <!-- profiles -->
                 <div class="col-sm-2 document-id ellipsis" ng-if="profile">
-                    <span class="" title="Display the whole ID" ng-bind="document.id"></span>
+                    <strong class="" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
 
                 <div class="col-sm-2" ng-if="profile">
@@ -35,7 +35,7 @@
 
                 <!-- users -->
                 <div class="col-sm-2 document-id ellipsis" ng-if="user">
-                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                    <strong title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
 
                 <div class="col-sm-2" ng-if="user">

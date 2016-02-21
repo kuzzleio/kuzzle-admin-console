@@ -7,13 +7,9 @@ angular.module('kuzzle.indexes')
     'indexesApi',
     '$window',
     function ($scope, $stateParams, $state, indexesApi, $window) {
+      $scope.indexData = indexesApi.data;
 
-      $scope.init = function () {
-        $scope.indexData = indexesApi.data;
-
-        indexesApi.list();
-      };
-
+      indexesApi.list();
 
       $scope.browseCollection = function(index) {
         $state.go('collection.browse', {index: index});

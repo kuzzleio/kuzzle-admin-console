@@ -13,7 +13,7 @@
                 </select>
                 <input id="filter-value" type="text" class="form-control" placeholder="Value" ng-model="term.value">
                 <button class="btn btn-default" ng-if="$last" aria-hidden="true" ng-click="addAndTerm(groupIndex)">And</button>
-              <span class="glyphicon glyphicon-remove remove-term text-danger" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
+              <span class="glyphicon glyphicon-remove remove-term text-danger" ng-if="count > 1" aria-hidden="true" ng-click="removeTerm(groupIndex, $index)"></span>
         </div>
 
         <p class="or-label">or</p>

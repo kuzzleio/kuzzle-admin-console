@@ -2,6 +2,11 @@
   http://stackoverflow.com/questions/7111610/import-regular-css-file-in-scss-file */
 @import "lib/sb-admin";
 @import "mixins";
+@import "../fonts/roboto_regular_macroman/stylesheet.css";
+@import "../fonts/roboto_medium_macroman/stylesheet.css";
+@import "../fonts/roboto_bold_macroman/stylesheet.css";
+@import "../fonts/roboto_condensed_macroman/stylesheet.css";
+@import "../fonts/roboto_boldcondensed_macroman/stylesheet.css";
 
 body {
     background-color: #F3F3F3;
@@ -31,11 +36,6 @@ div.view-fade {
     }
 }
 
-.navbar-brand {
-  height: auto;
-  padding: 10px, 15px, 0, 15px;
-}
-
 .actions-group {
     button.control {
         margin-right: 10px;
@@ -44,7 +44,9 @@ div.view-fade {
         cursor: pointer;
     }
 }
-
+#wrapper {
+  padding-left: 250px;
+}
 #page-wrapper {
     padding: 0;
     background-color: #F3F3F3;
@@ -80,7 +82,7 @@ div.view-fade {
   top: 0;
   bottom: 0;
   right: 0;
-  margin-top: 50px;
+  margin-top: 60px;
 }
 
 .document-id {
@@ -179,6 +181,11 @@ h2.select-collection {
 }
 .container {
   width: 100%;
+
+  &.container-medium {
+    width: 70%;
+    margin-left: 8px;
+  }
 }
 .container-fluid {
   padding:0;
@@ -189,14 +196,15 @@ headline > div {
   box-shadow: 0 4px 2px -1px rgba(0,0,0,0.1) inset;
   padding-top: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(38, 50, 56, 0.36);
 
   h1 {
-    margin: 0 10px 0 5px;
-    color: #004B52;
+    margin: 0 10px 0 24px;
+    color: #333;
+    font-family: roboto_condensedbold;
 
     small {
-      color: rgba(0, 75, 82, 0.75);
+      font-family: roboto_condensedregular;
+      color: #999;
     }
   }
 }

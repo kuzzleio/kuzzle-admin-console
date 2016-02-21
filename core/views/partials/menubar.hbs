@@ -8,8 +8,20 @@
             <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="/">
-            <img src="https://raw.githubusercontent.com/kuzzleio/kuzzle/master/docs/images/logo.png" />
+            <img src="images/logo/kuzzle-white.svg" />
         </a>
+
+      <div ng-controller="IndexesCtrl"
+           class="index-selector">
+        <indexes-drop-down-search
+                selected-index="indexData.selectedIndex"
+                create-label="New index"
+                items="indexData.indexes"
+                on-click-create="onCreateIndex(name)"
+                on-click-item="onSelectIndex(item)"
+                placeholder="Find an index">
+        </indexes-drop-down-search>
+      </div>
 
         <user-menu logged="session.jwtToken" username="session.userId" do-login="doLogin()" do-logout="doLogout()"></user-menu>
 
