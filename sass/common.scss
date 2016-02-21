@@ -175,7 +175,20 @@ h2.select-collection {
     }
   }
 }
-
+.message-log {
+  .btn.btn-default {
+    background-color: #45565F;
+    border: 1px solid #45565F;
+    padding-bottom: 2px;
+    color: #FFF;
+  }
+  pre {
+    margin: 8px 0 26px 0;
+    background-color: #45565F;
+    border:none;
+    color: #FFF;
+  }
+}
 * {
   border-radius: 0 !important;
 }
@@ -209,13 +222,12 @@ headline > div {
   }
 }
 .select-collection-helper {
-  background: #FFF;
-  border: solid 1px #ddd;
   padding: 10px 20px;
   position: absolute;
   right: 50px;
   top: 135px;
   font-size: 16px;
+  font-family: robotoregular;
   &.helper-realtime {
     top: 0;
   }

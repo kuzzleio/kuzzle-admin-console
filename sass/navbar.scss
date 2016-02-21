@@ -15,29 +15,33 @@ $menubar-border-color: #e6e6e6;
 
 .index-selector {
   position: absolute;
-  top: 19px;
+  top: 13px;
   left: 50%;
   right: 50%;
   cursor: pointer;
+
 
   a {
     text-decoration: none;
   }
 
   .indexes-selector-label {
-    font-size: 18px;
+    font-size: 16px;
+    padding: 6px 16px;
     color: #FFF;
-    display: block;
+    transition: all 0.2s;
+    display: inline-block;
     white-space: nowrap;
+
+    &:hover {
+      background-color: #FFF;
+      color: #555;
+    }
 
     i {
       display: inline-block;
       padding-top: 5px;
       padding-right: 10px;
-
-      &:before {
-        font-size: 16px;
-      }
     }
   }
 }
@@ -103,13 +107,33 @@ $menubar-border-color: #e6e6e6;
 
     a {
       &.collapsed {
-        i.fa-caret-down::before {
-          content: "\f067" !important;
+        i.fa-caret-down {
+          &:before {
+            transform: scale(0);
+            content: "\f068" !important;
+          }
+          &:after {
+            transform: scale(1);
+            content: "\f067" !important;
+          }
         }
       }
-      i.fa-caret-down::before {
+      i.fa-caret-down {
         opacity: 0.3;
-        content: "\f068" !important;
+
+        &:before,
+        &:after {
+          transition: all 0.4s;
+          position: absolute;
+        }
+        &:before {
+          transform: scale(1);
+          content: "\f068" !important;
+        }
+        &:after {
+          transform: scale(0);
+          content: "\f067" !important;
+        }
       }
     }
 
