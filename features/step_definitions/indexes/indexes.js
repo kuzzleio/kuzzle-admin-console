@@ -17,7 +17,7 @@ module.exports = function () {
 
   this.Then(/^I can ?(not)* see Storage & Realtime menu entries$/, function (not, callback) {
     browser
-      .isVisible('#menu-data > li:nth-child(5)').then(function(isVisible) {
+      .isVisible('.nav-category a[data-target="#menu-collections"]').then(function(isVisible) {
         if (not) {
           assert(!isVisible, 'The Storage & Realtime menu entries are visible');
         }
@@ -46,9 +46,9 @@ module.exports = function () {
     browser
       .pause(500)
       .waitForVisible('indexes-drop-down-search .dropdown-toggle', 1000)
-      .getText('#select-index > button > span')
+      .getText('.indexes-selector-label')
       .then(function(text) {
-        assert(text === 'Select an index', 'The index "' + text + '" is selected instead of no one');
+        assert(text === 'select a working index', 'The index "' + text + '" is selected instead of no one');
       })
       .call(callback);
   });
@@ -57,7 +57,7 @@ module.exports = function () {
     browser
       .pause(500)
       .waitForVisible('indexes-drop-down-search .dropdown-toggle', 1000)
-      .getText('#select-index > button > span > strong')
+      .getText('.indexes-selector-label')
       .then(function(text) {
         assert(index === text, 'The index "' + text + '" is selected instead of "' + index + '"');
       })
