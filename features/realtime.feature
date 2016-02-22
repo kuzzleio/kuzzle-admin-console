@@ -12,7 +12,7 @@ Feature: Test realtime watch data pages
     Given I click on the test collection
     And I subscribe to the collection events
 
-  @unsubscribe @myTest
+  @unsubscribe
   Scenario: I can subscribe to a collection
     Then I am subscribed
 
