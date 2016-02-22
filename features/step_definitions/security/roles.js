@@ -62,6 +62,20 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I click the delete button of the role "([^"]*)"$/, function (roleId, callback) {
+    browser
+      .getText('documents-inline .row.documents #'+ roleId +' .document-id span')
+      .then(text => {
+        assert(text, 'expected to have at least one role with a name');
+        this.deletedRoleName = text;
+      })
+      .waitForVisible('documents-inline .row.documents #'+ roleId +' role-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .row.documents #'+ roleId +' role-toolbar .edit-document.dropdown-toggle')
+      .waitForVisible('documents-inline .row.documents #'+ roleId +' role-toolbar .dropdown-menu .delete-document', 1000)
+      .click('documents-inline .row.documents #'+ roleId +' role-toolbar .dropdown-menu .delete-document')
+      .call(callback);
+  });
+
   this.When(/^I fill the confirmation modal with the name of the deleted role$/, function (callback) {
     assert(this.deletedRoleName, 'Expected to have a deleted role name');
     browser

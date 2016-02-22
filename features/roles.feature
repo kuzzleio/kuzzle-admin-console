@@ -50,7 +50,7 @@ Feature: Test the roles CRUD page
   @cleanSecurity
   Scenario: The user is able to delete a role.
     When I go on the browse roles page
-    And I click the delete button of the first role
+    And I click the delete button of the role "kuzzle-bo-dummy"
     Then I can see "modal-delete-role" modal
     When I fill the confirmation modal with the name of the deleted role
     And I confirm the deletion
