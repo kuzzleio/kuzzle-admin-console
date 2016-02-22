@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.17.3
+  image: kuzzleio/kuzzle:1.0.0-beta.1
   ports:
     - "7512:7512"
     - "7511:7511"
@@ -20,7 +20,7 @@ kuzzleBo:
     - kuzzle
 
 redis:
-  image: redis:3.0.2
+  image: redis:3.0
 
 elasticsearch:
-  image: elasticsearch:1.5.2
+  image: elasticsearch:1.7

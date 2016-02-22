@@ -18,13 +18,8 @@ documents[fixtures[index]['kuzzle-bo-test'][0].index._id] = fixtures[index]['kuz
 documents[fixtures[index]['kuzzle-bo-test'][2].index._id] = fixtures[index]['kuzzle-bo-test'][3];
 
 users['admin'] = fixtures['%kuzzle']['users'][1];
-users['admin'].username = 'kuzzle-bo-admin';
-
 users['dummy'] = fixtures['%kuzzle']['users'][3];
-users['dummy'].username = 'kuzzle-bo-dummy';
-
 users['standard'] = fixtures['%kuzzle']['users'][5];
-users['standard'].username = 'kuzzle-bo-standard';
 
 World = {
   index: index,
