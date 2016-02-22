@@ -20,7 +20,8 @@ angular.module('kuzzle.role')
             return $ocLazyLoad.load([
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
-              '/javascripts/role/browse.ctrl.js'
+              '/javascripts/role/browse.ctrl.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]).then(function () {
               return $ocLazyLoad.load([
                 '/javascripts/common/documentsInline/roleToolbar.directive.js'
@@ -40,7 +41,8 @@ angular.module('kuzzle.role')
               '/javascripts/role/full.ctrl.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
-              '/javascripts/storage/leaflet.directive.js'
+              '/javascripts/storage/leaflet.directive.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }
@@ -56,7 +58,8 @@ angular.module('kuzzle.role')
               '/javascripts/role/full.ctrl.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
-              '/javascripts/storage/leaflet.directive.js'
+              '/javascripts/storage/leaflet.directive.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }

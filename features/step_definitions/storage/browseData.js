@@ -1,5 +1,6 @@
 var
   assert = require('assert'),
+  wdioWrappers = require('../../support/wdioWrappers.js'),
   world = require('../../support/world.js');
 
 module.exports = function () {
@@ -8,15 +9,27 @@ module.exports = function () {
       .url('/#/' + world.index + '/storage/browse')
       .call(callback);
   });
+
   this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
     browser
       .url('/#/notexist/storage/browse')
       .call(callback);
   });
-
+  this.Given(/^I go to collection browse page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/collection/browse')
+      .call(callback);
+  });
   this.When(/^I click on add document button$/, function (callback) {
     browser
       .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
+      .call(callback);
+  });
+  this.When(/^I click on the cog$/, function (callback) {
+    browser
+      // This is quite worrying: I have to click on the deepest element if I
+      // want something to happen.
+      .click('.select-collection cog-options-collection span.dropdown small.dropdown')
       .call(callback);
   });
 
@@ -25,14 +38,14 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/add');
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/add');
       })
       .call(callback);
   });
 
-   this.Given(/^I am on page for create document$/, function (callback) {
+  this.Given(/^I am on page for create document$/, function (callback) {
      browser
-       .url('/#/' + world.index + '/storage/' + world.collection + '/add')
+       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
        .call(callback);
    });
 
@@ -42,12 +55,11 @@ module.exports = function () {
       .call(callback);
   });
 
-   this.Then(/^I have a form with fieldset "([^"]*)" with field "([^"]*)"$/, function (fieldset, field, callback) {
+  this.Then(/^I have a form with fieldset "([^"]*)" with field "([^"]*)"$/, function (fieldset, field, callback) {
      browser
        .waitForVisible('[ng-controller="StorageFullCtrl"] fieldset input[ng-model="model[\'' + fieldset + '\'][\''+ field + '\']"]', 1000)
        .call(callback);
    });
-
 
   this.Then(/^I delete the last element in list and I cancel$/, function (callback) {
     browser
@@ -79,10 +91,10 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .url('/#/' + world.index + '/storage/' + world.collection + '/'+ id)
+      .url('/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id)
       .waitForVisible('form fieldset', 1000)
       .pause(500)
-      .call(callback)
+      .call(callback);
   });
 
   this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
@@ -97,7 +109,7 @@ module.exports = function () {
       .waitForVisible('.edit-id')
       .getUrl()
       .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collection + '/' + id);
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/' + id);
       })
       .call(callback);
   });
@@ -136,7 +148,7 @@ module.exports = function () {
       .waitForVisible('.storage-browse .create', 1000)
       .getUrl()
       .then(url => {
-        assert(url,  world.baseUrl + '/#/' + world.index + '/browse');
+        assert(url,  world.baseUrl + '/#/' + world.index + '/collection/browse');
       })
       .call(callback);
   });
@@ -151,7 +163,97 @@ module.exports = function () {
 
   this.Given(/^I am on browse document page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/storage/' + world.collection)
+      .url('/#/' + world.index + '/storage/' + world.collections[0])
+      .call(callback);
+  });
+
+  this.Then(/^I ?(do not)? see the "([^"]*)" menu item$/, function (not, itemName, callback) {
+    browser
+      .waitForVisible('.select-collection cog-options-collection .dropdown-menu', 1000)
+      .getText('.select-collection cog-options-collection .dropdown-menu li')
+      .then(text => {
+        if (not) {
+          assert(!wdioWrappers.queryMatchesText(itemName, text),
+            'Expected not to find menu item' + itemName + ', but found one.');
+        } else {
+          assert(wdioWrappers.queryMatchesText(itemName, text),
+            'Expected to find menu item' + itemName + ', but found none.');
+        }
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I ?(do not)? see the cog$/, function (not, callback) {
+    browser
+      .elements('.select-collection cog-options-collection')
+      .then(elements => {
+        if (not) {
+          assert(elements.value.length === 0,
+            'Expected not to find the cog, but found one.');
+        } else {
+          assert(elements.value.length !== 0,
+            'Expected to find the cog, but found none.');
+        }
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I click on collection "([^"]+)"$/, function (collectionName, callback) {
+    var selectedCollection = null;
+
+    browser
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
+      .getText('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .then(text => {
+        selectedCollection = text;
+      })
+      .click('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .pause(200)
+      .getText('collections-drop-down-search .dropdown-toggle')
+      .then(text => {
+        assert.equal(
+          text,
+          selectedCollection,
+          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I do not see the add document button$/, function (callback) {
+    browser
+      .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Add document button must not be displayed');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I do not see the edit pencil of the document in position "([^"]*)"$/, function (position, callback) {
+    browser
+      .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] document-toolbar span.edit-inline')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Document edit pencil must not be displayed');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I do not see the cogwheel of the document in position "([^"]*)"$/, function (position, callback) {
+    browser
+      .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] document-toolbar span.dropdown-toggle')
+      .then(function(isExisting) {
+        assert(!isExisting, 'Document cogwheel must not be displayed');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I do not see the Add Collection button$/, function (callback) {
+    browser
+      .elements('.create .btn-collection-add')
+      .then(elements => {
+        assert(elements.value.length === 0,
+          'Expected not to find the Add collection button, but found one.');
+      })
       .call(callback);
   });
 };

@@ -27,11 +27,12 @@ exports.config = {
     './features/authentication.feature',
     './features/realtime.feature',
     './features/browseData.feature',
-    './features/dashboard.feature',
+    './features/metrics.feature',
     './features/indexes.feature',
     './features/roles.feature',
     './features/profiles.feature',
-    './features/users.feature'
+    './features/users.feature',
+    './features/notAllowed.feature',
   ],
   // Patterns to exclude.
   exclude: [
@@ -118,10 +119,11 @@ exports.config = {
       './features/step_definitions/common/forms.js',
       './features/step_definitions/common/screenshot.js',
       './features/step_definitions/common/wait.js',
+      './features/step_definitions/common/collections.js',
       './features/step_definitions/common/documentsInline.js',
 
       './features/step_definitions/storage/browseData.js',
-      './features/step_definitions/dashboard/dashboard.js',
+      './features/step_definitions/metrics/metrics.js',
       './features/step_definitions/realtime/realtime.js',
       './features/step_definitions/indexes/indexes.js',
       './features/step_definitions/security/roles.js',

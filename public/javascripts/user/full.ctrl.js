@@ -38,7 +38,7 @@ angular.module('kuzzle.user')
             $scope.user.content = angular.toJson(content, 4);
           }
           catch (e) {
-            console.log(e);
+            console.error(e);
           }
         }
       };

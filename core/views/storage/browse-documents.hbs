@@ -1,10 +1,10 @@
 <div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
 
     <div class="row create">
-        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})">Add document</button>
+        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})" ng-if="canCreateDocument">Add document</button>
     </div>
 
-    <div class="row">
+    <div ng-if="canReadDocument" class="row">
         <div class="panel panel-default filters">
             <div class="panel-body">
                     <filters
@@ -23,30 +23,36 @@
         </div>
     </div>
 
-    <div class="row" ng-if="documents.length == 0">
-        <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
+    <div ng-if="canReadDocument">
+        <div class="row" ng-if="documents.length == 0">
+            <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
+        </div>
+
+        <documents-inline documents="documents" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
+
+        <div class="row total-documents"  ng-show="documents.length != 0">
+            <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>
+        </div>
+        <div class="pull-right">
+            <uib-pagination
+                    total-items="total"
+                    ng-model="currentPage"
+                    max-size="5"
+                    class="pagination-sm"
+                    boundary-links="true"
+                    rotate="false"
+                    ng-change="loadDocuments()"
+                    num-pages="numPages"
+                    previous-text="Prev"
+                    next-text="Next"
+                    items-per-page="limit"
+                    ng-model="currentPage"
+                    ng-show="documents.length > 0">
+            </uib-pagination>
+        </div>
     </div>
 
-    <documents-inline documents="documents" collection="collection" can-edit="true"></documents-inline>
-
-    <div class="row total-documents"  ng-show="documents.length != 0">
-        <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>
-    </div>
-    <div class="pull-right">
-        <uib-pagination
-                total-items="total"
-                ng-model="currentPage"
-                max-size="5"
-                class="pagination-sm"
-                boundary-links="true"
-                rotate="false"
-                ng-change="loadDocuments()"
-                num-pages="numPages"
-                previous-text="Prev"
-                next-text="Next"
-                items-per-page="limit"
-                ng-model="currentPage"
-                ng-show="documents.length > 0">
-        </uib-pagination>
+    <div ng-if="!canReadDocument" class="row">
+        <p>You are not allowed to see documents in collection <strong ng-bind="collection"></strong>.</p>
     </div>
 </div>

@@ -11,7 +11,8 @@ angular.module('kuzzle.realtime')
     'filters',
     'Notification',
     'indexesApi',
-    function ($scope, collectionApi, documentApi, messageNotification, watchDataForms, $state, $stateParams, filterTools, notification, indexesApi) {
+    'authorizationApi',
+    function ($scope, collectionApi, documentApi, messageNotification, watchDataForms, $state, $stateParams, filterTools, notification, indexesApi, authorization) {
       var
         MAX_LOG_SIZE = 100,
         warning = {
@@ -21,8 +22,11 @@ angular.module('kuzzle.realtime')
         };
 
       $scope.subscribed = false;
+      $scope.stateParams = $stateParams;
 
       $scope.init = function () {
+        $scope.canSubscribe = false;
+        $scope.canPublish = false;
         $scope.forms = watchDataForms;
         collectionApi.list()
           .then(function (response) {
@@ -68,9 +72,15 @@ angular.module('kuzzle.realtime')
         if (typeof collection === 'object' && collection.name) {
           $scope.forms.collection = collection.name;
           $state.go('realtime.watch-data', {collection: collection.name, advancedFilter: null, basicFilter: null});
+          $scope.canSubscribe = authorization.canDoAction($stateParams.index, collection.name, 'subscribe', 'on') &&
+            authorization.canDoAction($stateParams.index, collection.name, 'subscribe', 'off');
+          $scope.canPublish = authorization.canDoAction($stateParams.index, collection.name, 'write', 'publish');
         } else if (typeof collection === 'string') {
           $scope.forms.collection = collection;
           $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
+          $scope.canSubscribe = authorization.canDoAction($stateParams.index, collection, 'subscribe', 'on') &&
+            authorization.canDoAction($stateParams.index, collection, 'subscribe', 'off');
+          $scope.canPublish = authorization.canDoAction($stateParams.index, collection, 'write', 'publish');
         }
       };
 
@@ -174,15 +184,8 @@ angular.module('kuzzle.realtime')
       /** PRIVATE METHODS **/
 
       var setSearchType = function (isAdvanced) {
-        $scope.forms.searchType.basic = false;
-        $scope.forms.searchType.advanced = false;
-
-        if (isAdvanced) {
-          $scope.forms.searchType.advanced = true;
-        }
-        else {
-          $scope.forms.searchType.basic = true;
-        }
+        $scope.forms.searchType.basic = !isAdvanced;
+        $scope.forms.searchType.advanced = isAdvanced;
       };
 
       var addNotification = function (notification) {

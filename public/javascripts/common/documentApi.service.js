@@ -2,11 +2,15 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
   .service('documentApi', [
     'kuzzleSdk',
+    '$stateParams',
     '$http',
     'uid',
     'Notification',
     'bufferCancel',
-    '$q', function (kuzzleSdk, $http, uid, notification, bufferCancel, $q) {
+    '$q',
+    'authorizationApi',
+    'indexesApi',
+    function (kuzzleSdk, $stateParams, $http, uid, notification, bufferCancel, $q, authorization, indexesApi) {
       var
         clientId = uid.new();
 
@@ -25,7 +29,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             data: {
               filter: filter,
               collection: collection,
-              index: 'mainindex'
+              index: indexesApi.data.selectedIndex
             }
           });
         },
@@ -72,11 +76,15 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         },
 
         subscribeId: function (collection, id, cb) {
-          return kuzzleSdk
-            .dataCollectionFactory(collection)
-            .subscribe({ids: {values: [id]}}, {subscribeToSelf: false}, function (error, result) {
-              cb(result);
-            });
+          if (authorization.canDoAction($stateParams.index, collection, 'subscribe', 'on') &&
+            authorization.canDoAction($stateParams.index, collection, 'subscribe', 'off')) {
+            return kuzzleSdk
+              .dataCollectionFactory(collection)
+              .subscribe({ids: {values: [id]}}, {subscribeToSelf: false}, function (error, result) {
+                cb(result);
+              });
+          }
+          return false;
         },
 
         subscribeFilter: function (collection, filters, cb) {
@@ -92,7 +100,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             collection: collection,
             id: id,
             clientId: clientId,
-            index: 'mainindex'
+            index: indexesApi.data.selectedIndex
           };
 
           if (buffer) {
@@ -109,7 +117,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             collection: collection,
             id: id,
             clientId: clientId,
-            index: 'mainindex'
+            index: indexesApi.data.selectedIndex
           });
         },
 

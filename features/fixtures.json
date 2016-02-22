@@ -1,15 +1,35 @@
 {
-  "mainindex": {
+  "kuzzle-bo-testindex": {
     "kuzzle-bo-test": [
       { "index" : {"_id": "ghopper"}},
       { "username": "ghopper", "name": {"first": "Grace", "last": "Hopper"} },
       { "index" : {"_id": "alovelace"}},
       { "username": "alovelace", "name": {"first": "Ada", "last": "Lovelace"} }
+    ],
+    "private-collection": [
+      { "index" : {"_id": "the-ring"}},
+      { "username": "the-ring", "description": "Everybody wants me." }
+    ],
+    "readonly-collection": [
+      { "index" : {"_id": "light"}},
+      { "username": "light", "description": "Nobody can touch me." }
+    ],
+    "editable-collection": [
+      { "index" : {"_id": "hipster"}},
+      { "username": "hipster", "description": "Fashion can edit me." }
+    ],
+    "emptiable-collection": [
+      { "index" : {"_id": "wc"}},
+      { "username": "wc", "description": "You can flush me." }
+    ],
+    "deletable-collection": [
+      { "index" : {"_id": "nutella"}},
+      { "username": "nutella", "description": "You can make me disappear." }
     ]
   },
   "%kuzzle": {
     "roles": [
-      { "create": { "_id": "role1" } },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "indexes": {
           "fakeIndex1": {
@@ -40,24 +60,152 @@
             }
           }
         }
+      },
+      { "index": { "_id": "kuzzle-bo-standard" } },
+      {
+        "indexes": {
+          "_canCreate": false,
+          "*": {
+            "_canDelete": false,
+            "collections": {
+              "_canCreate": false,
+              "*": {
+                "_canDelete": false,
+                "controllers": {
+                  "auth": {
+                    "actions": {
+                      "getCurrentUser": true,
+                      "login": true,
+                      "logout": true,
+                      "checkToken": true
+                    }
+                  },
+                  "read": {
+                    "actions": {
+                      "listIndexes": true,
+                      "listCollections": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "kuzzle-bo-testindex": {
+            "_canDelete": false,
+            "collections": {
+              "_canCreate": false,
+              "*": {
+                "_canDelete": false,
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true,
+                      "listCollections": true
+                    }
+                  }
+                }
+              },
+              "readonly-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true,
+                      "listIndexes": true,
+                      "listCollections": true
+                    }
+                  },
+                  "auth": {
+                    "actions": {
+                      "getCurrentUser": true,
+                      "login": true,
+                      "logout": true,
+                      "checkToken": true
+                    }
+                  }
+                }
+              },
+              "editable-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true,
+                      "listCollections": true
+                    }
+                  },
+                  "admin": {
+                    "actions": {
+                      "updateMapping": true
+                    }
+                  }
+                }
+              },
+              "emptiable-collection": {
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true,
+                      "listCollections": true
+                    }
+                  },
+                  "admin": {
+                    "actions": {
+                      "truncateCollection": true
+                    }
+                  }
+                }
+              },
+              "deletable-collection": {
+                "_canDelete": true,
+                "controllers": {
+                  "read": {
+                    "actions": {
+                      "search": true,
+                      "get": true,
+                      "listCollections": true
+                    }
+                  },
+                  "admin": {
+                    "actions": {
+                      "deleteCollection": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     ],
     "profiles": [
-      { "create": { "_id": "myprofile" } },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
       {
-        "roles": ["role1"]
+        "roles": ["kuzzle-bo-dummy"]
+      },
+      { "index": { "_id": "kuzzle-bo-standard" } },
+      {
+        "roles": ["kuzzle-bo-standard"]
       }
     ],
     "users": [
-      { "create": { "_id": "test" } },
+      { "index": { "_id": "kuzzle-bo-admin" } },
       {
         "profile": "admin",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
-      { "create": { "_id": "test1" } },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
       {
-        "profile": "myprofile",
+        "profile": "kuzzle-bo-dummy",
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      },
+      { "index": { "_id": "kuzzle-bo-standard" } },
+      {
+        "profile": "kuzzle-bo-standard",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       }

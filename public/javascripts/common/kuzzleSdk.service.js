@@ -6,6 +6,13 @@ angular.module('kuzzle.kuzzleSdk', [])
 
     return $location.$$host + ':7512';
   }])
+  .factory('kuzzleCoreIndex', function() {
+    if (typeof config !== 'undefined' && config.kuzzleCoreIndex) {
+      return config.kuzzleCoreIndex;
+    }
+
+    return '%kuzzle';
+  })
   .factory('kuzzleSdk', ['kuzzleUrl', function (kuzzleUrl) {
     return new Kuzzle(kuzzleUrl, {
       defaultIndex: 'mainindex',

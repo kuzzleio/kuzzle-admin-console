@@ -1,10 +1,10 @@
-angular.module('kuzzle.dashboard')
+angular.module('kuzzle.metrics')
   .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
-      .state('dashboard', {
+      .state('metrics', {
         parent: 'logged',
         views: {
-          bodyView: {templateUrl: '/dashboard'}
+          bodyView: {templateUrl: '/metrics'}
         }
       });
   }]);
