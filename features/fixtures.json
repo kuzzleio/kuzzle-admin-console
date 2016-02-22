@@ -193,18 +193,21 @@
     "users": [
       { "index": { "_id": "kuzzle-bo-admin" } },
       {
+        "username": "kuzzle-bo-admin",
         "profile": "admin",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
       { "index": { "_id": "kuzzle-bo-dummy" } },
       {
+        "username": "kuzzle-bo-dummy",
         "profile": "kuzzle-bo-dummy",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
       { "index": { "_id": "kuzzle-bo-standard" } },
       {
+        "username": "kuzzle-bo-standard",
         "profile": "kuzzle-bo-standard",
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
