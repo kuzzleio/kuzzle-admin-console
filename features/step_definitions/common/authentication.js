@@ -23,7 +23,7 @@ module.exports = function () {
     }
 
     browser
-      .setValue('[name=username]', world.users[user]._id)
+      .setValue('[name=username]', world.users[user].username)
       .setValue('[name=password]', world.users[user].clearPassword)
       .click('[type=submit]')
       .waitForVisible('.navbar-brand', 3000)
