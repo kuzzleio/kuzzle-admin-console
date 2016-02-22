@@ -4,6 +4,12 @@ var
   request = require('request-promise');
 
 router.get('/', function(req, res) {
+
+  if (process.env.TEST === '1') {
+    // /!\ UGLY HACK /!\ \\
+    return res.render('login/index');
+  }
+
   request({
     method: 'GET',
     uri: 'http://kuzzle:7511/api/1.0/roles/admin',

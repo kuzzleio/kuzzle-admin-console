@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.17.3
+  image: kuzzleio/kuzzle:0.18.2
   volumes:
     - "../features/fixtures.json:/fixtures.json"
   ports:
@@ -30,9 +30,10 @@ kuzzleBo:
     - kuzzle
   environment:
       - DEBUG_PHANTOM
+      - TEST=1
 
 redis:
   image: redis:3.0.2
 
 elasticsearch:
-  image: elasticsearch:1.5.2
+  image: elasticsearch:1.7
