@@ -14,7 +14,7 @@ Feature: Test multi index features
     Then I can not see Storage & Realtime menu entries
     Then I click on the index selector
     Then I select an index
-    Then The index "mainindex" is selected
+    Then The index "kuzzle-bo-testindex" is selected
     Then I can see Storage & Realtime menu entries
 
   Scenario: I can select an index directly in the manage index page
@@ -23,7 +23,7 @@ Feature: Test multi index features
     Then I can not see Storage & Realtime menu entries
     Then I click on the first index in manage index page
     Then I am on collection browse page
-    Then The index "mainindex" is selected
+    Then The index "kuzzle-bo-testindex" is selected
     Then I can see Storage & Realtime menu entries
 
   Scenario: I can access the index creation page in manage index page

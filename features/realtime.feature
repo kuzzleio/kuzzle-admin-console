@@ -9,7 +9,7 @@ Feature: Test realtime watch data pages
     Then I am authenticated
     Given I go to the realtime page
     And I click on the collection selector
-    Given I click on a collection
+    Given I click on the test collection
     And I subscribe to the collection events
 
   @unsubscribe @myTest

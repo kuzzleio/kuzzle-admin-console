@@ -1,4 +1,5 @@
 var
+  world = require('../../support/world.js'),
   assert = require('assert');
 
 module.exports = function() {
@@ -29,6 +30,13 @@ module.exports = function() {
     browser
       .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
       .click('collections-drop-down-search .dropdown-menu li[name=' + collectionName + '] a')
+      .call(callback);
+  });
+
+  this.When(/^I click on the test collection$/, function (callback) {
+    browser
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
+      .click('collections-drop-down-search .dropdown-menu li[name=' + world.collections[0] + '] a')
       .call(callback);
   });
 };
