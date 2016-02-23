@@ -105,7 +105,7 @@ Feature: Test browse data pages
     Then I click on the test collection
     Then I have a list with "1" elements
 
-  @cleanDb @myTest
+  @cleanDb
   Scenario: Edit a document
     Given I go to the page for edit document "alovelace"
     Then I fill the input "username" with "foo"

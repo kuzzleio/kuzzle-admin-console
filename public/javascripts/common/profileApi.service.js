@@ -124,7 +124,11 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             }
             else {
 
-              deferred.resolve({error: false});
+              // We wait 1s to ensure Elastic Search properly indexes the
+              // profile deletion.
+              setTimeout(function () {
+                deferred.resolve({error: false});
+              }, 1000);
 
               if (notify) {
                 notification.success('Profile deleted!');
