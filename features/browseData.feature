@@ -5,14 +5,14 @@ Feature: Test browse data pages
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "admin"
     Then I am authenticated
 
   @cleanDb
   Scenario: Display data list when a collection is selected
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     Then I have a list with "2" elements
 
   Scenario: I will be redirected to indexes browse page if i try to select an wrong collection
@@ -22,7 +22,7 @@ Feature: Test browse data pages
   Scenario: The search displays only the results that match the filters
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     Then I have a list with "2" elements
     Then I fill the input "filter-field" with "username"
     Then I fill the input "filter-value" with "alovelace"
@@ -32,14 +32,14 @@ Feature: Test browse data pages
   Scenario: Button access full view
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     When I click on link to access to "alovelace" full document page
     Then the current URL corresponds to the "alovelace" full document page
 
   Scenario: Button create a document
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     When I click on add document button
     Then the current URL corresponds to the add document page
 
@@ -63,7 +63,7 @@ Feature: Test browse data pages
     Then I'm waiting 1 sec
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     Then I have a list with "3" elements
 
   @cleanDb
@@ -78,7 +78,6 @@ Feature: Test browse data pages
     And I click on "create" button
     Then the current URL corresponds to the add document page
 
-  @cleanDb
   Scenario: Edit schema on document creation
     Given I am on page for edit document "alovelace"
     Then I have an input with id "id"
@@ -96,14 +95,14 @@ Feature: Test browse data pages
   Scenario: Delete a document
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     Then I have a list with "2" elements
     And I delete the last element in list and I cancel
     Then I have a list with "2" elements
     And I delete the last element in list
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     Then I have a list with "1" elements
 
   @cleanDb
@@ -111,16 +110,12 @@ Feature: Test browse data pages
     Given I am on page for edit document "alovelace"
     Then I fill the input "username" with "foo"
     And I click on "update" button
-
-  # @todo: warning, we can't switch page inside a scenario without re-logging
-  Scenario: I can retrieve an edited document with modifications
     Given I am on page for edit document "alovelace"
     Then the field "username" has the value "foo"
 
-  @cleanDb
   Scenario: Edit inline a document
     Given I am on browse data page
     Then I click on the collection selector
-    Then I click on a collection
+    Then I click on the test collection
     Then I click on edit-inline button of "alovelace" document
     Then a text area for document "alovelace" is displayed

@@ -11,7 +11,7 @@ angular.module('kuzzle', [
   'kuzzle.role',
   'kuzzle.profile',
   'kuzzle.user',
-  'kuzzle.dashboard',
+  'kuzzle.metrics',
   'kuzzle.bufferCancel',
   'kuzzle.documentApi',
   'kuzzle.indexesApi',
@@ -56,7 +56,7 @@ angular.module('kuzzle', [
         url: '',
         views: {
           wrappedView: { templateUrl: '/logged' },
-          'bodyView@logged': {templateUrl: '/dashboard'}
+          'bodyView@logged': {templateUrl: '/metrics'}
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -84,10 +84,14 @@ angular.module('kuzzle', [
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/firstAdmin/firstAdmin.module.js',
-              '/javascripts/firstAdmin/firstAdmin.service.js',
-              '/javascripts/firstAdmin/firstAdmin.controller.js'
-            ]);
+              '/javascripts/firstAdmin/firstAdmin.module.js'
+            ])
+              .then(function () {
+                return $ocLazyLoad.load([
+                  '/javascripts/firstAdmin/firstAdmin.service.js',
+                  '/javascripts/firstAdmin/firstAdmin.controller.js'
+                ]);
+              });
           }]
         }
       })

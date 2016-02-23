@@ -45,7 +45,8 @@ angular.module('kuzzle.collection')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/collection/full.controller.js'
+              '/javascripts/collection/full.controller.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }
@@ -58,7 +59,8 @@ angular.module('kuzzle.collection')
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
-              '/javascripts/collection/full.controller.js'
+              '/javascripts/collection/full.controller.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }

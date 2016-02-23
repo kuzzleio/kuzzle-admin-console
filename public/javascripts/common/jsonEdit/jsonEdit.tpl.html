@@ -1,0 +1,2 @@
+<div ng-show="canEdit" ui-ace="{ mode: 'json', onLoad: aceLoaded }" ng-model="content"></div>
+<div ng-show="!canEdit" ui-ace="{ mode: 'json', onLoad: aceLoaded }" ng-model="content" readonly></div>

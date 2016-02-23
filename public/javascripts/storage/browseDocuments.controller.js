@@ -15,7 +15,8 @@ angular.module('kuzzle.storage')
     '$timeout',
     '$state',
     'filters',
-    function ($scope, $http, $stateParams, schema, documentApi, $timeout, $state, filterTools) {
+    'authorizationApi',
+    function ($scope, $http, $stateParams, schema, documentApi, $timeout, $state, filterTools, authorization) {
 
       // List comparators for Basic filter block
       $scope.comparators = [
@@ -67,6 +68,11 @@ angular.module('kuzzle.storage')
           return false;
         }
 
+        $scope.canCreateDocument =  authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'create');
+        $scope.canReadDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'read', 'search');
+        $scope.canEditDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'createOrReplace');
+        $scope.canDeleteDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'delete');
+
         var filters = {};
         try {
           filters = filterTools.getFiltersFromUrl($stateParams, $scope.comparators);
@@ -74,7 +80,7 @@ angular.module('kuzzle.storage')
           $state.go('storage.browse.documents', {basicFilter: null}, {reload: false});
         }
 
-        if (filters.basicFilter){
+        if (filters.basicFilter) {
           $scope.filter.basicFilter = filters.basicFilter;
           setSearchType(false);
         } else if (filters.advancedFilter) {
@@ -84,8 +90,13 @@ angular.module('kuzzle.storage')
           setSearchType(false);
         }
 
-        $scope.loadDocuments();
+        if ($scope.canReadDocument) {
+          $scope.loadDocuments();
+        }
+
       };
+
+
 
       /**
        * Load documents according to filters
@@ -95,6 +106,10 @@ angular.module('kuzzle.storage')
 
         var
           filter = {};
+
+        if (!$scope.canReadDocument) {
+          return false;
+        }
 
         if ($scope.searchType.advanced) {
           try {

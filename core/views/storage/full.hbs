@@ -22,7 +22,7 @@
                             title="Use the JSON view"
                             ng-click="switchView('json')"></button>
                 </div>
-                <div class="btn-group" role="group">
+                <div class="btn-group" role="group" ng-if="canEditDocument">
                     <add-attribute schema="schema" document="document" refresh-form="refreshForm()"></add-attribute>
                 </div>
             </div>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <div ng-if="view === 'json'">
-                    <json-edit content="document.json"></json-edit>
+                    <json-edit content="document.json" can-edit="canEditDocument"></json-edit>
                 </div>
 
                 <div class="actions-group">
@@ -69,7 +69,7 @@
                         </label>
                     </div>
 
-                    <button id="update" type="submit" class="btn btn-success control" ng-if="exists" ng-click="update()">Update</button>
+                    <button ng-if="canEditDocument && exists" id="update" type="submit" class="btn btn-success control" ng-click="update()">Update</button>
                     <button id="create" type="submit" class="btn btn-success control" ng-if="!exists" ng-click="create()">Create</button>
 
                     <a href class="control" ng-click="goToList()">List</a>

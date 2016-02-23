@@ -38,7 +38,8 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           kuzzleSdk
             .dataCollectionFactory(collection.name)
-            .putMapping(collection.schema, function (error) {
+            .dataMappingFactory(collection.schema)
+            .apply(function (error) {
               if (error) {
                 if (notify) {
                   notification.error(messageError);

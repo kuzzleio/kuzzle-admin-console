@@ -4,7 +4,11 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="row create">
             <div class="col-sm-5">
-                <button type="button" class="btn btn-success"  ui-sref="collection.create">Add collection</button>
+                <button
+                  type="button"
+                  class="btn btn-success btn-collection-add"
+                  ng-if="canCreateCollection"
+                  ui-sref="collection.create">Add collection</button>
             </div>
         </div>
 

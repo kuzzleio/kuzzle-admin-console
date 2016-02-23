@@ -41,7 +41,8 @@ angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle
       scope: {
         canEdit: '=',
         index: '=',
-        afterDelete: '&'
+        afterDelete: '&',
+        canDelete: '='
       },
       controller: 'cogOptionsIndexesCtrl',
       templateUrl: '/javascripts/indexes/cogOptionsIndexes/cogOptionsIndexes.tpl.html'

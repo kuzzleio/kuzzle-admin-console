@@ -8,7 +8,28 @@ angular.module('kuzzle')
     'indexesApi',
     '$window',
     '$log',
-    function ($scope, $http, $stateParams, $state, indexesApi, $window, $log) {
-      $scope.init = function () {};
+    'authorizationApi',
+    'indexesApi',
+    function ($scope, $http, $stateParams, $state, indexesApi, $window, $log, authorization, indexes) {
+      $scope.init = function () {
+        $scope.indexData = indexesApi.data;
+        $scope.canGetServerInfo = authorization.canDoAction('foobar', 'foobar', 'read', 'serverInfo');
+        $scope.canGetStats = authorization.canDoAction('foobar', 'foobar', 'admin', 'getStats') &&
+          authorization.canDoAction('foobar', 'foobar', 'admin', 'getLastStats') &&
+          authorization.canDoAction('foobar', 'foobar', 'read', 'now');
+
+        indexesApi.list();
+      };
+
+      $scope.hasRightsOnIndex = function (index) {
+        return authorization.hasRightsOnIndex(index);
+      };
+
+      $scope.canShowDataDongle = function () {
+        if ($scope.indexData.indexes) {
+          return Object.keys($scope.indexData.indexes).length > 0;
+        }
+        return false;
+      };
     }
   ]);

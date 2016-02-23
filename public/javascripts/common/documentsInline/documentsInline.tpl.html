@@ -28,7 +28,8 @@
                         <button type="button" class="btn btn-default"
                                 ng-repeat="role in document.content.roles"
                                 ui-sref="role.full({role: role})"
-                                ng-bind="role"></button>
+                                ng-bind="role">
+                        </button>
                     </div>
                 </div>
                 <!-- /profiles -->
@@ -47,11 +48,9 @@
                 </div>
                 <!-- users -->
                 <!-- /title col -->
-
                 <!-- edit col -->
                 <div class="col-sm-8">
                     <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
-
                     <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
                 </div>
                 <!-- /edit col -->
