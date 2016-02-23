@@ -21,14 +21,19 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.saveEditDocument = function () {
-        var profile = {};
+        var profile = {
+          id: $scope.document.id,
+          content: {}
+        };
 
         try {
-          $scope.document.content = JSON.parse($scope.document.json);
+          profile.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          profile = {id: $scope.document.id, content: $scope.document.content};
-          profileApi.update(profile, true);
+          profileApi.update(profile, true)
+            .then(function() {
+              $scope.document.content = angular.extend($scope.document.content, profile.content);
+            });
         }
         catch (e) {
           notification.error('Error parsing role.');

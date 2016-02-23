@@ -22,6 +22,10 @@ angular.module('kuzzle.user')
       $scope.init = function () {
         $scope.canUpdateUser = authorization.canDoAction('%kuzzle', '*', 'security', 'updateUser');
 
+        $scope.loadUsers();
+      };
+
+      $scope.loadUsers = function() {
         userApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
           .then(function (response) {
             $scope.total = response.total;

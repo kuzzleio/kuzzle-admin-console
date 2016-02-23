@@ -22,6 +22,10 @@ angular.module('kuzzle.profile')
       $scope.init = function () {
         $scope.canUpdateProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'updateProfile');
 
+        $scope.loadProfiles();
+      };
+
+      $scope.loadProfiles = function() {
         profileApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
           .then(function (response) {
             $scope.total = response.total;

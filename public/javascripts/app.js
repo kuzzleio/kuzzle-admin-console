@@ -66,8 +66,10 @@ angular.module('kuzzle', [
               '/javascripts/common/widget/widget.directive.js'
             ]);
           }],
-          authenticated: ['AuthService', function (Auth, $state) {
-            return Auth.isAuthenticated();
+          authenticated: ['AuthService', 'kuzzleSdk', function (Auth, kuzzle) {
+            kuzzle.addListener('connected', function() {
+              Auth.isAuthenticated();
+            });
           }]
         }
       })

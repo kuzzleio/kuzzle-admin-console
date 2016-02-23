@@ -76,7 +76,7 @@ angular.module('kuzzle.authentication')
       } else {
         if (Session.resumeFromCookie()) {
           kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
-            if (error || response.result.valid === false) {
+            if (error || response.valid === false) {
               onLoginFailed(error);
               deferred.reject({
                 type: 'NOT_AUTHENTICATED',

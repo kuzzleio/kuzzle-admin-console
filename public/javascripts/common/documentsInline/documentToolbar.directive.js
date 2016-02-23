@@ -18,11 +18,19 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.saveEditDocument = function () {
+        var document = {
+          id: $scope.document.id,
+          content: {}
+        };
+
         try {
-          $scope.document.content = JSON.parse($scope.document.json);
+          document.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          documentApi.update($scope.collection, $scope.document.id, $scope.document.content, true);
+          documentApi.update($scope.collection, document.id, document.content, true)
+            .then(function() {
+              $scope.document.content = document.content;
+            });
         }
         catch (e) {
           console.error(e);
@@ -73,7 +81,8 @@ angular.module('kuzzle.documentsInline')
         document: '=',
         collection: '=',
         canEdit: '=',
-        afterDelete: '&'
+        afterDelete: '&',
+        onUpdate: '&'
       },
       controller: 'DocumentToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'

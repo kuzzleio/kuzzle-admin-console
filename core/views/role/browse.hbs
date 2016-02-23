@@ -7,7 +7,7 @@
                     <button type="button" class="btn btn-success"  ui-sref="role.create">Add role</button>
                 </div>
 
-                <documents-inline documents="roles" role="true" can-edit="canUpdateRole"></documents-inline>
+                <documents-inline documents="roles" role="true" can-edit="canUpdateRole" on-update="loadRoles"></documents-inline>
             </div>
 
             <div class="col-sm-9" ng-if="roles.length === 0">
