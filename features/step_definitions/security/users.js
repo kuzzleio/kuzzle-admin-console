@@ -174,6 +174,7 @@ module.exports = function () {
 
   this.When(/^I click the delete button of the user "([^"]*)"$/, function (userId, callback) {
     browser
+      .waitForVisible('documents-inline .row.documents #'+ userId +' .document-id span', 1000)
       .getText('documents-inline .row.documents #'+ userId +' .document-id span')
       .then(text => {
         assert(text, 'expected to have at least one user with a name');
