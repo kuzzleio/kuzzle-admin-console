@@ -93,7 +93,7 @@ module.exports = function () {
     browser
       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id)
       .waitForVisible('form fieldset', 1000)
-      .pause(500)
+      .pause(1500)
       .call(callback);
   });
 

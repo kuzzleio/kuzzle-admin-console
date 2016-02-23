@@ -9,10 +9,13 @@ angular.module('kuzzle.role')
     'previousState',
     'Notification',
     '$window',
-    function ($scope, $stateParams, roleApi, $state, schema, previousState, notification, $window) {
+    'authorizationApi',
+    function ($scope, $stateParams, roleApi, $state, schema, previousState, notification, $window, authorization) {
 
       $scope.isEdit = false;
       $scope.notFoundError = false;
+      $scope.canCreateOrReplaceRole = false;
+      $scope.canUpdateRole = false;
       $scope.role = {
         id: $stateParams.role,
         content: ''
@@ -20,6 +23,9 @@ angular.module('kuzzle.role')
 
       $scope.init = function (action) {
         var content;
+
+        $scope.canCreateOrReplaceRole = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceRole');
+        $scope.canUpdateRole = authorization.canDoAction('%kuzzle', '*', 'security', 'updateRole');
 
         if (action === 'edit') {
           $scope.isEdit = true;
@@ -97,7 +103,7 @@ angular.module('kuzzle.role')
         }
       };
 
-      $scope.update = function (isCreate) {
+      $scope.update = function () {
         var role = {
           id: $scope.role.id,
           content: {}

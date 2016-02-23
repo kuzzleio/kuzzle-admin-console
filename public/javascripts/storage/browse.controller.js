@@ -8,6 +8,24 @@ angular.module('kuzzle.storage')
     'collectionApi',
     'authorizationApi',
     function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
+      var checkRights = function (collection) {
+        $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
+        $scope.canEditCollection = authorization.canDoAction(
+          $stateParams.index,
+          collection,
+          'admin',
+          'updateMapping'
+        );
+        $scope.canEmptyCollection = authorization.canDoAction(
+          $stateParams.index,
+          collection,
+          'admin',
+          'truncateCollection'
+        );
+
+        $scope.showCog = $scope.canDeleteCollection || $scope.canEditCollection || $scope.canEmptyCollection;
+      };
+
       $scope.collections = [];
       $scope.stateParams = $stateParams;
 
@@ -17,6 +35,10 @@ angular.module('kuzzle.storage')
             $scope.collections = response.stored.map(function (collection) {
               return {name: collection};
             });
+
+            if ($stateParams.collection) {
+              checkRights($stateParams.collection);
+            }
           })
           .catch(function (error) {
             console.error(error);
@@ -28,21 +50,7 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onSelectCollection = function (collection) {
-        $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection.name);
-        $scope.canEditCollection = authorization.canDoAction(
-          $stateParams.index,
-          collection.name,
-          'admin',
-          'updateMapping'
-        );
-        $scope.canEmptyCollection = authorization.canDoAction(
-          $stateParams.index,
-          collection.name,
-          'admin',
-          'truncateCollection'
-        );
-
-        $scope.showCog = $scope.canDeleteCollection || $scope.canEditCollection || $scope.canEmptyCollection;
+        checkRights(collection.name);
         $state.go('storage.browse.documents', {index: $stateParams.index, collection: collection.name, advancedFilter: null, basicFilter: null});
       };
 

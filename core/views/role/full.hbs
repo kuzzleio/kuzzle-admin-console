@@ -18,13 +18,13 @@
             </div>
             <div class="form-group">
                 <label for="name">Role content</label>
-                <json-edit content="role.content"></json-edit>
+                <json-edit content="role.content" can-edit="canCreateOrReplaceRole || canUpdateRole"></json-edit>
             </div>
 
             <div class="actions-group">
-                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="create()">Create</button>
-                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
-                <button id="replace" type="submit" class="btn btn-warning control" ng-if="isEdit" ng-click="replace()">Replace</button>
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit && canCreateOrReplaceRole" ng-click="create()">Create</button>
+                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit && canUpdateRole" ng-click="update()">Update</button>
+                <button id="replace" type="submit" class="btn btn-warning control" ng-if="isEdit && canCreateOrReplaceRole" ng-click="replace()">Replace</button>
                 <a class="control" ng-click="cancel()">Cancel</a>
             </div>
         </form>

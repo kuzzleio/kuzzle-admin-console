@@ -5,29 +5,36 @@ angular.module('kuzzle.role')
     JSONFormatterConfigProvider.hoverPreviewArrayCount = 5;
   }])
 
-  .controller('RoleBrowseCtrl', ['$scope', 'roleApi', function ($scope, roleApi) {
+  .controller('RoleBrowseCtrl', [
+    '$scope',
+    'roleApi',
+    'authorizationApi',
+    function ($scope, roleApi, authorization) {
+      // Manage pagination
+      $scope.currentPage = 1;
+      $scope.total = 0;
+      $scope.limit = 10000;
 
-    // Manage pagination
-    $scope.currentPage = 1;
-    $scope.total = 0;
-    $scope.limit = 10000;
+      $scope.roles = [];
+      $scope.collection = 'roles';
+      $scope.canUpdateRole = false;
 
-    $scope.roles = [];
-    $scope.collection = 'roles';
+      $scope.init = function () {
+        $scope.canUpdateRole = authorization.canDoAction('%kuzzle', '*', 'security', 'updateRole');
 
-    $scope.init = function () {
-      $scope.loadRoles();
-    };
+        $scope.loadRoles();
+      };
 
-    $scope.loadRoles = function () {
-      roleApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
-        .then(function (response) {
-          $scope.roles = response;
-        })
-        .catch(function (error) {
-          console.error(error);
-        });
-    };
+      $scope.loadRoles = function () {
+        roleApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
+          .then(function (response) {
+            $scope.roles = response;
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      };
 
-    $scope.$on('$viewContentLoaded', $scope.init);
-  }]);
+      $scope.$on('$viewContentLoaded', $scope.init);
+    }
+  ]);
