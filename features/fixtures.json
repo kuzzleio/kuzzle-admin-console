@@ -107,6 +107,7 @@
                 }
               },
               "readonly-collection": {
+                "_canDelete": false,
                 "controllers": {
                   "read": {
                     "actions": {
@@ -127,6 +128,7 @@
                 }
               },
               "editable-collection": {
+                "_canDelete": false,
                 "controllers": {
                   "read": {
                     "actions": {
@@ -143,6 +145,7 @@
                 }
               },
               "emptiable-collection": {
+                "_canDelete": false,
                 "controllers": {
                   "read": {
                     "actions": {
