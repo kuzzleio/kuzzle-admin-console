@@ -15,7 +15,7 @@ module.exports = function () {
       .url('/#/notexist/storage/browse')
       .call(callback);
   });
-  this.Given(/^I go to collection browse page$/, function (callback) {
+  this.Given(/^I am on browse collection page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/collection/browse')
       .call(callback);
@@ -254,6 +254,12 @@ module.exports = function () {
         assert(elements.value.length === 0,
           'Expected not to find the Add collection button, but found one.');
       })
+      .call(callback);
+  });
+
+  this.Given(/^I am on browse data page for collection "([^"]*)"$/, function (collection, callback) {
+    browser
+      .url('/#/' + world.index + '/storage/browse/' + collection)
       .call(callback);
   });
 };

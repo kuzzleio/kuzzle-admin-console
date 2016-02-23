@@ -5,6 +5,11 @@ module.exports = function () {
   this.Then(/^I have a list with "([\d]*)" element[s]?$/, function (count, callback) {
     browser
       .waitForVisible('documents-inline .row', 1000)
+      .then(null, () => {
+        if (parseInt(count) === 0) {
+          callback();
+        }
+      })
       .elements('documents-inline .document-id')
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count),
