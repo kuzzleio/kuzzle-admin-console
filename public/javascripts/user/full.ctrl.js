@@ -9,10 +9,13 @@ angular.module('kuzzle.user')
     'previousState',
     'Notification',
     '$window',
-    function ($scope, $stateParams, userApi, $state, schema, previousState, notification, $window) {
+    'authorizationApi',
+    function ($scope, $stateParams, userApi, $state, schema, previousState, notification, $window, authorization) {
 
       $scope.isEdit = false;
       $scope.notFoundError = false;
+      $scope.canCreateOrReplaceUser = false;
+      $scope.canUpdateUser = false;
       $scope.user = {
         id: $stateParams.user,
         content: ''
@@ -20,6 +23,9 @@ angular.module('kuzzle.user')
 
       $scope.init = function (action) {
         var content;
+
+        $scope.canCreateOrReplaceUser = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceUser');
+        $scope.canUpdateUser = authorization.canDoAction('%kuzzle', '*', 'security', 'updateUser');
 
         if (action === 'edit') {
           $scope.isEdit = true;

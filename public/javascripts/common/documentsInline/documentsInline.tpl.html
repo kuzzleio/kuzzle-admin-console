@@ -51,7 +51,7 @@
                 <!-- edit col -->
                 <div class="col-sm-8">
                     <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
-                    <json-edit ng-if="canEdit && document.isEdit" content="document.json"></json-edit>
+                    <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
                 </div>
                 <!-- /edit col -->
 
