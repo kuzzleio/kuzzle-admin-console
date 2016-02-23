@@ -79,7 +79,7 @@ Feature: Test browse data pages
     Then the current URL corresponds to the add document page
 
   Scenario: Edit schema on document creation
-    Given I am on page for edit document "alovelace"
+    Given I go to the page for edit document "alovelace"
     Then I have an input with id "id"
     And I have an input with id "first"
     And I have an input with id "last"
@@ -105,13 +105,13 @@ Feature: Test browse data pages
     Then I click on the test collection
     Then I have a list with "1" elements
 
-  @cleanDb
+  @cleanDb @myTest
   Scenario: Edit a document
-    Given I am on page for edit document "alovelace"
+    Given I go to the page for edit document "alovelace"
     Then I fill the input "username" with "foo"
     And I click on "update" button
-    Given I am on page for edit document "alovelace"
-    Then the field "username" has the value "foo"
+    Then I am on page for edit document "alovelace"
+    And the field "username" has the value "foo"
 
   Scenario: Edit inline a document
     Given I am on browse data page

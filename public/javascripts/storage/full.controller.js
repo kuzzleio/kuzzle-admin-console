@@ -71,7 +71,7 @@ angular.module('kuzzle.storage')
                   refreshFormWithJson();
                   documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
                     message = notification.info({
-                      message:'Someone has update this document',
+                      message:'Someone just updated this document',
                       templateUrl: 'refreshTemplate.html',
                       delay: null,
                       scope: $scope,
