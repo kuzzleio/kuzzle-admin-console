@@ -9,13 +9,13 @@ Feature: Test the users CRUD page
     When I go on the browse users page
     Then I have a list with at least "2" elements
 
-  Scenario: The user is able to access the associated profile's user
+  Scenario: I am able to access the associated profile's user
     When I go on the browse users page
     Then I can see the profile associated to a user
     And I click on the profile associated to a user
     Then I am on the full view edit profiles page
 
-  Scenario: The user is able to edit an user using the detailed view.
+  Scenario: I am able to edit an user using the detailed view.
     When I go on the browse users page
     And I click the full view edit button of the last users
     Then I am on the full view edit users page
@@ -23,7 +23,7 @@ Feature: Test the users CRUD page
     And The input "user-id" is disabled
 
   @cleanSecurity
-  Scenario: The user is able to edit an user using the inline view.
+  Scenario: I am able to edit an user using the inline view.
     When I go on the browse users page
     And I click the inline edit button of the last user
     Then I see the inline editor of the last user
@@ -31,7 +31,7 @@ Feature: Test the users CRUD page
     Then I get a successful updated user notification
 
   @cleanSecurity
-  Scenario: The user is able to create a new user.
+  Scenario: I am able to create a new user.
     When I go on the browse users page
     And I click the add user button
     Then I am on the add user page
@@ -40,7 +40,7 @@ Feature: Test the users CRUD page
     And The input "user-id" is empty
 
   @cleanSecurity
-  Scenario: The user is able to clone a user and delete it.
+  Scenario: I am able to clone a user.
     When I go on the browse users page
     And I click the clone button of the last user
     Then I am on the add user page
@@ -51,14 +51,17 @@ Feature: Test the users CRUD page
     And I click the create button
     Then I am on the browse users page
     And I see "newUser" in the user list
+
+  @cleanSecurity
+  Scenario: I am able to delete a user
     When I go on the browse users page
-    And I click the delete button of the user "newUser"
+    And I click the delete button of the user "kuzzle-bo-dummy"
     Then I can see "modal-delete-user" modal
     When I fill the confirmation modal with the name of the deleted user
     And I confirm the deletion
     Then I am on the browse users page
     And I do not see the deleted user in the users list
 
-  Scenario: The user is unable to edit an unexisting user.
+  Scenario: I am unable to edit an unexisting user.
     When I go to the full view of an unexisting user
     Then I see a message saying the user does not exist

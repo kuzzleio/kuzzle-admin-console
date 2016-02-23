@@ -89,11 +89,26 @@ module.exports = function () {
       });
   });
 
-  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
+  this.When(/^I go to the page for edit document "([^"]*)"$/, function (id, callback) {
     browser
       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id)
-      .waitForVisible('form fieldset', 1000)
+      .waitForVisible('form fieldset', 10000)
       .pause(1500)
+      .call(callback);
+  });
+
+  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
+    browser
+      .pause(500)
+      .getUrl()
+      .then(url => {
+        var expectedUrl = world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id;
+        var urlRegexp = new RegExp(expectedUrl, 'g');
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
       .call(callback);
   });
 

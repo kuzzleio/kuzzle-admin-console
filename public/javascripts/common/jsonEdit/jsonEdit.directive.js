@@ -2,7 +2,12 @@ angular.module('kuzzle.jsonEdit', ['ui.ace'])
 
   .controller('AceCtrl', ['$scope', function ($scope) {
     $scope.aceLoaded = function (editor) {
+      $scope.aceSession = editor.getSession();
       editor.$blockScrolling = Infinity;
+    };
+
+    $scope.aceChanged = function () {
+      $scope.content = $scope.aceSession.getDocument().getValue();
     };
   }])
 
