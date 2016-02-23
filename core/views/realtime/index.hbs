@@ -24,7 +24,10 @@
               <div class="btn-group" ng-if="forms.collection">
                 <cog-options-collection
                         collection="forms.collection"
+                        current-index="index"
                         can-edit="true"
+                        can-delete="true"
+                        can-empty="true"
                         after-delete="onDeleteCollection()"
                         after-empty="onEmptyCollection()">
                 </cog-options-collection>

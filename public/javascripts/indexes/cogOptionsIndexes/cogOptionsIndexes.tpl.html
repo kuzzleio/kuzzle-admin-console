@@ -1,7 +1,7 @@
 <span class="cog-options-indexes" ng-if="canEdit || canDelete">
     <span class="dropdown">
         <small class="glyphicon glyphicon-cog dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options..."></small>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu dropdown-menu-right">
             <li ng-if="canEdit"><a href="" ui-sref="indexes.full({index: index.name})" title="Go to full view">Edit</a></li>
             <li ng-if="canDelete"><a href="" ng-click="openModalDeleteIndex()" class="text-danger" title="Delete index ...">Delete</a></li>
         </ul>

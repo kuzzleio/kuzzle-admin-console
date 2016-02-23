@@ -9,6 +9,7 @@ angular.module('kuzzle.storage')
     'authorizationApi',
     function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
       var checkRights = function (collection) {
+        $scope.canCreateDocument =  authorization.canDoAction($stateParams.index, collection, 'write', 'create');
         $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
         $scope.canEditCollection = authorization.canDoAction(
           $stateParams.index,
@@ -30,6 +31,7 @@ angular.module('kuzzle.storage')
       $scope.stateParams = $stateParams;
 
       $scope.init = function () {
+
         collectionApi.list()
           .then(function (response) {
             $scope.collections = response.stored.map(function (collection) {

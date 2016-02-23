@@ -4,10 +4,10 @@
   <div class="container container-medium">
     <div class="row whitespace-top">
       <div class="col-sm-12">
-          <div class="row create">
-              <div class="col-sm-5">
-                 <button type="button" class="btn btn-success"  ui-sref="indexes.create" ng-if="canCreateIndex">Add index</button>
-              </div>
+          <div class="create" style="margin-bottom: 15px">
+            <button type="button" class="btn btn-success"  ui-sref="indexes.create" ng-if="canCreateIndex">
+              <i class="fa fa-plus"></i> Add index
+            </button>
           </div>
 
           <div class="row" ng-if="indexData.indexes.length !== 0">

@@ -1,9 +1,5 @@
 <div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
 
-    <div class="row create">
-        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})" ng-if="canCreateDocument">Add document</button>
-    </div>
-
     <div ng-if="canReadDocument" class="row">
         <div class="panel panel-default filters">
             <div class="panel-body">

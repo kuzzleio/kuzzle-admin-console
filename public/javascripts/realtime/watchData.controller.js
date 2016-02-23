@@ -23,11 +23,13 @@ angular.module('kuzzle.realtime')
 
       $scope.subscribed = false;
       $scope.stateParams = $stateParams;
+      $scope.index = $stateParams.index;
 
       $scope.init = function () {
         $scope.canSubscribe = false;
         $scope.canPublish = false;
         $scope.forms = watchDataForms;
+
         collectionApi.list()
           .then(function (response) {
             var
@@ -47,7 +49,7 @@ angular.module('kuzzle.realtime')
 
             $scope.forms.collections = collections;
           });
-        $scope.forms.collection = $stateParams.collection;
+        $scope.onSelectCollection($stateParams.collection);
 
 
         var filters = {};
