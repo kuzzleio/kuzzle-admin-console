@@ -8,7 +8,8 @@
 >
     <ul class="nav navbar-nav side-nav">
         <li class="nav-category"
-            ui-sref-active="active">
+             ng-if="canGetServerInfo || canGetStats"
+             ui-sref-active="active">
             <a ui-sref="logged">
                 <i class="fa fa-fw fa-area-chart pull-left"></i>
                     System metrics
@@ -17,7 +18,7 @@
         </li>
 
         <!-- Indexes -->
-        <li class="nav-category"
+        <li ng-if="canShowDataDongle()" class="nav-category"
             ng-class="{ in: ('indexes.*.*' | includedByState)}">
           <a href data-toggle="collapse"
              ng-class="{ collapsed: !('indexes.*.*' | includedByState)}"
@@ -42,8 +43,8 @@
         <!-- /Indexes -->
 
         <!-- Collections -->
-        <li class="nav-category"
-            ng-if="indexData.selectedIndex"
+        <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+            class="nav-category"
             ng-class="{ in: ('collection.*.*' | includedByState)}">
           <a href data-toggle="collapse"
              ng-class="{ collapsed: !('collection.*.*' | includedByState)}"
@@ -68,8 +69,8 @@
         <!-- /Collections -->
 
         <!-- Data -->
-        <li class="nav-category"
-            ng-if="indexData.selectedIndex"
+        <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+            class="nav-category"
             ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
           <a href data-toggle="collapse"
              ng-class="{ collapsed: !(('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState))}"
@@ -118,7 +119,7 @@
         <-- / Plugins -->
 
         <!-- Security -->
-        <li class="nav-category"
+        <li ng-if="hasRightsOnIndex('%kuzzle')" class="nav-category"
             ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
             <a href data-toggle="collapse"
                ng-class="{ collapsed: !(('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState))  }"

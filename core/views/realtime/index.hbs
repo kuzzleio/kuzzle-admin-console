@@ -11,14 +11,14 @@
             <h2 class="select-collection">
               <collections-drop-down-search
                       label=""
-                      selected="forms.collection"
+                      selected-index="stateParams.index"
+                      selected="stateParams.collection"
                       create-label="New collection"
                       items="forms.collections"
-                      current-item="forms.collection"
+                      current-item="stateParams.collection"
                       on-click-create="onCreateCollection(collection, index)"
                       on-click-item="onSelectCollection(item)"
-                      placeholder="Find a collection"
-                      select-volatile-collections="true">
+                      placeholder="Find a collection">
               </collections-drop-down-search>
 
               <div class="btn-group" ng-if="forms.collection">
@@ -55,6 +55,13 @@
                         messages="forms.messages"
                         init-messages="clearMessages()">
                 </messages>
+                <!--<messages
+                        ng-if="forms.collection && canSubscribe"
+                        class="fixed-right message-log"
+                        collection="forms.collection"
+                        messages="forms.messages"
+                        init-messages="clearMessages()">
+                </messages>-->
 
               </div>
             </div>

@@ -4,7 +4,7 @@ Feature: Test metrics page
 
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "admin"
     Then I am authenticated
 
   Scenario: Display widgets

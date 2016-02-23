@@ -35,8 +35,7 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        update: function (user, notify, isCreate) {
-          console.log('update', user);
+        createOrReplace: function (user, notify, isCreate) {
           var
             deferred = $q.defer(),
             messageSuccess,
@@ -47,8 +46,8 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             messageSuccess = 'User created !';
           }
           else {
-            messageError = 'Error during user update. Please retry.';
-            messageSuccess = 'User updated !';
+            messageError = 'Error during user replacement. Please retry.';
+            messageSuccess = 'User replaced !';
           }
 
           kuzzleSdk.security.createUser(
@@ -67,6 +66,37 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
               if (notify) {
                 notification.success(messageSuccess);
+              }
+
+              // We wait 1s to ensure Elastic Search properly indexes the new
+              // user.
+              setTimeout(function () {
+                deferred.resolve(result);
+              }, 1000);
+            }
+          );
+
+          return deferred.promise;
+        },
+        update: function (user, notify) {
+          var
+            deferred = $q.defer();
+
+          kuzzleSdk.security.updateUser(
+            user.id,
+            user.content,
+            function(error, result) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during user update. Please retry.');
+                }
+
+                deferred.reject({error: true, message: error});
+                return;
+              }
+
+              if (notify) {
+                notification.success('User updated !');
               }
 
               // We wait 1s to ensure Elastic Search properly indexes the new

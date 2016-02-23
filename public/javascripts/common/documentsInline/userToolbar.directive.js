@@ -21,14 +21,19 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.saveEditDocument = function () {
-        var user = {};
+        var user = {
+          id: $scope.document.id,
+          content: {}
+        };
 
         try {
-          $scope.document.content = JSON.parse($scope.document.json);
+          user.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          user = {id: $scope.document.id, content: $scope.document.content};
-          userApi.update(user, true, false);
+          userApi.update(user, true)
+            .then(function() {
+              $scope.document.content = angular.extend($scope.document.content, user.content);
+            });
         }
         catch (e) {
           console.error(e);

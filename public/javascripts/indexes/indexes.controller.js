@@ -6,10 +6,19 @@ angular.module('kuzzle.indexes')
     '$state',
     'indexesApi',
     '$window',
-    function ($scope, $stateParams, $state, indexesApi, $window) {
+    'authorizationApi',
+    function ($scope, $stateParams, $state, indexesApi, $window, authorization) {
       $scope.indexData = indexesApi.data;
 
       indexesApi.list();
+
+      $scope.init = function () {
+        $scope.canCreateIndex = authorization.canCreateIndex();
+      };
+
+      $scope.canDeleteIndex = function (index) {
+        return authorization.canDeleteIndex(index);
+      };
 
       $scope.browseCollection = function(index) {
         $state.go('collection.browse', {index: index});

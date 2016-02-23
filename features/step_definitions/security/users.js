@@ -32,7 +32,7 @@ module.exports = function () {
   this.When(/^I go on the browse users page$/, function (callback) {
     browser
       .url('/#/user/browse')
-      .waitForVisible('button.btn-success', 1000)
+      .pause(1000)
       .call(callback);
   });
 
@@ -75,7 +75,6 @@ module.exports = function () {
     browser
       .waitForVisible('documents-inline .row.documents:last-child .icons .edit-document.edit-inline', 1000)
       .click('documents-inline .row.documents:last-child .icons .edit-document.edit-inline')
-      .saveScreenshot('./features/errorShots/test.png')
       .call(callback);
   });
 
@@ -155,7 +154,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I ?(do not)* see "([^$]*)" in the user list$/, function (not, userName, callback) {
+  this.Then(/^I ?(do not)* see "([^"]*)" in the user list$/, function (not, userName, callback) {
     searchUserList(not, userName, callback);
   });
 
@@ -170,6 +169,21 @@ module.exports = function () {
       .click('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle')
       .waitForVisible('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .delete-document', 1000)
       .click('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .delete-document')
+      .call(callback);
+  });
+
+  this.When(/^I click the delete button of the user "([^"]*)"$/, function (userId, callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents #'+ userId +' .document-id span', 1000)
+      .getText('documents-inline .row.documents #'+ userId +' .document-id span')
+      .then(text => {
+        assert(text, 'expected to have at least one user with a name');
+        this.deletedUserName = text;
+      })
+      .waitForVisible('documents-inline .row.documents #'+ userId +' user-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .row.documents #'+ userId +' user-toolbar .edit-document.dropdown-toggle')
+      .waitForVisible('documents-inline .row.documents #'+ userId +' user-toolbar .dropdown-menu .delete-document', 1000)
+      .click('documents-inline .row.documents #'+ userId +' user-toolbar .dropdown-menu .delete-document')
       .call(callback);
   });
 
@@ -204,5 +218,5 @@ module.exports = function () {
       })
       .call(callback);
   });
-  
+
 };

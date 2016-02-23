@@ -12,7 +12,6 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           kuzzleSdk.security.searchProfiles({from: from, size: size}, {hydrate: false}, function (error, profiles) {
 
-            console.log(profiles);
             if (error) {
               deferred.reject(error);
               return;
@@ -37,7 +36,7 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        update: function (profile, notify, isCreate) {
+        createOrReplace: function (profile, notify, isCreate) {
           var
             deferred = $q.defer(),
             messageSuccess,
@@ -48,8 +47,8 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             messageSuccess = 'Profile created !';
           }
           else {
-            messageError = 'Error during profile update. Please retry.';
-            messageSuccess = 'Profile updated !';
+            messageError = 'Error during profile replacement. Please retry.';
+            messageSuccess = 'Profile replaced !';
           }
 
           kuzzleSdk.security.createProfile(
@@ -80,6 +79,37 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
+        update: function (profile, notify) {
+          var
+            deferred = $q.defer();
+
+          kuzzleSdk.security.updateProfile(
+            profile.id,
+            profile.content,
+            function(error, result) {
+              if (error) {
+                if (notify) {
+                  notification.error('Error during profile update. Please retry.');
+                }
+
+                deferred.reject({error: true, message: error});
+                return;
+              }
+
+              if (notify) {
+                notification.success('Profile updated !');
+              }
+
+              // We wait 1s to ensure Elastic Search properly indexes the new
+              // profile.
+              setTimeout(function () {
+                deferred.resolve(result);
+              }, 1000);
+            }
+          );
+
+          return deferred.promise;
+        },
         deleteById: function (id, notify) {
           var deferred = $q.defer();
 
@@ -88,13 +118,17 @@ angular.module('kuzzle.profileApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               deferred.reject(error);
 
               if (notify) {
-                console.log(error);
+                console.error(error);
                 notification.error('Error during profile deletion. Please retry.');
               }
             }
             else {
 
-              deferred.resolve({error: false});
+              // We wait 1s to ensure Elastic Search properly indexes the
+              // profile deletion.
+              setTimeout(function () {
+                deferred.resolve({error: false});
+              }, 1000);
 
               if (notify) {
                 notification.success('Profile deleted!');

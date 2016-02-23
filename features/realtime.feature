@@ -5,18 +5,18 @@ Feature: Test realtime watch data pages
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "admin"
     Then I am authenticated
     Given I go to the realtime page
     And I click on the collection selector
-    Given I click on a collection
+    Given I click on the test collection
     And I subscribe to the collection events
 
-  @cleanDb @unsubscribe
+  @unsubscribe
   Scenario: I can subscribe to a collection
     Then I am subscribed
 
-  @cleanDb @unsubscribe
+  @unsubscribe
   Scenario: I can clear the message log
     Given I clear the message log
     Then The message log is empty
@@ -43,19 +43,19 @@ Feature: Test realtime watch data pages
     Then I receive the notification that the document is being deleted
     And I receive the notification that the document has been deleted
 
-  @cleanDb @unsubscribe
+  @unsubscribe
   Scenario: Once subscribed, I receive notifications about volatile messages
     Given I clear the message log
     And I publish a volatile message
     Then I receive the notification about the volatile message
 
-  @cleanDb @unsubscribe
+  @unsubscribe
   Scenario: Once subscribed, I receive notifications about users joining the room
     Given I clear the message log
     And Someone subscribes to my room
     Then I receive the notification about the new user joining the room
 
-  @cleanDb @unsubscribe
+  @unsubscribe
   Scenario: Once subscribed, I receive notifications about users leaving the room
     Given Someone subscribes to my room
     And I clear the message log

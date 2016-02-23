@@ -2,9 +2,10 @@ angular.module('kuzzle.metrics')
   .controller('MetricsCtrl', [
     '$scope',
     '$window',
-    '$timeout',
     'serverApi',
-    function ($scope, $window, $timeout, serverApi) {
+    '$timeout',
+    'authorizationApi',
+    function ($scope, $window, serverApi, $timeout, authorization) {
       'use strict';
       var timer = {
         serverInfo: null,
@@ -31,7 +32,11 @@ angular.module('kuzzle.metrics')
       });
 
       $scope.init = function () {
-        if ($scope.isWidgetSelected('statInfo')) {
+        $scope.canGetServerInfo = authorization.canDoAction('foobar', 'foobar', 'read', 'serverInfo');
+        $scope.canGetStats = authorization.canDoAction('foobar', 'foobar', 'admin', 'getStats') &&
+          authorization.canDoAction('foobar', 'foobar', 'admin', 'getLastStats') &&
+          authorization.canDoAction('foobar', 'foobar', 'read', 'now');
+        if ($scope.isWidgetSelected('statInfo') && $scope.canGetStats) {
           serverApi.getNowTimestamp()
             .then(function (response) {
               $scope.nowTimestamp = response;
@@ -46,7 +51,7 @@ angular.module('kuzzle.metrics')
               timer.statistics = $timeout($scope.refreshStatistics, 5000);
             });
         }
-        if (isOneWidgetSelected(['serverInfo', 'pluginInfo', 'apiInfo', 'resourceInfo'])) {
+        if (isOneWidgetSelected(['serverInfo', 'pluginInfo', 'apiInfo', 'resourceInfo']) && $scope.canGetServerInfo) {
           timer.serverInfo = $scope.refreshServerInfo();
         }
       };

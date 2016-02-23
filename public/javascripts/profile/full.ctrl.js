@@ -9,10 +9,13 @@ angular.module('kuzzle.profile')
     'previousState',
     'Notification',
     '$window',
-    function ($scope, $stateParams, profileApi, $state, schema, previousState, notification, $window) {
+    'authorizationApi',
+    function ($scope, $stateParams, profileApi, $state, schema, previousState, notification, $window, authorization) {
 
       $scope.isEdit = false;
       $scope.notFoundError = false;
+      $scope.canCreateOrReplaceProfile = false;
+      $scope.canUpdateProfile = false;
       $scope.profile = {
         id: $stateParams.profile,
         content: ''
@@ -20,6 +23,9 @@ angular.module('kuzzle.profile')
 
       $scope.init = function (action) {
         var content;
+
+        $scope.canCreateOrReplaceProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceProfile');
+        $scope.canUpdateProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'updateProfile');
 
         if (action === 'edit') {
           $scope.isEdit = true;
@@ -38,7 +44,7 @@ angular.module('kuzzle.profile')
             $scope.profile.content = angular.toJson(content, 4);
           }
           catch (e) {
-            console.log(e);
+            console.error(e);
           }
         }
       };
@@ -52,7 +58,7 @@ angular.module('kuzzle.profile')
         $window.history.back();
       };
 
-      $scope.update = function (isCreate) {
+      $scope.create = function () {
         var profile = {
           id: $scope.profile.id,
           content: {}
@@ -68,7 +74,53 @@ angular.module('kuzzle.profile')
           }
         }
 
-        profileApi.update(profile, true, isCreate)
+        profileApi.createOrReplace(profile, true, true)
+          .then(function () {
+            $state.go('profile.browse');
+          });
+      };
+
+      $scope.replace = function () {
+        var profile = {
+          id: $scope.profile.id,
+          content: {}
+        };
+
+        if ($scope.profile.content) {
+          try {
+            profile.content = JSON.parse($scope.profile.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        if ($window.confirm('You are about to replace profile "' + $scope.profile.id + '", are you sure ?')) {
+          profileApi.createOrReplace(profile, true, false)
+            .then(function () {
+              $state.go('profile.browse');
+            });
+        }
+      };
+
+      $scope.update = function () {
+        var profile = {
+          id: $scope.profile.id,
+          content: {}
+        };
+
+        if ($scope.profile.content) {
+          try {
+            profile.content = JSON.parse($scope.profile.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        profileApi.update(profile, true)
           .then(function () {
             $state.go('profile.browse');
           });

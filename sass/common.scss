@@ -12,6 +12,12 @@ body {
     background-color: #F3F3F3;
 }
 
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 div.view-fade {
     top: 0;
     left: 0;
@@ -182,6 +188,7 @@ h2.select-collection {
     padding-bottom: 2px;
     color: #FFF;
   }
+  code,
   pre {
     margin: 8px 0 26px 0;
     background-color: #45565F;

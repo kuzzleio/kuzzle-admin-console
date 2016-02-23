@@ -4,7 +4,7 @@
     <div class="container">
       <div class="whitespace-top row">
         <div class="col-sm-4">
-          <widget title="Server Information" name="serverInfo" widgets="widgets">
+          <widget title="Server Information" name="serverInfo" widgets="widgets" ng-if="canGetServerInfo">
             <table class="table">
               <tbody>
               <tr>
@@ -42,13 +42,13 @@
               </tbody>
             </table>
           </widget>
-          <widget title="Resources usage" name="resourceInfo" widgets="widgets">
+          <widget title="Resources usage" name="resourceInfo" widgets="widgets" ng-if="canGetServerInfo">
             <div  class="text-center">
               <gauge style="display: inline-block" label="Cpu" value="cpuPercent"></gauge>
               <gauge style="display: inline-block" label="Memory" value="memoryPercent"></gauge>
             </div>
           </widget>
-          <widget title="Plugin Information" name="pluginInfo" widgets="widgets">
+          <widget title="Plugin Information" name="pluginInfo" widgets="widgets" ng-if="canGetServerInfo">
             <table class="table">
               <tbody>
               <tr>
@@ -69,10 +69,10 @@
         </div>
 
         <div class="col-sm-8">
-          <widget title="Statistics" name="statInfo" widgets="widgets">
+          <widget title="Statistics" name="statInfo" widgets="widgets" ng-if="canGetStats">
             <chart ylabel="Requests" series="statisticSeries" newvalue="newStatValue"></chart>
           </widget>
-          <widget title="API Information" name="apiInfo" widgets="widgets">
+          <widget title="API Information" name="apiInfo" widgets="widgets" ng-if="canGetServerInfo">
                 <table class="table">
                     <tbody>
                     <tr>

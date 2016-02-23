@@ -31,7 +31,8 @@ exports.config = {
     './features/indexes.feature',
     './features/roles.feature',
     './features/profiles.feature',
-    './features/users.feature'
+    './features/users.feature',
+    './features/notAllowed.feature',
   ],
   // Patterns to exclude.
   exclude: [
@@ -118,6 +119,7 @@ exports.config = {
       './features/step_definitions/common/forms.js',
       './features/step_definitions/common/screenshot.js',
       './features/step_definitions/common/wait.js',
+      './features/step_definitions/common/collections.js',
       './features/step_definitions/common/documentsInline.js',
 
       './features/step_definitions/storage/browseData.js',
