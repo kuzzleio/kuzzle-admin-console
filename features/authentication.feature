@@ -1,8 +1,7 @@
 Feature: Test authentication
   As a user
   I want to be able to login and logout.
-  
-  @cleanSecurity
+
   Scenario: Log a user in when she provides correct credentials
     Given I go to the login page
     Then I see the login page

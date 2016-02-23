@@ -22,8 +22,7 @@ users['dummy'] = fixtures['%kuzzle']['users'][3];
 users['standard'] = fixtures['%kuzzle']['users'][5];
 users['firstAdminWithBadPassword'] = {_id: 'firstAdmin', clearPassword: 'test'};
 users['firstAdmin'] = {_id: 'firstAdmin', clearPassword: 'testtest'};
-users['existingAdmin'] = fixtures['%kuzzle']['users'][1];
-users.existingAdmin.clearPassword = 'testtest';
+users['existingAdmin'] = {_id: fixtures['%kuzzle']['users'][1]._id, clearPassword: 'testtest'};
 
 World = {
   index: index,
