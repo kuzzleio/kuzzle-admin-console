@@ -40,8 +40,10 @@ angular.module('kuzzle.user')
         }
         else {
           try {
-            content = JSON.parse($stateParams.content);
-            $scope.user.content = angular.toJson(content, 4);
+            if ($stateParams.content) {
+                content = JSON.parse($stateParams.content);
+                $scope.user.content = angular.toJson(content, 4);
+            }
           }
           catch (e) {
             console.error(e);
