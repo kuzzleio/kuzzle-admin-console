@@ -81,7 +81,7 @@ angular.module('kuzzle', [
                     })
                     .catch(function () {
                       deferred.reject();
-                    })
+                    });
                 });
               });
 
