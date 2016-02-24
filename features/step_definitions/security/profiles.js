@@ -1,38 +1,8 @@
 var
   searchProfileList,
   world = require('../../support/world.js'),
+  wdioTools = require('../../support/wdioWrappers.js'),
   assert = require('assert');
-
-
-searchProfileList = function (not, profileName, callback) {
-  browser
-    .waitForVisible('documents-inline .row.documents .document-id span', 1000)
-    .then(() => {
-      browser
-      .getText('documents-inline .row.documents .document-id span')
-      .then(el => {
-        if (typeof el == 'string') {
-          if (not) {
-            assert.notEqual(el, profileName, 'Expected not to find ' + profileName + ' in list');
-          } else {
-            assert.equal(el, profileName, 'Expected to find ' + profileName + ' in list, found ' + el);
-          }
-        }
-        if (typeof el == 'object' && Array.isArray(el)) {
-          if (not) {
-            assert(el.indexOf(profileName) === -1, 'Expected not to find ' + profileName + ' in list');
-          } else {
-            assert(el.indexOf(profileName) >= 0, 'Expected to find ' + profileName + ' in list ' + el);
-          }
-        }
-      })
-      .call(callback);
-    }, error => {
-      if (not) {
-        browser.call(callback);
-      }
-    });
-};
 
 module.exports = function () {
   this.deletedProfileName = null;
@@ -133,7 +103,7 @@ module.exports = function () {
   });
 
   this.Then(/^I ?(do not)* see "([^$]*)" in the profile list$/, function (not, profileName, callback) {
-    searchProfileList(not, profileName, callback);
+    wdioTools.searchItemInList(browser, not, profileName, callback);
   });
 
   this.When(/^I click the delete button of the last profile$/, function (callback) {
@@ -151,12 +121,9 @@ module.exports = function () {
   });
 
   this.When(/^I click the delete button of the profile "([^"]*)"$/, function (profileId, callback) {
+    this.deletedProfileName = profileId;
+
     browser
-      .getText('documents-inline .row.documents #'+ profileId +' .document-id span')
-      .then(text => {
-        assert(text, 'expected to have at least one profile with a name');
-        this.deletedProfileName = text;
-      })
       .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle', 1000)
       .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle')
       .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .dropdown-menu .delete-document', 1000)
@@ -169,12 +136,18 @@ module.exports = function () {
     browser
       .waitForVisible('#modal-delete-profile input', 1000)
       .setValue('#modal-delete-profile input', this.deletedProfileName)
+      .pause(2000)
       .call(callback);
   });
 
   this.Then(/^I ?(do not) see the deleted profile in the profiles list$/, function (not, callback) {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
-    searchProfileList(not, this.deletedProfileName, callback);
+    browser
+      .pause(1000)
+      .saveScreenshot('./features/errorShots/afterDeleteProfile-' + Date.now() + '.png')
+      .then(() => {
+        wdioTools.searchItemInList(browser, not, this.deletedProfileName, callback);
+      });
   });
 
   this.When(/^I go to the full view of an unexisting profile$/, function (callback) {

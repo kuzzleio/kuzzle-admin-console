@@ -173,6 +173,7 @@ var cleanSecurity = function (callback) {
         .queryPromise(query, {body: fixtures['%kuzzle']['profiles']});
     })
     .then(() => {
+      console.log('profiles have just been bulked');
       var query = {
         controller: 'bulk',
         action: 'import',
