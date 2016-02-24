@@ -121,12 +121,9 @@ module.exports = function () {
   });
 
   this.When(/^I click the delete button of the profile "([^"]*)"$/, function (profileId, callback) {
+    this.deletedProfileName = profileId;
+
     browser
-      .getText('documents-inline .row.documents #'+ profileId +' .document-id span')
-      .then(text => {
-        assert(text, 'expected to have at least one profile with a name');
-        this.deletedProfileName = text;
-      })
       .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle', 1000)
       .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle')
       .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .dropdown-menu .delete-document', 1000)
@@ -139,6 +136,7 @@ module.exports = function () {
     browser
       .waitForVisible('#modal-delete-profile input', 1000)
       .setValue('#modal-delete-profile input', this.deletedProfileName)
+      .pause(2000)
       .call(callback);
   });
 
