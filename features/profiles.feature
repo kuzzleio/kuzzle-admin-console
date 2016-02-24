@@ -39,7 +39,7 @@ Feature: Test the profiles CRUD page
     And The input "profile-id" is empty
 
   @cleanSecurity
-  Scenario: I am able to clone a profile and delete it.
+  Scenario: I am able to clone a profile.
     When I go on the browse profiles page
     And I click the clone button of the last profile
     Then I am on the add profile page

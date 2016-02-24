@@ -174,7 +174,12 @@ module.exports = function () {
 
   this.Then(/^I ?(do not) see the deleted profile in the profiles list$/, function (not, callback) {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
-    searchProfileList(not, this.deletedProfileName, callback);
+    browser
+      .pause(1000)
+      .saveScreenshot('./features/errorShots/afterDeleteProfile.png')
+      .then(() => {
+        searchProfileList(not, this.deletedProfileName, callback);
+      });
   });
 
   this.When(/^I go to the full view of an unexisting profile$/, function (callback) {
