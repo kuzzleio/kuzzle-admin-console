@@ -104,7 +104,7 @@ module.exports = function () {
     browser
       .waitForVisible('form .actions-group button#create', 1000)
       .click('form .actions-group button#create')
-      .pause(1000)
+      .pause(2000)
       .call(callback);
   });
 

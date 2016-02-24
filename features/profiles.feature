@@ -39,7 +39,7 @@ Feature: Test the profiles CRUD page
     And The input "profile-id" is empty
 
   @cleanSecurity
-  Scenario: I am able to clone a profile and delete it.
+  Scenario: I am able to clone a profile.
     When I go on the browse profiles page
     And I click the clone button of the last profile
     Then I am on the add profile page
@@ -59,8 +59,10 @@ Feature: Test the profiles CRUD page
     Then I can see "modal-delete-profile" modal
     When I fill the confirmation modal with the name of the deleted profile
     And I confirm the deletion
+    And I'm waiting 10 sec
     When I go on the browse profiles page
     Then I do not see the deleted profile in the profiles list
+    And I'm waiting 5 sec
 
   Scenario: I am unable to edit an unexisting profile.
     When I go to the full view of an unexisting profile

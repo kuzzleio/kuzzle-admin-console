@@ -58,7 +58,7 @@ module.exports = function () {
 
   this.Then(/^I am on the full view edit users page$/, function (callback) {
     browser
-      .pause(500)
+      .pause(1000)
       .getUrl()
       .then(url => {
         var expectedUrl = world.baseUrl + '/#/user/';
@@ -88,6 +88,7 @@ module.exports = function () {
     browser
       .waitForVisible('documents-inline .row.documents:last-child user-toolbar .edit-document.text-success', 1000)
       .click('documents-inline .row.documents:last-child user-toolbar .edit-document.text-success')
+      .pause(1000)
       .call(callback);
   });
 
