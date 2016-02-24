@@ -172,7 +172,6 @@ module.exports = function () {
         callback();
       })
       .catch((error) => {
-        console.log('Error creating new document', error);
         callback.fail();
       });
   });
@@ -197,7 +196,6 @@ module.exports = function () {
          callback();
        })
        .catch((error) => {
-         console.log('Error updating document', error);
          callback.fail();
        });
    });
@@ -212,7 +210,6 @@ module.exports = function () {
         callback();
       })
       .catch((error) => {
-        console.log('Error deleting document', error);
         callback.fail();
       });
   });

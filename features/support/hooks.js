@@ -159,7 +159,7 @@ var cleanSecurity = function (callback) {
       };
 
       return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle']['roles']});
+        .queryPromise(query, {body: fixtures['%kuzzle'].roles});
     })
     .then(() => {
       var query = {
@@ -170,10 +170,9 @@ var cleanSecurity = function (callback) {
       };
 
       return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle']['profiles']});
+        .queryPromise(query, {body: fixtures['%kuzzle'].profiles});
     })
     .then(() => {
-      console.log('profiles have just been bulked');
       var query = {
         controller: 'bulk',
         action: 'import',
@@ -182,7 +181,7 @@ var cleanSecurity = function (callback) {
       };
 
       return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle']['users']});
+        .queryPromise(query, {body: fixtures['%kuzzle'].users});
     })
     .then(() => {
       callback();
