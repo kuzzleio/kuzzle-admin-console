@@ -141,6 +141,19 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I delete the profile "([^"]*)"$/, function (profileId, callback) {
+    this.deletedProfileName = profileId;
+
+    browser
+      .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle')
+      .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .dropdown-menu .delete-document')
+      .pause(500)
+      .setValue('.modal-dialog input', profileId)
+      .click('.modal-dialog .actions-group button')
+      .call(callback);
+  });
+
   this.Then(/^I ?(do not) see the deleted profile in the profiles list$/, function (not, callback) {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
     browser

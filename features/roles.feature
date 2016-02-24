@@ -53,7 +53,7 @@ Feature: Test the roles CRUD page
     And I click the delete button of the role "kuzzle-bo-dummy"
     Then I can see "modal-delete-role" modal
     When I fill the confirmation modal with the name of the deleted role
-    And I confirm the deletion
+    And I click the confirm button in the modal
     Then I am on the browse roles page
     And I do not see the deleted role in the roles list
 

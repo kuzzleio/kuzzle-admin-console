@@ -58,7 +58,7 @@ Feature: Test the users CRUD page
     And I click the delete button of the user "kuzzle-bo-dummy"
     Then I can see "modal-delete-user" modal
     When I fill the confirmation modal with the name of the deleted user
-    And I confirm the deletion
+    And I click the confirm button in the modal
     Then I am on the browse users page
     And I do not see the deleted user in the users list
 

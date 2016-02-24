@@ -56,6 +56,15 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I click the confirm button in the modal$/, function (callback) {
+    browser
+      .waitForVisible('.modal button.btn-danger', 1000)
+      .click('.modal button.btn-danger')
+      .pause(1200)
+      .saveScreenshot('./features/errorShots/afterModalConfirm'+ Date.now() +'.png')
+      .call(callback);
+  });
+
   this.Then(/^The button "([^"]*)" is ?(not)* disabled$/, function (id, not, callback) {
     browser
       .getAttribute('#' + id, 'disabled')
