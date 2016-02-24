@@ -54,5 +54,5 @@ Feature: Test multi index features
     Given I go to manage index page
     Then I click on the first index in manage index page
     Then I am on collection browse page
-    Then I click on the first collection in browse document page
-    Then I am on browse document page
+    Then I click on the collection "kuzzle-bo-test" in collections list
+    Then I am on browse data page for collection "kuzzle-bo-test"

@@ -22,8 +22,8 @@
             </div>
 
             <div class="actions-group">
-                <button type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="update(true)">Create</button>
-                <button type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="update(true)">Create</button>
+                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
                 <a class="control" ng-click="cancel()">Cancel</a>
             </div>
         </form>

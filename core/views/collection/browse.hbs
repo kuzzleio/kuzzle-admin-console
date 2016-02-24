@@ -38,17 +38,20 @@
 
                 <div class="row">
                     <div class="col-sm-12 list-collections">
-                        <div class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
+
+                        <div id="\{{collection.name}}" class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
                             <div class="panel-heading">
                                 <h3 class="panel-title">
                                     <span class="collection-name" ng-bind="collection.name" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Go to full view"></span>
 
                                     <span class="pull-right">
-                                        <span class="glyphicon glyphicon-eye-open" ui-sref="collection.full({collection: collection.name, index: index})" title="Go to full view"></span>
-                                        <span class="glyphicon glyphicon-th-list" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Go to documents list"></span>
+                                        <span class="glyphicon edit glyphicon-eye-open" ui-sref="collection.full({collection: collection.name, index: index})" title="Go to full view"></span>
+                                        <span class="glyphicon documents-list glyphicon-th-list" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Go to documents list"></span>
                                         <cog-options-collection
                                                 collection="collection"
                                                 can-edit="false"
+                                                can-empty="true"
+                                                can-delete="true"
                                                 after-delete="afterDelete(collection)">
                                         </cog-options-collection>
                                     </span>
