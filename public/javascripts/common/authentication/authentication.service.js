@@ -10,19 +10,39 @@ angular.module('kuzzle.authentication')
   function ($q, $http, Session, $rootScope, AUTH_EVENTS, kuzzle, indexesApi) {
     var authService = {};
 
-    var onLoginSuccess = function () {
+    var onLoginSuccess = function (broadcastEvent) {
+      var deferred = $q.defer();
+
       kuzzle.whoAmI(function (err, res) {
-        if (err || !res.content) {
-          console.log('Unable to retrieve user information', err);
+        if (err || !res) {
+          console.error('Unable to retrieve user information', err);
           return;
         }
-        Session.create(kuzzle.getJwtToken(), res.id, res.content.profile);
+
+        if (res.id) {
+          Session.setUserId(res.id);
+        }
+
+        if (res.content.profile) {
+          Session.setProfile(res.content.profile);
+          Session.setUser(res);
+        }
+
+        deferred.resolve(true);
+
+        if (broadcastEvent) {
+          $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+        }
+
       });
+      Session.create(kuzzle.jwtToken);
+
+      return deferred.promise;
     };
 
     var onLoginFailed = function (err) {
       if (err) {
-        console.log('Authentication error.', err.message);
+        console.error('Authentication error.', err.message);
       }
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     };
@@ -39,9 +59,10 @@ angular.module('kuzzle.authentication')
           onLoginFailed(err);
           deferred.reject(err);
         } else {
-          onLoginSuccess();
-          $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-          deferred.resolve(true);
+          onLoginSuccess(true)
+            .then(function (value) {
+              deferred.resolve(value);
+            });
         }
       });
 
@@ -73,8 +94,10 @@ angular.module('kuzzle.authentication')
             }
 
             kuzzle.setJwtToken(Session.session.jwtToken);
-            onLoginSuccess();
-            deferred.resolve(true);
+            onLoginSuccess(false)
+              .then(function (value) {
+                deferred.resolve(value);
+              });
           });
         } else {
           deferred.reject({

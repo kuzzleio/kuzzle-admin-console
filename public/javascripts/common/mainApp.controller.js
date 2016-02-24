@@ -7,7 +7,11 @@ angular.module('kuzzle')
   'AUTH_EVENTS',
   'Notification',
   'kuzzleSdk',
-function ($rootScope, $scope, Auth, Session, AUTH_EVENTS, Notification, kuzzle) {
+  'authorizationApi',
+function ($rootScope, $scope, Auth, Session, AUTH_EVENTS, Notification, kuzzle, authorizationApi) {
+
+  $scope.authorizationApi = authorizationApi;
+
   var currentNotification = null;
 
   var onConnected = function () {

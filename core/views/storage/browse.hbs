@@ -7,6 +7,7 @@
               Collection
               <collections-drop-down-search
                   label=""
+                  selected-index="stateParams.index"
                   selected="stateParams.collection"
                   create-label="New collection"
                   items="collections"
@@ -16,13 +17,15 @@
                   placeholder="Find a collection">
               </collections-drop-down-search>
 
-              <div class="btn-group" ng-if="stateParams.collection && stateParams.index">
+              <div class="btn-group" ng-if="stateParams.collection && stateParams.index && showCog">
                   <cog-options-collection
+                    current-index="stateParams.index"
                     collection="stateParams.collection"
-                    index="stateParams.index"
-                    can-edit="true"
                     after-delete="onDeleteCollection()"
-                    after-empty="onEmptyCollection()">
+                    after-empty="onEmptyCollection()"
+                    can-delete="canDeleteCollection"
+                    can-empty="canEmptyCollection"
+                    can-edit="canEditCollection" >
                   </cog-options-collection>
               </div>
           </h2>

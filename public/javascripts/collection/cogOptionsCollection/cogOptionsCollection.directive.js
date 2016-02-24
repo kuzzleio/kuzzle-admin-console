@@ -54,11 +54,13 @@ angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuz
     return {
       restrict: 'E',
       scope: {
+        currentIndex: '=',
         collection: '=',
-        index: '=',
-        canEdit: '=',
         afterDelete: '&',
-        afterEmpty: '&'
+        afterEmpty: '&',
+        canDelete: '=',
+        canEmpty: '=',
+        canEdit: '='
       },
       controller: 'cogOptionsCollectionCtrl',
       templateUrl: '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.tpl.html'

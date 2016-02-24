@@ -36,7 +36,6 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           return deferred.promise;
         },
         update: function (user, notify, isCreate) {
-          console.log('update', user);
           var
             deferred = $q.defer(),
             messageSuccess,

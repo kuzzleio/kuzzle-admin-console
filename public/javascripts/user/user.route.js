@@ -20,9 +20,13 @@ angular.module('kuzzle.user')
             return $ocLazyLoad.load([
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js',
               '/javascripts/common/documentsInline/documentsInline.directive.js',
-              '/javascripts/common/documentsInline/userToolbar.directive.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js',
               '/javascripts/user/browse.ctrl.js'
-            ]);
+            ]).then(function () {
+              return $ocLazyLoad.load([
+                '/javascripts/common/documentsInline/userToolbar.directive.js'
+              ]);
+            });
           }]
         }
       })
@@ -37,6 +41,7 @@ angular.module('kuzzle.user')
               '/javascripts/user/full.ctrl.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js',
               '/javascripts/storage/leaflet.directive.js'
             ]);
           }]
@@ -53,6 +58,7 @@ angular.module('kuzzle.user')
               '/javascripts/user/full.ctrl.js',
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
+              '/javascripts/common/jsonEdit/jsonEdit.directive.js',
               '/javascripts/storage/leaflet.directive.js'
             ]);
           }]

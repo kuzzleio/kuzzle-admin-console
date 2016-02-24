@@ -2,14 +2,17 @@ angular.module('kuzzle.collection')
 
   .controller('CollectionBrowseCtrl', [
     '$scope',
+    '$stateParams',
     '$state',
     '$log',
     'collectionApi',
     'indexesApi',
-    function ($scope, $state, $log, collectionApi, indexesApi) {
+    'authorizationApi',
+    function ($scope, $stateParams, $state, $log, collectionApi, indexesApi, authorization) {
 
       $scope.collections = null;
-      $scope.index = indexesApi.data.selectedIndex;
+      $scope.index = $stateParams.index;
+      $scope.canCreateCollection = authorization.canCreateCollection($stateParams.index);
 
       $scope.init = function () {
         collectionApi.list()

@@ -101,7 +101,7 @@ module.exports = function () {
 
   this.Then(/^I can see "([^"]*)" indexes in list$/, function (nb, callback) {
     browser
-      .pause(100)
+      .pause(1000)
       .waitForVisible('.list-indexes', 1000)
       .elements('.list-indexes .panel')
       .then(function(elements) {

@@ -9,10 +9,13 @@ angular.module('kuzzle.profile')
     'previousState',
     'Notification',
     '$window',
-    function ($scope, $stateParams, profileApi, $state, schema, previousState, notification, $window) {
+    'authorizationApi',
+    function ($scope, $stateParams, profileApi, $state, schema, previousState, notification, $window, authorization) {
 
       $scope.isEdit = false;
       $scope.notFoundError = false;
+      $scope.canCreateOrReplaceProfile = false;
+      $scope.canUpdateProfile = false;
       $scope.profile = {
         id: $stateParams.profile,
         content: ''
@@ -20,6 +23,9 @@ angular.module('kuzzle.profile')
 
       $scope.init = function (action) {
         var content;
+
+        $scope.canCreateOrReplaceProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceProfile');
+        $scope.canUpdateProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'updateProfile');
 
         if (action === 'edit') {
           $scope.isEdit = true;
@@ -38,7 +44,7 @@ angular.module('kuzzle.profile')
             $scope.profile.content = angular.toJson(content, 4);
           }
           catch (e) {
-            console.log(e);
+            console.error(e);
           }
         }
       };

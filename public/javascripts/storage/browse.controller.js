@@ -6,10 +6,28 @@ angular.module('kuzzle.storage')
     '$stateParams',
     '$state',
     'collectionApi',
-    function ($scope, $http, $stateParams, $state, collectionApi) {
+    'authorizationApi',
+    function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
+      var checkRights = function (collection) {
+        $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
+        $scope.canEditCollection = authorization.canDoAction(
+          $stateParams.index,
+          collection,
+          'admin',
+          'updateMapping'
+        );
+        $scope.canEmptyCollection = authorization.canDoAction(
+          $stateParams.index,
+          collection,
+          'admin',
+          'truncateCollection'
+        );
+
+        $scope.showCog = $scope.canDeleteCollection || $scope.canEditCollection || $scope.canEmptyCollection;
+      };
+
       $scope.collections = [];
       $scope.stateParams = $stateParams;
-
 
       $scope.init = function () {
         collectionApi.list()
@@ -17,6 +35,10 @@ angular.module('kuzzle.storage')
             $scope.collections = response.stored.map(function (collection) {
               return {name: collection};
             });
+
+            if ($stateParams.collection) {
+              checkRights($stateParams.collection);
+            }
           })
           .catch(function (error) {
             console.error(error);
@@ -28,7 +50,8 @@ angular.module('kuzzle.storage')
        * @param collection
        */
       $scope.onSelectCollection = function (collection) {
-        $state.go('storage.browse.documents', {collection: collection.name, advancedFilter: null, basicFilter: null});
+        checkRights(collection.name);
+        $state.go('storage.browse.documents', {index: $stateParams.index, collection: collection.name, advancedFilter: null, basicFilter: null});
       };
 
       /**
@@ -47,7 +70,7 @@ angular.module('kuzzle.storage')
        */
       $scope.onDeleteCollection = function () {
         setTimeout(function () {
-          $state.go('storage.browse', {}, {reload: true});
+          $state.go('storage.browse', {index: $stateParams.index}, {reload: true});
         }, 1000);
       };
 

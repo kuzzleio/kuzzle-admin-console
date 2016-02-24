@@ -1,8 +1,10 @@
-angular.module('kuzzle.collectionsDropDownSearch', [])
+angular.module('kuzzle.collectionsDropDownSearch', ['kuzzle.authorization'])
   .controller('collectionsDropDownSearchCtrl', [
     '$scope',
-    function ($scope) {
+    'authorizationApi',
+    function ($scope, authorization) {
       $scope.isOpen = false;
+      $scope.canCreateCollection = authorization.canCreateCollection($scope.selectedIndex);
 
       $scope.onPressEnter = function () {
         if (!$scope.selectVolatileCollections) {
@@ -22,6 +24,7 @@ angular.module('kuzzle.collectionsDropDownSearch', [])
       scope: {
         label: '@',
         selected: '=',
+        selectedIndex: '=',
         createLabel: '@',
         createLink: '@',
         onClickCreate: '&',

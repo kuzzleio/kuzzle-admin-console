@@ -4,7 +4,7 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="row create">
             <div class="col-sm-5">
-                <button type="button" class="btn btn-success"  ui-sref="indexes.create">Add index</button>
+                <button type="button" class="btn btn-success"  ui-sref="indexes.create" ng-if="canCreateIndex">Add index</button>
             </div>
         </div>
 
@@ -44,7 +44,8 @@
                                         <cog-options-indexes
                                             index="index"
                                             can-edit="false"
-                                            after-delete="afterDelete(index)">
+                                            after-delete="afterDelete(index)"
+                                            can-delete="canDeleteIndex(index)">
                                         </cog-options-indexes>
                                     </span>
                                 </h3>

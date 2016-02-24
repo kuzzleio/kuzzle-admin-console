@@ -5,17 +5,16 @@ Feature: Test multi index features
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate
+    And I authenticate as "admin"
     Then I am authenticated
 
-  @cleanDb
   Scenario: I can select an index with the index selector in sidebar
     Given I go to manage index page
     Then No index is selected
     Then I can not see Storage & Realtime menu entries
     Then I click on the index selector
     Then I select an index
-    Then The index "mainindex" is selected
+    Then The index "kuzzle-bo-testindex" is selected
     Then I can see Storage & Realtime menu entries
 
   Scenario: I can select an index directly in the manage index page
@@ -24,7 +23,7 @@ Feature: Test multi index features
     Then I can not see Storage & Realtime menu entries
     Then I click on the first index in manage index page
     Then I am on collection browse page
-    Then The index "mainindex" is selected
+    Then The index "kuzzle-bo-testindex" is selected
     Then I can see Storage & Realtime menu entries
 
   Scenario: I can access the index creation page in manage index page
@@ -55,6 +54,5 @@ Feature: Test multi index features
     Given I go to manage index page
     Then I click on the first index in manage index page
     Then I am on collection browse page
-    Then I click on the first collection in browse document page
-    Then I am on browse document page
-
+    Then I click on the collection "kuzzle-bo-test" in collections list
+    Then I am on browse data page for collection "kuzzle-bo-test"

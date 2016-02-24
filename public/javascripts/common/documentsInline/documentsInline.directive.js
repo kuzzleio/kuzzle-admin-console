@@ -79,6 +79,7 @@ angular.module('kuzzle.documentsInline', [
       scope: {
         documents: '=',
         collection: '=',
+        canDelete: '=',
         role: '=',
         profile: '=',
         user: '=',
