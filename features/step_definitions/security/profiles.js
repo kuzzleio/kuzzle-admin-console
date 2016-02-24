@@ -1,38 +1,8 @@
 var
   searchProfileList,
   world = require('../../support/world.js'),
+  wdioTools = require('../../support/wdioWrappers.js'),
   assert = require('assert');
-
-
-searchProfileList = function (not, profileName, callback) {
-  browser
-    .waitForVisible('documents-inline .row.documents .document-id span', 1000)
-    .then(() => {
-      browser
-      .getText('documents-inline .row.documents .document-id span')
-      .then(el => {
-        if (typeof el == 'string') {
-          if (not) {
-            assert.notEqual(el, profileName, 'Expected not to find ' + profileName + ' in list');
-          } else {
-            assert.equal(el, profileName, 'Expected to find ' + profileName + ' in list, found ' + el);
-          }
-        }
-        if (typeof el == 'object' && Array.isArray(el)) {
-          if (not) {
-            assert(el.indexOf(profileName) === -1, 'Expected not to find ' + profileName + ' in list');
-          } else {
-            assert(el.indexOf(profileName) >= 0, 'Expected to find ' + profileName + ' in list ' + el);
-          }
-        }
-      })
-      .call(callback);
-    }, error => {
-      if (not) {
-        browser.call(callback);
-      }
-    });
-};
 
 module.exports = function () {
   this.deletedProfileName = null;
@@ -176,9 +146,9 @@ module.exports = function () {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
     browser
       .pause(1000)
-      .saveScreenshot('./features/errorShots/afterDeleteProfile.png')
+      .saveScreenshot('./features/errorShots/afterDeleteProfile-' + Date.now() + '.png')
       .then(() => {
-        searchProfileList(not, this.deletedProfileName, callback);
+        wdioTools.searchItemInList(browser, not, this.deletedProfileName, callback);
       });
   });
 
