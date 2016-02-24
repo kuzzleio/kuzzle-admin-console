@@ -5,11 +5,13 @@ angular.module('kuzzle.authentication')
   '$log',
   'AUTH_EVENTS',
   'AuthService',
-function ($scope, $uibModal, $log, AUTH_EVENTS, Auth) {
+  '$state',
+function ($scope, $uibModal, $log, AUTH_EVENTS, Auth, $state) {
   var modalInstance = null;
 
   var showDialog = function (nextState) {
-    $log.info('showing modal for attepmt to reach ' + nextState.name);
+    Auth.setNextRoute($state.current.name, $state.params);
+
     modalInstance = $uibModal.open({
       animation: true,
       templateUrl: 'javascripts/common/authentication/loginForm.tpl.html',
