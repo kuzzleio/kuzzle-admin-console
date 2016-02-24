@@ -103,7 +103,7 @@ module.exports = function () {
   });
 
   this.Then(/^I ?(do not)* see "([^$]*)" in the profile list$/, function (not, profileName, callback) {
-    searchProfileList(not, profileName, callback);
+    wdioTools.searchItemInList(browser, not, profileName, callback);
   });
 
   this.When(/^I click the delete button of the last profile$/, function (callback) {
