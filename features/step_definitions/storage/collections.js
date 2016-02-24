@@ -6,7 +6,7 @@ var
 module.exports = function () {
   this.Then(/^I have a list with "([^"]*)" collections$/, function (count, callback) {
     browser
-      .waitForVisible('.list-collections', 1000)
+      .waitForVisible('.list-collections .panel', 1000)
       .elements('.list-collections .panel')
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count),

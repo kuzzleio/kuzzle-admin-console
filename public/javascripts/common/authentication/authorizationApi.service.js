@@ -8,6 +8,10 @@ angular.module('kuzzle.authorization', [])
       };
 
       var hasUser = function (user) {
+        if (!user) {
+          return false;
+        }
+
         return !!user.id;
       };
 

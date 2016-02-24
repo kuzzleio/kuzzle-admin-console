@@ -15,21 +15,30 @@ module.exports = function () {
       .url('/#/notexist/storage/browse')
       .call(callback);
   });
+
+  this.Given(/^I go to collection browse page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/collection/browse')
+      .call(callback);
+  });
+
   this.Given(/^I am on browse collection page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/collection/browse')
       .call(callback);
   });
+
   this.When(/^I click on add document button$/, function (callback) {
     browser
       .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
       .call(callback);
   });
+
   this.When(/^I click on the cog$/, function (callback) {
     browser
       // This is quite worrying: I have to click on the deepest element if I
       // want something to happen.
-      .click('.select-collection cog-options-collection span.dropdown small.dropdown')
+      .click('.select-collection cog-options-collection .dropdown-toggle')
       .call(callback);
   });
 
@@ -168,17 +177,20 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I click on the first collection in browse document page$/, function (callback) {
+  this.Then(/^I click on the collection "([^"]*)" in collections list$/, function (id, callback) {
     browser
       .pause(500)
-      .waitForVisible('span.collection-name:first-of-type', 1000)
-      .click('span.collection-name:first-of-type')
+      .waitForVisible('.list-collections #' + id, 1000)
+      .click('.list-collections #' + id + ' h3 span.collection-name')
       .call(callback);
   });
 
   this.Given(/^I am on browse document page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/storage/' + world.collections[0])
+      .getUrl()
+      .then(url => {
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/browse/' + world.collections[0]);
+      })
       .call(callback);
   });
 
