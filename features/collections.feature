@@ -32,14 +32,13 @@ Feature: Test collections page
     When I click on full view button for collection "kuzzle-bo-test"
     Then the current URL corresponds to the "kuzzle-bo-test" edit collection page
 
-  @myTest
   Scenario: Access to documents list
     Given I am on browse collection page
     When I click on documents list button for collection "kuzzle-bo-test"
     Then I am on browse data page for collection "kuzzle-bo-test"
     Then I have a list with "2" elements
 
-  @cleanDb @myTest
+  @cleanDb
   Scenario: Delete a collection
     Given I am on browse collection page
     When I click on delete button for collection "kuzzle-bo-test"

@@ -4,37 +4,10 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.Then(/^I have a list with "([^"]*)" collections$/, function (count, callback) {
-    browser
-      .waitForVisible('.list-collections .panel', 1000)
-      .elements('.list-collections .panel')
-      .then(elements => {
-        assert.equal(elements.value.length, parseInt(count),
-          'Expected to find ' + count + ' collections, found ' + elements.value.length);
-      })
-      .call(callback);
-  });
-
   this.When(/^I click on add collection button$/, function (callback) {
     browser
-      .click('.create button')
-      .call(callback);
-  });
-
-  this.Then(/^the current URL corresponds to the add collection page$/, function (callback) {
-    browser
-      .waitForVisible('#name')
-      .getUrl()
-      .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/collection/create');
-      })
-      .call(callback);
-  });
-
-  this.Given(/^I am on page for create collection/, function (callback) {
-    browser
-      .url('/#/' + world.index + '/collection/create')
-      .call(callback);
+    .click('.create button')
+    .call(callback);
   });
 
   this.When(/^I click on link to access to "([^"]*)" collection page$/, function (id, callback) {
@@ -91,4 +64,30 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.Then(/^I have a list with "([^"]*)" collections$/, function (count, callback) {
+    browser
+      .waitForVisible('.list-collections .panel', 1000)
+      .elements('.list-collections .panel')
+      .then(elements => {
+        assert.equal(elements.value.length, parseInt(count),
+          'Expected to find ' + count + ' collections, found ' + elements.value.length);
+      })
+      .call(callback);
+  });
+
+  this.Then(/^the current URL corresponds to the add collection page$/, function (callback) {
+    browser
+      .waitForVisible('#name')
+      .getUrl()
+      .then(url => {
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/collection/create');
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on page for create collection/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/collection/create')
+      .call(callback);
+  });
 };

@@ -1,4 +1,6 @@
-var assert = require('assert');
+var
+  wdioTools = require('../support/wdioWrappers'),
+  assert = require('assert');
 
 module.exports = function () {
   this.Given(/^I shut down the Kuzzle server$/, function (callback) {
@@ -17,7 +19,8 @@ module.exports = function () {
       .waitForVisible('.ui-notification h3')
       .getText('.ui-notification h3')
       .then(text => {
-        assert.equal(text, 'Houston, we have a problem.');
+        assert.ok(wdioTools.queryMatchesText(text, 'Houston, we have a problem.'),
+          'Expected to receive a disconnection notification, but got ' + text);
       })
       .call(callback);
     });

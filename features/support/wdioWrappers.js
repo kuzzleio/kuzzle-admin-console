@@ -35,5 +35,19 @@ module.exports = {
           browser.call(callback);
         }
       });
+  },
+
+  deleteItemInList: function (browser, itemType, itemName, callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents #'+ itemName +' ' + itemType + '-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .row.documents #'+ itemName +' ' + itemType + '-toolbar .edit-document.dropdown-toggle')
+      .click('documents-inline .row.documents #'+ itemName +' ' + itemType + '-toolbar .dropdown-menu .delete-document')
+      .pause(500)
+      .setValue('.modal-dialog input', itemName)
+      // Sometimes it takes a _lot_ of time for PhantomJS to take the keystrokes
+      // into accout. Specially on Travis.
+      .waitForEnabled('.modal-dialog .actions-group button', 10000)
+      .click('.modal-dialog .actions-group button')
+      .call(callback);
   }
 };
