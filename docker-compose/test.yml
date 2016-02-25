@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.18.2
+  image: kuzzleio/kuzzle:latest
   volumes:
     - "../features/fixtures.json:/fixtures.json"
   ports:
@@ -12,9 +12,9 @@ kuzzle:
     - redis
   environment:
     - LIKE_A_VIRGIN
-    - FIXTURES=/fixtures.json
     - DEFAULT_MAPPING
     - FEATURE_COVERAGE
+    - FIXTURES=/fixtures.json
 
 kuzzleBo:
   image: kuzzleio/bo-test

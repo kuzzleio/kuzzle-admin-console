@@ -39,7 +39,7 @@ module.exports = function () {
 
   this.Then(/^I see the login page$/, function(callback) {
     browser
-      .waitForVisible('input[name=password]', 2000)
+      .waitForVisible('input[name=password]', 20000)
       .isVisible('input[name=username]')
       .then((isVisible) => {
         assert(isVisible, 'Element username is not visible');

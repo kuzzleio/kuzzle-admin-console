@@ -1,9 +1,9 @@
 Feature: Test all the actions that are not allowed by rights
 
   Background:
-  Given I go to the login page
-  And I authenticate as "standard"
-  Then I am authenticated
+    Given I go to the login page
+    And I authenticate as "admin"
+    Then I am authenticated
 
   Scenario: I do not see the Add Collection button if I have no right
     When I go to collection browse page

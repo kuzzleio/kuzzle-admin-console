@@ -30,7 +30,8 @@ angular.module('kuzzle.firstAdmin')
     $scope.credentials = {
       username: '',
       passworda: '',
-      passwordb: ''
+      passwordb: '',
+      resetroles: '1'
     };
 
     $scope.createFirstAdmin = function (credentials) {

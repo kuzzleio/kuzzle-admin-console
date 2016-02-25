@@ -15,6 +15,7 @@ Feature: Test authentication
     And I click the logout button
     Then I am logged out
 
+  @anonymousAsInitial
   Scenario: The not authentified user is denied to visit an authenticated page
     Given I go to the logout page
     And I am on browse data page

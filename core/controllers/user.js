@@ -2,6 +2,7 @@ var
   express = require('express'),
   router = express.Router(),
   request = require('request-promise'),
+  q = require('q'),
   rc = require('rc'),
   userRoles = rc('roles');
 
@@ -73,22 +74,40 @@ router.post('/firstAdmin', function (req, res) {
 
   createAdminUser(req.body.username, req.body.password)
     .then(function () {
-      return resetProfile('default', 'default');
+      if (req.body.resetroles) {
+        return resetProfile('default', 'default');
+      }
+      return q.resolve();
     })
     .then(function () {
-      return resetProfile('admin', 'admin');
+      if (req.body.resetroles) {
+        return resetProfile('admin', 'admin');
+      }
+      return q.resolve();
     })
     .then(function () {
-      return resetProfile('anonymous', 'anonymous');
+      if (req.body.resetroles) {
+        return resetProfile('anonymous', 'anonymous');
+      }
+      return q.resolve();
     })
     .then(function () {
-      return resetRole('default');
+      if (req.body.resetroles) {
+        return resetRole('default');
+      }
+      return q.resolve();
     })
     .then(function () {
-      return resetRole('admin');
+      if (req.body.resetroles) {
+        return resetRole('admin');
+      }
+      return q.resolve();
     })
     .then(function () {
-      return resetRole('anonymous');
+      if (req.body.resetroles) {
+        return resetRole('anonymous');
+      }
+      return q.resolve();
     })
     .then(function () {
       res.status(200).end();

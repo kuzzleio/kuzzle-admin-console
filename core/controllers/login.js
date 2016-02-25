@@ -1,21 +1,25 @@
 var
   express = require('express'),
   router = express.Router(),
-  request = require('request-promise');
+  kuzzle = require('../services/kuzzle')();
 
 router.get('/', function(req, res) {
 
-  request({
-    method: 'GET',
-    uri: 'http://kuzzle:7511/api/1.0/roles/admin',
-    json: true
-  })
-    .then(function () {
-      // we can access to the admin role, so no admin account have been created yet
+  kuzzle
+    .dataCollectionFactory('%kuzzle', 'users')
+    .fetchAllDocumentsPromise()
+    .then(function (result) {
+      if (result.total > 0) {
+        // there are users already, lets allow them to login
+        return res.render('login/index');
+      }
+      // if there are no users, we should create one
       return res.render('user/firstAdmin');
     })
     .catch(function () {
-      // We got 401 HTTP error: the first admin has already been created !
+      // we probably do not have the right to list users,
+      // so the rights have been reseted
+      // we show the login page
       return res.render('login/index');
     });
 });

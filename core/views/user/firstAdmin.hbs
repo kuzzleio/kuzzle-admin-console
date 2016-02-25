@@ -41,6 +41,11 @@
                    ng-model="credentials.passwordb" required>
           </div>
 
+          <div class="form-group">
+            <label for="resetroles">Reset the admin, default and anonymous ?</label>
+            <input type="checkbox" name="resetroles" ng-model="credentials.resetroles">
+          </div>
+
           <button class="btn btn-primary" type="submit">Create the account</button>
 
         </form>

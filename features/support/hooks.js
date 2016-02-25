@@ -25,6 +25,11 @@ var hooks = function () {
     cleanSecurity.call(this, callback);
   });
 
+  this.Before('@deleteUsers', function (scenario, callback) {
+    console.log('@deleteUsers');
+    deleteUsers.call(this, callback);
+  });
+
   this.After('@unsubscribe', function (scenario, callback) {
     browser
       .waitForVisible('.filters button.btn-unsubscribe', 1000)
@@ -107,6 +112,37 @@ var bulk = function () {
   });
 
   return q.all(promises);
+};
+
+var deleteUsers = function (callback) {
+   world.kuzzle
+    .listIndexesPromise()
+    .then(indexes => {
+      if (indexes.indexOf('%kuzzle') === -1) {
+        return q.reject(new ReferenceError('%kuzzle index not found'));
+      }
+    })
+    .then(() => {
+      var query = {
+        controller: 'write',
+        action: 'deleteByQuery',
+        index: '%kuzzle',
+        collection: 'users'
+      };
+
+      return world.kuzzle
+        .queryPromise(query, {body: { filter: { regexp: { _uid: 'users.' + world.idPrefix + '.*' } } }});
+    })
+    .then(() => {
+      callback();
+    })
+    .catch(error => {
+      if (error instanceof ReferenceError && error.message === '%kuzzle index not found') {
+        // The %kuzzle index is not created yet. Is not a problem if the tests are run for the first time.
+       callback();
+      }
+      callback(error);
+    });
 };
 
 var cleanSecurity = function (callback) {

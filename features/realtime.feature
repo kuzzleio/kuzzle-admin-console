@@ -4,9 +4,11 @@ Feature: Test realtime watch data pages
 
   @createIndex
   Background:
+    @anonymousAsFinal
     Given I go to the login page
     And I authenticate as "admin"
     Then I am authenticated
+    @anonymousAsInitial
     Given I go to the realtime page
     And I click on the collection selector
     Given I click on the test collection

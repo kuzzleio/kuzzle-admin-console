@@ -5,12 +5,6 @@ var
 
 module.exports = function () {
 
-  this.Given(/^I go to the login page$/, function (callback) {
-    browser
-      .url('/#/login')
-      .call(callback);
-  });
-
   this.Then(/^I see the first admin creation page$/, function(callback) {
     browser
       .waitForVisible('input[name=username]', 5000)
