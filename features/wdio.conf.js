@@ -24,16 +24,16 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: [
-    //'./features/authentication.feature',
+    './features/authentication.feature',
     './features/realtime.feature',
-    //'./features/browseData.feature',
-    //'./features/metrics.feature',
-    //'./features/indexes.feature',
-    //'./features/roles.feature',
-    //'./features/profiles.feature',
-    //'./features/users.feature',
-    //'./features/notAllowed.feature',
-    //'./features/collections.feature',
+    './features/browseData.feature',
+    './features/metrics.feature',
+    './features/indexes.feature',
+    './features/roles.feature',
+    './features/profiles.feature',
+    './features/users.feature',
+    './features/notAllowed.feature',
+    './features/collections.feature'
   ],
   // Patterns to exclude.
   exclude: [
