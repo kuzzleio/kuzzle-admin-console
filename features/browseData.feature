@@ -13,7 +13,7 @@ Feature: Test browse data pages
     Given I am on browse data page
     Then I click on the collection selector
     Then I click on the test collection
-    Then I have a list with "3" elements
+    Then I have a list with "2" elements
 
   Scenario: I will be redirected to indexes browse page if i try to select an wrong collection
     Given I am on browse data page with an wrong index
