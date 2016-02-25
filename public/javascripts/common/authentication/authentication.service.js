@@ -40,10 +40,7 @@ angular.module('kuzzle.authentication')
       return deferred.promise;
     };
 
-    var onLoginFailed = function (err) {
-      if (err) {
-        console.error('Authentication error.', err.message);
-      }
+    var onLoginFailed = function () {
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     };
 

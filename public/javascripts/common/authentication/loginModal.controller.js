@@ -9,18 +9,13 @@ angular.module('kuzzle.authentication')
 function ($scope, $uibModal, $log, AUTH_EVENTS, Auth, $state) {
   var modalInstance = null;
 
-  var showDialog = function (nextState) {
+  var showDialog = function () {
     Auth.setNextRoute($state.current.name, $state.params);
 
     modalInstance = $uibModal.open({
       animation: true,
       templateUrl: 'javascripts/common/authentication/loginForm.tpl.html',
-      size: 'sm',
-      resolve: {
-        credentials:  {
-          nextState: nextState
-        }
-      }
+      size: 'sm'
     });
     modalInstance.result.then(null, function () {
       // Triggered when the backdrop is clicked
