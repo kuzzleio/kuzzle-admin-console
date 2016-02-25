@@ -19,7 +19,7 @@ script:
   - docker-compose -f docker-compose/test-travis.yml run kuzzleBo
 
 after_failure:
-  - "artifacts upload --target-paths \"artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT\" $(git ls-files -o)"
+  - "artifacts upload --target-paths \"artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER\" ./features/errorShots/"
 
 notifications:
   webhooks:
