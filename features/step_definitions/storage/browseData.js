@@ -4,25 +4,25 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.Given(/^I am on browse data page$/, function (callback) {
+  this.When(/^I am on browse data page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/storage/browse')
       .call(callback);
   });
 
-  this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
+  this.When(/^I am on browse data page with an wrong index$/, function (callback) {
     browser
       .url('/#/notexist/storage/browse')
       .call(callback);
   });
 
-  this.Given(/^I go to collection browse page$/, function (callback) {
+  this.When(/^I go to collection browse page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/collection/browse')
       .call(callback);
   });
 
-  this.Given(/^I am on browse collection page$/, function (callback) {
+  this.When(/^I am on browse collection page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/collection/browse')
       .call(callback);
@@ -42,6 +42,51 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I am on page for create document$/, function (callback) {
+     browser
+       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
+       .call(callback);
+  });
+
+  this.When(/^I click on add attribute button$/, function (callback) {
+    browser
+      .click('add-attribute button')
+      .call(callback);
+  });
+
+  this.When(/^I add the new attribute$/, function (callback) {
+    browser
+      .click('.modal-footer .add-attribute')
+      .call(callback);
+  });
+
+  this.When(/^I click on collection "([^"]+)"$/, function (collectionName, callback) {
+    var selectedCollection = null;
+    browser
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
+      .getText('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .then(text => {
+        selectedCollection = text;
+      })
+      .click('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .pause(200)
+      .getText('collections-drop-down-search .dropdown-toggle')
+      .then(text => {
+        assert.equal(
+          text,
+          selectedCollection,
+          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
+        );
+      })
+      .call(callback);
+  });
+
+  this.When(/^I am on browse data page for collection "([^"]*)"$/, function (collection, callback) {
+    browser
+      .url('/#/' + world.index + '/storage/browse/' + collection)
+      .call(callback);
+  });
+
   this.Then(/^the current URL corresponds to the add document page$/, function (callback) {
     browser
       .waitForVisible('.edit-id')
@@ -51,12 +96,6 @@ module.exports = function () {
       })
       .call(callback);
   });
-
-  this.Given(/^I am on page for create document$/, function (callback) {
-     browser
-       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
-       .call(callback);
-   });
 
   this.Then(/^I have an id input$/, function (callback) {
     browser
@@ -70,7 +109,7 @@ module.exports = function () {
        .call(callback);
    });
 
-  this.Then(/^I delete the last element in list and I cancel$/, function (callback) {
+  this.When(/^I delete the last element in list and I cancel$/, function (callback) {
     browser
       .waitForVisible('documents-inline :last-child .panel .edit.dropdown-toggle', 1000)
       .click('documents-inline :last-child .panel .edit.dropdown-toggle')
@@ -85,7 +124,7 @@ module.exports = function () {
       });
   });
 
-  this.Then(/^I delete the last element in list$/, function (callback) {
+  this.When(/^I delete the last element in list$/, function (callback) {
     browser
       .waitForVisible('documents-inline :last-child .panel .edit.dropdown-toggle', 1000)
       .click('documents-inline :last-child .panel .edit.dropdown-toggle')
@@ -138,7 +177,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I click on edit-inline button of "([^"]*)" document$/, function (id, callback) {
+  this.When(/^I click on edit-inline button of "([^"]*)" document$/, function (id, callback) {
     browser
       .waitForVisible('documents-inline #' + id + ' .edit-inline', 1000)
       .click('documents-inline #' + id + ' .edit-inline')
@@ -152,18 +191,6 @@ module.exports = function () {
       .then(text => {
         assert.equal(text, '"username": "'+ id +'",');
       })
-      .call(callback);
-  });
-
-  this.Then(/^I click on add attribute button$/, function (callback) {
-    browser
-      .click('add-attribute button')
-      .call(callback);
-  });
-
-  this.Then(/^I add the new attribute$/, function (callback) {
-    browser
-      .click('.modal-footer .add-attribute')
       .call(callback);
   });
 
@@ -185,7 +212,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I am on browse document page$/, function (callback) {
+  this.Then(/^I am on browse document page$/, function (callback) {
     browser
       .getUrl()
       .then(url => {
@@ -225,28 +252,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I click on collection "([^"]+)"$/, function (collectionName, callback) {
-    var selectedCollection = null;
-
-    browser
-      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
-      .getText('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
-      .then(text => {
-        selectedCollection = text;
-      })
-      .click('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
-      .pause(200)
-      .getText('collections-drop-down-search .dropdown-toggle')
-      .then(text => {
-        assert.equal(
-          text,
-          selectedCollection,
-          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
-        );
-      })
-      .call(callback);
-  });
-
   this.Then(/^I do not see the add document button$/, function (callback) {
     browser
       .isExisting('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
@@ -281,12 +286,6 @@ module.exports = function () {
         assert(elements.value.length === 0,
           'Expected not to find the Add collection button, but found one.');
       })
-      .call(callback);
-  });
-
-  this.Given(/^I am on browse data page for collection "([^"]*)"$/, function (collection, callback) {
-    browser
-      .url('/#/' + world.index + '/storage/browse/' + collection)
       .call(callback);
   });
 };
