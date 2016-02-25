@@ -13,13 +13,15 @@ before_install:
   - sudo service docker restart ; sleep 10
 
 before_script:
-  - "gem install travis-artifacts"
+  - "curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash"
 
 script:
   - docker-compose -f docker-compose/test-travis.yml run kuzzleBo
 
 after_failure:
-  - "travis-artifacts upload --path ./features/errorShots --target-path artifacts/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID"
+  - "artifacts upload \
+       --target-paths "artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER:artifacts/$TRAVIS_REPO_SLUG/$TRAVIS_COMMIT" \
+       $(git ls-files -o)"
 
 notifications:
   webhooks:
