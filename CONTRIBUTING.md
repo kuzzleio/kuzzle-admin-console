@@ -15,6 +15,7 @@ their literal meaning.
 
 * Test scenarii MUST be independent from each other.
 * Test scenarii MUST leave the data in the same state as before their execution.
+* Test scenarii SHOULD use preparation and cleanup hooks only when necessary, in order to optimize execution time.
 
 ### Steps
 
@@ -24,6 +25,8 @@ their literal meaning.
   * When introduces an action with no assertion in its definition. E.g. “When I go to the browse data page”.
   * Given introduces an action with an assertion in its definition. E.g. “Given I go to the browse data page” (ensuring that the resulting URL is ok).
   * Then introduces a statement with an assertion in its definition. E.g. “Then I see 3 elements in the list”.
+* Test scenarii SHOULD minimize the wait timeouts, in order to optimize the execution time.
+* Steps definitions SHOULD be grouped and ordered as following: “When”, “Given”, “Then”.
 
 ### Assertions
 
