@@ -66,8 +66,26 @@ angular.module('kuzzle', [
               '/javascripts/common/widget/widget.directive.js'
             ]);
           }],
-          authenticated: ['AuthService', function (Auth, $state) {
-            return Auth.isAuthenticated();
+          authenticated: ['AuthService', '$q', 'kuzzleSdk', function (Auth, q, kuzzle) {
+            var deferred = q.defer();
+
+            Auth.isAuthenticated()
+              .then(function () {
+                deferred.resolve();
+              })
+              .catch(function () {
+                kuzzle.addListener('connected', function() {
+                  Auth.isAuthenticated()
+                    .then(function () {
+                      deferred.resolve();
+                    })
+                    .catch(function () {
+                      deferred.reject();
+                    });
+                });
+              });
+
+            return deferred.promise;
           }]
         }
       })

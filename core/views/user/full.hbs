@@ -22,8 +22,9 @@
             </div>
 
             <div class="actions-group">
-                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit && canCreateOrReplaceUser" ng-click="update(true)">Create</button>
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit && canCreateOrReplaceUser" ng-click="create()">Create</button>
                 <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit && canUpdateUser" ng-click="update()">Update</button>
+                <button id="replace" type="submit" class="btn btn-warning control" ng-if="isEdit && canCreateOrReplaceUser" ng-click="replace()">Replace</button>
                 <a class="control" ng-click="cancel()">Cancel</a>
             </div>
         </form>

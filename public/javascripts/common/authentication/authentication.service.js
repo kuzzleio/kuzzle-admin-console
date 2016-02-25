@@ -40,10 +40,7 @@ angular.module('kuzzle.authentication')
       return deferred.promise;
     };
 
-    var onLoginFailed = function (err) {
-      if (err) {
-        console.error('Authentication error.', err.message);
-      }
+    var onLoginFailed = function () {
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     };
 
@@ -85,7 +82,7 @@ angular.module('kuzzle.authentication')
       } else {
         if (Session.resumeFromCookie()) {
           kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
-            if (error || response.result.valid === false) {
+            if (error || response.valid === false) {
               onLoginFailed(error);
               deferred.reject({
                 type: 'NOT_AUTHENTICATED',

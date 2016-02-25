@@ -58,7 +58,7 @@ angular.module('kuzzle.profile')
         $window.history.back();
       };
 
-      $scope.update = function (isCreate) {
+      $scope.create = function () {
         var profile = {
           id: $scope.profile.id,
           content: {}
@@ -74,7 +74,53 @@ angular.module('kuzzle.profile')
           }
         }
 
-        profileApi.update(profile, true, isCreate)
+        profileApi.createOrReplace(profile, true, true)
+          .then(function () {
+            $state.go('profile.browse');
+          });
+      };
+
+      $scope.replace = function () {
+        var profile = {
+          id: $scope.profile.id,
+          content: {}
+        };
+
+        if ($scope.profile.content) {
+          try {
+            profile.content = JSON.parse($scope.profile.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        if ($window.confirm('You are about to replace profile "' + $scope.profile.id + '", are you sure ?')) {
+          profileApi.createOrReplace(profile, true, false)
+            .then(function () {
+              $state.go('profile.browse');
+            });
+        }
+      };
+
+      $scope.update = function () {
+        var profile = {
+          id: $scope.profile.id,
+          content: {}
+        };
+
+        if ($scope.profile.content) {
+          try {
+            profile.content = JSON.parse($scope.profile.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        profileApi.update(profile, true)
           .then(function () {
             $state.go('profile.browse');
           });
