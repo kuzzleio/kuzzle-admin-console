@@ -55,14 +55,10 @@ Feature: Test the profiles CRUD page
   @cleanSecurity
   Scenario: I am able to delete a profile.
     When I go on the browse profiles page
-    And I click the delete button of the profile "kuzzle-bo-dummy"
-    Then I can see "modal-delete-profile" modal
-    When I fill the confirmation modal with the name of the deleted profile
-    And I confirm the deletion
-    And I'm waiting 10 sec
-    When I go on the browse profiles page
+    And I delete the profile "kuzzle-bo-dummy"
+    And I'm waiting 2 sec
+    And I go on the browse profiles page
     Then I do not see the deleted profile in the profiles list
-    And I'm waiting 5 sec
 
   Scenario: I am unable to edit an unexisting profile.
     When I go to the full view of an unexisting profile

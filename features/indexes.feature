@@ -31,13 +31,15 @@ Feature: Test multi index features
     Then I click on create index button
     Then I am on index creation page
 
+  @cleanFooIndex
   Scenario: I can create an index in index creation page
     Given I go to index creation page
-    Then I fill the input "name" with "index-foo"
+    Then I fill the input "name" with the foo index
     And I click on "create" button
     Then I am on manage index page
     Then I can see "2" indexes in list
 
+  @createFooIndex
   Scenario: I can delete an index in manage index page
     Given I go to manage index page
     Then I can see "2" indexes in list
@@ -45,7 +47,7 @@ Feature: Test multi index features
     Then I click on Delete dropdown menu item
     Then I can see "modal-delete-index" modal
     Then The button "modal-delete-index-delete" is disabled
-    Then I fill the input "modal-delete-index-name" with "index-foo"
+    Then I fill the input "modal-delete-index-name" with the foo index
     Then The button "modal-delete-index-delete" is not disabled
     And I click on "modal-delete-index-delete" button
     Then I can see "1" indexes in list
