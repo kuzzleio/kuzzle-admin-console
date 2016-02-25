@@ -61,7 +61,6 @@ module.exports = function () {
       .waitForVisible('.modal button.btn-danger', 1000)
       .click('.modal button.btn-danger')
       .pause(1200)
-      .saveScreenshot('./features/errorShots/afterModalConfirm'+ Date.now() +'.png')
       .call(callback);
   });
 

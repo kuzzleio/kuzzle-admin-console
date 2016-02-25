@@ -137,7 +137,6 @@ module.exports = function () {
       .waitForVisible('#modal-delete-profile input', 1000)
       .setValue('#modal-delete-profile input', this.deletedProfileName)
       .pause(2000)
-      .saveScreenshot('./features/errorShots/afterModalFill'+ Date.now() +'.png')
       .call(callback);
   });
 
@@ -158,7 +157,6 @@ module.exports = function () {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
     browser
       .pause(1000)
-      .saveScreenshot('./features/errorShots/afterDeleteProfile-' + Date.now() + '.png')
       .then(() => {
         wdioTools.searchItemInList(browser, not, this.deletedProfileName, callback);
       });
