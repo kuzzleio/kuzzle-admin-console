@@ -106,40 +106,6 @@ module.exports = function () {
     wdioTools.searchItemInList(browser, not, profileName, callback);
   });
 
-  this.When(/^I click the delete button of the last profile$/, function (callback) {
-    browser
-      .getText('documents-inline .row.documents:last-child .document-id span')
-      .then(text => {
-        assert(text, 'expected to have at least one profile with a name');
-        this.deletedProfileName = text;
-      })
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .delete-document', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .delete-document')
-      .call(callback);
-  });
-
-  this.When(/^I click the delete button of the profile "([^"]*)"$/, function (profileId, callback) {
-    this.deletedProfileName = profileId;
-
-    browser
-      .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .dropdown-menu .delete-document', 1000)
-      .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .dropdown-menu .delete-document')
-      .call(callback);
-  });
-
-  this.When(/^I fill the confirmation modal with the name of the deleted profile$/, function (callback) {
-    assert(this.deletedProfileName, 'Expected to have a deleted profile name');
-    browser
-      .waitForVisible('#modal-delete-profile input', 1000)
-      .setValue('#modal-delete-profile input', this.deletedProfileName)
-      .pause(2000)
-      .call(callback);
-  });
-
   this.When(/^I delete the profile "([^"]*)"$/, function (profileId, callback) {
     this.deletedProfileName = profileId;
     wdioTools.deleteItemInList(browser, 'profile', profileId, callback);

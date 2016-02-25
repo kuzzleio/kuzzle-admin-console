@@ -1,31 +1,7 @@
 var
-  searchUserList,
   wdioTools = require('../../support/wdioWrappers.js'),
   world = require('../../support/world.js'),
   assert = require('assert');
-
-searchUserList = function (not, userName, callback) {
-  browser
-    .waitForVisible('documents-inline .row.documents .document-id span', 1000)
-    .getText('documents-inline .row.documents .document-id span')
-    .then(el => {
-      if (typeof el == 'string') {
-        if (not) {
-          assert.notEqual(el, userName, 'Expected not to find ' + userName + ' in list');
-        } else {
-          assert.equal(el, userName, 'Expected to find ' + userName + ' in list, found ' + el);
-        }
-      }
-      if (typeof el == 'object' && Array.isArray(el)) {
-        if (not) {
-          assert(el.indexOf(userName) === -1, 'Expected not to find ' + userName + ' in list');
-        } else {
-          assert(el.indexOf(userName) >= 0, 'Expected to find ' + userName + ' in list ' + el);
-        }
-      }
-    })
-    .call(callback);
-};
 
 module.exports = function () {
   this.deletedUserName = null;
@@ -156,49 +132,12 @@ module.exports = function () {
   });
 
   this.Then(/^I ?(do not)* see "([^"]*)" in the user list$/, function (not, userName, callback) {
-    searchUserList(not, userName, callback);
-  });
-
-  this.When(/^I click the delete button of the last user$/, function (callback) {
-    browser
-      .getText('documents-inline .row.documents:last-child .document-id span')
-      .then(text => {
-        assert(text, 'expected to have at least one user with a name');
-        this.deletedUserName = text;
-      })
-      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .delete-document', 1000)
-      .click('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .delete-document')
-      .call(callback);
-  });
-
-  this.When(/^I click the delete button of the user "([^"]*)"$/, function (userId, callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents #'+ userId +' .document-id span', 1000)
-      .getText('documents-inline .row.documents #'+ userId +' .document-id span')
-      .then(text => {
-        assert(text, 'expected to have at least one user with a name');
-        this.deletedUserName = text;
-      })
-      .waitForVisible('documents-inline .row.documents #'+ userId +' user-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents #'+ userId +' user-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents #'+ userId +' user-toolbar .dropdown-menu .delete-document', 1000)
-      .click('documents-inline .row.documents #'+ userId +' user-toolbar .dropdown-menu .delete-document')
-      .call(callback);
+    wdioTools.searchItemInList(browser, not, userName, callback);
   });
 
   this.When(/^I delete the user "([^"]*)"$/, function (userId, callback) {
     this.deletedUserName = userId;
     wdioTools.deleteItemInList(browser, 'user', userId, callback);
-  });
-
-  this.When(/^I fill the confirmation modal with the name of the deleted user$/, function (callback) {
-    assert(this.deletedUserName, 'Expected to have a deleted user name');
-    browser
-      .waitForVisible('#modal-delete-user input', 1000)
-      .setValue('#modal-delete-user input', this.deletedUserName)
-      .call(callback);
   });
 
   this.Then(/^I ?(do not) see the deleted user in the users list$/, function (not, callback) {
