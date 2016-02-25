@@ -149,12 +149,8 @@ module.exports = function () {
       .getText('.ui-notification .message')
       .then(text => {
         var textToSearch = 'Profile updated !';
-        if (typeof text == 'string') {
-          assert.equal(text, textToSearch, 'Expected to receive a successful notification, found ' + text);
-        }
-        if (typeof text == 'object' && Array.isArray(text)) {
-          assert(text.indexOf(textToSearch) >= 0, 'Expected to receive a successful notification, found ' + text);
-        }
+        assert.ok(wdioTools.queryMatchesText(text, textToSearch),
+          'Expected to receive a successful notification, found ' + text);
       })
       .call(callback);
   });

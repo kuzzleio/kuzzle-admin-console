@@ -123,29 +123,6 @@ module.exports = function () {
     wdioTools.searchItemInList(browser, not, this.deletedRoleName, callback);
   });
 
-  var searchRoleList = function (not, roleName, callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents .document-id span', 1000)
-      .getText('documents-inline .row.documents .document-id span')
-      .then(el => {
-        if (typeof el == 'string') {
-          if (not) {
-            assert.notEqual(el, roleName, 'Expected not to find ' + roleName + ' in list');
-          } else {
-            assert.equal(el, roleName, 'Expected to find ' + roleName + ' in list, found ' + el);
-          }
-        }
-        if (typeof el == 'object' && Array.isArray(el)) {
-          if (not) {
-            assert(el.indexOf(roleName) === -1, 'Expected not to find ' + roleName + ' in list');
-          } else {
-            assert(el.indexOf(roleName) >= 0, 'Expected to find ' + roleName + ' in list ' + el);
-          }
-        }
-      })
-      .call(callback);
-  };
-
   this.Then(/^I see the inline editor of the first role$/, function (callback) {
     browser
       .waitForVisible('documents-inline .row:first-child json-edit', 1000)
@@ -172,12 +149,8 @@ module.exports = function () {
       .getText('.ui-notification .message')
       .then(text => {
         var textToSearch = 'Role updated !';
-        if (typeof text == 'string') {
-          assert.equal(text, textToSearch, 'Expected to receive a successful notification, found ' + text);
-        }
-        if (typeof text == 'object' && Array.isArray(text)) {
-          assert(text.indexOf(textToSearch) >= 0, 'Expected to receive a successful notification, found ' + text);
-        }
+        assert.ok(wdioTools.queryMatchesText(textToSearch, text),
+          'Expected to receive a successful notification, found ' + text);
       })
       .call(callback);
     });
