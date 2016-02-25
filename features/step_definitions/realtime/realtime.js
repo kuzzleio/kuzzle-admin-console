@@ -14,13 +14,13 @@ var
   };
 
 module.exports = function () {
-  this.Given(/^I go to the realtime page$/, function (callback) {
+  this.When(/^I go to the realtime page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/realtime')
       .call(callback);
   });
 
-  this.Then(/^I click on the collection selector$/, function (callback) {
+  this.When(/^I click on the collection selector$/, function (callback) {
     browser
       .waitForVisible('collections-drop-down-search .dropdown-toggle', 1000)
       .pause(1000)
@@ -28,18 +28,94 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I subscribe to the collection events$/, function (callback) {
+  this.When(/^I subscribe to the collection events$/, function (callback) {
     browser
       .waitForVisible('.filters button.btn-subscribe', 1000)
       .click('.filters button.btn-subscribe')
       .call(callback);
   });
 
-  this.Given(/^I unsubscribe from the collection$/, function (callback) {
+  this.When(/^I unsubscribe from the collection$/, function (callback) {
     browser
       .waitForVisible('.filters button.btn-unsubscribe', 1000)
       .click('.filters button.btn-unsubscribe')
       .call(callback);
+  });
+
+  this.When(/^I clear the message log$/, function (callback) {
+    browser
+    .click('messages button.btn-clear')
+    .call(callback);
+  });
+
+  this.When(/^Someone subscribes to my room$/, function (callback) {
+    world.currentRoom = world.kuzzle
+      .dataCollectionFactory(world.index, world.collections[0])
+      .subscribe({}, function (error, result) {});
+
+    setTimeout(() => {
+      callback();
+    }, 1000);
+  });
+
+  this.When(/^Someone unsubscribes from the room$/, function (callback) {
+    world.currentRoom.unsubscribe();
+
+    setTimeout(() => {
+      this.currentRoom = null;
+      callback();
+    }, 200);
+  });
+
+  this.Given(/^I create a persistent document$/, function (callback) {
+    world.kuzzle
+      .dataCollectionFactory(world.collections[0])
+      .createDocumentPromise(testDocument)
+      .then((response) => {
+        world.currentDocumentId = response.id;
+        callback();
+      })
+      .catch((error) => {
+        callback.fail();
+      });
+  });
+
+  this.Given(/^I publish a volatile message$/, function (callback) {
+    world.kuzzle
+      .dataCollectionFactory(world.collections[0])
+      .publishMessage(world.currentDocumentId, testDocument);
+
+      setTimeout(() => {
+        callback();
+      }, 200);
+  });
+
+  this.Given(/^I update a persistent document$/, function (callback) {
+     assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+     world.kuzzle
+       .dataCollectionFactory(world.collections[0])
+       .updateDocumentPromise(world.currentDocumentId, updatedTestDocument)
+       .then((response) => {
+         callback();
+       })
+       .catch((error) => {
+         callback.fail();
+       });
+   });
+
+  this.Given(/^I delete a persistent document$/, function (callback) {
+    assert(world.currentDocumentId, 'Expected to have the id of the current document');
+
+    world.kuzzle
+      .dataCollectionFactory(world.collections[0])
+      .deleteDocumentPromise(world.currentDocumentId)
+      .then((response) => {
+        callback();
+      })
+      .catch((error) => {
+        callback.fail();
+      });
   });
 
   this.Then(/^I am subscribed$/, function (callback) {
@@ -49,12 +125,6 @@ module.exports = function () {
       .then(text => {
         assert(world.collections.indexOf(text) !== -1, 'The collection ' + text + ' is not in fixtures');
       })
-      .call(callback);
-  });
-
-  this.Given(/^I clear the message log$/, function (callback) {
-    browser
-      .click('messages button.btn-clear')
       .call(callback);
   });
 
@@ -163,75 +233,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I create a persistent document$/, function (callback) {
-    world.kuzzle
-      .dataCollectionFactory(world.collections[0])
-      .createDocumentPromise(testDocument)
-      .then((response) => {
-        world.currentDocumentId = response.id;
-        callback();
-      })
-      .catch((error) => {
-        callback.fail();
-      });
-  });
-
-  this.Given(/^I publish a volatile message$/, function (callback) {
-    world.kuzzle
-      .dataCollectionFactory(world.collections[0])
-      .publishMessage(world.currentDocumentId, testDocument);
-
-      setTimeout(() => {
-        callback();
-      }, 200);
-  });
-
-   this.Given(/^I update a persistent document$/, function (callback) {
-     assert(world.currentDocumentId, 'Expected to have the id of the current document');
-
-     world.kuzzle
-       .dataCollectionFactory(world.collections[0])
-       .updateDocumentPromise(world.currentDocumentId, updatedTestDocument)
-       .then((response) => {
-         callback();
-       })
-       .catch((error) => {
-         callback.fail();
-       });
-   });
-
-  this.Given(/^I delete a persistent document$/, function (callback) {
-    assert(world.currentDocumentId, 'Expected to have the id of the current document');
-
-    world.kuzzle
-      .dataCollectionFactory(world.collections[0])
-      .deleteDocumentPromise(world.currentDocumentId)
-      .then((response) => {
-        callback();
-      })
-      .catch((error) => {
-        callback.fail();
-      });
-  });
-
-  this.Given(/^Someone subscribes to my room$/, function (callback) {
-    world.currentRoom = world.kuzzle.dataCollectionFactory(world.index, world.collections[0]).subscribe({}, function (error, result) {});
-
-    setTimeout(() => {
-      callback();
-    }, 1000);
-  });
-
-  this.Given(/^Someone unsubscribes from the room$/, function (callback) {
-    world.currentRoom.unsubscribe();
-
-    setTimeout(() => {
-      this.currentRoom = null;
-      callback();
-    }, 200);
-  });
-
-  this.Given(/^I can not see filter form$/, function (callback) {
+  this.Then(/^I can not see filter form$/, function (callback) {
     browser
       .isExisting('[ng-controller="WatchDataCtrl"] div.filters')
       .then(function(isExisting) {
