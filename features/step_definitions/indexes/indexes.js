@@ -15,6 +15,13 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I fill the input "([^"]*)" with the foo index$/, function (id, callback) {
+    browser
+      .waitForVisible('#' + id, 1000)
+      .setValue('#' + id, world.fooIndex)
+      .call(callback);
+  });
+
   this.Then(/^I can ?(not)* see Storage & Realtime menu entries$/, function (not, callback) {
     browser
       .isVisible('#menu-data > li:nth-child(5)').then(function(isVisible) {

@@ -20,6 +20,48 @@ var hooks = function () {
     cleanDb(callback);
   });
 
+  this.Before('@createFooIndex', function (scenario, callback) {
+    console.log('@createFooIndex');
+
+    var
+      query = {
+        controller: 'admin',
+        action: 'createIndex',
+        index: world.fooIndex
+      },
+      timeoutCallback = function () {
+        setTimeout(() => {
+          callback();
+        }, 1000);
+      };
+
+    world.kuzzle
+      .queryPromise(query, {})
+      .then(timeoutCallback)
+      .catch(timeoutCallback);
+  });
+
+  this.After('@cleanFooIndex', function (scenario, callback) {
+    console.log('@cleanFooIndex');
+
+    var
+      query = {
+        controller: 'admin',
+        action: 'deleteIndex',
+        index: world.fooIndex
+      },
+      timeoutCallback = function () {
+        setTimeout(() => {
+          callback();
+        }, 1000);
+      };
+
+    world.kuzzle
+      .queryPromise(query, {})
+      .then(timeoutCallback)
+      .catch(timeoutCallback);
+  });
+
   this.After('@cleanSecurity', function (scenario, callback) {
     console.log('@cleanSecurity');
     cleanSecurity.call(this, callback);
