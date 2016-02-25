@@ -25,7 +25,7 @@ their literal meaning.
   * When introduces an action with no assertion in its definition. E.g. “When I go to the browse data page”.
   * Given introduces an action with an assertion in its definition. E.g. “Given I go to the browse data page” (ensuring that the resulting URL is ok).
   * Then introduces a statement with an assertion in its definition. E.g. “Then I see 3 elements in the list”.
-  * Test scenarii SHOULD minimize the wait timeouts, in order to optimize the execution time.
+* Test scenarii SHOULD minimize the wait timeouts, in order to optimize the execution time.
 
 ### Assertions
 
