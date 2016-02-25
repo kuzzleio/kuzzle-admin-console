@@ -13,6 +13,57 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I click the full view edit button of the last users$/, function (callback) {
+    browser
+    .waitForVisible('documents-inline .row.documents:last-child .icons a.edit-document.full-view', 1000)
+    .click('documents-inline .row.documents:last-child .icons a.edit-document.full-view')
+    .call(callback);
+  });
+
+  this.When(/^I click the inline edit button of the last user$/, function (callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents:last-child .icons .edit-document.edit-inline', 1000)
+      .click('documents-inline .row.documents:last-child .icons .edit-document.edit-inline')
+      .call(callback);
+  });
+
+
+  this.When(/^I click the save button of the last user$/, function (callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .edit-document.text-success', 1000)
+      .click('documents-inline .row.documents:last-child user-toolbar .edit-document.text-success')
+      .call(callback);
+  });
+
+  this.When(/^I click the add user button$/, function (callback) {
+    browser
+      .waitForVisible('.create button.btn', 1000)
+      .click('.create button.btn')
+      .call(callback);
+  });
+
+
+  this.When(/^I click the clone button of the last user$/, function (callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle')
+      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .clone-document', 1000)
+      .click('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .clone-document')
+      .call(callback);
+  });
+
+  this.When(/^I delete the user "([^"]*)"$/, function (userId, callback) {
+    this.deletedUserName = userId;
+    wdioTools.deleteItemInList(browser, 'user', userId, callback);
+  });
+
+
+  this.When(/^I go to the full view of an unexisting user$/, function (callback) {
+    browser
+      .url('/#/user/non-existing')
+      .call(callback);
+  });
+
   this.Then(/^I can see the profile associated to a user/, function(callback) {
     browser
       .waitForVisible('documents-inline .row.documents:last-child .profiles-list', 1000)
@@ -23,13 +74,6 @@ module.exports = function () {
     browser
       .waitForVisible('documents-inline .row.documents:last-child .profiles-list button:first-of-type', 1000)
       .click('documents-inline .row.documents:last-child .profiles-list button:first-of-type')
-      .call(callback);
-  });
-
-  this.When(/^I click the full view edit button of the last users$/, function (callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child .icons a.edit-document.full-view', 1000)
-      .click('documents-inline .row.documents:last-child .icons a.edit-document.full-view')
       .call(callback);
   });
 
@@ -48,23 +92,9 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.When(/^I click the inline edit button of the last user$/, function (callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child .icons .edit-document.edit-inline', 1000)
-      .click('documents-inline .row.documents:last-child .icons .edit-document.edit-inline')
-      .call(callback);
-  });
-
   this.Then(/^I see the inline editor of the last user$/, function (callback) {
     browser
       .waitForVisible('documents-inline .row.documents:last-child json-edit', 1000)
-      .call(callback);
-  });
-
-  this.When(/^I click the save button of the last user$/, function (callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .edit-document.text-success', 1000)
-      .click('documents-inline .row.documents:last-child user-toolbar .edit-document.text-success')
       .call(callback);
   });
 
@@ -85,13 +115,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.When(/^I click the add user button$/, function (callback) {
-    browser
-      .waitForVisible('.create button.btn', 1000)
-      .click('.create button.btn')
-      .call(callback);
-  });
-
   this.Then(/^I am on the add user page$/, function (callback) {
     browser
       .pause(500)
@@ -104,15 +127,6 @@ module.exports = function () {
           'Expected url to begin with ' + expectedUrl + ', found ' + url
         );
       })
-      .call(callback);
-  });
-
-  this.When(/^I click the clone button of the last user$/, function (callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents:last-child user-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .clone-document', 1000)
-      .click('documents-inline .row.documents:last-child user-toolbar .dropdown-menu .clone-document')
       .call(callback);
   });
 
@@ -135,20 +149,9 @@ module.exports = function () {
     wdioTools.searchItemInList(browser, not, userName, callback);
   });
 
-  this.When(/^I delete the user "([^"]*)"$/, function (userId, callback) {
-    this.deletedUserName = userId;
-    wdioTools.deleteItemInList(browser, 'user', userId, callback);
-  });
-
   this.Then(/^I ?(do not) see the deleted user in the users list$/, function (not, callback) {
     assert(this.deletedUserName, 'Expected to have a deleted user name');
     wdioTools.searchItemInList(browser, not, this.deletedUserName, callback);
-  });
-
-  this.When(/^I go to the full view of an unexisting user$/, function (callback) {
-    browser
-      .url('/#/user/non-existing')
-      .call(callback);
   });
 
   this.Then(/^I see a message saying the user does not exist$/, function (callback) {
