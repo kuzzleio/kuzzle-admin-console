@@ -49,7 +49,10 @@ angular.module('kuzzle.realtime')
 
             $scope.forms.collections = collections;
           });
-        $scope.onSelectCollection($stateParams.collection);
+
+        if ($stateParams.collection) {
+          $scope.onSelectCollection($stateParams.collection);
+        }
 
 
         var filters = {};

@@ -4,23 +4,23 @@
             <div class="row">
                 <!-- title col -->
                 <!-- collection/documents -->
-                <div class="col-sm-2 document-id ellipsis"
+                <div class="col-sm-2 ellipsis"
                      ng-if="collection"
                      uib-popover="{{document.id}}" popover-placement="top" popover-animation="false">
-                    <strong title="Display the whole ID" ng-bind="document.id"></strong>
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
                 <!-- /collection/documents -->
 
                 <!-- roles -->
-                <div class="col-sm-2 document-id ellipsis"
+                <div class="col-sm-2 ellipsis"
                      ng-if="role">
-                    <strong title="Display the whole ID" ng-bind="document.id"></strong>
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
                 <!-- /roles -->
 
                 <!-- profiles -->
-                <div class="col-sm-2 document-id ellipsis" ng-if="profile">
-                    <strong class="" title="Display the whole ID" ng-bind="document.id"></strong>
+                <div class="col-sm-2 ellipsis" ng-if="profile">
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
 
                 <div class="col-sm-2" ng-if="profile">
@@ -34,8 +34,8 @@
                 <!-- /profiles -->
 
                 <!-- users -->
-                <div class="col-sm-2 document-id ellipsis" ng-if="user">
-                    <strong title="Display the whole ID" ng-bind="document.id"></strong>
+                <div class="col-sm-2 ellipsis" ng-if="user">
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
 
                 <div class="col-sm-2" ng-if="user">

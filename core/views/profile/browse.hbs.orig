@@ -1,0 +1,30 @@
+<div class="role-browse" ng-controller="ProfileBrowseCtrl" ng-init="init()">
+    <headline title="Profiles" subtitle="Browse profiles"></headline>
+    <div class="container container-medium">
+        <div class="row whitespace-top">
+            <div class="col-sm-12">
+                <div class="create">
+                    <button type="button" class="btn btn-success"  ui-sref="profile.create">
+                      <i class="fa fa-plus"></i> Add profile
+                    </button>
+                </div>
+
+<<<<<<< HEAD
+              <div class="container">
+                <div class="row whitespace-top">
+                  <div class="col-sm-12">
+                    <documents-inline documents="profiles" profile="true" can-edit="canUpdateProfile"></documents-inline>
+                  </div>
+                </div>
+              </div>
+=======
+                <documents-inline documents="profiles" profile="true" can-edit="canUpdateProfile"></documents-inline>
+>>>>>>> crudl-security-update
+            </div>
+
+            <div class="col-sm-9" ng-if="profiles.length === 0">
+                <p>There is no profile in this database.</p>
+            </div>
+        </div>
+    </div>
+</div>

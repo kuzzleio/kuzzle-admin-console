@@ -47,7 +47,7 @@
           <div class="row whitespace-top">
 
             <div class="create" style="margin-bottom: 15px">
-              <button type="button" class="btn btn-success" ui-sref="storage.create({collection: collection})" ng-if="canCreateDocument">
+              <button type="button" class="btn btn-success" ui-sref="storage.create({collection: stateParams.collection})" ng-if="canCreateDocument">
                 <i class="fa fa-plus"></i> Add document
               </button>
             </div>

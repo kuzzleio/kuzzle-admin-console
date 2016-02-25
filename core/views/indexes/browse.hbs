@@ -36,7 +36,7 @@
 
                   <div class="row">
                       <div class="col-sm-12 list-indexes">
-                          <div class="panel panel-primary" ng-repeat="index in indexData.indexes | orderBy | filter:search">
+                          <div id="\{{index}}" class="panel panel-primary" ng-repeat="index in indexData.indexes | orderBy | filter:search">
                               <div class="panel-heading">
                                   <h3 class="panel-title">
                                       <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Go to full view"></span>
@@ -46,6 +46,7 @@
                                           <cog-options-indexes
                                               index="index"
                                               can-edit="false"
+                                              can-delete="canDeleteIndex(index)"
                                               after-delete="afterDelete(index)">
                                           </cog-options-indexes>
                                       </span>

@@ -43,8 +43,8 @@ Feature: Test multi index features
   Scenario: I can delete an index in manage index page
     Given I go to manage index page
     Then I can see "2" indexes in list
-    Then I click on the index option selector
-    Then I click on Delete dropdown menu item
+    Then I click on the index option selector of the foo index
+    Then I click on Delete dropdown menu item of the foo index
     Then I can see "modal-delete-index" modal
     Then The button "modal-delete-index-delete" is disabled
     Then I fill the input "modal-delete-index-name" with the foo index

@@ -47,21 +47,21 @@ module.exports = function () {
   this.When(/^I click on create index button$/, function (callback) {
     browser
     .waitForVisible('.indexes-browse', 1000)
-    .click('.indexes-browse div.row.create > div > button')
+    .click('.indexes-browse .create button')
     .call(callback);
   });
   
-  this.When(/^I click on the index option selector$/, function (callback) {
+  this.When(/^I click on the index option selector of the foo index$/, function (callback) {
     browser
-      .waitForVisible('.panel:first-of-type cog-options-indexes .cog-options-indexes', 1000)
-      .click('.panel:first-of-type cog-options-indexes .cog-options-indexes small')
+      .waitForVisible('#' + world.fooIndex + ' cog-options-indexes .cog-options-indexes .dropdown-toggle', 1000)
+      .click('#' + world.fooIndex + ' cog-options-indexes .cog-options-indexes .dropdown-toggle')
       .call(callback);
   });
 
-  this.When(/^I click on Delete dropdown menu item$/, function (callback) {
+  this.When(/^I click on Delete dropdown menu item of the foo index$/, function (callback) {
     browser
-      .waitForVisible('.panel:first-of-type cog-options-indexes .cog-options-indexes', 1000)
-      .click('.panel:first-of-type cog-options-indexes .cog-options-indexes .dropdown-menu a')
+      .waitForVisible('#' + world.fooIndex + ' cog-options-indexes .cog-options-indexes .dropdown-menu', 1000)
+      .click('#' + world.fooIndex + ' cog-options-indexes .cog-options-indexes .dropdown-menu a')
       .call(callback);
   });
 
