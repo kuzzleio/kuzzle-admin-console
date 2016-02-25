@@ -21,31 +21,10 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I am on the full view edit profiles page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/profile/';
-        var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
   this.When(/^I click the inline edit button of the last profile$/, function (callback) {
     browser
       .waitForVisible('documents-inline .row.documents:last-child .icons .edit-document.edit-inline', 1000)
       .click('documents-inline .row.documents:last-child .icons .edit-document.edit-inline')
-      .call(callback);
-  });
-
-  this.Then(/^I see the inline editor of the last profile$/, function (callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child json-edit', 1000)
       .call(callback);
   });
 
@@ -63,6 +42,54 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I click the clone button of the last profile$/, function (callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle')
+      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .clone-document', 1000)
+      .click('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .clone-document')
+      .call(callback);
+  });
+
+  this.When(/^I delete the profile "([^"]*)"$/, function (profileId, callback) {
+    this.deletedProfileName = profileId;
+    wdioTools.deleteItemInList(browser, 'profile', profileId, callback);
+  });
+
+  this.When(/^I go to the full view of an unexisting profile$/, function (callback) {
+    browser
+      .url('/#/profile/non-existing')
+      .call(callback);
+  });
+
+  this.When(/^I click on the first role on the roles list associated to a profile$/, function(callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents:last-child .roles-list button:first-of-type', 1000)
+      .click('documents-inline .row.documents:last-child .roles-list button:first-of-type')
+      .call(callback);
+  });
+
+  this.Then(/^I see the inline editor of the last profile$/, function (callback) {
+    browser
+      .waitForVisible('documents-inline .row.documents:last-child json-edit', 1000)
+      .call(callback);
+  });
+
+  this.Then(/^I am on the full view edit profiles page$/, function (callback) {
+    browser
+      .pause(500)
+      .getUrl()
+      .then(url => {
+        var expectedUrl = world.baseUrl + '/#/profile/';
+        var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
   this.Then(/^I am on the add profile page$/, function (callback) {
     browser
       .pause(500)
@@ -75,15 +102,6 @@ module.exports = function () {
           'Expected url to begin with ' + expectedUrl + ', found ' + url
         );
       })
-      .call(callback);
-  });
-
-  this.When(/^I click the clone button of the last profile$/, function (callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .clone-document', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .clone-document')
       .call(callback);
   });
 
@@ -106,20 +124,9 @@ module.exports = function () {
     wdioTools.searchItemInList(browser, not, profileName, callback);
   });
 
-  this.When(/^I delete the profile "([^"]*)"$/, function (profileId, callback) {
-    this.deletedProfileName = profileId;
-    wdioTools.deleteItemInList(browser, 'profile', profileId, callback);
-  });
-
   this.Then(/^I ?(do not) see the deleted profile in the profiles list$/, function (not, callback) {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
     wdioTools.searchItemInList(browser, not, this.deletedProfileName, callback);
-  });
-
-  this.When(/^I go to the full view of an unexisting profile$/, function (callback) {
-    browser
-      .url('/#/profile/non-existing')
-      .call(callback);
   });
 
   this.Then(/^I see a message saying the profile does not exist$/, function (callback) {
@@ -155,13 +162,6 @@ module.exports = function () {
   this.Then(/^I can see the roles list associated to a profile$/, function(callback) {
     browser
       .waitForVisible('documents-inline .row.documents:last-child .roles-list', 1000)
-      .call(callback);
-  });
-
-  this.Then(/^I click on the first role on the roles list associated to a profile$/, function(callback) {
-    browser
-      .waitForVisible('documents-inline .row.documents:last-child .roles-list button:first-of-type', 1000)
-      .click('documents-inline .row.documents:last-child .roles-list button:first-of-type')
       .call(callback);
   });
 };
