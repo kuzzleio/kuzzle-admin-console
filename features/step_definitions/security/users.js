@@ -1,5 +1,6 @@
 var
   searchUserList,
+  wdioTools = require('../../support/wdioWrappers.js'),
   world = require('../../support/world.js'),
   assert = require('assert');
 
@@ -187,6 +188,11 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I delete the user "([^"]*)"$/, function (userId, callback) {
+    this.deletedUserName = userId;
+    wdioTools.deleteItemInList(browser, 'user', userId, callback);
+  });
+
   this.When(/^I fill the confirmation modal with the name of the deleted user$/, function (callback) {
     assert(this.deletedUserName, 'Expected to have a deleted user name');
     browser
@@ -197,7 +203,7 @@ module.exports = function () {
 
   this.Then(/^I ?(do not) see the deleted user in the users list$/, function (not, callback) {
     assert(this.deletedUserName, 'Expected to have a deleted user name');
-    searchUserList(not, this.deletedUserName, callback);
+    wdioTools.searchItemInList(browser, not, this.deletedUserName, callback);
   });
 
   this.When(/^I go to the full view of an unexisting user$/, function (callback) {

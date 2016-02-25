@@ -56,6 +56,7 @@ Feature: Test the profiles CRUD page
   Scenario: I am able to delete a profile.
     When I go on the browse profiles page
     And I delete the profile "kuzzle-bo-dummy"
+    And I'm waiting 2 sec
     And I go on the browse profiles page
     Then I do not see the deleted profile in the profiles list
 

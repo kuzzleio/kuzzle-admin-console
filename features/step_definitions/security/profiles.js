@@ -142,24 +142,12 @@ module.exports = function () {
 
   this.When(/^I delete the profile "([^"]*)"$/, function (profileId, callback) {
     this.deletedProfileName = profileId;
-
-    browser
-      .waitForVisible('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .edit-document.dropdown-toggle')
-      .click('documents-inline .row.documents #'+ profileId +' profile-toolbar .dropdown-menu .delete-document')
-      .pause(500)
-      .setValue('.modal-dialog input', profileId)
-      .click('.modal-dialog .actions-group button')
-      .call(callback);
+    wdioTools.deleteItemInList(browser, 'profile', profileId, callback);
   });
 
   this.Then(/^I ?(do not) see the deleted profile in the profiles list$/, function (not, callback) {
     assert(this.deletedProfileName, 'Expected to have a deleted profile name');
-    browser
-      .pause(1000)
-      .then(() => {
-        wdioTools.searchItemInList(browser, not, this.deletedProfileName, callback);
-      });
+    wdioTools.searchItemInList(browser, not, this.deletedProfileName, callback);
   });
 
   this.When(/^I go to the full view of an unexisting profile$/, function (callback) {

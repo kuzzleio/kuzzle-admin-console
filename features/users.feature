@@ -55,12 +55,10 @@ Feature: Test the users CRUD page
   @cleanSecurity
   Scenario: I am able to delete a user
     When I go on the browse users page
-    And I click the delete button of the user "kuzzle-bo-dummy"
-    Then I can see "modal-delete-user" modal
-    When I fill the confirmation modal with the name of the deleted user
-    And I click the confirm button in the modal
-    Then I am on the browse users page
-    And I do not see the deleted user in the users list
+    And I delete the user "kuzzle-bo-dummy"
+    And I'm waiting 2 sec
+    When I go on the browse users page
+    Then I do not see the deleted user in the users list
 
   Scenario: I am unable to edit an unexisting user.
     When I go to the full view of an unexisting user

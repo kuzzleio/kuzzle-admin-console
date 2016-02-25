@@ -1,5 +1,6 @@
 var
   world = require('../../support/world.js'),
+  wdioTools = require('../../support/wdioWrappers.js'),
   assert = require('assert');
 
 module.exports = function () {
@@ -76,6 +77,11 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.When(/^I delete the role "([^"]*)"$/, function (roleId, callback) {
+    this.deletedRoleName = roleId;
+    wdioTools.deleteItemInList(browser, 'role', roleId, callback);
+  });
+
   this.When(/^I fill the confirmation modal with the name of the deleted role$/, function (callback) {
     assert(this.deletedRoleName, 'Expected to have a deleted role name');
     browser
@@ -146,12 +152,12 @@ module.exports = function () {
   });
 
   this.Then(/^I ?(do not)* see "([^$]*)" in the roles list$/, function (not, roleName, callback) {
-    searchRoleList(not, roleName, callback);
+    wdioTools.searchItemInList(browser, not, roleName, callback);
   });
 
   this.Then(/^I ?(do not) see the deleted role in the roles list$/, function (not, callback) {
     assert(this.deletedRoleName, 'Expected to have a deleted role name');
-    searchRoleList(not, this.deletedRoleName, callback);
+    wdioTools.searchItemInList(browser, not, this.deletedRoleName, callback);
   });
 
   var searchRoleList = function (not, roleName, callback) {
