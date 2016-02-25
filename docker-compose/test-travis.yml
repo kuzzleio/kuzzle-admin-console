@@ -28,6 +28,8 @@ kuzzleBo:
     - "9876:9876"
   links:
     - kuzzle
+    # add link to elasticsearch in order to perform a dump
+    - elasticsearch
   environment:
       - DEBUG_PHANTOM
 
