@@ -1,18 +1,39 @@
 var assert = require('assert');
 
 module.exports = function () {
-  this.Then(/^I fill the input "([^"]*)" with "([^"]*)"$/, function (id, value, callback) {
+  this.When(/^I fill the input "([^"]*)" with "([^"]*)"$/, function (id, value, callback) {
     browser
       .waitForVisible('#' + id, 1000)
       .setValue('#' + id, value)
       .call(callback);
   });
 
-  this.Then(/^I click on "([^"]*)" button$/, function (id, callback) {
+  this.When(/^I click on "([^"]*)" button$/, function (id, callback) {
     browser
       .waitForVisible('#' + id, 1000)
       .click('#' + id)
       .call(callback);
+  });
+
+  this.When(/^I check the checkbox with class "([^"]*)"$/, function (cssClass, callback) {
+    browser
+    .waitForVisible('input[type=checkbox].' + cssClass, 1000)
+    .click('input[type=checkbox].' + cssClass)
+    .call(callback);
+  });
+
+  this.When(/^I select in "([^"]*)" the text "([^"]*)"$/, function (id, text, callback) {
+    browser
+    .selectByVisibleText('#' + id, text)
+    .call(callback);
+  });
+
+  this.When(/^I click the confirm button in the modal$/, function (callback) {
+    browser
+    .waitForVisible('.modal button.btn-danger', 1000)
+    .click('.modal button.btn-danger')
+    .pause(1200)
+    .call(callback);
   });
 
   this.Then(/^the field "([^"]*)" has the value "([^"]*)"$/, function (id, value, callback) {
@@ -24,17 +45,9 @@ module.exports = function () {
       .call(callback);
   });
 
-
   this.Then(/^I have input "([^"]*)"$/, function (field, callback) {
     browser
       .waitForVisible('input[id="' + field + '"]', 1000)
-      .call(callback);
-  });
-
-  this.Then(/^I check the checkbox with class "([^"]*)"$/, function (cssClass, callback) {
-    browser
-      .waitForVisible('input[type=checkbox].' + cssClass, 1000)
-      .click('input[type=checkbox].' + cssClass)
       .call(callback);
   });
 
@@ -44,23 +57,9 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I select in "([^"]*)" the text "([^"]*)"$/, function (id, text, callback) {
-    browser
-      .selectByVisibleText('#' + id, text)
-      .call(callback);
-  });
-
   this.Then(/^I can see "([^"]*)" modal$/, function(id, callback) {
     browser
       .waitForVisible('.modal #' + id, 1000)
-      .call(callback);
-  });
-
-  this.When(/^I click the confirm button in the modal$/, function (callback) {
-    browser
-      .waitForVisible('.modal button.btn-danger', 1000)
-      .click('.modal button.btn-danger')
-      .pause(1200)
       .call(callback);
   });
 
