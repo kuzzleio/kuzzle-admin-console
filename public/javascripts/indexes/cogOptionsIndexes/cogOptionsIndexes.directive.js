@@ -33,6 +33,10 @@ angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle
           $scope.onDeleteIndex();
         }
       };
+
+      $scope.cancelModal = function () {
+        modal.dismiss('cancel');
+      };
     }
   ])
   .directive('cogOptionsIndexes', [function () {

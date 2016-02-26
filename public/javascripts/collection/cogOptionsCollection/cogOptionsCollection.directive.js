@@ -46,8 +46,8 @@ angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuz
       };
 
       $scope.cancelModal = function () {
-      modal.dismiss('cancel');
-    };
+        modal.dismiss('cancel');
+      };
     }
   ])
   .directive('cogOptionsCollection', [function () {

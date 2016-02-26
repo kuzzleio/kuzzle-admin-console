@@ -32,6 +32,7 @@ $menubar-border-color: #e6e6e6;
     transition: all 0.2s;
     display: inline-block;
     white-space: nowrap;
+    border-bottom: 1px solid rgb(151, 198, 203);
 
     &:hover {
       background-color: #FFF;

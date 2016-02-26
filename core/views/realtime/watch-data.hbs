@@ -12,8 +12,12 @@
         </filters>
 
         <div class="form-group">
-            <button type="submit" class="btn btn-default btn-subscribe" ng-click="subscribe()" ng-disabled="subscribed">Subscribe &nbsp;<span class="glyphicon glyphicon-play"><span></button>
-            <button type="submit" class="btn btn-default btn-unsubscribe" ng-click="unsubscribe()" ng-disabled="!subscribed">Unsubscribe&nbsp;<span class="glyphicon glyphicon-pause"><span></button>
+            <button type="submit" class="btn btn-primary btn-subscribe" ng-click="subscribe()" ng-disabled="subscribed">
+              Subscribe &nbsp;<span class="glyphicon glyphicon-play"></span>
+            </button>
+            <button type="submit" class="btn btn-warning btn-unsubscribe" ng-click="unsubscribe()" ng-disabled="!subscribed">
+              Unsubscribe&nbsp;<span class="glyphicon glyphicon-pause"></span>
+            </button>
             <button class="btn btn-link" ng-click="resetFilters()">Clear</button>
         </div>
     </div>
@@ -26,7 +30,7 @@
         <p class="text-danger" ng-show="forms.error" ng-bind="forms.error"></p>
         <json-edit content="forms.messageToPublish" can-edit="true"></json-edit>
       </div>
-      <button type="button" name="button" class="btn btn-default" ng-click="publishMessage(forms.messageToPublish)">
+      <button type="button" name="button" class="btn btn-primary" ng-click="publishMessage(forms.messageToPublish)">
         Publish &nbsp; <span class="glyphicon glyphicon-send"></span>
       </button>
     </form>

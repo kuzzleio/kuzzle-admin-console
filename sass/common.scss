@@ -29,6 +29,17 @@ a {
   }
 }
 
+.btn-default {
+  color: #444;
+  border-color: #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background-color: #FBFBFB;
+}
+
+.btn-group-lg>.btn, .btn-lg {
+  padding: 9px 16px;
+}
+
 .btn-primary {
   color: #fff;
   background-color: #00757F;
@@ -316,7 +327,7 @@ h2.select-collection {
   }
 }
 * {
-  border-radius: 0 !important;
+  border-radius: 2px !important;
 }
 .container {
   width: 100%;
@@ -329,6 +340,7 @@ h2.select-collection {
 .container-fluid {
   padding:0;
   margin:0;
+  overflow-x: hidden;
 }
 headline > div {
   background: #FFFFFF;
