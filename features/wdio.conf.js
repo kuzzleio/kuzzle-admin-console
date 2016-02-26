@@ -33,7 +33,7 @@ exports.config = {
     './features/profiles.feature',
     './features/users.feature',
     './features/notAllowed.feature',
-    './features/collections.feature',
+    './features/collections.feature'
   ],
   // Patterns to exclude.
   exclude: [
@@ -131,7 +131,7 @@ exports.config = {
       './features/step_definitions/security/roles.js',
       './features/step_definitions/security/profiles.js',
       './features/step_definitions/security/users.js'
-    ]
+    ],
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,
     // run only certain scenarios annotated by tags
