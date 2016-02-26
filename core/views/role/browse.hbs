@@ -1,16 +1,24 @@
 <div class="role-browse" ng-controller="RoleBrowseCtrl" ng-init="init()">
     <headline title="Roles" subtitle="Browse roles"></headline>
-    <div class="container">
+    <div class="container container-medium">
         <div class="row whitespace-top">
             <div class="col-sm-12">
-                <div class="row create">
-                    <button type="button" class="btn btn-success"  ui-sref="role.create">Add role</button>
+                <div class="create">
+                    <button type="button" class="btn btn-success"  ui-sref="role.create">
+                      <i class="fa fa-plus"></i> Add role
+                    </button>
                 </div>
 
-                <documents-inline documents="roles" role="true" can-edit="canUpdateRole"></documents-inline>
+              <div class="container">
+                <div class="row whitespace-top">
+                  <div class="col-sm-12">
+                    <documents-inline documents="roles" role="true" can-edit="canUpdateRole"></documents-inline>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="col-sm-9" ng-if="roles.length === 0">
+            <div class="col-sm-12" ng-if="roles.length === 0">
                 <p>There is no role in this database.</p>
             </div>
         </div>

@@ -7,7 +7,9 @@
     style="height: 1px;"
 >
     <ul class="nav navbar-nav side-nav">
-        <li ui-sref-active="active" ng-if="canGetServerInfo || canGetStats">
+        <li class="nav-category"
+             ng-if="canGetServerInfo || canGetStats"
+             ui-sref-active="active">
             <a ui-sref="logged">
                 <i class="fa fa-fw fa-area-chart pull-left"></i>
                     System metrics
@@ -15,86 +17,92 @@
             </a>
         </li>
 
+        <!-- Indexes -->
+        <li ng-if="canShowDataDongle()" class="nav-category"
+            ng-class="{ in: ('indexes.*.*' | includedByState)}">
+          <a href data-toggle="collapse"
+             ng-class="{ collapsed: !('indexes.*.*' | includedByState)}"
+             data-target="#menu-indexes">
+            <i class="fa fa-database pull-left"></i>
+            Indexes
+            <i class="fa fa-fw fa-caret-down pull-right"></i>
+          </a>
+          <ul
+            ng-class="{ in: ('indexes.*.*' | includedByState)}"
+            id="menu-indexes"
+            class="collapse submenu">
+
+            <li>
+              <a ui-sref="indexes.browse"
+                 ng-class="{ active: ('indexes.browse' | includedByState) }">
+                <!--<i class="fa fa-database"></i>--> Manage indexes
+              </a>
+            </li>
+          </ul>
+        </li>
+        <!-- /Indexes -->
+
+        <!-- Collections -->
+        <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+            class="nav-category"
+            ng-class="{ in: ('collection.*.*' | includedByState)}">
+          <a href data-toggle="collapse"
+             ng-class="{ collapsed: !('collection.*.*' | includedByState)}"
+             data-target="#menu-collections">
+            <i class="fa fa-table pull-left"></i>
+            Collections
+            <i class="fa fa-fw fa-caret-down pull-right"></i>
+          </a>
+          <ul
+            ng-class="{ in: ('collection.*.*' | includedByState)}"
+            id="menu-collections"
+            class="collapse submenu">
+
+            <li>
+              <a ng-class="{ active: ('collection.*.*' | includedByState) }"
+                 ui-sref="collection.browse({index: indexData.selectedIndex})">
+                <!--<i class="fa fa-table"></i>--> Manage collections
+              </a>
+            </li>
+          </ul>
+        </li>
+        <!-- /Collections -->
+
         <!-- Data -->
-        <li ng-if="canShowDataDongle()">
-            <a href data-toggle="collapse" data-target="#menu-data" ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
-                <i class="fa fa-database pull-left"></i>
-                Data
-                <i class="fa fa-fw fa-caret-down pull-right"></i>
-            </a>
-            <ul
-                ng-controller="IndexesCtrl"
-                ng-init="init()"
-                id="menu-data"
-                class="collapse submenu"
-                ng-class="{ in: ('indexes.*.*' | includedByState) || ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
-            >
+        <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+            class="nav-category"
+            ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
+          <a href data-toggle="collapse"
+             ng-class="{ collapsed: !(('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState))}"
+             data-target="#menu-data">
+            <i class="fa fa-list-alt pull-left"></i>
+            Data
+            <i class="fa fa-fw fa-caret-down pull-right"></i>
+          </a>
+          <ul
+            ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}"
+            id="menu-data"
+            class="collapse submenu">
 
-                <!-- Indexes -->
-                <li>
-                    <a ui-sref="indexes.browse" ng-class="{ in: ('indexes.browse' | includedByState) }">
-                        <i class="fa fa-database"></i> Manage indexes
-                    </a>
-                </li>
-
-                <li class="divider"></li>
-
-                <li>
-                    <indexes-drop-down-search
-                        selected-index="indexData.selectedIndex"
-                        create-label="New index"
-                        items="indexData.indexes"
-                        on-click-create="onCreateIndex(name)"
-                        on-click-item="onSelectIndex(item)"
-                        placeholder="Find an index">
-                    </indexes-drop-down-search>
-                </li>
-
-                <li class="divider"></li>
-                <!-- / Indexes -->
-
-
-                <!-- Persisted data -->
-                <li ng-show="indexData.selectedIndex">
-                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-storage" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
-                        <i class="fa fa-database"></i>
-                        Storage
-                        <i class="fa fa-fw fa-caret-down pull-right"></i>
-                    </a>
-                    <ul id="menu-storage" class="collapse submenu2" ng-class="{ in: ('storage.*.*' | includedByState) || ('collection.*.*' | includedByState) }">
-                        <li ng-class="{ active: ('storage.*.*' | includedByState) }">
-                            <a ui-sref="storage.browse({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Browse data</a>
-                        </li>
-                        <li ng-class="{ active: ('collection.*.*' | includedByState) }">
-                            <a ui-sref="collection.browse({index: indexData.selectedIndex})"><i class="fa fa-table"></i> Browse collection</a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- / Persisted data -->
-
-
-
-                <!-- Real-time data -->
-                <li ng-show="indexData.selectedIndex">
-                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-rt" ng-class="{ in: ('realtime.*.*' | includedByState) }">
-                        <i class="glyphicon glyphicon-time"></i>
-                        Realtime
-                        <i class="fa fa-fw fa-caret-down pull-right"></i>
-                    </a>
-                    <ul id="menu-rt" class="collapse submenu2" ng-class="{ in: ('realtime.*.*' | includedByState) }">
-                        <li ng-class="{ active: ('realtime.*.*' | includedByState) }">
-                            <a ui-sref="realtime.watch-data({index: indexData.selectedIndex})"><i class="fa fa-list-alt"></i> Watch data</a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- / Real-time data -->
-            </ul>
+            <li>
+              <a ng-class="{ active: ('storage.*.*' | includedByState) }"
+                 ui-sref="storage.browse({index: indexData.selectedIndex})">
+                <!--<i class="fa fa-list-alt"></i>--> Browse data
+              </a>
+            </li>
+            <li>
+              <a ng-class="{ active: ('realtime.*.*' | includedByState) }"
+                 ui-sref="realtime.watch-data({index: indexData.selectedIndex})">
+                <!--<i class="fa fa-list-alt"></i>--> Watch data
+              </a>
+            </li>
+          </ul>
         </li>
         <!-- / Data -->
 
 
-        <!-- Plugins
-        <li>
+        <!-- Plugins ->
+        <li class="nav-category">
             <a href data-toggle="collapse" data-target="#menu-plugins">
                 <i class="fa fa-puzzle-piece pull-left"></i>
                 Plugins
@@ -108,24 +116,36 @@
                 <li></li>
             </ul>
         </li>
-        / Plugins -->
+        <-- / Plugins -->
 
         <!-- Security -->
-        <li ng-if="hasRightsOnIndex('%kuzzle')">
-            <a href data-toggle="collapse" data-target="#menu-security">
+        <li ng-if="hasRightsOnIndex('%kuzzle')" class="nav-category"
+            ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
+            <a href data-toggle="collapse"
+               ng-class="{ collapsed: !(('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState))  }"
+               data-target="#menu-security">
                 <i class="fa fa-shield pull-left"></i>
                 Security
                 <i class="fa fa-fw fa-caret-down pull-right"></i>
             </a>
             <ul id="menu-security" class="collapse submenu" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
-                <li ng-class="{ active: ('role.*.*' | includedByState) }">
-                    <a ui-sref="role.browse"><i class="fa fa-list-alt"></i> Roles</a>
+                <li>
+                    <a ng-class="{ active: ('role.*.*' | includedByState) }"
+                       ui-sref="role.browse">
+                      <!--<i class="fa fa-list-alt"></i>--> Roles
+                    </a>
                 </li>
-                <li ng-class="{ active: ('profile.*.*' | includedByState) }">
-                    <a ui-sref="profile.browse"><i class="fa fa-list-alt"></i> Profiles</a>
+                <li>
+                    <a ng-class="{ active: ('profile.*.*' | includedByState) }"
+                       ui-sref="profile.browse">
+                      <!--<i class="fa fa-list-alt"></i>--> Profiles
+                    </a>
                 </li>
-                <li ng-class="{ active: ('user.*.*' | includedByState) }">
-                    <a ui-sref="user.browse"><i class="fa fa-users"></i> Users</a>
+                <li>
+                    <a ng-class="{ active: ('user.*.*' | includedByState) }"
+                       ui-sref="user.browse">
+                      <!--<i class="fa fa-users"></i>--> Users
+                    </a>
                 </li>
             </ul>
         </li>
@@ -133,46 +153,58 @@
 
 
         <!-- Help and feedback -->
-        <li class="bottom menu-help">
-            <a href="javascript:;" data-toggle="collapse" data-target="#menu-help">
+        <li class="bottom nav-category menu-help">
+            <a href="javascript:;" class="collapsed" data-toggle="collapse" data-target="#menu-help">
                 <i class="fa fa-question pull-left"></i>
                 Help and feedback
-                <i class="fa fa-fw fa-caret-up pull-right"></i>
+                <i class="fa fa-fw fa-caret-down pull-right"></i>
             </a>
             <ul id="menu-help" class="collapse submenu">
                 <li>
-                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-doc">
-                        <i class="fa fa-book"></i>
+                    <a href="javascript:;" class="collapsed" data-toggle="collapse" data-target="#menu-help-doc">
+                        <!--<i class="fa fa-book"></i>-->
                         Read the doc
-                        <i class="fa fa-fw fa-caret-up pull-right"></i>
+                        <i class="fa fa-fw fa-caret-down pull-right"></i>
                     </a>
                     <ul id="menu-help-doc" class="collapse submenu2">
                         <li>
-                            <a href="https://github.com/kuzzleio/kuzzle/blob/0.7.2/docs/README.md" target="_blank"><i class="fa fa-book"></i> Kuzzle</a>
+                            <a href="https://github.com/kuzzleio/kuzzle/blob/0.7.2/docs/README.md" target="_blank">
+                              <i class="fa fa-book"></i> Kuzzle
+                            </a>
                         </li>
                         <li>
-                            <a href="http://kuzzleio.github.io/sdk-documentation/" target="_blank"><i class="fa fa-book"></i> SDK</a>
+                            <a href="http://kuzzleio.github.io/sdk-documentation/" target="_blank">
+                              <i class="fa fa-book"></i> SDK
+                            </a>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="https://gitter.im/kuzzleio/kuzzle" target="_blank"><i class="fa fa-comments-o"></i> Chat with the team</a>
+                    <a href="https://gitter.im/kuzzleio/kuzzle" target="_blank">
+                      <!--<i class="fa fa-comments-o"></i>--> Chat with the team
+                    </a>
                 </li>
                 <li>
-                    <a href="mailto:feedback@kuzzle.io"><i class="fa fa-commenting-o"></i> Give your feedback</a>
+                    <a href="mailto:feedback@kuzzle.io">
+                      <!--<i class="fa fa-commenting-o"></i>--> Give your feedback
+                    </a>
                 </li>
                 <li>
-                    <a href="javascript:;" data-toggle="collapse" data-target="#menu-help-issue">
-                        <i class="fa fa-github"></i>
+                    <a href="javascript:;" class="collapsed" data-toggle="collapse" data-target="#menu-help-issue">
+                        <!--<i class="fa fa-github"></i>-->
                         Create an issue
-                        <i class="fa fa-fw fa-caret-up pull-right"></i>
+                        <i class="fa fa-fw fa-caret-down pull-right"></i>
                     </a>
                     <ul id="menu-help-issue" class="collapse submenu2">
                         <li>
-                            <a href="https://github.com/kuzzleio/kuzzle/issues/new" target="_blank"><i class="fa fa-github"></i> Kuzzle</a>
+                            <a href="https://github.com/kuzzleio/kuzzle/issues/new" target="_blank">
+                              <i class="fa fa-github"></i> Kuzzle
+                            </a>
                         </li>
                         <li>
-                            <a href="https://github.com/kuzzleio/kuzzle-bo/issues/new" target="_blank"><i class="fa fa-github"></i> Back-office</a>
+                            <a href="https://github.com/kuzzleio/kuzzle-bo/issues/new" target="_blank">
+                              <i class="fa fa-github"></i> Back-office
+                            </a>
                         </li>
                     </ul>
                 </li>

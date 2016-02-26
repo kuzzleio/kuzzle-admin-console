@@ -1,38 +1,77 @@
 <div  class="view-fade h100 posrel">
-  <headline title="Realtime" subtitle="watch data"></headline>
 
-  <div class="watch-data-container" ng-controller="WatchDataCtrl" ng-init="init()">
+  <div class="container">
+    <div class="watch-data-container" ng-controller="WatchDataCtrl" ng-init="init()">
 
-    <div class="filters-log-container">
-      <div class="filters-container">
-        <h2 class="select-collection">
-            Collection
-            <collections-drop-down-search
-                label=""
-                selected-index="stateParams.index"
-                selected="stateParams.collection"
-                create-label="New collection"
-                items="forms.collections"
-                current-item="stateParams.collection"
-                on-click-create="onCreateCollection(collection, index)"
-                on-click-item="onSelectCollection(item)"
-                placeholder="Find a collection">
-            </collections-drop-down-search>
+      <div class="filters-log-container">
 
-            <div class="btn-group" ng-if="forms.collection">
+        <div class="filters-container">
+          <headline title="Realtime" subtitle="watch data"></headline>
+          <div class="pull-right" style="margin-top: -70px; margin-right: 25px;">
+            <h2 class="select-collection">
+              <collections-drop-down-search
+                      label=""
+                      selected-index="stateParams.index"
+                      selected="stateParams.collection"
+                      create-label="New collection"
+                      items="forms.collections"
+                      current-item="stateParams.collection"
+                      on-click-create="onCreateCollection(collection, index)"
+                      on-click-item="onSelectCollection(item)"
+                      placeholder="Find a collection">
+              </collections-drop-down-search>
+
+              <div class="btn-group" ng-if="forms.collection">
                 <cog-options-collection
-                  current-index="stateParams.index"
-                  collection="forms.collection"
-                  can-edit="true"
-                  after-delete="onDeleteCollection()"
-                  after-empty="onEmptyCollection()">
+                        collection="forms.collection"
+                        current-index="index"
+                        can-edit="true"
+                        can-delete="true"
+                        can-empty="true"
+                        after-delete="onDeleteCollection()"
+                        after-empty="onEmptyCollection()">
                 </cog-options-collection>
-            </div>
-        </h2>
+              </div>
+            </h2>
+          </div>
 
-        <div ui-view="mainView"></div>
+          <div class="clearfix" style="clear: both"></div>
+
+          <div class="container">
+            <div class="row whitespace-top">
+              <div class="col-sm-12">
+                <div ui-view="mainView"></div>
+                <div class="row" ng-if="!forms.collection">
+                  <span class="select-collection-helper helper-realtime">
+                    Hey ! Over here <i class="glyphicon glyphicon-arrow-up"></i>
+                  </span>
+                  <div class="col-sm-4 col-sm-offset-4 text-center" style="
+                        margin-top: 200px;
+                        opacity: 0.4;">
+                    <h3>Select a collection to continue</h3>
+                  </div>
+                </div>
+
+                <messages
+                        class="fixed-right message-log"
+                        collection="forms.collection"
+                        messages="forms.messages"
+                        init-messages="clearMessages()">
+                </messages>
+                <!--<messages
+                        ng-if="forms.collection && canSubscribe"
+                        class="fixed-right message-log"
+                        collection="forms.collection"
+                        messages="forms.messages"
+                        init-messages="clearMessages()">
+                </messages>-->
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="log-spacer"></div>
       </div>
-      <div class="log-spacer"></div>
     </div>
   </div>
 </div>

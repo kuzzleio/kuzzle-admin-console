@@ -21,7 +21,7 @@ module.exports = function () {
 
   this.Then(/^I have a display of "([\d]+)" widgets$/, function (count, callback) {
     browser
-      .waitForVisible('.metrics-row', 1000)
+      .waitForVisible('.metrics-container', 1000)
       .elements('widget')
       .then(elements => {
         assert.equal(elements.value.length, parseInt(count), 'Must have ' + count + ' widgets, get ' + elements.value.length);

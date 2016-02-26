@@ -8,12 +8,12 @@ angular.module('kuzzle.indexes')
     '$window',
     'authorizationApi',
     function ($scope, $stateParams, $state, indexesApi, $window, authorization) {
+      $scope.indexData = indexesApi.data;
+
+      indexesApi.list();
 
       $scope.init = function () {
         $scope.canCreateIndex = authorization.canCreateIndex();
-        $scope.indexData = indexesApi.data;
-
-        indexesApi.list();
       };
 
       $scope.canDeleteIndex = function (index) {
@@ -65,6 +65,10 @@ angular.module('kuzzle.indexes')
         setTimeout(function () {
           $state.go('', {}, {reload: true});
         }, 1000);
+      };
+
+      $scope.cancel = function () {
+        $state.go('indexes.browse');
       };
 
 
