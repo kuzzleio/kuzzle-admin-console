@@ -33,17 +33,15 @@ router.get('/full', function (req, res) {
 // first admin creation
 
 var resetRole = function (roleId) {
-  console.log('rr',userRoles[roleId]);
   return kuzzle
     .security
-    .updateRolePromise(roleId, userRoles[roleId]);
+    .createRolePromise(roleId, userRoles[roleId], {replaceIfExist: true});
 };
 
 var resetProfile = function (profileId, roleId) {
   var data = {
     roles: [ roleId ]
   };
-
   return kuzzle
     .security
     .updateProfilePromise(profileId, data); 
@@ -54,14 +52,12 @@ var createAdminUser = function (username, password) {
     password: password,
     profile: 'admin'
   };
-  console.log('cred',[username, password]);
   return kuzzle
     .security
     .createUserPromise(username, userContent);
 };
 
 router.post('/firstAdmin', function (req, res) {
-console.log('req.body', req.body);
   createAdminUser(req.body.username, req.body.password)
     .then(function () {
       if (req.body.resetroles) {
@@ -103,8 +99,7 @@ console.log('req.body', req.body);
       res.status(200).end();
     })
     .catch(function (err) {
-      console.log(err);
-      res.status(500).end();
+      res.status(500).send(err).end();
     });
 });
 
