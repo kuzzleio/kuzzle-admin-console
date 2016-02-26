@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:0.18.2
+  image: kuzzleio/kuzzle:1.0.0-beta.1
   command: /run-debug.sh
   volumes:
     - "../features/fixtures.json:/fixtures.json"
@@ -32,7 +32,7 @@ kuzzleBo:
     - DEVELOPMENT
 
 redis:
-  image: redis:3.0.2
+  image: redis:3.0
 
 elasticsearch:
-  image: elasticsearch:1.5.2
+  image: elasticsearch:1.7

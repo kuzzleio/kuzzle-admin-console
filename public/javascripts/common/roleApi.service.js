@@ -35,7 +35,7 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        update: function (role, notify, isCreate) {
+        createOrReplace: function (role, notify, isCreate) {
           var
             deferred = $q.defer(),
             messageSuccess,
@@ -45,8 +45,8 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             messageError = 'Error during role creation. Please retry.';
             messageSuccess = 'Role created !';
           } else {
-            messageError = 'Error during role update. Please retry.';
-            messageSuccess = 'Role updated !';
+            messageError = 'Error during role replacement. Please retry.';
+            messageSuccess = 'Role replaced !';
           }
 
           kuzzleSdk.security.createRole(role.id, role.content, {replaceIfExist: true}, function (error, role) {
@@ -61,6 +61,33 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
             if (notify) {
               notification.success(messageSuccess);
+            }
+
+            // We wait 1s to ensure Elastic Search properly indexes the new
+            // role.
+            setTimeout(function () {
+              deferred.resolve(role);
+            }, 1000);
+          });
+
+          return deferred.promise;
+        },
+        update: function (role, notify) {
+          var
+            deferred = $q.defer();
+
+          kuzzleSdk.security.updateRole(role.id, role.content, function (error, role) {
+            if (error) {
+              if (notify) {
+                notification.error('Error during role update. Please retry.');
+              }
+
+              deferred.reject({error: true, message: error});
+              return;
+            }
+
+            if (notify) {
+              notification.success('Role updated !');
             }
 
             // We wait 1s to ensure Elastic Search properly indexes the new

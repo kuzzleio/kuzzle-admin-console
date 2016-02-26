@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:latest
+  image: kuzzleio/kuzzle:1.0.0-beta.1
   volumes:
     - "../features/fixtures.json:/fixtures.json"
   ports:
@@ -12,9 +12,9 @@ kuzzle:
     - redis
   environment:
     - LIKE_A_VIRGIN
+    - FIXTURES=/fixtures.json
     - DEFAULT_MAPPING
     - FEATURE_COVERAGE
-    - FIXTURES=/fixtures.json
 
 kuzzleBo:
   image: kuzzleio/bo-test
@@ -28,11 +28,13 @@ kuzzleBo:
     - "9876:9876"
   links:
     - kuzzle
+    # add link to elasticsearch in order to perform a dump
+    - elasticsearch
   environment:
       - DEBUG_PHANTOM
 
 redis:
-  image: redis:3.0.2
+  image: redis:3.0
 
 elasticsearch:
   image: elasticsearch:1.7

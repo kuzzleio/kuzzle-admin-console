@@ -8,6 +8,10 @@ angular.module('kuzzle.authorization', [])
       };
 
       var hasUser = function (user) {
+        if (!user) {
+          return false;
+        }
+
         return !!user.id;
       };
 
@@ -148,8 +152,17 @@ angular.module('kuzzle.authorization', [])
           }, false);
         },
         canDoAction: function (index, collection, controller, action) {
-          if (!index || !collection || !controller || !action) {
-            throw new Error('[canDeleteCollection] Missing argument');
+          if (!index) {
+            throw new TypeError('[canDoAction] Missing index');
+          }
+          if (!collection) {
+            throw new TypeError('[canDoAction] Missing collection');
+          }
+          if (!controller) {
+            throw new TypeError('[canDoAction] Missing controller');
+          }
+          if (!action) {
+            throw new TypeError('[canDoAction] Missing action');
           }
 
           if (!hasUser(session.user) || !hasRole(session.user)) {

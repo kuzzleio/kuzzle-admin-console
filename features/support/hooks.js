@@ -20,6 +20,48 @@ var hooks = function () {
     cleanDb(callback);
   });
 
+  this.Before('@createFooIndex', function (scenario, callback) {
+    console.log('@createFooIndex');
+
+    var
+      query = {
+        controller: 'admin',
+        action: 'createIndex',
+        index: world.fooIndex
+      },
+      timeoutCallback = function () {
+        setTimeout(() => {
+          callback();
+        }, 1000);
+      };
+
+    world.kuzzle
+      .queryPromise(query, {})
+      .then(timeoutCallback)
+      .catch(timeoutCallback);
+  });
+
+  this.After('@cleanFooIndex', function (scenario, callback) {
+    console.log('@cleanFooIndex');
+
+    var
+      query = {
+        controller: 'admin',
+        action: 'deleteIndex',
+        index: world.fooIndex
+      },
+      timeoutCallback = function () {
+        setTimeout(() => {
+          callback();
+        }, 1000);
+      };
+
+    world.kuzzle
+      .queryPromise(query, {})
+      .then(timeoutCallback)
+      .catch(timeoutCallback);
+  });
+
   this.After('@cleanSecurity', function (scenario, callback) {
     console.log('@cleanSecurity');
     cleanSecurity.call(this, callback);
@@ -195,7 +237,7 @@ var cleanSecurity = function (callback) {
       };
 
       return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle']['roles']});
+        .queryPromise(query, {body: fixtures['%kuzzle'].roles});
     })
     .then(() => {
       var query = {
@@ -206,7 +248,7 @@ var cleanSecurity = function (callback) {
       };
 
       return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle']['profiles']});
+        .queryPromise(query, {body: fixtures['%kuzzle'].profiles});
     })
     .then(() => {
       var query = {
@@ -217,7 +259,7 @@ var cleanSecurity = function (callback) {
       };
 
       return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle']['users']});
+        .queryPromise(query, {body: fixtures['%kuzzle'].users});
     })
     .then(() => {
       callback();

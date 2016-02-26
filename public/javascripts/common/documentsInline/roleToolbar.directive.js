@@ -21,14 +21,19 @@ angular.module('kuzzle.documentsInline')
       };
 
       $scope.saveEditDocument = function () {
-        var role = {};
+        var role = {
+          id: $scope.document.id,
+          content: {}
+        };
 
         try {
-          $scope.document.content = JSON.parse($scope.document.json);
+          role.content = JSON.parse($scope.document.json);
           $scope.document.isEdit = false;
 
-          role = {id: $scope.document.id, content: $scope.document.content};
-          roleApi.update(role, true, false);
+          roleApi.update(role, true)
+            .then(function() {
+              $scope.document.content = angular.extend($scope.document.content, role.content);
+            });
         }
         catch (e) {
           console.error(e);

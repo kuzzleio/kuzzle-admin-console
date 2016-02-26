@@ -9,10 +9,13 @@ angular.module('kuzzle.role')
     'previousState',
     'Notification',
     '$window',
-    function ($scope, $stateParams, roleApi, $state, schema, previousState, notification, $window) {
+    'authorizationApi',
+    function ($scope, $stateParams, roleApi, $state, schema, previousState, notification, $window, authorization) {
 
       $scope.isEdit = false;
       $scope.notFoundError = false;
+      $scope.canCreateOrReplaceRole = false;
+      $scope.canUpdateRole = false;
       $scope.role = {
         id: $stateParams.role,
         content: ''
@@ -20,6 +23,9 @@ angular.module('kuzzle.role')
 
       $scope.init = function (action) {
         var content;
+
+        $scope.canCreateOrReplaceRole = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceRole');
+        $scope.canUpdateRole = authorization.canDoAction('%kuzzle', '*', 'security', 'updateRole');
 
         if (action === 'edit') {
           $scope.isEdit = true;
@@ -51,7 +57,7 @@ angular.module('kuzzle.role')
         $window.history.back();
       };
 
-      $scope.update = function (isCreate) {
+      $scope.create = function () {
         var role = {
           id: $scope.role.id,
           content: {}
@@ -67,7 +73,53 @@ angular.module('kuzzle.role')
           }
         }
 
-        roleApi.update(role, true, isCreate)
+        roleApi.createOrReplace(role, true, true)
+          .then(function () {
+            $state.go('role.browse');
+          });
+      };
+
+      $scope.replace = function () {
+        var role = {
+          id: $scope.role.id,
+          content: {}
+        };
+
+        if ($scope.role.content) {
+          try {
+            role.content = JSON.parse($scope.role.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        if ($window.confirm('You are about to replace role "' + $scope.role.id + '", are you sure ?')) {
+          roleApi.createOrReplace(role, true, false)
+            .then(function () {
+              $state.go('role.browse');
+            });
+        }
+      };
+
+      $scope.update = function () {
+        var role = {
+          id: $scope.role.id,
+          content: {}
+        };
+
+        if ($scope.role.content) {
+          try {
+            role.content = JSON.parse($scope.role.content);
+          }
+          catch (e) {
+            notification.error('Error parsing the role content.');
+            return false;
+          }
+        }
+
+        roleApi.update(role, true)
           .then(function () {
             $state.go('role.browse');
           });

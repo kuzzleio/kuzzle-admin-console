@@ -22,11 +22,13 @@ angular.module('kuzzle.profile')
               '/javascripts/common/documentsInline/documentsInline.directive.js',
               '/javascripts/profile/browse.ctrl.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js'
-            ]).then(function () {
-              return $ocLazyLoad.load([
-                '/javascripts/common/documentsInline/profileToolbar.directive.js',
-              ]);
-            });
+            ])
+              .then(function () {
+                return $ocLazyLoad
+                  .load([
+                    '/javascripts/common/documentsInline/profileToolbar.directive.js'
+                  ]);
+              });
           }]
         }
       })

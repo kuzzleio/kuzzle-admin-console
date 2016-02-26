@@ -4,32 +4,86 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.Given(/^I am on browse data page$/, function (callback) {
+  this.When(/^I am on browse data page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/storage/browse')
       .call(callback);
   });
 
-  this.Given(/^I am on browse data page with an wrong index$/, function (callback) {
+  this.When(/^I am on browse data page with an wrong index$/, function (callback) {
     browser
       .url('/#/notexist/storage/browse')
       .call(callback);
   });
-  this.Given(/^I go to collection browse page$/, function (callback) {
+
+  this.When(/^I go to collection browse page$/, function (callback) {
     browser
       .url('/#/' + world.index + '/collection/browse')
       .call(callback);
   });
+
+  this.When(/^I am on browse collection page$/, function (callback) {
+    browser
+      .url('/#/' + world.index + '/collection/browse')
+      .call(callback);
+  });
+
   this.When(/^I click on add document button$/, function (callback) {
     browser
       .click('[ng-controller="StorageBrowseDocumentsCtrl"] .create button')
       .call(callback);
   });
+
   this.When(/^I click on the cog$/, function (callback) {
     browser
       // This is quite worrying: I have to click on the deepest element if I
       // want something to happen.
-      .click('.select-collection cog-options-collection span.dropdown small.dropdown')
+      .click('.select-collection cog-options-collection .dropdown-toggle')
+      .call(callback);
+  });
+
+  this.When(/^I am on page for create document$/, function (callback) {
+     browser
+       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
+       .call(callback);
+  });
+
+  this.When(/^I click on add attribute button$/, function (callback) {
+    browser
+      .click('add-attribute button')
+      .call(callback);
+  });
+
+  this.When(/^I add the new attribute$/, function (callback) {
+    browser
+      .click('.modal-footer .add-attribute')
+      .call(callback);
+  });
+
+  this.When(/^I click on collection "([^"]+)"$/, function (collectionName, callback) {
+    var selectedCollection = null;
+    browser
+      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
+      .getText('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .then(text => {
+        selectedCollection = text;
+      })
+      .click('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
+      .pause(200)
+      .getText('collections-drop-down-search .dropdown-toggle')
+      .then(text => {
+        assert.equal(
+          text,
+          selectedCollection,
+          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
+        );
+      })
+      .call(callback);
+  });
+
+  this.When(/^I am on browse data page for collection "([^"]*)"$/, function (collection, callback) {
+    browser
+      .url('/#/' + world.index + '/storage/browse/' + collection)
       .call(callback);
   });
 
@@ -43,12 +97,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Given(/^I am on page for create document$/, function (callback) {
-     browser
-       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
-       .call(callback);
-   });
-
   this.Then(/^I have an id input$/, function (callback) {
     browser
       .waitForVisible('[ng-controller="StorageFullCtrl"] input[ng-model="document.id"]', 1000)
@@ -61,7 +109,7 @@ module.exports = function () {
        .call(callback);
    });
 
-  this.Then(/^I delete the last element in list and I cancel$/, function (callback) {
+  this.When(/^I delete the last element in list and I cancel$/, function (callback) {
     browser
       .waitForVisible('documents-inline :last-child .panel .edit.dropdown-toggle', 1000)
       .click('documents-inline :last-child .panel .edit.dropdown-toggle')
@@ -76,7 +124,7 @@ module.exports = function () {
       });
   });
 
-  this.Then(/^I delete the last element in list$/, function (callback) {
+  this.When(/^I delete the last element in list$/, function (callback) {
     browser
       .waitForVisible('documents-inline :last-child .panel .edit.dropdown-toggle', 1000)
       .click('documents-inline :last-child .panel .edit.dropdown-toggle')
@@ -89,11 +137,26 @@ module.exports = function () {
       });
   });
 
-  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
+  this.When(/^I go to the page for edit document "([^"]*)"$/, function (id, callback) {
     browser
       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id)
-      .waitForVisible('form fieldset', 1000)
+      .waitForVisible('form fieldset', 10000)
+      .pause(1500)
+      .call(callback);
+  });
+
+  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
+    browser
       .pause(500)
+      .getUrl()
+      .then(url => {
+        var expectedUrl = world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id;
+        var urlRegexp = new RegExp(expectedUrl, 'g');
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
       .call(callback);
   });
 
@@ -114,7 +177,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I click on edit-inline button of "([^"]*)" document$/, function (id, callback) {
+  this.When(/^I click on edit-inline button of "([^"]*)" document$/, function (id, callback) {
     browser
       .waitForVisible('documents-inline #' + id + ' .edit-inline', 1000)
       .click('documents-inline #' + id + ' .edit-inline')
@@ -131,18 +194,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I click on add attribute button$/, function (callback) {
-    browser
-      .click('add-attribute button')
-      .call(callback);
-  });
-
-  this.Then(/^I add the new attribute$/, function (callback) {
-    browser
-      .click('.modal-footer .add-attribute')
-      .call(callback);
-  });
-
   this.Then(/^I am on collection browse page$/, function (callback) {
     browser
       .waitForVisible('.storage-browse .create', 1000)
@@ -153,17 +204,20 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I click on the first collection in browse document page$/, function (callback) {
+  this.Then(/^I click on the collection "([^"]*)" in collections list$/, function (id, callback) {
     browser
       .pause(500)
-      .waitForVisible('span.collection-name:first-of-type', 1000)
-      .click('span.collection-name:first-of-type')
+      .waitForVisible('.list-collections #' + id, 1000)
+      .click('.list-collections #' + id + ' h3 span.collection-name')
       .call(callback);
   });
 
-  this.Given(/^I am on browse document page$/, function (callback) {
+  this.Then(/^I am on browse document page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/storage/' + world.collections[0])
+      .getUrl()
+      .then(url => {
+        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/browse/' + world.collections[0]);
+      })
       .call(callback);
   });
 
@@ -194,28 +248,6 @@ module.exports = function () {
           assert(elements.value.length !== 0,
             'Expected to find the cog, but found none.');
         }
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I click on collection "([^"]+)"$/, function (collectionName, callback) {
-    var selectedCollection = null;
-
-    browser
-      .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
-      .getText('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
-      .then(text => {
-        selectedCollection = text;
-      })
-      .click('collections-drop-down-search .dropdown-menu #collection-' + collectionName + ' a')
-      .pause(200)
-      .getText('collections-drop-down-search .dropdown-toggle')
-      .then(text => {
-        assert.equal(
-          text,
-          selectedCollection,
-          'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
-        );
       })
       .call(callback);
   });

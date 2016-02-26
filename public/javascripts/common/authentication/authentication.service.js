@@ -11,6 +11,8 @@ angular.module('kuzzle.authentication')
     var authService = {};
 
     var onLoginSuccess = function (broadcastEvent) {
+      var deferred = $q.defer();
+
       kuzzle.whoAmI(function (err, res) {
         if (err || !res) {
           console.error('Unable to retrieve user information', err);
@@ -25,18 +27,20 @@ angular.module('kuzzle.authentication')
           Session.setProfile(res.content.profile);
           Session.setUser(res);
         }
+
+        deferred.resolve(true);
+
+        if (broadcastEvent) {
+          $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+        }
+
       });
       Session.create(kuzzle.jwtToken);
 
-      if (broadcastEvent) {
-        $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-      }
+      return deferred.promise;
     };
 
-    var onLoginFailed = function (err) {
-      if (err) {
-        console.error('Authentication error.', err.message);
-      }
+    var onLoginFailed = function () {
       $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
     };
 
@@ -52,8 +56,10 @@ angular.module('kuzzle.authentication')
           onLoginFailed(err);
           deferred.reject(err);
         } else {
-          onLoginSuccess(true);
-          deferred.resolve(true);
+          onLoginSuccess(true)
+            .then(function (value) {
+              deferred.resolve(value);
+            });
         }
       });
 
@@ -76,7 +82,7 @@ angular.module('kuzzle.authentication')
       } else {
         if (Session.resumeFromCookie()) {
           kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
-            if (error || response.result.valid === false) {
+            if (error || response.valid === false) {
               onLoginFailed(error);
               deferred.reject({
                 type: 'NOT_AUTHENTICATED',
@@ -85,8 +91,10 @@ angular.module('kuzzle.authentication')
             }
 
             kuzzle.setJwtToken(Session.session.jwtToken);
-            onLoginSuccess(false);
-            deferred.resolve(true);
+            onLoginSuccess(false)
+              .then(function (value) {
+                deferred.resolve(value);
+              });
           });
         } else {
           deferred.reject({

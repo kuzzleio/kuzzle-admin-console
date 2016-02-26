@@ -34,7 +34,8 @@ World = {
   baseUrl: wdio.config.baseUrl,
   documents: documents,
   users: users,
-  idPrefix: 'kuzzle-bo-'
+  idPrefix: 'kuzzle-bo-',
+  fooIndex: 'index-foo'
 };
 
 module.exports = World;
