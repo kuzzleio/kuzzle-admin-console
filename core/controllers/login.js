@@ -9,10 +9,10 @@ router.get('/', function(req, res) {
     .dataCollectionFactory('%kuzzle', 'users')
     .fetchAllDocumentsPromise()
     .then(function (result) {
-      if (result.total > 0) {
-        // there are users already, lets allow them to login
-        return res.render('login/index');
-      }
+      // if (result.total > 0) {
+      //   // there are users already, lets allow them to login
+      //   return res.render('login/index');
+      // }
       // if there are no users, we should create one
       return res.render('user/firstAdmin');
     })

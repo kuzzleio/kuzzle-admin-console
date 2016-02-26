@@ -1,5 +1,6 @@
 {
   "admin": {
+    "_id": "admin",
     "indexes": {
       "_canCreate": true,
       "*": {
@@ -37,6 +38,7 @@
     }
   },
   "anonymous": {
+    "_id": "anonymous",
     "indexes": {
       "_canCreate": false,
       "*": {
@@ -59,6 +61,7 @@
     }
   },
   "default": {
+    "_id": "default",
     "indexes": {
       "_canCreate": false,
       "*": {

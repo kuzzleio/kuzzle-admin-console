@@ -35,6 +35,7 @@ angular.module('kuzzle.firstAdmin')
     };
 
     $scope.createFirstAdmin = function (credentials) {
+
       if (!credentials || !credentials.username || !credentials.passworda) {
         $scope.message = 'Please, provide a valid username and password.';
         return;
@@ -57,13 +58,20 @@ angular.module('kuzzle.firstAdmin')
         return;
       }
 
-      FirstAdminService.create({username: credentials.username, password: credentials.passworda}).then(function (user) {
-        $window.location.reload();
-      },
-      function (error) {
-        $scope.message = 'Something really wrong just happend... look at the console...';
-        console.log(error);
-      });
+      FirstAdminService.create({
+        username: credentials.username, 
+        password: credentials.passworda , 
+        resetroles: credentials.resetroles
+      })
+        .then(
+          function (user) {
+            $window.location.reload();
+          },
+          function (error) {
+            $scope.message = 'Something really wrong just happend... look at the console...';
+            console.log(error);
+          }
+        );
     };
   }
 ]);

@@ -1,10 +1,10 @@
 var
   express = require('express'),
   router = express.Router(),
-  request = require('request-promise'),
   q = require('q'),
   rc = require('rc'),
-  userRoles = rc('roles');
+  userRoles = rc('roles'),
+  kuzzle = require('../services/kuzzle')();
 
 router.get('/', function(req, res) {
 
@@ -33,45 +33,35 @@ router.get('/full', function (req, res) {
 // first admin creation
 
 var resetRole = function (roleId) {
-  return request({
-    method: 'PUT',
-    uri: 'http://kuzzle:7511/api/1.0/roles/' + roleId,
-    body: userRoles[roleId],
-    json: true
-  });
+  console.log('rr',userRoles[roleId]);
+  return kuzzle
+    .security
+    .updateRolePromise(roleId, userRoles[roleId]);
 };
 
 var resetProfile = function (profileId, roleId) {
   var data = {
-    _id: profileId,
     roles: [ roleId ]
   };
 
-  return request({
-    method: 'PUT',
-    uri: 'http://kuzzle:7511/api/1.0/profiles/' + profileId,
-    body: data,
-    json: true
-  });  
+  return kuzzle
+    .security
+    .updateProfilePromise(profileId, data); 
 };
 
 var createAdminUser = function (username, password) {
-  var data = {
-    _id: username,
+  var userContent = {
     password: password,
     profile: 'admin'
   };
-
-  return request({
-    method: 'POST',
-    uri: 'http://kuzzle:7511/api/1.0/users/_create',
-    body: data,
-    json: true
-  });
+  console.log('cred',[username, password]);
+  return kuzzle
+    .security
+    .createUserPromise(username, userContent);
 };
 
 router.post('/firstAdmin', function (req, res) {
-
+console.log('req.body', req.body);
   createAdminUser(req.body.username, req.body.password)
     .then(function () {
       if (req.body.resetroles) {
@@ -113,7 +103,8 @@ router.post('/firstAdmin', function (req, res) {
       res.status(200).end();
     })
     .catch(function (err) {
-      res.status(err.statusCode).end();
+      console.log(err);
+      res.status(500).end();
     });
 });
 
