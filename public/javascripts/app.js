@@ -80,7 +80,7 @@ angular.module('kuzzle', [
                       deferred.resolve();
                     })
                     .catch(function () {
-                      deferred.reject();
+                      deferred.reject({ type: 'NOT_AUTHENTICATED' });
                     });
                 });
               });
@@ -129,7 +129,7 @@ angular.module('kuzzle', [
     });
 
     $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, error) {
-      if (error.type === 'NOT_AUTHENTICATED') {
+      if (error && error.type === 'NOT_AUTHENTICATED') {
         AuthService.setNextRoute(toState.name, toParams);
         $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       }
