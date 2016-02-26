@@ -67,6 +67,10 @@ angular.module('kuzzle.indexes')
         }, 1000);
       };
 
+      $scope.cancel = function () {
+        $state.go('indexes.browse');
+      };
+
 
     }]
 );
