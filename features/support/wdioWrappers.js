@@ -12,10 +12,10 @@ module.exports = {
 
   searchItemInList: function (browser, not, itemName, callback) {
     browser
-      .waitForVisible('documents-inline .row.documents .document-id span', 1000)
+      .waitForVisible('documents-inline .documents .document-id', 1000)
       .then(() => {
         browser
-        .getText('documents-inline .row.documents .document-id span')
+        .getText('documents-inline .documents .document-id')
         .then(el => {
           if (not) {
             assert(
@@ -31,17 +31,15 @@ module.exports = {
         })
         .call(callback);
       }, error => {
-        if (not) {
-          browser.call(callback);
-        }
+        callback(error);
       });
   },
 
   deleteItemInList: function (browser, itemType, itemName, callback) {
     browser
-      .waitForVisible('documents-inline .row.documents #'+ itemName +' ' + itemType + '-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents #'+ itemName +' ' + itemType + '-toolbar .edit-document.dropdown-toggle')
-      .click('documents-inline .row.documents #'+ itemName +' ' + itemType + '-toolbar .dropdown-menu .delete-document')
+      .waitForVisible('documents-inline .documents #'+ itemName +' ' + itemType + '-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .documents #'+ itemName +' ' + itemType + '-toolbar .edit-document.dropdown-toggle')
+      .click('documents-inline .documents #'+ itemName +' ' + itemType + '-toolbar .dropdown-menu .delete-document')
       .pause(500)
       .setValue('.modal-dialog input', itemName)
       // Sometimes it takes a _lot_ of time for PhantomJS to take the keystrokes

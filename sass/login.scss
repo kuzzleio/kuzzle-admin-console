@@ -2,6 +2,14 @@
   margin-top: 50px;
 
   .login-container {
+    background: #FFF;
+    box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.15);
+    padding: 35px;
+  }
+
+  .login-form-container {
     margin-top: 20px;
+    border-top: solid 1px #EEE;
+    padding-top: 20px;
   }
 }

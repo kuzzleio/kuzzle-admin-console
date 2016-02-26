@@ -64,17 +64,19 @@ module.exports = function () {
   });
 
   this.Then(/^The button "([^"]*)" is ?(not)* disabled$/, function (id, not, callback) {
-    browser
-      .getAttribute('#' + id, 'disabled')
-      .then(function(value) {
-        if (not) {
-          assert.equal(value, null);
-        }
-        else {
+    if (not) {
+      browser
+        .waitForEnabled('#' + id, 5000)
+        .call(callback);
+    }
+    else {
+      browser
+        .getAttribute('#' + id, 'disabled')
+        .then(function(value) {
           assert.equal(value, 'true');
-        }
-      })
-      .call(callback);
+        })
+        .call(callback);
+    }
   });
 
   this.Then(/^The input "([^"]*)" is ?(not)* disabled$/, function (name, not, callback) {

@@ -4,53 +4,59 @@
             <div class="row">
                 <!-- title col -->
                 <!-- collection/documents -->
-                <div class="col-sm-2 document-id ellipsis"
+                <div class="col-sm-2 ellipsis"
                      ng-if="collection"
                      uib-popover="{{document.id}}" popover-placement="top" popover-animation="false">
-                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
                 <!-- /collection/documents -->
 
                 <!-- roles -->
-                <div class="col-sm-2 document-id ellipsis"
+                <div class="col-sm-2 ellipsis"
                      ng-if="role">
-                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
                 <!-- /roles -->
 
                 <!-- profiles -->
-                <div class="col-sm-1 document-id ellipsis" ng-if="profile">
-                    <span class="" title="Display the whole ID" ng-bind="document.id"></span>
+                <div class="col-sm-2 ellipsis" ng-if="profile">
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
 
-                <div class="col-sm-1" ng-if="profile">
+                <div class="col-sm-2" ng-if="profile">
                     <div class="btn-group-vertical btn-group-xs roles-list">
-                        <button type="button" class="btn btn-default"
+                        <a type="button" class="btn btn-default ellipsis"
                                 ng-repeat="role in document.content.roles"
                                 ui-sref="role.full({role: role})"
-                                ng-bind="role">
-                        </button>
+                                ng-bind="role"></a>
                     </div>
                 </div>
                 <!-- /profiles -->
 
                 <!-- users -->
-                <div class="col-sm-1 document-id ellipsis" ng-if="user">
-                    <span title="Display the whole ID" ng-bind="document.id"></span>
+                <div class="col-sm-2 ellipsis" ng-if="user">
+                    <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
                 </div>
 
-                <div class="col-sm-1" ng-if="user">
+                <div class="col-sm-2" ng-if="user">
                     <div class="btn-group-vertical btn-group-xs profiles-list">
-                        <button type="button" class="btn btn-default"
+                        <a type="button" class="btn btn-default ellipsis"
                                 ui-sref="profile.full({profile: document.content.profile})"
-                                ng-bind="document.content.profile"></button>
+                                ng-bind="document.content.profile"></a>
                     </div>
                 </div>
                 <!-- users -->
                 <!-- /title col -->
+
                 <!-- edit col -->
-                <div class="col-sm-8">
+                <div class="col-sm-9" ng-if="collection || role">
                     <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
+
+                    <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
+                </div>
+                <div class="col-sm-7" ng-if="profile || user">
+                    <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
+
                     <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
                 </div>
                 <!-- /edit col -->

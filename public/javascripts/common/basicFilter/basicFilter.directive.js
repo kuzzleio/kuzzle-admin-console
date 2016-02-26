@@ -1,13 +1,22 @@
 angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
 
   .controller('BasicFilterCtrl', ['$scope', 'schema', function ($scope, schema) {
+    var count = function() {
+      $scope.count = 0;
+
+      angular.forEach($scope.filters, function (value, key) {
+        $scope.count += value.and.length;
+      });
+    };
 
     $scope.formattedFilter = [];
 
     $scope.fields = [];
+    $scope.count = 0;
 
     $scope.addAndTerm = function (index) {
       $scope.filters[index].and.push({field: null, equal: $scope.comparators[0], value: null});
+      count();
     };
 
     $scope.addOr = function () {
@@ -16,6 +25,7 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
           {field: null, equal: $scope.comparators[0], value: null}
         ]
       });
+      count();
     };
 
     $scope.removeTerm = function (groupIndex, termIndex) {
@@ -31,6 +41,7 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
       if ($scope.filters[groupIndex].and.length === 0) {
         $scope.filters.splice(groupIndex, 1);
       }
+      count();
     };
 
     var getFields = function () {
@@ -64,6 +75,7 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
     };
 
     getFields();
+    count();
 
     /** WATCHERS **/
     $scope.$watch('collection', function () {

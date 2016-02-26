@@ -16,22 +16,22 @@ module.exports = function () {
 
   this.When(/^I click the full view edit button of the last profiles$/, function (callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child .icons a.edit-document.full-view', 1000)
-      .click('documents-inline .row.documents:last-child .icons a.edit-document.full-view')
+      .waitForVisible('documents-inline .documents:last-child .icons a.edit-document.full-view', 1000)
+      .click('documents-inline .documents:last-child .icons a.edit-document.full-view')
       .call(callback);
   });
 
   this.When(/^I click the inline edit button of the last profile$/, function (callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child .icons .edit-document.edit-inline', 1000)
-      .click('documents-inline .row.documents:last-child .icons .edit-document.edit-inline')
+      .waitForVisible('documents-inline .documents:last-child .icons .edit-document.edit-inline', 1000)
+      .click('documents-inline .documents:last-child .icons .edit-document.edit-inline')
       .call(callback);
   });
 
   this.When(/^I click the save button of the last profile$/, function (callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .edit-document.text-success', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .edit-document.text-success')
+      .waitForVisible('documents-inline .documents:last-child profile-toolbar .edit-document.text-success', 1000)
+      .click('documents-inline .documents:last-child profile-toolbar .edit-document.text-success')
       .call(callback);
   });
 
@@ -44,10 +44,10 @@ module.exports = function () {
 
   this.When(/^I click the clone button of the last profile$/, function (callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .edit-document.dropdown-toggle')
-      .waitForVisible('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .clone-document', 1000)
-      .click('documents-inline .row.documents:last-child profile-toolbar .dropdown-menu .clone-document')
+      .waitForVisible('documents-inline .documents:last-child profile-toolbar .edit-document.dropdown-toggle', 1000)
+      .click('documents-inline .documents:last-child profile-toolbar .edit-document.dropdown-toggle')
+      .waitForVisible('documents-inline .documents:last-child profile-toolbar .dropdown-menu .clone-document', 1000)
+      .click('documents-inline .documents:last-child profile-toolbar .dropdown-menu .clone-document')
       .call(callback);
   });
 
@@ -64,14 +64,14 @@ module.exports = function () {
 
   this.When(/^I click on the first role on the roles list associated to a profile$/, function(callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child .roles-list button:first-of-type', 1000)
-      .click('documents-inline .row.documents:last-child .roles-list button:first-of-type')
+      .waitForVisible('documents-inline .documents:last-child .roles-list a:first-of-type', 1000)
+      .click('documents-inline .documents:last-child .roles-list a:first-of-type')
       .call(callback);
   });
 
   this.Then(/^I see the inline editor of the last profile$/, function (callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child json-edit', 1000)
+      .waitForVisible('documents-inline .documents:last-child json-edit', 1000)
       .call(callback);
   });
 
@@ -157,7 +157,7 @@ module.exports = function () {
 
   this.Then(/^I can see the roles list associated to a profile$/, function(callback) {
     browser
-      .waitForVisible('documents-inline .row.documents:last-child .roles-list', 1000)
+      .waitForVisible('documents-inline .documents:last-child .roles-list', 1000)
       .call(callback);
   });
 };
