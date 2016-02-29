@@ -128,7 +128,7 @@ angular.module('kuzzle', [
     });
 
     $rootScope.$on(AUTH_EVENTS.notAuthenticated, function () {
-      $state.go('login');
+      $state.go('login', {}, {reload: true});
     });
 
     $rootScope.$on(AUTH_EVENTS.loginSuccess, function () {

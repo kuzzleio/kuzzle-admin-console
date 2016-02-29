@@ -163,6 +163,7 @@ var deleteUsers = function (callback) {
       if (indexes.indexOf('%kuzzle') === -1) {
         return q.reject(new ReferenceError('%kuzzle index not found'));
       }
+      return q();
     })
     .then(() => {
       var query = {

@@ -5,50 +5,53 @@
 <div class="view-fade container login-page">
   <div class="row">
     <div class="col-xs-4 col-xs-push-4">
-      <img src="images/logo/kuzzle.svg" class="img-responsive" />
       <div class="login-container">
+      
+        <img src="images/logo/kuzzle.svg" class="img-responsive" />
+        <div class="login-form-container">
 
-        <iframe src="/login/sink" name="sink" style="display:none"></iframe>
+          <iframe src="/login/sink" name="sink" style="display:none"></iframe>
 
-        <form name="loginForm"
-              action="/login/sink" target="sink" method="post"
-              ng-controller="FirstAdminController"
-              ng-submit="createFirstAdmin(credentials)"
-              novalidate fa-form-autofill-fix>
+          <form name="loginForm"
+                action="/login/sink" target="sink" method="post"
+                ng-controller="FirstAdminController"
+                ng-submit="createFirstAdmin(credentials)"
+                novalidate fa-form-autofill-fix>
 
-          <h3>First admin account creation</h3>
-          <p>Your Kuzzle server does not have any admin account yet.<br>This form allows you to create one.</p>
+            <h3>First admin account creation</h3>
+            <p>Your Kuzzle server does not have any admin account yet.<br>This form allows you to create one.</p>
 
-          <div ng-if="message" ng-bind="message" class="alert alert-warning"></div>
+            <div ng-if="message" ng-bind="message" class="alert alert-warning"></div>
 
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" name="username" class="form-control" placeholder="Username"
-                   ng-model="credentials.username" required>
-            <p class="help-block">Tip: avoid to use "admin" or "root" as a username.</p>
-          </div>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" name="username" class="form-control" placeholder="Username"
+                     ng-model="credentials.username" required>
+              <p class="help-block">Tip: avoid to use "admin" or "root" as a username.</p>
+            </div>
 
-          <div class="form-group">
-            <label for="passworda">Password</label>
-            <input type="password" name="passworda" class="form-control" placeholder="Password"
-                   ng-model="credentials.passworda" required>
-            <p class="help-block">Tip: mix lowercase and uppcase letters, digits and special chars. Avoid using spaces or tabs.</p>
-          </div>
+            <div class="form-group">
+              <label for="passworda">Password</label>
+              <input type="password" name="passworda" class="form-control" placeholder="Password"
+                     ng-model="credentials.passworda" required>
+              <p class="help-block">Tip: mix lowercase and uppcase letters, digits and special chars. Avoid using spaces or tabs.</p>
+            </div>
 
-          <div class="form-group">
-            <label for="passwordb">Password (confirmation)</label>
-            <input type="password" name="passwordb" class="form-control" placeholder="Password"
-                   ng-model="credentials.passwordb" required>
-          </div>
+            <div class="form-group">
+              <label for="passwordb">Password (confirmation)</label>
+              <input type="password" name="passwordb" class="form-control" placeholder="Password"
+                     ng-model="credentials.passwordb" required>
+            </div>
 
-          <div class="form-group">
-            <label for="resetroles">Reset the admin, default and anonymous ?</label>
-            <input type="checkbox" name="resetroles" ng-model="credentials.resetroles">
-          </div>
+            <div class="form-group">
+              <label for="resetroles">Reset the admin, default and anonymous ?</label>
+              <input type="checkbox" name="resetroles" ng-model="credentials.resetroles">
+            </div>
 
-          <button class="btn btn-primary" type="submit">Create the account</button>
+            <button class="btn btn-primary" type="submit">Create the account</button>
 
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>

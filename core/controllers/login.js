@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
         return res.render('login/index');
       }
       //if there are no users, we should create one
-      return res.render('user/firstAdmin');
+      return res.redirect('user/firstAdmin');
     })
     .catch(function () {
       // we probably do not have the right to list users,

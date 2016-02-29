@@ -57,6 +57,29 @@ var createAdminUser = function (username, password) {
     .createUserPromise(username, userContent);
 };
 
+router.get('/firstAdmin', function (req, res) {
+
+  kuzzle
+    .dataCollectionFactory('%kuzzle', 'users')
+    .fetchAllDocumentsPromise()
+    .then(function (result) {
+      if (result.total > 0) {
+        // there are users already, lets allow them to login
+        return res.redirect('login/index');
+      }
+      //if there are no users, we should create one
+      return res.render('user/firstAdmin');
+    })
+    .catch(function () {
+      // we probably do not have the right to list users,
+      // so the rights have been reseted
+      // we show the login page
+      return res.redirect('login/index');
+    });
+
+});
+
+
 router.post('/firstAdmin', function (req, res) {
   createAdminUser(req.body.username, req.body.password)
     .then(function () {

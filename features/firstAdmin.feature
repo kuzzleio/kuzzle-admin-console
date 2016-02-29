@@ -1,4 +1,4 @@
-Feature: Test firstAdmin
+Feature: Test firstAdmin (must be the last one)
 
   @deleteUsers
   Scenario: Create the first admin with bad password.
@@ -12,7 +12,6 @@ Feature: Test firstAdmin
     Then I see the first admin creation page
     And I create the admin account as "firstAdmin"
 
-  @cleanSecurity
   Scenario: Log as the just created firstAdmin account.
     Given I go to the login page
     Then I see the login page
