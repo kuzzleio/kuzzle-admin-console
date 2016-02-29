@@ -20,9 +20,9 @@ documents[fixtures[index]['kuzzle-bo-test'][2].index._id] = fixtures[index]['kuz
 users['admin'] = fixtures['%kuzzle']['users'][1];
 users['dummy'] = fixtures['%kuzzle']['users'][3];
 users['standard'] = fixtures['%kuzzle']['users'][5];
-users['firstAdminWithBadPassword'] = {_id: 'firstAdmin', clearPassword: 'test'};
-users['firstAdmin'] = {_id: 'firstAdmin', clearPassword: 'testtest'};
-users['existingAdmin'] = {_id: fixtures['%kuzzle']['users'][1]._id, clearPassword: 'testtest'};
+users['firstAdminWithBadPassword'] = {username: 'firstAdmin', clearPassword: 'test'};
+users['firstAdmin'] = {username: 'firstAdmin', clearPassword: 'testtest'};
+users['existingAdmin'] = {username: fixtures['%kuzzle']['users'][1].username, clearPassword: 'testtest'};
 
 World = {
   index: index,

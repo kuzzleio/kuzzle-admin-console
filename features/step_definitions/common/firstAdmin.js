@@ -30,7 +30,7 @@ module.exports = function () {
     }
 
     browser
-      .setValue('[name=username]', world.users[user]._id)
+      .setValue('[name=username]', world.users[user].username)
       .setValue('[name=passworda]', world.users[user].clearPassword)
       .setValue('[name=passwordb]', world.users[user].clearPassword)
       .click('[type=submit]')

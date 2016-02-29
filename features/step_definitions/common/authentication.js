@@ -31,7 +31,7 @@ module.exports = function () {
       .setValue('[name=username]', world.users[user].username)
       .setValue('[name=password]', world.users[user].clearPassword)
       .click('[type=submit]')
-      .waitForVisible('.navbar-brand', 3000)
+      .waitForVisible('.navbar-brand', 20000)
       .pause(1000)
       .call(callback);
   });
