@@ -1,7 +1,9 @@
 angular.module('kuzzle.indexesDropDownSearch', [])
   .controller('indexesDropDownSearchCtrl', [
     '$scope',
-    function ($scope) {
+    '$state',
+    '$stateParams',
+    function ($scope, $state, $stateParams) {
       $scope.isOpen = false;
 
       $scope.onPressEnter = function () {
@@ -10,6 +12,16 @@ angular.module('kuzzle.indexesDropDownSearch', [])
         $scope.search = '';
         $scope.onClickItem({item: $scope.selectedIndex});
       };
+
+      $scope.onClickItemProxy = function(item) {
+        if ($state.current.name == 'storage') {
+          $stateParams.index = item.item;
+          $state.transitionTo('storage.browse', $stateParams);
+          return;
+        }
+
+        $scope.onClickItem(item);
+      }
     }
   ])
   .directive('indexesDropDownSearch', function () {
@@ -17,6 +29,7 @@ angular.module('kuzzle.indexesDropDownSearch', [])
       restrict: 'E',
       scope: {
         label: '@',
+        showSelector: '=',
         selectedIndex: '=',
         createLabel: '@',
         createLink: '@',

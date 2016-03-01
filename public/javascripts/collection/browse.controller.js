@@ -14,6 +14,7 @@ angular.module('kuzzle.collection')
       $scope.index = $stateParams.index;
       $scope.canCreateCollection = authorization.canCreateCollection($stateParams.index);
 
+
       $scope.init = function () {
         collectionApi.list()
           .then(function (response) {

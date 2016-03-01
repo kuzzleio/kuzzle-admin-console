@@ -8,6 +8,11 @@ angular.module('kuzzle.indexes')
         url: '/indexes',
         views: {
           'bodyView': { templateUrl: '/indexes' }
+        },
+        resolve: {
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = false;
+          }]
         }
       })
       .state('indexes.browse', {

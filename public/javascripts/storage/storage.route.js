@@ -5,7 +5,7 @@ angular.module('kuzzle.storage')
     $stateProvider
       .state('storage', {
         parent: 'logged',
-        url: '/:index/storage',
+        url: '/storage/:index',
         views: {
           bodyView: { templateUrl: '/storage' }
         },
@@ -15,16 +15,8 @@ angular.module('kuzzle.storage')
               '/javascripts/collection/collectionsDropDownSearch/collectionsDropDownSearch.directive.js'
             ]);
           }],
-          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
-              .then(function (exist) {
-                if (!exist) {
-                  $state.go('indexes.browse');
-                }
-                else {
-                  indexesApi.select($stateParams.index);
-                }
-              });
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = true;
           }]
         }
       })
@@ -39,6 +31,17 @@ angular.module('kuzzle.storage')
               '/javascripts/storage/browse.controller.js',
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (exist) {
+                  indexesApi.select($stateParams.index);
+                }
+                else {
+                  $state.go('storage')
+                }
+              });
           }]
         }
       })

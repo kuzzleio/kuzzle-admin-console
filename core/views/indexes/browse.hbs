@@ -42,7 +42,9 @@
                                       <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Go to full view"></span>
 
                                       <span class="pull-right">
-                                          <span class="glyphicon glyphicon-th-list" ng-click="browseCollection(index)" title="Go to collections list"></span>
+                                          <a ui-sref="collection.browse({index: index})" title="Browse collections">
+                                            <span class="fa fa-table" style="font-size: 0.8em;color: #777;"></span>
+                                          </a>
                                           <cog-options-indexes
                                               index="index"
                                               can-edit="false"

@@ -5,7 +5,7 @@ angular.module('kuzzle.realtime')
     $stateProvider
       .state('realtime', {
         parent: 'logged',
-        url: '/:index/realtime',
+        url: '/realtime/:index',
         views: {
           bodyView: { templateUrl: '/realtime' }
         },
@@ -32,13 +32,14 @@ angular.module('kuzzle.realtime')
               });
           }],
           index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
+            indexesApi.data.showSelector = true;
+            indexesApi.isSelectedIndexValid($stateParams.index)
               .then(function (exist) {
-                if (!exist) {
-                  $state.go('indexes.browse');
+                if (exist) {
+                  indexesApi.select($stateParams.index);
                 }
                 else {
-                  indexesApi.select($stateParams.index);
+                  $state.go('storage')
                 }
               });
           }]

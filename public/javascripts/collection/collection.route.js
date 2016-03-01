@@ -5,19 +5,21 @@ angular.module('kuzzle.collection')
     $stateProvider
       .state('collection', {
         parent: 'logged',
-        url: '/:index/collection',
+        url: '/collection/:index',
         views: {
           bodyView: { templateUrl: '/collection' }
         },
         resolve: {
-          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
+          index: ['$ocLazyLoad', '$stateParams', '$state', 'indexesApi', function($ocLazyLoad, $stateParams, $state, indexesApi) {
+            indexesApi.data.showSelector = true;
+            indexesApi.isSelectedIndexValid($stateParams.index)
               .then(function (exist) {
                 if (!exist) {
-                  $state.go('indexes.browse');
+                  console.log('notExist', $state.current);
                 }
                 else {
                   indexesApi.select($stateParams.index);
+                  $state.go('collection.browse', $stateParams);
                 }
               });
           }]
