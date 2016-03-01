@@ -20,7 +20,7 @@ angular.module('kuzzle.realtime')
           messageItem.canEdit = false;
         break;
         case 'create':
-        case 'createOrUpdate':
+        case 'createOrReplace':
           messageItem.icon = 'file';
 
           if (notification.state === 'done') {
@@ -67,7 +67,7 @@ angular.module('kuzzle.realtime')
         break;
 
         default:
-          throw 'Unknown notification';
+          throw 'Unknown notification: ' + notification.action;
       }
 
       return messageItem;

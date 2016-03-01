@@ -39,17 +39,20 @@ $bs-container-padding: 15px;
   flex-grow: 1;
 }
 
+
 $message-log-width: 600px;
 
 .log-spacer {
   width: $message-log-width;
   margin-right: -$bs-container-padding;
+  transition: width 0.5s;
 }
 
 .message-log {
   width: $message-log-width;
   background-color: #263238;
   color: #ddd;
+  transition: width 0.5s;
 
   .message-list {
     padding: 0 20px;
@@ -58,8 +61,20 @@ $message-log-width: 600px;
     .message-item {
       list-style-type: none;
       margin: 10px 0;
+
+      a {
+        color: #92A1A9;
+        vertical-align: -2px;
+        padding-left: 5px;
+        display: inline-block;
+      }
     }
   }
+}
+
+.collapsed .message-log,
+.collapsed .log-spacer {
+  width: 130px;
 }
 
 $notif-volatile-clr: #60AB61;

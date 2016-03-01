@@ -24,6 +24,7 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = false;
       $scope.stateParams = $stateParams;
       $scope.index = $stateParams.index;
+      $scope.messageBoardOpen = true;
 
       $scope.init = function () {
         $scope.canSubscribe = false;
