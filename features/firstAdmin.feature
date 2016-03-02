@@ -12,6 +12,7 @@ Feature: Test firstAdmin (must be the last one)
     Then I see the first admin creation page
     And I create the admin account as "firstAdmin"
 
+  @cleanSecurity
   Scenario: Log as the just created firstAdmin account.
     Given I go to the login page
     Then I see the login page

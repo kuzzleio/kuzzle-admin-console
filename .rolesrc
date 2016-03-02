@@ -49,6 +49,7 @@
               "auth": {
                 "actions": {
                   "login": true,
+                  "checkToken": true,
                   "getCurrentUser": true
                 }
               }
@@ -71,6 +72,7 @@
               "auth": {
                 "actions": {
                   "logout": true,
+                  "checkToken": true,
                   "getCurrentUser": true
                 }
               }

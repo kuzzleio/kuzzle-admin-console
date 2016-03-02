@@ -31,7 +31,7 @@ angular.module('kuzzle.firstAdmin')
       username: '',
       passworda: '',
       passwordb: '',
-      resetroles: '1'
+      resetroles: false
     };
 
     $scope.createFirstAdmin = function (credentials) {
@@ -65,7 +65,7 @@ angular.module('kuzzle.firstAdmin')
       })
         .then(
           function (user) {
-            $window.location.reload();
+            $state.go('login');
           },
           function (error) {
             $scope.message = 'Something really wrong just happend... look at the console...';

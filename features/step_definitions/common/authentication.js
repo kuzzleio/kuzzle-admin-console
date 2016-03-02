@@ -7,6 +7,8 @@ module.exports = function () {
   this.When(/^I go to the login page$/, function (callback) {
     browser
       .url('/#/login')
+      .pause(1000)
+      .waitForVisible('[name=password]', 20000)
       .call(callback);
   });
 
@@ -56,7 +58,7 @@ module.exports = function () {
 
   this.Then(/^I am authenticated$/, function (callback) {
     browser
-      .waitForVisible('.menubar.navbar', 2000)
+      .waitForVisible('.menubar.navbar', 20000)
       .getCookie(c.authCookieName)
       .then(cookie => {
         var sessionObject;

@@ -100,6 +100,41 @@ angular.module('kuzzle', [
           wrappedView: { templateUrl: '/login' }
         },
         resolve: {
+          check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
+            kuzzleSdk
+              .dataCollectionFactory('%kuzzle', 'users')
+              .fetchAllDocuments(function (error, result) {
+                if (result) {
+                  if (result.total === 0) {
+                    console.log('redirect to first admin');
+                    $state.go('firstAdmin');
+                  }
+                }
+              });
+          }]
+        }
+      })
+     .state('firstAdmin', {
+        url: '/firstAdmin',
+        views: {
+          wrappedView: { templateUrl: '/user/firstAdmin' }
+        },
+        resolve: {
+          // check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
+          //   kuzzleSdk
+          //     .dataCollectionFactory('%kuzzle', 'users')
+          //     .fetchAllDocuments(function (error, result) {
+          //       if (error !== null) {
+          //         console.log('redirect to login');
+          //         $state.go('login');
+          //       } else if (result) {
+          //         if (result.total > 0) {
+          //           console.log('redirect to login');
+          //           $state.go('login');
+          //         }
+          //       }
+          //     });
+          // }],
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/firstAdmin/firstAdmin.module.js'
@@ -122,13 +157,21 @@ angular.module('kuzzle', [
 
   }])
 
-  .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', function ($rootScope, AUTH_EVENTS, AuthService, $state) {
+  .run(['$rootScope', 'AUTH_EVENTS', 'AuthService', '$state', 'kuzzleSdk', function ($rootScope, AUTH_EVENTS, AuthService, $state, kuzzleSdk) {
     $rootScope.$on('$stateNotFound', function(event) {
       $state.go('404');
     });
 
     $rootScope.$on(AUTH_EVENTS.notAuthenticated, function () {
-      $state.go('login', {}, {reload: true});
+      kuzzleSdk
+        .dataCollectionFactory('%kuzzle', 'users')
+        .fetchAllDocuments(function (result, error) {
+          if (error || result.total > 0 || result.message) {
+            $state.go('login');
+          } else {
+            $state.go('firstAdmin');
+          }
+        });
     });
 
     $rootScope.$on(AUTH_EVENTS.loginSuccess, function () {

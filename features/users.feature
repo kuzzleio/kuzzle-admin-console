@@ -1,11 +1,9 @@
 Feature: Test the users CRUD page
 
   Background:
-    @anonymousAsFinal
     Given I go to the login page
     And I authenticate as "admin"
     Then I am authenticated
-    @anonymousAsInitial
 
   Scenario: Existing profiles appear in the list on the main page.
     When I go on the browse users page

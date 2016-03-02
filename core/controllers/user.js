@@ -58,30 +58,25 @@ var createAdminUser = function (username, password) {
 };
 
 router.get('/firstAdmin', function (req, res) {
-
-  kuzzle
-    .dataCollectionFactory('%kuzzle', 'users')
-    .fetchAllDocumentsPromise()
-    .then(function (result) {
-      if (result.total > 0) {
-        // there are users already, lets allow them to login
-        return res.redirect('login/index');
-      }
-      //if there are no users, we should create one
-      return res.render('user/firstAdmin');
-    })
-    .catch(function () {
-      // we probably do not have the right to list users,
-      // so the rights have been reseted
-      // we show the login page
-      return res.redirect('login/index');
-    });
-
+  return res.render('user/firstAdmin');
 });
 
 
 router.post('/firstAdmin', function (req, res) {
-  createAdminUser(req.body.username, req.body.password)
+  kuzzle
+    .dataCollectionFactory('%kuzzle', 'users')
+    .fetchAllDocumentsPromise()
+    .then(function (response) {
+      if (response) {
+        if (response.total > 0) {
+          return q.reject('There are users already');
+        }
+        return q.resolve();
+      }
+    })
+    .then(function () {
+      return createAdminUser(req.body.username, req.body.password);
+    })
     .then(function () {
       if (req.body.resetroles) {
         return resetProfile('default', 'default');
@@ -119,7 +114,8 @@ router.post('/firstAdmin', function (req, res) {
       return q.resolve();
     })
     .then(function () {
-      res.status(200).end();
+      // must wait the indexation !!!!!
+      setTimeout(function() {res.status(200).end();}, 1200);
     })
     .catch(function (err) {
       res.status(500).send(err).end();
