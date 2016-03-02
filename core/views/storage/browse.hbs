@@ -41,27 +41,9 @@
       </div>
     </div>
     <div class="row" ng-if="stateParams.collection">
-      <div class="col-sm-12">
-        <div class="container container-medium">
+      <div ui-view="subView" class="view-fade"></div>
 
-          <div class="row whitespace-top">
 
-            <div class="create" style="margin-bottom: 15px">
-              <button type="button" class="btn btn-success" ui-sref="storage.create({collection: stateParams.collection})" ng-if="canCreateDocument">
-                <i class="fa fa-plus"></i> Add document
-              </button>
-            </div>
-
-            <div class="col-sm-12">
-              <div ui-view="subView" class="view-fade"></div>
-            </div>
-
-            <div class="col-sm-12" ng-if="collections.length === 0">
-                <p>There is no collection in this database</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>

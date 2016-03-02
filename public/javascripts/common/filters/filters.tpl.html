@@ -12,10 +12,11 @@
         <form name="filterForms.advancedSearch">
             <div class="form-group">
                 <label>Filter</label>&nbsp;-&nbsp;<a ng-href="{{dslDocUrl}}" target="_blank">Check out the DSL documentation</a>
-                <button type="button" ng-click="fillAdvancedSearchWithBasic()" class="btn btn-primary pull-right">Fill from basic search</button>
+                <button type="button" style="margin-bottom: 5px;" ng-click="fillAdvancedSearchWithBasic()" class="btn btn-primary pull-right">Fill from basic search</button>
+                <button type="button" style="margin-bottom: 5px;" ng-click="clearFilters()" class="btn btn-default pull-right">Clear filters</button>
                 <div class="clearfix"></div>
                 <p class="text-danger" ng-show="error" ng-bind="error"></p>
-                <json-edit content="filters.advancedFilter"></json-edit>
+                <json-edit can-edit="true" content="filters.advancedFilter"></json-edit>
             </div>
         </form>
     </uib-tab>

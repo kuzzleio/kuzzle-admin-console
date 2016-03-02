@@ -16,7 +16,7 @@ angular.module('kuzzle.roleApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               return;
             }
 
-            deferred.resolve(response.roles);
+            deferred.resolve(response);
           });
 
           return deferred.promise;

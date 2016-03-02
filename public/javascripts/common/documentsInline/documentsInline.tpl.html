@@ -49,12 +49,7 @@
                 <!-- /title col -->
 
                 <!-- edit col -->
-                <div class="col-sm-9" ng-if="collection || role">
-                    <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
-
-                    <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
-                </div>
-                <div class="col-sm-7" ng-if="profile || user">
+                <div ng-class="{'col-sm-6': profile || user, 'col-sm-8': collection || role}">
                     <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
 
                     <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
@@ -62,6 +57,7 @@
                 <!-- /edit col -->
 
                 <document-toolbar
+                        class="col-sm-2"
                         ng-if="collection"
                         can-edit="canEdit"
                         document="document"
@@ -69,18 +65,21 @@
                         collection="collection">
                 </document-toolbar>
                 <role-toolbar
+                        class="col-sm-2"
                         ng-if="role"
                         can-edit="canEdit"
                         after-delete="afterDelete(document)"
                         document="document">
                 </role-toolbar>
                 <profile-toolbar
+                        class="col-sm-2"
                         ng-if="profile"
                         can-edit="canEdit"
                         after-delete="afterDelete(document)"
                         document="document">
                 </profile-toolbar>
                 <user-toolbar
+                        class="col-sm-2"
                         ng-if="user"
                         can-edit="canEdit"
                         after-delete="afterDelete(document)"

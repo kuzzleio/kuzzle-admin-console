@@ -1,0 +1,16 @@
+<div class="view-fade container login-page">
+  <div class="row">
+    <div class="col-xs-4 col-xs-push-4">
+<<<<<<< HEAD
+        <img src="https://raw.githubusercontent.com/kuzzleio/kuzzle/master/docs/images/logo.png" class="img-responsive" />
+=======
+>>>>>>> 822a9b25734fb55a36738c0a0d683eb48c637370
+      <div class="login-container">
+        <img src="images/logo/kuzzle.svg" class="img-responsive" />
+        <div class="login-form-container">
+          {{>loginForm}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

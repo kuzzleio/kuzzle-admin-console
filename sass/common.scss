@@ -2,6 +2,7 @@
   http://stackoverflow.com/questions/7111610/import-regular-css-file-in-scss-file */
 @import "lib/sb-admin";
 @import "mixins";
+@import "components";
 @import "../fonts/roboto_regular_macroman/stylesheet.css";
 @import "../fonts/roboto_medium_macroman/stylesheet.css";
 @import "../fonts/roboto_bold_macroman/stylesheet.css";
@@ -12,177 +13,18 @@ body {
     background-color: #F3F3F3;
 }
 
-.ellipsis {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+@media(min-width:768px) {
+  #wrapper {
+    padding-left: 250px;
+  }
+
 }
-
-a {
-  color: #004B52;
-  text-decoration: none;
-
-  &:focus,
-  &:hover {
-    color: #00757F;
-    text-decoration: none;
+@media(max-width:768px) {
+  #wrapper {
+    padding-left: 0;
   }
 }
 
-.btn-default {
-  color: #444;
-  border-color: #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.16);
-  background-color: #FBFBFB;
-}
-
-.btn-group-lg>.btn, .btn-lg {
-  padding: 9px 16px;
-}
-
-.btn-primary {
-  color: #fff;
-  background-color: #00757F;
-  border-color: #00757F;
-  &:disabled {
-    background-color: desaturate(#00757f, 20%);
-    border-color: desaturate(#00757f, 20%);
-    &:focus,
-    &:hover {
-      background-color: lighten(desaturate(#00757f, 20%), 5%);
-      border-color: lighten(desaturate(#00757f, 20%), 5%);
-      &:active {
-        background-color: lighten(desaturate(#00757f, 20%), 5%);
-        border-color: lighten(desaturate(#00757f, 20%), 5%);
-      }
-    }
-  }
-  &:focus,
-  &:hover {
-    background-color: lighten(#00757f, 5%);
-    border-color: lighten(#00757f, 5%);
-    &:active {
-      background-color: lighten(#00757f, 5%);
-      border-color: lighten(#00757f, 5%);
-    }
-  }
-}
-.btn-success {
-  color: #fff;
-  background-color: #45b29d;
-  border-color: #45b29d;
-  &:disabled {
-    background-color: desaturate(#45b29d, 20%);
-    border-color: desaturate(#45b29d, 20%);
-    &:focus,
-    &:hover {
-      background-color: saturate(desaturate(#45b29d, 20%), 20%);
-      border-color: saturate(desaturate(#45b29d, 20%), 20%);
-      &:active {
-        background-color: saturate(desaturate(#45b29d, 20%), 20%);
-        border-color: saturate(desaturate(#45b29d, 20%), 20%);
-      }
-    }
-  }
-  &:focus,
-  &:hover {
-    background-color: saturate(#45b29d, 20%);
-    border-color: saturate(#45b29d, 20%);
-    &:active {
-      background-color: saturate(#45b29d, 20%);
-      border-color: saturate(#45b29d, 20%);
-    }
-  }
-}
-.btn-warning {
-  color: #fff;
-  background-color: #efc94c;
-  border-color: #efc94c;
-  &:disabled {
-    background-color: desaturate(#efc94c, 20%);
-    border-color: desaturate(#efc94c, 20%);
-    &:focus,
-    &:hover {
-      background-color: saturate(desaturate(#efc94c, 20%), 20%);
-      border-color: saturate(desaturate(#efc94c, 20%), 20%);
-      &:active {
-        background-color: saturate(desaturate(#efc94c, 20%), 20%);
-        border-color: saturate(desaturate(#efc94c, 20%), 20%);
-      }
-    }
-  }
-  &:focus,
-  &:hover {
-    background-color: saturate(#efc94c, 20%);
-    border-color: saturate(#efc94c, 20%);
-    &:active {
-      background-color: saturate(#efc94c, 20%);
-      border-color: saturate(#efc94c, 20%);
-    }
-  }
-}
-.btn-danger {
-  color: #fff;
-  background-color: #d54f58;
-  border-color: #d54f58;
-  &:disabled {
-    background-color: desaturate(#d54f58, 20%);
-    border-color: desaturate(#d54f58, 20%);
-    &:focus,
-    &:hover {
-      background-color: saturate(desaturate(#d54f58, 20%), 20%);
-      border-color: saturate(desaturate(#d54f58, 20%), 20%);
-      &:active {
-        background-color: saturate(desaturate(#d54f58, 20%), 20%);
-        border-color: saturate(desaturate(#d54f58, 20%), 20%);
-      }
-    }
-  }
-  &:focus,
-  &:hover {
-    background-color: saturate(#d54f58, 20%);
-    border-color: saturate(#d54f58, 20%);
-    &:active {
-      background-color: saturate(#d54f58, 20%);
-      border-color: saturate(#d54f58, 20%);
-    }
-  }
-}
-div.view-fade {
-    top: 0;
-    left: 0;
-    right: 0;
-    opacity: 1;
-
-    &.ng-enter {
-        -webkit-transition: all .5s ease;
-        transition: all .5s ease;
-    }
-    &.ng-enter {
-        opacity: 0;
-    }
-    &.ng-enter-active {
-        opacity: 1;
-    }
-    &.ng-leave {
-        opacity: 1;
-    }
-    &.ng-leave-active {
-        opacity: 0;
-    }
-}
-
-.actions-group {
-    button.control {
-        margin-right: 10px;
-    }
-    a.control {
-        cursor: pointer;
-    }
-}
-#wrapper {
-  padding-left: 250px;
-}
 #page-wrapper {
     padding: 0;
     background-color: #F3F3F3;
@@ -335,6 +177,18 @@ h2.select-collection {
   &.container-medium {
     width: 70%;
     margin-left: 8px;
+  }
+}
+
+
+@media(max-width:1440px) {
+  .container {
+    width: 100%;
+
+    &.container-medium {
+      width: 100%;
+      margin: 0 auto;
+    }
   }
 }
 .container-fluid {

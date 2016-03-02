@@ -56,7 +56,7 @@ angular.module('kuzzle.storage')
       // Manage pagination
       $scope.currentPage = 1;
       $scope.total = 0;
-      $scope.limit = 0;
+      $scope.limit = 10;
 
       /**
        * Call on DOM init.
@@ -130,16 +130,18 @@ angular.module('kuzzle.storage')
 
         $scope.error = null;
 
-        documentApi.search($scope.collection, filter, $scope.currentPage)
+        filter.from = ($scope.currentPage - 1) * $scope.limit;
+        filter.size = $scope.limit;
+
+        documentApi.search($scope.collection, filter)
           .then(function (response) {
             if (response.error) {
               console.error(response.message);
               return false;
             }
 
-            $scope.documents = response.data.documents;
-            $scope.total = response.data.total;
-            $scope.limit = response.data.limit;
+            $scope.documents = response.documents;
+            $scope.total = response.total;
           })
           .catch(function (error) {
             console.error(error);
