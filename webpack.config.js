@@ -3,7 +3,7 @@
 // Modules
 var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+// var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -15,8 +15,8 @@ var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
 var isProd = ENV === 'build';
 
-var DEV_SERVER_PORT = 3030;
-var BASE_CONTENT_PATH = './public/javascripts';
+var DEV_SERVER_PORT = 3000;
+var BASE_CONTENT_PATH = './src';
 
 module.exports = function makeWebpackConfig () {
   /**
@@ -33,7 +33,7 @@ module.exports = function makeWebpackConfig () {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? {} : {
-    app: BASE_CONTENT_PATH + '/app.js'
+    app: BASE_CONTENT_PATH + '/javascripts/app.js'
   };
 
   /**
@@ -173,27 +173,27 @@ module.exports = function makeWebpackConfig () {
   // }
 
   // Add build specific plugins
-  // if (isProd) {
-  //   config.plugins.push(
-  //     // Reference: http://webpack.github.io/docs/list-of-plugins.html#noerrorsplugin
-  //     // Only emit files when there are no errors
-  //     new webpack.NoErrorsPlugin(),
-  //
-  //     // Reference: http://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
-  //     // Dedupe modules in the output
-  //     new webpack.optimize.DedupePlugin(),
-  //
-  //     // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
-  //     // Minify all javascript, switch loaders to minimizing mode
-  //     new webpack.optimize.UglifyJsPlugin(),
-  //
-  //     // Copy assets from the public folder
-  //     // Reference: https://github.com/kevlened/copy-webpack-plugin
-  //     new CopyWebpackPlugin([{
-  //       from: __dirname + '/src/public'
-  //     }])
-  //   );
-  // }
+  if (isProd) {
+    config.plugins.push(
+      // Reference: http://webpack.github.io/docs/list-of-plugins.html#noerrorsplugin
+      // Only emit files when there are no errors
+      new webpack.NoErrorsPlugin(),
+
+      // Reference: http://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
+      // Dedupe modules in the output
+      new webpack.optimize.DedupePlugin(),
+
+      // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
+      // Minify all javascript, switch loaders to minimizing mode
+      new webpack.optimize.UglifyJsPlugin(),
+
+      // Copy assets from the public folder
+      // Reference: https://github.com/kevlened/copy-webpack-plugin
+      new CopyWebpackPlugin([{
+        from: __dirname + '/src/public'
+      }])
+    );
+  }
 
   /**
    * Dev server configuration
