@@ -11,7 +11,6 @@ module.exports = {
   },
 
   searchItemInList: function (browser, not, itemName, callback) {
-    console.log('test 1');
     browser
       .waitForVisible('documents-inline .documents .document-id', 1000)
       .then(() => {
@@ -29,14 +28,11 @@ module.exports = {
               'Expected to find ' + itemName + ' in list ' + el
             );
           }
-          console.log('test 2');
         }, error => {
-          console.log('test 4');
           callback(error);
         })
         .call(callback);
       }, error => {
-    console.log('test 3');
         callback(error);
       });
   },
