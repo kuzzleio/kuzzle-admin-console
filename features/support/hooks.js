@@ -166,22 +166,33 @@ var deleteUsers = function (callback) {
       return q();
     })
     .then(() => {
-      return world.kuzzle
-        .security
-        .searchUsersPromise({ filter: { regexp: { _uid: 'users.' + world.idPrefix + '.*' } } });
-    })
-    .then((users) => {
-      var passed = 1;
+      var
+        deffered = q.defer();
+        passed = 1;
 
-      users.users.forEach(function (user) {
-        console.log('deleting',user.id);
-        user.delete(function () {
-          passed++;
-          if (passed === users.total) {
-            return q();
-          }
-        })
+      fixtures['%kuzzle'].users.forEach(function (user) {
+        if (user.username === undefined) {
+          return;
+        }
+
+        world
+          .kuzzle
+          .security
+          .deleteUser(user.username, function (error, result) {
+            if (error) {
+              deffered.reject(error);
+              return;
+            }
+            passed++;
+
+            if (passed === (fixtures['%kuzzle'].users.length /2)) {
+              deffered.resolve();
+              return;
+            }
+          });
       });
+
+      return deffered.promise;
     })
     .then(() => {
       setTimeout(function() {callback();}, 1200);
@@ -204,21 +215,33 @@ var cleanSecurity = function (callback) {
       }
     })
     .then(() => {
-      return world.kuzzle
-        .security
-        .searchUsersPromise({ filter: { regexp: { _uid: 'users.' + world.idPrefix + '.*' } } });
-    })
-    .then((users) => {
-      var passed = 1;
+      var
+        deffered = q.defer();
+        passed = 1;
 
-      users.users.forEach(function (user) {
-        user.delete(function () {
-          passed++;
-          if (passed === users.total) {
-            return q();
-          }
-        })
+      fixtures['%kuzzle'].users.forEach(function (user) {
+        if (user.username === undefined) {
+          return;
+        }
+
+        world
+          .kuzzle
+          .security
+          .deleteUser(user.username, function (error, result) {
+            /*if (error) {
+              deffered.reject(error);
+              return;
+            }*/
+            passed++;
+
+            if (passed === (fixtures['%kuzzle'].users.length /2)) {
+              deffered.resolve();
+              return;
+            }
+          });
       });
+
+      return deffered.promise;
     })
     .then(() => {
       var query = {
@@ -265,20 +288,30 @@ var cleanSecurity = function (callback) {
         .queryPromise(query, {body: fixtures['%kuzzle'].profiles});
     })
     .then(() => {
-      var passed = 1;
+      var 
+        deffered = q.defer(),
+        passed = 1;
 
       fixtures['%kuzzle'].users.forEach(function(user) {
         if (user.username) {
-          world.kuzzle
+          world
+            .kuzzle
             .security
-            .createUser(user.username, {password: user.clearPassword, profile: user.profile}, function(error, response) {
+            .createUser(user.username, {password: user.clearPassword, profile: user.profile}, {replaceIfExist: true}, function(error, response) {
+              /*if (error) {
+                return q.reject(error);
+              }*/
+
               passed++;
               if (passed == (fixtures['%kuzzle'].users.length/2)) {
-                return q();
+                deffered.resolve();
+                return;
               }
             });
         }
       });
+
+      return deffered.promise;
     })  
     .then(() => {
       setTimeout(function() {callback();}, 1200);
