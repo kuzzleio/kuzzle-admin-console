@@ -1,0 +1,45 @@
+sudo: false
+language: node_js
+node_js:
+- '4.2.6'
+env:
+- CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
+script:
+- grunt && npm test && cat ./coverage/lcov.info | ./node_modules/.bin/codecov
+before_install: npm install -g grunt-cli
+install: npm install
+
+after_success:
+  - chmod 755 ${TRAVIS_BUILD_DIR}/deploy.sh && sh -c "${TRAVIS_BUILD_DIR}/deploy.sh"
+
+env:
+  global:
+    secure: EZ+XXJFDtehmag7wt8JbutqgzpkkJUCzkEWw6W+p7MIxWenLyuGv/RUu7KGqAloOud1cZbmZGSfRx/vsPvxRjo+ZC7aaPqb74qRvfctGdlJTtEffS2jFno1pEppJzCR4n7vocSfMVYtOD6oHP67lXwn/Qnh++WUkZaV137m5+7rqiYgJ+JTeSs5jBRZ6X7VNoNz8tZXejQ+FOymCFQTS2JM/rSZX9NEK+OwUEhEjRcxqWMm2avk6NAQNAL3WQuIBJQH8lxEJxOXkMc0rQZZ09AoLpqJKzsaicaZMInt5JstPo2e9vJfhi+PpRSNhErIff36aCHWRYYDPKl5x6IelZpBfZeTdrs4V2TbRi1y0ELbgMG1FHS4HAw3vTnh4/49g01lAJed4UguFRc6MzwTLAL8uPG/zFe8snm9+kaf4pL7yO89Hf3eltE03+N//tyVv+X/jdSca2dBZ9FMeLE5pJ2jlRiKitCLjXmLUEMMxEwNF7K/IvOrD9wue3JXK0UogOpcXfppk++pNTijsZluU1Yj7k3fGFeS8d6rIU0Yj40y6/VMaJeL4EXlARRsGLigUKVjQL6+/N5xudlsCng+EG+WVIy4wEEPH0QgjUkPTgWx1NrUlTwjskE0cdqDOBu39WkRFJHHECYFPTfTuDJ7xxuuibFTQmUFu2zjbYfYKhPE=
+deploy:
+  provider: npm
+  email: support@kuzzle.io
+  api_key:
+    secure: jQsANrQ9UXBZxrWLXJKL+G8eszVmADZ8Kx4/UhGE50mBXVOkbkXF0UjqElm4T5ADniK6IoPUAEZDQ1Jk8QsJyHo2FUkeu4kV0s7tj0SWdEAev+M8SChoPayDPQcMbncPRCNKZQy5MfAtAao/n+RxPOLZjqnWfQf+ucSNlKrmvhTNkN4L0YWJHoQgcdUE5zRHopPCJF7n0XENJFq61ke7SIBDotg4xmRIErhco09QUFkYe2OWfLljodbuY50jU+/3rHgK8pTUBCra5FithfiekeynyUpUXtcRUV4pg0UTnVzWow0S2z1LlrpHaywoe2QmfDOs+bZ7EqYZSpnFxRmrUqNUNQjtkxMG8DlAc7rMj/0P70c2FAUmulng0NW4YGP+TTP5J8pzu1Jf7i+Njwe7vm8dKvvQPUFC+p2hYMCbpIFe9kVDg7jDXAd1fyxz/yDwVyKYLwvX84S/00wdLq8zuHYmZTCtAnA3RNfpjbGdHCfAUxoro/4jAzAYN3g6ppUSOYnn0egqVoyo7vBXNR2i11zSL3XIZGKWNa+fCIkmF3/wE3LpFtmznzN66tTSL5D/6y0fkVxZ9SZRnaIsxyBIG9kRz1FH4YAlFlcLd8ul4+Tjc5gxpy7P8zIr+rKm1q+Tc+ieVzEDaPx3ikplXmwf0U9geFcFw80XCLpVVmZDvVo=
+  on:
+    repo: kuzzleio/sdk-javascript
+    branch: master
+notifications:
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/8e145155fbaaf37cffea
+    on_success: change
+    on_failure: always
+    on_start: never
+  email: false
+  slack:
+    secure: m0BEda/eXxYkil0zDZ1uNpK13kiNbb5/80I5OqDBz6X7/WH3uhWIV6q38lI929tQKz04eHAfVDaRSoPk1XwZBnb70MgcRmSG/m4/moR7BCnx7D9hHFqhNf0EfdzwEg44dCCVtD2vUvChtYV+jK74sNd4yqeq86YXi33qS7SYLS6kYnRloX0D7sQXDy14FWU2a5+hsrPX8yBoWuPjBergvK6W1dZAG+SfDywaqsrUDs+q64yEHiYV9VlvVZ/oKXZiDnVcB2hi0uulIZ8+iZaMJFEU30uCQiK6w3HG587yx3sVJmprr64ZYHKaFJD2ZAG1td6wJ1ccJsU/ruGkj4+0CeoZUYYBYXYQ4qhQl8F2QT0m+8dWqPwzYpxEoqyvGS9ioZG/YI18V2CE1pEyc72JzEv6c3AgDbtwrLH5s3ViNts7kulk3wwCzuAww+DapSV9ggezo+Bs7OGRpXwh/saeKWUCLqTkLQTjuq2dFVdo85HsC2RrLcSsZLMTOuV/A//FNBDJBlNnuneGP84zGkWGPEja0FFXvm2TS95gh1hd2PMe+QxjygOAvIMLmDmfdlWSLayUeWbqp20EdF7TUHV0dvBucga8s3UvFhIMnnGLS9vcNEIRtVornXznwdYSLbYD0mLXNtitneXTnSAxilThKtGDPOWQFkYkyoFV9FEwKO8=
+    on_success: never
+    on_failure: always
+    on_start: never
+

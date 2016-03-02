@@ -1,0 +1,23 @@
+{
+  "name": "kuzzle-sdk",
+  "description": "Official Javascript SDK for Kuzzle",
+  "main": "dist/kuzzle.js",
+  "authors": [
+    "The Kuzzle Team <support@kuzzle.io>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "kuzzle",
+    "sdk",
+    "baas",
+    "backend",
+    "realtime",
+    "advanced",
+    "search",
+    "bulk"
+  ],
+  "homepage": "https://github.com/kuzzleio/sdk-javascript",
+  "dependencies": {
+    "socket.io-client": "git://github.com/socketio/socket.io-client#1.4.4"
+  }
+}

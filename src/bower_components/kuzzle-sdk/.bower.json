@@ -1,0 +1,33 @@
+{
+  "name": "kuzzle-sdk",
+  "description": "Official Javascript SDK for Kuzzle",
+  "main": "dist/kuzzle.js",
+  "authors": [
+    "The Kuzzle Team <support@kuzzle.io>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "kuzzle",
+    "sdk",
+    "baas",
+    "backend",
+    "realtime",
+    "advanced",
+    "search",
+    "bulk"
+  ],
+  "homepage": "https://github.com/kuzzleio/sdk-javascript",
+  "dependencies": {
+    "socket.io-client": "git://github.com/socketio/socket.io-client#1.4.4"
+  },
+  "version": "1.7.1",
+  "_release": "1.7.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.7.1",
+    "commit": "6620dd3ba57213ec006f61c3b3b508d494a813e6"
+  },
+  "_source": "git://github.com/kuzzleio/sdk-javascript.git",
+  "_target": "1.7.1",
+  "_originalSource": "kuzzle-sdk"
+}

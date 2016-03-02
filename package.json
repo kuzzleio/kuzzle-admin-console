@@ -6,7 +6,8 @@
   "scripts": {
     "test": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js",
     "test-selective": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js --cucumberOpts.tags @myTest",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "webpack-dev-server --history-api-fallback --inline --progress"
   },
   "keywords": [
     "kuzzle",
@@ -40,6 +41,23 @@
     "gruntify-eslint": "^2.0.0",
     "q": "^1.4.1",
     "request": "^2.67.0",
-    "webdriverio": "^3.4.0"
+    "webdriverio": "^3.4.0",
+    "autoprefixer": "^6.0.3",
+    "babel-core": "^6.2.1",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.1.18",
+    "copy-webpack-plugin": "^1.1.1",
+    "css-loader": "^0.23.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.4",
+    "html-webpack-plugin": "^2.7.1",
+    "node-libs-browser": "^1.0.0",
+    "null-loader": "^0.1.1",
+    "postcss-loader": "^0.8.0",
+    "raw-loader": "^0.5.1",
+    "style-loader": "^0.13.0",
+    "rimraf": "^2.5.1",
+    "webpack": "^1.12.14",
+    "webpack-dev-server": "^1.14.1"
   }
 }

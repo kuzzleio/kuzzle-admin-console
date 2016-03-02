@@ -11,7 +11,7 @@ npm-debug.log*
 public/bower_components
 
 # Sass
-public/styles
+src/styles
 
 # IDE
 .idea

@@ -1,0 +1,137 @@
+{
+  "schema": {
+    "type": "object",
+    "title": "Comment",
+    "required": ["comments"],
+    "properties": {
+      "tags": {
+        "type": "array",
+        "maxItems": 4,
+        "minItems": 2,
+        "uniqueItems": true,
+        "items": {
+          "type": "string"
+        }
+      },
+      "comments": {
+        "type": "array",
+        "maxItems": 2,
+        "items": {
+          "type": "object",
+          "properties": {
+            "name":  {
+              "title": "Name",
+              "type": "string"
+            },
+            "email":  {
+              "title": "Email",
+              "type": "string",
+              "pattern": "^\\S+@\\S+$",
+              "description": "Email will be used for evil."
+            },
+            "spam": {
+              "title": "Spam",
+              "type": "boolean",
+              "default": true
+            },
+            "comment": {
+              "title": "Comment",
+              "type": "string",
+              "maxLength": 20,
+              "validationMessage": "Don't be greedy!"
+            }
+          },
+          "required": ["name","comment"]
+        }
+      },
+      "matrix": {
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "subs": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sub": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "triplesubs": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sub": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "form": [
+    {
+      "type": "help",
+      "helpvalue": "<h4>Array Example</h4><p>Try adding a couple of forms, reorder by drag'n'drop.</p>"
+    },
+    "tags",
+    {
+      "key": "comments",
+  	  "add": "New",
+  	  "style": {
+  		"add": "btn-success"
+	  },
+      "items": [
+        "comments[].name",
+        "comments[].email",
+        {
+          "key": "comments[].spam",
+          "type": "checkbox",
+          "title": "Yes I want spam.",
+          "condition": "model.comments[arrayIndex].email"
+        },
+        {
+          "key": "comments[].comment",
+          "type": "textarea"
+        }
+      ]
+    },
+    "matrix",
+    {
+      "type": "array",
+      "key": "subs",
+      "items": [
+        "subs[].sub"
+      ]
+    },
+    "triplesubs",
+    {
+      "type": "submit",
+      "style": "btn-info",
+      "title": "OK"
+    }
+  ],
+  "model": {
+    "tags": ["one", "two"],
+    "comments": [{}],
+    "matrix": [["one","two"],["three"]],
+    "subs": [{ "sub":["yes!"] }]
+  }
+}
