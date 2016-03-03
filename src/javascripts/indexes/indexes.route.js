@@ -7,25 +7,25 @@ angular.module('kuzzle.indexes')
         parent: 'logged',
         url: '/indexes',
         views: {
-          'bodyView': { templateUrl: '/indexes' }
+          'bodyView': { templateUrl: '/javascripts/indexes/index.template.html' }
         }
       })
       .state('indexes.browse', {
         url: '/browse',
         views: {
-          'mainView': { templateUrl: '/indexes/browse' }
+          'mainView': { templateUrl: '/javascripts/indexes/browse.template.html' }
         }
       })
       .state('indexes.create', {
         url: '/add',
         views: {
-          'mainView': { templateUrl: '/indexes/create' }
+          'mainView': { templateUrl: '/javascripts/indexes/full.template.html' }
         }
       })
       .state('indexes.full', {
         url: '/:index',
         views: {
-          'mainView': { templateUrl: '/indexes/full' }
+          'mainView': { templateUrl: '/javascripts/indexes/full.template.html' }
         }
       });
   }]);
