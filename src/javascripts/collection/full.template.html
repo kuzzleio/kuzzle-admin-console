@@ -1,0 +1,31 @@
+<div class="edit-collection" ng-controller="CollectionFullCtrl" ng-init="init('{{action}}')">
+  <headline title="Collection" subtitle="{{action}}"></headline>
+  <div class="container container-medium">
+    <div class="row whitespace-top">
+      <div class="col-sm-12" ng-if="notFoundError">
+        <p>There is no document matching the collection <strong ng-bind="collection"></strong>.</p>
+      </div>
+
+      <div class="col-sm-12" ng-if="!notFoundError">
+
+        <form>
+            <div class="form-group">
+                <label for="name">Collection name</label>
+                <input type="text" class="form-control" ng-model="collection.name" id="name" ng-disabled="isEdit">
+            </div>
+            <div class="form-group">
+                <label for="name">Collection schema</label>
+                <json-edit content="collection.schema" can-edit="true"></json-edit>
+            </div>
+
+            <div class="actions-group">
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit" ng-click="update(true)">Create</button>
+                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit" ng-click="update()">Update</button>
+                <a class="control" ng-click="cancel()">Cancel</a>
+            </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
