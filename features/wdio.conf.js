@@ -24,17 +24,17 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: [
-  //  './features/firstAdmin.feature',
-    // './features/authentication.feature',
-    // './features/realtime.feature',
+    './features/firstAdmin.feature',
+    './features/authentication.feature',
+    './features/realtime.feature',
     './features/browseData.feature'
-    // './features/metrics.feature',
-    // './features/indexes.feature',
-    // './features/roles.feature',
-    // './features/profiles.feature',
-    // './features/users.feature',
-    // './features/notAllowed.feature',
-    // './features/collections.feature',
+    './features/metrics.feature',
+    './features/indexes.feature',
+    './features/roles.feature',
+    './features/profiles.feature',
+    './features/users.feature',
+    './features/notAllowed.feature',
+    './features/collections.feature',
   ],
   // Patterns to exclude.
   exclude: [
@@ -69,7 +69,7 @@ exports.config = {
   coloredLogs: true,
   //
   // Saves a screenshot to a given path if a command fails.
-  screenshotPath: './features/errorShots/',
+  //screenshotPath: './features/errorShots/',
   //
   // Set a base URL in order to shorten url command calls. If your url parameter starts
   // with "/", the base url gets prepended.
@@ -117,22 +117,22 @@ exports.config = {
     require: [
       './features/support/hooks.js',
 
-//      './features/step_definitions/common/firstAdmin.js',
-      // './features/step_definitions/common/authentication.js',
+     './features/step_definitions/common/firstAdmin.js',
+      './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',
-      // './features/step_definitions/common/screenshot.js',
+      './features/step_definitions/common/screenshot.js',
       './features/step_definitions/common/wait.js',
-      // './features/step_definitions/common/collections.js',
+      './features/step_definitions/common/collections.js',
       './features/step_definitions/common/documentsInline.js',
 
       './features/step_definitions/storage/browseData.js',
-      // './features/step_definitions/storage/collections.js',
-      // './features/step_definitions/metrics/metrics.js',
-      // './features/step_definitions/realtime/realtime.js',
-      // './features/step_definitions/indexes/indexes.js',
-      // './features/step_definitions/security/roles.js',
-      // './features/step_definitions/security/profiles.js',
-      // './features/step_definitions/security/users.js'
+      './features/step_definitions/storage/collections.js',
+      './features/step_definitions/metrics/metrics.js',
+      './features/step_definitions/realtime/realtime.js',
+      './features/step_definitions/indexes/indexes.js',
+      './features/step_definitions/security/roles.js',
+      './features/step_definitions/security/profiles.js',
+      './features/step_definitions/security/users.js'
     ],
     // Enable this config to treat undefined definitions as warnings.
     //ignoreUndefinedDefinitions: false,
