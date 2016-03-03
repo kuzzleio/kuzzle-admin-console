@@ -8,7 +8,7 @@ module.exports = function () {
     browser
       .url('/#/login')
       .pause(1000)
-      .waitForVisible('[name=password]', 20000)
+      .waitForVisible('[name=username]', 20000)
       .call(callback);
   });
 

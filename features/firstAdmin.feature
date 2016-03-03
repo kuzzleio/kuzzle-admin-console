@@ -3,17 +3,17 @@ Feature: Test firstAdmin (must be the last one)
   @deleteUsers
   Scenario: Create the first admin with bad password.
     Given I go to the login page
-    Then I see the first admin creation page
-    And I create the admin account as "firstAdminWithBadPassword"
-    Then I see an error message about the bad password
+    Then I'm waiting 4 sec
+    And I see the first admin creation page
+    Then I create the admin account as "firstAdminWithBadPassword"
+    And I see an error message about the bad password
 
-  Scenario: Create the first admin.
+  @cleanSecurity
+  Scenario: Create the first admin and i can login with this account.
     Given I go to the login page
     Then I see the first admin creation page
     And I create the admin account as "firstAdmin"
-
-  @cleanSecurity
-  Scenario: Log as the just created firstAdmin account.
+    And I'm waiting 2 sec
     Given I go to the login page
     Then I see the login page
     And I authenticate as "firstAdmin"

@@ -7,7 +7,9 @@ module.exports = function () {
 
   this.Then(/^I see the first admin creation page$/, function(callback) {
     browser
-      .waitForVisible('input[name=username]', 5000)
+      .pause(1200)
+      .waitForVisible('button[type=submit]', 5000)
+      .waitForVisible('input[name=passwordb]', 5000)
       .isVisible('input[name=passworda]')
       .then((isVisible) => {
         assert(isVisible, 'Element passworda is not visible');

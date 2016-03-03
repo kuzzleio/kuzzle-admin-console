@@ -111,7 +111,7 @@ var initIndex = function (callback) {
     timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000);
+      }, 1200);
     };
 
   world.kuzzle
@@ -130,7 +130,7 @@ var removeIndex = function (callback) {
     timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000);
+      }, 1200);
     };
 
   world.kuzzle
@@ -156,9 +156,25 @@ var bulk = function () {
   return q.all(promises);
 };
 
+
+var listIndexes = function () {
+  var deffered = q.defer();
+
+  world
+    .kuzzle
+    .listIndexes(function(error, indexes) {
+      if (error) {
+        deffered.reject(error)
+      }
+
+      deffered.resolve(indexes);
+    })
+
+  return deffered.promise;  
+};
+
 var deleteUsers = function (callback) {
-   world.kuzzle
-    .listIndexesPromise()
+    listIndexes()
     .then(indexes => {
       if (indexes.indexOf('%kuzzle') === -1) {
         return q.reject(new ReferenceError('%kuzzle index not found'));
@@ -168,23 +184,21 @@ var deleteUsers = function (callback) {
     .then(() => {
       var
         deffered = q.defer();
-        passed = 1;
+        passed = 0;
 
       fixtures['%kuzzle'].users.forEach(function (user) {
         if (user.username === undefined) {
           return;
         }
-
         world
           .kuzzle
           .security
           .deleteUser(user.username, function (error, result) {
             if (error) {
-              deffered.reject(error);
-              return;
+              console.log(error);
             }
             passed++;
-
+            console.log('deleted user:', user.username);
             if (passed === (fixtures['%kuzzle'].users.length /2)) {
               deffered.resolve();
               return;
@@ -201,7 +215,8 @@ var deleteUsers = function (callback) {
       if (error instanceof ReferenceError && error.message === '%kuzzle index not found') {
         // The %kuzzle index is not created yet. Is not a problem if the tests are run for the first time.
         setTimeout(function() {callback();}, 1200);
-     }
+      }
+      console.log('catch', error);
       callback(error);
     });
 };
@@ -217,7 +232,7 @@ var cleanSecurity = function (callback) {
     .then(() => {
       var
         deffered = q.defer();
-        passed = 1;
+        passed = 0;
 
       fixtures['%kuzzle'].users.forEach(function (user) {
         if (user.username === undefined) {
@@ -228,10 +243,6 @@ var cleanSecurity = function (callback) {
           .kuzzle
           .security
           .deleteUser(user.username, function (error, result) {
-            /*if (error) {
-              deffered.reject(error);
-              return;
-            }*/
             passed++;
 
             if (passed === (fixtures['%kuzzle'].users.length /2)) {
@@ -298,10 +309,6 @@ var cleanSecurity = function (callback) {
             .kuzzle
             .security
             .createUser(user.username, {password: user.clearPassword, profile: user.profile}, {replaceIfExist: true}, function(error, response) {
-              /*if (error) {
-                return q.reject(error);
-              }*/
-
               passed++;
               if (passed == (fixtures['%kuzzle'].users.length/2)) {
                 deffered.resolve();

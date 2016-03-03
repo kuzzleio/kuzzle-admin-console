@@ -115,7 +115,7 @@ router.post('/firstAdmin', function (req, res) {
     })
     .then(function () {
       // must wait the indexation !!!!!
-      setTimeout(function() {res.status(200).end();}, 1200);
+      setTimeout(function() {res.status(200).end();}, 2000);
     })
     .catch(function (err) {
       res.status(500).send(err).end();
