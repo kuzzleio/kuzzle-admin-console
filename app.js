@@ -6,7 +6,35 @@ var
   bodyParser = require('body-parser'),
   router = require('./core/router'),
   exphbs  = require('express-handlebars'),
-  app = express();
+  app = express(),
+  webpack = require('webpack'),
+  config = require('./webpack.config'),
+  compiler = webpack(config);
+
+var devMiddleware = require('webpack-dev-middleware')(compiler, {
+  publicPath: config.output.publicPath,
+  stats: {
+    colors: true,
+    chunks: false
+  }
+});
+
+var hotMiddleware = require('webpack-hot-middleware')(compiler);
+// force page reload when html-webpack-plugin template changes
+compiler.plugin('compilation', function (compilation) {
+  compilation.plugin('html-webpack-plugin-after-emit', function (data, cb) {
+    hotMiddleware.publish({ action: 'reload' });
+    cb();
+  });
+});
+
+// handle fallback for HTML5 history API
+app.use(require('connect-history-api-fallback')());
+// serve webpack bundle output
+app.use(devMiddleware);
+// enable hot-reload and state-preserving
+// compilation error display
+app.use(hotMiddleware);
 
 // view engine setup
 app.engine('.hbs', exphbs({
@@ -24,7 +52,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'src')));
 
 // Init routes and controllers
 router.initRoutes(app);
