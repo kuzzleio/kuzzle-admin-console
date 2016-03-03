@@ -117,7 +117,7 @@ exports.config = {
     require: [
       './features/support/hooks.js',
 
-      './features/step_definitions/common/firstAdmin.js',
+//      './features/step_definitions/common/firstAdmin.js',
       './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',
       './features/step_definitions/common/screenshot.js',
