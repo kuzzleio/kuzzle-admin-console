@@ -55,8 +55,8 @@ angular.module('kuzzle', [
       .state('logged', {
         url: '',
         views: {
-          wrappedView: { templateUrl: '/templates/logged.html' },
-          'bodyView@logged': {templateUrl: '/templates/metrics.html'}
+          wrappedView: { template: require('./common/authentication/logged.template.html') },
+          'bodyView@logged': { template: require('./metrics/metrics.template.html') }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -91,13 +91,13 @@ angular.module('kuzzle', [
       })
       .state('404', {
         views: {
-          wrappedView: { templateUrl: '/templates/404.html' }
+          wrappedView: { template: require('./common/404.template.html') }
         }
       })
       .state('login', {
         url: '/login',
         views: {
-          wrappedView: { templateUrl: '/templates/login.html' }
+          wrappedView: { template: require('./common/authentication/login.template.html') }
         }
       })
       .state('logout', {
