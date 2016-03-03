@@ -7,7 +7,7 @@ angular.module('kuzzle.realtime')
         parent: 'logged',
         url: '/:index/realtime',
         views: {
-          bodyView: { templateUrl: '/realtime' }
+          bodyView: { templateUrl: '/javascripts/realtime/index.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -47,7 +47,7 @@ angular.module('kuzzle.realtime')
       .state('realtime.watch-data', {
         url: '/:collection?basicFilter&advancedFilter',
         views: {
-          mainView: { templateUrl: '/realtime/watch-data' }
+          mainView: { templateUrl: '/javascripts/realtime/watch-data.template.html' }
         },
         data: {}
       });
