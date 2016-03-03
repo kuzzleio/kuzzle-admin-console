@@ -7,13 +7,13 @@ angular.module('kuzzle.role')
         parent: 'logged',
         url: '/role',
         views: {
-          'bodyView': { templateUrl: '/role' }
+          'bodyView': { templateUrl: '/javascripts/role/index.template.html' }
         }
       })
       .state('role.browse', {
         url: '/browse',
         views: {
-          'mainView': { templateUrl: '/role/browse' }
+          'mainView': { templateUrl: '/javascripts/role/browse.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -33,7 +33,7 @@ angular.module('kuzzle.role')
       .state('role.create', {
         url: '/add?content',
         views: {
-          'mainView': { templateUrl: '/role/create' }
+          'mainView': { templateUrl: '/javascripts/role/full.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -50,7 +50,7 @@ angular.module('kuzzle.role')
       .state('role.full', {
         url: '/:role',
         views: {
-          'mainView': { templateUrl: '/role/full' }
+          'mainView': { templateUrl: '/javascripts/role/full.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
