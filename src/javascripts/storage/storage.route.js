@@ -7,7 +7,7 @@ angular.module('kuzzle.storage')
         parent: 'logged',
         url: '/:index/storage',
         views: {
-          bodyView: { templateUrl: '/storage' }
+          bodyView: { templateUrl: '/javascripts/storage/index.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -31,7 +31,7 @@ angular.module('kuzzle.storage')
       .state('storage.browse', {
         url: '/browse',
         views: {
-          mainView: { templateUrl: '/storage/browse' }
+          mainView: { templateUrl: '/javascripts/storage/browse.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -45,7 +45,7 @@ angular.module('kuzzle.storage')
       .state('storage.browse.documents', {
         url: '/:collection?basicFilter&advancedFilter',
         views: {
-          subView: { templateUrl: '/storage/browse-documents' }
+          subView: { templateUrl: '/javascripts/storage/browse-documents.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -70,7 +70,7 @@ angular.module('kuzzle.storage')
       .state('storage.create', {
         url: '/:collection/add',
         views: {
-          mainView: { templateUrl: '/storage/create' }
+          mainView: { templateUrl: '/javascripts/storage/full.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -88,7 +88,7 @@ angular.module('kuzzle.storage')
       .state('storage.full', {
         url: '/:collection/:id',
         views: {
-          mainView: { templateUrl: '/storage/full' }
+          mainView: { templateUrl: '/javascripts/storage/full.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {

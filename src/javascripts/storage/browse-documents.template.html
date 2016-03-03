@@ -1,0 +1,54 @@
+<div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
+
+    <div ng-if="canReadDocument" class="row">
+        <div class="panel panel-default filters">
+            <div class="panel-body">
+                    <filters
+                            dsl-doc-url="https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl.html"
+                            add-group-label="Add group"
+                            filters="filter"
+                            collection="collection"
+                            comparators="comparators"
+                            search-type="searchType"
+                            submit-label="Search"
+                            advanced-search="advancedSearch()"
+                            basic-search="basicSearch()"
+                            is-realtime="false">
+                    </filters>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="canReadDocument">
+        <div class="row" ng-if="documents.length == 0">
+            <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
+        </div>
+
+        <documents-inline documents="documents" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
+
+        <div class="row total-documents"  ng-show="documents.length != 0">
+            <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>
+        </div>
+        <div class="pull-right">
+            <uib-pagination
+                    total-items="total"
+                    ng-model="currentPage"
+                    max-size="5"
+                    class="pagination-sm"
+                    boundary-links="true"
+                    rotate="false"
+                    ng-change="loadDocuments()"
+                    num-pages="numPages"
+                    previous-text="Prev"
+                    next-text="Next"
+                    items-per-page="limit"
+                    ng-model="currentPage"
+                    ng-show="documents.length > 0">
+            </uib-pagination>
+        </div>
+    </div>
+
+    <div ng-if="!canReadDocument" class="row">
+        <p>You are not allowed to see documents in collection <strong ng-bind="collection"></strong>.</p>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+<div class="edit-document" ng-controller="StorageFullCtrl" ng-init="init('{{action}}')">
+  <headline title="Storage" subtitle="{{action}}"></headline>
+  <div class="container container-medium">
+    <div class="row whitespace-top">
+      <div class="col-sm-12" ng-if="notFoundError">
+          <p>There is no document matching the id <strong ng-bind="id">null</strong>.</p>
+      </div>
+
+      <div class="col-sm-12" ng-if="!notFoundError">
+          <div class="row view-toggle">
+              <div class="col-sm-12">
+                  <div class="btn-group" role="group">
+                      <button
+                              type="button"
+                              class="btn btn-lg btn-default fa fa-file-text-o"
+                              ng-class="{active: view === 'form'}"
+                              title="Use the form view"
+                              ng-click="switchView('form')"></button>
+                      <button
+                              type="button"
+                              class="btn btn-lg btn-default fa fa-file-code-o"
+                              ng-class="{active: view === 'json'}"
+                              title="Use the JSON view"
+                              ng-click="switchView('json')"></button>
+                  </div>
+                  <div class="btn-group" role="group" ng-if="canEditDocument">
+                      <add-attribute schema="schema" document="document" refresh-form="refreshForm()"></add-attribute>
+                  </div>
+              </div>
+          </div>
+          <div class="row edit-id">
+              <div class="col-sm-3">
+                  <div class="form-group">
+                      <label>id</label>
+                      <div class="input-group">
+                          <input type="text" id="id" class="form-control" placeholder="Optional" ng-model="document.id" ng-disabled="isEdit" ng-blur="documentExists()"/>
+                          <div class="input-group-addon">
+                              <span ng-if="isLoading">
+                                  <span class="fa fa-spinner fa-spin"></span>
+                              </span>
+                              <span ng-if="exists && !isEdit">
+                                  <span
+                                          class="go-document glyphicon glyphicon-eye-open"
+                                          title="A document with this id already exists. Click here for access to the whole document."
+                                          ui-sref="storage.full({collection: collection, id: document.id})">
+                                  </span>
+                              </span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-sm-12 form">
+                  <div ng-if="view === 'form'">
+                      <div class="panel panel-default">
+                          <div class="panel-body">
+                              <form sf-schema="schema" sf-model="document.content"></form>
+                          </div>
+                      </div>
+                  </div>
+                  <div ng-if="view === 'json'">
+                      <json-edit content="document.json" can-edit="canEditDocument"></json-edit>
+                  </div>
+
+                  <div class="actions-group">
+                      <div class="checkbox" ng-if="!exists">
+                          <label>
+                              <input type="checkbox" ng-model="option.another" class="create-another"> Create another
+                          </label>
+                      </div>
+
+                      <button id="update" type="submit" class="btn btn-success control" ng-if="exists && canEditDocument" ng-click="update()">Update</button>
+                      <button id="create" type="submit" class="btn btn-success control" ng-if="!exists" ng-click="create()">Create</button>
+
+                      <a href class="control" ng-click="goToList()">List</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
