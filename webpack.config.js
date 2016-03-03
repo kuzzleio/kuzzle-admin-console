@@ -203,7 +203,17 @@ module.exports = function makeWebpackConfig () {
   config.devServer = {
     contentBase: BASE_CONTENT_PATH,
     stats: 'minimal',
-    port: DEV_SERVER_PORT
+    port: DEV_SERVER_PORT,
+    host: '0.0.0.0',
+    proxy: {
+      '/api/*': {
+        target: 'http://localhost:3001/',
+        secure: false,
+        rewrite: function(req) {
+          req.url = req.url.replace(/^\/api/, '');
+        }
+      }
+    }
   };
 
   return config;

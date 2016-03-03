@@ -7,7 +7,7 @@
     "test": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js",
     "test-selective": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js --cucumberOpts.tags @myTest",
     "start": "node ./bin/www",
-    "dev": "webpack-dev-server --history-api-fallback --inline --progress"
+    "dev": "webpack-dev-server --history-api-fallback --inline --progress --public localhost"
   },
   "keywords": [
     "kuzzle",
