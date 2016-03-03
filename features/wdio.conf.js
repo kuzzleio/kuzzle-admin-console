@@ -27,7 +27,7 @@ exports.config = {
     './features/firstAdmin.feature',
     './features/authentication.feature',
     './features/realtime.feature',
-    './features/browseData.feature'
+    './features/browseData.feature',
     './features/metrics.feature',
     './features/indexes.feature',
     './features/roles.feature',
