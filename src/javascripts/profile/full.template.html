@@ -1,0 +1,32 @@
+<div class="edit-collection" ng-controller="ProfileFullCtrl" ng-init="init('{{action}}')">
+  <headline title="Profile" subtitle="{{action}}"></headline>
+  <div class="container container-medium">
+    <div class="row whitespace-top">
+      <div class="col-sm-12 profile-not-found" ng-if="notFoundError">
+        <p>There is no profile matching the name <strong ng-bind="profile.id">null</strong>.</p>
+      </div>
+
+      <div class="col-sm-12" ng-if="!notFoundError">
+
+        <form>
+            <div class="form-group">
+                <label for="profile-id">Profile name</label>
+                <input type="text" class="form-control" ng-model="profile.id" id="profile-id" ng-disabled="isEdit">
+            </div>
+            <div class="form-group">
+                <label for="name">Profile content</label>
+                <json-edit content="profile.content" can-edit="canCreateOrReplaceProfile || canUpdateProfile"></json-edit>
+            </div>
+
+            <div class="actions-group">
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit && canCreateOrReplaceProfile" ng-click="create()">Create</button>
+                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit && canUpdateProfile" ng-click="update()">Update</button>
+                <button id="replace" type="submit" class="btn btn-warning control" ng-if="isEdit && canCreateOrReplaceProfile" ng-click="replace()">Replace</button>
+                <a class="control" ng-click="cancel()">Cancel</a>
+            </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

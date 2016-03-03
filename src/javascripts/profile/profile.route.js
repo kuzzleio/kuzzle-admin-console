@@ -7,13 +7,13 @@ angular.module('kuzzle.profile')
         parent: 'logged',
         url: '/profile',
         views: {
-          'bodyView': { templateUrl: '/profile' }
+          'bodyView': { templateUrl: '/javascripts/profile/index.template.html' }
         }
       })
       .state('profile.browse', {
         url: '/browse',
         views: {
-          'mainView': { templateUrl: '/profile/browse' }
+          'mainView': { templateUrl: '/javascripts/profile/browse.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -35,7 +35,7 @@ angular.module('kuzzle.profile')
       .state('profile.create', {
         url: '/add?content',
         views: {
-          'mainView': { templateUrl: '/profile/create' }
+          'mainView': { templateUrl: '/javascripts/profile/full.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -52,7 +52,7 @@ angular.module('kuzzle.profile')
       .state('profile.full', {
         url: '/:profile',
         views: {
-          'mainView': { templateUrl: '/profile/full' }
+          'mainView': { templateUrl: '/javascripts/profile/full.template.html' }
         },
         resolve: {
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
