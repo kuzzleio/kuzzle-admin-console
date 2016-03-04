@@ -14,14 +14,14 @@ angular.module('kuzzle.indexesDropDownSearch', [])
       };
 
       $scope.onClickItemProxy = function(item) {
-        if ($state.current.name == 'storage') {
+        if ($state.current.name === 'storage') {
           $stateParams.index = item.item;
           $state.transitionTo('storage.browse', $stateParams);
           return;
         }
 
         $scope.onClickItem(item);
-      }
+      };
     }
   ])
   .directive('indexesDropDownSearch', function () {

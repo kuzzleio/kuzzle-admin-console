@@ -33,15 +33,15 @@ a {
   background-color: #00757F;
   border-color: #00757F;
   &:disabled {
-    background-color: desaturate(#00757f, 20%);
-    border-color: desaturate(#00757f, 20%);
+    background-color: desaturate(#00757f, 70%);
+    border-color: desaturate(#00757f, 70%);
     &:focus,
     &:hover {
-      background-color: lighten(desaturate(#00757f, 20%), 5%);
-      border-color: lighten(desaturate(#00757f, 20%), 5%);
+      background-color: lighten(desaturate(#00757f, 70%), 5%);
+      border-color: lighten(desaturate(#00757f, 70%), 5%);
       &:active {
-        background-color: lighten(desaturate(#00757f, 20%), 5%);
-        border-color: lighten(desaturate(#00757f, 20%), 5%);
+        background-color: lighten(desaturate(#00757f, 70%), 5%);
+        border-color: lighten(desaturate(#00757f, 70%), 5%);
       }
     }
   }
@@ -60,15 +60,15 @@ a {
   background-color: #45b29d;
   border-color: #45b29d;
   &:disabled {
-    background-color: desaturate(#45b29d, 20%);
-    border-color: desaturate(#45b29d, 20%);
+    background-color: desaturate(#45b29d, 55%);
+    border-color: desaturate(#45b29d, 55%);
     &:focus,
     &:hover {
-      background-color: saturate(desaturate(#45b29d, 20%), 20%);
-      border-color: saturate(desaturate(#45b29d, 20%), 20%);
+      background-color: saturate(desaturate(#45b29d, 55%), 20%);
+      border-color: saturate(desaturate(#45b29d, 55%), 20%);
       &:active {
-        background-color: saturate(desaturate(#45b29d, 20%), 20%);
-        border-color: saturate(desaturate(#45b29d, 20%), 20%);
+        background-color: saturate(desaturate(#45b29d, 55%), 20%);
+        border-color: saturate(desaturate(#45b29d, 55%), 20%);
       }
     }
   }
@@ -87,15 +87,15 @@ a {
   background-color: #efc94c;
   border-color: #efc94c;
   &:disabled {
-    background-color: desaturate(#efc94c, 20%);
-    border-color: desaturate(#efc94c, 20%);
+    background-color: desaturate(#efc94c, 55%);
+    border-color: desaturate(#efc94c, 55%);
     &:focus,
     &:hover {
-      background-color: saturate(desaturate(#efc94c, 20%), 20%);
-      border-color: saturate(desaturate(#efc94c, 20%), 20%);
+      background-color: saturate(desaturate(#efc94c, 55%), 20%);
+      border-color: saturate(desaturate(#efc94c, 55%), 20%);
       &:active {
-        background-color: saturate(desaturate(#efc94c, 20%), 20%);
-        border-color: saturate(desaturate(#efc94c, 20%), 20%);
+        background-color: saturate(desaturate(#efc94c, 55%), 20%);
+        border-color: saturate(desaturate(#efc94c, 55%), 20%);
       }
     }
   }
@@ -114,15 +114,15 @@ a {
   background-color: #d54f58;
   border-color: #d54f58;
   &:disabled {
-    background-color: desaturate(#d54f58, 20%);
-    border-color: desaturate(#d54f58, 20%);
+    background-color: desaturate(#d54f58, 55%);
+    border-color: desaturate(#d54f58, 55%);
     &:focus,
     &:hover {
-      background-color: saturate(desaturate(#d54f58, 20%), 20%);
-      border-color: saturate(desaturate(#d54f58, 20%), 20%);
+      background-color: saturate(desaturate(#d54f58, 55%), 20%);
+      border-color: saturate(desaturate(#d54f58, 55%), 20%);
       &:active {
-        background-color: saturate(desaturate(#d54f58, 20%), 20%);
-        border-color: saturate(desaturate(#d54f58, 20%), 20%);
+        background-color: saturate(desaturate(#d54f58, 55%), 20%);
+        border-color: saturate(desaturate(#d54f58, 55%), 20%);
       }
     }
   }

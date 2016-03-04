@@ -19,7 +19,7 @@ angular.module('kuzzle.messageLog', [
     };
     $scope.collapseToggle = function () {
       $scope.messageBoardOpen = !$scope.messageBoardOpen;
-      $cookies.put('watch_message_board_open', $scope.messageBoardOpen)
+      $cookies.put('watch_message_board_open', $scope.messageBoardOpen);
     };
   }])
   .directive('messages', function () {

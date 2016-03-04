@@ -79,4 +79,9 @@ angular.module('schemaForm')
         'location',
         'javascripts/storage/customFormDecorators/leaflet/location.tpl.html'
       );
+      schemaFormDecoratorsProvider.addMapping(
+        'bootstrapDecorator',
+        'geo_point',
+        'javascripts/storage/customFormDecorators/leaflet/location.tpl.html'
+      );
     }]);

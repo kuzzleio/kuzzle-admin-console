@@ -5,7 +5,12 @@ angular.module('kuzzle.filters')
     $scope.filterForms = {};
 
     $scope.reset = function () {
-      // TODO! Implement this.
+      $scope.filters.advancedFilter = angular.toJson({}, 4);
+      $scope.filters.basicFilter = [{
+        and: [
+          {field: null, equal: comparators[0], value: null}
+        ]
+      }];
     };
 
     $scope.doSearch = function () {

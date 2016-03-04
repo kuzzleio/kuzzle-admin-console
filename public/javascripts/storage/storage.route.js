@@ -39,7 +39,7 @@ angular.module('kuzzle.storage')
                   indexesApi.select($stateParams.index);
                 }
                 else {
-                  $state.go('storage')
+                  $state.go('storage');
                 }
               });
           }]
@@ -85,6 +85,17 @@ angular.module('kuzzle.storage')
               '/javascripts/storage/leaflet.directive.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (exist) {
+                  indexesApi.select($stateParams.index);
+                }
+                else {
+                  $state.go('storage');
+                }
+              });
           }]
         }
       })
@@ -103,6 +114,17 @@ angular.module('kuzzle.storage')
               '/javascripts/storage/leaflet.directive.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (exist) {
+                  indexesApi.select($stateParams.index);
+                }
+                else {
+                  $state.go('storage');
+                }
+              });
           }]
         }
       });

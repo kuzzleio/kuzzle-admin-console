@@ -39,7 +39,7 @@ angular.module('kuzzle.realtime')
                   indexesApi.select($stateParams.index);
                 }
                 else {
-                  $state.go('storage')
+                  $state.go('storage');
                 }
               });
           }]

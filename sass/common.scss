@@ -111,6 +111,13 @@ h2.select-collection {
   .dropdown-menu {
     min-width: 200px;
     li {
+      &.active {
+        a {
+          i {
+            color: #FFF;
+          }
+        }
+      }
       form {
         margin-bottom: 0;
       }
