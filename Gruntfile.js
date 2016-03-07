@@ -8,7 +8,7 @@ module.exports = function (grunt) {
   grunt.initConfig({
     /** ADD REAL TESTS ON SOURCE **/
     jshint: {
-      all: ['public/javascripts/**/*.js'],
+      all: ['src/javascripts/**/*.js'],
       options: {
         jshintrc: './.jshintrc'
       }
@@ -22,7 +22,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: 'sass',
           src: ['*.scss'],
-          dest: 'public/styles',
+          dest: 'src/styles',
           ext: '.css'
         }]
       }

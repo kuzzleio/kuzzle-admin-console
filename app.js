@@ -13,10 +13,16 @@ var
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: config.output.publicPath,
+  contentBase: './src',
   stats: {
     colors: true,
     chunks: false
-  }
+  },
+  watchOptions: {
+    aggregateTimeout: 300,
+    // poll: 1000
+  },
+  lazy: false
 });
 
 var hotMiddleware = require('webpack-hot-middleware')(compiler);
@@ -34,9 +40,9 @@ app.use(require('connect-history-api-fallback')());
 app.use(devMiddleware);
 // enable hot-reload and state-preserving
 // compilation error display
-app.use(hotMiddleware);
+// app.use(hotMiddleware);
 
-// view engine setup
+// // view engine setup
 app.engine('.hbs', exphbs({
   defaultLayout: null,
   layoutsDir: 'core/views/layouts',

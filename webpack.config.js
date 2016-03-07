@@ -33,7 +33,11 @@ module.exports = function makeWebpackConfig () {
    * Karma will set this when it's a test build
    */
   config.entry = isTest ? {} : {
-    app: BASE_CONTENT_PATH + '/javascripts/app.js'
+    app: [
+      // 'webpack/hot/dev-server',
+      // 'webpack-hot-middleware/client',
+      BASE_CONTENT_PATH + '/javascripts/app.js'
+    ]
   };
 
   /**
