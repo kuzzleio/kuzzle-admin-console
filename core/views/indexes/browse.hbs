@@ -34,26 +34,45 @@
                       </div>
                   </div>
 
-                  <div class="row">
+                  <div class="row documents">
                       <div class="col-sm-12 list-indexes">
-                          <div id="\{{index}}" class="panel panel-primary" ng-repeat="index in indexData.indexes | orderBy | filter:search">
-                              <div class="panel-heading">
-                                  <h3 class="panel-title">
-                                      <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Go to full view"></span>
-
-                                      <span class="pull-right">
-                                          <a ui-sref="collection.browse({index: index})" title="Browse collections">
-                                            <span class="fa fa-table" style="font-size: 0.8em;color: #777;"></span>
-                                          </a>
-                                          <cog-options-indexes
-                                              index="index"
-                                              can-edit="false"
-                                              can-delete="canDeleteIndex(index)"
-                                              after-delete="afterDelete(index)">
-                                          </cog-options-indexes>
-                                      </span>
-                                  </h3>
+                          <div id="\{{index}}" class="panel panel-primary dropdown" ng-repeat="index in indexData.indexes | orderBy | filter:search">
+                            <div class="panel-body">
+                              <div class="col-sm-10 ellipsis">
+                                <a ui-sref="collection.browse({index: index})" title="Browse '\{{index}}' collections">
+                                  <strong class="index-name" ng-bind="index"></strong>
+                                </a>
                               </div>
+
+                              <div class="col-sm-2">
+                                <div class="icons">
+                                  <span class="fa fa-table" ui-sref="collection.browse({index: index})" title="Browse '\{{index}}' collections"></span>
+                                  <cog-options-indexes
+                                      index="index"
+                                      can-edit="false"
+                                      can-delete="canDeleteIndex(index)"
+                                      after-delete="afterDelete(index)">
+                                  </cog-options-indexes>
+                                </div>
+                              </div>
+                            </div>
+                            <!--<div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <span class="index-name" ng-bind="index" ng-click="browseCollection(index)" title="Browse '\{{index}}' collections"></span>
+
+                                    <span class="pull-right">
+                                        <a ui-sref="collection.browse({index: index})" title="Browse '\{{index}}' collections">
+                                          <span class="fa fa-table"></span>
+                                        </a>
+                                        <cog-options-indexes
+                                            index="index"
+                                            can-edit="false"
+                                            can-delete="canDeleteIndex(index)"
+                                            after-delete="afterDelete(index)">
+                                        </cog-options-indexes>
+                                    </span>
+                                </h3>
+                            </div>-->
                           </div>
                       </div>
                   </div>
