@@ -21,7 +21,7 @@ kuzzleBo:
   command: /run-test.sh
   volumes:
     - "..:/var/app"
-    - "../features/kuzzle-config.js:/var/app/public/javascripts/config.js"
+    - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
   ports:
     - "3000:3000"
     - "8082:8080"
