@@ -17,12 +17,7 @@ var devMiddleware = require('webpack-dev-middleware')(compiler, {
   stats: {
     colors: true,
     chunks: false
-  },
-  watchOptions: {
-    aggregateTimeout: 300,
-    // poll: 1000
-  },
-  lazy: false
+  }
 });
 
 var hotMiddleware = require('webpack-hot-middleware')(compiler);
@@ -35,12 +30,12 @@ compiler.plugin('compilation', function (compilation) {
 });
 
 // handle fallback for HTML5 history API
-app.use(require('connect-history-api-fallback')());
+// app.use(require('connect-history-api-fallback')());
 // serve webpack bundle output
 app.use(devMiddleware);
 // enable hot-reload and state-preserving
 // compilation error display
-// app.use(hotMiddleware);
+app.use(hotMiddleware);
 
 // // view engine setup
 app.engine('.hbs', exphbs({

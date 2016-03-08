@@ -3,7 +3,7 @@
 // Modules
 var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
-// var HtmlWebpackPlugin = require('html-webpack-plugin');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -35,7 +35,7 @@ module.exports = function makeWebpackConfig () {
   config.entry = isTest ? {} : {
     app: [
       // 'webpack/hot/dev-server',
-      // 'webpack-hot-middleware/client',
+      'webpack-hot-middleware/client',
       BASE_CONTENT_PATH + '/javascripts/app.js'
     ]
   };
@@ -157,7 +157,12 @@ module.exports = function makeWebpackConfig () {
    * Reference: http://webpack.github.io/docs/configuration.html#plugins
    * List: http://webpack.github.io/docs/list-of-plugins.html
    */
-  config.plugins = [];
+  config.plugins = [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+    // new HtmlWebpackPlugin()
+  ];
 
   // // Skip rendering index.html in test mode
   // if (!isTest) {
