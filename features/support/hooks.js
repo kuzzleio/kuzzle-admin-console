@@ -1,5 +1,4 @@
 var
-  request = require('request'),
   config = require('./config.js'),
   fixtures = require('../fixtures.json'),
   q = require('q'),
