@@ -1,4 +1,4 @@
-Feature: Test firstAdmin (must be the last one)
+Feature: Test firstAdmin
 
   @deleteUsers
   Scenario: Create the first admin with bad password.
