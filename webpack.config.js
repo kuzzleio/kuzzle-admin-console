@@ -11,12 +11,11 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
  * Env
  * Get npm lifecycle event to identify the environment
  */
-var ENV = process.env.npm_lifecycle_event;
-var isTest = ENV === 'test' || ENV === 'test-watch';
-var isProd = ENV === 'build';
-
+var DEVELOPMENT = 'dev';
+var ENV = process.env.NODE_ENV;
 var DEV_SERVER_PORT = 3000;
 var BASE_CONTENT_PATH = './src';
+var isProd = ENV !== DEVELOPMENT;
 
 module.exports = function makeWebpackConfig () {
   /**
@@ -29,12 +28,21 @@ module.exports = function makeWebpackConfig () {
   /**
    * Entry
    * Reference: http://webpack.github.io/docs/configuration.html#entry
-   * Should be an empty object if it's generating a test build
-   * Karma will set this when it's a test build
+   * Embed the webpack hot reload clients in development mode.
    */
-  config.entry = isTest ? {} : {
+  config.entry = isProd ? {
+    app: BASE_CONTENT_PATH + '/javascripts/app.js'
+  } : {
     app: [
+      /**
+       * Use this if you serve your content with WebpackDevServer
+       * (either from binary script or with Node.js API)
+       */
       // 'webpack/hot/dev-server',
+      /**
+       * Use this if you serve your content with the webpack-hot-middleware
+       * you embedded in your Express.js server.
+       */
       'webpack-hot-middleware/client',
       BASE_CONTENT_PATH + '/javascripts/app.js'
     ]
@@ -46,7 +54,7 @@ module.exports = function makeWebpackConfig () {
    * Should be an empty object if it's generating a test build
    * Karma will handle setting it up for you when it's a test build
    */
-  config.output = isTest ? {} : {
+  config.output = {
     // Absolute output directory
     path: __dirname + '/dist',
 
@@ -56,11 +64,11 @@ module.exports = function makeWebpackConfig () {
 
     // Filename for entry points
     // Only adds hash in build mode
-    filename: isProd ? '[name].[hash].js' : '[name].bundle.js',
+    filename: /*isProd ? '[name].[hash].js' :*/ '[name].bundle.js',
 
     // Filename for non-entry points
     // Only adds hash in build mode
-    chunkFilename: isProd ? '[name].[hash].js' : '[name].bundle.js'
+    chunkFilename: /*isProd ? '[name].[hash].js' :*/ '[name].bundle.js'
   };
 
   /**
@@ -68,9 +76,7 @@ module.exports = function makeWebpackConfig () {
    * Reference: http://webpack.github.io/docs/configuration.html#devtool
    * Type of sourcemap to use per build type
    */
-  if (isTest) {
-    config.devtool = 'inline-source-map';
-  } else if (isProd) {
+  if (isProd) {
     config.devtool = 'source-map';
   } else {
     config.devtool = 'eval-source-map';
@@ -107,7 +113,7 @@ module.exports = function makeWebpackConfig () {
       //
       // Reference: https://github.com/webpack/style-loader
       // Use style-loader in development.
-      loader: isTest ? 'null' : ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
+      loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
     }, {
       // ASSET LOADER
       // Reference: https://github.com/webpack/file-loader
@@ -125,21 +131,6 @@ module.exports = function makeWebpackConfig () {
       loader: 'raw'
     }]
   };
-
-  // ISPARTA LOADER
-  // Reference: https://github.com/ColCh/isparta-instrumenter-loader
-  // Instrument JS files with Isparta for subsequent code coverage reporting
-  // Skips node_modules and files that end with .test.js
-  // if (isTest) {
-  //   config.module.preLoaders.push({
-  //     test: /\.js$/,
-  //     exclude: [
-  //       /node_modules/,
-  //       /\.spec\.js$/
-  //     ],
-  //     loader: 'isparta-instrumenter'
-  //   });
-  // }
 
   /**
    * PostCSS
@@ -161,25 +152,16 @@ module.exports = function makeWebpackConfig () {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
-    // new HtmlWebpackPlugin()
+    /**
+     * We'll use the HtmlWebpackPlugin once all the module dependencies are
+     * expressed as require() calls.
+     */
+    // new HtmlWebpackPlugin({
+    //   template: './src/index.html',
+    //   inject: 'body'
+    // }),
+    // new ExtractTextPlugin('[name].[hash].css', {disable: !isProd})
   ];
-
-  // // Skip rendering index.html in test mode
-  // if (!isTest) {
-  //   // Reference: https://github.com/ampedandwired/html-webpack-plugin
-  //   // Render index.html
-  //   config.plugins.push(
-  //     new HtmlWebpackPlugin({
-  //       template: './src/public/index.html',
-  //       inject: 'body'
-  //     }),
-  //
-  //     // Reference: https://github.com/webpack/extract-text-webpack-plugin
-  //     // Extract css files
-  //     // Disabled when in test mode or not in build mode
-  //     new ExtractTextPlugin('[name].[hash].css', {disable: !isProd})
-  //   );
-  // }
 
   // Add build specific plugins
   if (isProd) {
@@ -199,7 +181,7 @@ module.exports = function makeWebpackConfig () {
       // Copy assets from the public folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin
       new CopyWebpackPlugin([{
-        from: __dirname + '/src/public'
+        from: __dirname + '/src'
       }])
     );
   }

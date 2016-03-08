@@ -8,7 +8,7 @@ npm-debug.log*
 !/coverage/scripts
 
 # Bower
-public/bower_components
+src/bower_components
 
 # Sass
 src/styles
@@ -29,3 +29,6 @@ docker-compose-custom.yml
 .*.swp
 .tags
 .sass-cache
+
+# Build assets
+dist
