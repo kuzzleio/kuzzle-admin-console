@@ -92,13 +92,14 @@ module.exports = function makeWebpackConfig () {
   // Initialize module
   config.module = {
     preLoaders: [],
-    loaders: [{
+    loaders: [
+      {
       // JS LOADER
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      loader: 'babel',
+      loaders: ['angular-hmr', 'babel'],
       exclude: /node_modules/
     }, {
       // CSS LOADER
