@@ -1,6 +1,7 @@
 var
   assert = require('assert'),
-  world = require('../../support/world.js');
+  world = require('../../support/world.js'),
+  wdioWrappers = require('../../support/wdioWrappers');
 
 module.exports = function () {
   this.When(/^I go to manage index page$/, function (callback) {
@@ -18,8 +19,9 @@ module.exports = function () {
   this.When(/^I fill the input "([^"]*)" with the foo index$/, function (id, callback) {
     browser
       .waitForVisible('#' + id, 1000)
-      .setValue('#' + id, world.fooIndex)
-      .call(callback);
+      .then(function () {
+        wdioWrappers.setValueViaScript(browser, '#' + id, world.fooIndex, callback);
+      });
   });
 
   this.When(/^I click on the index selector$/, function (callback) {
@@ -50,7 +52,7 @@ module.exports = function () {
     .click('.indexes-browse .create button')
     .call(callback);
   });
-  
+
   this.When(/^I click on the index option selector of the foo index$/, function (callback) {
     browser
       .waitForVisible('#' + world.fooIndex + ' cog-options-indexes .cog-options-indexes .dropdown-toggle', 1000)

@@ -48,7 +48,6 @@ Feature: Test multi index features
     Then I can see "modal-delete-index" modal
     Then The button "modal-delete-index-delete" is disabled
     Then I fill the input "modal-delete-index-name" with the foo index
-    And I'm waiting 10 sec
     Then The button "modal-delete-index-delete" is not disabled
     And I click on "modal-delete-index-delete" button
     Then I can see "1" indexes in list

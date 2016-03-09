@@ -49,5 +49,15 @@ module.exports = {
       .waitForEnabled('.modal-dialog .actions-group button', 10000)
       .click('.modal-dialog .actions-group button')
       .call(callback);
+  },
+
+  setValueViaScript: function (browser, selector, value, callback) {
+    browser
+      .execute(function (selector, value) {
+        $(selector).val(value);
+        $(selector).trigger('change');
+      }, selector, value)
+      .pause(200)
+      .call(callback);
   }
 };
