@@ -12,7 +12,7 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I am on the login$/, function (callback) {
+  this.Then(/^I am on the login page$/, function (callback) {
     var requiredUrl = world.baseUrl + '/#/login';
     var urlRegexp = new RegExp(requiredUrl, 'g');
 

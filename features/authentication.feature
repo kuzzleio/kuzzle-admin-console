@@ -18,4 +18,4 @@ Feature: Test authentication
   Scenario: The not authentified user is denied to visit an authenticated page
     Given I go to the logout page
     And I try to go to browse data page
-    Then I see the login page
+    Then I am on the login page
