@@ -185,11 +185,13 @@ var deleteUsers = function (callback) {
         deffered = q.defer(),
         passed = 0;
 
+      console.log('BEGIN deleteUsers');
       world
         .kuzzle
         .security
         .searchUsers({}, {hydrate: false}, function(err, res) {
           res.users.forEach(function (user) {
+            console.log('try deleteUser', user.id);
             world
               .kuzzle
               .security
@@ -198,8 +200,10 @@ var deleteUsers = function (callback) {
                   console.log(error);
                 }
                 passed++;
+                console.log('deletedUser', user.id, passed, res.total);
                 if (passed === res.total) {
                   deffered.resolve();
+                  console.log('END deleteUsers');
                 }
               });
           });
