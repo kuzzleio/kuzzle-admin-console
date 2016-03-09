@@ -52,9 +52,6 @@
       <script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
       <script type="text/javascript" src="bower_components/angular-cookies/angular-cookies.min.js"></script>
 
-      <script type="text/javascript" src="bower_components/socket.io-client/socket.io.js"></script>
-      <script type="text/javascript" src="bower_components/kuzzle-sdk/dist/kuzzle.js"></script>
-
       <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
       <script type="text/javascript" src="bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
       <script type="text/javascript" src="bower_components/json-formatter/dist/json-formatter.min.js"></script>
@@ -77,66 +74,15 @@
       <script type="text/javascript" src="bower_components/highcharts/highcharts-more.js"></script>
       <script type="text/javascript" src="bower_components/highcharts/modules/exporting.js"></script>
 
-      <script type="text/javascript" src="/bower_components/angular-scroll-glue/src/scrollglue.js"></script>
-
-      <script type="text/javascript" src="bower_components/oclazyload/dist/ocLazyLoad.min.js"></script>
-
-      <script type="text/javascript" src="/javascripts/config.js"></script>
       <script type="text/javascript" src="/app.bundle.js"></script>
 
-      <script type="text/javascript" src="/javascripts/common/authentication/authorizationApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/authentication/authentication.module.js"></script>
-      <script type="text/javascript" src="/javascripts/common/authentication/authentication.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/authentication/session.service.js"></script>
+      <!-- DIRECTIVES  (unable to require with webpack due to AHMR) -->
+      <script type="text/javascript" src="/javascripts/common/authentication/login.controller.js"></script>
       <script type="text/javascript" src="/javascripts/common/authentication/userRoles.const.js"></script>
       <script type="text/javascript" src="/javascripts/common/authentication/authEvents.const.js"></script>
-      <script type="text/javascript" src="/javascripts/common/authentication/login.controller.js"></script>
-      <script type="text/javascript" src="/javascripts/common/authentication/loginModal.controller.js"></script>
       <script type="text/javascript" src="/javascripts/common/authentication/userMenu.directive.js"></script>
-
-      <script type="text/javascript" src="/javascripts/common/mainApp.controller.js"></script>
-      <script type="text/javascript" src="/javascripts/common/sidebar.controller.js"></script>
-      <script type="text/javascript" src="/javascripts/common/kuzzleSdk.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/bufferCancel.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/documentApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/indexesApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/collectionApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/roleApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/profileApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/userApi.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/serverApi.service.js"></script>
-
       <script type="text/javascript" src="/javascripts/common/headline/headline.directive.js"></script>
-
-      <script type="text/javascript" src="/javascripts/indexes/indexes.module.js"></script>
-      <script type="text/javascript" src="/javascripts/indexes/indexes.route.js"></script>
-      <script type="text/javascript" src="/javascripts/indexes/indexes.controller.js"></script>
       <script type="text/javascript" src="/javascripts/indexes/indexesDropDownSearch/indexesDropDownSearch.directive.js"></script>
       <script type="text/javascript" src="/javascripts/indexes/cogOptionsIndexes/cogOptionsIndexes.directive.js"></script>
-      <script type="text/javascript" src="/javascripts/common/schema.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/uid.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/previousState.service.js"></script>
-      <script type="text/javascript" src="/javascripts/common/unsubscribeOnPageChange.service.js"></script>
-
-      <script type="text/javascript" src="/javascripts/storage/storage.module.js"></script>
-      <script type="text/javascript" src="/javascripts/storage/storage.route.js"></script>
-
-      <script type="text/javascript" src="/javascripts/collection/collection.module.js"></script>
-      <script type="text/javascript" src="/javascripts/collection/collection.route.js"></script>
-
-      <script type="text/javascript" src="/javascripts/realtime/realtime.module.js"></script>
-      <script type="text/javascript" src="/javascripts/realtime/realtime.route.js"></script>
-
-      <script type="text/javascript" src="/javascripts/role/role.module.js"></script>
-      <script type="text/javascript" src="/javascripts/role/role.route.js"></script>
-
-      <script type="text/javascript" src="/javascripts/profile/profile.module.js"></script>
-      <script type="text/javascript" src="/javascripts/profile/profile.route.js"></script>
-
-      <script type="text/javascript" src="/javascripts/user/user.module.js"></script>
-      <script type="text/javascript" src="/javascripts/user/user.route.js"></script>
-
-      <script type="text/javascript" src="/javascripts/metrics/metrics.module.js"></script>
-      <script type="text/javascript" src="/javascripts/metrics/metrics.ctrl.js"></script>
   </body>
 </html>

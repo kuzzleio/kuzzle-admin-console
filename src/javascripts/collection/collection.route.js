@@ -1,3 +1,5 @@
+require('./collection.module');
+
 angular.module('kuzzle.collection')
 
   .config(['$stateProvider', function ($stateProvider) {

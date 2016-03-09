@@ -1,3 +1,9 @@
+// require('./cogOptionsIndexes/cogOptionsIndexes.directive');
+// require('./indexesDropDownSearch/indexesDropDownSearch.directive');
+
+require('./indexes.module');
+require('./indexes.controller');
+
 angular.module('kuzzle.indexes')
 
   .config(['$stateProvider', 'USER_ROLES', function ($stateProvider, USER_ROLES) {

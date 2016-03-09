@@ -1,3 +1,4 @@
+require('./session.service');
 angular.module('kuzzle.authorization', [])
   .service('authorizationApi', [
     'Session',

@@ -1,3 +1,5 @@
+require('./user.module');
+
 angular.module('kuzzle.user')
 
   .config(['$stateProvider', function ($stateProvider) {

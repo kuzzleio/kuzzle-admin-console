@@ -1,3 +1,5 @@
+require('./profile.module');
+
 angular.module('kuzzle.profile')
 
   .config(['$stateProvider', function ($stateProvider) {

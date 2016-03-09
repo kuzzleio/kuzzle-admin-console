@@ -1,3 +1,5 @@
+require('./session.service');
+
 angular.module('kuzzle.authentication')
 .factory('AuthService', [
   '$q',

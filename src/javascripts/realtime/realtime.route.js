@@ -1,3 +1,6 @@
+require('angularjs-scroll-glue');
+require('./realtime.module');
+
 angular.module('kuzzle.realtime')
 
   .config(['$stateProvider', function ($stateProvider) {

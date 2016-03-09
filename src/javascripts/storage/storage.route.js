@@ -1,3 +1,5 @@
+require('./storage.module');
+
 angular.module('kuzzle.storage')
 
   .config(['$stateProvider', function ($stateProvider) {

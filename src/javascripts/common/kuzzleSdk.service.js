@@ -1,3 +1,6 @@
+var Kuzzle = require('kuzzle-sdk');
+var config = require('../config');
+
 angular.module('kuzzle.kuzzleSdk', [])
   .factory('kuzzleUrl', ['$location', function ($location) {
     if (typeof config !== 'undefined' && config.kuzzleUrl) {

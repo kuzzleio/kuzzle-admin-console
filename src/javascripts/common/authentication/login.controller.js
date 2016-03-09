@@ -1,3 +1,4 @@
+
 angular.module('kuzzle.authentication')
 .directive('formAutofillFix', ['$timeout', function ($timeout) {
   return function (scope, element, attrs) {

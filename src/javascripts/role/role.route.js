@@ -1,3 +1,5 @@
+require('./role.module');
+
 angular.module('kuzzle.role')
 
   .config(['$stateProvider', function ($stateProvider) {

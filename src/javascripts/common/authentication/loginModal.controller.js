@@ -1,3 +1,5 @@
+require('./authentication.service');
+
 angular.module('kuzzle.authentication')
 .controller('LoginModalCtrl', [
   '$scope',
