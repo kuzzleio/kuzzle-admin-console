@@ -182,27 +182,28 @@ var deleteUsers = function (callback) {
     })
     .then(() => {
       var
-        deffered = q.defer();
+        deffered = q.defer(),
         passed = 0;
 
-      fixtures['%kuzzle'].users.forEach(function (user) {
-        if (user.username === undefined) {
-          return;
-        }
-        world
-          .kuzzle
-          .security
-          .deleteUser(user.username, function (error, result) {
-            if (error) {
-              console.log(error);
-            }
-            passed++;
-            if (passed === (fixtures['%kuzzle'].users.length /2)) {
-              deffered.resolve();
-              return;
-            }
+      world
+        .kuzzle
+        .security
+        .searchUsers({}, {hydrate: false}, function(err, res) {
+          res.users.forEach(function (user) {
+            world
+              .kuzzle
+              .security
+              .deleteUser(user.id, function (error, result) {
+                if (error) {
+                  console.log(error);
+                }
+                passed++;
+                if (passed === res.total) {
+                  deffered.resolve();
+                }
+              });
           });
-      });
+        });
 
       return deffered.promise;
     })
