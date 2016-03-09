@@ -71,12 +71,24 @@ angular.module('kuzzle', [
 
             Auth.isAuthenticated()
               .then(function () {
+
+                require.ensure(['./split_chunk'], function (require) {
+                  var execSplitChunk = require('./split_chunk');
+                  execSplitChunk();
+                });
+
                 deferred.resolve();
               })
               .catch(function () {
                 kuzzle.addListener('connected', function() {
                   Auth.isAuthenticated()
                     .then(function () {
+
+                      require.ensure(['./split_chunk'], function (require) {
+                        var execSplitChunk = require('./split_chunk');
+                        execSplitChunk();
+                      });
+
                       deferred.resolve();
                     })
                     .catch(function () {
