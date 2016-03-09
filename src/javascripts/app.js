@@ -1,3 +1,7 @@
+if (module.hot) {
+  module.hot.accept();
+}
+
 angular.module('kuzzle', [
   'ui.router',
   'ui.bootstrap',
