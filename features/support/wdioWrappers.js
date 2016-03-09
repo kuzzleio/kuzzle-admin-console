@@ -28,6 +28,8 @@ module.exports = {
               'Expected to find ' + itemName + ' in list ' + el
             );
           }
+        }, error => {
+          callback(error);
         })
         .call(callback);
       }, error => {

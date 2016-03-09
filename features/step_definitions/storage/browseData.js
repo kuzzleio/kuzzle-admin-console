@@ -147,7 +147,7 @@ module.exports = function () {
 
   this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
     browser
-      .pause(500)
+      .pause(1000)
       .getUrl()
       .then(url => {
         var expectedUrl = world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id;

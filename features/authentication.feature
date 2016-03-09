@@ -18,4 +18,5 @@ Feature: Test authentication
   Scenario: The not authentified user is denied to visit an authenticated page
     Given I go to the logout page
     And I am on browse data page
+    And I'm waiting 2 sec
     Then I see the login page

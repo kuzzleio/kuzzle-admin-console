@@ -7,6 +7,8 @@ module.exports = function () {
   this.When(/^I go to the login page$/, function (callback) {
     browser
       .url('/#/login')
+      .pause(1000)
+      .waitForVisible('[name=username]', 20000)
       .call(callback);
   });
 
@@ -31,13 +33,14 @@ module.exports = function () {
       .setValue('[name=username]', world.users[user].username)
       .setValue('[name=password]', world.users[user].clearPassword)
       .click('[type=submit]')
-      .waitForVisible('.navbar-brand', 3000)
+      .waitForVisible('.navbar-brand', 20000)
       .pause(1000)
       .call(callback);
   });
 
   this.Then(/^I see the login page$/, function(callback) {
     browser
+      .waitForVisible('input[name=password]', 20000)
       .isVisible('input[name=username]')
       .then((isVisible) => {
         assert(isVisible, 'Element username is not visible');
@@ -55,7 +58,7 @@ module.exports = function () {
 
   this.Then(/^I am authenticated$/, function (callback) {
     browser
-      .waitForVisible('.menubar.navbar', 2000)
+      .waitForVisible('.menubar.navbar', 20000)
       .getCookie(c.authCookieName)
       .then(cookie => {
         var sessionObject;
