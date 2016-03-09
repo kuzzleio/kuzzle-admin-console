@@ -4,6 +4,7 @@
   "description": "Official back office for manage and monitor your Kuzzle",
   "main": "app.js",
   "scripts": {
+    "build": "echo LOL",
     "test": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js",
     "test-selective": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js --cucumberOpts.tags @myTest",
     "start": "node ./bin/www"
@@ -27,6 +28,7 @@
     "kuzzle-sdk": "1.7.1",
     "lodash": "^3.10.1",
     "morgan": "~1.6.1",
+    "rc": "^1.1.6",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.3.7"
   },

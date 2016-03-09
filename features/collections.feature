@@ -27,15 +27,18 @@ Feature: Test collections page
     Given I am on browse collection page
     Then I have a list with "7" collections
 
+  @cleanDb
   Scenario: Access to collection edit
     Given I go to browse collection page
     When I click on full view button for collection "kuzzle-bo-test"
     Then I am on edit collection page for collection "kuzzle-bo-test"
 
+  @cleanDb
   Scenario: Access to documents list
     Given I go to browse collection page
     When I click on documents list button for collection "kuzzle-bo-test"
     Then I am on browse data page for collection "kuzzle-bo-test"
+    And I'm waiting 4 sec
     Then I have a list with "2" elements
 
   @cleanDb

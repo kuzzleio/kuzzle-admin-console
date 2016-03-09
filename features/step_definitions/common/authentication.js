@@ -12,6 +12,12 @@ module.exports = function () {
       .call(callback);
   });
 
+  this.Given(/^I try to go to the login page$/, function (callback) {
+    browser
+      .url('/#/login')
+      .call(callback);
+  });
+
   this.Then(/^I am on the login page$/, function (callback) {
     browser
       .waitForVisible('.login-page', world.waitForPageVisible)

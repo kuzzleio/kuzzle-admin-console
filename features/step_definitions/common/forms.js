@@ -66,7 +66,7 @@ module.exports = function () {
   this.Then(/^The button "([^"]*)" is ?(not)* disabled$/, function (id, not, callback) {
     if (not) {
       browser
-        .waitForEnabled('#' + id, 5000)
+        .waitForEnabled('#' + id, 120000)
         .call(callback);
     }
     else {
