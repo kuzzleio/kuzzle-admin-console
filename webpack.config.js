@@ -99,7 +99,7 @@ module.exports = function makeWebpackConfig () {
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      loaders: ['angular-hmr', 'babel'],
+      loaders: isProd ? ['babel'] : ['angular-hmr', 'babel'],
       exclude: /node_modules/
     }, {
       // CSS LOADER
