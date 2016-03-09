@@ -51,13 +51,12 @@ module.exports = {
       .call(callback);
   },
 
-  setValueViaScript: function (browser, selector, value, callback) {
+  setValueViaScript: function (browser, selector, value) {
     browser
       .execute(function (selector, value) {
         $(selector).val(value);
         $(selector).trigger('change');
       }, selector, value)
-      .pause(200)
-      .call(callback);
+      .pause(200);
   }
 };

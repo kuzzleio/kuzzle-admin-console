@@ -20,8 +20,9 @@ module.exports = function () {
     browser
       .waitForVisible('#' + id, 1000)
       .then(function () {
-        wdioWrappers.setValueViaScript(browser, '#' + id, world.fooIndex, callback);
-      });
+        wdioWrappers.setValueViaScript(browser, '#' + id, world.fooIndex);
+      })
+      .call(callback);
   });
 
   this.When(/^I click on the index selector$/, function (callback) {
