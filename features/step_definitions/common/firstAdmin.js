@@ -23,7 +23,6 @@ module.exports = function () {
         console.log('wtf ?', res)
 
         browser
-          .waitForVisible('.create-first-admin-page', world.waitForPageVisible)
           .getUrl()
           .then(url => {
             assert(
@@ -31,6 +30,7 @@ module.exports = function () {
               'Must be at ' + requiredUrl + ' location, got ' + url
             );
           })
+          .waitForVisible('.create-first-admin-page', world.waitForPageVisible)
           .call(callback);
       })
 
