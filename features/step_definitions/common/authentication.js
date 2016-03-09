@@ -13,18 +13,8 @@ module.exports = function () {
   });
 
   this.Then(/^I am on the login page$/, function (callback) {
-    var requiredUrl = world.baseUrl + '/#/login';
-    var urlRegexp = new RegExp(requiredUrl, 'g');
-
     browser
       .waitForVisible('.login-page', world.waitForPageVisible)
-      .getUrl()
-      .then(url => {
-        assert(
-          url.match(urlRegexp),
-          'Must be at ' + requiredUrl + ' location, got ' + url
-        );
-      })
       .call(callback);
   });
 
@@ -50,25 +40,6 @@ module.exports = function () {
       .setValue('[name=username]', world.users[user].username)
       .setValue('[name=password]', world.users[user].clearPassword)
       .click('[type=submit]')
-      .waitForVisible('.navbar-brand', 3000)
-      .pause(1000)
-      .call(callback);
-  });
-
-  this.Then(/^I see the login page$/, function(callback) {
-    browser
-      .isVisible('input[name=username]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element username is not visible');
-      })
-      .isVisible('input[name=password]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element password is not visible');
-      })
-      .isVisible('button[type=submit]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element submit is not visible');
-      })
       .call(callback);
   });
 

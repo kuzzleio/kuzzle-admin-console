@@ -32,7 +32,7 @@ Feature: Test the profiles CRUD page
   @cleanSecurity
   Scenario: I am able to create a new profile.
     Given I go on the browse profiles page
-    Then I click the add profile button
+    And I click the add profile button
     Then I am on the add profile page
     Then I have input "profile-id"
     And The input "profile-id" is not disabled
@@ -41,7 +41,7 @@ Feature: Test the profiles CRUD page
   @cleanSecurity
   Scenario: I am able to clone a profile.
     Given I go on the browse profiles page
-    Then I click the clone button of the last profile
+    And I click the clone button of the last profile
     Then I am on the add profile page
     And I have input "profile-id"
     And The input "profile-id" is not disabled
