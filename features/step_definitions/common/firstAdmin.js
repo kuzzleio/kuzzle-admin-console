@@ -15,26 +15,16 @@ module.exports = function () {
     var requiredUrl = world.baseUrl + '/#/firstAdmin';
     var urlRegexp = new RegExp(requiredUrl, 'g');
 
-
-    world
-      .kuzzle
-      .security
-      .searchUsers({}, {hydrate: false}, function(err, res) {
-        console.log('wtf ?', res)
-
-        browser
-          .getUrl()
-          .then(url => {
-            assert(
-              url.match(urlRegexp),
-              'Must be at ' + requiredUrl + ' location, got ' + url
-            );
-          })
-          .waitForVisible('.create-first-admin-page', world.waitForPageVisible)
-          .call(callback);
+    browser
+      .waitForVisible('.create-first-admin-page', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
       })
-
-
+      .call(callback);
   });
 
   this.Given(/^I create the admin account as "([^"]*)"$/, function (user, callback) {

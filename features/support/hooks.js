@@ -185,29 +185,24 @@ var deleteUsers = function (callback) {
         deffered = q.defer(),
         passed = 0;
 
-      console.log('BEGIN deleteUsers');
-      world
-        .kuzzle
-        .security
-        .searchUsers({}, {hydrate: false}, function(err, res) {
-          res.users.forEach(function (user) {
-            console.log('try deleteUser', user.id);
-            world
-              .kuzzle
-              .security
-              .deleteUser(user.id, function (error, result) {
-                if (error) {
-                  console.log(error);
-                }
-                passed++;
-                console.log('deletedUser', user.id, passed, res.total);
-                if (passed === res.total) {
-                  deffered.resolve();
-                  console.log('END deleteUsers');
-                }
-              });
+      fixtures['%kuzzle'].users.forEach(function (user) {
+        if (user.username === undefined) {
+          return;
+        }
+        world
+          .kuzzle
+          .security
+          .deleteUser(user.username, function (error, result) {
+            if (error) {
+              console.log(error);
+            }
+            passed++;
+            if (passed === (fixtures['%kuzzle'].users.length /2)) {
+              deffered.resolve();
+              return;
+            }
           });
-        });
+      });
 
       return deffered.promise;
     })
