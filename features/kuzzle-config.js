@@ -1,3 +1,3 @@
 var config = {
-  kuzzleUrl: 'http://kuzzle:7512'
+  kuzzleUrl: 'http://192.168.1.169:7512'
 };

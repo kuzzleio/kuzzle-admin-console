@@ -79,6 +79,7 @@ angular.module('kuzzle.documentsInline')
       restrict: 'E',
       scope: {
         document: '=',
+        index: '=',
         collection: '=',
         canEdit: '=',
         afterDelete: '&',

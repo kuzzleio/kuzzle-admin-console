@@ -64,7 +64,7 @@ angular.module('schemaForm')
     function (schemaFormProvider, schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
 
       var location = function(name, schema, options) {
-        if (schema.type === 'object' && schema.properties && schema.properties.lat && schema.properties.lon && Object.keys(schema.properties).length === 2) {
+        if (schema.type === 'geo_point' && schema.properties && schema.properties.lat && schema.properties.lon && Object.keys(schema.properties).length === 2) {
           var f = schemaFormProvider.stdFormObj(name, schema, options);
           f.key = options.path;
           f.type = 'location';
@@ -73,15 +73,13 @@ angular.module('schemaForm')
         }
       };
 
-      schemaFormProvider.defaults.object.unshift(location);
+      /* jshint camelcase:false */
+      schemaFormProvider.defaults.geo_point = [];
+      schemaFormProvider.defaults.geo_point.unshift(location);
       schemaFormDecoratorsProvider.addMapping(
         'bootstrapDecorator',
         'location',
         'javascripts/storage/customFormDecorators/leaflet/location.tpl.html'
       );
-      schemaFormDecoratorsProvider.addMapping(
-        'bootstrapDecorator',
-        'geo_point',
-        'javascripts/storage/customFormDecorators/leaflet/location.tpl.html'
-      );
+      /* jshint camelcase:true */
     }]);

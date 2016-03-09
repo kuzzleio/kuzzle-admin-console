@@ -3,17 +3,53 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
+  // Location checking
   this.When(/^I go to manage index page$/, function (callback) {
     browser
       .url('/#/indexes/browse')
+      .waitForVisible('.indexes-browse', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.Then(/^I am on the manage index page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/indexes/browse';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.indexes-browse', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
       .call(callback);
   });
 
   this.When(/^I go to index creation page$/, function (callback) {
     browser
       .url('/#/indexes/add')
+      .waitForVisible('.edit-index', world.waitForPageVisible)
       .call(callback);
   });
+
+  this.Then(/^I am on the index creation page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/indexes/add';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-index', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
 
   this.When(/^I fill the input "([^"]*)" with the foo index$/, function (id, callback) {
     browser
@@ -39,8 +75,8 @@ module.exports = function () {
   this.When(/^I click on the first index in manage index page$/, function (callback) {
     browser
     .pause(500)
-    .waitForVisible('span.index-name:first-of-type', 1000)
-    .click('span.index-name:first-of-type')
+    .waitForVisible('.documents .panel:first-of-type .index-link', 1000)
+    .click('.documents .panel:first-of-type .index-link')
     .call(callback);
   });
 
@@ -96,26 +132,6 @@ module.exports = function () {
       .getText('.indexes-selector-label')
       .then(function(text) {
         assert(index === text, 'The index "' + text + '" is selected instead of "' + index + '"');
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on index creation page$/, function (callback) {
-    browser
-      .pause(1000)
-      .getUrl()
-      .then(function(url) {
-        assert.equal(url, world.baseUrl + '/#/indexes/add');
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on manage index page$/, function (callback) {
-    browser
-      .pause(1000)
-      .getUrl()
-      .then(function(url) {
-        assert.equal(url, world.baseUrl + '/#/indexes/browse');
       })
       .call(callback);
   });

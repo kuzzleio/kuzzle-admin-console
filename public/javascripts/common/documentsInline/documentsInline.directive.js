@@ -78,6 +78,7 @@ angular.module('kuzzle.documentsInline', [
       restrict: 'E',
       scope: {
         documents: '=',
+        index: '=',
         collection: '=',
         canDelete: '=',
         role: '=',

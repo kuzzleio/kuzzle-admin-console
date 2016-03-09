@@ -30,8 +30,8 @@
         </ul>
     </div>
     <div class="icons" ng-if="!document.isDeleted && document.isEdit">
-        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument(document)" title="Save modifications"></span>
         <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument(document)" title="Cancel modifications"></span>
+        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument(document)" title="Save modifications"></span>
     </div>
     <div class="icons" ng-show="document.isDeleted" ng-if="canCancelDelete">
         <a href ng-click="cancelDelete(document)" title="Cancel the deletion" class="cancel-delete-document">Cancel</a>

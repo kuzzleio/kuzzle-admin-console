@@ -28,6 +28,17 @@ a {
   padding: 9px 16px;
 }
 
+.btn-link {
+  color: #004B52;
+  text-decoration: none;
+
+  &:focus,
+  &:hover {
+    color: #00757F;
+    text-decoration: none;
+  }
+}
+
 .btn-primary {
   color: #fff;
   background-color: #00757F;

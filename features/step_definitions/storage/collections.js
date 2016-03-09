@@ -4,6 +4,47 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
+  // Location checking
+  this.Given(/^I go to the create collection page/, function (callback) {
+    browser
+      .url('/#/collection/' + world.index + '/create')
+      .waitForVisible('.edit-collection', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.Then(/^I am on create collection page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/collection/' + world.index + '/create';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-collection', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on edit collection page for collection "([^"]*)"$/, function (id, callback) {
+    var requiredUrl = world.baseUrl + '/#/collection/' + world.index + '/' + id;
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-collection', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
+
   this.When(/^I click on add collection button$/, function (callback) {
     browser
     .click('.create button')
@@ -20,33 +61,23 @@ module.exports = function () {
   this.When(/^I click on full view button for collection "([^"]*)"$/, function (id, callback) {
     browser
       .waitForVisible('.list-collections', 1000)
-      .click('.list-collections #' + id + ' h3 span.edit')
-      .call(callback);
-  });
-
-  this.When(/^the current URL corresponds to the "([^"]*)" edit collection page$/, function (id, callback) {
-    browser
-      .waitForVisible('#name')
-      .getUrl()
-      .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/collection/' + id);
-      })
+      .click('.list-collections #' + id + ' .icons .edit')
       .call(callback);
   });
 
   this.When(/^I click on documents list button for collection "([^"]*)"$/, function (id, callback) {
     browser
       .waitForVisible('.list-collections', 1000)
-      .click('.list-collections #' + id + ' h3 span.documents-list')
+      .click('.list-collections #' + id + ' .icons .documents-list')
       .pause(500)
       .call(callback);
   });
 
   this.When(/^I click on delete button for collection "([^"]*)"$/, function (id, callback) {
     browser
-      .waitForVisible('.list-collections #' + id + ' h3 .dropdown-toggle', 1000)
-      .click('.list-collections #' + id + ' h3 .dropdown-toggle')
-      .click('.list-collections #' + id + ' h3 .dropdown-menu .delete')
+      .waitForVisible('.list-collections #' + id + ' .icons .dropdown-toggle', 1000)
+      .click('.list-collections #' + id + ' .icons .dropdown-toggle')
+      .click('.list-collections #' + id + ' .icons .dropdown-menu .delete')
       .pause(500)
       .setValue('.modal-dialog input', id)
       .click('.modal-dialog .actions-group button')
@@ -55,9 +86,9 @@ module.exports = function () {
 
   this.When(/^I click on empty button for collection "([^"]*)"$/, function (id, callback) {
     browser
-      .waitForVisible('.list-collections #' + id + ' h3 .dropdown-toggle', 1000)
-      .click('.list-collections #' + id + ' h3 .dropdown-toggle')
-      .click('.list-collections #' + id + ' h3 .dropdown-menu .empty')
+      .waitForVisible('.list-collections #' + id + ' .icons .dropdown-toggle', 1000)
+      .click('.list-collections #' + id + ' .icons .dropdown-toggle')
+      .click('.list-collections #' + id + ' .icons .dropdown-menu .empty')
       .pause(500)
       .setValue('.modal-dialog input', id)
       .click('.modal-dialog .actions-group button')
@@ -72,22 +103,6 @@ module.exports = function () {
         assert.equal(elements.value.length, parseInt(count),
           'Expected to find ' + count + ' collections, found ' + elements.value.length);
       })
-      .call(callback);
-  });
-
-  this.Then(/^the current URL corresponds to the add collection page$/, function (callback) {
-    browser
-      .waitForVisible('#name')
-      .getUrl()
-      .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/collection/create');
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on page for create collection/, function (callback) {
-    browser
-      .url('/#/' + world.index + '/collection/create')
       .call(callback);
   });
 };

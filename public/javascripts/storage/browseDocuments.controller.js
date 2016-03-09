@@ -32,6 +32,8 @@ angular.module('kuzzle.storage')
 
       // The selected collection
       $scope.collection = $stateParams.collection;
+      // The selected index
+      $scope.index = $stateParams.index;
       // Documents list
       $scope.documents = null;
 

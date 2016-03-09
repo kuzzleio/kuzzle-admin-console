@@ -4,9 +4,27 @@ var
   world = require('../../support/world');
 
 module.exports = function () {
-  this.When(/^I go to the login page$/, function (callback) {
+  // Location checking
+  this.Given(/^I go to the login page$/, function (callback) {
     browser
       .url('/#/login')
+      .waitForVisible('.login-page', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.Then(/^I am on the login$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/login';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.login-page', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
       .call(callback);
   });
 
@@ -15,6 +33,7 @@ module.exports = function () {
       .url('/#/logout')
       .call(callback);
   });
+  // END - Location checking
 
   this.When(/^I click the logout button$/, function (callback) {
     browser

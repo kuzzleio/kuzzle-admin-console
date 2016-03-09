@@ -3,21 +3,30 @@ var
   assert = require('assert');
 
 module.exports = function () {
-  this.Given(/^I am on metrics page$/, function (callback) {
+  // Location checking
+  this.Given(/^I go to metrics page$/, function (callback) {
     browser
+      .url('/#/')
+      .waitForVisible('.metrics', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.Then(/^I am on metrics page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.metrics', world.waitForPageVisible)
       .getUrl()
       .then(url => {
-        if (url.match(world.baseUrl + '/#/')) {
-          browser
-            .call(callback);
-        } else {
-          browser
-            .url('/#/')
-            .pause(500)
-            .call(callback);
-        }
-      });
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
   });
+  // END - Location checking
 
   this.Then(/^I have a display of "([\d]+)" widgets$/, function (count, callback) {
     browser

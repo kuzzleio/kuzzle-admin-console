@@ -19,6 +19,11 @@ angular.module('kuzzle.indexesDropDownSearch', [])
           $state.transitionTo('storage.browse', $stateParams);
           return;
         }
+        if ($state.current.name === 'collection') {
+          $stateParams.index = item.item;
+          $state.transitionTo('collection.browse', $stateParams);
+          return;
+        }
 
         $scope.onClickItem(item);
       };

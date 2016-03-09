@@ -12,6 +12,9 @@
               ui-sref="collection.create">
                <i class="fa fa-plus"></i> Add collection
              </button>
+            <button type="button" class="btn btn-link" ui-sref="indexes.browse()">
+              <i class="fa fa-angle-left"></i> Back to indexes list
+            </button>
           </div>
 
           <div class="row" ng-if="collections.length !== 0">
@@ -43,15 +46,15 @@
                           <div id="\{{collection.name}}" class="panel panel-primary dropdown" ng-repeat="collection in collections | orderBy | filter:search">
                               <div class="panel-body">
                                 <div class="col-sm-10 ellipsis">
-                                  <a ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Browse '\{{collection.name}}' documents list">
+                                  <a class="collection-link" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Browse '\{{collection.name}}' documents list">
                                     <strong class="collection-name" ng-bind="collection.name"></strong>
                                   </a>
                                 </div>
 
                                 <div class="col-sm-2">
                                   <div class="icons">
-                                    <span class="glyphicon edit glyphicon-eye-open" ui-sref="collection.full({collection: collection.name, index: index})" title="View/edit '\{{collection.name}}' collection schema"></span>
-                                    <span class="fa fa-list-alt" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Browse '\{{collection.name}}' documents list"></span>
+                                    <span class="glyphicon glyphicon-eye-open edit" ui-sref="collection.full({collection: collection.name, index: index})" title="View/edit '\{{collection.name}}' collection schema"></span>
+                                    <span class="fa fa-list-alt documents-list" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Browse '\{{collection.name}}' documents list"></span>
                                     <cog-options-collection
                                         collection="collection.name"
                                         current-index="index"

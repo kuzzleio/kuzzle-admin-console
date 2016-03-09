@@ -7,6 +7,8 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
         properties = {},
         type;
 
+      console.log('buildPropertiesRecursive', mapping);
+
       angular.forEach(mapping, function (value, attribute) {
         properties[attribute] = {};
         if (value.type) {
@@ -26,6 +28,18 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
             type: 'object',
             title: attribute,
             properties: buildPropertiesRecursive(value.properties)
+          };
+        }
+
+
+        if (value.type === 'geo_point') {
+          properties[attribute] = {
+            type: 'geo_point',
+            title: attribute,
+            properties: {
+              lat: {type: 'number'},
+              lon: {type: 'number'}
+            }
           };
         }
       });

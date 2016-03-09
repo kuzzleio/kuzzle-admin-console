@@ -9,15 +9,64 @@ module.exports = function () {
   this.When(/^I go on the browse roles page$/, function (callback) {
     browser
       .url('/#/role/browse')
-      .pause(300)
+      .waitForVisible('.role-browse', world.waitForPageVisible)
       .call(callback);
   });
 
-  this.When(/^I go to the full view of an unexisting Role$/, function (callback) {
+  this.When(/^I try to go to the edit page of an unexisting Role$/, function (callback) {
     browser
       .url('/#/role/non-existing')
       .call(callback);
   });
+
+  this.Then(/^I am on the edit role page$/, function (callback) {
+    var expectedUrl = world.baseUrl + '/#/role/';
+    var urlRegexp = new RegExp(expectedUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-role', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on the add role page$/, function (callback) {
+    var expectedUrl = world.baseUrl + '/#/role/add';
+    var urlRegexp = new RegExp(expectedUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-role', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on the browse roles page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/role/browse';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.role-browse', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
 
   this.When(/^I click the full view edit button of the first role$/, function (callback) {
     browser
@@ -66,51 +115,6 @@ module.exports = function () {
       .waitForVisible('form .actions-group button#create', 1000)
       .click('form .actions-group button#create')
       .pause(2000)
-      .call(callback);
-  });
-
-  this.Then(/^I am on the browse roles page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/role/browse$';
-        var urlRegexp = new RegExp(expectedUrl, 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to be ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on the full view edit role page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/role/';
-        var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on the add role page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-          var expectedUrl = world.baseUrl + '/#/role/add/';
-        var urlRegexp = new RegExp(expectedUrl + '?[A-Za-z0-9_-]*', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
       .call(callback);
   });
 

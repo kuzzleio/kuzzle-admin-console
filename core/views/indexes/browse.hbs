@@ -39,7 +39,7 @@
                           <div id="\{{index}}" class="panel panel-primary dropdown" ng-repeat="index in indexData.indexes | orderBy | filter:search">
                             <div class="panel-body">
                               <div class="col-sm-10 ellipsis">
-                                <a ui-sref="collection.browse({index: index})" title="Browse '\{{index}}' collections">
+                                <a class="index-link" ui-sref="collection.browse({index: index})" title="Browse '\{{index}}' collections">
                                   <strong class="index-name" ng-bind="index"></strong>
                                 </a>
                               </div>

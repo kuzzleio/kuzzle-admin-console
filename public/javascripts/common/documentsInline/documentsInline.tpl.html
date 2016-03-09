@@ -13,13 +13,13 @@
             <!-- roles -->
             <div class="col-sm-2 ellipsis"
                  ng-if="role">
-                <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
+                <strong class="document-id" ng-bind="document.id"></strong>
             </div>
             <!-- /roles -->
 
             <!-- profiles -->
             <div class="col-sm-2 ellipsis" ng-if="profile">
-                <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
+                <strong class="document-id" ng-bind="document.id"></strong>
             </div>
 
             <div class="col-sm-2" ng-if="profile">
@@ -34,7 +34,7 @@
 
             <!-- users -->
             <div class="col-sm-2 ellipsis" ng-if="user">
-                <strong class="document-id" title="Display the whole ID" ng-bind="document.id"></strong>
+                <strong class="document-id" ng-bind="document.id"></strong>
             </div>
 
             <div class="col-sm-2" ng-if="user">
@@ -59,6 +59,7 @@
                     class="col-sm-2"
                     ng-if="collection"
                     can-edit="canEdit"
+                    index="index"
                     document="document"
                     after-delete="afterDelete(document)"
                     collection="collection">

@@ -3,9 +3,12 @@
 
     <div class="row whitespace-top">
 
-      <div class="create" style="margin-bottom: 15px">
-        <button type="button" class="btn btn-success" ui-sref="storage.create({collection: stateParams.collection})" ng-if="canCreateDocument">
+      <div style="margin-bottom: 15px">
+        <button type="button" class="btn btn-success create" ui-sref="storage.create({collection: stateParams.collection})" ng-if="canCreateDocument">
           <i class="fa fa-plus"></i> Add document
+        </button>
+        <button type="button" class="btn btn-link" ui-sref="collection.browse({index: stateParams.index})">
+          <i class="fa fa-angle-left"></i> Back to collections list
         </button>
       </div>
 
@@ -36,7 +39,7 @@
               <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
             </div>
 
-            <documents-inline documents="documents" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
+            <documents-inline documents="documents" index="index" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
 
           </div>
 
