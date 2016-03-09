@@ -38,6 +38,7 @@ Feature: Test collections page
     Given I am on browse collection page
     When I click on documents list button for collection "kuzzle-bo-test"
     Then I am on browse data page for collection "kuzzle-bo-test"
+    And I'm waiting 4 sec
     Then I have a list with "2" elements
 
   @cleanDb

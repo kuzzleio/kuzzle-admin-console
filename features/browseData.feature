@@ -89,6 +89,7 @@ Feature: Test browse data pages
     And I select in "new-attribute-type" the text "String"
     And I select in "new-attribute-after" the text "Root document"
     Then I add the new attribute
+    And I'm waiting 4 sec
     And I have an input with id "myNewField"
 
   @cleanDb
