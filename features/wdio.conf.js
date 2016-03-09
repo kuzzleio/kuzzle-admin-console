@@ -25,16 +25,16 @@ exports.config = {
   //
   specs: [
     './features/firstAdmin.feature',
-    './features/authentication.feature',
-    './features/realtime.feature',
-    './features/browseData.feature',
-    './features/metrics.feature',
-    './features/indexes.feature',
-    './features/roles.feature',
-    './features/profiles.feature',
-    './features/users.feature',
-    './features/notAllowed.feature',
-    './features/collections.feature',
+    //'./features/authentication.feature',
+    //'./features/realtime.feature',
+    //'./features/browseData.feature',
+    //'./features/metrics.feature',
+    //'./features/indexes.feature',
+    //'./features/roles.feature',
+    //'./features/profiles.feature',
+    //'./features/users.feature',
+    //'./features/notAllowed.feature',
+    //'./features/collections.feature',
   ],
   // Patterns to exclude.
   exclude: [
@@ -117,7 +117,7 @@ exports.config = {
     require: [
       './features/support/hooks.js',
 
-     './features/step_definitions/common/firstAdmin.js',
+      './features/step_definitions/common/firstAdmin.js',
       './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',
       './features/step_definitions/common/screenshot.js',
