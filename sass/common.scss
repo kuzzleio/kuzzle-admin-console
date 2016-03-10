@@ -55,6 +55,27 @@ body {
   padding-left: 0;
 }
 
+.select-index-helper {
+  .trollface {
+    top: 70px;
+    position: absolute;
+    height: 59px;
+    left: 48%;
+    right: 52%;
+  }
+  .select-collection-helper {
+    left: 52%;
+    top: 76px;
+    padding: 10px;
+    opacity: 0.6;
+  }
+
+  .select-collection-helper-text {
+    margin-top: 200px;
+    opacity: 0.4;
+  }
+}
+
 .fixed-right {
   position: fixed;
   top: 0;
