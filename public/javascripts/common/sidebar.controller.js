@@ -25,12 +25,5 @@ angular.module('kuzzle')
       $scope.hasRightsOnIndex = function (index) {
         return authorization.hasRightsOnIndex(index);
       };
-
-      $scope.canShowDataDongle = function () {
-        if ($scope.indexData.indexes) {
-          return Object.keys($scope.indexData.indexes).length > 0;
-        }
-        return false;
-      };
     }
   ]);

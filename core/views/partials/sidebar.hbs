@@ -18,7 +18,7 @@
         </li>
 
         <!-- Indexes -->
-        <li ng-if="canShowDataDongle()" class="nav-category"
+        <li class="nav-category"
             ng-class="{ in: ('indexes.*.*' | includedByState)}">
           <a href data-toggle="collapse"
              ng-class="{ collapsed: !('indexes.*.*' | includedByState)}"
@@ -43,7 +43,7 @@
         <!-- /Indexes -->
 
         <!-- Collections -->
-        <li ng-if="canShowDataDongle() && !indexData.selectedIndex"
+        <li ng-if="!indexData.selectedIndex"
             class="nav-category"
             ng-class="{ in: ('collection.*.*' | includedByState)}">
           <a ui-sref="collection()">
@@ -51,7 +51,7 @@
             Collections
           </a>
         </li>
-        <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+        <li ng-if="indexData.selectedIndex"
             class="nav-category"
             ng-class="{ in: ('collection.*.*' | includedByState)}">
           <a href data-toggle="collapse"
@@ -77,7 +77,7 @@
         <!-- /Collections -->
 
         <!-- Data -->
-        <li ng-if="canShowDataDongle() && !indexData.selectedIndex"
+        <li ng-if="!indexData.selectedIndex"
             class="nav-category"
             ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
           <a ui-sref="storage()">
@@ -86,7 +86,7 @@
           </a>
         </li>
 
-        <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+        <li ng-if="indexData.selectedIndex"
             class="nav-category"
             ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
           <a href data-toggle="collapse"
