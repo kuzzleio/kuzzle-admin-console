@@ -28,7 +28,6 @@ angular.module('kuzzle.role')
       $scope.loadRoles = function () {
         roleApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
           .then(function (response) {
-            console.log(response);
             $scope.roles = response.roles;
             $scope.total = response.total;
           })
