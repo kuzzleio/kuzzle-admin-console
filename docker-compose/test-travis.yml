@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:1.0.0-beta.1
+  image: kuzzleio/kuzzle:1.0.0-beta.4
   volumes:
     - "../features/fixtures.json:/fixtures.json"
   ports:
