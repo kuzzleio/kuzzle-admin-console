@@ -20,6 +20,9 @@
   },
   "author": "Kuzzle Team",
   "license": "Apache-2.0",
+  "babel": {
+    "presets": ["es2015"]
+  },
   "dependencies": {
     "angular": "^1.4.7",
     "angular-animate": "~1.4.7",

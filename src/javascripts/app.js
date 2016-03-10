@@ -1,4 +1,5 @@
-var uirouter = require('angular-ui-router');
+import uirouter from 'angular-ui-router';
+
 require('oclazyload');
 
 require('./common/kuzzleSdk.service');
