@@ -20,12 +20,12 @@ Feature: Test collections page
   @cleanDb
   Scenario: Create a new collection
     Given I go to the create collection page
-    Then I fill the input "name" with "foo"
+    And I fill the input "name" with "foo"
     And I click on "create" button
     # Wait 1sec for let ES index the new doc
-    Then I'm waiting 1 sec
-    Given I am on browse collection page
-    Then I have a list with "7" collections
+    And I'm waiting 1 sec
+    Then I am on browse collection page
+    And I have a list with "7" collections
 
   @cleanDb
   Scenario: Access to collection edit
@@ -46,15 +46,15 @@ Feature: Test collections page
     Given I go to browse collection page
     When I click on delete button for collection "kuzzle-bo-test"
     # Wait 1sec for let ES index the new doc
-    Then I'm waiting 1 sec
-    Given I am on browse collection page
-    Then I have a list with "5" collections
+    And I'm waiting 1 sec
+    Then I am on browse collection page
+    And I have a list with "5" collections
 
   @cleanDb
   Scenario: Empty a collection
     Given I go to browse collection page
     When I click on empty button for collection "kuzzle-bo-test"
     # Wait 1sec for let ES index the new doc
-    Then I'm waiting 1 sec
+    And I'm waiting 1 sec
     Given I go to the browse data page for collection "kuzzle-bo-test"
     Then I have a list with "0" elements
