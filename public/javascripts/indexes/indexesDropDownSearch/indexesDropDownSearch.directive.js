@@ -13,6 +13,11 @@ angular.module('kuzzle.indexesDropDownSearch', [])
         $scope.onClickItem({item: $scope.selectedIndex});
       };
 
+      /**
+       * Temporary hack to redirect user when selecting an index on an empty page (storage or collection)
+       * @todo refactor router to avoid this
+       * @param item
+       */
       $scope.onClickItemProxy = function(item) {
         if ($state.current.name === 'storage') {
           $stateParams.index = item.item;
