@@ -1,4 +1,5 @@
 require('./session.service');
+require('./authEvents.const');
 
 angular.module('kuzzle.authentication')
 .factory('AuthService', [

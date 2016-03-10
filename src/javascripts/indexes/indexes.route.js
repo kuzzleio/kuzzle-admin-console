@@ -6,7 +6,7 @@ require('./indexes.controller');
 
 angular.module('kuzzle.indexes')
 
-  .config(['$stateProvider', 'USER_ROLES', function ($stateProvider, USER_ROLES) {
+  .config(['$stateProvider', function ($stateProvider) {
 
     $stateProvider
       .state('indexes', {

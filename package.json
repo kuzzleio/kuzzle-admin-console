@@ -25,7 +25,6 @@
     "angular-animate": "~1.4.7",
     "angular-bootstrap-npm": "~0.14.3",
     "angular-cookies": "~1.4.8",
-    "angular-hmr": "git://github.com/yargalot/Angular-HMR.git",
     "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master",
     "angularjs-scroll-glue": "^2.0.4",
     "body-parser": "~1.13.2",
@@ -43,6 +42,7 @@
   },
   "devDependencies": {
     "async": "^1.5.0",
+    "angular-hmr": "git://github.com/xbill82/Angular-HMR.git",
     "autoprefixer": "^6.0.3",
     "babel-core": "^6.2.1",
     "babel-loader": "^6.2.0",

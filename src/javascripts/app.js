@@ -19,6 +19,10 @@ require('./common/authentication/authentication.service');
 require('./common/authentication/loginModal.controller');
 require('./common/authentication/authorizationApi.service');
 
+require('./common/authentication/login.controller');
+require('./common/authentication/userMenu.directive');
+require('./common/headline/headline.directive');
+
 require('./indexes/indexes.route');
 require('./storage/storage.route');
 require('./collection/collection.route');
@@ -27,7 +31,6 @@ require('./role/role.route');
 require('./profile/profile.route');
 require('./user/user.route');
 require('./metrics/metrics.route');
-
 
 angular.module('kuzzle', [
   'ui.router',
