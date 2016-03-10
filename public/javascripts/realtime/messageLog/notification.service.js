@@ -7,7 +7,10 @@ angular.module('kuzzle.realtime')
         text: '',
         icon: 'file',
         class: '',
-        source:  notification.result._source,
+        source:  {
+            source: notification.result._source,
+            metadata: notification.metadata
+        },
         expanded: false,
         canEdit: true
       };
