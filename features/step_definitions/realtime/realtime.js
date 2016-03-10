@@ -14,11 +14,30 @@ var
   };
 
 module.exports = function () {
-  this.When(/^I go to the realtime page$/, function (callback) {
+  // Location checking
+  this.Given(/^I go to the realtime page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/realtime')
+      .url('/#/realtime/' + world.index + '/')
+      .waitForVisible('.watch-data-container', world.waitForPageVisible)
       .call(callback);
   });
+
+  this.Then(/^I am on the realtime page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/realtime/' + world.index + '/';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.watch-data-container', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
 
   this.When(/^I click on the collection selector$/, function (callback) {
     browser

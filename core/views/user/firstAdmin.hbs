@@ -2,7 +2,7 @@
   <div></div>
 </div>
 
-<div class="view-fade container login-page">
+<div class="view-fade container login-area">
   <div class="row">
     <div class="col-xs-4 col-xs-push-4">
       <div class="login-container">
@@ -13,6 +13,7 @@
           <iframe src="/login/sink" name="sink" style="display:none"></iframe>
 
           <form name="loginForm"
+                class="create-first-admin-page"
                 action="/login/sink" target="sink" method="post"
                 ng-controller="FirstAdminController"
                 ng-submit="createFirstAdmin(credentials)"

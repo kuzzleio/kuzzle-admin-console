@@ -24,6 +24,7 @@ angular.module('kuzzle.realtime')
       $scope.subscribed = false;
       $scope.stateParams = $stateParams;
       $scope.index = $stateParams.index;
+      $scope.messageBoardOpen = true;
 
       $scope.init = function () {
         $scope.canSubscribe = false;
@@ -34,17 +35,23 @@ angular.module('kuzzle.realtime')
           .then(function (response) {
             var
               collections = response.realtime.map(function (collection) {
-                return {name: collection, realtime: true};
+                return {name: collection, realtime: true, stored: false};
               });
 
             response.stored.forEach(function (collection) {
-              var index = collections.indexOf(collection);
-              if (index !== -1) {
-                collections[index] = {name: collection, realtime: false, stored: true};
-                return true;
-              }
+              var found = false;
 
-              collections.push({name: collection, stored: true});
+              collections.forEach(function (collectionData, index) {
+                if (collectionData.name === collection) {
+                  collections[index] = {name: collection, realtime: true, stored: true};
+                  found = true;
+                  return true;
+                }
+              });
+
+              if (!found) {
+                collections.push({name: collection, realtime: false, stored: true});
+              }
             });
 
             $scope.forms.collections = collections;
@@ -76,17 +83,18 @@ angular.module('kuzzle.realtime')
       $scope.onSelectCollection = function (collection) {
         if (typeof collection === 'object' && collection.name) {
           $scope.forms.collection = collection.name;
-          $state.go('realtime.watch-data', {collection: collection.name, advancedFilter: null, basicFilter: null});
-          $scope.canSubscribe = authorization.canDoAction($stateParams.index, collection.name, 'subscribe', 'on') &&
-            authorization.canDoAction($stateParams.index, collection.name, 'subscribe', 'off');
-          $scope.canPublish = authorization.canDoAction($stateParams.index, collection.name, 'write', 'publish');
-        } else if (typeof collection === 'string') {
-          $scope.forms.collection = collection;
-          $state.go('realtime.watch-data', {collection: collection, advancedFilter: null, basicFilter: null});
-          $scope.canSubscribe = authorization.canDoAction($stateParams.index, collection, 'subscribe', 'on') &&
-            authorization.canDoAction($stateParams.index, collection, 'subscribe', 'off');
-          $scope.canPublish = authorization.canDoAction($stateParams.index, collection, 'write', 'publish');
         }
+        else if (typeof collection === 'string') {
+          $scope.forms.collection = collection;
+        }
+
+        $scope.canSubscribe =
+          authorization.canDoAction($stateParams.index, $scope.forms.collection, 'subscribe', 'on') &&
+          authorization.canDoAction($stateParams.index, $scope.forms.collection, 'subscribe', 'off');
+
+        $scope.canPublish = authorization.canDoAction($stateParams.index, $scope.forms.collection, 'write', 'publish');
+
+        $state.go('realtime.watch-data', {collection: $scope.forms.collection, advancedFilter: null, basicFilter: null});
       };
 
       /**

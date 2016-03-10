@@ -1,54 +1,76 @@
-<div class="browse-documents" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
+<div class="storage-browse-document col-sm-12" ng-controller="StorageBrowseDocumentsCtrl" ng-init="init()">
+  <div class="container container-medium">
 
-    <div ng-if="canReadDocument" class="row">
-        <div class="panel panel-default filters">
-            <div class="panel-body">
-                    <filters
-                            dsl-doc-url="https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl.html"
-                            add-group-label="Add group"
-                            filters="filter"
-                            collection="collection"
-                            comparators="comparators"
-                            search-type="searchType"
-                            submit-label="Search"
-                            advanced-search="advancedSearch()"
-                            basic-search="basicSearch()"
-                            is-realtime="false">
-                    </filters>
+    <div class="row whitespace-top">
+
+      <div style="margin-bottom: 15px">
+        <button type="button" class="btn btn-success create" ui-sref="storage.create({collection: stateParams.collection})" ng-if="canCreateDocument">
+          <i class="fa fa-plus"></i> Add document
+        </button>
+        <button type="button" class="btn btn-link" ui-sref="collection.browse({index: stateParams.index})">
+          <i class="fa fa-angle-left"></i> Back to collections list
+        </button>
+      </div>
+
+      <div class="col-sm-12">
+        <div class="browse-documents">
+
+          <div ng-if="canReadDocument" class="row">
+            <div class="panel panel-default filters">
+              <div class="panel-body">
+                <filters
+                    dsl-doc-url="https://www.elastic.co/guide/en/elasticsearch/reference/1.7/query-dsl.html"
+                    add-group-label="Add group"
+                    filters="filter"
+                    collection="collection"
+                    comparators="comparators"
+                    search-type="searchType"
+                    submit-label="Search"
+                    advanced-search="advancedSearch()"
+                    basic-search="basicSearch()"
+                    is-realtime="false">
+                </filters>
+              </div>
             </div>
+          </div>
+
+          <div ng-if="canReadDocument">
+            <div class="row" ng-if="documents.length == 0">
+              <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
+            </div>
+
+            <documents-inline documents="documents" index="index" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
+
+          </div>
+
+          <div ng-if="!canReadDocument" class="row">
+            <p>You are not allowed to see documents in collection <strong ng-bind="collection"></strong>.</p>
+          </div>
         </div>
+      </div>
+
+      <div class="col-sm-12 text-right"
+           ng-show="documents.length < total">
+        <div class="row">
+          <uib-pagination
+              total-items="total"
+              ng-model="currentPage"
+              max-size="4"
+              class="pagination-sm"
+              boundary-links="true"
+              rotate="false"
+              ng-change="loadDocuments()"
+              num-pages="numPages"
+              previous-text="Prev"
+              next-text="Next"
+              items-per-page="limit">
+          </uib-pagination>
+        </div>
+      </div>
+
+      <div class="col-sm-12" ng-if="collections.length === 0">
+        <p>There is no collection in this database</p>
+      </div>
     </div>
-
-    <div ng-if="canReadDocument">
-        <div class="row" ng-if="documents.length == 0">
-            <p>There is no document matching the collection <strong ng-bind="collection"></strong> with provided filters.</p>
-        </div>
-
-        <documents-inline documents="documents" collection="collection" can-edit="canEditDocument" can-delete="canDeleteDocument"></documents-inline>
-
-        <div class="row total-documents"  ng-show="documents.length != 0">
-            <p class="col-sm-1 pull-right"><span ng-bind="documents.length">0</span>/<span ng-bind="total">0</span></p>
-        </div>
-        <div class="pull-right">
-            <uib-pagination
-                    total-items="total"
-                    ng-model="currentPage"
-                    max-size="5"
-                    class="pagination-sm"
-                    boundary-links="true"
-                    rotate="false"
-                    ng-change="loadDocuments()"
-                    num-pages="numPages"
-                    previous-text="Prev"
-                    next-text="Next"
-                    items-per-page="limit"
-                    ng-model="currentPage"
-                    ng-show="documents.length > 0">
-            </uib-pagination>
-        </div>
-    </div>
-
-    <div ng-if="!canReadDocument" class="row">
-        <p>You are not allowed to see documents in collection <strong ng-bind="collection"></strong>.</p>
-    </div>
+  </div>
 </div>

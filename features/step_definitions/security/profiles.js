@@ -7,12 +7,68 @@ var
 module.exports = function () {
   this.deletedProfileName = null;
 
+  // Location checking
   this.When(/^I go on the browse profiles page$/, function (callback) {
     browser
       .url('/#/profile/browse')
-      .waitForVisible('button.btn-success', 1000)
+      .waitForVisible('.profile-browse', world.waitForPageVisible)
       .call(callback);
   });
+
+  this.When(/^I try to go to the edit page of an unexisting profile$/, function (callback) {
+    browser
+      .url('/#/profile/non-existing')
+      .call(callback);
+  });
+
+  this.Then(/^I am on edit profile page$/, function (callback) {
+    var expectedUrl = world.baseUrl + '/#/profile/';
+    var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
+
+    browser
+      .waitForVisible('.edit-profile', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on the add profile page$/, function (callback) {
+    var expectedUrl = world.baseUrl + '/#/profile/add/';
+    var urlRegexp = new RegExp(expectedUrl + '?[A-Za-z0-9_-]*', 'g');
+
+    browser
+      .waitForVisible('.edit-profile', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on the browse profiles page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/profile/browse';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.profile-browse', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
 
   this.When(/^I click the full view edit button of the last profiles$/, function (callback) {
     browser
@@ -56,12 +112,6 @@ module.exports = function () {
     wdioTools.deleteItemInList(browser, 'profile', profileId, callback);
   });
 
-  this.When(/^I go to the full view of an unexisting profile$/, function (callback) {
-    browser
-      .url('/#/profile/non-existing')
-      .call(callback);
-  });
-
   this.When(/^I click on the first role on the roles list associated to a profile$/, function(callback) {
     browser
       .waitForVisible('documents-inline .documents:last-child .roles-list a:first-of-type', 1000)
@@ -72,51 +122,6 @@ module.exports = function () {
   this.Then(/^I see the inline editor of the last profile$/, function (callback) {
     browser
       .waitForVisible('documents-inline .documents:last-child json-edit', 1000)
-      .call(callback);
-  });
-
-  this.Then(/^I am on the full view edit profiles page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/profile/';
-        var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on the add profile page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/profile/add/';
-        var urlRegexp = new RegExp(expectedUrl + '?[A-Za-z0-9_-]*', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on the browse profiles page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/profile/browse$';
-        var urlRegexp = new RegExp(expectedUrl, 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to be ' + expectedUrl + ', found ' + url
-        );
-      })
       .call(callback);
   });
 

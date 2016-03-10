@@ -35,7 +35,8 @@ World = {
   documents: documents,
   users: users,
   idPrefix: 'kuzzle-bo-',
-  fooIndex: 'index-foo'
+  fooIndex: 'index-foo',
+  waitForPageVisible: 5000
 };
 
 module.exports = World;

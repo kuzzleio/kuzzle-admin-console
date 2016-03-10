@@ -1,7 +1,7 @@
-<div  class="view-fade h100 posrel">
+<div class="view-fade h100 posrel">
 
   <div class="container">
-    <div class="watch-data-container" ng-controller="WatchDataCtrl" ng-init="init()">
+    <div class="watch-data-container" ng-class="{collapsed: !messageBoardOpen}" ng-controller="WatchDataCtrl" ng-init="init()">
 
       <div class="filters-log-container">
 
@@ -48,7 +48,7 @@
                   <div class="col-sm-4 col-sm-offset-4 text-center" style="
                         margin-top: 200px;
                         opacity: 0.4;">
-                    <h3>Select a collection to continue</h3>
+                    <h3>No collection selected</h3>
                   </div>
                 </div>
 
@@ -56,15 +56,10 @@
                         class="fixed-right message-log"
                         collection="forms.collection"
                         messages="forms.messages"
+                        message-board-open="messageBoardOpen"
                         init-messages="clearMessages()">
                 </messages>
-                <!--<messages
-                        ng-if="forms.collection && canSubscribe"
-                        class="fixed-right message-log"
-                        collection="forms.collection"
-                        messages="forms.messages"
-                        init-messages="clearMessages()">
-                </messages>-->
+
 
               </div>
             </div>

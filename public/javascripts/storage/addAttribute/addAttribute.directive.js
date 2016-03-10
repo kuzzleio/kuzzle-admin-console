@@ -26,6 +26,7 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
     };
 
     $scope.addAttribute = function () {
+
       var
         nestedProperties,
         nestedBody;
@@ -57,7 +58,7 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
           break;
         case 'location':
           nestedBody[$scope.newField.name] = {lat: 0, lon: 0};
-          nestedProperties[$scope.newField.name].type = 'object';
+          nestedProperties[$scope.newField.name].type = 'geo_point';
           nestedProperties[$scope.newField.name].properties = {
             lat : {
               type: 'number'

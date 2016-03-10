@@ -4,7 +4,6 @@ Feature: Test authentication
 
   Scenario: Log a user in when she provides correct credentials
     Given I go to the login page
-    Then I see the login page
     And I authenticate as "admin"
     Then I am authenticated
 
@@ -17,6 +16,5 @@ Feature: Test authentication
 
   Scenario: The not authentified user is denied to visit an authenticated page
     Given I go to the logout page
-    And I am on browse data page
-    And I'm waiting 2 sec
-    Then I see the login page
+    When I try to go to browse data page
+    Then I am on the login page

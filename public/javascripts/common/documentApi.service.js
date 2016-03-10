@@ -15,23 +15,20 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         clientId = uid.new();
 
       return {
-        search: function (collection, filter, page) {
-          if (!page) {
-            page = 1;
-          }
+        search: function (collection, filter) {
+          var deferred = $q.defer();
 
-          return $http({
-            url: '/storage/search',
-            method: 'POST',
-            params: {
-              page: page
-            },
-            data: {
-              filter: filter,
-              collection: collection,
-              index: indexesApi.data.selectedIndex
-            }
-          });
+          kuzzleSdk
+            .dataCollectionFactory(indexesApi.data.selectedIndex, collection)
+            .advancedSearch(filter, function(error, result) {
+              if (error) {
+                deferred.reject(error);
+              }
+
+              deferred.resolve(result);
+            });
+
+          return deferred.promise;
         },
 
         getById: function (collection, id) {

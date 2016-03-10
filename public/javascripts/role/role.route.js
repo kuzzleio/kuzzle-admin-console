@@ -8,6 +8,11 @@ angular.module('kuzzle.role')
         url: '/role',
         views: {
           'bodyView': { templateUrl: '/role' }
+        },
+        resolve: {
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = false;
+          }]
         }
       })
       .state('role.browse', {

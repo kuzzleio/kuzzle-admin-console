@@ -5,21 +5,13 @@ angular.module('kuzzle.collection')
     $stateProvider
       .state('collection', {
         parent: 'logged',
-        url: '/:index/collection',
+        url: '/collection/:index',
         views: {
           bodyView: { templateUrl: '/collection' }
         },
         resolve: {
-          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
-              .then(function (exist) {
-                if (!exist) {
-                  $state.go('indexes.browse');
-                }
-                else {
-                  indexesApi.select($stateParams.index);
-                }
-              });
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = true;
           }]
         }
       })
@@ -34,6 +26,17 @@ angular.module('kuzzle.collection')
               '/javascripts/collection/browse.controller.js',
               '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('collection');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
+              });
           }]
         }
       })
@@ -48,6 +51,17 @@ angular.module('kuzzle.collection')
               '/javascripts/collection/full.controller.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('collection');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
+              });
           }]
         }
       })
@@ -62,6 +76,17 @@ angular.module('kuzzle.collection')
               '/javascripts/collection/full.controller.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('collection');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
+              });
           }]
         }
       });

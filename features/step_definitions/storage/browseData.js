@@ -4,33 +4,138 @@ var
   world = require('../../support/world.js');
 
 module.exports = function () {
-  this.When(/^I am on browse data page$/, function (callback) {
+  // Location checking
+  this.Given(/^I go to the browse data page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/storage/browse')
+      .url('/#/storage/' + world.index + '/browse')
+      .waitForVisible('.storage-browse', world.waitForPageVisible)
       .call(callback);
   });
 
-  this.When(/^I am on browse data page with an wrong index$/, function (callback) {
+  this.Given(/^I go to the browse data page for collection "([^"]*)"$/, function (collection, callback) {
     browser
-      .url('/#/notexist/storage/browse')
+      .url('/#/storage/' + world.index + '/browse/' + collection)
+      .waitForVisible('.storage-browse-document', world.waitForPageVisible)
       .call(callback);
   });
 
-  this.When(/^I go to collection browse page$/, function (callback) {
+  this.Given(/^I go to browse collection page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/collection/browse')
+      .url('/#/collection/' + world.index + '/browse')
+      .waitForVisible('.collection-browse', world.waitForPageVisible)
       .call(callback);
   });
 
-  this.When(/^I am on browse collection page$/, function (callback) {
+  this.Given(/^I go to the create document page$/, function (callback) {
     browser
-      .url('/#/' + world.index + '/collection/browse')
+      .url('/#/storage/' + world.index + '/' + world.collections[0] + '/add')
+      .waitForVisible('.edit-document', world.waitForPageVisible)
       .call(callback);
   });
+
+  this.Given(/^I go to the edit document page for document "([^"]*)"$/, function (id, callback) {
+    browser
+      .url('/#/storage/' + world.index + '/' + world.collections[0] + '/'+ id)
+      .waitForVisible('.edit-document', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.When(/^I try to go to browse data page$/, function (callback) {
+    browser
+      .url('/#/storage/' + world.index + '/browse')
+      .call(callback);
+  });
+
+  this.When(/^I try to go to the browse data page with an wrong index$/, function (callback) {
+    browser
+      .url('/#/storage/notexist/browse')
+      .call(callback);
+  });
+
+  this.Then(/^I am on create document page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/storage/' + world.index + '/' + world.collections[0] + '/add';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-document', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on browse data page for collection "([^"]*)"$/, function (collection, callback) {
+    var requiredUrl = world.baseUrl + '/#/storage/' + world.index + '/browse/' + collection;
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.storage-browse-document', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on edit document page for document "([^"]*)"$/, function (id, callback) {
+    var requiredUrl = world.baseUrl + '/#/storage/' + world.index + '/' + world.collections[0] + '/' + id;
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.edit-document', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on browse collection page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/collection/' + world.index + '/browse';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.collection-browse', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on browse document page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/' + world.index + '/storage/browse/' + world.collections[0];
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.storage-browse-document', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
 
   this.When(/^I click on add document button$/, function (callback) {
     browser
-      .click('.storage-browse .create button')
+      .click('.storage-browse .create')
       .call(callback);
   });
 
@@ -40,12 +145,6 @@ module.exports = function () {
       // want something to happen.
       .click('.select-collection cog-options-collection .dropdown-toggle')
       .call(callback);
-  });
-
-  this.When(/^I am on page for create document$/, function (callback) {
-     browser
-       .url('/#/' + world.index + '/storage/' + world.collections[0] + '/add')
-       .call(callback);
   });
 
   this.When(/^I click on add attribute button$/, function (callback) {
@@ -77,22 +176,6 @@ module.exports = function () {
           selectedCollection,
           'Expected the button text to match the selected collection (' + selectedCollection + '), found ' + text
         );
-      })
-      .call(callback);
-  });
-
-  this.When(/^I am on browse data page for collection "([^"]*)"$/, function (collection, callback) {
-    browser
-      .url('/#/' + world.index + '/storage/browse/' + collection)
-      .call(callback);
-  });
-
-  this.Then(/^the current URL corresponds to the add document page$/, function (callback) {
-    browser
-      .waitForVisible('.edit-id')
-      .getUrl()
-      .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/add');
       })
       .call(callback);
   });
@@ -137,43 +220,10 @@ module.exports = function () {
       });
   });
 
-  this.When(/^I go to the page for edit document "([^"]*)"$/, function (id, callback) {
-    browser
-      .url('/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id)
-      .waitForVisible('form fieldset', 10000)
-      .pause(1500)
-      .call(callback);
-  });
-
-  this.Then(/^I am on page for edit document "([^"]*)"$/, function (id, callback) {
-    browser
-      .pause(1000)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/'+ id;
-        var urlRegexp = new RegExp(expectedUrl, 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
   this.When(/^I click on link to access to "([^"]*)" full document page$/, function (id, callback) {
     browser
       .waitForVisible('documents-inline #' + id + ' .full-view', 1000)
       .click('documents-inline #' + id + ' .full-view')
-      .call(callback);
-  });
-
-  this.Then(/^the current URL corresponds to the "([^"]*)" full document page$/, function (id, callback) {
-    browser
-      .waitForVisible('.edit-id')
-      .getUrl()
-      .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/' + world.collections[0] + '/' + id);
-      })
       .call(callback);
   });
 
@@ -194,30 +244,11 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.Then(/^I am on collection browse page$/, function (callback) {
-    browser
-      .waitForVisible('.storage-browse .create', 1000)
-      .getUrl()
-      .then(url => {
-        assert(url,  world.baseUrl + '/#/' + world.index + '/collection/browse');
-      })
-      .call(callback);
-  });
-
   this.Then(/^I click on the collection "([^"]*)" in collections list$/, function (id, callback) {
     browser
       .pause(500)
       .waitForVisible('.list-collections #' + id, 1000)
-      .click('.list-collections #' + id + ' h3 span.collection-name')
-      .call(callback);
-  });
-
-  this.Then(/^I am on browse document page$/, function (callback) {
-    browser
-      .getUrl()
-      .then(url => {
-        assert.equal(url, world.baseUrl + '/#/' + world.index + '/storage/browse/' + world.collections[0]);
-      })
+      .click('.list-collections #' + id + ' .collection-link')
       .call(callback);
   });
 

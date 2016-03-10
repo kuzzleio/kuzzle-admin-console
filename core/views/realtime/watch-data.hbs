@@ -1,4 +1,4 @@
-<div class="panel panel-default filters" ng-if="forms.collection && canSubscribe">
+<div class="realtime-filters panel panel-default filters" ng-if="forms.collection && canSubscribe">
     <div class="panel-body">
         <filters
             dsl-doc-url="https://github.com/kuzzleio/kuzzle/blob/master/docs/filters.md"
@@ -18,11 +18,11 @@
             <button type="submit" class="btn btn-warning btn-unsubscribe" ng-click="unsubscribe()" ng-disabled="!subscribed">
               Unsubscribe&nbsp;<span class="glyphicon glyphicon-pause"></span>
             </button>
-            <button class="btn btn-link" ng-click="resetFilters()">Clear</button>
+            <button class="btn btn-link" ng-click="resetFilters()">Clear filters</button>
         </div>
     </div>
 </div>
-<div class="panel panel-default publish" ng-if="forms.collection && canPublish">
+<div class="realtime-publish panel panel-default publish" ng-if="forms.collection && canPublish">
   <div class="panel-body">
     <label>Publish <small>a volatile message</small></label>
     <form name="forms.publish">

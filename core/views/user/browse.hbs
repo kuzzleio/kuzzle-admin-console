@@ -14,6 +14,25 @@
                   <div class="col-sm-12">
                     <documents-inline documents="users" user="true" can-edit="canUpdateUser"></documents-inline>
                   </div>
+
+                  <div class="col-sm-12 text-right"
+                       ng-show="users.length < total">
+                    <div class="row">
+                      <uib-pagination
+                          total-items="total"
+                          ng-model="currentPage"
+                          max-size="4"
+                          class="pagination-sm"
+                          boundary-links="true"
+                          rotate="false"
+                          ng-change="loadUsers()"
+                          num-pages="numPages"
+                          previous-text="Prev"
+                          next-text="Next"
+                          items-per-page="limit">
+                      </uib-pagination>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

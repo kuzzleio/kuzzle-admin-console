@@ -4,23 +4,25 @@ var
   world = require('../../support/world');
 
 module.exports = function () {
-
-  this.Then(/^I see the first admin creation page$/, function(callback) {
+  this.Given(/^I go to the first admin creation page$/, function (callback) {
     browser
-      .pause(1200)
-      .waitForVisible('button[type=submit]', 5000)
-      .waitForVisible('input[name=passwordb]', 5000)
-      .isVisible('input[name=passworda]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element passworda is not visible');
-      })
-      .isVisible('input[name=passwordb]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element passwordb is not visible');
-      })
-      .isVisible('button[type=submit]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element submit is not visible');
+      .url('/#/firstAdmin')
+      .waitForVisible('.create-first-admin-page', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.Then(/^I am on the first admin creation page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/firstAdmin';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.create-first-admin-page', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
       })
       .call(callback);
   });

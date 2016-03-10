@@ -5,12 +5,15 @@ angular.module('kuzzle.metrics')
     'serverApi',
     '$timeout',
     'authorizationApi',
-    function ($scope, $window, serverApi, $timeout, authorization) {
+    'indexesApi',
+    function ($scope, $window, serverApi, $timeout, authorization, indexesApi) {
       'use strict';
       var timer = {
         serverInfo: null,
         statistics: null
       };
+
+      indexesApi.data.showSelector = false;
 
       $scope.Math = $window.Math;
       $scope.timeFrame = 86400 * 1000;

@@ -182,7 +182,7 @@ var deleteUsers = function (callback) {
     })
     .then(() => {
       var
-        deffered = q.defer();
+        deffered = q.defer(),
         passed = 0;
 
       fixtures['%kuzzle'].users.forEach(function (user) {
@@ -197,7 +197,6 @@ var deleteUsers = function (callback) {
               console.log(error);
             }
             passed++;
-            console.log('deleted user:', user.username);
             if (passed === (fixtures['%kuzzle'].users.length /2)) {
               deffered.resolve();
               return;
