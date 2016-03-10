@@ -8,23 +8,11 @@ Feature: Test multi index features
     And I authenticate as "admin"
     Then I am authenticated
 
- # Scenario: I can select an index with the index selector in sidebar
- #   Given I go to manage index page
- #   Then No index is selected
- #   Then I can not see Storage & Realtime menu entries
- #   Then I click on the index selector
- #   Then I select an index
- #   Then The index "kuzzle-bo-testindex" is selected
- #   Then I can see Storage & Realtime menu entries
-
   Scenario: I can select an index directly in the manage index page
     Given I go to manage index page
- #   Then No index is selected
- #   Then I can not see Storage & Realtime menu entries
     Then I click on the first index in manage index page
     Then I am on browse collection page
     Then The index "kuzzle-bo-testindex" is selected
- #   Then I can see Storage & Realtime menu entries
 
   Scenario: I can access the index creation page in manage index page
     Given I go to manage index page
