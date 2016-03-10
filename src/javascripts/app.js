@@ -1,3 +1,4 @@
+var uirouter = require('angular-ui-router');
 require('oclazyload');
 
 require('./common/kuzzleSdk.service');
@@ -19,10 +20,6 @@ require('./common/authentication/authentication.service');
 require('./common/authentication/loginModal.controller');
 require('./common/authentication/authorizationApi.service');
 
-require('./common/authentication/login.controller');
-require('./common/authentication/userMenu.directive');
-require('./common/headline/headline.directive');
-
 require('./indexes/indexes.route');
 require('./storage/storage.route');
 require('./collection/collection.route');
@@ -33,7 +30,7 @@ require('./user/user.route');
 require('./metrics/metrics.route');
 
 angular.module('kuzzle', [
-  'ui.router',
+  uirouter,
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
@@ -184,3 +181,7 @@ angular.module('kuzzle', [
 
 require('./common/mainApp.controller');
 require('./common/sidebar.controller');
+require('./common/authentication/login.controller');
+require('./common/authentication/formAutoFillFix.directive');
+require('./common/authentication/userMenu.directive');
+require('./common/headline/headline.directive');
