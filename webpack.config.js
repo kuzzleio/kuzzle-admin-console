@@ -2,6 +2,7 @@
 
 // Modules
 var webpack = require('webpack');
+var path = require('path');
 var autoprefixer = require('autoprefixer');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -71,6 +72,14 @@ module.exports = function makeWebpackConfig () {
     chunkFilename: /*isProd ? '[name].[hash].js' :*/ '[name].bundle.js'
   };
 
+  config.resolve = {
+    extensions: ['', '.js', '.vue']
+  };
+
+  config.resolveLoader = {
+    root: path.join(__dirname, 'node_modules')
+  };
+
   /**
    * Devtool
    * Reference: http://webpack.github.io/docs/configuration.html#devtool
@@ -94,12 +103,15 @@ module.exports = function makeWebpackConfig () {
     preLoaders: [],
     loaders: [
       {
+        test: /\.vue$/,
+        loader: 'vue'
+    }, {
       // JS LOADER
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
       test: /\.js$/,
-      loaders: isProd ? ['babel'] : ['angular-hmr', 'babel'],
+      loaders: ['babel'],
       exclude: /node_modules/
     }, {
       // CSS LOADER
