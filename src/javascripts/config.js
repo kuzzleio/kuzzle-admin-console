@@ -9,3 +9,5 @@ var config = {
   kuzzleUrl: null,
   kuzzleCoreIndex: '%kuzzle'
 };
+
+module.exports = config;
