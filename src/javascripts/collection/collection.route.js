@@ -42,14 +42,23 @@ angular.module('kuzzle.collection')
       .state('collection.create', {
         url: '/create?newCollection',
         views: {
-          mainView: { templateUrl: '/javascripts/collection/full.template.html' }
+          mainView: {
+            templateProvider: ($q) => {
+              return $q((resolve) => {
+                require.ensure([], () => resolve(require('./full.template.html')));
+              });
+            }
+          }
         },
         resolve: {
-          loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
-            return $ocLazyLoad.load([
-              '/javascripts/collection/full.controller.js',
-              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
-            ]);
+          loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+            return $q((resolve) => {
+              require.ensure([], function (require) {
+                let ctrl = require('./full.controller');
+                $ocLazyLoad.load({name: 'kuzzle.collection'});
+                resolve(angular.module('kuzzle.collection'));
+              });
+            });
           }]
         }
       })
@@ -62,7 +71,6 @@ angular.module('kuzzle.collection')
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/collection/full.controller.js',
-              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }
