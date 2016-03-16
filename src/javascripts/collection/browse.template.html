@@ -40,7 +40,7 @@
 
                   <div class="row">
                       <div class="col-sm-12 list-collections">
-                          <div id="\{{collection.name}}" class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
+                          <div id="{{collection.name}}" class="panel panel-primary" ng-repeat="collection in collections | orderBy | filter:search">
                               <div class="panel-heading">
                                   <h3 class="panel-title">
                                       <span class="collection-name" ng-bind="collection.name" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Go to full view"></span>
