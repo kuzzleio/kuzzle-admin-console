@@ -27,7 +27,7 @@ angular.module('kuzzle.role')
         $scope.canCreateOrReplaceRole = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceRole');
         $scope.canUpdateRole = authorization.canDoAction('%kuzzle', '*', 'security', 'updateRole');
 
-        if (action === 'edit') {
+        if ($stateParams.role) {
           $scope.isEdit = true;
 
           roleApi.get($scope.role.id)

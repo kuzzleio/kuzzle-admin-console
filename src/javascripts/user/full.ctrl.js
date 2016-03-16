@@ -21,13 +21,13 @@ angular.module('kuzzle.user')
         content: ''
       };
 
-      $scope.init = function (action) {
+      $scope.init = function () {
         var content;
 
         $scope.canCreateOrReplaceUser = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceUser');
         $scope.canUpdateUser = authorization.canDoAction('%kuzzle', '*', 'security', 'updateUser');
 
-        if (action === 'edit') {
+        if ($stateParams.user) {
           $scope.isEdit = true;
 
           userApi.get($scope.user.id, false)

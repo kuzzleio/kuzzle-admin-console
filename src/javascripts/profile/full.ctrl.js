@@ -21,13 +21,13 @@ angular.module('kuzzle.profile')
         content: ''
       };
 
-      $scope.init = function (action) {
+      $scope.init = function () {
         var content;
 
         $scope.canCreateOrReplaceProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'createOrReplaceProfile');
         $scope.canUpdateProfile = authorization.canDoAction('%kuzzle', '*', 'security', 'updateProfile');
 
-        if (action === 'edit') {
+        if ($stateParams.profile) {
           $scope.isEdit = true;
 
           profileApi.get($scope.profile.id, false)
