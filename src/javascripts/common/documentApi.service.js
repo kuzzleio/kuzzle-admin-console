@@ -21,7 +21,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           }
 
           return $http({
-            url: '/api/storage/search',
+            url: '/storage/search',
             method: 'POST',
             params: {
               page: page
@@ -108,12 +108,12 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
             data.buffer = true;
           }
 
-          return $http.post('/api/storage/deleteById', data);
+          return $http.post('/storage/deleteById', data);
         },
 
         cancelDeleteById: function (collection, id) {
           bufferCancel.cancel('deleteById', collection, id);
-          return $http.post('/api/storage/cancel-deleteById', {
+          return $http.post('/storage/cancel-deleteById', {
             collection: collection,
             id: id,
             clientId: clientId,
