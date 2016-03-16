@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:1.0.0-beta.4
+  image: kuzzleio/kuzzle:beta
   ports:
     - "7512:7512"
     - "7511:7511"
@@ -13,7 +13,7 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo
+  image: kuzzleio/bo:beta
   ports:
     - "3000:3000"
   links:
