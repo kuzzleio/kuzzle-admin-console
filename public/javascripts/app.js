@@ -106,7 +106,6 @@ angular.module('kuzzle', [
               .fetchAllDocuments(function (error, result) {
                 if (result) {
                   if (result.total === 0) {
-                    console.log('redirect to first admin');
                     $state.go('firstAdmin');
                   }
                 }

@@ -9,7 +9,8 @@
     "no-unreachable": 2,
     "yoda": [2, "never"],
     "eqeqeq": 2,
-    "space-in-parens": [2, "never"]
+    "space-in-parens": [2, "never"],
+    "no-console": [2, { "allow": ["warn", "error"]}]
   },
   "env": {
     "node": true

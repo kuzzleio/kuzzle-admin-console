@@ -288,9 +288,6 @@ angular.module('kuzzle.storage')
         schema = getUpdatedSchema($scope.document, 'content');
         $scope.schema = angular.merge(schema, $scope.schema);
 
-        console.log($scope.document.content);
-        console.log($scope.schema);
-
         $scope.$broadcast('schemaFormRedraw');
       };
     }]);

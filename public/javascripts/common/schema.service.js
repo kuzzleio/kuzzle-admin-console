@@ -7,8 +7,6 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
         properties = {},
         type;
 
-      console.log('buildPropertiesRecursive', mapping);
-
       angular.forEach(mapping, function (value, attribute) {
         properties[attribute] = {};
         if (value.type) {
