@@ -1,6 +1,7 @@
 import uirouter from 'angular-ui-router';
 
 require('oclazyload');
+require('angular-loading-bar');
 
 require('./common/kuzzleSdk.service');
 
