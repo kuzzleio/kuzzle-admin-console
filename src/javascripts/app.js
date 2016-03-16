@@ -129,7 +129,20 @@ angular.module('kuzzle', [
       .state('login', {
         url: '/login',
         views: {
-          wrappedView: { template: require('./common/authentication/login.template.html') }
+          wrappedView: { template: `
+            <div class="view-fade container login-page">
+              <div class="row">
+                <div class="col-xs-4 col-xs-push-4">
+                  <div class="login-container">
+                    <img src="images/logo/kuzzle.svg" class="img-responsive" />
+                    <div class="login-form-container">
+                      ${require('./common/authentication/loginForm.tpl.html')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ` }
         }
       })
       .state('logout', {

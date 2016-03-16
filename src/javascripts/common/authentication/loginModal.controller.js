@@ -16,7 +16,13 @@ function ($scope, $uibModal, $log, AUTH_EVENTS, Auth, $state) {
 
     modalInstance = $uibModal.open({
       animation: true,
-      templateUrl: 'javascripts/common/authentication/loginForm.tpl.html',
+      template: `
+      <div class="modal-header">
+        <h3 class="modal-title">It seems like your session has expired.</h3>
+      </div>
+      <div class="modal-body">
+        ${require('./loginForm.tpl.html')}
+      </div>`,
       size: 'sm'
     });
     modalInstance.result.then(null, function () {
