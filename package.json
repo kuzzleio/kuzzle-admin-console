@@ -23,6 +23,10 @@
   "babel": {
     "presets": [
       "es2015"
+    ],
+    "plugins": [
+      "syntax-async-functions",
+      "transform-regenerator"
     ]
   },
   "dependencies": {
@@ -53,8 +57,11 @@
     "autoprefixer": "^6.0.3",
     "babel-core": "^6.2.1",
     "babel-loader": "^6.2.0",
-    "babel-preset-es2015": "^6.1.18",
+    "babel-plugin-syntax-async-functions": "^6.5.0",
+    "babel-plugin-transform-regenerator": "^6.6.5",
     "babel-plugin-transform-runtime": "^6.0.0",
+    "babel-polyfill": "^6.7.2",
+    "babel-preset-es2015": "^6.1.18",
     "babel-preset-stage-2": "^6.0.0",
     "babel-runtime": "^5.8.0",
     "copy-webpack-plugin": "^1.1.1",
@@ -76,14 +83,14 @@
     "request": "^2.67.0",
     "rimraf": "^2.5.1",
     "style-loader": "^0.13.0",
+    "vue-hot-reload-api": "^1.2.0",
+    "vue-html-loader": "^1.0.0",
+    "vue-loader": "^8.1.3",
+    "vue-style-loader": "^1.0.0",
     "webdriverio": "^3.4.0",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",
     "webpack-dev-server": "^1.14.1",
-    "webpack-hot-middleware": "^2.9.1",
-    "vue-hot-reload-api": "^1.2.0",
-    "vue-html-loader": "^1.0.0",
-    "vue-loader": "^8.1.3",
-    "vue-style-loader": "^1.0.0"
+    "webpack-hot-middleware": "^2.9.1"
   }
 }
