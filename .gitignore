@@ -29,6 +29,7 @@ docker-compose-custom.yml
 .*.swp
 .tags
 .sass-cache
+phantom.log
 
 # Build assets
 dist
