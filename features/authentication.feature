@@ -2,7 +2,6 @@ Feature: Test authentication
   As a user
   I want to be able to login and logout.
 
-  @myTest
   Scenario: I can login by providing the correct credentials
     Given I go to the login page
     Then I see the login page
