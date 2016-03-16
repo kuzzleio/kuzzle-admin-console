@@ -56,7 +56,6 @@ angular.module('kuzzle.storage')
               '/javascripts/common/documentsInline/documentsInline.directive.js',
               '/javascripts/common/basicFilter/basicFilter.directive.js',
               '/javascripts/common/filters/filters.module.js',
-              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ])
               .then(function () {
                 return $ocLazyLoad.load([
@@ -82,7 +81,6 @@ angular.module('kuzzle.storage')
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js',
-              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }
@@ -100,7 +98,6 @@ angular.module('kuzzle.storage')
               'bower_components/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js',
-              '/javascripts/common/jsonEdit/jsonEdit.directive.js'
             ]);
           }]
         }
