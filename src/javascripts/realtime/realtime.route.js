@@ -24,7 +24,6 @@ angular.module('kuzzle.realtime')
                 '/javascripts/realtime/realtimeState.service.js',
                 '/javascripts/common/basicFilter/basicFilter.directive.js',
                 '/javascripts/common/filters/filters.module.js',
-                '/javascripts/common/jsonEdit/jsonEdit.directive.js'
               ])
               .then(function () {
                 return $ocLazyLoad
