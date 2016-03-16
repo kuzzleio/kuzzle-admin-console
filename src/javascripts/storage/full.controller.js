@@ -46,17 +46,15 @@ angular.module('kuzzle.storage')
        * This function will get the document by _id if we are in edition
        * Prepare the schema according to data set in document
        * Subscribe to the document modification for displaying a message if someone else edit/delete this document
-       *
-       * @param action Can be 'edit' or 'create'
        */
-      $scope.init = function (action) {
+      $scope.init = function () {
         $scope.canEditDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'createOrReplace');
         schema.buildFormatter($stateParams.collection)
           .then(function (schema) {
             $scope.schema = schema;
             $scope.schema.readonly = !$scope.canEditDocument;
 
-            if (action === 'edit') {
+            if ($stateParams.id) {
               $scope.isEdit = true;
               $scope.exists = true;
 
