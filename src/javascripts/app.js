@@ -1,7 +1,11 @@
+// Look ma, ES6!
 import uirouter from 'angular-ui-router';
 import loadingBar from 'angular-loading-bar';
 import sanitize from 'angular-sanitize';
+import uiNotification from 'angular-ui-notification';
+import uiBootstrap from 'angular-bootstrap-npm';
 
+require('jsonformatter');
 require('oclazyload');
 
 require('./common/kuzzleSdk.service');
@@ -34,7 +38,7 @@ require('./metrics/metrics.route');
 angular.module('kuzzle', [
   uirouter,
   sanitize,
-  'ui.bootstrap',
+  uiBootstrap,
   'jsonFormatter',
   'kuzzle.authentication',
   'kuzzle.headline',
@@ -54,7 +58,7 @@ angular.module('kuzzle', [
   loadingBar,
   'ngAnimate',
   'kuzzle.uid',
-  'ui-notification',
+  uiNotification,
   'kuzzle.previousState',
   'kuzzle.unsubscribeOnPageChange',
   'oc.lazyLoad'
