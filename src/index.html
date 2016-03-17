@@ -47,11 +47,11 @@
               <span class="close glyphicon glyphicon-remove" ng-click="kill(true)"></span>
           </div>
       </script>
+
+      <!-- We need to load jQuery and AngularJS the legacy way since they are needed by ace and angular-schema,
+      which are loaded legacy. So nineties it's almost cool. -->
       <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
-      <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
-      <script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
-      <script type="text/javascript" src="bower_components/angular-cookies/angular-cookies.min.js"></script>
 
       <!-- These scripts must be loaded via the script tags. Actually, ACE can be required the CommonJS way, but
       the worker would not work (we need to load it with a tag). So, since the worker needs ace to be

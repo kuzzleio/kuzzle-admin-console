@@ -1,12 +1,14 @@
+require('oclazyload');
+require('jsonformatter');
+require('bootstrap');
+
 // Look ma, ES6!
 import uirouter from 'angular-ui-router';
 import loadingBar from 'angular-loading-bar';
 import sanitize from 'angular-sanitize';
 import uiNotification from 'angular-ui-notification';
 import uiBootstrap from 'angular-bootstrap-npm';
-
-require('jsonformatter');
-require('oclazyload');
+import ngAnimate from 'angular-animate';
 
 require('./common/kuzzleSdk.service');
 require('./common/bufferCancel.service');
@@ -39,6 +41,10 @@ angular.module('kuzzle', [
   uirouter,
   sanitize,
   uiBootstrap,
+  uiNotification,
+  loadingBar,
+  ngAnimate,
+  'oc.lazyLoad',
   'jsonFormatter',
   'kuzzle.authentication',
   'kuzzle.headline',
@@ -55,13 +61,9 @@ angular.module('kuzzle', [
   'kuzzle.indexesApi',
   'kuzzle.collectionApi',
   'kuzzle.serverApi',
-  loadingBar,
-  'ngAnimate',
   'kuzzle.uid',
-  uiNotification,
   'kuzzle.previousState',
   'kuzzle.unsubscribeOnPageChange',
-  'oc.lazyLoad'
 ])
 
   .config(['$httpProvider', function ($httpProvider) {
