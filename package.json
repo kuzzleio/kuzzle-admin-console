@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "async": "^1.x",
-    "cucumber": "0.x",
+    "cucumber": "0.5.x",
     "grunt": "0.x",
     "grunt-contrib-jshint": "0.x",
     "grunt-contrib-sass": "0.x",
