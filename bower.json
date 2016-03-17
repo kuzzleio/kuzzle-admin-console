@@ -20,25 +20,22 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.5",
-    "angular": "1.4.7",
-    "angular-animate": "~1.4.7",
-    "angular-bootstrap": "~0.14.3",
+    "bootstrap": "3.x",
+    "angular": "1.5.x",
+    "angular-animate": "1.x",
+    "angular-bootstrap": "0.x",
     "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master",
-    "json-formatter": "~0.4.0",
-    "angular-ui-router": "~0.2.15",
-    "angular-loading-bar": "~0.8.0",
-    "angular-ui-ace": "0.2.3",
-    "angular-schema-form": "~0.8.12",
-    "angular-schema-form-bootstrap": "~0.2.0",
-    "leaflet": "0.7.x",
-    "kuzzle-sdk": "1.7.1",
-    "angular-scroll-glue": "~2.0.6",
-    "angular-cookies": "~1.4.8",
-    "highcharts": "4.2.1",
-    "oclazyload": "~1.0.9"
-  },
-  "resolutions": {
-    "angular": "1.4.9"
+    "json-formatter": "0.x",
+    "angular-ui-router": "0.x",
+    "angular-loading-bar": "0.x",
+    "angular-ui-ace": "0.x",
+    "angular-schema-form": "0.x",
+    "angular-schema-form-bootstrap": "0.x",
+    "leaflet": "0.x",
+    "kuzzle-sdk": "1.x",
+    "angular-scroll-glue": "2.x",
+    "angular-cookies": "1.x",
+    "highcharts": "4.x",
+    "oclazyload": "1.x"
   }
 }
