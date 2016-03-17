@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-bo",
-  "version": "beta",
+  "version": "1.0.0-beta.1",
   "description": "Official back office for manage and monitor your Kuzzle",
   "main": "app.js",
   "scripts": {
