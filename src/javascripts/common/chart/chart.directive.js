@@ -72,12 +72,6 @@ angular.module('kuzzle.chart', [])
       templateUrl: '/javascripts/common/chart/chart.tpl.html',
       replace: true,
       link: function (scope, element) {
-        Highcharts.setOptions({
-          global: {
-            useUTC: false
-          }
-        });
-
         scope.$watch('series', function (series) {
           if (typeof scope.chart === 'undefined' && series.length > 0) {
             angular.element(element).highcharts('StockChart', chartConfiguration(scope.ylabel, scope.series),

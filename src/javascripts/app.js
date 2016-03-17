@@ -10,6 +10,16 @@ import uiNotification from 'angular-ui-notification';
 import uiBootstrap from 'angular-bootstrap-npm';
 import ngAnimate from 'angular-animate';
 
+var Highcharts = require('highcharts/highstock');
+var MoreHighcharts = require('highcharts/highcharts-more')(Highcharts);
+require('highcharts/modules/exporting')(Highcharts);
+
+Highcharts.setOptions({
+  global: {
+    useUTC: false
+  }
+});
+
 require('./common/kuzzleSdk.service');
 require('./common/bufferCancel.service');
 require('./common/documentApi.service');
