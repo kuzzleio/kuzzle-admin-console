@@ -35,6 +35,7 @@
     "angular-bootstrap-npm": "~0.14.3",
     "angular-cookies": "~1.4.8",
     "angular-loading-bar": "^0.8.0",
+    "angular-sanitize": "^1.5.1",
     "angular-ui-ace": "git://github.com/angular-ui/ui-ace.git",
     "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master",
     "angular-ui-router": "^0.2.18",

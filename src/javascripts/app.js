@@ -1,7 +1,8 @@
 import uirouter from 'angular-ui-router';
+import loadingBar from 'angular-loading-bar';
+import sanitize from 'angular-sanitize';
 
 require('oclazyload');
-require('angular-loading-bar');
 
 require('./common/kuzzleSdk.service');
 require('./common/bufferCancel.service');
@@ -32,6 +33,7 @@ require('./metrics/metrics.route');
 
 angular.module('kuzzle', [
   uirouter,
+  sanitize,
   'ui.bootstrap',
   'jsonFormatter',
   'kuzzle.authentication',
@@ -49,7 +51,7 @@ angular.module('kuzzle', [
   'kuzzle.indexesApi',
   'kuzzle.collectionApi',
   'kuzzle.serverApi',
-  'angular-loading-bar',
+  loadingBar,
   'ngAnimate',
   'kuzzle.uid',
   'ui-notification',
