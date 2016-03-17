@@ -57,12 +57,13 @@
       <script type="text/javascript" src="bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
       <script type="text/javascript" src="bower_components/json-formatter/dist/json-formatter.min.js"></script>
 
+      <!-- These scripts must be loaded via the script tags. Actually, ACE can be required the CommonJS way, but
+      the worker would not work (we need to load it with a tag). So, since the worker needs ace to be
+      instantiated when it loads, we load all the ACE ecosystem via script tags e buonanotte. -->
       <script type="text/javascript" src="bower_components/ace-builds/src-min/ace.js"></script>
-      <script type="text/javascript" src="bower_components/angular-ui-ace/ui-ace.js"></script>
       <script type="text/javascript" src="bower_components/ace-builds/src-min/mode-json.js"></script>
-      <script type="text/javascript" src="bower_components/ace-builds/src-min/worker-json.js"></script>
+      <script type="text/javascript" src="bower_components/ace-builds/src-min-noconflict/worker-json.js"></script>
 
-      <script type="text/javascript" src="bower_components/tv4/tv4.js"></script>
       <script type="text/javascript" src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
       <script type="text/javascript" src="bower_components/objectpath/lib/ObjectPath.js"></script>
       <script type="text/javascript" src="bower_components/angular-schema-form/dist/schema-form.js"></script>

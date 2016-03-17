@@ -1,3 +1,6 @@
+require('tv4');
+require('angular-ui-ace/src/ui-ace');
+
 angular.module('kuzzle.jsonEdit', ['ui.ace'])
 
   .controller('AceCtrl', ['$scope', function ($scope) {

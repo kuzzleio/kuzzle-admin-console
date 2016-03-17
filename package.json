@@ -35,6 +35,7 @@
     "angular-bootstrap-npm": "~0.14.3",
     "angular-cookies": "~1.4.8",
     "angular-loading-bar": "^0.8.0",
+    "angular-ui-ace": "git://github.com/angular-ui/ui-ace.git",
     "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master",
     "angular-ui-router": "^0.2.18",
     "angularjs-scroll-glue": "^2.0.4",
@@ -50,6 +51,7 @@
     "oclazyload": "^1.0.9",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.3.7",
+    "tv4": "^1.2.7",
     "vue": "^1.0.17"
   },
   "devDependencies": {

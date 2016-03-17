@@ -4,7 +4,6 @@ require('oclazyload');
 require('angular-loading-bar');
 
 require('./common/kuzzleSdk.service');
-
 require('./common/bufferCancel.service');
 require('./common/documentApi.service');
 require('./common/indexesApi.service');
