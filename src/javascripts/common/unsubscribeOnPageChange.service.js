@@ -5,7 +5,7 @@ angular.module('kuzzle.unsubscribeOnPageChange', ['kuzzle.kuzzleSdk'])
     $rootScope.$on('$stateChangeSuccess', function () {
       angular.forEach(kuzzleSdk.subscriptions, function (rooms) {
         angular.forEach(rooms, function (room) {
-            room.unsubscribe();
+          room.unsubscribe();
         });
       });
     });

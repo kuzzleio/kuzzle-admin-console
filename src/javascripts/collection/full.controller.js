@@ -69,4 +69,4 @@ angular.module('kuzzle.collection')
 
         $window.history.back();
       };
-  }]);
+    }]);

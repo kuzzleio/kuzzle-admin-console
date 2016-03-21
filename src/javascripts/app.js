@@ -118,9 +118,9 @@ angular.module('kuzzle', [
     $urlMatcherFactoryProvider.strictMode(false);
 
     $urlRouterProvider.otherwise(function ($injector) {
-        $injector.invoke(['$state', function ($state) {
-          $state.go('404');
-        }]);
+      $injector.invoke(['$state', function ($state) {
+        $state.go('404');
+      }]);
     });
 
     $stateProvider

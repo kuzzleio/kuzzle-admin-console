@@ -100,75 +100,76 @@ module.exports = function makeWebpackConfig () {
 
   // Initialize module
   config.module = {
-    preLoaders: [],
+    preLoaders: [{
+      test: /\.js$/, // include .js files
+      exclude: /node_modules/, // exclude any and all files in the node_modules folder
+      loader: 'eslint-loader'
+    }],
     loaders: [
       {
         test: /\.vue$/,
         loader: 'vue'
-    }, {
+      }, {
       // JS LOADER
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
-      test: /\.js$/,
-      loaders: ['babel'],
-      exclude: /node_modules/
-    }, {
-      test: /\.scss$/,
-      loaders: ['style', 'css', 'sass']
-    },
-    {
+        test: /\.js$/,
+        loaders: ['babel'],
+        exclude: /node_modules/
+      }, {
+        test: /\.scss$/,
+        loaders: ['style', 'css', 'sass']
+      },
+      {
       // CSS LOADER
       // Reference: https://github.com/webpack/css-loader
       // Allow loading css through js
       //
       // Reference: https://github.com/postcss/postcss-loader
       // Postprocess your css with PostCSS plugins
-      test: /\.css$/,
+        test: /\.css$/,
       // Reference: https://github.com/webpack/extract-text-webpack-plugin
       // Extract css files in production builds
       //
       // Reference: https://github.com/webpack/style-loader
       // Use style-loader in development.
       // loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
-      loaders: ['style', 'css']
-    }, {
+        loaders: ['style', 'css']
+      }, {
       // ASSET LOADER
       // Reference: https://github.com/webpack/file-loader
       // Copy png, jpg, jpeg, gif, svg, woff, woff2, ttf, eot files to output
       // Rename the file using the asset hash
       // Pass along the updated reference to your code
       // You can add here any file extension you want to get copied to your output
-      test: /\.(png|jpg|jpeg|gif|svg|ttf|eot)$/,
-      loader: 'file'
-    }, {
+        test: /\.(png|jpg|jpeg|gif|svg|ttf|eot)$/,
+        loader: 'file'
+      }, {
       // HTML LOADER
       // Reference: https://github.com/webpack/raw-loader
       // Allow loading html through js
-      test: /\.html$/,
-      loader: 'raw'
-    },
+        test: /\.html$/,
+        loader: 'raw'
+      },
       // font-awesome specific loaders
-    {
-      test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-      loader: 'url-loader?limit=10000&mimetype=application/font-woff'
-    }, {
-      test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-      loader: 'file-loader'
-  }]
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+      }, {
+        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: 'file-loader'
+      }]
   };
 
-  if (!isProd) {
-    config.module.preLoaders.push({
-        test: /\.js$/, // include .js files
-        exclude: /node_modules/, // exclude any and all files in the node_modules folder
-        loader: 'jshint-loader'
-    });
-    config.jshint = {
-      emitErrors: true,
-      failOnHint: false
-    };
-  }
+  // We want to emit errors in development mode because the HMR will show
+  // the errrors directly in the browser. We don't want errors to make
+  // the build fail.
+  config.eslint = {
+    configFile: './.eslintrc'
+  };
+
+  if (isProd) {}
 
   /**
    * PostCSS
