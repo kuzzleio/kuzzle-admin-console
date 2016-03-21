@@ -1,3 +1,4 @@
+// Look ma, require!
 require('oclazyload');
 require('jsonformatter');
 require('bootstrap');
@@ -10,17 +11,18 @@ require('../../node_modules/jsonformatter/dist/json-formatter.min.css');
 require('../../node_modules/angular-ui-notification/dist/angular-ui-notification.min.css');
 require('../font-awesome/css/font-awesome.min.css');
 
-require('../styles/login.css');
-require('../styles/storage.css');
-require('../styles/realtime.css');
-require('../styles/navbar.css');
-require('../styles/notifications.css');
-require('../styles/modal.css');
-require('../styles/collection.css');
-require('../styles/basicFilter.css');
-require('../styles/documents-inline.css');
-require('../styles/metrics.css');
-require('../styles/common.css');
+// Look ma, SASS!
+require('../sass/login.scss');
+require('../sass/storage.scss');
+require('../sass/realtime.scss');
+require('../sass/navbar.scss');
+require('../sass/notifications.scss');
+require('../sass/modal.scss');
+require('../sass/collection.scss');
+require('../sass/basicFilter.scss');
+require('../sass/documents-inline.scss');
+require('../sass/metrics.scss');
+require('../sass/common.scss');
 
 // Look ma, ES6!
 import uirouter from 'angular-ui-router';
