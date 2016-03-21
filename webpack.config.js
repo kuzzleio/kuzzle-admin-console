@@ -114,6 +114,10 @@ module.exports = function makeWebpackConfig () {
       loaders: ['babel'],
       exclude: /node_modules/
     }, {
+      test: /\.scss$/,
+      loaders: ['style', 'css', 'sass']
+    },
+    {
       // CSS LOADER
       // Reference: https://github.com/webpack/css-loader
       // Allow loading css through js
@@ -126,7 +130,8 @@ module.exports = function makeWebpackConfig () {
       //
       // Reference: https://github.com/webpack/style-loader
       // Use style-loader in development.
-      loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
+      // loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
+      loaders: ['style', 'css']
     }, {
       // ASSET LOADER
       // Reference: https://github.com/webpack/file-loader
@@ -134,7 +139,7 @@ module.exports = function makeWebpackConfig () {
       // Rename the file using the asset hash
       // Pass along the updated reference to your code
       // You can add here any file extension you want to get copied to your output
-      test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+      test: /\.(png|jpg|jpeg|gif|svg|ttf|eot)$/,
       loader: 'file'
     }, {
       // HTML LOADER
@@ -142,7 +147,15 @@ module.exports = function makeWebpackConfig () {
       // Allow loading html through js
       test: /\.html$/,
       loader: 'raw'
-    }]
+    },
+      // font-awesome specific loaders
+    {
+      test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+    }, {
+      test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: 'file-loader'
+  }]
   };
 
   /**

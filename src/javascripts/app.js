@@ -2,6 +2,26 @@ require('oclazyload');
 require('jsonformatter');
 require('bootstrap');
 
+// Look ma, CSS!
+require('../../node_modules/angular-loading-bar/build/loading-bar.min.css');
+require('../../node_modules/bootstrap/dist/css/bootstrap.min.css');
+require('../../node_modules/leaflet/dist/leaflet.css');
+require('../../node_modules/jsonformatter/dist/json-formatter.min.css');
+require('../../node_modules/angular-ui-notification/dist/angular-ui-notification.min.css');
+require('../font-awesome/css/font-awesome.min.css');
+
+require('../styles/login.css');
+require('../styles/storage.css');
+require('../styles/realtime.css');
+require('../styles/navbar.css');
+require('../styles/notifications.css');
+require('../styles/modal.css');
+require('../styles/collection.css');
+require('../styles/basicFilter.css');
+require('../styles/documents-inline.css');
+require('../styles/metrics.css');
+require('../styles/common.css');
+
 // Look ma, ES6!
 import uirouter from 'angular-ui-router';
 import loadingBar from 'angular-loading-bar';

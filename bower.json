@@ -21,15 +21,10 @@
   ],
   "dependencies": {
     "bootstrap": "~3.3.5",
-    "angular": "1.4.7",
+    "angular": "1.4.9",
     "angular-ui-ace": "0.2.3",
     "angular-schema-form": "~0.8.12",
-    "angular-schema-form-bootstrap": "~0.2.0",
-
-    "leaflet": "0.7.x",
-    "angular-loading-bar": "~0.8.0",
-    "json-formatter": "~0.4.0",
-    "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master"
+    "angular-schema-form-bootstrap": "~0.2.0"
   },
   "resolutions": {
     "angular": "1.4.9"
