@@ -13,7 +13,7 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo:beta
+  image: kuzzleio/bo:alpine
   ports:
     - "3000:3000"
   links:

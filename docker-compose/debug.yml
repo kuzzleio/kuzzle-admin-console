@@ -18,7 +18,7 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo
+  image: kuzzleio/bo-dev:alpine
   volumes:
     - "..:/var/app"
   ports:
