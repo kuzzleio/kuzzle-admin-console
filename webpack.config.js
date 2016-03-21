@@ -158,6 +158,18 @@ module.exports = function makeWebpackConfig () {
   }]
   };
 
+  if (!isProd) {
+    config.module.preLoaders.push({
+        test: /\.js$/, // include .js files
+        exclude: /node_modules/, // exclude any and all files in the node_modules folder
+        loader: 'jshint-loader'
+    });
+    config.jshint = {
+      emitErrors: true,
+      failOnHint: false
+    };
+  }
+
   /**
    * PostCSS
    * Reference: https://github.com/postcss/autoprefixer-core
