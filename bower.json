@@ -22,21 +22,14 @@
   "dependencies": {
     "bootstrap": "~3.3.5",
     "angular": "1.4.7",
-    "angular-animate": "~1.4.7",
-    "angular-bootstrap": "~0.14.3",
-    "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master",
-    "json-formatter": "~0.4.0",
-    "angular-ui-router": "~0.2.15",
-    "angular-loading-bar": "~0.8.0",
     "angular-ui-ace": "0.2.3",
     "angular-schema-form": "~0.8.12",
     "angular-schema-form-bootstrap": "~0.2.0",
+
     "leaflet": "0.7.x",
-    "kuzzle-sdk": "1.7.1",
-    "angular-scroll-glue": "~2.0.6",
-    "angular-cookies": "~1.4.8",
-    "highcharts": "4.2.1",
-    "oclazyload": "~1.0.9"
+    "angular-loading-bar": "~0.8.0",
+    "json-formatter": "~0.4.0",
+    "angular-ui-notification": "git://github.com/AnthonySendra/angular-ui-notification.git#master"
   },
   "resolutions": {
     "angular": "1.4.9"
