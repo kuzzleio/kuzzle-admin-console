@@ -169,7 +169,9 @@ module.exports = function makeWebpackConfig () {
     configFile: './.eslintrc'
   };
 
-  if (isProd) {}
+  if (isProd) {
+    config.eslint.failOnError = true;
+  }
 
   /**
    * PostCSS

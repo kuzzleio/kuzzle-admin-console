@@ -12,6 +12,7 @@
   },
   "globals": {},
   "rules": {
+    "semi": [2, "always"],
     "camelcase": 2,
     "curly": 2,
     "eqeqeq": 2,
