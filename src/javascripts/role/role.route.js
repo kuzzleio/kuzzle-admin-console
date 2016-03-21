@@ -40,7 +40,7 @@ angular.module('kuzzle.role')
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/role/full.ctrl.js',
-              'bower_components/leaflet/dist/leaflet.js',
+              'node_modules/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js'

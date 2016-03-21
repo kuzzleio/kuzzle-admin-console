@@ -75,6 +75,10 @@ if (ENV === DEVELOPMENT) {
   });
 }
 
+// WARNING: this is temporarily used to serve node_modules content while
+// migrating from ocLazyLoad to webpack require
+app.use('/node_modules/', express.static('node_modules'));
+
 // Init routes and controllers
 router.initRoutes(app);
 

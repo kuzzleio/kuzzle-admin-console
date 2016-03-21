@@ -78,7 +78,7 @@ angular.module('kuzzle.storage')
             return $ocLazyLoad.load([
               '/javascripts/storage/addAttribute/addAttribute.directive.js',
               '/javascripts/storage/full.controller.js',
-              'bower_components/leaflet/dist/leaflet.js',
+              'node_modules/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js',
             ]);
@@ -95,7 +95,7 @@ angular.module('kuzzle.storage')
             return $ocLazyLoad.load([
               '/javascripts/storage/addAttribute/addAttribute.directive.js',
               '/javascripts/storage/full.controller.js',
-              'bower_components/leaflet/dist/leaflet.js',
+              'node_modules/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/storage/leaflet.directive.js',
             ]);

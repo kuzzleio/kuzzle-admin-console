@@ -43,7 +43,7 @@ angular.module('kuzzle.user')
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/user/full.ctrl.js',
-              'bower_components/leaflet/dist/leaflet.js',
+              'node_modules/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js',
               '/javascripts/storage/leaflet.directive.js'
@@ -60,7 +60,7 @@ angular.module('kuzzle.user')
           loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
             return $ocLazyLoad.load([
               '/javascripts/user/full.ctrl.js',
-              'bower_components/leaflet/dist/leaflet.js',
+              'node_modules/leaflet/dist/leaflet.js',
               '/javascripts/storage/customFormDecorators/leaflet/sfLeaflet.module.js',
               '/javascripts/common/jsonEdit/jsonEdit.directive.js',
               '/javascripts/storage/leaflet.directive.js'
