@@ -12,6 +12,11 @@
   },
   "globals": {},
   "rules": {
+    "new-cap": 1,
+    "no-lonely-if": 1,
+    "no-multi-spaces": 1,
+    "no-multiple-empty-lines": 1,
+    "no-undef-init": 1,
     "semi": [2, "always"],
     "camelcase": 2,
     "curly": 2,
@@ -24,7 +29,6 @@
         "SwitchCase": 1
       }
     ],
-    "new-cap": 2,
     "quotes": [
       2,
       "single"

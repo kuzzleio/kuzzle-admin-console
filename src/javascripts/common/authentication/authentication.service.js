@@ -82,29 +82,27 @@ angular.module('kuzzle.authentication')
 
       if (kuzzle.getJwtToken()) {
         deferred.resolve(true);
-      } else {
-        if (Session.resumeFromCookie()) {
-          kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
-            if (error || response.valid === false) {
-              onLoginFailed(error);
-              deferred.reject({
-                type: 'NOT_AUTHENTICATED',
-                message: 'Found invalid token in cookie. Not authenticated.'});
-              return;
-            }
+      } else if (Session.resumeFromCookie()) {
+        kuzzle.checkToken(Session.session.jwtToken, function(error, response) {
+          if (error || response.valid === false) {
+            onLoginFailed(error);
+            deferred.reject({
+              type: 'NOT_AUTHENTICATED',
+              message: 'Found invalid token in cookie. Not authenticated.'});
+            return;
+          }
 
-            kuzzle.setJwtToken(Session.session.jwtToken);
-            onLoginSuccess(false)
-              .then(function (value) {
-                deferred.resolve(value);
-              });
-          });
-        } else {
-          deferred.reject({
-            type: 'NOT_AUTHENTICATED',
-            message: 'No JWT Token and no cookie found. Not authenticated.'
-          });
-        }
+          kuzzle.setJwtToken(Session.session.jwtToken);
+          onLoginSuccess(false)
+            .then(function (value) {
+              deferred.resolve(value);
+            });
+        });
+      } else {
+        deferred.reject({
+          type: 'NOT_AUTHENTICATED',
+          message: 'No JWT Token and no cookie found. Not authenticated.'
+        });
       }
 
       return deferred.promise;
