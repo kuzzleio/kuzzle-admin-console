@@ -12,6 +12,7 @@ require('angular-ui-notification/dist/angular-ui-notification.min.css');
 require('font-awesome/css/font-awesome.min.css');
 
 // Look ma, SASS!
+// TODO move every style to the corresponding section
 require('../sass/login.scss');
 require('../sass/storage.scss');
 require('../sass/realtime.scss');
