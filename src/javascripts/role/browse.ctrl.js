@@ -1,3 +1,7 @@
+require('../collection/cogOptionsCollection/cogOptionsCollection.directive');
+require('../common/documentsInline/documentsInline.directive');
+require('../common/documentsInline/roleToolbar.directive');
+
 angular.module('kuzzle.role')
 
   .config(['JSONFormatterConfigProvider', function (JSONFormatterConfigProvider) {

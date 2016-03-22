@@ -62,11 +62,11 @@ require('./common/authentication/loginModal.controller');
 require('./common/authentication/authorizationApi.service');
 
 import baseRouting from './baseRouting';
+import role from './role';
 require('./indexes/indexes.route');
 require('./storage/storage.route');
 require('./collection/collection.route');
 require('./realtime/realtime.route');
-require('./role/role.route');
 require('./profile/profile.route');
 require('./user/user.route');
 require('./metrics/metrics.route');
@@ -86,7 +86,7 @@ angular.module('kuzzle', [
   'kuzzle.storage',
   'kuzzle.collection',
   'kuzzle.realtime',
-  'kuzzle.role',
+  role,
   'kuzzle.profile',
   'kuzzle.user',
   'kuzzle.metrics',
