@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "rimraf dist && webpack --bail --profile --progress -p",
-    "test": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js",
+    "test": "rm -f ./features/errorShots/*; ./node_modules/.bin/wdio ./features/wdio.conf.js",
     "test-selective": "rm -f ./features/errorShots/*; grunt linter && ./node_modules/.bin/wdio ./features/wdio.conf.js --cucumberOpts.tags @myTest",
     "start": "./bin/www",
     "dev": "NODE_ENV=dev node ./bin/www"
