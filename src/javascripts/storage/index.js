@@ -1,6 +1,8 @@
 require('../common/jsonEdit/jsonEdit.directive');
 require('../common/schema.service.js');
 
+import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+
 const MODULE_NAME = 'kuzzle.storage';
 
 export default angular.module(MODULE_NAME, [
@@ -9,7 +11,8 @@ export default angular.module(MODULE_NAME, [
   'schemaForm',
   'kuzzle.schema',
   'kuzzle.jsonEdit',
-  'kuzzle.documentsInline'
+  'kuzzle.documentsInline',
+  collectionsDropDownSearch
 ])
   .config(function ($stateProvider) {
     $stateProvider

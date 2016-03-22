@@ -8,8 +8,8 @@ angular.module('kuzzle.realtime')
         icon: 'file',
         class: '',
         source:  {
-            source: notification.result._source,
-            metadata: notification.metadata
+          source: notification.result._source,
+          metadata: notification.metadata
         },
         expanded: false,
         canEdit: true
@@ -21,7 +21,7 @@ angular.module('kuzzle.realtime')
           messageItem.icon = 'send';
           messageItem.class = 'message-volatile';
           messageItem.canEdit = false;
-        break;
+          break;
         case 'create':
         case 'createOrUpdate':
           messageItem.icon = 'file';
@@ -33,13 +33,13 @@ angular.module('kuzzle.realtime')
             messageItem.text = 'Creating new document';
             messageItem.class = 'message-pending';
           }
-        break;
+          break;
 
         case 'update':
           messageItem.text = 'Updated document';
           messageItem.icon = 'file';
           messageItem.class = 'message-created-updated-doc';
-        break;
+          break;
 
         case 'delete':
           messageItem.icon = 'remove';
@@ -51,7 +51,7 @@ angular.module('kuzzle.realtime')
             messageItem.text = 'Deleting document';
             messageItem.class = 'message-pending';
           }
-        break;
+          break;
 
         case 'on':
           messageItem.text = 'A new user is listening to this room';
@@ -59,7 +59,7 @@ angular.module('kuzzle.realtime')
           messageItem.class = 'message-user';
           messageItem.canEdit = false;
           messageItem.source = notification.metadata;
-        break;
+          break;
 
         case 'off':
           messageItem.text = 'A user exited this room';
@@ -67,7 +67,7 @@ angular.module('kuzzle.realtime')
           messageItem.class = 'message-user';
           messageItem.source = notification.metadata;
           messageItem.canEdit = false;
-        break;
+          break;
 
         default:
           throw 'Unknown notification';

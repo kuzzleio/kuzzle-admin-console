@@ -1,7 +1,6 @@
-angular.module('kuzzle.messageLog', [
-    'luegg.directives'
-  ])
+import messageLog from './index';
 
+angular.module(messageLog)
   .controller('messageLogCtrl', ['$scope', function ($scope) {
     $scope.clearMessages = function () {
       $scope.initMessages();
@@ -19,6 +18,6 @@ angular.module('kuzzle.messageLog', [
         initMessages: '&'
       },
       controller: 'messageLogCtrl',
-      templateUrl: '/javascripts/realtime/messageLog/messageLog.tpl.html'
+      template: require('./messageLog.tpl.html')
     };
   });

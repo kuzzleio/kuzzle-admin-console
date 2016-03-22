@@ -1,4 +1,6 @@
-angular.module('kuzzle.collectionsDropDownSearch', ['kuzzle.authorization'])
+import mod from './index';
+
+export default angular.module(mod, ['kuzzle.authorization'])
   .controller('collectionsDropDownSearchCtrl', [
     '$scope',
     'authorizationApi',
@@ -37,4 +39,5 @@ angular.module('kuzzle.collectionsDropDownSearch', ['kuzzle.authorization'])
       controller: 'collectionsDropDownSearchCtrl',
       templateUrl: '/javascripts/collection/collectionsDropDownSearch/collectionsDropDownSearch.tpl.html'
     };
-  });
+  })
+  .name;

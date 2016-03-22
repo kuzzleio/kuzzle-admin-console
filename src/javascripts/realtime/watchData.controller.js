@@ -1,3 +1,7 @@
+require('./messageLog/messageLog.directive');
+require('./messageLog/notification.service');
+require('./realtimeState.service');
+
 angular.module('kuzzle.realtime')
 
   .controller('WatchDataCtrl', [

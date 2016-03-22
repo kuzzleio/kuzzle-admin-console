@@ -75,9 +75,9 @@ require('./common/filters/filters.directive');
 import baseRouting from './baseRouting';
 import role from './role';
 import storage from './storage';
+import realtime from './realtime';
 require('./indexes/indexes.route');
 require('./collection/collection.route');
-require('./realtime/realtime.route');
 require('./profile/profile.route');
 require('./user/user.route');
 require('./metrics/metrics.route');
@@ -96,7 +96,7 @@ angular.module('kuzzle', [
   'kuzzle.indexes',
   storage,
   'kuzzle.collection',
-  'kuzzle.realtime',
+  realtime,
   role,
   'kuzzle.profile',
   'kuzzle.user',
