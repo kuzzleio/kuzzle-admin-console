@@ -60,11 +60,22 @@ require('./common/authentication/authentication.module');
 require('./common/authentication/authentication.service');
 require('./common/authentication/loginModal.controller');
 require('./common/authentication/authorizationApi.service');
+require('./common/authentication/login.controller');
+require('./common/authentication/formAutoFillFix.directive');
+require('./common/authentication/userMenu.directive');
+require('./common/headline/headline.directive');
+
+require('./common/documentsInline/documentsInline.directive');
+require('./common/documentsInline/documentToolbar.directive');
+
+require('./common/filters/filters.module');
+require('./common/filters/filters.service');
+require('./common/filters/filters.directive');
 
 import baseRouting from './baseRouting';
 import role from './role';
+import storage from './storage';
 require('./indexes/indexes.route');
-require('./storage/storage.route');
 require('./collection/collection.route');
 require('./realtime/realtime.route');
 require('./profile/profile.route');
@@ -83,7 +94,7 @@ angular.module('kuzzle', [
   'kuzzle.authentication',
   'kuzzle.headline',
   'kuzzle.indexes',
-  'kuzzle.storage',
+  storage,
   'kuzzle.collection',
   'kuzzle.realtime',
   role,
@@ -97,7 +108,7 @@ angular.module('kuzzle', [
   'kuzzle.serverApi',
   'kuzzle.uid',
   'kuzzle.previousState',
-  'kuzzle.unsubscribeOnPageChange',
+  'kuzzle.unsubscribeOnPageChange'
 ])
 
   .config(['$httpProvider', function ($httpProvider) {
@@ -147,7 +158,3 @@ angular.module('kuzzle', [
 
 require('./common/mainApp.controller');
 require('./common/sidebar.controller');
-require('./common/authentication/login.controller');
-require('./common/authentication/formAutoFillFix.directive');
-require('./common/authentication/userMenu.directive');
-require('./common/headline/headline.directive');

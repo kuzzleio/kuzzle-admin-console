@@ -1,3 +1,7 @@
+
+require('../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive');
+require('../collection/cogOptionsCollection/cogOptionsCollection.directive');
+
 angular.module('kuzzle.storage')
 
   .config(['JSONFormatterConfigProvider', function (JSONFormatterConfigProvider) {
@@ -68,7 +72,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $scope.canCreateDocument =  authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'create');
+        $scope.canCreateDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'create');
         $scope.canReadDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'read', 'search');
         $scope.canEditDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'createOrReplace');
         $scope.canDeleteDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'delete');
@@ -95,8 +99,6 @@ angular.module('kuzzle.storage')
         }
 
       };
-
-
 
       /**
        * Load documents according to filters
@@ -195,4 +197,4 @@ angular.module('kuzzle.storage')
         var filter = decodeURIComponent(advancedFilter);
         $state.go('storage.browse.documents', {advancedFilter: filter, basicFilter: null}, {reload: false});
       };
-  }]);
+    }]);

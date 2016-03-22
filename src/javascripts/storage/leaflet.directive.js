@@ -1,3 +1,5 @@
+require('./customFormDecorators/leaflet/sfLeaflet.module');
+
 angular.module('kuzzle.leaflet', [])
 
   .service('leaflet', [function () {

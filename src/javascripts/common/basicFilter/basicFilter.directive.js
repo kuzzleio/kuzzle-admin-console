@@ -93,6 +93,6 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
         comparators: '='
       },
       controller: 'BasicFilterCtrl',
-      templateUrl: '/javascripts/common/basicFilter/basicFilter.tpl.html'
+      template: require('./basicFilter.tpl.html')
     };
   });

@@ -1,3 +1,5 @@
+require('../basicFilter/basicFilter.directive');
+
 angular.module('kuzzle.filters')
   .controller('FiltersCtrl', ['$scope', 'filters', function ($scope, filterTools) {
     $scope.error = null;
@@ -47,6 +49,6 @@ angular.module('kuzzle.filters')
         isRealtime: '='
       },
       controller: 'FiltersCtrl',
-      templateUrl: '/javascripts/common/filters/filters.tpl.html'
+      template: require('./filters.tpl.html')
     };
   }]);

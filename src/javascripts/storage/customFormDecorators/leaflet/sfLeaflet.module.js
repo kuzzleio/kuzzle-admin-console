@@ -1,3 +1,5 @@
+require('leaflet/dist/leaflet');
+
 angular.module('schemaForm')
 
   .directive('sfLeaflet', ['leaflet', function (leaflet) {

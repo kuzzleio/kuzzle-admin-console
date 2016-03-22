@@ -1,1 +1,1 @@
-angular.module('kuzzle.filters', []);
+angular.module('kuzzle.filters', ['kuzzle.basicFilter']);

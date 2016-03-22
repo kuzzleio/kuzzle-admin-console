@@ -1,3 +1,6 @@
+require('./addAttribute/addAttribute.directive');
+require('./leaflet.directive');
+
 angular.module('kuzzle.storage')
 
   /** This controller is used on a document full view: for edit or create a document **/

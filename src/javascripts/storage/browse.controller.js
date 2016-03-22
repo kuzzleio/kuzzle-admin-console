@@ -1,5 +1,7 @@
-angular.module('kuzzle.storage')
+require('../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive');
+require('../collection/cogOptionsCollection/cogOptionsCollection.directive');
 
+angular.module('kuzzle.storage')
   .controller('StorageBrowseCtrl', [
     '$scope',
     '$http',
@@ -9,7 +11,7 @@ angular.module('kuzzle.storage')
     'authorizationApi',
     function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
       var checkRights = function (collection) {
-        $scope.canCreateDocument =  authorization.canDoAction($stateParams.index, collection, 'write', 'create');
+        $scope.canCreateDocument = authorization.canDoAction($stateParams.index, collection, 'write', 'create');
         $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
         $scope.canEditCollection = authorization.canDoAction(
           $stateParams.index,
@@ -87,4 +89,4 @@ angular.module('kuzzle.storage')
           }, {reload: true});
         }, 1000);
       };
-  }]);
+    }]);
