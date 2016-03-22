@@ -7,6 +7,7 @@ var autoprefixer = require('autoprefixer');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+var NgAnnotatePlugin = require('ng-annotate-webpack-plugin');
 
 /**
  * Env
@@ -103,7 +104,7 @@ module.exports = function makeWebpackConfig () {
     preLoaders: [{
       test: /\.js$/, // include .js files
       exclude: /node_modules/, // exclude any and all files in the node_modules folder
-      loader: 'eslint-loader'
+      loaders: ['eslint-loader']
     }],
     loaders: [
       {
@@ -114,8 +115,10 @@ module.exports = function makeWebpackConfig () {
       // Reference: https://github.com/babel/babel-loader
       // Transpile .js files using babel-loader
       // Compiles ES6 and ES7 into ES5 code
+      // Reference: https://github.com/jeffling/ng-annotate-webpack-plugin
+      // Add angular-injector annotations before minification
         test: /\.js$/,
-        loaders: ['babel'],
+        loaders: ['ng-annotate', 'babel'],
         exclude: /node_modules/
       }, {
         test: /\.scss$/,

@@ -90,6 +90,7 @@
     "gruntify-eslint": "^2.0.0",
     "html-webpack-plugin": "^2.7.1",
     "jshint": "^2.9.1",
+    "ng-annotate-loader": "^0.1.0",
     "node-libs-browser": "^1.0.0",
     "node-sass": "^3.4.2",
     "null-loader": "^0.1.1",
