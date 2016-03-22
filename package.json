@@ -46,6 +46,7 @@
     "debug": "^2.2.0",
     "express": "~4.13.1",
     "express-handlebars": "^2.0.1",
+    "font-awesome": "^4.5.0",
     "highcharts": "^4.2.3",
     "jsonformatter": "^0.5.0",
     "kuzzle-sdk": "^1.7.1",

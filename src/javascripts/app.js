@@ -4,12 +4,12 @@ require('jsonformatter');
 require('bootstrap');
 
 // Look ma, CSS!
-require('../../node_modules/angular-loading-bar/build/loading-bar.min.css');
-require('../../node_modules/bootstrap/dist/css/bootstrap.min.css');
-require('../../node_modules/leaflet/dist/leaflet.css');
-require('../../node_modules/jsonformatter/dist/json-formatter.min.css');
-require('../../node_modules/angular-ui-notification/dist/angular-ui-notification.min.css');
-require('../font-awesome/css/font-awesome.min.css');
+require('angular-loading-bar/build/loading-bar.min.css');
+require('bootstrap/dist/css/bootstrap.min.css');
+require('leaflet/dist/leaflet.css');
+require('jsonformatter/dist/json-formatter.min.css');
+require('angular-ui-notification/dist/angular-ui-notification.min.css');
+require('font-awesome/css/font-awesome.min.css');
 
 // Look ma, SASS!
 require('../sass/login.scss');
