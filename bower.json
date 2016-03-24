@@ -29,6 +29,7 @@
     "angular-ui-router": "0.2.18",
     "angular-loading-bar": "0.9.0",
     "angular-ui-ace": "0.2.3",
+    "angular-sanitize": "1.5.1",
     "angular-schema-form": "0.8.12",
     "angular-schema-form-bootstrap": "0.2.0",
     "leaflet": "0.7.7",
