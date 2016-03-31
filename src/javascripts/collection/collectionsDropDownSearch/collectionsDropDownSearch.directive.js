@@ -1,7 +1,9 @@
 import mod from './index';
+import template from './collectionsDropDownSearch.tpl.html';
+let controller = 'collectionsDropDownSearchCtrl';
 
 export default angular.module(mod, ['kuzzle.authorization'])
-  .controller('collectionsDropDownSearchCtrl', [
+  .controller(controller, [
     '$scope',
     'authorizationApi',
     function ($scope, authorization) {
@@ -36,8 +38,8 @@ export default angular.module(mod, ['kuzzle.authorization'])
         placeholder: '@',
         selectVolatileCollections: '='
       },
-      controller: 'collectionsDropDownSearchCtrl',
-      templateUrl: '/javascripts/collection/collectionsDropDownSearch/collectionsDropDownSearch.tpl.html'
+      controller,
+      template
     };
   })
   .name;

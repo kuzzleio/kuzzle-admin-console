@@ -1,6 +1,8 @@
-import messageLog from './index';
+import mod from './index';
+import templateContent from './messageLog.tpl.html';
+console.log('into directive messageLog');
 
-angular.module(messageLog)
+export default angular.module(mod)
   .controller('messageLogCtrl', ['$scope', function ($scope) {
     $scope.clearMessages = function () {
       $scope.initMessages();
@@ -18,6 +20,7 @@ angular.module(messageLog)
         initMessages: '&'
       },
       controller: 'messageLogCtrl',
-      template: require('./messageLog.tpl.html')
+      template: templateContent
     };
-  });
+  })
+  .name;

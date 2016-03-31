@@ -1,6 +1,9 @@
 require('../common/jsonEdit/jsonEdit.directive');
 require('../common/schema.service.js');
 
+// These directives should be required in the lazy-loaded controller
+// but that way it just silently fails (as if the directive had never
+// been there).
 import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
 
 const MODULE_NAME = 'kuzzle.storage';

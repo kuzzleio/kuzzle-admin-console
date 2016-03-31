@@ -50,7 +50,7 @@ Feature: Test browse data pages
     And I have a form with fieldset "name" with field "last"
     And I have input "username"
 
-  @cleanDb
+  @cleanDb @myTest
   Scenario: Create a new document
     Given I am on page for create document
     Then I'm waiting for the element with class "edit-id"

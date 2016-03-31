@@ -1,7 +1,8 @@
-require('./messageLog/messageLog.directive');
 require('./messageLog/notification.service');
 require('./realtimeState.service');
-
+import messageLog from './messageLog/messageLog.directive';
+import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+console.log('imported messageLog');
 angular.module('kuzzle.realtime')
 
   .controller('WatchDataCtrl', [
@@ -16,7 +17,8 @@ angular.module('kuzzle.realtime')
     'Notification',
     'indexesApi',
     'authorizationApi',
-    function ($scope, collectionApi, documentApi, messageNotification, watchDataForms, $state, $stateParams, filterTools, notification, indexesApi, authorization) {
+    '$ocLazyLoad',
+    function ($scope, collectionApi, documentApi, messageNotification, watchDataForms, $state, $stateParams, filterTools, notification, indexesApi, authorization, $ocLazyLoad) {
       var
         MAX_LOG_SIZE = 100,
         warning = {

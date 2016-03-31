@@ -1,5 +1,10 @@
+// These directives should be required in the lazy-loaded controller
+// but that way it just silently fails (as if the directive had never
+// been there).
 import messageLog from './messageLog';
-import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+import collectionsDropDownSearch from '../collection/collectionsDropDownSearch';
+import templateContent from './index.template.html';
+
 const MODULE_NAME = 'kuzzle.realtime';
 
 export default angular.module(MODULE_NAME, [
@@ -18,6 +23,8 @@ export default angular.module(MODULE_NAME, [
         url: '/:index/realtime',
         views: {
           bodyView: {
+            // templateUrl: '/javascripts/realtime/index.template.html'
+            // template: templateContent
             templateProvider: ($q) => {
               return $q((resolve) => {
                 require.ensure([], () => {
