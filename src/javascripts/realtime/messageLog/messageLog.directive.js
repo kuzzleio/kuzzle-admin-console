@@ -11,7 +11,7 @@ export default angular.module(mod)
       $scope.messages[index].expanded = !$scope.messages[index].expanded;
     };
   }])
-  .directive('messages', function () {
+  .directive('messageLog', function () {
     return {
       restrict: 'E',
       scope: {

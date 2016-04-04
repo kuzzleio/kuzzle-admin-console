@@ -1,11 +1,14 @@
 require('./messageLog/notification.service');
 require('./realtimeState.service');
+
 import messageLog from './messageLog/messageLog.directive';
 import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+
+let ctrlName = 'WatchDataCtrl';
+
 console.log('imported messageLog');
 angular.module('kuzzle.realtime')
-
-  .controller('WatchDataCtrl', [
+  .controller(ctrlName, [
     '$scope',
     'collectionApi',
     'documentApi',
@@ -261,3 +264,5 @@ angular.module('kuzzle.realtime')
         }
       };
     }]);
+
+export default [ctrlName, messageLog, collectionsDropDownSearch];
