@@ -1,6 +1,5 @@
 import mod from './index';
 import templateContent from './messageLog.tpl.html';
-console.log('into directive messageLog');
 
 export default angular.module(mod)
   .controller('messageLogCtrl', ['$scope', function ($scope) {

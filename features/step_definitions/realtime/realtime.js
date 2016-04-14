@@ -44,7 +44,7 @@ module.exports = function () {
 
   this.When(/^I clear the message log$/, function (callback) {
     browser
-    .click('messages button.btn-clear')
+    .click('message-log button.btn-clear')
     .call(callback);
   });
 
@@ -120,8 +120,8 @@ module.exports = function () {
 
   this.Then(/^I am subscribed$/, function (callback) {
     browser
-      .waitForText('messages ul.message-list li.message-item:last-child code.document-id', 500)
-      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .waitForText('message-log ul.message-list li.message-item:last-child code.document-id', 500)
+      .getText('message-log ul.message-list li.message-item:last-child code.document-id')
       .then(text => {
         assert(world.collections.indexOf(text) !== -1, 'The collection ' + text + ' is not in fixtures');
       })
@@ -130,7 +130,7 @@ module.exports = function () {
 
   this.Then(/^The message log is empty$/, function (callback) {
     browser
-      .elements('messages ul.message-list li.message-item')
+      .elements('message-log ul.message-list li.message-item')
       .then((response) => {
         assert.equal(response.value.length, 0, 'The message log is not empty');
       })
@@ -141,7 +141,7 @@ module.exports = function () {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
     browser
-      .getText('messages ul.message-list li.message-item:first-child span.message-pending')
+      .getText('message-log ul.message-list li.message-item:first-child span.message-pending')
       .then(text => {
         assert.equal(text, 'Creating new document');
       })
@@ -152,11 +152,11 @@ module.exports = function () {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
     browser
-      .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
+      .getText('message-log ul.message-list li.message-item:last-child span.message-created-updated-doc')
       .then(text => {
         assert.equal(text, 'Created new document');
       })
-      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .getText('message-log ul.message-list li.message-item:last-child code.document-id')
       .then(text => {
         assert.equal(text, world.currentDocumentId);
       })
@@ -167,11 +167,11 @@ module.exports = function () {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
     browser
-      .getText('messages ul.message-list li.message-item:last-child span.message-created-updated-doc')
+      .getText('message-log ul.message-list li.message-item:last-child span.message-created-updated-doc')
       .then(text => {
         assert.equal(text, 'Updated document');
       })
-      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .getText('message-log ul.message-list li.message-item:last-child code.document-id')
       .then(text => {
         assert.equal(text, world.currentDocumentId);
       })
@@ -182,7 +182,7 @@ module.exports = function () {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
     browser
-      .getText('messages ul.message-list li.message-item:first-child span.message-pending')
+      .getText('message-log ul.message-list li.message-item:first-child span.message-pending')
       .then(text => {
         assert.equal(text, 'Deleting document');
       })
@@ -193,11 +193,11 @@ module.exports = function () {
     assert(world.currentDocumentId, 'Expected to have the id of the current document');
 
     browser
-      .getText('messages ul.message-list li.message-item:last-child span.message-deleted-doc')
+      .getText('message-log ul.message-list li.message-item:last-child span.message-deleted-doc')
       .then(text => {
         assert.equal(text, 'Deleted document');
       })
-      .getText('messages ul.message-list li.message-item:last-child code.document-id')
+      .getText('message-log ul.message-list li.message-item:last-child code.document-id')
       .then(text => {
         assert.equal(text, world.currentDocumentId);
       })
@@ -206,7 +206,7 @@ module.exports = function () {
 
   this.Then(/^I receive the notification about the volatile message$/, function (callback) {
     browser
-      .getText('messages ul.message-list li.message-item:last-child span.message-volatile')
+      .getText('message-log ul.message-list li.message-item:last-child span.message-volatile')
       .then(text => {
         assert.equal(text, 'Received volatile message');
       })
@@ -215,8 +215,8 @@ module.exports = function () {
 
   this.Then(/^I receive the notification about the new user joining the room$/, function (callback) {
     browser
-      .waitForExist('messages ul.message-list li.message-item:last-child span.message-user', 2000)
-      .getText('messages ul.message-list li.message-item:last-child span.message-user')
+      .waitForExist('message-log ul.message-list li.message-item:last-child span.message-user', 2000)
+      .getText('message-log ul.message-list li.message-item:last-child span.message-user')
       .then(text => {
         assert.equal(text, 'A new user is listening to this room');
       })
@@ -225,8 +225,8 @@ module.exports = function () {
 
   this.Then(/^I receive the notification about the user leaving the room$/, function (callback) {
     browser
-      .waitForExist('messages ul.message-list li.message-item:last-child span.message-user', 2000)
-      .getText('messages ul.message-list li.message-item:last-child span.message-user')
+      .waitForExist('message-log ul.message-list li.message-item:last-child span.message-user', 2000)
+      .getText('message-log ul.message-list li.message-item:last-child span.message-user')
       .then(text => {
         assert.equal(text, 'A user exited this room');
       })
