@@ -1,4 +1,6 @@
-angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
+import schemaService from '../schema.service';
+
+export default angular.module('kuzzle.basicFilter', [schemaService])
 
   .controller('BasicFilterCtrl', ['$scope', 'schema', function ($scope, schema) {
     var count = function() {
@@ -95,4 +97,5 @@ angular.module('kuzzle.basicFilter', ['kuzzle.schema'])
       controller: 'BasicFilterCtrl',
       template: require('./basicFilter.tpl.html')
     };
-  });
+  })
+  .name;

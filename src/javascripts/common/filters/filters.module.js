@@ -1,1 +1,3 @@
-angular.module('kuzzle.filters', ['kuzzle.basicFilter']);
+export default angular
+  .module('kuzzle.filters', ['kuzzle.basicFilter'])
+  .name;

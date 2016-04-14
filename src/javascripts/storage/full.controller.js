@@ -1,10 +1,16 @@
-require('./addAttribute/addAttribute.directive');
-require('./leaflet.directive');
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
+import leaflet from './leaflet.directive';
+import addAttribute from './addAttribute/addAttribute.directive';
+import schemaService from '../common/schema.service';
+
+var ctrlName = 'StorageFullCtrl';
+
+export default [ctrlName, leaflet, addAttribute, jsonEdit, schemaService];
 
 angular.module('kuzzle.storage')
 
   /** This controller is used on a document full view: for edit or create a document **/
-  .controller('StorageFullCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$http',
     'documentApi',

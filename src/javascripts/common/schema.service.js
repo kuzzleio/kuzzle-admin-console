@@ -1,5 +1,4 @@
-angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
-
+export default angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
   .service('schema', ['kuzzleSdk', '$q', function (kuzzleSdk, $q) {
 
     var buildPropertiesRecursive = function (mapping) {
@@ -79,4 +78,5 @@ angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
         return deferred.promise;
       }
     };
-  }]);
+  }])
+  .name;

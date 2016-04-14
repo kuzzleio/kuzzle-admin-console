@@ -52,7 +52,6 @@ require('./common/roleApi.service');
 require('./common/profileApi.service');
 require('./common/userApi.service');
 require('./common/serverApi.service');
-require('./common/schema.service.js');
 require('./common/uid.service.js');
 require('./common/previousState.service.js');
 require('./common/unsubscribeOnPageChange.service.js');
@@ -68,9 +67,9 @@ require('./common/headline/headline.directive');
 require('./common/documentsInline/documentsInline.directive');
 require('./common/documentsInline/documentToolbar.directive');
 
-require('./common/filters/filters.module');
-require('./common/filters/filters.service');
-require('./common/filters/filters.directive');
+// require('./common/filters/filters.module');
+// require('./common/filters/filters.service');
+// require('./common/filters/filters.directive');
 
 import baseRouting from './baseRouting';
 import role from './role';

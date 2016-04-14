@@ -1,6 +1,7 @@
-require('../basicFilter/basicFilter.directive');
+import thisMod from './filters.module';
+import basicFilterDirective from '../basicFilter/basicFilter.directive';
 
-angular.module('kuzzle.filters')
+export default angular.module('kuzzle.filters')
   .controller('FiltersCtrl', ['$scope', 'filters', function ($scope, filterTools) {
     $scope.error = null;
     $scope.submited = false;
@@ -51,4 +52,5 @@ angular.module('kuzzle.filters')
       controller: 'FiltersCtrl',
       template: require('./filters.tpl.html')
     };
-  }]);
+  }])
+  .name;

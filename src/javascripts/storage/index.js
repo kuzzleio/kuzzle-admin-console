@@ -1,14 +1,8 @@
-require('../common/jsonEdit/jsonEdit.directive');
-require('../common/schema.service.js');
-
 const MODULE_NAME = 'kuzzle.storage';
 
 export default angular.module(MODULE_NAME, [
-  'kuzzle.filters',
   'kuzzle.authentication',
   'schemaForm',
-  'kuzzle.schema',
-  'kuzzle.jsonEdit',
   'kuzzle.documentsInline'
 ])
   .config(function ($stateProvider) {
@@ -88,8 +82,10 @@ export default angular.module(MODULE_NAME, [
           loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrl = require('./browseDocuments.controller');
-                $ocLazyLoad.load({name: MODULE_NAME});
+                let ctrlDeps = require('./browseDocuments.controller');
+                ctrlDeps.default.forEach((dep) => {
+                  $ocLazyLoad.load({name: dep});
+                });
                 resolve(angular.module(MODULE_NAME));
               });
             });
@@ -111,8 +107,10 @@ export default angular.module(MODULE_NAME, [
           loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrl = require('./full.controller');
-                $ocLazyLoad.load({name: MODULE_NAME});
+                let ctrlDeps = require('./full.controller');
+                ctrlDeps.default.forEach((dep) => {
+                  $ocLazyLoad.load({name: dep});
+                });
                 resolve(angular.module(MODULE_NAME));
               });
             });
@@ -134,8 +132,10 @@ export default angular.module(MODULE_NAME, [
           loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrl = require('./full.controller');
-                $ocLazyLoad.load({name: MODULE_NAME});
+                let ctrlDeps = require('./full.controller');
+                ctrlDeps.default.forEach((dep) => {
+                  $ocLazyLoad.load({name: dep});
+                });
                 resolve(angular.module(MODULE_NAME));
               });
             });

@@ -1,4 +1,4 @@
-angular.module('kuzzle.documentsInline', [
+export default angular.module('kuzzle.documentsInline', [
   'kuzzle.documentApi',
   'jsonFormatter',
   'kuzzle.bufferCancel',
@@ -88,4 +88,5 @@ angular.module('kuzzle.documentsInline', [
       controller: 'DocumentsInlineCtrl',
       templateUrl: '/javascripts/common/documentsInline/documentsInline.tpl.html'
     };
-  });
+  })
+  .name;

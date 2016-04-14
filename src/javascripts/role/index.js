@@ -26,8 +26,10 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           loadDeps:['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrl = require('./browse.ctrl');
-                $ocLazyLoad.load({name: MODULE_NAME});
+                let ctrlDeps = require('./browse.ctrl');
+                ctrlDeps.default.forEach((dep) => {
+                  $ocLazyLoad.load({name: dep});
+                });
                 resolve(angular.module(MODULE_NAME));
               });
             });

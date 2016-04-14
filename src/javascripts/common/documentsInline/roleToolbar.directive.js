@@ -1,5 +1,4 @@
-angular.module('kuzzle.documentsInline')
-
+export default angular.module('kuzzle.documentsInline')
   .controller('RoleToolbarCtrl', [
     '$scope',
     '$filter',
@@ -93,4 +92,5 @@ angular.module('kuzzle.documentsInline')
       controller: 'RoleToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
     };
-  }]);
+  }])
+  .name;

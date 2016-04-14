@@ -1,7 +1,6 @@
 require('./customFormDecorators/leaflet/sfLeaflet.module');
 
-angular.module('kuzzle.leaflet', [])
-
+export default angular.module('kuzzle.leaflet', [])
   .service('leaflet', [function () {
     var
       maps = {};
@@ -140,4 +139,5 @@ angular.module('kuzzle.leaflet', [])
         };
       }
     };
-  }]);
+  }])
+  .name;

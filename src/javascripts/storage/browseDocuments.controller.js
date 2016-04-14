@@ -1,6 +1,12 @@
+import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
+import filtersDirective from '../common/filters/filters.directive';
+import {servName} from '../common/filters/filters.service';
+debugger;
+var ctrlName = 'StorageBrowseDocumentsCtrl';
 
-require('../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive');
-require('../collection/cogOptionsCollection/cogOptionsCollection.directive');
+export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection, jsonEdit, filtersDirective];
 
 angular.module('kuzzle.storage')
 
@@ -10,17 +16,16 @@ angular.module('kuzzle.storage')
   }])
 
   /** This controller is used for display and manage the document list */
-  .controller('StorageBrowseDocumentsCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$http',
     '$stateParams',
-    'schema',
     'documentApi',
     '$timeout',
     '$state',
-    'filters',
+    servName,
     'authorizationApi',
-    function ($scope, $http, $stateParams, schema, documentApi, $timeout, $state, filterTools, authorization) {
+    function ($scope, $http, $stateParams, documentApi, $timeout, $state, filterTools, authorization) {
 
       // List comparators for Basic filter block
       $scope.comparators = [

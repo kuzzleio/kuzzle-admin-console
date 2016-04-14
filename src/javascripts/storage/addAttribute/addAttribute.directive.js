@@ -1,4 +1,4 @@
-angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
+export default angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
 
   .controller('AddAttributeCtrl', ['$scope', '$uibModal', function ($scope, $uibModal) {
     var
@@ -171,4 +171,5 @@ angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
       templateUrl: 'javascripts/storage/addAttribute/addAttribute.tpl.html',
       controller: 'AddAttributeCtrl'
     };
-  }]);
+  }])
+  .name;

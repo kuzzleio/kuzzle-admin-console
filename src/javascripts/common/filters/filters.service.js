@@ -1,6 +1,9 @@
-angular.module('kuzzle.filters')
+import thisMod from './filters.module';
+debugger;
+export const servName = 'filters';
 
-  .service('filters', [function () {
+export default angular.module('kuzzle.filters')
+  .service(servName, [function () {
     var realTimeDslFormat = function (basicFilter) {
       var
         or = [],
@@ -172,4 +175,5 @@ angular.module('kuzzle.filters')
         return storageDslFormat(basicFilter);
       }
     };
-  }]);
+  }])
+  .name;

@@ -1,15 +1,16 @@
-require('../collection/cogOptionsCollection/cogOptionsCollection.directive');
-require('../common/documentsInline/documentsInline.directive');
-require('../common/documentsInline/roleToolbar.directive');
+import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
+import documentsInline from '../common/documentsInline/documentsInline.directive';
+import roleToolbar from '../common/documentsInline/roleToolbar.directive';
+
+let ctrlName = 'RoleBrowseCtrl';
 
 angular.module('kuzzle.role')
-
   .config(['JSONFormatterConfigProvider', function (JSONFormatterConfigProvider) {
     JSONFormatterConfigProvider.hoverPreviewEnabled = true;
     JSONFormatterConfigProvider.hoverPreviewArrayCount = 5;
   }])
 
-  .controller('RoleBrowseCtrl', [
+  .controller(ctrlName, [
     '$scope',
     'roleApi',
     'authorizationApi',
@@ -42,3 +43,5 @@ angular.module('kuzzle.role')
       $scope.$on('$viewContentLoaded', $scope.init);
     }
   ]);
+
+export default [ctrlName, documentsInline, roleToolbar];
