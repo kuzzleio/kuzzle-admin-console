@@ -7,6 +7,12 @@ var
 
 var hooks = function () {
 
+  this.Before(function (scenario, callback) {
+    browser
+      .refresh()
+      .call(callback);
+  });
+
   this.registerHandler('BeforeFeatures', function (event, callback) {
     browser
       .setViewportSize({width: 1920, height: 1080})
