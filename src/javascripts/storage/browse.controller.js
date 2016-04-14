@@ -1,8 +1,10 @@
-require('../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive');
-require('../collection/cogOptionsCollection/cogOptionsCollection.directive');
+import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
+
+let ctrlName = 'StorageBrowseCtrl';
 
 angular.module('kuzzle.storage')
-  .controller('StorageBrowseCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$http',
     '$stateParams',
@@ -90,3 +92,5 @@ angular.module('kuzzle.storage')
         }, 1000);
       };
     }]);
+
+export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection];

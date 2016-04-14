@@ -1,4 +1,4 @@
-angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuzzle.collectionApi'])
+export default angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuzzle.collectionApi'])
   .controller('cogOptionsCollectionCtrl', [
     '$scope',
     '$uibModal',
@@ -65,4 +65,5 @@ angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'ui.router', 'kuz
       controller: 'cogOptionsCollectionCtrl',
       templateUrl: '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.tpl.html'
     };
-  }]);
+  }])
+  .name;

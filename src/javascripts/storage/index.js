@@ -63,8 +63,10 @@ export default angular.module(MODULE_NAME, [
           loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrl = require('./browse.controller');
-                $ocLazyLoad.load({name: MODULE_NAME});
+                let ctrlDeps = require('./browse.controller');
+                ctrlDeps.default.forEach((dep) => {
+                  $ocLazyLoad.load({name: dep});
+                });
                 resolve(angular.module(MODULE_NAME));
               });
             });
