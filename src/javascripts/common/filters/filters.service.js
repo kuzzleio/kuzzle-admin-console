@@ -1,9 +1,7 @@
 import thisMod from './filters.module';
-debugger;
-export const servName = 'filters';
 
 export default angular.module('kuzzle.filters')
-  .service(servName, [function () {
+  .service('filters', [function () {
     var realTimeDslFormat = function (basicFilter) {
       var
         or = [],

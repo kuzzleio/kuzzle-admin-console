@@ -67,10 +67,6 @@ require('./common/headline/headline.directive');
 require('./common/documentsInline/documentsInline.directive');
 require('./common/documentsInline/documentToolbar.directive');
 
-// require('./common/filters/filters.module');
-// require('./common/filters/filters.service');
-// require('./common/filters/filters.directive');
-
 import baseRouting from './baseRouting';
 import role from './role';
 import storage from './storage';

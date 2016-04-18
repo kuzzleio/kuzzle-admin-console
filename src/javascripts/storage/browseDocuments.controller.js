@@ -2,11 +2,10 @@ import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/c
 import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
 import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
 import filtersDirective from '../common/filters/filters.directive';
-import {servName} from '../common/filters/filters.service';
-debugger;
+import filtersService from '../common/filters/filters.service';
 var ctrlName = 'StorageBrowseDocumentsCtrl';
 
-export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection, jsonEdit, filtersDirective];
+export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection, jsonEdit, filtersDirective, filtersService];
 
 angular.module('kuzzle.storage')
 
@@ -23,7 +22,7 @@ angular.module('kuzzle.storage')
     'documentApi',
     '$timeout',
     '$state',
-    servName,
+    'filters',
     'authorizationApi',
     function ($scope, $http, $stateParams, documentApi, $timeout, $state, filterTools, authorization) {
 
