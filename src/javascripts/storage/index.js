@@ -2,8 +2,7 @@ const MODULE_NAME = 'kuzzle.storage';
 
 export default angular.module(MODULE_NAME, [
   'kuzzle.authentication',
-  'schemaForm',
-  'kuzzle.documentsInline'
+  'schemaForm'
 ])
   .config(function ($stateProvider) {
     $stateProvider

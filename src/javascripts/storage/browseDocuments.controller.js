@@ -3,9 +3,15 @@ import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsC
 import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
 import filtersDirective from '../common/filters/filters.directive';
 import filtersService from '../common/filters/filters.service';
+import documentsInline from '../common/documentsInline/documentsInline.directive';
+import documentToolbar from '../common/documentsInline/documentToolbar.directive';
+import documentApi from '../common/documentApi.service';
+import authorizationApi from '../common/authentication/authorizationApi.service';
+
 var ctrlName = 'StorageBrowseDocumentsCtrl';
 
-export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection, jsonEdit, filtersDirective, filtersService];
+export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection,
+  jsonEdit, filtersDirective, filtersService, documentsInline];
 
 angular.module('kuzzle.storage')
 

@@ -1,3 +1,5 @@
+require('./documentsInline.directive');
+
 export default angular.module('kuzzle.documentsInline')
   .controller('RoleToolbarCtrl', [
     '$scope',

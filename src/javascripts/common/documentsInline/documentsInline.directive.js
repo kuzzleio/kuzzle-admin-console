@@ -1,8 +1,12 @@
+import documentApi from '../documentApi.service';
+import bufferCancel from '../bufferCancel.service';
+import uiNotification from 'angular-ui-notification';
+
 export default angular.module('kuzzle.documentsInline', [
   'kuzzle.documentApi',
   'jsonFormatter',
   'kuzzle.bufferCancel',
-  'ui-notification'
+  uiNotification
 ])
   .controller('DocumentsInlineCtrl', [
     '$scope',

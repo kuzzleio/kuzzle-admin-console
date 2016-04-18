@@ -64,9 +64,6 @@ require('./common/authentication/formAutoFillFix.directive');
 require('./common/authentication/userMenu.directive');
 require('./common/headline/headline.directive');
 
-require('./common/documentsInline/documentsInline.directive');
-require('./common/documentsInline/documentToolbar.directive');
-
 import baseRouting from './baseRouting';
 import role from './role';
 import storage from './storage';

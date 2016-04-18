@@ -1,4 +1,5 @@
-angular.module('kuzzle.documentsInline')
+require('./documentsInline.directive');
+export default angular.module('kuzzle.documentsInline')
 
   .controller('DocumentToolbarCtrl', [
     '$scope',
@@ -87,4 +88,5 @@ angular.module('kuzzle.documentsInline')
       controller: 'DocumentToolbarCtrl',
       templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
     };
-  }]);
+  }])
+  .name;

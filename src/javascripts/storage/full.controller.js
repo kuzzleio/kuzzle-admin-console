@@ -2,10 +2,14 @@ import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
 import leaflet from './leaflet.directive';
 import addAttribute from './addAttribute/addAttribute.directive';
 import schemaService from '../common/schema.service';
+import documentApi from '../common/documentApi.service';
+import uiNotification from 'angular-ui-notification';
+import prevousState from '../common/previousState.service.js';
+import authorizationApi from '../common/authentication/authorizationApi.service';
 
 var ctrlName = 'StorageFullCtrl';
 
-export default [ctrlName, leaflet, addAttribute, jsonEdit, schemaService];
+export default [ctrlName, leaflet, addAttribute, jsonEdit, schemaService, uiNotification];
 
 angular.module('kuzzle.storage')
 

@@ -3,7 +3,6 @@ const MODULE_NAME = 'kuzzle.realtime';
 export default angular.module(MODULE_NAME, [
   'kuzzle.authentication',
   'kuzzle.headline',
-  'kuzzle.documentsInline'
 ])
   .config(function ($stateProvider) {
     $stateProvider

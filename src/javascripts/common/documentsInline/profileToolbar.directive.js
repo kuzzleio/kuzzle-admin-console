@@ -1,3 +1,5 @@
+require('./documentsInline.directive');
+
 angular.module('kuzzle.documentsInline')
 
   .controller('ProfileToolbarCtrl', [
