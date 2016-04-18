@@ -12,7 +12,6 @@ export default [ctrlName, messageLog, collectionsDropDownSearch, filtersDirectiv
 
 let ctrlName = 'WatchDataCtrl';
 
-console.log('imported messageLog');
 angular.module('kuzzle.realtime')
   .controller(ctrlName, [
     '$scope',

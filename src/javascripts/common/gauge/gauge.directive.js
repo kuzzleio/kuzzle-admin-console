@@ -1,4 +1,4 @@
-angular.module('kuzzle.gauge', [])
+export default angular.module('kuzzle.gauge', [])
   .directive('gauge', function () {
     'use strict';
 
@@ -116,4 +116,5 @@ angular.module('kuzzle.gauge', [])
         });
       }
     };
-  });
+  })
+  .name;

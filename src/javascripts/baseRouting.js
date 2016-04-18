@@ -16,12 +16,16 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
         'bodyView@logged': { template: require('./metrics/metrics.template.html') }
       },
       resolve: {
-        loadDeps: ['$ocLazyLoad', function ($ocLazyLoad) {
-          return $ocLazyLoad.load([
-            '/javascripts/common/chart/chart.directive.js',
-            '/javascripts/common/gauge/gauge.directive.js',
-            '/javascripts/common/widget/widget.directive.js'
-          ]);
+        loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+          return $q((resolve) => {
+            require.ensure([], function (require) {
+              let ctrlDeps = require('./metrics/metrics.ctrl');
+              ctrlDeps.default.forEach((dep) => {
+                $ocLazyLoad.load({name: dep});
+              });
+              resolve(angular.module('kuzzle.metrics'));
+            }, 'MetricsCtrl');
+          });
         }],
         authenticated: ['AuthService', '$q', 'kuzzleSdk', function (Auth, q, kuzzle) {
           var deferred = q.defer();

@@ -1,4 +1,4 @@
-angular.module('kuzzle.widget', [])
+export default angular.module('kuzzle.widget', [])
   .controller('WidgetCtrl', ['$scope', function ($scope) {
     'use strict';
     $scope.isWidgetSelected = function (widgetName) {
@@ -28,4 +28,5 @@ angular.module('kuzzle.widget', [])
       controller: 'WidgetCtrl',
       templateUrl: '/javascripts/common/widget/widget.tpl.html'
     };
-  });
+  })
+  .name;

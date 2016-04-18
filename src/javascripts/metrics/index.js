@@ -1,5 +1,5 @@
-angular.module('kuzzle.metrics', [
-  'kuzzle.authentication'
+export default angular.module('kuzzle.metrics', [
+  // 'kuzzle.authentication'
 ])
   .filter('secondsToDateTime', function($filter) {
     return function(seconds) {
@@ -33,4 +33,5 @@ angular.module('kuzzle.metrics', [
 
       return $filter('date')(date, dateFormat);
     };
-  });
+  })
+  .name;

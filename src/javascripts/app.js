@@ -68,11 +68,11 @@ import baseRouting from './baseRouting';
 import role from './role';
 import storage from './storage';
 import realtime from './realtime';
+import metrics from './metrics/';
 require('./indexes/indexes.route');
 require('./collection/collection.route');
 require('./profile/profile.route');
 require('./user/user.route');
-require('./metrics/metrics.route');
 
 angular.module('kuzzle', [
   uirouter,
@@ -92,7 +92,7 @@ angular.module('kuzzle', [
   role,
   'kuzzle.profile',
   'kuzzle.user',
-  'kuzzle.metrics',
+  metrics,
   'kuzzle.bufferCancel',
   'kuzzle.documentApi',
   'kuzzle.indexesApi',

@@ -1,4 +1,4 @@
-angular.module('kuzzle.chart', [])
+export default angular.module('kuzzle.chart', [])
   .directive('chart', function () {
     'use strict';
 
@@ -90,4 +90,5 @@ angular.module('kuzzle.chart', [])
         });
       }
     };
-  });
+  })
+  .name;
