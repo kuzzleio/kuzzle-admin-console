@@ -1,8 +1,14 @@
-require('./messageLog/notification.service');
-require('./realtimeState.service');
-
+import notificationService from './messageLog/notification.service';
+import stateService from './realtimeState.service';
 import messageLog from './messageLog/messageLog.directive';
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
 import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
+import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
+import filtersDirective from '../common/filters/filters.directive';
+import filtersService from '../common/filters/filters.service';
+
+export default [ctrlName, messageLog, collectionsDropDownSearch, filtersDirective,
+  filtersService, cogOptionsCollection, jsonEdit];
 
 let ctrlName = 'WatchDataCtrl';
 
@@ -264,5 +270,3 @@ angular.module('kuzzle.realtime')
         }
       };
     }]);
-
-export default [ctrlName, messageLog, collectionsDropDownSearch];
