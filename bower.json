@@ -20,13 +20,10 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.5",
+    "bootstrap": "3.3.6",
     "angular": "1.4.9",
     "angular-ui-ace": "0.2.3",
-    "angular-schema-form": "~0.8.12",
-    "angular-schema-form-bootstrap": "~0.2.0"
-  },
-  "resolutions": {
-    "angular": "1.4.9"
+    "angular-schema-form": "0.8.12",
+    "angular-schema-form-bootstrap": "0.2.0"
   }
 }

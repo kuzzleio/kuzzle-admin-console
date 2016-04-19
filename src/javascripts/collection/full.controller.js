@@ -62,12 +62,7 @@ angular.module('kuzzle.collection')
 
         collectionApi.putMapping(collection, true, isCreate)
           .then(function () {
-            if (!previousState.get() || previousState.get().url.indexOf('collection') !== -1) {
-              $state.go('storage.browse.documents', {collection: $scope.collection.name});
-              return false;
-            }
-
-            $window.history.back();
+            $state.go('collection.browse', {index: $stateParams.index});
           })
           .catch(function (error) {
             console.error(error);
@@ -76,7 +71,7 @@ angular.module('kuzzle.collection')
 
       $scope.cancel = function () {
         if (!previousState.get()) {
-          $state.go('collection.browse');
+          $state.go('collection.browse', {index: $stateParams.index});
           return false;
         }
 

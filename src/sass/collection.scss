@@ -4,8 +4,7 @@
   }
 }
 
-.list-indexes,
-.list-collections {
+.documents {
   .panel {
     margin-bottom: 10px;
     background-color: #fff;
@@ -13,6 +12,17 @@
     border-color: #eee;
     border-bottom: 2px solid #e4eaec;
     border-radius: 3px;
+
+    .fa,
+    .glyphicon {
+      color: #888;
+      cursor: pointer;
+      font-size: 1em;
+      margin-right: 5px;
+      &:hover {
+        color: #00757F;
+      }
+    }
 
     .panel-heading {
       color: #444;
@@ -28,11 +38,6 @@
         .index-name,
         .collection-name {
           cursor: pointer;
-        }
-        .glyphicon {
-          cursor: pointer;
-          font-size: 0.8em;
-          margin-right: 5px;
         }
       }
     }

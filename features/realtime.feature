@@ -5,12 +5,12 @@ Feature: Test realtime watch data pages
   @createIndex
   Background:
     Given I go to the login page
-    And I authenticate as "admin"
+    Then I authenticate as "admin"
     Then I am authenticated
     Given I go to the realtime page
-    And I click on the collection selector
-    Given I click on the test collection
-    And I subscribe to the collection events
+    Then I click on the collection selector
+    And I click on the test collection
+    Then I subscribe to the collection events
 
   @unsubscribe
   Scenario: I can subscribe to a collection
@@ -24,7 +24,7 @@ Feature: Test realtime watch data pages
   @cleanDb @unsubscribe
   Scenario: Once subscribed, I receive notifications about document creations
     Given I clear the message log
-    And I create a persistent document
+    Then I create a persistent document
     Then I receive the notification that the document is being created
     And I receive the notification that the document has been created
 

@@ -4,9 +4,23 @@ var
   world = require('../../support/world');
 
 module.exports = function () {
-  this.When(/^I go to the login page$/, function (callback) {
+  // Location checking
+  this.Given(/^I go to the login page$/, function (callback) {
     browser
       .url('/#/login')
+      .waitForVisible('.login-page', world.waitForPageVisible)
+      .call(callback);
+  });
+
+  this.Given(/^I try to go to the login page$/, function (callback) {
+    browser
+      .url('/#/login')
+      .call(callback);
+  });
+
+  this.Then(/^I am on the login page$/, function (callback) {
+    browser
+      .waitForVisible('.login-page', world.waitForPageVisible)
       .call(callback);
   });
 
@@ -15,6 +29,7 @@ module.exports = function () {
       .url('/#/logout')
       .call(callback);
   });
+  // END - Location checking
 
   this.When(/^I click the logout button$/, function (callback) {
     browser
@@ -31,25 +46,6 @@ module.exports = function () {
       .setValue('[name=username]', world.users[user].username)
       .setValue('[name=password]', world.users[user].clearPassword)
       .click('[type=submit]')
-      .waitForVisible('.navbar-brand', 3000)
-      .pause(1000)
-      .call(callback);
-  });
-
-  this.Then(/^I see the login page$/, function(callback) {
-    browser
-      .isVisible('input[name=username]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element username is not visible');
-      })
-      .isVisible('input[name=password]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element password is not visible');
-      })
-      .isVisible('button[type=submit]')
-      .then((isVisible) => {
-        assert(isVisible, 'Element submit is not visible');
-      })
       .call(callback);
   });
 

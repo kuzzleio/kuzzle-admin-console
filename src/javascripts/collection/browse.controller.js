@@ -20,7 +20,10 @@ angular.module('kuzzle.collection')
       $scope.index = $stateParams.index;
       $scope.canCreateCollection = authorization.canCreateCollection($stateParams.index);
 
+
       $scope.init = function () {
+        indexesApi.select($stateParams.index);
+
         collectionApi.list()
           .then(function (response) {
             $scope.collections = response.stored.map(function (collection) {
@@ -38,6 +41,5 @@ angular.module('kuzzle.collection')
       $scope.afterDelete = function (collection) {
         $scope.collections.splice($scope.collections.indexOf(collection), 1);
       };
-
     }]
   );

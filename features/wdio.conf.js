@@ -24,6 +24,7 @@ exports.config = {
   // directory is where your package.json resides, so `wdio` will be called from there.
   //
   specs: [
+    './features/firstAdmin.feature',
     './features/authentication.feature',
     './features/realtime.feature',
     './features/browseData.feature',
@@ -33,7 +34,7 @@ exports.config = {
     './features/profiles.feature',
     './features/users.feature',
     './features/notAllowed.feature',
-    './features/collections.feature'
+    './features/collections.feature',
   ],
   // Patterns to exclude.
   exclude: [
@@ -116,6 +117,7 @@ exports.config = {
     require: [
       './features/support/hooks.js',
 
+      './features/step_definitions/common/firstAdmin.js',
       './features/step_definitions/common/authentication.js',
       './features/step_definitions/common/forms.js',
       './features/step_definitions/common/screenshot.js',

@@ -117,7 +117,7 @@ angular.module('kuzzle.userApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
               deferred.reject(error);
 
               if (notify) {
-                console.log(error);
+                console.error(error);
                 notification.error('Error during user deletion. Please retry.');
               }
             }

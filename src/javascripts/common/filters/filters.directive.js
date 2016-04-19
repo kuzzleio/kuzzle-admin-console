@@ -8,7 +8,12 @@ export default angular.module('kuzzle.filters')
     $scope.filterForms = {};
 
     $scope.reset = function () {
-      // TODO! Implement this.
+      $scope.filters.advancedFilter = angular.toJson({}, 4);
+      $scope.filters.basicFilter = [{
+        and: [
+          {field: null, equal: comparators[0], value: null}
+        ]
+      }];
     };
 
     $scope.doSearch = function () {
@@ -27,6 +32,10 @@ export default angular.module('kuzzle.filters')
 
       var filter = filterTools.formatBasicFilter($scope.filters.basicFilter, $scope.isRealtime);
       $scope.filters.advancedFilter = angular.toJson(filter, 4);
+    };
+
+    $scope.clearFilters = function () {
+      $scope.filters.advancedFilter = angular.toJson({}, 4);
     };
   }])
 

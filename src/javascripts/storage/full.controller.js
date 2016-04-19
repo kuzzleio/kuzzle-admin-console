@@ -31,6 +31,8 @@ angular.module('kuzzle.storage')
       $scope.schema = {};
       // List of all flatten attributes. Useful for display a list of nested attributes
       $scope.listAttributes = [];
+      // The document index
+      $scope.index = $stateParams.index;
       // The document collection
       $scope.collection = $stateParams.collection;
       // The view type. Can be 'form' or 'json'. The 'json' view display the document as a JSON object
@@ -59,6 +61,8 @@ angular.module('kuzzle.storage')
        * This function will get the document by _id if we are in edition
        * Prepare the schema according to data set in document
        * Subscribe to the document modification for displaying a message if someone else edit/delete this document
+       *
+       * @param action Can be 'edit' or 'create'
        */
       $scope.init = function () {
         $scope.canEditDocument = authorization.canDoAction($stateParams.index, $scope.collection, 'write', 'createOrReplace');
@@ -71,7 +75,7 @@ angular.module('kuzzle.storage')
               $scope.isEdit = true;
               $scope.exists = true;
 
-              documentApi.getById($stateParams.collection, $stateParams.id)
+              documentApi.getById($scope.collection, $scope.document.id)
                 .then(function (response) {
                   $scope.document.json = angular.toJson(response.document.content, 4);
 
@@ -80,7 +84,7 @@ angular.module('kuzzle.storage')
                   // use refreshFormWithJson instead of directly put data in body because the field order is different in mapping and in document itself
                   // if we don't do that, when the user switch between json/form view, fields order can move
                   refreshFormWithJson();
-                  documentApi.subscribeId($stateParams.collection, $stateParams.id, function () {
+                  documentApi.subscribeId($scope.collection, $scope.document.id, function () {
                     message = notification.info({
                       message:'Someone just updated this document',
                       templateUrl: 'refreshTemplate.html',
@@ -113,7 +117,7 @@ angular.module('kuzzle.storage')
         }
 
         $scope.isLoading = true;
-        documentApi.getById($stateParams.collection, $scope.document.id)
+        documentApi.getById($scope.collection, $scope.document.id)
           .then(function (response) {
             $scope.isLoading = false;
 
@@ -165,7 +169,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        documentApi.update($stateParams.collection, $scope.document.id, document, true);
+        documentApi.update($scope.collection, $scope.document.id, document, true);
       };
 
       /**
@@ -181,7 +185,7 @@ angular.module('kuzzle.storage')
           return false;
         }
 
-        $state.go('storage.browse.documents', {index: $stateParams.index, collection: $stateParams.collection}, {reload: false});
+        $state.go('storage.browse.documents', {index: $scope.index, collection: $scope.collection}, {reload: false});
       };
 
       /**
@@ -296,6 +300,7 @@ angular.module('kuzzle.storage')
         $scope.document.content = JSON.parse($scope.document.json);
         schema = getUpdatedSchema($scope.document, 'content');
         $scope.schema = angular.merge(schema, $scope.schema);
+
         $scope.$broadcast('schemaFormRedraw');
       };
     }]);

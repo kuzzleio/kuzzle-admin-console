@@ -26,7 +26,7 @@ angular.module('kuzzle.user')
       // Manage pagination
       $scope.currentPage = 1;
       $scope.total = 0;
-      $scope.limit = 10000;
+      $scope.limit = 10;
 
       $scope.users = [];
       $scope.canUpdateUser = false;

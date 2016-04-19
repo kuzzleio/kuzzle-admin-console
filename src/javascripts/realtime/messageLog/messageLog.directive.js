@@ -8,6 +8,14 @@ export default angular.module(mod)
     };
     $scope.toggleExpanded = function (index) {
       $scope.messages[index].expanded = !$scope.messages[index].expanded;
+
+      if ($scope.messages[index].expanded && !$scope.messageBoardOpen) {
+        $scope.messageBoardOpen = true;
+      }
+    };
+    $scope.collapseToggle = function () {
+      $scope.messageBoardOpen = !$scope.messageBoardOpen;
+      $cookies.put('watch_message_board_open', $scope.messageBoardOpen);
     };
   }])
   .directive('messageLog', function () {
@@ -16,6 +24,7 @@ export default angular.module(mod)
       scope: {
         collection: '=',
         messages: '=',
+        messageBoardOpen: '=',
         initMessages: '&'
       },
       controller: 'messageLogCtrl',

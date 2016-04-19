@@ -6,12 +6,68 @@ var
 module.exports = function () {
   this.deletedUserName = null;
 
-  this.When(/^I go on the browse users page$/, function (callback) {
+  // Location checking
+  this.Given(/^I go on the browse users page$/, function (callback) {
     browser
       .url('/#/user/browse')
-      .pause(1000)
+      .waitForVisible('.user-browse', world.waitForPageVisible)
       .call(callback);
   });
+
+  this.When(/^I try to go to the edit page of an unexisting user$/, function (callback) {
+    browser
+      .url('/#/user/non-existing')
+      .call(callback);
+  });
+
+  this.Then(/^I am on the edit users page$/, function (callback) {
+    var expectedUrl = world.baseUrl + '/#/user/';
+    var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
+
+    browser
+      .waitForVisible('.edit-user', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on the add user page$/, function (callback) {
+    var expectedUrl = world.baseUrl + '/#/user/add/';
+    var urlRegexp = new RegExp(expectedUrl + '?[A-Za-z0-9_-]*', 'g');
+
+    browser
+      .waitForVisible('.edit-user', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Expected url to begin with ' + expectedUrl + ', found ' + url
+        );
+      })
+      .call(callback);
+  });
+
+  this.Then(/^I am on the browse users page$/, function (callback) {
+    var requiredUrl = world.baseUrl + '/#/user/browse';
+    var urlRegexp = new RegExp(requiredUrl, 'g');
+
+    browser
+      .waitForVisible('.user-browse', world.waitForPageVisible)
+      .getUrl()
+      .then(url => {
+        assert(
+          url.match(urlRegexp),
+          'Must be at ' + requiredUrl + ' location, got ' + url
+        );
+      })
+      .call(callback);
+  });
+  // END - Location checking
 
   this.When(/^I click the full view edit button of the last users$/, function (callback) {
     browser
@@ -42,7 +98,6 @@ module.exports = function () {
       .call(callback);
   });
 
-
   this.When(/^I click the clone button of the last user$/, function (callback) {
     browser
       .waitForVisible('documents-inline .documents:last-child user-toolbar .edit-document.dropdown-toggle', 1000)
@@ -57,13 +112,6 @@ module.exports = function () {
     wdioTools.deleteItemInList(browser, 'user', userId, callback);
   });
 
-
-  this.When(/^I go to the full view of an unexisting user$/, function (callback) {
-    browser
-      .url('/#/user/non-existing')
-      .call(callback);
-  });
-
   this.Then(/^I can see the profile associated to a user/, function(callback) {
     browser
       .waitForVisible('documents-inline .documents:last-child .profiles-list', 1000)
@@ -74,21 +122,6 @@ module.exports = function () {
     browser
       .waitForVisible('documents-inline .documents:last-child .profiles-list a:first-of-type', 1000)
       .click('documents-inline .documents:last-child .profiles-list a:first-of-type')
-      .call(callback);
-  });
-
-  this.Then(/^I am on the full view edit users page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/user/';
-        var urlRegexp = new RegExp(expectedUrl + '[A-Za-z0-9_-]+', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
       .call(callback);
   });
 
@@ -111,36 +144,6 @@ module.exports = function () {
         if (typeof text == 'object' && Array.isArray(text)) {
           assert(text.indexOf(textToSearch) >= 0, 'Expected to receive a successful notification, found ' + text);
         }
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on the add user page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/user/add/';
-        var urlRegexp = new RegExp(expectedUrl + '?[A-Za-z0-9_-]*', 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to begin with ' + expectedUrl + ', found ' + url
-        );
-      })
-      .call(callback);
-  });
-
-  this.Then(/^I am on the browse users page$/, function (callback) {
-    browser
-      .pause(500)
-      .getUrl()
-      .then(url => {
-        var expectedUrl = world.baseUrl + '/#/user/browse$';
-        var urlRegexp = new RegExp(expectedUrl, 'g');
-        assert(
-          url.match(urlRegexp),
-          'Expected url to be ' + expectedUrl + ', found ' + url
-        );
       })
       .call(callback);
   });

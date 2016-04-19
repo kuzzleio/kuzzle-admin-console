@@ -1,4 +1,4 @@
-<div class="role-browse" ng-controller="ProfileBrowseCtrl" ng-init="init()">
+<div class="profile-browse" ng-controller="ProfileBrowseCtrl" ng-init="init()">
     <headline title="Profiles" subtitle="Browse profiles"></headline>
     <div class="container container-medium">
         <div class="row whitespace-top">
@@ -13,6 +13,25 @@
                 <div class="row whitespace-top">
                   <div class="col-sm-12">
                     <documents-inline documents="profiles" profile="true" can-edit="canUpdateProfile"></documents-inline>
+                  </div>
+
+                  <div class="col-sm-12 text-right"
+                       ng-show="profiles.length < total">
+                    <div class="row">
+                      <uib-pagination
+                          total-items="total"
+                          ng-model="currentPage"
+                          max-size="4"
+                          class="pagination-sm"
+                          boundary-links="true"
+                          rotate="false"
+                          ng-change="loadProfiles()"
+                          num-pages="numPages"
+                          previous-text="Prev"
+                          next-text="Next"
+                          items-per-page="limit">
+                      </uib-pagination>
+                    </div>
                   </div>
                 </div>
               </div>

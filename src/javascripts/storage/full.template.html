@@ -34,7 +34,7 @@
                       <label>id</label>
                       <div class="input-group">
                           <input type="text" id="id" class="form-control" placeholder="Optional" ng-model="document.id" ng-disabled="isEdit" ng-blur="documentExists()"/>
-                          <div class="input-group-addon">
+                          <div class="input-group-addon" ng-if="isLoading || (exists && !isEdit)">
                               <span ng-if="isLoading">
                                   <span class="fa fa-spinner fa-spin"></span>
                               </span>

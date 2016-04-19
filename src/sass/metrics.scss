@@ -25,9 +25,42 @@
         border: none;
         padding: 10px 15px;
 
+        &[aria-expanded="false"] {
+          i.fa-caret-down {
+            &:before {
+              transform: scale(0);
+              content: "\f068" !important;
+            }
+            &:after {
+              transform: scale(1);
+              content: "\f067" !important;
+              right: -2px;
+            }
+          }
+        }
+        i.fa-caret-down {
+          opacity: 0.3;
+
+          &:before,
+          &:after {
+            transition: all 0.4s;
+            position: absolute;
+          }
+          &:before {
+            transform: scale(1);
+            content: "\f068" !important;
+          }
+          &:after {
+            transform: scale(0);
+            content: "\f067" !important;
+            right: -2px;
+          }
+        }
+
         .panel-title {
           font-family: roboto_condensedregular;
           font-size: 1.2em;
+          position: relative;
 
           .glyphicon {
             cursor: pointer;

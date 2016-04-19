@@ -22,7 +22,7 @@ angular.module('kuzzle.role')
       // Manage pagination
       $scope.currentPage = 1;
       $scope.total = 0;
-      $scope.limit = 10000;
+      $scope.limit = 10;
 
       $scope.roles = [];
       $scope.collection = 'roles';
@@ -37,7 +37,8 @@ angular.module('kuzzle.role')
       $scope.loadRoles = function () {
         roleApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
           .then(function (response) {
-            $scope.roles = response;
+            $scope.roles = response.roles;
+            $scope.total = response.total;
           })
           .catch(function (error) {
             console.error(error);

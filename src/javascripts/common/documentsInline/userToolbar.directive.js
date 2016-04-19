@@ -88,6 +88,8 @@ angular.module('kuzzle.documentsInline')
     return {
       restrict: 'E',
       scope: {
+        index: '=',
+        collection: '=',
         document: '=',
         canEdit: '=',
         afterDelete: '&'

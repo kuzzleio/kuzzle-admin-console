@@ -1,16 +1,16 @@
 <div ng-if="!canEdit">
-    <div class="col-sm-1 pull-right">
+    <div class="pull-right">
         <span class="edit-document full-view glyphicon glyphicon-eye-open" ui-sref="storage.full({collection: collection, id: document.id})"></span>
     </div>
 </div>
 
 <div ng-if="canEdit">
-    <div class="col-sm-1 icons" ng-if="!document.isDeleted && !document.isEdit">
+    <div class="icons" ng-if="!document.isDeleted && !document.isEdit">
         <a class="edit-document full-view glyphicon glyphicon-eye-open"
-              ng-href="{{buildUrlFull(document)}}" title="Go to full view">
+              ng-href="{{buildUrlFull(document)}}" title="View/edit '{{document.id}}' element">
         </a>
 
-        <span class="edit-document edit-inline glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Edit inline">
+        <span class="edit-document edit-inline glyphicon glyphicon-pencil" ng-click="editDocument(document)" title="Quick edit '{{document.id}}' element">
         </span>
         <span class="edit-document edit dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="More options...">
                         </span>
@@ -29,11 +29,11 @@
             </li>
         </ul>
     </div>
-    <div class="col-sm-1 icons" ng-if="!document.isDeleted && document.isEdit">
-        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument(document)" title="Save modifications"></span>
+    <div class="icons" ng-if="!document.isDeleted && document.isEdit">
         <span class="edit-document glyphicon glyphicon-remove text-danger" ng-click="cancelEditDocument(document)" title="Cancel modifications"></span>
+        <span class="edit-document glyphicon glyphicon-ok text-success" ng-click="saveEditDocument(document)" title="Save modifications"></span>
     </div>
-    <div class="col-sm-1 icons" ng-show="document.isDeleted" ng-if="canCancelDelete">
+    <div class="icons" ng-show="document.isDeleted" ng-if="canCancelDelete">
         <a href ng-click="cancelDelete(document)" title="Cancel the deletion" class="cancel-delete-document">Cancel</a>
     </div>
 </div>

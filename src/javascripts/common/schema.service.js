@@ -27,6 +27,18 @@ export default angular.module('kuzzle.schema', ['kuzzle.kuzzleSdk'])
             properties: buildPropertiesRecursive(value.properties)
           };
         }
+
+
+        if (value.type === 'geo_point') {
+          properties[attribute] = {
+            type: 'geo_point',
+            title: attribute,
+            properties: {
+              lat: {type: 'number'},
+              lon: {type: 'number'}
+            }
+          };
+        }
       });
 
       return properties;

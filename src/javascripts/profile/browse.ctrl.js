@@ -26,7 +26,7 @@ angular.module('kuzzle.profile')
       // Manage pagination
       $scope.currentPage = 1;
       $scope.total = 0;
-      $scope.limit = 10000;
+      $scope.limit = 10;
       $scope.canUpdateProfile = false;
 
       $scope.profiles = [];

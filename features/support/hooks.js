@@ -1,5 +1,4 @@
 var
-  request = require('request'),
   config = require('./config.js'),
   fixtures = require('../fixtures.json'),
   q = require('q'),
@@ -67,6 +66,11 @@ var hooks = function () {
     cleanSecurity.call(this, callback);
   });
 
+  this.Before('@deleteUsers', function (scenario, callback) {
+    console.log('@deleteUsers');
+    deleteUsers.call(this, callback);
+  });
+
   this.After('@unsubscribe', function (scenario, callback) {
     browser
       .waitForVisible('.filters button.btn-unsubscribe', 1000)
@@ -106,7 +110,7 @@ var initIndex = function (callback) {
     timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000);
+      }, 1200);
     };
 
   world.kuzzle
@@ -125,7 +129,7 @@ var removeIndex = function (callback) {
     timeoutCallback = function () {
       setTimeout(() => {
         callback();
-      }, 1000);
+      }, 1200);
     };
 
   world.kuzzle
@@ -151,6 +155,70 @@ var bulk = function () {
   return q.all(promises);
 };
 
+
+var listIndexes = function () {
+  var deffered = q.defer();
+
+  world
+    .kuzzle
+    .listIndexes(function(error, indexes) {
+      if (error) {
+        deffered.reject(error)
+      }
+
+      deffered.resolve(indexes);
+    })
+
+  return deffered.promise;  
+};
+
+var deleteUsers = function (callback) {
+    listIndexes()
+    .then(indexes => {
+      if (indexes.indexOf('%kuzzle') === -1) {
+        return q.reject(new ReferenceError('%kuzzle index not found'));
+      }
+      return q();
+    })
+    .then(() => {
+      var
+        deffered = q.defer(),
+        passed = 0;
+
+      fixtures['%kuzzle'].users.forEach(function (user) {
+        if (user.username === undefined) {
+          return;
+        }
+        world
+          .kuzzle
+          .security
+          .deleteUser(user.username, function (error, result) {
+            if (error) {
+              console.log(error);
+            }
+            passed++;
+            if (passed === (fixtures['%kuzzle'].users.length /2)) {
+              deffered.resolve();
+              return;
+            }
+          });
+      });
+
+      return deffered.promise;
+    })
+    .then(() => {
+      setTimeout(function() {callback();}, 1200);
+    })
+    .catch(error => {
+      if (error instanceof ReferenceError && error.message === '%kuzzle index not found') {
+        // The %kuzzle index is not created yet. Is not a problem if the tests are run for the first time.
+        setTimeout(function() {callback();}, 1200);
+      }
+      console.log('catch', error);
+      callback(error);
+    });
+};
+
 var cleanSecurity = function (callback) {
   world.kuzzle
     .listIndexesPromise()
@@ -160,15 +228,29 @@ var cleanSecurity = function (callback) {
       }
     })
     .then(() => {
-      var query = {
-        controller: 'write',
-        action: 'deleteByQuery',
-        index: '%kuzzle',
-        collection: 'users'
-      };
+      var
+        deffered = q.defer();
+        passed = 0;
 
-      return world.kuzzle
-        .queryPromise(query, {body: { filter: { regexp: { _uid: 'users.' + world.idPrefix + '.*' } } }});
+      fixtures['%kuzzle'].users.forEach(function (user) {
+        if (user.username === undefined) {
+          return;
+        }
+
+        world
+          .kuzzle
+          .security
+          .deleteUser(user.username, function (error, result) {
+            passed++;
+
+            if (passed === (fixtures['%kuzzle'].users.length /2)) {
+              deffered.resolve();
+              return;
+            }
+          });
+      });
+
+      return deffered.promise;
     })
     .then(() => {
       var query = {
@@ -215,23 +297,34 @@ var cleanSecurity = function (callback) {
         .queryPromise(query, {body: fixtures['%kuzzle'].profiles});
     })
     .then(() => {
-      var query = {
-        controller: 'bulk',
-        action: 'import',
-        index: '%kuzzle',
-        collection: 'users'
-      };
+      var 
+        deffered = q.defer(),
+        passed = 1;
 
-      return world.kuzzle
-        .queryPromise(query, {body: fixtures['%kuzzle'].users});
-    })
+      fixtures['%kuzzle'].users.forEach(function(user) {
+        if (user.username) {
+          world
+            .kuzzle
+            .security
+            .createUser(user.username, {password: user.clearPassword, profile: user.profile}, {replaceIfExist: true}, function(error, response) {
+              passed++;
+              if (passed == (fixtures['%kuzzle'].users.length/2)) {
+                deffered.resolve();
+                return;
+              }
+            });
+        }
+      });
+
+      return deffered.promise;
+    })  
     .then(() => {
-      callback();
+      setTimeout(function() {callback();}, 1200);
     })
     .catch(error => {
       if (error instanceof ReferenceError && error.message === '%kuzzle index not found') {
         // The %kuzzle index is not created yet. Is not a problem if the tests are run for the first time.
-        callback();
+        setTimeout(function() {callback();}, 1200);
       }
       callback(error);
     });

@@ -1,4 +1,4 @@
-<div id="select-index" class="indexes-drop-down-search" uib-dropdown is-open="isOpen">
+<div id="select-index" class="indexes-drop-down-search" ng-if="showSelector" uib-dropdown is-open="isOpen">
 
   <a uib-dropdown-toggle data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span ng-if="selectedIndex" class="indexes-selector-label">
@@ -22,7 +22,7 @@
       <a class="external-link" ng-click="onClickCreate({name: name}); name = ''" ng-bind="createLabel"></a>
     </li>
     <li class="divider"></li>
-    <li ng-class="{active: item === selectedIndex}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItem({item: item})">
+    <li ng-class="{active: item === selectedIndex}" ng-repeat="item in items | orderBy | filter:search" ng-click="onClickItemProxy({item: item})">
       <a>
         <span ng-bind="item"></span>
       </a>

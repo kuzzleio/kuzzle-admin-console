@@ -14,6 +14,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
         service = this;
 
       service.data = {
+        showSelector: false,
         selectedIndex: null,
         indexes: null
       };
