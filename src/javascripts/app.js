@@ -71,8 +71,8 @@ import realtime from './realtime';
 import metrics from './metrics';
 import indexes from './indexes';
 import profile from './profile';
+import user from './user/';
 require('./collection/collection.route');
-require('./user/user.route');
 
 angular.module('kuzzle', [
   uirouter,
@@ -85,13 +85,13 @@ angular.module('kuzzle', [
   'jsonFormatter',
   'kuzzle.authentication',
   'kuzzle.headline',
-  'kuzzle.indexes',
-  storage,
   'kuzzle.collection',
+  indexes,
+  storage,
   realtime,
   role,
   profile,
-  'kuzzle.user',
+  user,
   metrics,
   'kuzzle.bufferCancel',
   'kuzzle.documentApi',

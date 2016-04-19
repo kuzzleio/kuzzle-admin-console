@@ -1,3 +1,14 @@
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
+import addAttribute from '../storage/addAttribute/addAttribute.directive';
+import userApi from '../common/userApi.service';
+import uiNotification from 'angular-ui-notification';
+import prevousState from '../common/previousState.service.js';
+import authorizationApi from '../common/authentication/authorizationApi.service';
+
+var ctrlName = 'StorageFullCtrl';
+
+export default [ctrlName, addAttribute, jsonEdit, userApi, uiNotification];
+
 angular.module('kuzzle.user')
 
   .controller('UserFullCtrl', [
@@ -5,12 +16,11 @@ angular.module('kuzzle.user')
     '$stateParams',
     'userApi',
     '$state',
-    'schema',
     'previousState',
     'Notification',
     '$window',
     'authorizationApi',
-    function ($scope, $stateParams, userApi, $state, schema, previousState, notification, $window, authorization) {
+    function ($scope, $stateParams, userApi, $state, previousState, notification, $window, authorization) {
 
       $scope.isEdit = false;
       $scope.notFoundError = false;
@@ -41,8 +51,8 @@ angular.module('kuzzle.user')
         else {
           try {
             if ($stateParams.content) {
-                content = JSON.parse($stateParams.content);
-                $scope.user.content = angular.toJson(content, 4);
+              content = JSON.parse($stateParams.content);
+              $scope.user.content = angular.toJson(content, 4);
             }
           }
           catch (e) {

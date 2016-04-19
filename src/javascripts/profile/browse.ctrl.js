@@ -3,10 +3,12 @@ import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsC
 import documentsInline from '../common/documentsInline/documentsInline.directive';
 import profileToolbar from '../common/documentsInline/profileToolbar.directive';
 import profileApi from '../common/profileApi.service';
+import authorizationApi from '../common/authentication/authorizationApi.service';
 
 const ctrlName = 'ProfileBrowseCtrl';
 
-export default [profileApi, jsonEdit, cogOptionsCollection, documentsInline, profileToolbar, ctrlName];
+export default [profileApi, jsonEdit, cogOptionsCollection, documentsInline,
+  profileToolbar, ctrlName, authorizationApi];
 
 angular.module('kuzzle.profile')
 
