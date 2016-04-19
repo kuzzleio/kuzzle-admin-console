@@ -1,4 +1,4 @@
-angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle.indexesApi'])
+export default angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle.indexesApi'])
   .controller('cogOptionsIndexesCtrl', [
     '$scope',
     '$uibModal',
@@ -51,4 +51,5 @@ angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.router', 'kuzzle
       controller: 'cogOptionsIndexesCtrl',
       templateUrl: '/javascripts/indexes/cogOptionsIndexes/cogOptionsIndexes.tpl.html'
     };
-  }]);
+  }])
+  .name;

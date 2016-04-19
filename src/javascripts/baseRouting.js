@@ -24,7 +24,14 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
                 $ocLazyLoad.load({name: dep});
               });
               resolve(angular.module('kuzzle.metrics'));
-            }, 'MetricsCtrl');
+              // We have to include this here since it is used by the big index
+              // dropdown button in the header...
+              ctrlDeps = require('./indexes/indexes.controller');
+              ctrlDeps.default.forEach((dep) => {
+                $ocLazyLoad.load({name: dep});
+              });
+              resolve(angular.module('kuzzle.indexes'));
+            }, 'IndexAndMetricsCtrl');
           });
         }],
         authenticated: ['AuthService', '$q', 'kuzzleSdk', function (Auth, q, kuzzle) {

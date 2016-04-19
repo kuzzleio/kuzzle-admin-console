@@ -1,6 +1,13 @@
+import cogOptionsIndexes from './cogOptionsIndexes/cogOptionsIndexes.directive';
+import indexesDropDownSearch from './indexesDropDownSearch/indexesDropDownSearch.directive';
+
+let crtlName = 'IndexesCtrl';
+
+export default [crtlName, cogOptionsIndexes, indexesDropDownSearch];
+
 angular.module('kuzzle.indexes')
 
-  .controller('IndexesCtrl', [
+  .controller(crtlName, [
     '$scope',
     '$stateParams',
     '$state',

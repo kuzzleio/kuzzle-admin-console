@@ -1,5 +1,7 @@
-angular.module('kuzzle.indexesDropDownSearch', [])
-  .controller('indexesDropDownSearchCtrl', [
+const ctrlName = 'indexesDropDownSearchCtrl';
+
+export default angular.module('kuzzle.indexesDropDownSearch', [])
+  .controller(ctrlName, [
     '$scope',
     function ($scope) {
       $scope.isOpen = false;
@@ -25,7 +27,8 @@ angular.module('kuzzle.indexesDropDownSearch', [])
         onClickItem: '&',
         placeholder: '@'
       },
-      controller: 'indexesDropDownSearchCtrl',
-      templateUrl: '/javascripts/indexes/indexesDropDownSearch/indexesDropDownSearch.tpl.html'
+      controller: ctrlName,
+      template: require('./indexesDropDownSearch.tpl.html')
     };
-  });
+  })
+  .name;
