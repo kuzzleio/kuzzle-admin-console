@@ -1,8 +1,12 @@
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
 import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
 import documentsInline from '../common/documentsInline/documentsInline.directive';
 import roleToolbar from '../common/documentsInline/roleToolbar.directive';
+import roleApi from '../common/roleApi.service';
 
 let ctrlName = 'RoleBrowseCtrl';
+
+export default [roleApi, jsonEdit, cogOptionsCollection, documentsInline, roleToolbar, ctrlName];
 
 angular.module('kuzzle.role')
   .config(['JSONFormatterConfigProvider', function (JSONFormatterConfigProvider) {
