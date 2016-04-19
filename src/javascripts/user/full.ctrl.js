@@ -5,13 +5,13 @@ import uiNotification from 'angular-ui-notification';
 import prevousState from '../common/previousState.service.js';
 import authorizationApi from '../common/authentication/authorizationApi.service';
 
-var ctrlName = 'StorageFullCtrl';
+var ctrlName = 'UserFullCtrl';
 
 export default [ctrlName, addAttribute, jsonEdit, userApi, uiNotification];
 
 angular.module('kuzzle.user')
 
-  .controller('UserFullCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$stateParams',
     'userApi',

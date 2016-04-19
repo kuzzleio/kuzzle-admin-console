@@ -72,7 +72,7 @@ import metrics from './metrics';
 import indexes from './indexes';
 import profile from './profile';
 import user from './user/';
-require('./collection/collection.route');
+import collection from './collection';
 
 angular.module('kuzzle', [
   uirouter,
@@ -85,7 +85,7 @@ angular.module('kuzzle', [
   'jsonFormatter',
   'kuzzle.authentication',
   'kuzzle.headline',
-  'kuzzle.collection',
+  collection,
   indexes,
   storage,
   realtime,

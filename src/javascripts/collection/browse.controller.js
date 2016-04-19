@@ -1,6 +1,12 @@
+import cogOptionsCollection from './cogOptionsCollection/cogOptionsCollection.directive';
+
+const ctrlName = 'CollectionBrowseCtrl';
+
+export default [ctrlName, cogOptionsCollection];
+
 angular.module('kuzzle.collection')
 
-  .controller('CollectionBrowseCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$stateParams',
     '$state',

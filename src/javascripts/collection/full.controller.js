@@ -1,6 +1,19 @@
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
+import addAttribute from '../storage/addAttribute/addAttribute.directive';
+import collectionApi from '../common/collectionApi.service';
+import uiNotification from 'angular-ui-notification';
+import prevousState from '../common/previousState.service.js';
+import authorizationApi from '../common/authentication/authorizationApi.service';
+import schemaService from '../common/schema.service';
+
+var ctrlName = 'CollectionFullCtrl';
+
+export default [ctrlName, addAttribute, jsonEdit, collectionApi, uiNotification,
+  schemaService];
+
 angular.module('kuzzle.collection')
 
-  .controller('CollectionFullCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$stateParams',
     'collectionApi',
