@@ -1,3 +1,13 @@
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
+import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
+import documentsInline from '../common/documentsInline/documentsInline.directive';
+import profileToolbar from '../common/documentsInline/profileToolbar.directive';
+import profileApi from '../common/profileApi.service';
+
+const ctrlName = 'ProfileBrowseCtrl';
+
+export default [profileApi, jsonEdit, cogOptionsCollection, documentsInline, profileToolbar, ctrlName];
+
 angular.module('kuzzle.profile')
 
   .config(['JSONFormatterConfigProvider', function (JSONFormatterConfigProvider) {
@@ -5,7 +15,7 @@ angular.module('kuzzle.profile')
     JSONFormatterConfigProvider.hoverPreviewArrayCount = 5;
   }])
 
-  .controller('ProfileBrowseCtrl', [
+  .controller(ctrlName, [
     '$scope',
     'profileApi',
     'authorizationApi',

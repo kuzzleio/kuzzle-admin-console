@@ -70,8 +70,8 @@ import storage from './storage';
 import realtime from './realtime';
 import metrics from './metrics';
 import indexes from './indexes';
+import profile from './profile';
 require('./collection/collection.route');
-require('./profile/profile.route');
 require('./user/user.route');
 
 angular.module('kuzzle', [
@@ -90,7 +90,7 @@ angular.module('kuzzle', [
   'kuzzle.collection',
   realtime,
   role,
-  'kuzzle.profile',
+  profile,
   'kuzzle.user',
   metrics,
   'kuzzle.bufferCancel',

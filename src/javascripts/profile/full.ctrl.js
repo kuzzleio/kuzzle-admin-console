@@ -1,6 +1,18 @@
+import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
+import schemaService from '../common/schema.service';
+import profileApi from '../common/profileApi.service';
+import uiNotification from 'angular-ui-notification';
+import prevousState from '../common/previousState.service.js';
+import authorizationApi from '../common/authentication/authorizationApi.service';
+
+var ctrlName = 'ProfileFullCtrl';
+
+export default [ctrlName, jsonEdit, schemaService, uiNotification, prevousState,
+  authorizationApi, profileApi];
+
 angular.module('kuzzle.profile')
 
-  .controller('ProfileFullCtrl', [
+  .controller(ctrlName, [
     '$scope',
     '$stateParams',
     'profileApi',
