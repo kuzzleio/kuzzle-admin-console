@@ -8,7 +8,7 @@ export default angular.module(MODULE_NAME, [
     $stateProvider
       .state('storage', {
         parent: 'logged',
-        url: '/:index/storage',
+        url: '/storage/:index',
         views: {
           bodyView:{
             templateProvider: ($q) => {
@@ -28,16 +28,8 @@ export default angular.module(MODULE_NAME, [
               });
             });
           }],
-          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
-              .then(function (exist) {
-                if (!exist) {
-                  $state.go('indexes.browse');
-                }
-                else {
-                  indexesApi.select($stateParams.index);
-                }
-              });
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = true;
           }]
         }
       })
@@ -63,6 +55,17 @@ export default angular.module(MODULE_NAME, [
                 resolve(angular.module(MODULE_NAME));
               });
             });
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index, true)
+              .then(function (exist) {
+                if (exist) {
+                  indexesApi.select($stateParams.index);
+                }
+                else {
+                  $state.go('storage');
+                }
+              });
           }]
         }
       })

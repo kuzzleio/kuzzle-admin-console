@@ -22,6 +22,11 @@ export default angular.module(MODULE_NAME, [
               });
             }
           }
+        },
+        resolve: {
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = false;
+          }]
         }
       })
       .state('indexes.browse', {

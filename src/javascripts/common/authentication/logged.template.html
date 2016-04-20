@@ -16,6 +16,7 @@
         <div ng-controller="IndexesCtrl"
              class="index-selector">
           <indexes-drop-down-search
+                  show-selector="indexData.showSelector"
                   selected-index="indexData.selectedIndex"
                   create-label="New index"
                   items="indexData.indexes"
@@ -48,7 +49,7 @@
               </li>
 
               <!-- Indexes -->
-              <li ng-if="canShowDataDongle()" class="nav-category"
+              <li class="nav-category"
                   ng-class="{ in: ('indexes.*.*' | includedByState)}">
                 <a href data-toggle="collapse"
                    ng-class="{ collapsed: !('indexes.*.*' | includedByState)}"
@@ -73,7 +74,7 @@
               <!-- /Indexes -->
 
               <!-- Collections -->
-              <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+              <li ng-if="indexData.selectedIndex"
                   class="nav-category"
                   ng-class="{ in: ('collection.*.*' | includedByState)}">
                 <a href data-toggle="collapse"
@@ -99,7 +100,15 @@
               <!-- /Collections -->
 
               <!-- Data -->
-              <li ng-if="canShowDataDongle() && indexData.selectedIndex"
+              <li ng-if="!indexData.selectedIndex"
+                  class="nav-category"
+                  ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
+                <a ui-sref="storage()">
+                  <i class="fa fa-list-alt pull-left"></i>
+                  Data
+                </a>
+              </li>
+              <li ng-if="indexData.selectedIndex"
                   class="nav-category"
                   ng-class="{ in: ('storage.*.*' | includedByState) || ('realtime.*.*' | includedByState)}">
                 <a href data-toggle="collapse"
