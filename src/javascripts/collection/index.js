@@ -8,7 +8,7 @@ export default angular.module(MODULE_NAME, [
     $stateProvider
       .state('collection', {
         parent: 'logged',
-        url: '/:index/collection',
+        url: '/collection/:index',
         views: {
           bodyView: {
             templateProvider: ($q) => {
@@ -19,16 +19,8 @@ export default angular.module(MODULE_NAME, [
           }
         },
         resolve: {
-          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
-              .then(function (exist) {
-                if (!exist) {
-                  $state.go('indexes.browse');
-                }
-                else {
-                  indexesApi.select($stateParams.index);
-                }
-              });
+          index: ['indexesApi', function(indexesApi) {
+            indexesApi.data.showSelector = true;
           }]
         }
       })
@@ -54,8 +46,18 @@ export default angular.module(MODULE_NAME, [
                 resolve(angular.module(MODULE_NAME));
               });
             });
+          }],
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
+            indexesApi.isSelectedIndexValid($stateParams.index)
+              .then(function (exist) {
+                if (!exist) {
+                  $state.go('collection');
+                }
+                else {
+                  indexesApi.select($stateParams.index);
+                }
+              });
           }]
-
         }
       })
       .state('collection.create', {

@@ -66,7 +66,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
       url: '/login',
       views: {
         wrappedView: { template: `
-          <div class="view-fade container login-page">
+          <div class="view-fade container login-area">
             <div class="row">
               <div class="col-xs-4 col-xs-push-4">
                 <div class="login-container">
