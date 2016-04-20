@@ -62,6 +62,41 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
         wrappedView: { template: require('./common/404.template.html') }
       }
     })
+    .state('firstAdmin', {
+      url: '/firstAdmin',
+      views: {
+        wrappedView: { template: require('./firstAdmin/index.template.html') }
+      },
+      resolve: {
+        // check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
+        //   kuzzleSdk
+        //     .dataCollectionFactory('%kuzzle', 'users')
+        //     .fetchAllDocuments(function (error, result) {
+        //       if (error !== null) {
+        //         console.log('redirect to login');
+        //         $state.go('login');
+        //       } else if (result) {
+        //         if (result.total > 0) {
+        //           console.log('redirect to login');
+        //           $state.go('login');
+        //         }
+        //       }
+        //     });
+        // }],
+        loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+          return $q((resolve) => {
+            require.ensure([], function (require) {
+              let moduleName = require('./firstAdmin/').default;
+              let ctrlDeps = require('./firstAdmin/firstAdmin.controller');
+              ctrlDeps.default.forEach((dep) => {
+                $ocLazyLoad.load({name: dep});
+              });
+              resolve(angular.module(moduleName));
+            }, 'IndexAndMetricsCtrl');
+          });
+        }]
+      }
+    })
     .state('login', {
       url: '/login',
       views: {
@@ -79,6 +114,19 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
             </div>
           </div>
           ` }
+      },
+      resolve: {
+        check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
+          kuzzleSdk
+            .dataCollectionFactory('%kuzzle', 'users')
+            .fetchAllDocuments(function (error, result) {
+              if (result) {
+                if (result.total === 0) {
+                  $state.go('firstAdmin');
+                }
+              }
+            });
+        }]
       }
     })
     .state('logout', {
