@@ -2,7 +2,7 @@
   http://stackoverflow.com/questions/7111610/import-regular-css-file-in-scss-file */
 @import "lib/sb-admin";
 @import "mixins";
-// @import "components";
+@import "components";
 @import "../fonts/roboto_regular_macroman/stylesheet.css";
 @import "../fonts/roboto_medium_macroman/stylesheet.css";
 @import "../fonts/roboto_bold_macroman/stylesheet.css";
