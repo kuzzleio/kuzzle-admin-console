@@ -34,3 +34,4 @@ dump
 
 # Build assets
 dist
+build.log

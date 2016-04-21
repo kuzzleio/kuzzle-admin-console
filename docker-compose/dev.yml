@@ -17,7 +17,7 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo-test
+  image: kuzzleio/bo-test:alpine
   command: /run-dev.sh
   volumes:
     - "..:/var/app"
