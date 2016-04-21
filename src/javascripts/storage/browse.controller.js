@@ -5,6 +5,8 @@ import collectionApi from '../common/collectionApi.service';
 
 let ctrlName = 'StorageBrowseCtrl';
 
+export default [collectionsDropDownSearch, cogOptionsCollection, authorizationApi, collectionApi, ctrlName];
+
 angular.module('kuzzle.storage')
   .controller(ctrlName, [
     '$scope',
@@ -14,10 +16,15 @@ angular.module('kuzzle.storage')
     'collectionApi',
     'authorizationApi',
     function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
+      $scope.canCreateDocument =true;
+      $scope.canDeleteCollection = true;
+      $scope.canEdit = true;
+      $scope.showCog = true;
+
       var checkRights = function (collection) {
         $scope.canCreateDocument = authorization.canDoAction($stateParams.index, collection, 'write', 'create');
         $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
-        $scope.canEditCollection = authorization.canDoAction(
+        $scope.canEdit = authorization.canDoAction(
           $stateParams.index,
           collection,
           'admin',

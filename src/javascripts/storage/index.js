@@ -28,8 +28,17 @@ export default angular.module(MODULE_NAME, [
               });
             });
           }],
-          index: ['indexesApi', function(indexesApi) {
+          index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
             indexesApi.data.showSelector = true;
+            indexesApi.isSelectedIndexValid($stateParams.index, true)
+              .then(function (exist) {
+                if (exist) {
+                  indexesApi.select($stateParams.index);
+                }
+                else {
+                  $state.go('storage');
+                }
+              });
           }]
         }
       })

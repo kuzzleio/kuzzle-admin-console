@@ -16,8 +16,9 @@
                   placeholder="Find a collection">
               </collections-drop-down-search>
 
-              <div class="btn-group" ng-if="stateParams.collection && stateParams.index && showCog">
+              <div class="btn-group">
                   <cog-options-collection
+                    ng-if="stateParams.collection && stateParams.index && showCog"
                     current-index="stateParams.index"
                     collection="stateParams.collection"
                     after-delete="onDeleteCollection()"

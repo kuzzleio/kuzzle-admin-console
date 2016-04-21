@@ -63,7 +63,7 @@ export default angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'u
         canEdit: '='
       },
       controller: 'cogOptionsCollectionCtrl',
-      templateUrl: '/javascripts/collection/cogOptionsCollection/cogOptionsCollection.tpl.html'
+      template: require('./cogOptionsCollection.tpl.html')
     };
   }])
   .name;
