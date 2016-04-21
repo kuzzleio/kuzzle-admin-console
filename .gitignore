@@ -30,6 +30,7 @@ docker-compose-custom.yml
 .tags
 .sass-cache
 phantom.log
+dump
 
 # Build assets
 dist
