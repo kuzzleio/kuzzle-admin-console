@@ -9,7 +9,7 @@ Feature: Test firstAdmin
     When I create the admin account as "firstAdminWithBadPassword"
     Then I see an error message about the bad password
 
-  @cleanSecurity
+  @cleanSecurity @cleanFirstAdmin
   Scenario: Create the first admin and i can login with this account.
     Given I try to go to the login page
     Then I am on the first admin creation page
