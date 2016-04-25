@@ -6,7 +6,16 @@ var
 
 var hooks = function () {
 
-  this.registerHandler('BeforeFeatures', function (event, callback) {
+  this.registerHandler('BeforeFeatures', function beforeFeatures(event, callback) {
+    if (world.kuzzle.state !== 'connected') {
+      setTimeout(() => {
+        beforeFeatures(event, callback);
+      }, 50)
+
+      return;
+    }
+
+
     browser
       .setViewportSize({width: 1920, height: 1080})
       .call(() => {
