@@ -6,7 +6,7 @@ module.exports = function() {
   this.When(/^I click on the collection named "([^"]*)"$/, function (collectionName, callback) {
     browser
     .waitForVisible('collections-drop-down-search .dropdown-menu', 1000)
-    .click('collections-drop-down-search .dropdown-menu li[name=' + collectionName + '] a')
+    .click('collections-drop-down-search .dropdown-menu li[name=' + collectionName + '] span')
     .call(callback);
   });
 

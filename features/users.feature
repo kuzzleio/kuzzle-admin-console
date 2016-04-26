@@ -39,7 +39,7 @@ Feature: Test the users CRUD page
     And The input "user-id" is not disabled
     And The input "user-id" is empty
 
-  @cleanSecurity
+  @cleanSecurity @cleanNewUser
   Scenario: I am able to clone a user.
     Given I go on the browse users page
     Then I click the clone button of the last user

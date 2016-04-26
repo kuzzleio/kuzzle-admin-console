@@ -1,0 +1,259 @@
+/* SASS has a weird way of importing regular CSS files.
+  http://stackoverflow.com/questions/7111610/import-regular-css-file-in-scss-file */
+@import "lib/sb-admin";
+@import "mixins";
+@import "components";
+@import "../fonts/roboto_regular_macroman/stylesheet.css";
+@import "../fonts/roboto_medium_macroman/stylesheet.css";
+@import "../fonts/roboto_bold_macroman/stylesheet.css";
+@import "../fonts/roboto_condensed_macroman/stylesheet.css";
+@import "../fonts/roboto_boldcondensed_macroman/stylesheet.css";
+
+body {
+    background-color: #F3F3F3;
+}
+
+@media(min-width:768px) {
+  #wrapper {
+    padding-left: 250px;
+  }
+
+}
+@media(max-width:768px) {
+  #wrapper {
+    padding-left: 0;
+  }
+}
+
+#page-wrapper {
+    padding: 0;
+    background-color: #F3F3F3;
+    @extend .h100;
+
+    #loading-bar-wrapper {
+        .bar {
+            position: inherit;
+            height: 3px;
+        }
+    }
+}
+
+.dropdown-menu {
+    li {
+        a.text-danger {
+            color: #a94442;
+            font-weight: bold;
+        }
+    }
+}
+
+.row .col-no-padding {
+  padding: 0;
+}
+
+.row .col-no-padding-left {
+  padding-left: 0;
+}
+
+.select-index-helper {
+  .trollface {
+    top: 70px;
+    position: absolute;
+    height: 59px;
+    left: 48%;
+    right: 52%;
+  }
+  .select-collection-helper {
+    left: 52%;
+    top: 76px;
+    padding: 10px;
+    opacity: 0.6;
+  }
+
+  .select-collection-helper-text {
+    margin-top: 200px;
+    opacity: 0.4;
+  }
+}
+
+.fixed-right {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  margin-top: 60px;
+}
+
+.document-id {
+  span {
+    background-color: #EFEFEF;
+    border: 1px solid rgba(43, 43, 43, 0.04);
+    border-radius: 4px;
+    padding: 2px 6px 2px 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #004B52;
+    display: block;
+
+    &.ellipsis {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      margin-left: -5px;
+      margin-right: -4px;
+    }
+  }
+}
+.profiles-list,
+.roles-list {
+  display: block;
+}
+/* FORM */
+input.ng-invalid.ng-touched, select.ng-invalid.ng-touched {
+    border-color: #FA787E;
+}
+
+h2.select-index,
+h2.select-collection {
+  color: #828282;
+}
+
+.select-index,
+.select-collection {
+  text-align: center;
+}
+
+.collections-drop-down-search, #select-index {
+  button {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .dropdown-menu {
+    min-width: 200px;
+    li {
+      &.active {
+        a {
+          i {
+            color: #FFF;
+          }
+        }
+      }
+      form {
+        margin-bottom: 0;
+      }
+      cursor: pointer;
+      a {
+        i {
+          padding-right: 5px;
+          color: #848484;
+        }
+
+        padding: 8px;
+
+        &.external-link {
+          padding: 5px 0 5px 10px;
+          text-decoration: underline;
+          color: #215C9C;
+        }
+        &.external-link:hover {
+          padding: 5px 0 5px 10px;
+          text-decoration: underline;
+          color: #215C9C;
+          background-color: #f5f5f5;
+        }
+        &:hover {
+          color: #262626;
+          text-decoration: none;
+          background-color: #f5f5f5;
+        }
+      }
+      &.active a {
+        background-color: #528186;
+        &:hover {
+          color: #fff;
+          background-color: #6C9A9E;
+        }
+      }
+    }
+    .search {
+      padding: 5px;
+    }
+  }
+}
+.message-log {
+  .btn.btn-default {
+    background-color: #45565F;
+    border: 1px solid #45565F;
+    padding-bottom: 2px;
+    color: #FFF;
+  }
+  code,
+  pre {
+    margin: 8px 0 26px 0;
+    background-color: #45565F;
+    border:none;
+    color: #FFF;
+  }
+}
+* {
+  border-radius: 2px !important;
+}
+.container {
+  width: 100%;
+
+  &.container-medium {
+    width: 70%;
+    margin-left: 8px;
+  }
+}
+
+
+@media(max-width:1440px) {
+  .container {
+    width: 100%;
+
+    &.container-medium {
+      width: 100%;
+      margin: 0 auto;
+    }
+  }
+}
+.container-fluid {
+  padding:0;
+  margin:0;
+  overflow-x: hidden;
+}
+headline > div {
+  background: #FFFFFF;
+  box-shadow: 0 4px 2px -1px rgba(0,0,0,0.1) inset;
+  padding-top: 20px;
+  padding-bottom: 10px;
+
+  h1 {
+    margin: 0 10px 0 24px;
+    color: #333;
+    font-family: roboto_condensedbold;
+
+    small {
+      font-family: roboto_condensedregular;
+      color: #999;
+    }
+  }
+}
+.select-collection-helper {
+  padding: 10px 20px;
+  position: absolute;
+  right: 50px;
+  top: 135px;
+  font-size: 16px;
+  font-family: robotoregular;
+  &.helper-realtime {
+    top: 0;
+  }
+
+  i {
+    margin-left: 5px;
+    display: inline-block;
+  }
+}

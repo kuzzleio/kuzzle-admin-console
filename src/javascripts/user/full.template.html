@@ -1,0 +1,32 @@
+<div class="edit-user" ng-controller="UserFullCtrl" ng-init="init()">
+  <headline title="User" subtitle=""></headline>
+  <div class="container container-medium">
+    <div class="row whitespace-top">
+      <div class="col-sm-12 user-not-found" ng-if="notFoundError">
+        <p>There is no user matching the name <strong ng-bind="user.id">null</strong>.</p>
+      </div>
+
+      <div class="col-sm-12" ng-if="!notFoundError">
+
+        <form>
+            <div class="form-group">
+                <label for="user-id">User id</label>
+                <input type="text" class="form-control" ng-model="user.id" id="user-id" ng-disabled="isEdit">
+            </div>
+            <div class="form-group">
+                <label for="name">User content</label>
+                <json-edit content="user.content" can-edit="canCreateOrReplaceUser || canUpdateUser"></json-edit>
+            </div>
+
+            <div class="actions-group">
+                <button id="create" type="submit" class="btn btn-success control" ng-if="!isEdit && canCreateOrReplaceUser" ng-click="create()">Create</button>
+                <button id="update" type="submit" class="btn btn-success control" ng-if="isEdit && canUpdateUser" ng-click="update()">Update</button>
+                <button id="replace" type="submit" class="btn btn-warning control" ng-if="isEdit && canCreateOrReplaceUser" ng-click="replace()">Replace</button>
+                <a class="control" ng-click="cancel()">Cancel</a>
+            </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -143,6 +143,7 @@ module.exports = function () {
     browser
       // This is quite worrying: I have to click on the deepest element if I
       // want something to happen.
+      .waitForVisible('.select-collection cog-options-collection', 2000)
       .click('.select-collection cog-options-collection .dropdown-toggle')
       .call(callback);
   });

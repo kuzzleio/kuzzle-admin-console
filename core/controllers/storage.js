@@ -5,37 +5,6 @@ var
   _ = require('lodash'),
   bufferCancel = require('../services/bufferCancel');
 
-router.get('/', function(req, res) {
-
-  return res.render('storage/index');
-
-});
-
-router.get('/browse', function(req, res) {
-
-  return res.render('storage/browse');
-
-});
-
-router.get('/browse-documents', function(req, res) {
-
-  return res.render('storage/browse-documents');
-
-});
-
-router.get('/create', function (req, res) {
-
-  return res.render('storage/full', {action: 'create'});
-
-});
-
-router.get('/full', function (req, res) {
-
-  return res.render('storage/full', {action: 'edit'});
-
-});
-
-
 router.post('/search', function (req, res) {
 
   var
@@ -176,4 +145,3 @@ router.post('/cancel-deleteById', function (req, res) {
 });
 
 module.exports = router;
-
