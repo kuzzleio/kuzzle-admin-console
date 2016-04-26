@@ -1,9 +1,9 @@
-import roleApi from '../../common/roleApi.service';
+import roleApi from '../../common/services/roleApi.service';
 import uiNotification from 'angular-ui-notification';
-import prevousState from '../../common/previousState.service.js';
+import prevousState from '../../common/services/previousState.service.js';
 import authorizationApi from '../../authentication/authorizationApi.service';
-import schemaService from '../../common/schema.service';
-import jsonEdit from '../../common/jsonEdit/jsonEdit.directive';
+import schemaService from '../../common/services/schema.service';
+import jsonEdit from '../../common/components/jsonEdit/jsonEdit.directive';
 
 let ctrlName = 'RoleFullCtrl';
 

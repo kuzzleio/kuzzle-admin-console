@@ -1,8 +1,8 @@
-import jsonEdit from '../../common/jsonEdit/jsonEdit.directive';
-import cogOptionsCollection from '../../collection/cogOptionsCollection/cogOptionsCollection.directive';
-import documentsInline from '../../common/documentsInline/documentsInline.directive';
-import roleToolbar from '../../common/documentsInline/roleToolbar.directive';
-import roleApi from '../../common/roleApi.service';
+import jsonEdit from '../../common/components/jsonEdit/jsonEdit.directive';
+import cogOptionsCollection from '../../data/collection/cogOptionsCollection/cogOptionsCollection.directive';
+import documentsInline from '../../common/components/documentsInline/documentsInline.directive';
+import roleToolbar from '../../common/components/documentsInline/roleToolbar.directive';
+import roleApi from '../../common/services/roleApi.service';
 
 let ctrlName = 'RoleBrowseCtrl';
 

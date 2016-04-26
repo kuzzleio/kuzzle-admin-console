@@ -43,18 +43,18 @@ Highcharts.setOptions({
   }
 });
 
-require('./common/kuzzleSdk.service');
-require('./common/bufferCancel.service');
-require('./common/documentApi.service');
-require('./common/indexesApi.service');
-require('./common/collectionApi.service');
-require('./common/roleApi.service');
-require('./common/profileApi.service');
-require('./common/userApi.service');
-require('./common/serverApi.service');
-require('./common/uid.service.js');
-require('./common/previousState.service.js');
-require('./common/unsubscribeOnPageChange.service.js');
+require('./common/services/kuzzleSdk.service');
+require('./common/services/bufferCancel.service');
+require('./common/services/documentApi.service');
+require('./common/services/indexesApi.service');
+require('./common/services/collectionApi.service');
+require('./common/services/roleApi.service');
+require('./common/services/profileApi.service');
+require('./common/services/userApi.service');
+require('./common/services/serverApi.service');
+require('./common/services/uid.service.js');
+require('./common/services/previousState.service.js');
+require('./common/services/unsubscribeOnPageChange.service.js');
 require('./authentication/authentication.module');
 require('./authentication/authentication.service');
 require('./authentication/loginModal.controller');
@@ -62,17 +62,17 @@ require('./authentication/authorizationApi.service');
 require('./authentication/login.controller');
 require('./authentication/formAutoFillFix.directive');
 require('./authentication/userMenu.directive');
-require('./common/headline/headline.directive');
+require('./common/components/headline/headline.directive');
 
 import baseRouting from './baseRouting';
 import role from './security/role';
-import storage from './storage';
-import realtime from './realtime';
+import storage from './data/storage';
+import realtime from './data/realtime';
 import metrics from './metrics';
-import indexes from './indexes';
+import indexes from './data/indexes';
 import profile from './security/profile';
 import user from './security/user';
-import collection from './collection';
+import collection from './data/collection';
 
 angular.module('kuzzle', [
   uirouter,

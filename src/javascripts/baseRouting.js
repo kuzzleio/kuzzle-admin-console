@@ -26,7 +26,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
               resolve(angular.module('kuzzle.metrics'));
               // We have to include this here since it is used by the big index
               // dropdown button in the header...
-              ctrlDeps = require('./indexes/indexes.controller');
+              ctrlDeps = require('./data/indexes/indexes.controller');
               ctrlDeps.default.forEach((dep) => {
                 $ocLazyLoad.load({name: dep});
               });

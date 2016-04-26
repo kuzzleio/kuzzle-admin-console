@@ -1,9 +1,9 @@
-import gaugeDirective from '../common/gauge/gauge.directive.js';
-import chartDirective from '../common/chart/chart.directive.js';
-import widgetDirective from '../common/widget/widget.directive.js';
+import gaugeDirective from '../common/components/gauge/gauge.directive.js';
+import chartDirective from '../common/components/chart/chart.directive.js';
+import widgetDirective from '../common/components/widget/widget.directive.js';
 
 import authorizationApi from '../authentication/authorizationApi.service';
-import serverApi from '../common/serverApi.service';
+import serverApi from '../common/services/serverApi.service';
 
 let ctrlName = 'MetricsCtrl';
 
