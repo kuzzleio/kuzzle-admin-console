@@ -2,7 +2,7 @@ import gaugeDirective from '../common/gauge/gauge.directive.js';
 import chartDirective from '../common/chart/chart.directive.js';
 import widgetDirective from '../common/widget/widget.directive.js';
 
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 import serverApi from '../common/serverApi.service';
 
 let ctrlName = 'MetricsCtrl';

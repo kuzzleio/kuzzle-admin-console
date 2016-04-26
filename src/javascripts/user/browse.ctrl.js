@@ -3,7 +3,7 @@ import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsC
 import documentsInline from '../common/documentsInline/documentsInline.directive';
 import userToolbar from '../common/documentsInline/userToolbar.directive';
 import userApi from '../common/userApi.service';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 
 const ctrlName = 'UserBrowseCtrl';
 

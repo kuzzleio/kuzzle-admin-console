@@ -1,6 +1,6 @@
 import collectionsDropDownSearch from '../collection/collectionsDropDownSearch/collectionsDropDownSearch.directive';
 import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 import collectionApi from '../common/collectionApi.service';
 
 let ctrlName = 'StorageBrowseCtrl';

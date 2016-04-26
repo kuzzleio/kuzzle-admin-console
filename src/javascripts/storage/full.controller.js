@@ -5,7 +5,7 @@ import schemaService from '../common/schema.service';
 import documentApi from '../common/documentApi.service';
 import uiNotification from 'angular-ui-notification';
 import prevousState from '../common/previousState.service.js';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 
 var ctrlName = 'StorageFullCtrl';
 

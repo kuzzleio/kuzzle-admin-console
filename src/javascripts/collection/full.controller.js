@@ -3,7 +3,7 @@ import addAttribute from '../storage/addAttribute/addAttribute.directive';
 import collectionApi from '../common/collectionApi.service';
 import uiNotification from 'angular-ui-notification';
 import prevousState from '../common/previousState.service.js';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 import schemaService from '../common/schema.service';
 
 var ctrlName = 'CollectionFullCtrl';

@@ -1,7 +1,7 @@
 import roleApi from '../common/roleApi.service';
 import uiNotification from 'angular-ui-notification';
 import prevousState from '../common/previousState.service.js';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 import schemaService from '../common/schema.service';
 import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
 

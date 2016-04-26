@@ -6,7 +6,7 @@ import filtersService from '../common/filters/filters.service';
 import documentsInline from '../common/documentsInline/documentsInline.directive';
 import documentToolbar from '../common/documentsInline/documentToolbar.directive';
 import documentApi from '../common/documentApi.service';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 
 var ctrlName = 'StorageBrowseDocumentsCtrl';
 

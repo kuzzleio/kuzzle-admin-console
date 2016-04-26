@@ -12,7 +12,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
     .state('logged', {
       url: '',
       views: {
-        wrappedView: { template: require('./common/authentication/logged.template.html') },
+        wrappedView: { template: require('./authentication/logged.template.html') },
         'bodyView@logged': { template: require('./metrics/metrics.template.html') }
       },
       resolve: {
@@ -107,7 +107,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
                 <div class="login-container">
                   <img src="images/logo/kuzzle.svg" class="img-responsive" />
                   <div class="login-form-container">
-                    ${require('./common/authentication/loginForm.tpl.html')}
+                    ${require('./authentication/loginForm.tpl.html')}
                   </div>
                 </div>
               </div>

@@ -3,7 +3,7 @@ import schemaService from '../common/schema.service';
 import profileApi from '../common/profileApi.service';
 import uiNotification from 'angular-ui-notification';
 import prevousState from '../common/previousState.service.js';
-import authorizationApi from '../common/authentication/authorizationApi.service';
+import authorizationApi from '../authentication/authorizationApi.service';
 
 var ctrlName = 'ProfileFullCtrl';
 
