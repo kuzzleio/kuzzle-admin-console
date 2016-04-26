@@ -26,7 +26,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
           loadDeps:['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrlDeps = require('./browse.ctrl');
+                let ctrlDeps = require('./browse.controller');
                 ctrlDeps.default.forEach((dep) => {
                   $ocLazyLoad.load({name: dep});
                 });
@@ -51,7 +51,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
           loadDeps:['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrlDeps = require('./full.ctrl');
+                let ctrlDeps = require('./full.controller');
                 ctrlDeps.default.forEach((dep) => {
                   $ocLazyLoad.load({name: dep});
                 });
@@ -76,7 +76,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
           loadDeps:['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
-                let ctrlDeps = require('./full.ctrl');
+                let ctrlDeps = require('./full.controller');
                 ctrlDeps.default.forEach((dep) => {
                   $ocLazyLoad.load({name: dep});
                 });

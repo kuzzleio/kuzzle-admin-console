@@ -19,7 +19,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
         loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
           return $q((resolve) => {
             require.ensure([], function (require) {
-              let ctrlDeps = require('./metrics/metrics.ctrl');
+              let ctrlDeps = require('./metrics/metrics.controller');
               ctrlDeps.default.forEach((dep) => {
                 $ocLazyLoad.load({name: dep});
               });
