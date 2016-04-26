@@ -1,9 +1,9 @@
-import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
-import cogOptionsCollection from '../collection/cogOptionsCollection/cogOptionsCollection.directive';
-import documentsInline from '../common/documentsInline/documentsInline.directive';
-import userToolbar from '../common/documentsInline/userToolbar.directive';
-import userApi from '../common/userApi.service';
-import authorizationApi from '../authentication/authorizationApi.service';
+import jsonEdit from '../../common/jsonEdit/jsonEdit.directive';
+import cogOptionsCollection from '../../collection/cogOptionsCollection/cogOptionsCollection.directive';
+import documentsInline from '../../common/documentsInline/documentsInline.directive';
+import userToolbar from '../../common/documentsInline/userToolbar.directive';
+import userApi from '../../common/userApi.service';
+import authorizationApi from '../../authentication/authorizationApi.service';
 
 const ctrlName = 'UserBrowseCtrl';
 

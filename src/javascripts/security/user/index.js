@@ -1,22 +1,23 @@
-const MODULE_NAME = 'kuzzle.profile';
+const MODULE_NAME = 'kuzzle.user';
 
-export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
+export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
   .config(['$stateProvider', function ($stateProvider) {
+
     $stateProvider
-      .state('profile', {
+      .state('user', {
         parent: 'logged',
-        url: '/profile',
+        url: '/user',
         views: {
-          'bodyView': { templateUrl: '/templates/profile/index.template.html' }
+          'bodyView': { templateUrl: '/templates/security/user/index.template.html' }
         }
       })
-      .state('profile.browse', {
+      .state('user.browse', {
         url: '/browse',
         views: {
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('../../templates/profile/browse.template.html')));
+                require.ensure([], () => resolve(require('../../../templates/security/user/browse.template.html')));
               });
             }
           }
@@ -35,13 +36,13 @@ export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
           }]
         }
       })
-      .state('profile.create', {
+      .state('user.create', {
         url: '/add?content',
         views: {
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('../../templates/profile/full.template.html')));
+                require.ensure([], () => resolve(require('../../../templates/security/user/full.template.html')));
               });
             }
           }
@@ -60,13 +61,13 @@ export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
           }]
         }
       })
-      .state('profile.full', {
-        url: '/:profile',
+      .state('user.full', {
+        url: '/:user',
         views: {
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('../../templates/profile/full.template.html')));
+                require.ensure([], () => resolve(require('../../../templates/security/user/full.template.html')));
               });
             }
           }

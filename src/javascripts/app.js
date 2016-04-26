@@ -65,13 +65,13 @@ require('./authentication/userMenu.directive');
 require('./common/headline/headline.directive');
 
 import baseRouting from './baseRouting';
-import role from './role';
+import role from './security/role';
 import storage from './storage';
 import realtime from './realtime';
 import metrics from './metrics';
 import indexes from './indexes';
-import profile from './profile';
-import user from './user/';
+import profile from './security/profile';
+import user from './security/user';
 import collection from './collection';
 
 angular.module('kuzzle', [

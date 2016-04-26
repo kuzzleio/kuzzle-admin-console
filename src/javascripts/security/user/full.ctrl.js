@@ -1,9 +1,9 @@
-import jsonEdit from '../common/jsonEdit/jsonEdit.directive';
-import addAttribute from '../storage/addAttribute/addAttribute.directive';
-import userApi from '../common/userApi.service';
+import jsonEdit from '../../common/jsonEdit/jsonEdit.directive';
+import addAttribute from '../../storage/addAttribute/addAttribute.directive';
+import userApi from '../../common/userApi.service';
 import uiNotification from 'angular-ui-notification';
-import prevousState from '../common/previousState.service.js';
-import authorizationApi from '../authentication/authorizationApi.service';
+import prevousState from '../../common/previousState.service.js';
+import authorizationApi from '../../authentication/authorizationApi.service';
 
 var ctrlName = 'UserFullCtrl';
 

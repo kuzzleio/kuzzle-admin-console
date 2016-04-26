@@ -1,23 +1,22 @@
-const MODULE_NAME = 'kuzzle.role';
+const MODULE_NAME = 'kuzzle.profile';
 
-export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
-  .config(function ($stateProvider) {
-    'ngInject';
+export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
+  .config(['$stateProvider', function ($stateProvider) {
     $stateProvider
-      .state('role', {
+      .state('profile', {
         parent: 'logged',
-        url: '/role',
+        url: '/profile',
         views: {
-          'bodyView': { template: require('../../templates/role/index.template.html') }
+          'bodyView': { templateUrl: '/templates/security/profile/index.template.html' }
         }
       })
-      .state('role.browse', {
+      .state('profile.browse', {
         url: '/browse',
         views: {
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('../../templates/role/browse.template.html')));
+                require.ensure([], () => resolve(require('../../../templates/security/profile/browse.template.html')));
               });
             }
           }
@@ -36,19 +35,19 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           }]
         }
       })
-      .state('role.create', {
+      .state('profile.create', {
         url: '/add?content',
         views: {
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('../../templates/role/full.template.html')));
+                require.ensure([], () => resolve(require('../../../templates/security/profile/full.template.html')));
               });
             }
           }
         },
         resolve: {
-          loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+          loadDeps:['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
                 let ctrlDeps = require('./full.ctrl');
@@ -61,20 +60,19 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           }]
         }
       })
-      .state('role.full', {
-        url: '/:role',
+      .state('profile.full', {
+        url: '/:profile',
         views: {
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('../../templates/role/full.template.html')));
+                require.ensure([], () => resolve(require('../../../templates/security/profile/full.template.html')));
               });
             }
           }
         },
-        controller: 'RoleFullCtrl',
         resolve: {
-          loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
+          loadDeps:['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
             return $q((resolve) => {
               require.ensure([], function (require) {
                 let ctrlDeps = require('./full.ctrl');
@@ -87,5 +85,5 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           }]
         }
       });
-  })
+  }])
   .name;
