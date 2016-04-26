@@ -48,7 +48,7 @@ angular.module('kuzzle.documentsInline')
 
       $scope.delete = function () {
         modal = $uibModal.open({
-          templateUrl: 'javascripts/common/documentsInline/modalDeleteProfile.tpl.html',
+          templateUrl: '/templates/common/documentsInline/modalDeleteProfile.tpl.html',
           scope: $scope
         });
       };
@@ -92,6 +92,6 @@ angular.module('kuzzle.documentsInline')
         afterDelete: '&'
       },
       controller: 'ProfileToolbarCtrl',
-      templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
+      templateUrl: '/templates/common/documentsInline/toolbar.tpl.html'
     };
   }]);

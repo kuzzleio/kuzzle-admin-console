@@ -8,7 +8,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
         parent: 'logged',
         url: '/user',
         views: {
-          'bodyView': { templateUrl: '/javascripts/user/index.template.html' }
+          'bodyView': { templateUrl: '/templates/user/index.template.html' }
         }
       })
       .state('user.browse', {
@@ -17,7 +17,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./browse.template.html')));
+                require.ensure([], () => resolve(require('../../templates/user/browse.template.html')));
               });
             }
           }
@@ -42,7 +42,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/user/full.template.html')));
               });
             }
           }
@@ -67,7 +67,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.userApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/user/full.template.html')));
               });
             }
           }

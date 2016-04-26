@@ -5,7 +5,7 @@ angular.module('kuzzle.authentication')
 .directive('userMenu', function () {
   return {
     restrict: 'E',
-    templateUrl: 'javascripts/authentication/userMenu.tpl.html',
+    templateUrl: 'templates/authentication/userMenu.tpl.html',
     controller: 'UserMenuCtrl',
     scope: {
       logged: '=',

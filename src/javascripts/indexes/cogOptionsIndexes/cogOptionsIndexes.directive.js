@@ -10,14 +10,14 @@ export default angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.r
 
       $scope.openModalDeleteIndex = function () {
         modal = $uibModal.open({
-          templateUrl: 'javascripts/indexes/cogOptionsIndexes/modalDeleteIndexes.tpl.html',
+          templateUrl: '/templates/indexes/cogOptionsIndexes/modalDeleteIndexes.tpl.html',
           scope: $scope
         });
       };
 
       $scope.openModalEmptyIndex = function () {
         modal = $uibModal.open({
-          templateUrl: 'javascripts/indexes/cogOptionsIndexes/modalEmptyIndexes.tpl.html',
+          templateUrl: '/templates/indexes/cogOptionsIndexes/modalEmptyIndexes.tpl.html',
           scope: $scope
         });
       };
@@ -49,7 +49,7 @@ export default angular.module('kuzzle.cogOptionsIndexes', ['ui.bootstrap', 'ui.r
         canDelete: '='
       },
       controller: 'cogOptionsIndexesCtrl',
-      templateUrl: '/javascripts/indexes/cogOptionsIndexes/cogOptionsIndexes.tpl.html'
+      templateUrl: '/templates/indexes/cogOptionsIndexes/cogOptionsIndexes.tpl.html'
     };
   }])
   .name;

@@ -7,7 +7,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
         parent: 'logged',
         url: '/profile',
         views: {
-          'bodyView': { templateUrl: '/javascripts/profile/index.template.html' }
+          'bodyView': { templateUrl: '/templates/profile/index.template.html' }
         }
       })
       .state('profile.browse', {
@@ -16,7 +16,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./browse.template.html')));
+                require.ensure([], () => resolve(require('../../templates/profile/browse.template.html')));
               });
             }
           }
@@ -41,7 +41,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/profile/full.template.html')));
               });
             }
           }
@@ -66,7 +66,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.profileApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/profile/full.template.html')));
               });
             }
           }

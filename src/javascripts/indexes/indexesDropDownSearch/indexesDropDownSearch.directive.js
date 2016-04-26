@@ -51,7 +51,7 @@ export default angular.module('kuzzle.indexesDropDownSearch', [])
         placeholder: '@'
       },
       controller: ctrlName,
-      template: require('./indexesDropDownSearch.tpl.html')
+      template: require('../../../templates/indexes/indexesDropDownSearch/indexesDropDownSearch.tpl.html')
     };
   })
   .name;

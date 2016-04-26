@@ -13,7 +13,7 @@ export default angular.module(MODULE_NAME, [
           bodyView:{
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./index.template.html')));
+                require.ensure([], () => resolve(require('../../templates/storage/index.template.html')));
               });
             }
           }
@@ -48,7 +48,7 @@ export default angular.module(MODULE_NAME, [
           mainView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./browse.template.html')));
+                require.ensure([], () => resolve(require('../../templates/storage/browse.template.html')));
               });
             }
           }
@@ -84,7 +84,7 @@ export default angular.module(MODULE_NAME, [
           subView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./browse-documents.template.html')));
+                require.ensure([], () => resolve(require('../../templates/storage/browse-documents.template.html')));
               });
             }
           }
@@ -109,7 +109,7 @@ export default angular.module(MODULE_NAME, [
           mainView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/storage/full.template.html')));
               });
             }
           }
@@ -134,7 +134,7 @@ export default angular.module(MODULE_NAME, [
           mainView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/storage/full.template.html')));
               });
             }
           }

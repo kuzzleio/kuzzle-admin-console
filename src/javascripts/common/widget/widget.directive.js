@@ -26,7 +26,7 @@ export default angular.module('kuzzle.widget', [])
         'widgets': '='
       },
       controller: 'WidgetCtrl',
-      templateUrl: '/javascripts/common/widget/widget.tpl.html'
+      templateUrl: '/templates/common/widget/widget.tpl.html'
     };
   })
   .name;

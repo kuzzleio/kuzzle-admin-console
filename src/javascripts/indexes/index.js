@@ -17,7 +17,7 @@ export default angular.module(MODULE_NAME, [
             templateProvider: ($q) => {
               return $q((resolve) => {
                 require.ensure([], () => {
-                  resolve(require('./index.template.html'));
+                  resolve(require('../../templates/indexes/index.template.html'));
                 });
               });
             }
@@ -36,7 +36,7 @@ export default angular.module(MODULE_NAME, [
             templateProvider: ($q) => {
               return $q((resolve) => {
                 require.ensure([], () => {
-                  resolve(require('./browse.template.html'));
+                  resolve(require('../../templates/indexes/browse.template.html'));
                 });
               });
             }
@@ -63,7 +63,7 @@ export default angular.module(MODULE_NAME, [
             templateProvider: ($q) => {
               return $q((resolve) => {
                 require.ensure([], () => {
-                  resolve(require('./full.template.html'));
+                  resolve(require('../../templates/indexes/full.template.html'));
                 });
               });
             }
@@ -90,7 +90,7 @@ export default angular.module(MODULE_NAME, [
             templateProvider: ($q) => {
               return $q((resolve) => {
                 require.ensure([], () => {
-                  resolve(require('./full.template.html'));
+                  resolve(require('../../templates/indexes/full.template.html'));
                 });
               });
             }

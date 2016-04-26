@@ -69,7 +69,7 @@ export default angular.module('kuzzle.chart', [])
         'series': '=',
         'newvalue': '='
       },
-      templateUrl: '/javascripts/common/chart/chart.tpl.html',
+      templateUrl: '/templates/common/chart/chart.tpl.html',
       replace: true,
       link: function (scope, element) {
         scope.$watch('series', function (series) {

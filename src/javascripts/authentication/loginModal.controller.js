@@ -21,7 +21,7 @@ angular.module('kuzzle.authentication')
         <h3 class="modal-title">It seems like your session has expired.</h3>
       </div>
       <div class="modal-body">
-        ${require('./loginForm.tpl.html')}
+        ${require('../../templates/authentication/loginForm.tpl.html')}
       </div>`,
         size: 'sm'
       });

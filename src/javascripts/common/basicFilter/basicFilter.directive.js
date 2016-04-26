@@ -95,7 +95,7 @@ export default angular.module('kuzzle.basicFilter', [schemaService])
         comparators: '='
       },
       controller: 'BasicFilterCtrl',
-      template: require('./basicFilter.tpl.html')
+      template: require('../../../templates/common/basicFilter/basicFilter.tpl.html')
     };
   })
   .name;

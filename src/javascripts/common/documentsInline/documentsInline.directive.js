@@ -91,7 +91,7 @@ export default angular.module('kuzzle.documentsInline', [
         canEdit: '='
       },
       controller: 'DocumentsInlineCtrl',
-      templateUrl: '/javascripts/common/documentsInline/documentsInline.tpl.html'
+      templateUrl: '/templates/common/documentsInline/documentsInline.tpl.html'
     };
   })
   .name;

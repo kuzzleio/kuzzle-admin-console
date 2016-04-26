@@ -1,5 +1,5 @@
 import mod from './index';
-import templateContent from './messageLog.tpl.html';
+import templateContent from '../../../templates/realtime/messageLog/messageLog.tpl.html';
 
 export default angular.module(mod)
   .controller('messageLogCtrl', ['$scope', function ($scope) {

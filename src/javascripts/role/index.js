@@ -8,7 +8,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
         parent: 'logged',
         url: '/role',
         views: {
-          'bodyView': { template: require('./index.template.html') }
+          'bodyView': { template: require('../../templates/role/index.template.html') }
         }
       })
       .state('role.browse', {
@@ -17,7 +17,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./browse.template.html')));
+                require.ensure([], () => resolve(require('../../templates/role/browse.template.html')));
               });
             }
           }
@@ -42,7 +42,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/role/full.template.html')));
               });
             }
           }
@@ -67,7 +67,7 @@ export default angular.module(MODULE_NAME, ['kuzzle.roleApi'])
           'mainView': {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/role/full.template.html')));
               });
             }
           }

@@ -15,7 +15,7 @@ export default angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
      */
     $scope.openModalAddAttribute = function () {
       modal = $uibModal.open({
-        templateUrl: 'javascripts/storage/addAttribute/addAttributeModal.tpl.html',
+        templateUrl: '/templates/storage/addAttribute/addAttributeModal.tpl.html',
         scope: $scope
       });
     };
@@ -169,7 +169,7 @@ export default angular.module('kuzzle.addAttribute', ['ui.bootstrap'])
         document: '=',
         refreshForm: '&'
       },
-      templateUrl: 'javascripts/storage/addAttribute/addAttribute.tpl.html',
+      templateUrl: '/templates/storage/addAttribute/addAttribute.tpl.html',
       controller: 'AddAttributeCtrl'
     };
   }])

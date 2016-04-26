@@ -13,7 +13,7 @@ export default angular.module(MODULE_NAME, [
           bodyView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./index.template.html')));
+                require.ensure([], () => resolve(require('../../templates/collection/index.template.html')));
               });
             }
           }
@@ -30,7 +30,7 @@ export default angular.module(MODULE_NAME, [
           mainView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./browse.template.html')));
+                require.ensure([], () => resolve(require('../../templates/collection/browse.template.html')));
               });
             }
           }
@@ -66,7 +66,7 @@ export default angular.module(MODULE_NAME, [
           mainView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/collection/full.template.html')));
               });
             }
           }
@@ -91,7 +91,7 @@ export default angular.module(MODULE_NAME, [
           mainView: {
             templateProvider: ($q) => {
               return $q((resolve) => {
-                require.ensure([], () => resolve(require('./full.template.html')));
+                require.ensure([], () => resolve(require('../../templates/collection/full.template.html')));
               });
             }
           }

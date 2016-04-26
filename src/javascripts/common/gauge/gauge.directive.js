@@ -100,7 +100,7 @@ export default angular.module('kuzzle.gauge', [])
         'label': '@',
         'value': '='
       },
-      templateUrl: '/javascripts/common/gauge/gauge.tpl.html',
+      templateUrl: '/templates/common/gauge/gauge.tpl.html',
       replace: true,
       link: function (scope, element) {
         if (typeof scope.gauge === 'undefined') {

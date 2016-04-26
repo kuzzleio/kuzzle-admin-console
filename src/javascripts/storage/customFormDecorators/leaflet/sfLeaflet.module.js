@@ -10,7 +10,7 @@ angular.module('schemaForm')
         form: '=',
         multiple: '='
       },
-      templateUrl: 'javascripts/storage/customFormDecorators/leaflet/sfLeaflet.tpl.html',
+      templateUrl: '/templates/storage/customFormDecorators/leaflet/sfLeaflet.tpl.html',
       link: function (scope) {
         var
           id = scope.form.title + '-' + (Math.random() * Date.now());
@@ -56,7 +56,7 @@ angular.module('schemaForm')
     };
   }])
   .run(['$templateCache', '$http', function($templateCache, $http) {
-    $http.get('javascripts/storage/customFormDecorators/leaflet/location.tpl.html', {cache: $templateCache});
+    $http.get('/templates/storage/customFormDecorators/leaflet/location.tpl.html', {cache: $templateCache});
   }])
   .config([
     'schemaFormProvider',
@@ -81,6 +81,6 @@ angular.module('schemaForm')
       schemaFormDecoratorsProvider.addMapping(
         'bootstrapDecorator',
         'location',
-        'javascripts/storage/customFormDecorators/leaflet/location.tpl.html'
+        '/templates/storage/customFormDecorators/leaflet/location.tpl.html'
       );
     }]);

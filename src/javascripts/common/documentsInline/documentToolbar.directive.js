@@ -87,7 +87,7 @@ export default angular.module('kuzzle.documentsInline')
         onUpdate: '&'
       },
       controller: 'DocumentToolbarCtrl',
-      templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
+      templateUrl: '/templates/common/documentsInline/toolbar.tpl.html'
     };
   }])
   .name;

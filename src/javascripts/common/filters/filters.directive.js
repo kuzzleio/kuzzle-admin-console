@@ -59,7 +59,7 @@ export default angular.module('kuzzle.filters')
         isRealtime: '='
       },
       controller: 'FiltersCtrl',
-      template: require('./filters.tpl.html')
+      template: require('../../../templates/common/filters/filters.tpl.html')
     };
   }])
   .name;

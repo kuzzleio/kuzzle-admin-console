@@ -12,8 +12,8 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
     .state('logged', {
       url: '',
       views: {
-        wrappedView: { template: require('./authentication/logged.template.html') },
-        'bodyView@logged': { template: require('./metrics/metrics.template.html') }
+        wrappedView: { template: require('../templates/authentication/logged.template.html') },
+        'bodyView@logged': { template: require('../templates/metrics/metrics.template.html') }
       },
       resolve: {
         loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
@@ -59,13 +59,13 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
     })
     .state('404', {
       views: {
-        wrappedView: { template: require('./common/404.template.html') }
+        wrappedView: { template: require('../templates/common/404.template.html') }
       }
     })
     .state('firstAdmin', {
       url: '/firstAdmin',
       views: {
-        wrappedView: { template: require('./firstAdmin/index.template.html') }
+        wrappedView: { template: require('../templates/firstAdmin/index.template.html') }
       },
       resolve: {
         // check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
@@ -107,7 +107,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
                 <div class="login-container">
                   <img src="images/logo/kuzzle.svg" class="img-responsive" />
                   <div class="login-form-container">
-                    ${require('./authentication/loginForm.tpl.html')}
+                    ${require('../templates/authentication/loginForm.tpl.html')}
                   </div>
                 </div>
               </div>

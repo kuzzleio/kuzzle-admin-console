@@ -9,14 +9,14 @@ export default angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'u
 
       $scope.openModalDeleteCollection = function () {
         modal = $uibModal.open({
-          templateUrl: 'javascripts/collection/cogOptionsCollection/modalDeleteCollection.tpl.html',
+          templateUrl: 'templates/collection/cogOptionsCollection/modalDeleteCollection.tpl.html',
           scope: $scope
         });
       };
 
       $scope.openModalEmptyCollection = function () {
         modal = $uibModal.open({
-          templateUrl: 'javascripts/collection/cogOptionsCollection/modalEmptyCollection.tpl.html',
+          templateUrl: 'templates/collection/cogOptionsCollection/modalEmptyCollection.tpl.html',
           scope: $scope
         });
       };
@@ -63,7 +63,7 @@ export default angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'u
         canEdit: '='
       },
       controller: 'cogOptionsCollectionCtrl',
-      template: require('./cogOptionsCollection.tpl.html')
+      template: require('../../../templates/collection/cogOptionsCollection/cogOptionsCollection.tpl.html')
     };
   }])
   .name;

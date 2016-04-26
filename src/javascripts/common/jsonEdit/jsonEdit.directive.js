@@ -20,7 +20,7 @@ export default angular.module('jsonEdit', ['ui.ace'])
         canEdit: '='
       },
       controller: 'AceCtrl',
-      templateUrl: '/javascripts/common/jsonEdit/jsonEdit.tpl.html'
+      templateUrl: '/templates/common/jsonEdit/jsonEdit.tpl.html'
     };
   }])
   .name;

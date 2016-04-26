@@ -48,7 +48,7 @@ export default angular.module('kuzzle.documentsInline')
 
       $scope.delete = function () {
         modal = $uibModal.open({
-          templateUrl: 'javascripts/common/documentsInline/modalDeleteRole.tpl.html',
+          templateUrl: '/templates/common/documentsInline/modalDeleteRole.tpl.html',
           scope: $scope
         });
       };
@@ -92,7 +92,7 @@ export default angular.module('kuzzle.documentsInline')
         afterDelete: '&'
       },
       controller: 'RoleToolbarCtrl',
-      templateUrl: '/javascripts/common/documentsInline/toolbar.tpl.html'
+      templateUrl: '/templates/common/documentsInline/toolbar.tpl.html'
     };
   }])
   .name;

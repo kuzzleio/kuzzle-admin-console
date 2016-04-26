@@ -1,5 +1,5 @@
 import mod from './index';
-import template from './collectionsDropDownSearch.tpl.html';
+import template from '../../../templates/collection/collectionsDropDownSearch/collectionsDropDownSearch.tpl.html';
 let controller = 'collectionsDropDownSearchCtrl';
 
 export default angular.module(mod, ['kuzzle.authorization'])

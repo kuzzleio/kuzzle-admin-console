@@ -7,6 +7,6 @@ angular.module('kuzzle.headline', [])
         title: '@',
         subtitle: '@'
       },
-      templateUrl: '/javascripts/common/headline/headline.tpl.html'
+      templateUrl: '/templates/common/headline/headline.tpl.html'
     };
   });

@@ -14,7 +14,7 @@ export default angular.module(MODULE_NAME, [
             templateProvider: ($q) => {
               return $q((resolve) => {
                 require.ensure([], () => {
-                  resolve(require('./index.template.html'));
+                  resolve(require('../../templates/realtime/index.template.html'));
                 }, 'EmptyWatchDataTemplate');
               });
             }
@@ -49,7 +49,7 @@ export default angular.module(MODULE_NAME, [
       .state('realtime.watch-data', {
         url: '/:collection?basicFilter&advancedFilter',
         views: {
-          mainView: { templateUrl: '/javascripts/realtime/watch-data.template.html' }
+          mainView: { templateUrl: '/templates/realtime/watch-data.template.html' }
         },
         data: {}
       });
