@@ -22,7 +22,7 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: I am able to edit a collection only if I have the right to
     Given I go to the browse data page
     Then I click on the collection selector
-    And I click on the collection named "not-editable-collection"
+    And I click on the collection named "emptiable-collection"
     And I click on the cog
     Then I do not see the "Edit" menu item
     Then I go to the logout page
