@@ -13,7 +13,7 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: I am able to empty a collection only if I have the right to
     Given I go to the browse data page
     Then I click on the collection selector
-    When I go to the browse data page for collection "emptiable-collection"
+    When I go to the browse data page for collection "editable-collection"
     And I take a screenshot "beforeCog"
     And I click on the cog
     Then I do not see the "Empty" menu item
