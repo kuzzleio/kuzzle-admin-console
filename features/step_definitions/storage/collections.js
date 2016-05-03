@@ -73,17 +73,6 @@ module.exports = function () {
       .call(callback);
   });
 
-  this.When(/^I click on delete button for collection "([^"]*)"$/, function (id, callback) {
-    browser
-      .waitForVisible('.list-collections #' + id + ' .icons .dropdown-toggle', 1000)
-      .click('.list-collections #' + id + ' .icons .dropdown-toggle')
-      .click('.list-collections #' + id + ' .icons .dropdown-menu .delete')
-      .pause(500)
-      .setValue('.modal-dialog input', id)
-      .click('.modal-dialog .actions-group button')
-      .call(callback);
-  });
-
   this.When(/^I click on empty button for collection "([^"]*)"$/, function (id, callback) {
     browser
       .waitForVisible('.list-collections #' + id + ' .icons .dropdown-toggle', 1000)

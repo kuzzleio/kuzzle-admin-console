@@ -17,13 +17,11 @@ angular.module('kuzzle.storage')
     'authorizationApi',
     function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
       $scope.canCreateDocument =true;
-      $scope.canDeleteCollection = true;
       $scope.canEdit = true;
       $scope.showCog = true;
 
       var checkRights = function (collection) {
         $scope.canCreateDocument = authorization.canDoAction($stateParams.index, collection, 'write', 'create');
-        $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
         $scope.canEdit = authorization.canDoAction(
           $stateParams.index,
           collection,
@@ -37,7 +35,7 @@ angular.module('kuzzle.storage')
           'truncateCollection'
         );
 
-        $scope.showCog = $scope.canDeleteCollection || $scope.canEditCollection || $scope.canEmptyCollection;
+        $scope.showCog = $scope.canEditCollection || $scope.canEmptyCollection;
       };
 
       $scope.collections = [];

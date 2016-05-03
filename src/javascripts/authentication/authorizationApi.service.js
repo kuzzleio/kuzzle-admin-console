@@ -111,47 +111,6 @@ angular.module('kuzzle.authorization', [])
             }
           }, false);
         },
-        canDeleteCollection: function (index, collection) {
-          if (!index || !collection) {
-            throw new Error('[canDeleteCollection] Missing argument');
-          }
-
-          if (!hasUser(session.user) || !hasRole(session.user)) {
-            return false;
-          }
-
-          return session.user.content.profile.content.roles.reduce(function (accumulator, role) {
-            var
-              roleIndexes,
-              currentIndex;
-            if (!role.content || !role.content.indexes) {
-              return accumulator;
-            }
-            roleIndexes = role.content.indexes;
-
-            if (roleIndexes[index]) {
-              currentIndex = roleIndexes[index];
-            } else if (index !== kuzzleCoreIndex && roleIndexes['*']) {
-              currentIndex = roleIndexes['*'];
-            } else {
-              return accumulator;
-            }
-
-            if (!currentIndex.collections) {
-              return accumulator;
-            } else if (currentIndex.collections[collection]) {
-              return accumulator ||
-                typeof currentIndex.collections[collection]._canDelete === 'undefined' ||
-                currentIndex.collections[collection]._canDelete;
-            } else if (currentIndex.collections['*']) {
-              return accumulator ||
-                typeof currentIndex.collections['*']._canDelete === 'undefined' ||
-                currentIndex.collections['*']._canDelete;
-            } else {
-              return accumulator;
-            }
-          }, false);
-        },
         canDoAction: function (index, collection, controller, action) {
           if (!index) {
             throw new TypeError('[canDoAction] Missing index');

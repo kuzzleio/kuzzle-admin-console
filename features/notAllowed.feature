@@ -13,7 +13,7 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: I am able to empty a collection only if I have the right to
     Given I go to the browse data page
     Then I click on the collection selector
-    When I go to the browse data page for collection "deletable-collection"
+    When I go to the browse data page for collection "not-editable-collection"
     And I take a screenshot "beforeCog"
     And I click on the cog
     Then I do not see the "Empty" menu item
@@ -22,17 +22,9 @@ Feature: Test all the actions that are not allowed by rights
   Scenario: I am able to edit a collection only if I have the right to
     Given I go to the browse data page
     Then I click on the collection selector
-    And I click on the collection named "deletable-collection"
+    And I click on the collection named "not-editable-collection"
     And I click on the cog
     Then I do not see the "Edit" menu item
-    Then I go to the logout page
-
-  Scenario: I am able to delete a collection only if I have the right to
-    Given I go to the browse data page
-    Then I click on the collection selector
-    And I click on the collection named "emptiable-collection"
-    And I click on the cog
-    Then I do not see the "Delete" menu item
     Then I go to the logout page
 
   Scenario: I do not see the cog if I have no rights on the collection
@@ -41,14 +33,6 @@ Feature: Test all the actions that are not allowed by rights
     And I click on the collection named "readonly-collection"
     Then I do not see the cog
     Then I go to the logout page
-
-  Scenario: I don't see Add Collection
-
-  Scenario: I don't see Add index
-
-  Scenario: I can't delete an index
-
-  Scenario: I can see security dongle
 
   @browseData
   Scenario: I can create document only if I have the right to
