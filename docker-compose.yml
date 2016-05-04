@@ -18,6 +18,8 @@ kuzzleBo:
     - "3000:3000"
   links:
     - kuzzle
+  environment:
+    - KUZZLE_URL
 
 redis:
   image: redis:3.0-alpine

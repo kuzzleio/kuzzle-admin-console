@@ -31,7 +31,8 @@ kuzzleBo:
     # add link to elasticsearch in order to perform a dump
     - elasticsearch
   environment:
-      - DEBUG_PHANTOM
+    - DEBUG_PHANTOM
+    - KUZZLE_URL
 
 redis:
   image: redis:3.0
