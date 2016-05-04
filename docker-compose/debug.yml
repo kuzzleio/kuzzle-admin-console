@@ -30,6 +30,7 @@ kuzzleBo:
     - kuzzle
   environment:
     - DEVELOPMENT
+    - KUZZLE_URL
 
 redis:
   image: redis:3.0-alpine
