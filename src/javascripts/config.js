@@ -6,7 +6,7 @@
  * @type {{kuzzleUrl: string}}
  */
 var config = {
-  kuzzleUrl: KUZZLE_URL || 'http://localhost:7512',
+  kuzzleUrl: KUZZLE_URL,
   kuzzleCoreIndex: '%kuzzle'
 };
 
