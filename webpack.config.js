@@ -195,6 +195,7 @@ module.exports = function makeWebpackConfig () {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
+    new webpack.DefinePlugin({KUZZLE_URL: JSON.stringify(process.env.KUZZLE_URL)})
     /**
      * We'll use the HtmlWebpackPlugin once all the module dependencies are
      * expressed as require() calls.
