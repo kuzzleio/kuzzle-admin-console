@@ -85,7 +85,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           .then(function(result) {
             var isIndexValid = (index && result.indexOf(index) !== -1);
 
-            if (!isIndexValid && notify && (index || notifyIfEmpty)) {
+            if (!isIndexValid && notify || !index && notifyIfEmpty) {
               Notification.error('Index "' + index + '" does not exist');
 
               service.select();
