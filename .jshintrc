@@ -8,5 +8,6 @@
 	"quotmark": "single",
 	"eqnull": true,
 	"funcscope": true,
-	"node": true
+	"node": true,
+	"esversion": 6
 }

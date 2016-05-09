@@ -1,0 +1,83 @@
+<div class="collection-browse" ng-controller="CollectionBrowseCtrl" ng-init="init()">
+  <headline title="Storage" subtitle="Browse collection"></headline>
+
+  <div class="container container-medium">
+    <div class="row whitespace-top">
+      <div class="col-sm-12">
+          <div class="create" style="margin-bottom: 15px">
+             <button
+              type="button"
+              class="btn btn-success btn-collection-add"
+              ng-if="canCreateCollection"
+              ui-sref="collection.create">
+               <i class="fa fa-plus"></i> Add collection
+             </button>
+            <button type="button" class="btn btn-link" ui-sref="indexes.browse()">
+              <i class="fa fa-angle-left"></i> Back to indexes list
+            </button>
+          </div>
+
+          <div class="row" ng-if="collections.length !== 0">
+              <div class="col-sm-12">
+                  <div class="row">
+                      <div class="col-sm-12 collection-filter">
+
+                          <div class="panel panel-default">
+                              <div class="panel-body">
+                                  <div class="form-group">
+                                      <label for="filter">Collection filter</label>
+                                      <input
+                                              id="filter"
+                                              type="text"
+                                              ng-model="search"
+                                              placeholder="Collection name"
+                                              uib-typeahead="collection.name for collection in collections | filter:$viewValue"
+                                              typeahead-min-length="0"
+                                              class="form-control" />
+                                  </div>
+                              </div>
+                          </div>
+
+                      </div>
+                  </div>
+
+                  <div class="row documents">
+                      <div class="col-sm-12 list-collections">
+                          <div id="{{collection.name}}" class="panel panel-primary dropdown" ng-repeat="collection in collections | orderBy | filter:search">
+                              <div class="panel-body">
+                                <div class="col-sm-10 ellipsis">
+                                  <a class="collection-link" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Browse '\{{collection.name}}' documents list">
+                                    <strong class="collection-name" ng-bind="collection.name"></strong>
+                                  </a>
+                                </div>
+
+                                <div class="col-sm-2">
+                                  <div class="icons">
+                                    <span class="glyphicon glyphicon-eye-open edit" ui-sref="collection.full({collection: collection.name, index: index})" title="View/edit '\{{collection.name}}' collection schema"></span>
+                                    <span class="fa fa-list-alt documents-list" ui-sref="storage.browse.documents({collection: collection.name, index: index})" title="Browse '\{{collection.name}}' documents list"></span>
+                                    <cog-options-collection
+                                        collection="collection.name"
+                                        current-index="index"
+                                        can-edit="true"
+                                        can-delete="true"
+                                        can-empty="true"
+                                        after-delete="afterDelete(collection)">
+                                    </cog-options-collection>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="row">
+              <div class="col-sm-12" ng-if="collections.length === 0">
+                  <p>There is no collection in this database</p>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

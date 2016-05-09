@@ -10,13 +10,4 @@ router.get('/', function(req, res) {
   });
 });
 
-router.get('/logged', function(req, res) {
-  return res.render('layouts/logged');
-});
-
-router.get('/404', function(req, res) {
-  return res.render('layouts/404');
-});
-
-
 module.exports = router;

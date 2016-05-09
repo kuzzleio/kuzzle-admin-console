@@ -1,34 +1,11 @@
 var
   express = require('express'),
+  /* eslint new-cap: 0 */
   router = express.Router(),
   q = require('q'),
   rc = require('rc'),
   userRoles = rc('roles'),
   kuzzle = require('../services/kuzzle')();
-
-router.get('/', function(req, res) {
-
-  return res.render('user/index');
-
-});
-
-router.get('/browse', function(req, res) {
-
-  return res.render('user/browse');
-
-});
-
-router.get('/create', function (req, res) {
-
-  return res.render('user/full', {action: 'create'});
-
-});
-
-router.get('/full', function (req, res) {
-
-  return res.render('user/full', {action: 'edit'});
-
-});
 
 // first admin creation
 
@@ -44,7 +21,7 @@ var resetProfile = function (profileId, roleId) {
   };
   return kuzzle
     .security
-    .updateProfilePromise(profileId, data); 
+    .updateProfilePromise(profileId, data);
 };
 
 var createAdminUser = function (username, password) {
@@ -56,11 +33,6 @@ var createAdminUser = function (username, password) {
     .security
     .createUserPromise(username, userContent);
 };
-
-router.get('/firstAdmin', function (req, res) {
-  return res.render('user/firstAdmin');
-});
-
 
 router.post('/firstAdmin', function (req, res) {
   kuzzle

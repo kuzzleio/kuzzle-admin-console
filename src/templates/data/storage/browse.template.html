@@ -1,0 +1,50 @@
+<div class="storage-browse" ng-controller="StorageBrowseCtrl" ng-init="init()">
+  <headline title="Storage" subtitle="Browse data"></headline>
+  <div class="container">
+    <div class="row pull-right" style="margin-top: -63px;">
+        <div class="col-sm-12">
+          <h2 class="select-collection">
+              <collections-drop-down-search
+                  label=""
+                  selected-index="stateParams.index"
+                  selected="stateParams.collection"
+                  create-label="New collection"
+                  items="collections"
+                  current-item="stateParams.collection"
+                  on-click-create="onCreateCollection(collection)"
+                  on-click-item="onSelectCollection(item)"
+                  placeholder="Find a collection">
+              </collections-drop-down-search>
+
+              <div class="btn-group">
+                  <cog-options-collection
+                    ng-if="stateParams.collection && stateParams.index && showCog"
+                    current-index="stateParams.index"
+                    collection="stateParams.collection"
+                    after-delete="onDeleteCollection()"
+                    after-empty="onEmptyCollection()"
+                    can-delete="canDeleteCollection"
+                    can-empty="canEmptyCollection"
+                    can-edit="canEditCollection" >
+                  </cog-options-collection>
+              </div>
+          </h2>
+        </div>
+    </div>
+    <div class="row" ng-if="!stateParams.collection">
+      <span class="select-collection-helper">
+        Hey ! Over here <i class="glyphicon glyphicon-arrow-up"></i>
+      </span>
+      <div class="col-sm-4 col-sm-offset-4 text-center" style="
+            margin-top: 200px;
+            opacity: 0.4;">
+        <h3>No collection selected</h3>
+      </div>
+    </div>
+    <div class="row" ng-if="stateParams.collection">
+      <div ui-view="subView" class="view-fade"></div>
+
+
+    </div>
+  </div>
+</div>

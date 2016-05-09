@@ -6,7 +6,16 @@ var
 
 var hooks = function () {
 
-  this.registerHandler('BeforeFeatures', function (event, callback) {
+  this.registerHandler('BeforeFeatures', function beforeFeatures(event, callback) {
+    if (world.kuzzle.state !== 'connected') {
+      setTimeout(() => {
+        beforeFeatures(event, callback);
+      }, 50)
+
+      return;
+    }
+
+
     browser
       .setViewportSize({width: 1920, height: 1080})
       .call(() => {
@@ -49,7 +58,7 @@ var hooks = function () {
         action: 'deleteIndex',
         index: world.fooIndex
       },
-      timeoutCallback = function () {
+      timeoutCallback = function (err) {
         setTimeout(() => {
           callback();
         }, 1000);
@@ -64,6 +73,20 @@ var hooks = function () {
   this.After('@cleanSecurity', function (scenario, callback) {
     console.log('@cleanSecurity');
     cleanSecurity.call(this, callback);
+  });
+
+  this.After('@cleanFirstAdmin', function (scenario, callback) {
+    console.log('@cleanFirstAdmin');
+    world
+      .kuzzle.security
+      .deleteUser(world.users['firstAdmin'].username, callback);
+  });
+
+  this.After('@cleanNewUser', function (scenario, callback) {
+    console.log('@cleanNewUser');
+    world
+      .kuzzle.security
+      .deleteUser('kuzzle-bo-newUser', callback);
   });
 
   this.Before('@deleteUsers', function (scenario, callback) {
@@ -169,7 +192,7 @@ var listIndexes = function () {
       deffered.resolve(indexes);
     })
 
-  return deffered.promise;  
+  return deffered.promise;
 };
 
 var deleteUsers = function (callback) {
@@ -297,7 +320,7 @@ var cleanSecurity = function (callback) {
         .queryPromise(query, {body: fixtures['%kuzzle'].profiles});
     })
     .then(() => {
-      var 
+      var
         deffered = q.defer(),
         passed = 1;
 
@@ -317,7 +340,7 @@ var cleanSecurity = function (callback) {
       });
 
       return deffered.promise;
-    })  
+    })
     .then(() => {
       setTimeout(function() {callback();}, 1200);
     })

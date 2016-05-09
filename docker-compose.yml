@@ -13,14 +13,16 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo:beta
+  image: kuzzleio/bo:alpine
   ports:
     - "3000:3000"
   links:
     - kuzzle
+  environment:
+    - KUZZLE_URL
 
 redis:
-  image: redis:3.0
+  image: redis:3.0-alpine
 
 elasticsearch:
   image: elasticsearch:1.7

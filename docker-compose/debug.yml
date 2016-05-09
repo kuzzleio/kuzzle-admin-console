@@ -18,7 +18,7 @@ kuzzle:
     - FEATURE_COVERAGE
 
 kuzzleBo:
-  image: kuzzleio/bo
+  image: kuzzleio/bo-dev:alpine
   volumes:
     - "..:/var/app"
   ports:
@@ -30,9 +30,10 @@ kuzzleBo:
     - kuzzle
   environment:
     - DEVELOPMENT
+    - KUZZLE_URL
 
 redis:
-  image: redis:3.0
+  image: redis:3.0-alpine
 
 elasticsearch:
   image: elasticsearch:1.7
