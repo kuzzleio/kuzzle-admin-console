@@ -74,8 +74,8 @@ Launch the back-office server:
 
 or launch it with [pm2](http://pm2.keymetrics.io/)
 
-  # if pm2 is not installed on your system...
-  $ sudo npm install -g pm2
+        # if pm2 is not installed on your system...
+        $ sudo npm install -g pm2
 	$ pm2 start ./bin/www --name 'kuzzle-bo'
 
 **Note:**
