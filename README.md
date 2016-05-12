@@ -62,12 +62,9 @@ The container name is in the last column.
 You'll need to clone the back-office repository then install the dependencies and compile the css files:
 
 	$ git clone https://github.com/kuzzleio/kuzzle-bo.git && cd kuzzle-bo
-	$ gem install sass
-	$ npm install grunt -g
-	$ npm install bower -g
-	$ npm install 
+	$ npm install
 	$ bower install --config.interactive=false
-	$ grunt sass
+	$ npm run build
 
 ### Second step
 
@@ -77,6 +74,8 @@ Launch the back-office server:
 
 or launch it with [pm2](http://pm2.keymetrics.io/)
 
+  # if pm2 is not installed on your system...
+  $ sudo npm install -g pm2
 	$ pm2 start ./bin/www --name 'kuzzle-bo'
 
 **Note:**
