@@ -17,14 +17,12 @@ angular.module('kuzzle.storage')
     'authorizationApi',
     function ($scope, $http, $stateParams, $state, collectionApi, authorization) {
       $scope.canCreateDocument =true;
-      $scope.canDeleteCollection = true;
-      $scope.canEdit = true;
+      $scope.canEditCollection = true;
       $scope.showCog = true;
 
       var checkRights = function (collection) {
         $scope.canCreateDocument = authorization.canDoAction($stateParams.index, collection, 'write', 'create');
-        $scope.canDeleteCollection = authorization.canDeleteCollection($stateParams.index, collection);
-        $scope.canEdit = authorization.canDoAction(
+        $scope.canEditCollection = authorization.canDoAction(
           $stateParams.index,
           collection,
           'admin',
@@ -37,7 +35,7 @@ angular.module('kuzzle.storage')
           'truncateCollection'
         );
 
-        $scope.showCog = $scope.canDeleteCollection || $scope.canEditCollection || $scope.canEmptyCollection;
+        $scope.showCog = $scope.canEditCollection || $scope.canEmptyCollection;
       };
 
       $scope.collections = [];
@@ -78,15 +76,6 @@ angular.module('kuzzle.storage')
           index: $stateParams.index,
           newCollection: collection
         });
-      };
-
-      /**
-       * Delete the entire collection
-       */
-      $scope.onDeleteCollection = function () {
-        setTimeout(function () {
-          $state.go('storage.browse', {index: $stateParams.index}, {reload: true});
-        }, 1000);
       };
 
       /**

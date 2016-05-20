@@ -120,15 +120,6 @@ angular.module('kuzzle.realtime')
       };
 
       /**
-       * Delete the entire collection
-       */
-      $scope.onDeleteCollection = function () {
-        setTimeout(function () {
-          $state.go('realtime.watch-data', {collection: null}, {reload: true});
-        }, 1000);
-      };
-
-      /**
        * Empty/flush the collection
        */
       $scope.onEmptyCollection = function () {

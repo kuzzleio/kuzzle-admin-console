@@ -42,15 +42,6 @@ Feature: Test collections page
     Then I have a list with "2" elements
 
   @cleanDb
-  Scenario: Delete a collection
-    Given I go to browse collection page
-    When I click on delete button for collection "kuzzle-bo-test"
-    # Wait 1sec for let ES index the new doc
-    And I'm waiting 1 sec
-    Then I am on browse collection page
-    And I have a list with "5" collections
-
-  @cleanDb
   Scenario: Empty a collection
     Given I go to browse collection page
     When I click on empty button for collection "kuzzle-bo-test"

@@ -23,7 +23,7 @@
       { "index" : {"_id": "wc"}},
       { "username": "wc", "description": "You can flush me." }
     ],
-    "deletable-collection": [
+    "not-editable-collection": [
       { "index" : {"_id": "nutella"}},
       { "username": "nutella", "description": "You can make me disappear." }
     ]
@@ -162,8 +162,8 @@
                   }
                 }
               },
-              "deletable-collection": {
-                "_canDelete": true,
+              "not-editable-collection": {
+                "_canDelete": false,
                 "controllers": {
                   "read": {
                     "actions": {

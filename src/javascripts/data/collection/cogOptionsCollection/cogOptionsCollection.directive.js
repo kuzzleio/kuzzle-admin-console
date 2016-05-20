@@ -7,30 +7,11 @@ export default angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'u
     function ($scope, $uibModal, $state, collectionApi) {
       var modal;
 
-      $scope.openModalDeleteCollection = function () {
-        modal = $uibModal.open({
-          templateUrl: 'templates/data/collection/cogOptionsCollection/modalDeleteCollection.tpl.html',
-          scope: $scope
-        });
-      };
-
       $scope.openModalEmptyCollection = function () {
         modal = $uibModal.open({
           templateUrl: 'templates/data/collection/cogOptionsCollection/modalEmptyCollection.tpl.html',
           scope: $scope
         });
-      };
-
-      /**
-       * Delete the entire collection
-       */
-      $scope.delete = function () {
-        collectionApi.delete($scope.collection, true);
-        modal.dismiss('cancel');
-
-        if ($scope.afterDelete) {
-          $scope.afterDelete();
-        }
       };
 
       /**
@@ -56,9 +37,7 @@ export default angular.module('kuzzle.cogOptionsCollection', ['ui.bootstrap', 'u
       scope: {
         currentIndex: '=',
         collection: '=',
-        afterDelete: '&',
         afterEmpty: '&',
-        canDelete: '=',
         canEmpty: '=',
         canEdit: '='
       },
