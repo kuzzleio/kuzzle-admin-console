@@ -1,5 +1,5 @@
 kuzzle:
-  image: kuzzleio/kuzzle:beta
+  image: kuzzleio/kuzzle
   volumes:
     - "../features/fixtures.json:/fixtures.json"
   ports:
@@ -38,4 +38,4 @@ redis:
   image: redis:3.0-alpine
 
 elasticsearch:
-  image: elasticsearch:1.7
+  image: kuzzleio/elasticsearch:2.2
