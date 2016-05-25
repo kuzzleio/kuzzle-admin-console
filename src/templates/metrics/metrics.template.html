@@ -53,12 +53,10 @@
               <tbody>
               <tr>
                 <th>Plugin</th>
-                <th>Version</th>
                 <th>Activated</th>
               </tr>
               <tr ng-repeat="(key, plugin) in serverInfo.kuzzle.plugins">
-                <td ng-bind="plugin.name"></td>
-                <td ng-bind="plugin.version || 'N/A'"></td>
+                <td ng-bind="key"></td>
                 <td>
                   <span ng-class="{ 'glyphicon glyphicon-ok': plugin.activated, 'glyphicon glyphicon-remove': !plugin.activated }"></span>
                 </td>

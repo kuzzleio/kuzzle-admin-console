@@ -1,4 +1,4 @@
-<div class="row documents" ng-repeat="document in documents">
+<div class="row documents" ng-repeat="document in documents track by $index">
     <div id="{{document.id}}" class="panel panel-default dropdown" ng-class="{deleted: document.isDeleted}">
         <div class="panel-body">
             <!-- title col -->
@@ -27,7 +27,7 @@
                     <a type="button" class="btn btn-default ellipsis"
                             ng-repeat="role in document.content.roles"
                             ui-sref="role.full({role: role})"
-                            ng-bind="role"></a>
+                            ng-bind="role._id"></a>
                 </div>
             </div>
             <!-- /profiles -->
@@ -49,7 +49,7 @@
 
             <!-- edit col -->
             <div ng-class="{'col-sm-6': profile || user, 'col-sm-8': collection || role}">
-                <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
+                <json-formatter open="0" json="yolo(document)" ng-if="!document.isEdit"></json-formatter>
 
                 <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
             </div>
