@@ -208,7 +208,6 @@ angular.module('kuzzle.realtime')
 
       var addNotification = function (notification) {
         $scope.forms.messages.push(messageNotification.notificationToMessage(notification));
-        console.log(messageNotification.notificationToMessage(notification), notification);
 
         if ($scope.forms.messages.length > MAX_LOG_SIZE) {
           $scope.forms.messages.shift();

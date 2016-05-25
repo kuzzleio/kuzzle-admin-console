@@ -40,7 +40,6 @@ angular.module('kuzzle.profile')
       $scope.loadProfiles = function() {
         profileApi.list(($scope.currentPage - 1) * $scope.limit, $scope.limit)
           .then(function (response) {
-            console.log(response.profiles);
             $scope.total = response.total;
             $scope.profiles = response.profiles;
           })
