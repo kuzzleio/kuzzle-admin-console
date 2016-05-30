@@ -196,5 +196,4 @@ angular.module('kuzzle.metrics')
         }
         return false;
       };
-    }])
-    .name;
+    }]);

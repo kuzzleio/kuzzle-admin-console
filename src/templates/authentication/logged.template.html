@@ -74,6 +74,14 @@
               <!-- /Indexes -->
 
               <!-- Collections -->
+              <li ng-if="!indexData.selectedIndex"
+                  class="nav-category"
+                  ng-class="{ in: ('collection.*.*' | includedByState)}">
+                <a ui-sref="collection()">
+                  <i class="fa fa-table pull-left"></i>
+                  Collections
+                </a>
+              </li>
               <li ng-if="indexData.selectedIndex"
                   class="nav-category"
                   ng-class="{ in: ('collection.*.*' | includedByState)}">
