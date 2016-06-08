@@ -68,21 +68,19 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
         wrappedView: { template: require('../templates/firstAdmin/index.template.html') }
       },
       resolve: {
-        // check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
-        //   kuzzleSdk
-        //     .dataCollectionFactory('%kuzzle', 'users')
-        //     .fetchAllDocuments(function (error, result) {
-        //       if (error !== null) {
-        //         console.log('redirect to login');
-        //         $state.go('login');
-        //       } else if (result) {
-        //         if (result.total > 0) {
-        //           console.log('redirect to login');
-        //           $state.go('login');
-        //         }
-        //       }
-        //     });
-        // }],
+        check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
+          kuzzleSdk
+            .dataCollectionFactory('users', '%kuzzle')
+            .fetchAllDocuments(function (error, result) {
+              if (error !== null) {
+                $state.go('login');
+              } else if (result) {
+                if (result.total > 0) {
+                  $state.go('login');
+                }
+              }
+            });
+        }],
         loadDeps: ['$q', '$ocLazyLoad', function ($q, $ocLazyLoad) {
           return $q((resolve) => {
             require.ensure([], function (require) {
@@ -118,7 +116,7 @@ export default function($stateProvider, $urlMatcherFactoryProvider, $urlRouterPr
       resolve: {
         check: ['$state', 'kuzzleSdk', function ($state, kuzzleSdk) {
           kuzzleSdk
-            .dataCollectionFactory('%kuzzle', 'users')
+            .dataCollectionFactory('users', '%kuzzle')
             .fetchAllDocuments(function (error, result) {
               if (result) {
                 if (result.total === 0) {
