@@ -37,6 +37,7 @@ kuzzle:
   environment:
     - MQ_BROKER_ENABLED=1
     - FEATURE_COVERAGE
+    - kuzzle_fixtures=/fixtures.json
 
 rabbit:
   image: kuzzleio/rabbitmq:alpine
