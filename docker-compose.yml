@@ -1,25 +1,24 @@
-kuzzle:
-  image: kuzzleio/kuzzle
+loadbalancer:
+  image: kuzzleio/proxy:alpine
   ports:
-    - "7512:7512"
     - "7511:7511"
-  links:
-    - elasticsearch
-    - redis
-  environment:
-    - LIKE_A_VIRGIN
-    - FIXTURES
-    - DEFAULT_MAPPING
-    - FEATURE_COVERAGE
+    - "7512:7512"
 
-kuzzleBo:
-  image: kuzzleio/bo:alpine
+bo:
+  image: kuzzleio/bo:develop
   ports:
     - "3000:3000"
   links:
-    - kuzzle
+    - loadbalancer:kuzzle
   environment:
     - KUZZLE_URL
+
+kuzzle:
+  image: kuzzleio/kuzzle:develop
+  links:
+    - elasticsearch
+    - redis
+    - loadbalancer
 
 redis:
   image: redis:3.0-alpine
