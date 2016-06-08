@@ -30,155 +30,119 @@
   },
   "%kuzzle": {
     "roles": [
-      { "index": { "_id": "kuzzle-bo-dummy" } },
+      { "index": { "_id": "anonymous" } },
       {
-        "indexes": {
-          "fakeIndex1": {
-            "collections": {
-              "fakeCollection1": {
-                "controllers": {
-                  "fakeController1": {
-                    "actions": {
-                      "fakeAction1": true
-                    }
-                  }
-                }
-              }
+        "controllers": {
+          "auth": {
+            "actions": {
+              "login": true,
+              "checkToken": true,
+              "getCurrentUser": true
             }
           },
-          "*": {
-            "collections": {
-              "*": {
-                "controllers": {
-                  "auth": {
-                    "actions": {
-                      "logout": true,
-                      "getCurrentUser": true
-                    }
-                  }
-                }
-              }
+          "read": {
+            "actions": {
+              "serverInfo": true
             }
           }
         }
       },
-      { "index": { "_id": "kuzzle-bo-standard" } },
+      { "index": { "_id": "default" } },
       {
-        "indexes": {
-          "_canCreate": false,
-          "*": {
-            "_canDelete": false,
-            "collections": {
-              "_canCreate": false,
-              "*": {
-                "_canDelete": false,
-                "controllers": {
-                  "auth": {
-                    "actions": {
-                      "getCurrentUser": true,
-                      "login": true,
-                      "logout": true,
-                      "checkToken": true
-                    }
-                  },
-                  "read": {
-                    "actions": {
-                      "listIndexes": true,
-                      "listCollections": true
-                    }
-                  }
-                }
-              }
+        "controllers": {
+          "auth": {
+            "actions": {
+              "logout": true,
+              "checkToken": true,
+              "getCurrentUser": true
             }
           },
-          "kuzzle-bo-testindex": {
-            "_canDelete": false,
-            "collections": {
-              "_canCreate": false,
-              "*": {
-                "_canDelete": false,
-                "controllers": {
-                  "read": {
-                    "actions": {
-                      "search": true,
-                      "get": true,
-                      "listCollections": true
-                    }
-                  }
-                }
-              },
-              "readonly-collection": {
-                "_canDelete": false,
-                "controllers": {
-                  "read": {
-                    "actions": {
-                      "search": true,
-                      "get": true,
-                      "listIndexes": true,
-                      "listCollections": true
-                    }
-                  },
-                  "auth": {
-                    "actions": {
-                      "getCurrentUser": true,
-                      "login": true,
-                      "logout": true,
-                      "checkToken": true
-                    }
-                  }
-                }
-              },
-              "editable-collection": {
-                "_canDelete": false,
-                "controllers": {
-                  "read": {
-                    "actions": {
-                      "search": true,
-                      "get": true,
-                      "listCollections": true
-                    }
-                  },
-                  "admin": {
-                    "actions": {
-                      "updateMapping": true
-                    }
-                  }
-                }
-              },
-              "emptiable-collection": {
-                "_canDelete": false,
-                "controllers": {
-                  "read": {
-                    "actions": {
-                      "search": true,
-                      "get": true,
-                      "listCollections": true
-                    }
-                  },
-                  "admin": {
-                    "actions": {
-                      "truncateCollection": true
-                    }
-                  }
-                }
-              },
-              "not-editable-collection": {
-                "_canDelete": false,
-                "controllers": {
-                  "read": {
-                    "actions": {
-                      "search": true,
-                      "get": true,
-                      "listCollections": true
-                    }
-                  },
-                  "admin": {
-                    "actions": {
-                      "deleteCollection": true
-                    }
-                  }
-                }
-              }
+          "read": {
+            "actions": {
+              "serverInfo": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "fake-action" } },
+      {
+        "controllers": {
+          "fakeController1": {
+            "actions": {
+              "fakeAction": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "logout-and-get-user"}},
+      {
+        "controllers": {
+          "auth": {
+            "actions": {
+              "logout": true,
+              "getCurrentUser": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "login-and-check-token" } },
+      {
+        "controllers": {
+          "auth": {
+            "login": true,
+            "checkToken": true
+          }
+        }
+      },
+      { "index": { "_id": "list-indexes-collections" } },
+      {
+        "controllers": {
+          "read": {
+            "actions": {
+              "listIndexes": true,
+              "listCollections": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "read-data" } },
+      {
+        "controllers": {
+          "read": {
+            "actions": {
+              "search": true,
+              "get": true,
+              "listCollections": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "edit-collection" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "updateMapping": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "truncate-collection" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "truncateCollection": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "delete-collection" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "deleteCollection": true
             }
           }
         }
@@ -187,11 +151,22 @@
     "profiles": [
       { "index": { "_id": "kuzzle-bo-dummy" } },
       {
-        "roles": ["kuzzle-bo-dummy"]
+        "roles": [
+          {"_id": "fake-action"},
+          {"_id": "logout-and-get-user"}
+        ]
       },
       { "index": { "_id": "kuzzle-bo-standard" } },
       {
-        "roles": ["kuzzle-bo-standard"]
+        "roles": [
+          {"_id": "logout-and-get-user"},
+          {"_id": "login-and-check-token"},
+          {"_id": "list-indexes-collections"},
+          {"_id": "read-data", "restrictedTo": {"index": "kuzzle-bo-testindex"}},
+          {"_id": "edit-collection", "restrictedTo": {"index": "kuzzle-bo-testindex", "collections": ["editable-collection"]}},
+          {"_id": "truncate-collection", "restrictedTo": {"index": "kuzzle-bo-testindex", "collections": ["emptiable-collection"]}},
+          {"_id": "delete-collection", "restrictedTo": {"index": "kuzzle-bo-testindex", "collections": ["not-editable-collection"]}}
+        ]
       }
     ],
     "users": [
