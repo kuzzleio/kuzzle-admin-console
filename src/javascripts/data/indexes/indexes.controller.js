@@ -39,6 +39,9 @@ angular.module('kuzzle.indexes')
         indexesApi.create(index, true)
           .then(function() {
             $state.go('indexes.browse');
+          })
+          .catch(err => {
+            console.error(err.message);
           });
       };
 
