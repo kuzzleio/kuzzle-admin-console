@@ -40,11 +40,6 @@ angular.module('kuzzle.authorization', [])
           return this.canDoAction(index, '*', 'admin', 'deleteIndex');
         },
         canDoAction: function (index, collection, controller, action) {
-          // wait for lazy loading rights
-          if (!session.session.rights) {
-            return canDoAction(index, collection, controller, action);
-          }
-
           var allowed = kuzzleSdk.security.isActionAllowed(session.session.rights, controller, action, index, collection);
 
           return allowed !== 'denied';
