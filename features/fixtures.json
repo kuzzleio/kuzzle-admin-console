@@ -89,8 +89,10 @@
       {
         "controllers": {
           "auth": {
-            "login": true,
-            "checkToken": true
+            "actions": {
+              "login": true,
+              "checkToken": true
+            }
           }
         }
       },
@@ -162,10 +164,10 @@
           {"_id": "logout-and-get-user"},
           {"_id": "login-and-check-token"},
           {"_id": "list-indexes-collections"},
-          {"_id": "read-data", "restrictedTo": {"index": "kuzzle-bo-testindex"}},
-          {"_id": "edit-collection", "restrictedTo": {"index": "kuzzle-bo-testindex", "collections": ["editable-collection"]}},
-          {"_id": "truncate-collection", "restrictedTo": {"index": "kuzzle-bo-testindex", "collections": ["emptiable-collection"]}},
-          {"_id": "delete-collection", "restrictedTo": {"index": "kuzzle-bo-testindex", "collections": ["not-editable-collection"]}}
+          {"_id": "read-data", "restrictedTo": [{"index": "kuzzle-bo-testindex"}]},
+          {"_id": "edit-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["editable-collection"]}]},
+          {"_id": "truncate-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["emptiable-collection"]}]},
+          {"_id": "delete-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["not-editable-collection"]}]}
         ]
       }
     ],
