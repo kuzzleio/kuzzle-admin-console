@@ -22,8 +22,11 @@ angular.module('kuzzle')
           authorization.canDoAction('foobar', 'foobar', 'read', 'now');
       };
 
-      $scope.hasRightsOnIndex = function (index) {
-        return authorization.hasRightsOnIndex(index);
-      };
+      $scope.canDoAction = authorization.canDoAction;
+      $scope.hasSecurityRights = authorization.hasSecurityRights;
+      $scope.canManageUsers = authorization.canManageUsers;
+      $scope.canManageProfiles = authorization.canManageProfiles;
+      $scope.canManageRoles = authorization.canManageRoles;
     }
   ]);
+

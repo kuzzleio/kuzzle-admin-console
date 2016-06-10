@@ -19,15 +19,6 @@ export default angular.module('kuzzle.documentsInline', [
 
       $scope.isEllipsed = true;
 
-      $scope.yolo = function(document) {
-        document.content.roles.forEach(function(role, index, array) {
-          delete role.$$hashKey;
-          array[index] = role;
-        });
-
-        return document.content;
-      };
-
       $scope.editDocument = function (document) {
         var index = $scope.documents.indexOf(document);
 

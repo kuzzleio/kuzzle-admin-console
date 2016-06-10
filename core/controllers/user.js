@@ -36,7 +36,7 @@ var createAdminUser = function (username, password) {
 
 router.post('/firstAdmin', function (req, res) {
   kuzzle
-    .dataCollectionFactory('%kuzzle', 'users')
+    .dataCollectionFactory('users', '%kuzzle')
     .fetchAllDocumentsPromise()
     .then(function (response) {
       if (response) {
