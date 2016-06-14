@@ -1,41 +1,54 @@
-kuzzle:
-  image: kuzzleio/kuzzle:beta
-  volumes:
-    - "../features/fixtures.json:/fixtures.json"
+proxy:
+  image: kuzzleio/proxy:alpine
   ports:
-    - "7512:7512"
     - "7511:7511"
-    - "8080:8080"
-    - "8081:8081"
-  links:
-    - elasticsearch
-    - redis
-  environment:
-    - LIKE_A_VIRGIN
-    - FIXTURES=/fixtures.json
-    - DEFAULT_MAPPING
-    - FEATURE_COVERAGE
+    - "7512:7512"
+    - "8083:8080"
 
 kuzzleBo:
-  image: kuzzleio/bo-test:alpine
+  image: kuzzleio/bo-dev:alpine
   command: /run-dev.sh
   volumes:
     - "..:/var/app"
-    - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
   ports:
     - "3000:3000"
     - "8082:8080"
     - "9876:9876"
+    - "35729:35729"
   links:
-    - kuzzle
-    # add link to elasticsearch in order to perform a dump
-    - elasticsearch
+    - proxy:kuzzle
   environment:
-    - DEBUG_PHANTOM
+    - DEVELOPMENT
     - KUZZLE_URL
 
+kuzzle:
+  image: kuzzleio/kuzzle:develop
+  command: /run-debug.sh
+  volumes:
+    - "../features/fixtures.json:/fixtures.json"
+  ports:
+    - "8080:8080"
+    - "8081:8081"
+  links:
+    - rabbit
+    - elasticsearch
+    - redis
+    - proxy:api
+  environment:
+    - MQ_BROKER_ENABLED=1
+    - FEATURE_COVERAGE
+    - kuzzle_fixtures=/fixtures.json
+
+rabbit:
+  image: kuzzleio/rabbitmq:alpine
+  ports:
+    - "61613:61613"
+    - "1883:1883"
+    - "5672:5672"
+    - "15672:15672"
+
 redis:
-  image: redis:3.0
+  image: redis:3.0-alpine
 
 elasticsearch:
-  image: elasticsearch:1.7
+  image: kuzzleio/elasticsearch:2.2
