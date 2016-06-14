@@ -1,4 +1,4 @@
-loadbalancer:
+proxy:
   image: kuzzleio/proxy:alpine
   ports:
     - "7511:7511"
@@ -13,7 +13,7 @@ bo:
   ports:
     - "3000:3000"
   links:
-    - kuzzle
+    - proxy:kuzzle
     # add link to elasticsearch in order to perform a dump
     - elasticsearch
   environment:
@@ -27,7 +27,7 @@ kuzzle:
   links:
     - elasticsearch
     - redis
-    - loadbalancer
+    - proxy:api
   environment:
     - FIXTURES=/fixtures.json
     - FEATURE_COVERAGE
