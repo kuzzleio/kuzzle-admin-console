@@ -1,38 +1,36 @@
-kuzzle:
-  image: kuzzleio/kuzzle
-  volumes:
-    - "../features/fixtures.json:/fixtures.json"
+proxy:
+  image: kuzzleio/proxy:alpine
   ports:
-    - "7512:7512"
     - "7511:7511"
-    - "8080:8080"
-    - "8081:8081"
-  links:
-    - elasticsearch
-    - redis
-  environment:
-    - LIKE_A_VIRGIN
-    - FIXTURES=/fixtures.json
-    - DEFAULT_MAPPING
-    - FEATURE_COVERAGE
+    - "7512:7512"
 
-kuzzleBo:
+bo:
   image: kuzzleio/bo-test:alpine
-  command: /run.sh
+  command: /run-test.sh
   volumes:
     - "..:/var/app"
     - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
   ports:
     - "3000:3000"
-    - "8082:8080"
-    - "9876:9876"
   links:
-    - kuzzle
+    - proxy:kuzzle
     # add link to elasticsearch in order to perform a dump
     - elasticsearch
   environment:
     - DEBUG_PHANTOM
     - KUZZLE_URL
+
+kuzzle:
+  image: kuzzleio/kuzzle:develop
+  volumes:
+    - "../features/fixtures.json:/fixtures.json"
+  links:
+    - elasticsearch
+    - redis
+    - proxy:api
+  environment:
+    - FIXTURES=/fixtures.json
+    - FEATURE_COVERAGE
 
 redis:
   image: redis:3.0-alpine
