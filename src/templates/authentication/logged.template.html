@@ -166,7 +166,7 @@
               <-- / Plugins -->
 
               <!-- Security -->
-              <li ng-if="hasRightsOnIndex('%kuzzle')" class="nav-category"
+              <li ng-if="hasSecurityRights()" class="nav-category"
                   ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
                   <a href data-toggle="collapse"
                      ng-class="{ collapsed: !(('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState))  }"
@@ -176,19 +176,19 @@
                       <i class="fa fa-fw fa-caret-down pull-right"></i>
                   </a>
                   <ul id="menu-security" class="collapse submenu" ng-class="{ in: ('user.*.*' | includedByState) || ('role.*.*' | includedByState) || ('profile.*.*' | includedByState) }">
-                      <li>
+                      <li ng-if="canManageRoles()">
                           <a ng-class="{ active: ('role.*.*' | includedByState) }"
                              ui-sref="role.browse">
                             <!--<i class="fa fa-list-alt"></i>--> Roles
                           </a>
                       </li>
-                      <li>
+                      <li ng-if="canManageProfiles()">
                           <a ng-class="{ active: ('profile.*.*' | includedByState) }"
                              ui-sref="profile.browse">
                             <!--<i class="fa fa-list-alt"></i>--> Profiles
                           </a>
                       </li>
-                      <li>
+                      <li ng-if="canManageUsers()">
                           <a ng-class="{ active: ('user.*.*' | includedByState) }"
                              ui-sref="user.browse">
                             <!--<i class="fa fa-users"></i>--> Users

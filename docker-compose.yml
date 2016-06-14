@@ -1,4 +1,4 @@
-loadbalancer:
+proxy:
   image: kuzzleio/proxy:alpine
   ports:
     - "7511:7511"
@@ -9,7 +9,7 @@ bo:
   ports:
     - "3000:3000"
   links:
-    - loadbalancer:kuzzle
+    - proxy:kuzzle
   environment:
     - KUZZLE_URL
 
@@ -18,7 +18,7 @@ kuzzle:
   links:
     - elasticsearch
     - redis
-    - loadbalancer
+    - proxy:api
 
 redis:
   image: redis:3.0-alpine

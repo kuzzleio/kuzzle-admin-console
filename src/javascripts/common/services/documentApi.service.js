@@ -19,7 +19,7 @@ angular.module('kuzzle.documentApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           var deferred = $q.defer();
 
           kuzzleSdk
-            .dataCollectionFactory(indexesApi.data.selectedIndex, collection)
+            .dataCollectionFactory(collection, indexesApi.data.selectedIndex)
             .advancedSearch(filter, function(error, result) {
               if (error) {
                 deferred.reject(error);

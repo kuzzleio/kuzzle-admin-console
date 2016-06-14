@@ -48,7 +48,7 @@
     "font-awesome": "^4.5.0",
     "highcharts": "^4.2.3",
     "jsonformatter": "^0.5.0",
-    "kuzzle-sdk": "1.7.4",
+    "kuzzle-sdk": "1.9.0",
     "leaflet": "^0.7.7",
     "lodash": "3.10.1",
     "morgan": "1.7.0",
