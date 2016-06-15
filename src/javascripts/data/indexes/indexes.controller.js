@@ -39,6 +39,9 @@ angular.module('kuzzle.indexes')
         indexesApi.create(index, true)
           .then(function() {
             $state.go('indexes.browse');
+          })
+          .catch(err => {
+            console.error(err.message);
           });
       };
 
@@ -48,7 +51,7 @@ angular.module('kuzzle.indexes')
        * @param index
        */
       $scope.onSelectIndex = function (index) {
-        indexesApi.isSelectedIndexValid(index)
+        indexesApi.isSelectedIndexValid(index, true)
           .then(function (exist) {
             if (exist) {
               indexesApi.select(index);

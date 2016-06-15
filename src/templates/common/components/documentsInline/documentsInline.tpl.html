@@ -1,4 +1,4 @@
-<div class="row documents" ng-repeat="document in documents">
+<div class="row documents" ng-repeat="document in documents track by $index">
     <div id="{{document.id}}" class="panel panel-default dropdown" ng-class="{deleted: document.isDeleted}">
         <div class="panel-body">
             <!-- title col -->
@@ -27,7 +27,7 @@
                     <a type="button" class="btn btn-default ellipsis"
                             ng-repeat="role in document.content.roles"
                             ui-sref="role.full({role: role})"
-                            ng-bind="role"></a>
+                            ng-bind="role._id"></a>
                 </div>
             </div>
             <!-- /profiles -->

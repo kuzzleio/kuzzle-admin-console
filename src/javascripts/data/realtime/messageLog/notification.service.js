@@ -6,6 +6,8 @@ angular.module('kuzzle.realtime')
         id:  notification.result._id,
         text: '',
         icon: 'file',
+        index: notification.index || '',
+        collection: notification.collection || '',
         class: '',
         source:  {
           source: notification.result._source,

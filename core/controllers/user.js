@@ -15,9 +15,9 @@ var resetRole = function (roleId) {
     .createRolePromise(roleId, userRoles[roleId], {replaceIfExist: true});
 };
 
-var resetProfile = function (profileId, roleId) {
+var resetProfile = function (profileId, role) {
   var data = {
-    roles: [ roleId ]
+    roles: [ role ]
   };
   return kuzzle
     .security
@@ -36,7 +36,7 @@ var createAdminUser = function (username, password) {
 
 router.post('/firstAdmin', function (req, res) {
   kuzzle
-    .dataCollectionFactory('%kuzzle', 'users')
+    .dataCollectionFactory('users', '%kuzzle')
     .fetchAllDocumentsPromise()
     .then(function (response) {
       if (response) {
@@ -51,19 +51,19 @@ router.post('/firstAdmin', function (req, res) {
     })
     .then(function () {
       if (req.body.resetroles) {
-        return resetProfile('default', 'default');
+        return resetProfile('default', {_id: 'default'});
       }
       return q.resolve();
     })
     .then(function () {
       if (req.body.resetroles) {
-        return resetProfile('admin', 'admin');
+        return resetProfile('admin', {_id: 'admin', allowInternalIndex: true});
       }
       return q.resolve();
     })
     .then(function () {
       if (req.body.resetroles) {
-        return resetProfile('anonymous', 'anonymous');
+        return resetProfile('anonymous', {_id: 'anonymous'});
       }
       return q.resolve();
     })

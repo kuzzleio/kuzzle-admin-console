@@ -5,6 +5,7 @@ angular.module('kuzzle.authentication')
   this.session = {
     jwtToken: null,
     userId: null,
+    rights: null,
     userProfile: null,
     user: null
   };
@@ -15,6 +16,10 @@ angular.module('kuzzle.authentication')
     this.session.userProfile = userProfile;
 
     this.persist();
+  };
+
+  this.setRights = function (rights) {
+    this.session.rights = rights;
   };
 
   this.setProfile = function (profile) {
@@ -32,6 +37,7 @@ angular.module('kuzzle.authentication')
 
   this.destroy = function () {
     this.session.jwtToken = null;
+    this.session.rights = null;
     this.session.userId = null;
     this.session.userProfile = null;
     this.session.user = null;

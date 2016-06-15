@@ -26,15 +26,15 @@
   <div class="message-list-container">
     <ul class="message-list"
         ng-if="collection">
-      <li class="message-item" ng-repeat="(index, message) in messages">
+      <li class="message-item" ng-repeat="(key, message) in messages">
         <span class="{{message.class}}" title="{{message.text}}">
           <span class="glyphicon glyphicon-{{message.icon}}"></span>&nbsp;
           <span ng-if="messageBoardOpen">{{message.text}}</span>
         </span>
-        &nbsp;<code ng-if="messageBoardOpen && message.id" class="document-id" ng-click="toggleExpanded(index)">{{message.id}}</code>
-        <button ng-if="message.source" type="button" class="btn btn-default btn-xs" ng-click="toggleExpanded(index)" title="Details..."><span class="glyphicon glyphicon-option-horizontal"></span></button>
+        &nbsp;<code ng-if="messageBoardOpen && message.id" class="document-id" ng-click="toggleExpanded(key)">{{message.id}}</code>
+        <button ng-if="message.source" type="button" class="btn btn-default btn-xs" ng-click="toggleExpanded(key)" title="Details..."><span class="glyphicon glyphicon-option-horizontal"></span></button>
         <a ng-if="messageBoardOpen && message.id && message.source && message.canEdit"
-           ui-sref="storage.full({collection: collection, index: index, id: message.id})">
+           ui-sref="storage.full({collection: message.collection, index: message.index, id: message.id})">
           <span class="edit-document edit glyphicon glyphicon-eye-open" title="Edit document..."></span>
         </a>
         <pre ng-if="message.source && message.expanded">{{message.source | json:4 }}</pre>

@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-bo",
-  "version": "1.0.0-RC2",
+  "version": "1.0.0-RC3",
   "description": "Official back office for manage and monitor your Kuzzle",
   "main": "app.js",
   "scripts": {
@@ -48,7 +48,7 @@
     "font-awesome": "^4.5.0",
     "highcharts": "^4.2.3",
     "jsonformatter": "^0.5.0",
-    "kuzzle-sdk": "1.7.4",
+    "kuzzle-sdk": "1.9.1",
     "leaflet": "^0.7.7",
     "lodash": "3.10.1",
     "morgan": "1.7.0",
@@ -72,7 +72,7 @@
     "babel-polyfill": "^6.7.2",
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-stage-2": "^6.0.0",
-    "babel-runtime": "^5.8.0",
+    "babel-runtime": "^6.0.0",
     "copy-webpack-plugin": "^1.1.1",
     "css-loader": "^0.23.0",
     "cucumber": "^0.5.3",

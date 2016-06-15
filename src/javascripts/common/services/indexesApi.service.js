@@ -75,14 +75,17 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
        *
        * @returns {promise}
        */
-      service.isSelectedIndexValid = function(index, notify) {
+      service.isSelectedIndexValid = function(index, notify, notifyIfEmpty) {
         var deferred = $q.defer();
+        if (typeof notifyIfEmpty === 'undefined') {
+          notifyIfEmpty = true;
+        }
 
         service.list()
           .then(function(result) {
             var isIndexValid = (index && result.indexOf(index) !== -1);
 
-            if (!isIndexValid && notify) {
+            if (index && !isIndexValid && notify || !index && notifyIfEmpty) {
               Notification.error('Index "' + index + '" does not exist');
 
               service.select();

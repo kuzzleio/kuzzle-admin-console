@@ -57,29 +57,6 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        delete: function (collectionName, notify) {
-          var deferred = $q.defer();
-
-          kuzzleSdk
-            .dataCollectionFactory(collectionName)
-            .delete(function (error) {
-              if (error) {
-                if (notify) {
-                  notification.error('Error during collection delete. Please retry.');
-                }
-
-                return deferred.reject({error: true, message: error});
-              }
-
-              if (notify) {
-                notification.success('Collection deleted!');
-              }
-
-              return deferred.resolve({error: false});
-            });
-
-          return deferred.promise;
-        },
         empty: function (collection, notify) {
           var deferred = $q.defer();
 

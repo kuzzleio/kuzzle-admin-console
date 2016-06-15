@@ -31,12 +31,14 @@ angular.module('kuzzle.authentication')
           Session.setUser(res);
         }
 
-        deferred.resolve(true);
-
         if (broadcastEvent) {
           $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
         }
 
+        kuzzle.getMyRights((err, rights) => {
+          Session.setRights(rights);
+          deferred.resolve(true);
+        });
       });
       Session.create(kuzzle.jwtToken);
 

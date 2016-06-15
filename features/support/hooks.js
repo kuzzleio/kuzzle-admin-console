@@ -10,7 +10,7 @@ var hooks = function () {
     if (world.kuzzle.state !== 'connected') {
       setTimeout(() => {
         beforeFeatures(event, callback);
-      }, 50)
+      }, 50);
 
       return;
     }
@@ -79,7 +79,7 @@ var hooks = function () {
     console.log('@cleanFirstAdmin');
     world
       .kuzzle.security
-      .deleteUser(world.users['firstAdmin'].username, callback);
+      .deleteUser(world.users.firstAdmin.username, callback);
   });
 
   this.After('@cleanNewUser', function (scenario, callback) {
@@ -186,17 +186,17 @@ var listIndexes = function () {
     .kuzzle
     .listIndexes(function(error, indexes) {
       if (error) {
-        deffered.reject(error)
+        deffered.reject(error);
       }
 
       deffered.resolve(indexes);
-    })
+    });
 
   return deffered.promise;
 };
 
 var deleteUsers = function (callback) {
-    listIndexes()
+  listIndexes()
     .then(indexes => {
       if (indexes.indexOf('%kuzzle') === -1) {
         return q.reject(new ReferenceError('%kuzzle index not found'));
@@ -252,7 +252,7 @@ var cleanSecurity = function (callback) {
     })
     .then(() => {
       var
-        deffered = q.defer();
+        deffered = q.defer(),
         passed = 0;
 
       fixtures['%kuzzle'].users.forEach(function (user) {
@@ -331,7 +331,7 @@ var cleanSecurity = function (callback) {
             .security
             .createUser(user.username, {password: user.clearPassword, profile: user.profile}, {replaceIfExist: true}, function(error, response) {
               passed++;
-              if (passed == (fixtures['%kuzzle'].users.length/2)) {
+              if (passed === (fixtures['%kuzzle'].users.length/2)) {
                 deffered.resolve();
                 return;
               }

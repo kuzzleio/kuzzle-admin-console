@@ -34,7 +34,7 @@ export default angular.module(MODULE_NAME, [
           }],
           index: ['$stateParams', '$state', 'indexesApi', function($stateParams, $state, indexesApi) {
             indexesApi.data.showSelector = true;
-            indexesApi.isSelectedIndexValid($stateParams.index, true)
+            indexesApi.isSelectedIndexValid($stateParams.index, true, false)
               .then(function (exist) {
                 if (exist) {
                   indexesApi.select($stateParams.index);
