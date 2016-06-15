@@ -23,7 +23,7 @@ kuzzleBo:
 
 kuzzle:
   image: kuzzleio/kuzzle:develop
-  command: /run-debug.sh
+  command: sh -c "npm install -g node-inspector && /run-debug.sh"
   volumes:
     - "../features/fixtures.json:/fixtures.json"
   ports:
@@ -36,7 +36,6 @@ kuzzle:
     - proxy:api
   environment:
     - MQ_BROKER_ENABLED=1
-    - FEATURE_COVERAGE
     - kuzzle_fixtures=/fixtures.json
 
 rabbit:
