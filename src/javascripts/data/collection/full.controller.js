@@ -30,10 +30,9 @@ angular.module('kuzzle.collection')
         schema: ''
       };
 
-      $scope.init = function (action) {
-        if (action === 'edit') {
+      $scope.init = function () {
+        if ($scope.collection.name) {
           $scope.isEdit = true;
-
           schema.get($scope.collection.name)
             .then(function (response) {
               $scope.collection.schema = angular.toJson(response.mapping, 4);
