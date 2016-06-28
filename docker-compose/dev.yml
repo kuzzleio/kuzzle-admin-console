@@ -1,0 +1,55 @@
+proxy:
+  image: kuzzleio/proxy:alpine
+  ports:
+    - "7511:7511"
+    - "7512:7512"
+    - "8083:8080"
+
+# TODO create a proper Docker enviroment to put it here
+#
+# backoffice:
+#   image: kuzzleio/bo-dev:alpine
+#   command: /run-dev.sh
+#   volumes:
+#     - "..:/var/app"
+#   ports:
+#     - "3000:3000"
+#     - "8082:8080"
+#     - "9876:9876"
+#     - "35729:35729"
+#   links:
+#     - proxy:kuzzle
+#   environment:
+#     - DEVELOPMENT
+#     - KUZZLE_URL
+
+kuzzle:
+  image: kuzzleio/kuzzle:develop
+  command: sh -c "npm install -g node-inspector && /run-debug.sh"
+  volumes:
+      - "../kuzzle/fixtures.json:/fixtures.json"
+  ports:
+    - "8080:8080"
+    - "8081:8081"
+  links:
+    - rabbit
+    - elasticsearch
+    - redis
+    - proxy:api
+  environment:
+    - MQ_BROKER_ENABLED=1
+    - kuzzle_fixtures=/fixtures.json
+
+rabbit:
+  image: kuzzleio/rabbitmq:alpine
+  ports:
+    - "61613:61613"
+    - "1883:1883"
+    - "5672:5672"
+    - "15672:15672"
+
+redis:
+  image: redis:3.0-alpine
+
+elasticsearch:
+  image: kuzzleio/elasticsearch:2.2
