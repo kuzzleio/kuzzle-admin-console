@@ -10,7 +10,6 @@ backoffice:
   command: /run-dev.sh
   volumes:
     - "..:/var/app"
-    - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
     - "./run-dev.sh:/run-dev.sh"
   ports:
     - "3000:3000"

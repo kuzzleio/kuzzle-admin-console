@@ -9,7 +9,6 @@ backoffice:
   command: /run-test.sh
   volumes:
     - "..:/var/app"
-    - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
     - "./run-test.sh:/run-test.sh"
   ports:
     - "3000:3000"
