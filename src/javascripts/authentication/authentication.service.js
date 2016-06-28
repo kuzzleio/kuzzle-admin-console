@@ -31,13 +31,18 @@ angular.module('kuzzle.authentication')
           Session.setUser(res);
         }
 
-        if (broadcastEvent) {
-          $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-        }
-
         kuzzle.getMyRights((err, rights) => {
-          Session.setRights(rights);
-          deferred.resolve(true);
+          if (err) {
+            console.error(err.message);
+            deferred.reject(err.message);
+          } else {
+            Session.setRights(rights);
+            deferred.resolve(true);
+
+            if (broadcastEvent) {
+              $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+            }
+          }
         });
       });
       Session.create(kuzzle.jwtToken);
@@ -73,9 +78,9 @@ angular.module('kuzzle.authentication')
 
     authService.logout = function () {
       kuzzle.logout(function (res) {
+        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
         Session.destroy();
         this.nextRoute = null;
-        $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
       }.bind(this));
     };
 
