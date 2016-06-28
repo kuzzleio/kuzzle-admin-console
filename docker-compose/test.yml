@@ -4,23 +4,22 @@ proxy:
     - "7511:7511"
     - "7512:7512"
 
-# TODO create a proper Docker enviroment to put it here
-#
-# backoffice:
-#   image: kuzzleio/bo-test:alpine
-#   command: /run-test.sh
-#   volumes:
-#     - "..:/var/app"
-#     - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
-#   ports:
-#     - "3000:3000"
-#   links:
-#     - proxy:kuzzle
-#     # add link to elasticsearch in order to perform a dump
-#     - elasticsearch
-#   environment:
-#     - DEBUG_PHANTOM
-#     - KUZZLE_URL
+backoffice:
+  image: kuzzleio/bo-test:alpine
+  command: /run-test.sh
+  volumes:
+    - "..:/var/app"
+    - "../features/kuzzle-config.js:/var/app/src/javascripts/config.js"
+    - "./run-test.sh:/run-test.sh"
+  ports:
+    - "3000:3000"
+  links:
+    - proxy:kuzzle
+    # add link to elasticsearch in order to perform a dump
+    - elasticsearch
+  environment:
+    - DEBUG_PHANTOM
+    - KUZZLE_URL
 
 kuzzle:
   image: kuzzleio/kuzzle:develop
