@@ -5,24 +5,29 @@
       <input v-model="username" type="text" name="username" placeholder="Username" required/>
       <input v-model="password" type="password" name="password" placeholder="Password" required />
     </div>
-    <button type="submit" >Login</button>
+    <button type="submit">Login</button>
 
     <p class="error"></p>
   </form>
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        username: null,
-        password: null
-      }
-    },
-    methods: {
-      login () {
-        // TODO perform login here
-      }
+import { doLogin } from '../vuex/actions'
+
+export default {
+  data () {
+    return {
+      username: null,
+      password: null
     }
+  },
+  methods: {
+    login () {
+      this.doLogin(this.username, this.password)
+    }
+  },
+  vuex: {
+    actions: { doLogin }
   }
+}
 </script>
