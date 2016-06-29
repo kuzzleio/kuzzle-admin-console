@@ -6,8 +6,8 @@ export const doLogin = (store, username, password) => {
   kuzzle
     .login('local', {username, password}, (err, res) => {
       if (err) {
+        store.dispatch('SET_ERROR', err.message)
         throw err.message
-        // TODO properly display error to the user
       }
       // TODO properly get user information via whoAmI
       let user = {

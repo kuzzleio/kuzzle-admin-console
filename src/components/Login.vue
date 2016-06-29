@@ -7,12 +7,13 @@
     </div>
     <button type="submit">Login</button>
 
-    <p class="error"></p>
+    <p class="error">{{error}}</p>
   </form>
 </template>
 
 <script>
 import { doLogin } from '../vuex/actions'
+import { getError } from '../vuex/getters'
 
 export default {
   data () {
@@ -22,7 +23,10 @@ export default {
     }
   },
   vuex: {
-    actions: { doLogin }
+    actions: { doLogin },
+    getters: {
+      error: getError
+    }
   }
 }
 </script>
