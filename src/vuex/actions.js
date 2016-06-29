@@ -1,6 +1,7 @@
 import router from '../services/router'
 import kuzzle from '../services/kuzzle'
 
+// NOTE move this to /actions/auth.js when this file becomes too big
 export const doLogin = (store, username, password) => {
   kuzzle
     .login('local', {username, password}, (err, res) => {
@@ -19,3 +20,5 @@ export const doLogin = (store, username, password) => {
       router.go('/')
     })
 }
+
+// TODO doLogout(store)

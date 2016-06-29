@@ -1,5 +1,5 @@
 <template>
-  <form method="post" @submit.prevent="login">
+  <form method="post" @submit.prevent="doLogin(username, password)">
     <span>Welcome to the Kuzzle.io Back-Office</span>
     <div>
       <input v-model="username" type="text" name="username" placeholder="Username" required/>
@@ -19,11 +19,6 @@ export default {
     return {
       username: null,
       password: null
-    }
-  },
-  methods: {
-    login () {
-      this.doLogin(this.username, this.password)
     }
   },
   vuex: {
