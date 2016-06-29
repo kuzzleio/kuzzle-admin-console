@@ -24,10 +24,14 @@
 
 <script>
 import Hello from './components/Hello'
+import kuzzle from './services/kuzzle'
 
 export default {
   components: {
     Hello
+  },
+  ready () {
+    console.dir(kuzzle)
   }
 }
 </script>

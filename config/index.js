@@ -20,5 +20,9 @@ module.exports = {
     env: require('./dev.env'),
     port: 3000,
     proxyTable: {}
+  },
+  backend: {
+    host: process.env.BACKEND_HOST || 'kuzzle',
+    port: process.env.BACKEND_PORT || '7512'
   }
 }
