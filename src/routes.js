@@ -1,5 +1,4 @@
 import Login from './components/Login'
-import Home from './components/Home'
 import store from './vuex/store'
 import { isAuthenticated } from './vuex/getters'
 
@@ -7,7 +6,9 @@ export default function createRoutes (router) {
   router.map({
     '/': {
       name: 'Home',
-      component: Home,
+      component: function (resolve) {
+        require(['./components/Home'], resolve)
+      },
       auth: true
     },
     '/login': {
