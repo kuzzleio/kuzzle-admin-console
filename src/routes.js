@@ -18,6 +18,9 @@ export default function createRoutes (router) {
   })
 
   router.beforeEach(function (transition) {
+    if (transition.to.path === '/login' && isAuthenticated(store.state)) {
+      transition.redirect(transition.from.path)
+    }
     if (transition.to.auth && !isAuthenticated(store.state)) {
       transition.redirect('/login')
     } else {

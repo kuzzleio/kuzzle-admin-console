@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { doLogin } from '../vuex/actions'
+import { doLogin } from '../vuex/modules/auth/actions'
 import { getError } from '../vuex/getters'
 
 export default {
@@ -23,7 +23,9 @@ export default {
     }
   },
   vuex: {
-    actions: { doLogin },
+    actions: {
+      doLogin
+    },
     getters: {
       error: getError
     }
