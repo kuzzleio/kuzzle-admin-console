@@ -1,40 +1,41 @@
 <template>
-  <router-view></router-view>
+  <header>
+    <nav>
+      <div class="navbar-fixed">
+        <a href="#" class="brand-logo">Logo</a>
+        <div class="container">
+          <ul>
+            <li><a>Dashboard</a></li>
+            <li><a>Data</a></li>
+            <li><a>Security</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <aside>
+      <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
+        <li class="bold"><a class="waves-effect waves-teal">Users</a></li>
+        <li class="bold"><a class="waves-effect waves-teal">Profiles</a></li>
+        <li class="bold"><a class="waves-effect waves-teal">Roles</a></li>
+      </ul>
+    </aside>
+
+    <section>
+      <div class="wrapper">
+
+      </div>
+    </section>
+  </main>
 </template>
 
 <script>
+import {} from 'materialize-css/sass/materialize.scss'
+import {} from './assets/global.scss'
+
 export default {
   replace: false
 }
 </script>
-
-<style>
-html {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-#app {
-  color: #2c3e50;
-  margin-top: -100px;
-  max-width: 600px;
-  font-family: Source Sans Pro, Helvetica, sans-serif;
-  text-align: center;
-}
-
-#app a {
-  color: #42b983;
-  text-decoration: none;
-}
-
-.logo {
-  width: 100px;
-  height: 100px
-}
-</style>

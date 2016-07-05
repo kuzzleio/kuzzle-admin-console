@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <img class="logo" src="../assets/logo.png">
-    <hello></hello>
     <p>
       Welcome to your Vue.js app!
     </p>
@@ -23,12 +21,10 @@
 </template>
 
 <script>
-import Hello from './Hello'
 import kuzzle from '../services/kuzzle'
 
 export default {
   components: {
-    Hello
   },
   ready () {
     console.dir(kuzzle)

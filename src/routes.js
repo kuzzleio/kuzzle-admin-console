@@ -6,7 +6,7 @@ export default function createRoutes (router) {
   router.map({
     '/': {
       name: 'Home',
-      component: function (resolve) {
+      component (resolve) {
         require(['./components/Home'], resolve)
       },
       auth: true
@@ -14,15 +14,29 @@ export default function createRoutes (router) {
     '/login': {
       name: 'Login',
       component: Login
+    },
+    '/security': {
+      component (resolve) {
+        require(['./components/Security/Layout'], resolve)
+      },
+      subRoutes: {
+        '/users': {
+          component (resolve) {
+            require(['./components/Security/Users/List'], resolve)
+          }
+        }
+      },
+      auth: false
     }
   })
 
-  router.beforeEach(function (transition) {
+  router.beforeEach((transition) => {
     if (transition.to.auth && !isAuthenticated(store.state)) {
       transition.redirect('/login')
     } else {
       transition.next()
     }
   })
+
   return router
 }

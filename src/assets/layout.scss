@@ -1,0 +1,18 @@
+main {
+  padding-left: 240px;
+
+  .wrapper {
+    padding-left: 25px;
+  }
+}
+
+.side-nav {
+  top: 64px;
+  overflow: hidden;
+}
+
+@media #{$medium-and-down} {
+  .side-nav.fixed {
+    transform: translateX(0);
+  }
+}
