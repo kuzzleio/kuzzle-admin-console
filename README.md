@@ -2,6 +2,9 @@
 
 > A handy back-office for Kuzzle.io
 
+:warning: This is a very early stage refactoring of [https://github.com/kuzzleio/kuzzle-bo](https://github.com/kuzzleio/kuzzle-bo)
+
+
 This is a very very WIP implementation of the Kuzzle.io back-office. It is based
 on Vue.js and provides you a web interface to easily manage your Kuzzle instance.
 
