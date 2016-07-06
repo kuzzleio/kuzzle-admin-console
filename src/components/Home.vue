@@ -18,17 +18,17 @@
       <a href="https://github.com/vuejs/vue-router/" target="_blank">vue-router</a> for routing and
       <a href="https://github.com/vuejs/vuex/" target="_blank">vuex</a> for state management.
     </p>
-    <button @click="logout">Logout</button>
+    <button @click="doLogout">Logout</button>
   </div>
 </template>
 
 <script>
-import { logout } from '../vuex/modules/auth/actions'
+import { doLogout } from '../vuex/modules/auth/actions'
 
 export default {
   vuex: {
     actions: {
-      logout
+      doLogout
     }
   }
 }

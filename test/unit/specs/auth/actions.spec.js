@@ -91,7 +91,7 @@ describe('logout action', () => {
   })
 
   it('should logout user', (done) => {
-    testAction(actions.logout, [], {}, [
+    testAction(actions.doLogout, [], {}, [
       { name: 'SET_CURRENT_USER', payload: [null] }
     ], done)
   })

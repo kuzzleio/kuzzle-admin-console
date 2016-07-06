@@ -3,8 +3,8 @@ const createRoutesInjector = require('inject!../../../src/routes')
 import VueRouter from 'vue-router'
 
 describe('Router test', () => {
-  let vueRouter = new VueRouter(),
-    transition = { redirect: sinon.spy(), next: sinon.spy(), to: { auth: true } }
+  let vueRouter = new VueRouter()
+  let transition = { redirect: sinon.spy(), next: sinon.spy(), to: { auth: true } }
 
   vueRouter.beforeEach = (f) => {
     f(transition)
@@ -23,12 +23,11 @@ describe('Router test', () => {
     vueRouter.go('/')
     expect(transition.redirect.calledWith('/login')).to.be.ok
   })
-
 })
 
 describe('Router test', () => {
-  let vueRouter = new VueRouter(),
-    transition = { redirect: sinon.spy(), next: sinon.spy(), to: { auth: false } }
+  let vueRouter = new VueRouter()
+  let transition = { redirect: sinon.spy(), next: sinon.spy(), to: { auth: false } }
 
   vueRouter.beforeEach = (f) => {
     f(transition)
@@ -47,12 +46,11 @@ describe('Router test', () => {
     vueRouter.go('/login')
     expect(transition.next.called).to.be.true
   })
-
 })
 
 describe('Router test', () => {
-  let vueRouter = new VueRouter(),
-    transition = { redirect: sinon.spy(), next: sinon.spy(), from: { path: '/' }, to: {path: '/login'} }
+  let vueRouter = new VueRouter()
+  let transition = { redirect: sinon.spy(), next: sinon.spy(), from: { path: '/' }, to: {path: '/login'} }
 
   vueRouter.beforeEach = (f) => {
     f(transition)
@@ -71,5 +69,4 @@ describe('Router test', () => {
     vueRouter.go('/login')
     expect(transition.redirect.calledWith('/')).to.be.ok
   })
-
 })

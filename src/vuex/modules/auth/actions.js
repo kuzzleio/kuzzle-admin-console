@@ -51,11 +51,11 @@ export const loginFromCookie = (store) => {
   }
 }
 
-export const logout = (store) => {
+export const doLogout = (store) => {
   kuzzle.logout()
   cookie.delete()
   store.dispatch('SET_CURRENT_USER', null)
-  router.go('/login')
+  router.go({name: 'Login'})
 }
 
 // TODO doLogout(store)

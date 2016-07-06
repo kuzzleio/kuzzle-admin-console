@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import Login from '../../../../src/components/Login'
 
 describe('Login.vue', () => {
