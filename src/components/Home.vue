@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <img class="logo" src="../assets/logo.png">
-    <hello></hello>
     <p>
       Welcome to your Vue.js app!
     </p>
@@ -24,14 +23,9 @@
 </template>
 
 <script>
-import Hello from './Hello'
-
 import { logout } from '../vuex/modules/auth/actions'
 
 export default {
-  components: {
-    Hello
-  },
   vuex: {
     actions: {
       logout

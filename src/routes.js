@@ -27,5 +27,6 @@ export default function createRoutes (router) {
       transition.next()
     }
   })
+
   return router
 }

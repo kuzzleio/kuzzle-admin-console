@@ -11,7 +11,7 @@ export const doLogin = (store, username, password) => {
       }
       // TODO properly get user information via whoAmI
       let user = {
-        username: res._id,
+        _id: res._id,
         jwt: res.jwt
       }
       let date = new Date()
@@ -25,17 +25,21 @@ export const doLogin = (store, username, password) => {
 }
 
 export const loginFromCookie = (store) => {
+  let user,
+    id
+
   if (kuzzle.state !== 'connected') {
-    setTimeout(() => {
+    id = kuzzle.addListener('connected', () => {
       loginFromCookie(store)
-    }, 500)
+      kuzzle.removeListener('connected', id)
+    })
     return
   }
-  let user = cookie.get()
+  user = cookie.get()
   if (user) {
     kuzzle.checkToken(user.jwt, (err, res) => {
       if (err) {
-        console.error(err)
+        store.dispatch('SET_CURRENT_USER', null)
         return
       }
       if (res.valid) {
@@ -48,7 +52,9 @@ export const loginFromCookie = (store) => {
 }
 
 export const logout = (store) => {
-  store.dispatch('LOGOUT')
+  kuzzle.logout()
+  cookie.delete()
+  store.dispatch('SET_CURRENT_USER', null)
   router.go('/login')
 }
 

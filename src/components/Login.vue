@@ -1,5 +1,5 @@
 <template>
-  <form method="post" @submit.prevent="doLogin(username, password)">
+  <form id="loginForm" method="post" @submit.prevent="doLogin(username, password)">
     <span>Welcome to the Kuzzle.io Back-Office</span>
     <div>
       <input v-model="username" type="text" name="username" placeholder="Username" required/>
