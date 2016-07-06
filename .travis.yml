@@ -1,5 +1,8 @@
 sudo: required
 dist: trusty
 
+before_script:
+  - npm i
+
 script:
   - npm test
