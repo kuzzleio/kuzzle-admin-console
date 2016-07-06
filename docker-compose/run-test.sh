@@ -6,7 +6,10 @@ echo "Installing dependencies..."
 npm install
 
 echo "Starting Tests..."
+
+# when e2e tests can be launched remove those two lines
 npm run unit
+return_value=$?
 
 while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
 do
@@ -15,9 +18,9 @@ do
 done
 echo "$(date) - successfully connected to Kuzzle"
 
-#npm run e2e
-
-return_value=$?
+# when e2e tests can be launched uncomment those two lines
+#npm run test
+#return_value=$?
 
 if [ $return_value -gt 0 ]; then
   mkdir /var/app/dump
