@@ -1,0 +1,5 @@
+sudo: required
+dist: trusty
+
+script:
+  - npm test
