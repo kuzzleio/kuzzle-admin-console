@@ -1,8 +1,37 @@
-sudo: required
-dist: trusty
+proxy:
+  image: kuzzleio/proxy:alpine
+  ports:
+    - "7511:7511"
+    - "7512:7512"
 
-before_script:
-  - npm i
+bo:
+  image: kuzzleio/bo-test:alpine
+  command: /run-test.sh
+  volumes:
+    - "..:/var/app"
+  ports:
+    - "3000:3000"
+  links:
+    - proxy:kuzzle
+    - elasticsearch
+  environment:
+    - DEBUG_PHANTOM
+    - KUZZLE_URL
 
-script:
-  - npm test
+kuzzle:
+  image: kuzzleio/kuzzle:develop
+  volumes:
+    - "../features/fixtures.json:/fixtures.json"
+  links:
+    - elasticsearch
+    - redis
+    - proxy:api
+  environment:
+    - FIXTURES=/fixtures.json
+    - FEATURE_COVERAGE
+
+redis:
+  image: redis:3.0-alpine
+
+elasticsearch:
+  image: kuzzleio/elasticsearch:2.2
