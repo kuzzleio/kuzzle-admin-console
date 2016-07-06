@@ -11,8 +11,22 @@
               <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
             </li>
           </ul>
+
+          <button @click="doLogout">Logout</button>
         </div>
       </div>
     </nav>
   </header>
 </template>
+
+<script>
+  import { doLogout } from '../../vuex/modules/auth/actions'
+
+  export default {
+    vuex: {
+      actions: {
+        doLogout
+      }
+    }
+  }
+</script>

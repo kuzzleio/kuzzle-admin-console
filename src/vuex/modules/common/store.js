@@ -7,7 +7,7 @@ const state = {
   error: null
 }
 
-const mutations = {
+export const mutations = {
   [SET_ERROR] (state, message) {
     state.error = message
   },

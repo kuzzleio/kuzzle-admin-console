@@ -48,7 +48,11 @@ export default function createRoutes (router) {
     '/security': '/security/users'
   })
 
-  router.beforeEach((transition) => {
+  router.beforeEach(transition => {
+    if (transition.to.name === 'Login' && isAuthenticated(store.state)) {
+      transition.redirect(transition.from.name)
+    }
+
     if (transition.to.auth && !isAuthenticated(store.state)) {
       transition.redirect('/login')
     } else {

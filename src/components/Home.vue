@@ -7,15 +7,14 @@
 </template>
 
 <script>
-import kuzzle from '../services/kuzzle'
-import MainMenu from './Layout/MainMenu'
-
-export default {
-  components: {
-    MainMenu
-  },
-  ready () {
-    console.dir(kuzzle)
+  import kuzzle from '../services/kuzzle'
+  import MainMenu from './Layout/MainMenu'
+  export default {
+    components: {
+      MainMenu
+    },
+    ready () {
+      console.dir(kuzzle)
+    }
   }
-}
 </script>
