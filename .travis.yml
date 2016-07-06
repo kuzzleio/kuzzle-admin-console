@@ -10,4 +10,4 @@ before_script:
   - "curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash"
 
 script:
-  - docker-compose -f docker-compose/test.yml run backoffice
+  - docker-compose -f docker-compose/test.yml up

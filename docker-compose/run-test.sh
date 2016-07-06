@@ -2,6 +2,12 @@
 
 kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
+echo "Installing dependencies..."
+npm install
+
+echo "Starting Tests..."
+npm run unit
+
 while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
 do
   echo "$(date) - still trying connecting to http://$kuzzle"
@@ -9,11 +15,8 @@ do
 done
 echo "$(date) - successfully connected to Kuzzle"
 
-echo "Installing dependencies..."
-npm install
+#npm run e2e
 
-echo "Starting Tests..."
-npm run unit
 return_value=$?
 
 if [ $return_value -gt 0 ]; then
