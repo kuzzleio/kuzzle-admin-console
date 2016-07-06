@@ -9,14 +9,27 @@ export default function createRoutes (router) {
       component (resolve) {
         require(['./components/Home'], resolve)
       },
-      auth: true,
       subRoutes: {
         '/security': {
+          name: 'Security',
           component (resolve) {
             require(['./components/Security/Layout'], resolve)
           },
           subRoutes: {
             '/users': {
+              name: 'SecurityUsersList',
+              component (resolve) {
+                require(['./components/Security/Users/List'], resolve)
+              }
+            },
+            '/profiles': {
+              name: 'SecurityProfilesList',
+              component (resolve) {
+                require(['./components/Security/Users/List'], resolve)
+              }
+            },
+            '/roles': {
+              name: 'SecurityRolesList',
               component (resolve) {
                 require(['./components/Security/Users/List'], resolve)
               }
@@ -29,6 +42,10 @@ export default function createRoutes (router) {
       name: 'Login',
       component: Login
     }
+  })
+
+  router.redirect({
+    '/security': '/security/users'
   })
 
   router.beforeEach((transition) => {
