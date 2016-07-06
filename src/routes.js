@@ -9,24 +9,25 @@ export default function createRoutes (router) {
       component (resolve) {
         require(['./components/Home'], resolve)
       },
-      auth: true
+      auth: true,
+      subRoutes: {
+        '/security': {
+          component (resolve) {
+            require(['./components/Security/Layout'], resolve)
+          },
+          subRoutes: {
+            '/users': {
+              component (resolve) {
+                require(['./components/Security/Users/List'], resolve)
+              }
+            }
+          }
+        }
+      }
     },
     '/login': {
       name: 'Login',
       component: Login
-    },
-    '/security': {
-      component (resolve) {
-        require(['./components/Security/Layout'], resolve)
-      },
-      subRoutes: {
-        '/users': {
-          component (resolve) {
-            require(['./components/Security/Users/List'], resolve)
-          }
-        }
-      },
-      auth: false
     }
   })
 

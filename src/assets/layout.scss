@@ -2,7 +2,13 @@ main {
   padding-left: 240px;
 
   .wrapper {
-    padding-left: 25px;
+    padding-left: 15px;
+    padding-top: 10px;
+
+    h1 {
+      margin-top: 0;
+      font-size: 3rem;
+    }
   }
 }
 
