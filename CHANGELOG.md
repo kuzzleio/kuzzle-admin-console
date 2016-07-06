@@ -1,5 +1,10 @@
 *__note:__ the # at the end of lines are the pull request numbers on GitHub*
 
+# 1.0.0-RC4
+
+* Fix rights checks after login #69
+* Fix #67: unable to see collection mappings #68
+
 # 1.0.0-RC3
 
 ## Features
@@ -9,7 +14,7 @@
 * Update docker-compose stack
 * Adapt test fixtures for new rights formatting
 * Remove "delete collection" route (no more in Kuzzle)
-* Notify in loop when index is empty on storage page 
+* Notify in loop when index is empty on storage page
 * Fix issues #64
 
 ## Merged PR
