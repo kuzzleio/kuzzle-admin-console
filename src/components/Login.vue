@@ -1,5 +1,5 @@
 <template>
-  <form method="post" @submit.prevent="doLogin(username, password)">
+  <form id="loginForm" method="post" @submit.prevent="doLogin(username, password)">
     <span>Welcome to the Kuzzle.io Back-Office</span>
     <div>
       <input v-model="username" type="text" name="username" placeholder="Username" required/>
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { doLogin } from '../vuex/actions'
+import { doLogin } from '../vuex/modules/auth/actions'
 import { getError } from '../vuex/getters'
 
 export default {
@@ -23,7 +23,9 @@ export default {
     }
   },
   vuex: {
-    actions: { doLogin },
+    actions: {
+      doLogin
+    },
     getters: {
       error: getError
     }
