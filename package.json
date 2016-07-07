@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
-    "unit": "karma start test/unit/karma.conf.js --single-run",
+    "unit": "karma start test/unit/karma.conf.js --single-run && cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
@@ -29,6 +29,7 @@
     "babel-preset-stage-2": "^6.0.0",
     "chai": "^3.5.0",
     "chromedriver": "^2.21.2",
+    "codecov": "^1.0.1",
     "connect-history-api-fallback": "^1.1.0",
     "cross-spawn": "^2.1.5",
     "css-loader": "^0.23.0",

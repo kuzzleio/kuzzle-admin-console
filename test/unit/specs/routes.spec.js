@@ -50,7 +50,7 @@ describe('Router test', () => {
 
 describe('Router test', () => {
   let vueRouter = new VueRouter()
-  let transition = { redirect: sinon.spy(), next: sinon.spy(), from: { name: 'Home' }, to: {name: 'Login'} }
+  let transition = { redirect: sinon.spy(), next: sinon.spy(), from: { path: '/' }, to: {path: '/login'} }
 
   vueRouter.beforeEach = (f) => {
     f(transition)
