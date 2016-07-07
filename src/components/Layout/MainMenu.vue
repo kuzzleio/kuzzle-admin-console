@@ -12,7 +12,11 @@
             </li>
           </ul>
 
-          <button @click="doLogout">Logout</button>
+          <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li>
+              <a @click="doLogout">Logout</a>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
