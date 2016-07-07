@@ -1,5 +1,6 @@
 import Login from './components/Login'
 import store from './vuex/store'
+import PluginPage from './components/PluginPage'
 import { isAuthenticated } from './vuex/getters'
 
 export default function createRoutes (router) {
@@ -14,6 +15,10 @@ export default function createRoutes (router) {
     '/login': {
       name: 'Login',
       component: Login
+    },
+    '/plugin/:pluginName': {
+      name: 'PluginPage',
+      component: PluginPage
     }
   })
 
