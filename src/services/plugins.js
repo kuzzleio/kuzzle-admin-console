@@ -2,7 +2,7 @@ import store from '../vuex/store'
 import * as pluginMutations from '../vuex/modules/plugins/mutation-types'
 
 const pluginList = [
-  'kuzzle-bo-plugin-dummy'
+  'dummy'
 ]
 
 export default {
@@ -12,7 +12,8 @@ export default {
     })
   },
   loadOne (pluginName) {
-    require(['../../plugins/' + pluginName + '/index'], (plugin) => {
+    // require(['../../node_modules/kuzzle-bo-plugin-' + pluginName + '/index'], (plugin) => {
+    require(['../../plugins/kuzzle-bo-plugin-' + pluginName + '/index'], (plugin) => {
       plugin.init({
         store,
         mutations: pluginMutations
