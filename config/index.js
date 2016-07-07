@@ -22,7 +22,7 @@ module.exports = {
     proxyTable: {}
   },
   backend: {
-    host: process.env.BACKEND_HOST || 'localhost',
+    host: process.env.BACKEND_HOST || 'kuzzle',
     port: process.env.BACKEND_PORT || '7512'
   }
 }
