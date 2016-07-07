@@ -6,10 +6,12 @@ import * as pluginMutations from './vuex/modules/plugins/mutation-types'
 
 Vue.config.debug = process.env.NODE_ENV !== 'production'
 
-var plugin = require('../plugins/kuzzle-bo-plugin-dummy/index').default
-plugin({
-  store,
-  mutations: pluginMutations
+require.ensure('../plugins/kuzzle-bo-plugin-dummy/index', (require) => {
+  let plugin = require('../plugins/kuzzle-bo-plugin-dummy/index').default
+  plugin({
+    store,
+    mutations: pluginMutations
+  })
 })
 
 router.start({
