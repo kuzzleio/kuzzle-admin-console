@@ -11,14 +11,14 @@ echo "Starting Tests..."
 npm run unit
 return_value=$?
 
-while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
-do
-  echo "$(date) - still trying connecting to http://$kuzzle"
-  sleep 1
-done
-echo "$(date) - successfully connected to Kuzzle"
-
 # when e2e tests can be launched uncomment those two lines
+#while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
+#do
+#  echo "$(date) - still trying connecting to http://$kuzzle"
+#  sleep 1
+#done
+#echo "$(date) - successfully connected to Kuzzle"
+
 #npm run test
 #return_value=$?
 
