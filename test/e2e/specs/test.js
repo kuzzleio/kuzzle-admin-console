@@ -4,11 +4,9 @@
 module.exports = {
   'default e2e tests': function (browser) {
     browser
-    .url('http://localhost:8080')
-      .waitForElementVisible('#app', 5000)
-      .assert.elementPresent('.logo')
-      .assert.containsText('h1', 'Hello World!')
-      .assert.elementCount('p', 3)
+    .url('http://localhost:3000')
+      .waitForElementVisible('#loginForm', 5000)
+      .assert.elementCount('input', 2)
       .end()
   }
 }
