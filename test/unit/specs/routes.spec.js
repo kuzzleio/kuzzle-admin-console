@@ -66,7 +66,7 @@ describe('Router test', () => {
 
   it('should not go to login because user already logged', () => {
     createRoutes.default(vueRouter)
-    vueRouter.go({name: 'Login'})
-    expect(transition.redirect.calledWith('Home')).to.be.ok
+    vueRouter.go('/login')
+    expect(transition.redirect.calledWith('/')).to.be.ok
   })
 })
