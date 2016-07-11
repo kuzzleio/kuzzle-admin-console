@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <img class="logo" src="../assets/logo.png">
-    <hello></hello>
     <p>
       Welcome to your Vue.js app!
     </p>
@@ -19,19 +18,18 @@
       <a href="https://github.com/vuejs/vue-router/" target="_blank">vue-router</a> for routing and
       <a href="https://github.com/vuejs/vuex/" target="_blank">vuex</a> for state management.
     </p>
+    <button @click="logout">Logout</button>
   </div>
 </template>
 
 <script>
-import Hello from './Hello'
-import kuzzle from '../services/kuzzle'
+import { logout } from '../vuex/modules/auth/actions'
 
 export default {
-  components: {
-    Hello
-  },
-  ready () {
-    console.dir(kuzzle)
+  vuex: {
+    actions: {
+      logout
+    }
   }
 }
 </script>
