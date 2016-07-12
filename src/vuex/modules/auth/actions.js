@@ -45,7 +45,6 @@ export const loginFromCookie = (store) => {
       if (res.valid) {
         kuzzle.setJwtToken(user.jwt)
         store.dispatch('SET_CURRENT_USER', user)
-        router.go({name: 'Home'})
       }
     })
   }
