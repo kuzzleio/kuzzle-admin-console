@@ -3,5 +3,9 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+    ready () {
+      console.log('READY')
+    }
+  }
 </script>

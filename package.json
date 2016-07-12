@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
-    "unit": "karma start test/unit/karma.conf.js --single-run && cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
+    "unit": "karma start test/unit/karma.conf.js --single-run",
+    "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"

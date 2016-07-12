@@ -1,9 +1,3 @@
-$primary-color: #00757f;
-
-$roboto-font-path: '../../node_modules/materialize-css/fonts/roboto/' !default;
-
-$navbar-height: 50px;
-$navbar-height-mobile: 40px;
-
+@import './variables';
 @import '../../node_modules/materialize-css/sass/materialize';
 @import './layout';

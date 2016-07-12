@@ -2,7 +2,7 @@ import Login from '../components/Login'
 import store from '../vuex/store'
 import { isAuthenticated } from '../vuex/getters'
 
-import SecurityRoutes from './securityRoutes'
+import SecuritySubRoutes from './subRoutes/security'
 
 export default function createRoutes (router) {
   router.map({
@@ -12,7 +12,7 @@ export default function createRoutes (router) {
         require(['../components/Home'], resolve)
       },
       auth: true,
-      subRoutes: SecurityRoutes
+      subRoutes: SecuritySubRoutes
     },
     '/login': {
       name: 'Login',
@@ -31,8 +31,7 @@ export default function createRoutes (router) {
 
     if (transition.to.auth && !isAuthenticated(store.state)) {
       transition.redirect('/login')
-    }
-    else {
+    } else {
       transition.next()
     }
   })

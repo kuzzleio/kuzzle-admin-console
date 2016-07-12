@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import SecurityLayout from '../../../../../src/components/Security/Layout'
 import VueRouter from 'vue-router'
-import SecurityRoutes from '../../../../../src/routes/securityRoutes'
+import SecurityRoutes from '../../../../../src/routes/subRoutes/security'
 
 describe('Security layout display', () => {
   it('should render correct contents', () => {
