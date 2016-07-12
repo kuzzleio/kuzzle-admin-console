@@ -11,9 +11,6 @@
   export default {
     components: {
       MainMenu
-    },
-    ready () {
-      console.log(MainMenu)
     }
   }
 </script>
