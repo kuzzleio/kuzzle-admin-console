@@ -18,9 +18,8 @@
   export default {
     props: ['id'],
     ready () {
-      let that = this
       /*eslint no-undef: 0*/
-      jQuery(that.$el).find('.dropdown-button').dropdown()
+      jQuery(this.$el).find('.dropdown-button').dropdown()
     }
   }
 </script>
