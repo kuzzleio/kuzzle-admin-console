@@ -24,13 +24,13 @@ export const doLogin = (store, username, password) => {
     })
 }
 
-export const loginFromCookie = (store) => {
+export const loginFromCookie = (store, cb) => {
   let user,
     id
 
   if (kuzzle.state !== 'connected') {
     id = kuzzle.addListener('connected', () => {
-      loginFromCookie(store)
+      loginFromCookie(store, cb)
       kuzzle.removeListener('connected', id)
     })
     return
@@ -40,14 +40,17 @@ export const loginFromCookie = (store) => {
     kuzzle.checkToken(user.jwt, (err, res) => {
       if (err) {
         store.dispatch('SET_CURRENT_USER', null)
+        cb()
         return
       }
       if (res.valid) {
         kuzzle.setJwtToken(user.jwt)
         store.dispatch('SET_CURRENT_USER', user)
-        router.go({name: 'Home'})
+        cb()
       }
     })
+  } else {
+    cb()
   }
 }
 
