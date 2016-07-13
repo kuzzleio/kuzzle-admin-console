@@ -22,6 +22,8 @@ return_value=$?
 #npm run test
 #return_value=$?
 
+npm run codecov
+
 if [ $return_value -gt 0 ]; then
   mkdir /var/app/dump
   curl -XGET http://elasticsearch:9200/kuzzle-bo-testindex/_search/?size=1000 -o /var/app/dump/kuzzle-bo-testindex.json

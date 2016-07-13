@@ -1,0 +1,24 @@
+main {
+  padding-left: 240px;
+
+  .wrapper {
+    padding-left: 15px;
+    padding-top: 10px;
+
+    h1 {
+      margin-top: 0;
+      font-size: 3rem;
+    }
+  }
+}
+
+.side-nav {
+  top: $navbar-height;
+  overflow: hidden;
+}
+
+@media #{$medium-and-down} {
+  .side-nav.fixed {
+    transform: translateX(0);
+  }
+}

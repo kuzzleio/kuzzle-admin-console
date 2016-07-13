@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-const createRoutesInjector = require('inject!../../../src/routes')
+const createRoutesInjector = require('inject?../vuex/getters!../../../src/routes/index')
 import VueRouter from 'vue-router'
 
 describe('Router test', () => {
@@ -11,7 +11,7 @@ describe('Router test', () => {
   }
 
   const createRoutes = createRoutesInjector({
-    './vuex/getters': {
+    '../vuex/getters': {
       isAuthenticated () {
         return false
       }
@@ -34,7 +34,7 @@ describe('Router test', () => {
   }
 
   const createRoutes = createRoutesInjector({
-    './vuex/getters': {
+    '../vuex/getters': {
       isAuthenticated () {
         return true
       }
@@ -57,7 +57,7 @@ describe('Router test', () => {
   }
 
   const createRoutes = createRoutesInjector({
-    './vuex/getters': {
+    '../vuex/getters': {
       isAuthenticated () {
         return true
       }
@@ -66,7 +66,7 @@ describe('Router test', () => {
 
   it('should not go to login because user already logged', () => {
     createRoutes.default(vueRouter)
-    vueRouter.go({name: 'Login'})
-    expect(transition.redirect.calledWith('Home')).to.be.ok
+    vueRouter.go('/login')
+    expect(transition.redirect.calledWith('/')).to.be.ok
   })
 })
