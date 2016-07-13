@@ -20,7 +20,7 @@ describe('Router test', () => {
 
   it('should redirect to login page', () => {
     createRoutes.default(vueRouter)
-    vueRouter.go('/')
+    vueRouter.go({name: 'Home'})
     expect(transition.redirect.calledWith('/login')).to.be.ok
   })
 })
