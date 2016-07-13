@@ -40,13 +40,17 @@ export const loginFromCookie = (store, cb) => {
     kuzzle.checkToken(user.jwt, (err, res) => {
       if (err) {
         store.dispatch('SET_CURRENT_USER', null)
+        cb()
         return
       }
       if (res.valid) {
         kuzzle.setJwtToken(user.jwt)
         store.dispatch('SET_CURRENT_USER', user)
+        cb()
       }
     })
+  } else {
+    cb()
   }
 }
 
