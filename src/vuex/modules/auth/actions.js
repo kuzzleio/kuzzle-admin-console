@@ -20,7 +20,7 @@ export const doLogin = (store, username, password) => {
 
       store.dispatch('SET_CURRENT_USER', user)
       // TODO redirect to the previously asked route
-      router.go('/')
+      router.go({name: 'Home'})
     })
 }
 
@@ -45,17 +45,17 @@ export const loginFromCookie = (store) => {
       if (res.valid) {
         kuzzle.setJwtToken(user.jwt)
         store.dispatch('SET_CURRENT_USER', user)
-        router.go('/')
+        router.go({name: 'Home'})
       }
     })
   }
 }
 
-export const logout = (store) => {
+export const doLogout = (store) => {
   kuzzle.logout()
   cookie.delete()
   store.dispatch('SET_CURRENT_USER', null)
-  router.go('/login')
+  router.go({name: 'Login'})
 }
 
 // TODO doLogout(store)

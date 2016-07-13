@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-const createRoutesInjector = require('inject!../../../src/routes')
+const createRoutesInjector = require('inject?../vuex/getters!../../../src/routes/index')
 import VueRouter from 'vue-router'
 
 describe('Router test', () => {
@@ -11,7 +11,7 @@ describe('Router test', () => {
   }
 
   const createRoutes = createRoutesInjector({
-    './vuex/getters': {
+    '../vuex/getters': {
       isAuthenticated () {
         return false
       }
@@ -34,7 +34,7 @@ describe('Router test', () => {
   }
 
   const createRoutes = createRoutesInjector({
-    './vuex/getters': {
+    '../vuex/getters': {
       isAuthenticated () {
         return true
       }
@@ -57,7 +57,7 @@ describe('Router test', () => {
   }
 
   const createRoutes = createRoutesInjector({
-    './vuex/getters': {
+    '../vuex/getters': {
       isAuthenticated () {
         return true
       }
