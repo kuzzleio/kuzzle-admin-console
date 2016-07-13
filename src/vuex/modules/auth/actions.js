@@ -24,13 +24,13 @@ export const doLogin = (store, username, password) => {
     })
 }
 
-export const loginFromCookie = (store) => {
+export const loginFromCookie = (store, cb) => {
   let user,
     id
 
   if (kuzzle.state !== 'connected') {
     id = kuzzle.addListener('connected', () => {
-      loginFromCookie(store)
+      loginFromCookie(store, cb)
       kuzzle.removeListener('connected', id)
     })
     return
