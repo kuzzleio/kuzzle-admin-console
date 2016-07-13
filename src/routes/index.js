@@ -1,6 +1,6 @@
 import Login from '../components/Login'
 import store from '../vuex/store'
-import { isAuthenticated } from '../vuex/getters'
+import { isAuthenticated } from '../vuex/modules/auth/getters'
 
 import SecuritySubRoutes from './subRoutes/security'
 

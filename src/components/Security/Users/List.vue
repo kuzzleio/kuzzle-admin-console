@@ -8,40 +8,41 @@
       <div class="row">
         <div class="col12">
           <div class="collection">
-            <div v-for="user in users" class="collection-item">
-              {{user.username}}
-
-              <a
-                v-for="profile in user.profiles"
-                v-link="{name: 'SecurityProfileDetail', params: {profileId: profile}}"
-                class="chip">{{profile}}</a>
+            <div v-for="user in documents" class="collection-item">
+              {{user.content.username}}
 
               <div class="right actions">
                 <a class="action fa fa-pencil"></a>
-                <a href="#" class="action dropdown-button fa fa-ellipsis-v" data-activates="{{user.id}}"></a>
-
-                <ul id="{{user.id}}" class='dropdown-content'>
+                <dropdown :id="user.id" class="action">
                   <li><a>Delete</a></li>
-                </ul>
+                </dropdown>
               </div>
             </div>
           </div>
+
+          <pagination
+            :change-page="changePage"
+            :current-page="currentPage"
+            :limit="limit"
+            :total="totalDocuments"
+          ></pagination>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" rel="stylesheet/scss" scoped>
   .collection {
     overflow: inherit;
 
     .actions {
-      margin-top: 6px;
+      margin-top: 1px;
       font-size: 1.3em;
 
       .action {
-        margin-right: 10px;
+        padding: 0 5px 0 5px;
+        margin-left: 5px;
       }
     }
   }
@@ -49,30 +50,47 @@
 
 <script>
   import Headline from '../../Layout/Headline'
+  import Pagination from '../../Layout/Pagination'
+  import Dropdown from '../../Layout/Dropdown'
+  import { searchUsers } from '../../../vuex/modules/collection/users-actions'
+  import { documents, totalDocuments } from '../../../vuex/modules/collection/getters'
 
   export default {
     components: {
-      Headline
+      Headline,
+      Pagination,
+      Dropdown
+    },
+    vuex: {
+      actions: {
+        searchUsers
+      },
+      getters: {
+        documents,
+        totalDocuments
+      }
     },
     data () {
       return {
-        users: [
-          {
-            id: 'toto',
-            username: 'toto',
-            profiles: ['profile1', 'profile2']
-          },
-          {
-            id: 'tutu',
-            username: 'tutu',
-            profiles: ['profile1', 'profile3']
-          }
-        ]
+        currentPage: 0,
+        limit: 15
       }
     },
-    ready () {
-      /*eslint no-undef: 0*/
-      jQuery(this.$el).find('.dropdown-button').dropdown()
+    events: {
+      'change-page' (currentPage) {
+        this.$router.go({query: {page: currentPage + 1}})
+      }
+    },
+    route: {
+      data () {
+        this.currentPage = parseInt(this.$route.query.page) - 1 || 0
+
+        this.searchUsers({
+          from: this.limit * this.currentPage,
+          size: this.limit
+        })
+      }
     }
+
   }
 </script>
