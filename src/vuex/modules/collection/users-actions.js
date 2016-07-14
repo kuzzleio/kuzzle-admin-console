@@ -1,5 +1,6 @@
 import {
-  RECEIVE_DOCUMENTS
+  RECEIVE_DOCUMENTS,
+  DELETE_DOCUMENT
 } from './mutation-types'
 
 import kuzzle from '../../../services/kuzzle'
@@ -11,8 +12,12 @@ export const deleteUser = (store, user) => {
 
   kuzzle
     .security
-    .deleteUser(user.id, (error, result) => {
-      console.log(error, result)
+    .deleteUser(user.id, error => {
+      if (error) {
+        return
+      }
+
+      store.dispatch(DELETE_DOCUMENT, user.id)
     })
 }
 

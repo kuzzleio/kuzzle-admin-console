@@ -14,7 +14,7 @@
               <div class="right actions">
                 <a class="action fa fa-pencil"></a>
                 <dropdown :id="user.id" class="action">
-                  <li><a>Delete</a></li>
+                  <li><a @click="deleteUser(user)">Delete</a></li>
                 </dropdown>
               </div>
             </div>
@@ -52,7 +52,7 @@
   import Headline from '../../Layout/Headline'
   import Pagination from '../../Layout/Pagination'
   import Dropdown from '../../Layout/Dropdown'
-  import { searchUsers } from '../../../vuex/modules/collection/users-actions'
+  import { searchUsers, deleteUser } from '../../../vuex/modules/collection/users-actions'
   import { documents, totalDocuments } from '../../../vuex/modules/collection/getters'
 
   export default {
@@ -63,7 +63,8 @@
     },
     vuex: {
       actions: {
-        searchUsers
+        searchUsers,
+        deleteUser
       },
       getters: {
         documents,

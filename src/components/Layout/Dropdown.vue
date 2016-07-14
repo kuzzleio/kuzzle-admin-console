@@ -1,8 +1,8 @@
 <template>
   <span>
-    <a class="dropdown-button fa fa-ellipsis-v" data-activates="id"></a>
+    <a class="dropdown-button fa fa-ellipsis-v" data-activates="{{id}}"></a>
 
-    <ul id="id" class='dropdown-content'>
+    <ul id="{{id}}" class='dropdown-content'>
       <slot></slot>
     </ul>
   </span>

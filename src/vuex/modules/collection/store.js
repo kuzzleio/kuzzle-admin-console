@@ -9,8 +9,8 @@ const state = {
 }
 
 export const mutations = {
-  [DELETE_DOCUMENT] (state, document) {
-    state.documents = state.documents.filter(element => element.id !== document.id)
+  [DELETE_DOCUMENT] (state, id) {
+    state.documents = state.documents.filter(element => element.id !== id)
   },
   [RECEIVE_DOCUMENTS] (state, result) {
     state.documents = result.documents
