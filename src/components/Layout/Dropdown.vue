@@ -1,6 +1,6 @@
 <template>
   <span>
-    <a class="dropdown-button fa fa-ellipsis-v" data-activates="{{id}}"></a>
+    <a class="action dropdown-button fa fa-ellipsis-v" data-activates="{{id}}"></a>
 
     <ul id="{{id}}" class='dropdown-content'>
       <slot></slot>
@@ -19,7 +19,7 @@
     props: ['id'],
     ready () {
       /*eslint no-undef: 0*/
-      jQuery(this.$el).find('.dropdown-button').dropdown()
+      $(this.$el).find('.dropdown-button').dropdown()
     }
   }
 </script>

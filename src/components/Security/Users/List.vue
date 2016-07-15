@@ -1,7 +1,7 @@
 <template>
   <div>
     <headline title="Users Management">
-      <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
+      <a @click="$broadcast('modal::open')" class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
     </headline>
 
     <div class="container">
@@ -13,7 +13,7 @@
 
               <div class="right actions">
                 <a class="action fa fa-pencil"></a>
-                <dropdown :id="user.id" class="action">
+                <dropdown :id="user.id">
                   <li><a @click="deleteUser(user)">Delete</a></li>
                 </dropdown>
               </div>
@@ -29,29 +29,26 @@
         </div>
       </div>
     </div>
+
+    <modal>
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+
+      <span slot="footer">
+        <button href="#" class="waves-effect waves-green btn-flat"
+                   @click="$broadcast('modal::close', 'agree')">
+            Agree
+        </button>
+      </span>
+    </modal>
   </div>
 </template>
-
-<style lang="scss" rel="stylesheet/scss" scoped>
-  .collection {
-    overflow: inherit;
-
-    .actions {
-      margin-top: 1px;
-      font-size: 1.3em;
-
-      .action {
-        padding: 0 5px 0 5px;
-        margin-left: 5px;
-      }
-    }
-  }
-</style>
 
 <script>
   import Headline from '../../Layout/Headline'
   import Pagination from '../../Layout/Pagination'
   import Dropdown from '../../Layout/Dropdown'
+  import Modal from '../../Layout/Modal'
   import { searchUsers, deleteUser } from '../../../vuex/modules/collection/users-actions'
   import { documents, totalDocuments } from '../../../vuex/modules/collection/getters'
 
@@ -59,7 +56,8 @@
     components: {
       Headline,
       Pagination,
-      Dropdown
+      Dropdown,
+      Modal
     },
     vuex: {
       actions: {

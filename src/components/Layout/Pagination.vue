@@ -34,13 +34,15 @@
 </style>
 
 <script>
-  let displayPages = 8
-
   export default {
     props: {
       total: Number,
       limit: Number,
-      currentPage: Number
+      currentPage: Number,
+      displayPages: {
+        type: Number,
+        'default': 8
+      }
     },
     watch: {
       currentPage () {
@@ -60,7 +62,7 @@
 
         pageList.push(this.currentPage)
 
-        while (pageList.length < displayPages && pageList.length < this.pages) {
+        while (pageList.length < this.displayPages && pageList.length < this.pages) {
           let page = this.currentPage + skip
           if (page >= 0 && page < this.pages) {
             pageList.push(page)
