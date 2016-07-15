@@ -65,7 +65,7 @@
     },
     events: {
       'change-page' (currentPage) {
-        this.$router.go({query: {page: currentPage + 1}})
+        this.$router.go({query: {page: currentPage}})
       }
     },
     route: {

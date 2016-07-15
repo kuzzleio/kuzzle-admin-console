@@ -88,7 +88,7 @@
     },
     methods: {
       setCurrentPage (n) {
-        console.log('set', n)
+        this.currentPage = n
         this.$dispatch('change-page', this.currentPage)
       },
       previousPage () {
