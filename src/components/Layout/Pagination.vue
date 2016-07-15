@@ -1,7 +1,7 @@
 <template>
   <ul class="pagination">
     <li @click.prevent="previousPage" :class="{disabled: currentPage == 0}" class="waves-effect">
-      <a v-if="firstLast" @click.prevent="currentPage = 0" href="#"><i class="fa fa-chevron-left"></i></a>
+      <a @click.prevent="currentPage = 0" href="#"><i class="fa fa-angle-double-left fast-pagination"></i></a>
       <a href="#"><i class="fa fa-chevron-left"></i></a>
     </li>
 
@@ -13,7 +13,7 @@
 
     <li @click.prevent="nextPage" :class="{disabled: currentPage == pages - 1}" class="waves-effect">
       <a href="#"><i class="fa fa-chevron-right"></i></a>
-      <a v-if="firstLast" @click.prevent="currentPage = pages - 1" href="#"><i class="fa fa-chevron-right"></i></a>
+      <a @click.prevent="currentPage = pages - 1" href="#"><i class="fa fa-angle-double-right fast-pagination"></i></a>
     </li>
   </ul>
 </template>
@@ -27,6 +27,11 @@
 
       i {
         font-size: 1rem;
+
+        &.fast-pagination {
+          font-size: 1.5rem;
+          font-weight: bold;
+        }
       }
     }
   }
@@ -59,21 +64,7 @@
         return Math.max(Math.ceil(this.total / this.limit), 1)
       },
       pager () {
-        var pageList = []
-        let skip = 1
 
-        pageList.push(this.currentPage)
-
-        while (pageList.length < this.displayPages && pageList.length < this.pages) {
-          let page = this.currentPage + skip
-          if (page >= 0 && page < this.pages) {
-            pageList.push(page)
-          }
-
-          skip = skip > 0 ? (skip * -1) : (skip * -1 + 1)
-        }
-
-        return pageList.sort(function (n1, n2) { return n1 - n2 })
       }
     },
     methods: {
