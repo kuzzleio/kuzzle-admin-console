@@ -35,5 +35,12 @@ describe('Pagination', () => {
     vm.total = 1000
     vm.displayPages = 9
     expect(vm.pager).to.eql([21, 22, 23, 24, 25, 26, 27, 28, 29])
+
+    vm = new Vue(Pagination)
+    vm.currentPage = 100
+    vm.limit = 10
+    vm.total = 1000
+    vm.displayPages = 9
+    expect(vm.pager).to.eql([92, 93, 94, 95, 96, 97, 98, 99, 100])
   })
 })

@@ -59,8 +59,8 @@
     },
     data () {
       return {
-        currentPage: 0,
-        limit: 15
+        currentPage: 1,
+        limit: 10
       }
     },
     events: {
@@ -70,7 +70,7 @@
     },
     route: {
       data () {
-        this.currentPage = parseInt(this.$route.query.page) - 1 || 0
+        this.currentPage = parseInt(this.$route.query.page) || 1
 
         this.searchUsers({
           from: this.limit * this.currentPage,
