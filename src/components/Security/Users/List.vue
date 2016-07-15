@@ -8,7 +8,7 @@
       <div class="row">
         <div class="col12">
           <div class="collection">
-            <div v-for="user in documents" class="collection-item">
+            <div v-for="user in documents" class="collection-item" transition="collection">
               {{user.content.username}}
 
               <div class="right actions">

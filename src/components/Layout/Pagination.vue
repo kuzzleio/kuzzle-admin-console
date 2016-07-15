@@ -7,9 +7,8 @@
 
     <li v-for="n in pager"
         :class="{active: currentPage === n}"
-        class="waves-effect"
-        @click.prevent="setCurrentPage(n)">
-      <a @click.prevent href="#">{{n + 1}}</a>
+        class="waves-effect">
+      <a @click.prevent="setCurrentPage(n)" href="#">{{n + 1}}</a>
     </li>
 
     <li @click.prevent="nextPage" :class="{disabled: currentPage == pages - 1}" class="waves-effect">
@@ -37,7 +36,10 @@
   export default {
     props: {
       total: Number,
-      limit: Number,
+      limit: {
+        type: Number,
+        'default': 10
+      },
       currentPage: Number,
       displayPages: {
         type: Number,
