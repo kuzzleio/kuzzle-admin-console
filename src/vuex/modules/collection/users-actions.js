@@ -21,7 +21,7 @@ export const deleteUser = (store, user) => {
     })
 }
 
-export const searchUsers = (store, filters) => {
+export const searchUsers = (store, filters = {}) => {
   kuzzle
     .security
     .searchUsers(filters, {hydrate: true}, (error, result) => {
