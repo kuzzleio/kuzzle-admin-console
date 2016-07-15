@@ -1,7 +1,7 @@
 <template>
   <div>
     <headline title="Users Management">
-      <a @click="$broadcast('modal::open')" class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
+      <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
     </headline>
 
     <div class="container">
@@ -29,18 +29,6 @@
         </div>
       </div>
     </div>
-
-    <modal>
-      <h4>Modal Header</h4>
-      <p>A bunch of text</p>
-
-      <span slot="footer">
-        <button href="#" class="waves-effect waves-green btn-flat"
-                   @click="$broadcast('modal::close', 'agree')">
-            Agree
-        </button>
-      </span>
-    </modal>
   </div>
 </template>
 

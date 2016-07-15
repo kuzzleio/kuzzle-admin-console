@@ -61,7 +61,6 @@
       'modal::close': function (result, id) {
         if ((this.id === null || typeof this.id === 'undefined') || (this.id === id)) {
           this.close()
-          this.result = result
           return true
         }
       }
@@ -131,7 +130,6 @@
       close () {
         if (this.active) {
           this.active = false
-          this.result = null
         }
       }
     }
