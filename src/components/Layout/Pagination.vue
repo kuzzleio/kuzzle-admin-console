@@ -1,8 +1,14 @@
 <template>
   <ul class="pagination">
-    <li @click.prevent="previousPage" :class="{disabled: currentPage == 1}">
-      <a @click.prevent="currentPage = 1" href="#"><i class="fa fa-angle-double-left fast-pagination waves-effect"></i></a>
-      <a href="#" class="waves-effect"><i class="fa fa-chevron-left"></i></a>
+    <li @click.prevent="currentPage = 1" :class="{disabled: currentPage == 1}" class="chevron">
+      <a href="#">
+        <i class="fa fa-angle-double-left fast-pagination waves-effect"></i>
+      </a>
+    </li>
+    <li @click.prevent="previousPage" :class="{disabled: currentPage == 1}" class="chevron">
+      <a href="#" class="waves-effect">
+        <i class="fa fa-chevron-left"></i>
+      </a>
     </li>
 
     <li v-for="n in pager"
@@ -11,9 +17,16 @@
       <a href="#">{{n}}</a>
     </li>
 
-    <li @click.prevent="nextPage" :class="{disabled: currentPage == pages}">
-      <a href="#"><i class="fa fa-chevron-right waves-effect"></i></a>
-      <a @click.prevent="currentPage = pages" href="#" class="waves-effect"><i class="fa fa-angle-double-right fast-pagination"></i></a>
+    <li @click.prevent="nextPage" :class="{disabled: currentPage == pages}" class="chevron">
+      <a href="#">
+        <i class="fa fa-chevron-right waves-effect"></i>
+      </a>
+    </li>
+    <li
+      @click.prevent="currentPage = pages" :class="{disabled: currentPage == pages}" class="chevron">
+      <a href="#">
+        <i class="fa fa-angle-double-right fast-pagination waves-effect"></i>
+      </a>
     </li>
   </ul>
 </template>
@@ -25,6 +38,11 @@
     li {
       font-size: 1rem;
 
+      &.chevron {
+        padding-left: 0;
+        padding-right: 0;
+        margin-right: 2px;
+      }
       i {
         font-size: 1rem;
 
@@ -92,13 +110,13 @@
         this.$dispatch('change-page', this.currentPage)
       },
       previousPage () {
-        if (this.currentPage > 0) {
+        if (this.currentPage > 1) {
           this.currentPage--
           this.$dispatch('change-page', this.currentPage)
         }
       },
       nextPage () {
-        if (this.currentPage < this.pages - 1) {
+        if (this.currentPage < this.pages) {
           this.currentPage++
           this.$dispatch('change-page', this.currentPage)
         }
