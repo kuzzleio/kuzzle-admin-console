@@ -72,8 +72,9 @@
     watch: {
       currentPage () {
         if (this.currentPage > this.pages) {
-          this.currentPage = this.pages
-          this.$dispatch('change-page', this.currentPage)
+          this.setCurrentPage(this.pages)
+        } else if (this.currentPage < 1) {
+          this.setCurrentPage(1)
         }
       }
     },
