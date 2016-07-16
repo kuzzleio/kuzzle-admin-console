@@ -29,6 +29,6 @@ export const searchUsers = (store, filters = {}) => {
         return
       }
 
-      store.dispatch(RECEIVE_DOCUMENTS, {total: 100, documents: result.users})
+      store.dispatch(RECEIVE_DOCUMENTS, {total: result.total, documents: result.users})
     })
 }
