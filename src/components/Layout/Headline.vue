@@ -11,7 +11,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" rel="stylesheet/scss">
   .headline {
     margin-bottom: 80px;
 

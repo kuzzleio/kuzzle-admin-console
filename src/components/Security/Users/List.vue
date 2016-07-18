@@ -1,7 +1,7 @@
 <template>
   <div>
     <headline title="Users Management">
-      <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
+      <a class="btn waves-effect waves-light" @click.prevent="$broadcast('modal-open', 'mymodal')"><i class="fa fa-plus-circle left"></i>Create</a>
     </headline>
 
     <div class="container">
@@ -29,6 +29,17 @@
         </div>
       </div>
     </div>
+
+    <modal id="mymodal" :bottom="false">
+      <h4>Test</h4>
+
+      <span slot="footer">
+        <button href="#" class="waves-effect waves-green btn-flat"
+                   @click.prevent="$broadcast('modal-close', 'agree', 'mymodal')">
+            Agree
+        </button>
+    </span>
+    </modal>
   </div>
 </template>
 

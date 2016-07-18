@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="active" :transition="transition" :id="id" :style="computedStyle" class="modal" :class="computedClasses">
+    <div v-if="active" :transition="transition" :id="id" class="modal" :class="computedClasses">
       <slot name="content">
         <div class="modal-content">
           <slot></slot>
@@ -23,43 +23,23 @@
 
 <script>
   // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
-  const ESC = 27
+  const ESC_KEY = 27
 
   export default {
     props: {
-      id: {
-        type: String,
-        required: false,
-        'default': null
-      },
-      result: {
-        type: String,
-        required: false,
-        'default': null
-      },
-      'class': {
-        type: String,
-        required: false,
-        'default': '',
-        twoWay: false
-      },
-      bottom: {
-        type: Boolean,
-        required: false,
-        'default': false,
-        twoWay: false
-      }
+      id: String,
+      result: String,
+      'class': String,
+      bottom: Boolean
     },
     events: {
-      'modal::open': function (id) {
-        if (this.id === null || typeof this.id === 'undefined') {
-          this.open()
-        } else if (this.id === id) {
+      'modal-open': function (id) {
+        if (this.id === id) {
           this.open()
         }
       },
-      'modal::close': function (result, id) {
-        if ((this.id === null || typeof this.id === 'undefined') || (this.id === id)) {
+      'modal-close': function (result, id) {
+        if (this.id === id) {
           this.close()
           return true
         }
@@ -83,39 +63,22 @@
       window.document.addEventListener('keydown', evt => {
         evt = evt || window.event
 
-        if (evt.keyCode === ESC) {
+        if (evt.keyCode === ESC_KEY) {
           this.close()
         }
       })
     },
     computed: {
-      computedStyle () {
-        if (this.active) {
-          return this.bottom ? {
-            'z-index': 1003,
-            'display': 'block',
-            'opacity': 1,
-            'bottom': '0px'
-          } : {
-            'z-index': 1003,
-            'display': 'block',
-            'top': '10%'
-          }
-        }
-
-        return null
-      },
       computedClasses () {
-        var classes = ''
-        if (this.class) {
-          classes += this.class
-        }
-        if (this.bottom) {
-          classes += ' '
-          classes += 'bottom-sheet'
+        if (!this.active) {
+          return null
         }
 
-        return classes
+        if (this.bottom) {
+          return 'bottom-modal bottom-sheet'
+        }
+
+        return 'normal-modal'
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'
@@ -123,20 +86,29 @@
     },
     methods: {
       open () {
-        if (!this.active) {
-          this.active = true
-        }
+        this.active = true
       },
       close () {
-        if (this.active) {
-          this.active = false
-        }
+        this.active = false
       }
     }
   }
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+  .modal {
+    &.bottom-modal {
+      z-index: 1003;
+      display: block;
+      opacity: 1;
+      bottom: 0;
+    }
+    &.normal-modal {
+      z-index: 1003;
+      display: block;
+      top: 10%;
+    }
+  }
   .modal-overlay-transition {
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
