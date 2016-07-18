@@ -143,26 +143,4 @@ describe('Modal', () => {
       expect(vm.$refs.modal.computedClasses).to.be.equal('normal-modal')
     })
   })
-
-  describe('Ready', () => {
-    it('should attach event on escape key', () => {
-      let spyEvent = sinon.spy()
-      let ModalInjector = require('inject?window!../../../../src/components/Layout/Modal')
-      let ModalMock = ModalInjector({
-        window: {
-          document: {
-            addEventListener: spyEvent
-          }
-        }
-      })
-
-      let vm = new Vue({
-        template: '<div><modal v-ref:modal id="myModal"></modal></div>',
-        components: {
-          Modal: ModalMock
-        }
-      }).$mount()
-      console.log(spyEvent.calledOnce)
-    })
-  })
 })

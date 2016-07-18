@@ -84,7 +84,7 @@
         this.currentPage = parseInt(this.$route.query.page) || 1
 
         this.searchUsers({
-          from: this.limit * this.currentPage,
+          from: this.limit * (this.currentPage - 1),
           size: this.limit
         })
       }
