@@ -21,7 +21,7 @@
           </div>
 
           <pagination
-            :change-page="changePage"
+            @change-page="changePage"
             :current-page="currentPage"
             :limit="limit"
             :total="totalDocuments"
@@ -63,8 +63,8 @@
         limit: 10
       }
     },
-    events: {
-      'change-page' (currentPage) {
+    methods: {
+      changePage (currentPage) {
         this.$router.go({query: {page: currentPage}})
       }
     },

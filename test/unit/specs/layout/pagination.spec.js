@@ -128,7 +128,7 @@ describe('Pagination', () => {
       let vm = new Vue({
         template: `<div>
           <pagination v-ref:pagination 
-          :change-page="changePage"
+          @change-page="changePage"
           :current-page="1" 
           :limit="10" 
           :total="100"></pagination>
@@ -136,8 +136,8 @@ describe('Pagination', () => {
         components: {
           Pagination
         },
-        events: {
-          'change-page': spyChangePage
+        methods: {
+          changePage: spyChangePage
         }
       }).$mount()
 
@@ -152,7 +152,7 @@ describe('Pagination', () => {
       let vm = new Vue({
         template: `<div>
           <pagination v-ref:pagination 
-          :change-page="changePage"
+          @change-page="changePage"
           :current-page="2" 
           :limit="10" 
           :total="100"></pagination>
@@ -160,8 +160,8 @@ describe('Pagination', () => {
         components: {
           Pagination
         },
-        events: {
-          'change-page': spyChangePage
+        methods: {
+          changePage: spyChangePage
         }
       }).$mount()
 
@@ -179,7 +179,7 @@ describe('Pagination', () => {
       let vm = new Vue({
         template: `<div>
           <pagination v-ref:pagination 
-          :change-page="changePage"
+          @change-page="changePage"
           :current-page="9" 
           :limit="10" 
           :total="100"></pagination>
@@ -187,8 +187,8 @@ describe('Pagination', () => {
         components: {
           Pagination
         },
-        events: {
-          'change-page': spyChangePage
+        methods: {
+          changePage: spyChangePage
         }
       }).$mount()
 
@@ -208,7 +208,7 @@ describe('Pagination', () => {
       let vm = new Vue({
         template: `<div>
           <pagination v-ref:pagination 
-          :change-page="changePage"
+          @change-page="changePage"
           :current-page="10" 
           :limit="10" 
           :total="100"></pagination>
@@ -216,8 +216,8 @@ describe('Pagination', () => {
         components: {
           Pagination
         },
-        events: {
-          'change-page': spyChangePage
+        methods: {
+          changePage: spyChangePage
         }
       }).$mount()
 
@@ -234,7 +234,7 @@ describe('Pagination', () => {
       let vm = new Vue({
         template: `<div>
           <pagination v-ref:pagination 
-          :change-page="changePage"
+          @change-page="changePage"
           :current-page="10" 
           :limit="10" 
           :total="100"></pagination>
@@ -242,8 +242,8 @@ describe('Pagination', () => {
         components: {
           Pagination
         },
-        events: {
-          'change-page': spyChangePage
+        methods: {
+          changePage: spyChangePage
         }
       }).$mount()
 
