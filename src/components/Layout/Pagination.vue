@@ -84,18 +84,17 @@
       },
       pager () {
         let displayedPages = []
-        let maximum = this.pages < this.displayPages ? this.pages : this.displayPages
+        let maximum = Math.min(this.pages, this.displayPages)
         let start = 1
 
-        if (this.pages <= this.displayPages) {
-          start = 1
-          maximum = this.pages
-        } else if (this.currentPage + Math.ceil(this.displayPages / 2) > this.pages) {
-          start = this.pages - (this.displayPages - 1)
-          maximum = this.pages
-        } else if (this.currentPage > Math.ceil(this.displayPages / 2)) {
-          start = Math.ceil(this.currentPage - (this.displayPages / 2))
-          maximum = start + (this.displayPages - 1)
+        if (this.pages > this.displayPages) {
+          if (this.currentPage + Math.ceil(this.displayPages / 2) > this.pages) {
+            start = this.pages - (this.displayPages - 1)
+            maximum = this.pages
+          } else if (this.currentPage > Math.ceil(this.displayPages / 2)) {
+            start = Math.ceil(this.currentPage - (this.displayPages / 2))
+            maximum = start + (this.displayPages - 1)
+          }
         }
 
         for (let i = start; i <= maximum; i++) {
