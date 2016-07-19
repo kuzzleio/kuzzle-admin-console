@@ -18,7 +18,7 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.deleteUser, [{}], {}, [], done)
+      testAction(actions.deleteUser, [], {}, [], done)
     })
 
     it('should do nothing on error from kuzzle', (done) => {
