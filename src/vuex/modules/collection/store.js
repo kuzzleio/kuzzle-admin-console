@@ -2,13 +2,15 @@ import {
   DELETE_DOCUMENT,
   DELETE_DOCUMENTS,
   RECEIVE_DOCUMENTS,
-  TOGGLE_SELECT_DOCUMENT
+  TOGGLE_SELECT_DOCUMENT,
+  SET_PAGINATION
 } from './mutation-types'
 
 const state = {
   selectedDocuments: [],
   documents: [],
-  total: 0
+  total: 0,
+  filters: {}
 }
 
 export const mutations = {
@@ -32,6 +34,10 @@ export const mutations = {
     }
 
     state.selectedDocuments.splice(index, 1)
+  },
+  [SET_PAGINATION] (state, pagination) {
+    state.filters.from = pagination.from
+    state.filters.size = pagination.size
   }
 }
 

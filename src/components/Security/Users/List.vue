@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col s10">
           <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-          <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" @click="deleteUsers(selectedDocuments)">
+          <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" @click="$broadcast('modal-open', 'bulk-delete')">
             <i class="fa fa-minus-circle left"></i>
             Delete
           </a>
@@ -39,6 +39,23 @@
         </div>
       </div>
     </div>
+
+    <modal id="bulk-delete">
+      <h4>Users deletion</h4>
+      <p>Do you really want to delete {{selectedDocuments.length}} users?</p>
+
+      <span slot="footer">
+        <button
+          href="#"
+          class="waves-effect waves-green btn red"
+          @click="confirmBulkDelete()">
+            I'm sure!
+        </button>
+        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
+            Cancel
+        </button>
+    </span>
+    </modal>
   </div>
 </template>
 
@@ -48,7 +65,7 @@
   import Dropdown from '../../Layout/Dropdown'
   import Modal from '../../Layout/Modal'
   import { searchUsers, deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
-  import { toggleSelectDocuments } from '../../../vuex/modules/collection/actions'
+  import { toggleSelectDocuments, setPagination } from '../../../vuex/modules/collection/actions'
   import { documents, totalDocuments, selectedDocuments } from '../../../vuex/modules/collection/getters'
 
   export default {
@@ -63,7 +80,8 @@
         searchUsers,
         deleteUser,
         deleteUsers,
-        toggleSelectDocuments
+        toggleSelectDocuments,
+        setPagination
       },
       getters: {
         documents,
@@ -87,18 +105,19 @@
       changePage (currentPage) {
         this.$router.go({query: {page: currentPage}})
       },
-      selectUser (userId) {
-        this.selectedUsers.push(userId)
+      confirmBulkDelete () {
+        this.$broadcast('modal-close', 'bulk-delete')
+        this.deleteUsers(this.selectedDocuments)
+          .then(() => {
+            this.searchUsers()
+          })
       }
     },
     route: {
       data () {
         this.currentPage = parseInt(this.$route.query.page) || 1
-
-        this.searchUsers({
-          from: this.limit * (this.currentPage - 1),
-          size: this.limit
-        })
+        this.setPagination(this.currentPage, this.limit)
+        this.searchUsers()
       }
     }
 

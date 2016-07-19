@@ -28,7 +28,6 @@
   export default {
     props: {
       id: String,
-      result: String,
       'class': String,
       bottom: Boolean
     },
@@ -38,7 +37,7 @@
           this.open()
         }
       },
-      'modal-close': function (result, id) {
+      'modal-close': function (id) {
         if (this.id === id) {
           this.close()
           return true

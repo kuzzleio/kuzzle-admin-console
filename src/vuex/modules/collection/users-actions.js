@@ -5,6 +5,7 @@ import {
 } from './mutation-types'
 
 import kuzzle from '../../../services/kuzzle'
+import Bluebird from 'bluebird'
 
 export const deleteUser = (store, id) => {
   if (!id) {
@@ -23,25 +24,30 @@ export const deleteUser = (store, id) => {
 }
 
 export const deleteUsers = (store, ids) => {
-  if (!ids) {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return
   }
 
-  kuzzle
-    .dataCollectionFactory('users', '%kuzzle')
-    .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
-      if (error) {
-        return
-      }
+  return new Bluebird((resolve) => {
+    kuzzle
+      .dataCollectionFactory('users', '%kuzzle')
+      .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
+        if (error) {
+          return
+        }
 
-      store.dispatch(DELETE_DOCUMENTS, ids)
-    })
+        store.dispatch(DELETE_DOCUMENTS, ids)
+        kuzzle.refreshIndex('myIndex', () => {
+          resolve()
+        })
+      })
+  })
 }
 
-export const searchUsers = (store, filters = {}) => {
+export const searchUsers = (store) => {
   kuzzle
     .security
-    .searchUsers(filters, (error, result) => {
+    .searchUsers(store.state.collection.filters, (error, result) => {
       if (error) {
         return
       }

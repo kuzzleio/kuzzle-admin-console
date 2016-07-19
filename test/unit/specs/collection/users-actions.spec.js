@@ -4,6 +4,7 @@ import {
   RECEIVE_DOCUMENTS,
   DELETE_DOCUMENTS
 } from '../../../../src/vuex/modules/collection/mutation-types'
+import store from '../../../../src/vuex/store'
 
 const actionsInjector = require('inject!../../../../src/vuex/modules/collection/users-actions')
 
@@ -62,7 +63,7 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.searchUsers, [{}], {}, [], done)
+      testAction(actions.searchUsers, [{}], {collection: {filters: {}}}, [], done)
     })
 
     it('should call kuzzle with the right filter', () => {
@@ -77,22 +78,8 @@ describe('Users actions', () => {
 
       let filter = {term: {attr: 'toto'}}
 
-      actions.searchUsers({}, filter)
+      actions.searchUsers({state: {collection: {filters: filter}}})
       expect(spySearchUsers.calledWith(filter)).to.equal(true)
-    })
-
-    it('should call kuzzle with the empty filter if not provided', () => {
-      let spySearchUsers = sinon.spy()
-      const actions = actionsInjector({
-        '../../../services/kuzzle': {
-          security: {
-            searchUsers: spySearchUsers
-          }
-        }
-      })
-
-      actions.searchUsers({})
-      expect(spySearchUsers.calledWith({})).to.equal(true)
     })
 
     it('should dispatch an object with total and users', (done) => {
@@ -107,7 +94,7 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.searchUsers, [{}], {}, [{ name: RECEIVE_DOCUMENTS, payload: [{total: result.total, documents: result.users}] }], done)
+      testAction(actions.searchUsers, [{}], {collection: {filters: {}}}, [{ name: RECEIVE_DOCUMENTS, payload: [{total: result.total, documents: result.users}] }], done)
     })
   })
 
@@ -119,7 +106,8 @@ describe('Users actions', () => {
             return {
               deleteUser: sinon.mock()
             }
-          }
+          },
+          refreshIndex: sinon.stub()
         }
       })
 
@@ -135,7 +123,8 @@ describe('Users actions', () => {
                 cb(new Error('error'))
               }
             }
-          }
+          },
+          refreshIndex: sinon.stub()
         }
       })
 
@@ -150,7 +139,8 @@ describe('Users actions', () => {
             return {
               deleteDocument: spyDeleteDocument
             }
-          }
+          },
+          refreshIndex: sinon.stub()
         }
       })
 
@@ -169,11 +159,53 @@ describe('Users actions', () => {
                 cb(null)
               }
             }
-          }
+          },
+          refreshIndex: sinon.stub()
         }
       })
 
       testAction(actions.deleteUsers, [['doc1', 'doc2']], {}, [{ name: DELETE_DOCUMENTS, payload: [['doc1', 'doc2']] }], done)
+    })
+
+    it('should call refresh index', () => {
+      let spyRefreshIndex = sinon.spy()
+      const actions = actionsInjector({
+        '../../../services/kuzzle': {
+          dataCollectionFactory () {
+            return {
+              deleteDocument (filter, cb) {
+                cb(null)
+              }
+            }
+          },
+          refreshIndex: spyRefreshIndex
+        }
+      })
+
+      actions.deleteUsers(store, ['doc1'])
+      expect(spyRefreshIndex.calledOnce).to.be.equal(true)
+    })
+
+    it('should resolve promise after refreshIndex', (done) => {
+      const actions = actionsInjector({
+        '../../../services/kuzzle': {
+          dataCollectionFactory () {
+            return {
+              deleteDocument (filter, cb) {
+                cb(null)
+              }
+            }
+          },
+          refreshIndex (index, cb) {
+            cb()
+          }
+        }
+      })
+
+      actions.deleteUsers(store, ['doc1'])
+        .then(() => {
+          done()
+        })
     })
   })
 })

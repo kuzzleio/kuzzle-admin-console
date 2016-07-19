@@ -39,7 +39,7 @@ describe('Modal', () => {
 
       vm.$refs.modal.open()
       vm.$refs.modal.close = sinon.spy()
-      vm.$broadcast('modal-close', true, 'otherModal')
+      vm.$broadcast('modal-close', 'otherModal')
 
       expect(vm.$refs.modal.close.calledOnce).to.be.equal(false)
     })
@@ -54,7 +54,7 @@ describe('Modal', () => {
 
       vm.$refs.modal.open()
       vm.$refs.modal.close = sinon.spy()
-      vm.$broadcast('modal-close', true, 'myModal')
+      vm.$broadcast('modal-close', 'myModal')
 
       expect(vm.$refs.modal.close.calledOnce).to.be.equal(true)
     })
