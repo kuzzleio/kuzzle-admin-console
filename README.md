@@ -41,11 +41,11 @@ If you want to communicate with Kuzzle in Stomp or AMQ, you probably want to add
 You can run the back office using the Kuzzle BO image with a link to your Kuzzle instance
 
     $ docker pull kuzzleio/bo
-    $ docker run --link my-kuzzle-container-name:kuzzle -p 3000:3000 kuzzleio/bo
+    $ docker run --link my-kuzzle-proxy-container-name:kuzzle -p 3000:3000 kuzzleio/bo
 
-Where `my-kuzzle-container-name` is the container name where your Kuzzle is running. If you are in trouble for get your container name you can retrieve it with
+Where `my-kuzzle-proxy-container-name` is the container name where your Kuzzle Proxy is running. If you are in trouble for get your container name you can retrieve it with
 
-    $ docker ps | grep kuzzleio/kuzzle
+    $ docker ps | grep kuzzleio/proxy
 
 The container name is in the last column.
 
