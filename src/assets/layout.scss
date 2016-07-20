@@ -2,12 +2,33 @@ main {
   padding-left: 240px;
 
   .wrapper {
-    padding-left: 15px;
-    padding-top: 10px;
+    padding-left: 20px;
+    padding-top: 20px;
 
     h1 {
       margin-top: 0;
       font-size: 3rem;
+    }
+  }
+}
+
+.collection {
+  overflow: inherit;
+
+  .collection-item {
+    label {
+      color: black;
+      line-height: 21px;
+    }
+    .actions {
+      margin-top: 1px;
+      font-size: 1.3em;
+
+      .action {
+        cursor: pointer;
+        padding: 0 5px 0 5px;
+        margin-left: 5px;
+      }
     }
   }
 }
