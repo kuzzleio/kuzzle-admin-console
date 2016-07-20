@@ -13,7 +13,7 @@
 
 <script>
 import { doLogin } from '../vuex/modules/auth/actions'
-import { getError } from '../vuex/getters'
+import { getError } from '../vuex/modules/common/getters'
 
 export default {
   data () {

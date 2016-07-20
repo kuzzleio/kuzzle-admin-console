@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import { mutations } from '../../../../src/vuex/modules/auth/store'
 
 const { SET_CURRENT_USER, SET_CURRENT_USER_RIGHTS } = mutations

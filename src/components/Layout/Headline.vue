@@ -1,7 +1,6 @@
 <template>
   <div class="headline">
-    <h1 class="left">{{title}}</h1>
-    <slot></slot>
+    <h1>{{title}}</h1>
   </div>
 </template>
 
@@ -11,9 +10,9 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" rel="stylesheet/scss">
   .headline {
-    margin-bottom: 80px;
+    margin-bottom: 60px;
 
     a.btn {
       margin-top: 5px;
