@@ -3,6 +3,7 @@ import store from '../vuex/store'
 import { isAuthenticated } from '../vuex/getters'
 
 import SecuritySubRoutes from './subRoutes/security'
+import DataSubRoutes from './subRoutes/data'
 
 export default function createRoutes (router) {
   router.map({
@@ -24,7 +25,8 @@ export default function createRoutes (router) {
           name: 'Data',
           component (resolve) {
             require(['../components/Data/Layout'], resolve)
-          }
+          },
+          subRoutes: DataSubRoutes
         }
       }
     },

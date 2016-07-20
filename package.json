@@ -2,7 +2,7 @@
   "name": "kuzzle-backoffice",
   "version": "1.0.0",
   "description": "A handy back-office for Kuzzle.io",
-  "author": "Luca Marchesini <luca@kuzzle.io>",
+  "author": "The Kuzzle team <support@kuzzle.io>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -19,6 +19,7 @@
     "jquery": "^2.1.3",
     "kuzzle-sdk": "^1.9.1",
     "materialize-css": "^0.97.6",
+    "q": "^1.4.1",
     "vue": "^1.0.21",
     "vue-router": "^0.7.13",
     "vuex": "^0.8.2"

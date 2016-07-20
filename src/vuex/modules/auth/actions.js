@@ -46,8 +46,8 @@ export const loginFromCookie = (store, cb) => {
       if (res.valid) {
         kuzzle.setJwtToken(user.jwt)
         store.dispatch('SET_CURRENT_USER', user)
-        cb()
       }
+      cb()
     })
   } else {
     cb()
@@ -60,5 +60,3 @@ export const doLogout = (store) => {
   store.dispatch('SET_CURRENT_USER', null)
   router.go({name: 'Login'})
 }
-
-// TODO doLogout(store)

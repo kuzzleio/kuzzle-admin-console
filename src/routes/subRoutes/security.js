@@ -11,6 +11,12 @@ export default {
       require(['../../components/Security/Profiles/List'], resolve)
     }
   },
+  '/profile/:profileId': {
+    name: 'SecurityProfileDetail',
+    component (resolve) {
+      require(['../../components/Security/Profiles/Detail'], resolve)
+    }
+  },
   '/roles': {
     name: 'SecurityRolesList',
     component (resolve) {
