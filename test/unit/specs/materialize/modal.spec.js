@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Modal from '../../../../src/components/Layout/Modal'
+import Modal from '../../../../src/components/Materialize/Modal'
 
 describe('Modal', () => {
   describe('Event', () => {

@@ -23,7 +23,7 @@
                 for="item-{{key}}"><strong>{{index.name}}</strong>&nbsp;<i class="fa fa-ellipsis-v"></i></label>
                 <ul>
                   <li v-for="collection in index.collections.stored"><a
-                    v-link="{name: 'SummaryData', params: {index: index.name, collection: collection}}"
+                    v-link="{name: 'DataIndexCollection', params: {index: index.name, collection: collection}}"
                     class="truncate">{{collection}}</a></li>
                   <li v-for="collection in index.collections.realtime"><a href="#" class="truncate">{{collection}}</a>
                   </li>
