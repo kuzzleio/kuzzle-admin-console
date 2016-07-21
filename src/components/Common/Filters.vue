@@ -8,6 +8,7 @@
               <div class="search-bar">
                 <i class="fa fa-search"></i>
                 <input type="text" placeholder="Search something..." @input="setSearchTerm"/>
+                <i class="fa fa-times remove-search" @click="removeSearchTerm"></i>
               </div>
             </div>
             <div class="col s3">
@@ -101,6 +102,9 @@
       },
       newSearch () {
         this.performSearch('users', '%kuzzle')
+      },
+      removeSearchTerm () {
+        this.setSearchTerm('')
       }
     }
   }
@@ -126,11 +130,16 @@
     }
 
     .search-bar {
+      position: relative;
       i {
         position: absolute;
         font-size: 1.3rem;
         margin-left: 4px;
         margin-top: 13px;
+        &.remove-search {
+          right: 48px;
+          cursor: pointer;
+        }
       }
       input {
         height: 48px;
