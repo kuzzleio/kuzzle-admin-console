@@ -12,22 +12,27 @@ main {
   }
 }
 
-.collection {
-  overflow: inherit;
+.list-document {
+  .no-document {
+    text-align: center;
+  }
+  .collection {
+    overflow: inherit;
 
-  .collection-item {
-    label {
-      color: black;
-      line-height: 21px;
-    }
-    .actions {
-      margin-top: 1px;
-      font-size: 1.3em;
+    .collection-item {
+      label {
+        color: black;
+        line-height: 21px;
+      }
+      .actions {
+        margin-top: 1px;
+        font-size: 1.3em;
 
-      .action {
-        cursor: pointer;
-        padding: 0 5px 0 5px;
-        margin-left: 5px;
+        .action {
+          cursor: pointer;
+          padding: 0 5px 0 5px;
+          margin-left: 5px;
+        }
       }
     }
   }

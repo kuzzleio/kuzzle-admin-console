@@ -4,7 +4,7 @@ import {
   RECEIVE_DOCUMENTS,
   TOGGLE_SELECT_DOCUMENT,
   SET_PAGINATION,
-  SET_SEARCH
+  SET_SEARCH_TERM
 } from './mutation-types'
 
 const state = {
@@ -47,7 +47,7 @@ export const mutations = {
   [SET_PAGINATION] (state, pagination) {
     state.pagination = pagination
   },
-  [SET_SEARCH] (state, search) {
+  [SET_SEARCH_TERM] (state, search) {
     state.search = search
   }
 }

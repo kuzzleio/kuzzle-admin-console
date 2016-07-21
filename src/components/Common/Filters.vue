@@ -3,15 +3,17 @@
     <div class="row">
       <div class="col s9 quick-search" v-if="!displayBlockFilter">
         <div class="row">
-          <div class="col s5">
-            <div class="search-bar">
-              <i class="fa fa-search"></i>
-              <input type="text" placeholder="Search something..." @input="newSearch" :value="search"/>
+          <form>
+            <div class="col s5">
+              <div class="search-bar">
+                <i class="fa fa-search"></i>
+                <input type="text" placeholder="Search something..." @input="setSearchTerm"/>
+              </div>
             </div>
-          </div>
-          <div class="col s3">
-            <button class="btn waves-effect waves-light">Search</button>
-          </div>
+            <div class="col s3">
+              <button type="submit" class="btn waves-effect waves-light" @click="newSearch">Search</button>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -65,7 +67,7 @@
   import Tabs from '../Layout/Tabs'
   import Tab from '../Layout/Tab'
   import MSelect from '../Layout/MSelect'
-  import { setSearch, performSearch } from '../../vuex/modules/collection/actions'
+  import { setSearchTerm, performSearch } from '../../vuex/modules/collection/actions'
   import { searchUsers } from '../../vuex/modules/collection/users-actions'
   import { search } from '../../vuex/modules/collection/getters'
 
@@ -82,7 +84,7 @@
         search
       },
       actions: {
-        setSearch,
+        setSearchTerm,
         performSearch,
         searchUsers
       }
@@ -97,12 +99,7 @@
       switchFilter (name) {
         this.tabActive = name
       },
-      newSearch (event) {
-        if (event.target.value === '') {
-          return this.searchUsers()
-        }
-
-        this.setSearch(event.target.value)
+      newSearch () {
         this.performSearch('users', '%kuzzle')
       }
     }

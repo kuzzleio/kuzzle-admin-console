@@ -1,7 +1,7 @@
 import {
   TOGGLE_SELECT_DOCUMENT,
   SET_PAGINATION,
-  SET_SEARCH,
+  SET_SEARCH_TERM,
   RECEIVE_DOCUMENTS
 } from './mutation-types'
 
@@ -26,21 +26,27 @@ export const setPagination = (store, currentPage, limit) => {
   })
 }
 
-export const setSearch = (store, search) => {
-  store.dispatch(SET_SEARCH, search)
+export const setSearchTerm = (store, e) => {
+  store.dispatch(SET_SEARCH_TERM, e.target.value)
 }
 
 export const performSearch = (store, collection, index) => {
-  let filter = {
-    query: {
-      'multi_match': {
-        query: store.state.collection.search,
-        fields: store.state.collection.fields,
-        type: 'best_fields',
-        'tie_breaker': 0.3
-      }
-    },
-    ...store.state.collection.pagination
+  let filter = {}
+
+  if (store.state.collection.search === '') {
+    filter = store.state.collection.pagination
+  } else {
+    filter = {
+      query: {
+        match_phrase_prefix: {
+          _all: {
+            query: store.state.collection.search,
+            max_expansions: 50
+          }
+        }
+      },
+      ...store.state.collection.pagination
+    }
   }
 
   kuzzle

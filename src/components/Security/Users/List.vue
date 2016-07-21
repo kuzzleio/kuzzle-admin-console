@@ -6,38 +6,44 @@
 
     <div>
       <div class="row">
-        <div class="col s10">
-          <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-          <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" @click="$broadcast('modal-open', 'bulk-delete')">
-            <i class="fa fa-minus-circle left"></i>
-            Delete
-          </a>
-          <div class="collection">
-            <div v-for="user in documents" class="collection-item" transition="collection">
-              <input
-                type="checkbox"
-                class="filled-in"
-                id="checkbox-{{user.id}}"
-                value="{{user.id}}"
-                @click="toggleSelectDocuments(user.id)"/>
+        <div class="col s10 list-document">
+          <div v-if="documents.length">
+            <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
+            <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" @click="$broadcast('modal-open', 'bulk-delete')">
+              <i class="fa fa-minus-circle left"></i>
+              Delete
+            </a>
+            <div class="collection">
+              <div v-for="user in documents" class="collection-item" transition="collection">
+                <input
+                  type="checkbox"
+                  class="filled-in"
+                  id="checkbox-{{user.id}}"
+                  value="{{user.id}}"
+                  @click="toggleSelectDocuments(user.id)"/>
 
-              <label for="checkbox-{{user.id}}" >{{user.id}}</label>
+                <label for="checkbox-{{user.id}}" >{{user.id}}</label>
 
-              <div class="right actions">
-                <a class="action fa fa-pencil"></a>
-                <dropdown :id="user.id">
-                  <li><a @click="deleteUser(user.id)">Delete</a></li>
-                </dropdown>
+                <div class="right actions">
+                  <a class="action fa fa-pencil"></a>
+                  <dropdown :id="user.id">
+                    <li><a @click="deleteUser(user.id)">Delete</a></li>
+                  </dropdown>
+                </div>
               </div>
             </div>
+
+            <pagination
+              @change-page="changePage"
+              :current-page="currentPage"
+              :limit="limit"
+              :total="totalDocuments"
+            ></pagination>
           </div>
 
-          <pagination
-            @change-page="changePage"
-            :current-page="currentPage"
-            :limit="limit"
-            :total="totalDocuments"
-          ></pagination>
+          <div v-if="!documents.length" class="no-document">
+            There is no user corresponding to your search!
+          </div>
         </div>
       </div>
     </div>
