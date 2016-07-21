@@ -2,6 +2,8 @@
   <div>
     <headline title="Users Management"></headline>
 
+    <filters></filters>
+
     <div>
       <div class="row">
         <div class="col s10">
@@ -64,16 +66,18 @@
   import Pagination from '../../Layout/Pagination'
   import Dropdown from '../../Layout/Dropdown'
   import Modal from '../../Layout/Modal'
+  import Filters from '../../Common/Filters'
   import { searchUsers, deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
   import { toggleSelectDocuments, setPagination } from '../../../vuex/modules/collection/actions'
-  import { documents, totalDocuments, selectedDocuments } from '../../../vuex/modules/collection/getters'
+  import { documents, totalDocuments, selectedDocuments, basicFilters } from '../../../vuex/modules/collection/getters'
 
   export default {
     components: {
       Headline,
       Pagination,
       Dropdown,
-      Modal
+      Modal,
+      Filters
     },
     vuex: {
       actions: {
@@ -86,7 +90,8 @@
       getters: {
         documents,
         totalDocuments,
-        selectedDocuments
+        selectedDocuments,
+        basicFilters
       }
     },
     data () {
@@ -117,7 +122,7 @@
       data () {
         this.currentPage = parseInt(this.$route.query.page) || 1
         this.setPagination(this.currentPage, this.limit)
-        this.searchUsers()
+        this.searchUsers(this.basicFilters)
       }
     }
 

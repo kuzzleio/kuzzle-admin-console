@@ -44,10 +44,10 @@ export const deleteUsers = (store, ids) => {
   })
 }
 
-export const searchUsers = (store) => {
+export const searchUsers = (store, filters = {}) => {
   kuzzle
     .security
-    .searchUsers(store.state.collection.filters, (error, result) => {
+    .searchUsers({...filters, ...store.state.collection.pagination}, (error, result) => {
       if (error) {
         return
       }
