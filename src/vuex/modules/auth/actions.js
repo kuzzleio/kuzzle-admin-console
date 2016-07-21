@@ -1,12 +1,14 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
 import cookie from '../../../services/cookies'
+import { SET_ERROR } from '../common/mutation-types'
+import { SET_CURRENT_USER } from './mutation-types'
 
 export const doLogin = (store, username, password) => {
   kuzzle
     .login('local', {username, password}, '1h', (err, res) => {
       if (err) {
-        store.dispatch('SET_ERROR', err.message)
+        store.dispatch(SET_ERROR, err.message)
         return
       }
       // TODO properly get user information via whoAmI
@@ -18,19 +20,19 @@ export const doLogin = (store, username, password) => {
       date.setTime(date.getTime() + 60 * 60 * 1000)
       cookie.set(`user=${JSON.stringify(user)}; expires=${date.toUTCString()}`)
 
-      store.dispatch('SET_CURRENT_USER', user)
+      store.dispatch(SET_CURRENT_USER, user)
       // TODO redirect to the previously asked route
-      router.go('/')
+      router.go({name: 'Home'})
     })
 }
 
-export const loginFromCookie = (store) => {
+export const loginFromCookie = (store, cb) => {
   let user,
     id
 
   if (kuzzle.state !== 'connected') {
     id = kuzzle.addListener('connected', () => {
-      loginFromCookie(store)
+      loginFromCookie(store, cb)
       kuzzle.removeListener('connected', id)
     })
     return
@@ -39,23 +41,26 @@ export const loginFromCookie = (store) => {
   if (user) {
     kuzzle.checkToken(user.jwt, (err, res) => {
       if (err) {
-        store.dispatch('SET_CURRENT_USER', null)
+        store.dispatch(SET_CURRENT_USER, null)
+        cb()
         return
       }
+
       if (res.valid) {
         kuzzle.setJwtToken(user.jwt)
-        store.dispatch('SET_CURRENT_USER', user)
-        router.go('/')
+        store.dispatch(SET_CURRENT_USER, user)
       }
+
+      cb()
     })
+  } else {
+    cb()
   }
 }
 
-export const logout = (store) => {
+export const doLogout = (store) => {
   kuzzle.logout()
   cookie.delete()
-  store.dispatch('SET_CURRENT_USER', null)
-  router.go('/login')
+  store.dispatch(SET_CURRENT_USER, null)
+  router.go({name: 'Login'})
 }
-
-// TODO doLogout(store)
