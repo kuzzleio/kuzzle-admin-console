@@ -36,13 +36,12 @@ export const listIndexesAndCollections = (store) => {
     })
 }
 
-export const getMapping = (store, index, collection, cb) => {
+export const getMapping = (store, index, collection) => {
   kuzzle.dataCollectionFactory(collection, index).getMapping((err, res) => {
     if (err) {
       store.dispatch('SET_ERROR', err.message)
       return
     }
     store.dispatch('RECEIVE_MAPPING', res.mapping)
-    cb()
   })
 }

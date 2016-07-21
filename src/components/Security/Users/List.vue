@@ -6,7 +6,8 @@
       <div class="row">
         <div class="col s10">
           <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-          <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" @click="$broadcast('modal-open', 'bulk-delete')">
+          <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'"
+             @click="$broadcast('modal-open', 'bulk-delete')">
             <i class="fa fa-minus-circle left"></i>
             Delete
           </a>
@@ -19,7 +20,7 @@
                 value="{{user.id}}"
                 @click="toggleSelectDocuments(user.id)"/>
 
-              <label for="checkbox-{{user.id}}" >{{user.id}}</label>
+              <label for="checkbox-{{user.id}}">{{user.id}}</label>
 
               <div class="right actions">
                 <a class="action fa fa-pencil"></a>
@@ -60,13 +61,13 @@
 </template>
 
 <script>
-  import Headline from '../../Layout/Headline'
-  import Pagination from '../../Layout/Pagination'
-  import Dropdown from '../../Layout/Dropdown'
-  import Modal from '../../Layout/Modal'
-  import { searchUsers, deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
-  import { toggleSelectDocuments, setPagination } from '../../../vuex/modules/collection/actions'
-  import { documents, totalDocuments, selectedDocuments } from '../../../vuex/modules/collection/getters'
+  import Headline from '../../Materialize/Headline'
+  import Pagination from '../../Materialize/Pagination'
+  import Dropdown from '../../Materialize/Dropdown'
+  import Modal from '../../Materialize/Modal'
+  import {searchUsers, deleteUser, deleteUsers} from '../../../vuex/modules/collection/users-actions'
+  import {toggleSelectDocuments, setPagination} from '../../../vuex/modules/collection/actions'
+  import {documents, totalDocuments, selectedDocuments} from '../../../vuex/modules/collection/getters'
 
   export default {
     components: {
