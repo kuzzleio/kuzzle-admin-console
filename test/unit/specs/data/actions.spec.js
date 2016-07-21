@@ -1,9 +1,9 @@
 import { testAction } from '../helper'
 const actionsInjector = require('inject!../../../../src/vuex/modules/data/actions')
 
-let triggerError = [true]
-
 describe('listIndexesAndCollections action', () => {
+  let triggerError = [true]
+
   const actions = actionsInjector({
     '../../../services/kuzzle': {
       listIndexes (cb) {
@@ -57,6 +57,39 @@ describe('listIndexesAndCollections action', () => {
           }
         ]
       ]}
+    ], done)
+  })
+})
+
+describe('getMapping test action', () => {
+  let triggerError = true
+
+  const actions = actionsInjector({
+    '../../../services/kuzzle': {
+      dataCollectionFactory () {
+        return {
+          getMapping: (cb) => {
+            if (triggerError) {
+              cb({message: 'error'})
+            } else {
+              cb(null, {mapping: 'mapping'})
+            }
+          }
+        }
+      }
+    }
+  })
+
+  it('should set an error on getMapping', (done) => {
+    testAction(actions.getMapping, [], {}, [
+      {name: 'SET_ERROR', payload: ['error']}
+    ], done)
+  })
+
+  it('should get the mapping properly', (done) => {
+    triggerError = false
+    testAction(actions.getMapping, [], {}, [
+      {name: 'RECEIVE_MAPPING', payload: ['mapping']}
     ], done)
   })
 })

@@ -9,28 +9,31 @@
 </style>
 
 <script>
-  let editor
-
   export default {
     props: [
       'content',
       'class',
       'readonly'
     ],
+    data () {
+      return {
+        editor: {}
+      }
+    },
     watch: {
       content: function () {
         if (this.content) {
-          editor.setValue(JSON.stringify(this.content, null, 2), -1)
+          this.editor.setValue(JSON.stringify(this.content, null, 2), -1)
         }
       }
     },
     ready () {
       /* eslint no-undef: 0 */
-      editor = ace.edit('jsoneditor')
-      editor.session.setMode('ace/mode/json')
-      editor.setTheme('ace/theme/tomorrow')
-      editor.setReadOnly(this.readonly)
-      editor.$blockScrolling = Infinity
+      this.editor = ace.edit('jsoneditor')
+      this.editor.session.setMode('ace/mode/json')
+      this.editor.setTheme('ace/theme/tomorrow')
+      this.editor.setReadOnly(this.readonly)
+      this.editor.$blockScrolling = Infinity
     }
   }
 </script>
