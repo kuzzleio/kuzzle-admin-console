@@ -7,8 +7,8 @@
             <div class="col s5">
               <div class="search-bar">
                 <i class="fa fa-search"></i>
-                <input type="text" placeholder="Search something..." @input="setSearchTerm"/>
-                <i class="fa fa-times remove-search" @click="removeSearchTerm"></i>
+                <input type="text" placeholder="Search something..." @input="setSearchTerm" :value="searchTerm"/>
+                <i class="fa fa-times remove-search" @click="resetSearchTerm"></i>
               </div>
             </div>
             <div class="col s3">
@@ -68,9 +68,9 @@
   import Tabs from '../Layout/Tabs'
   import Tab from '../Layout/Tab'
   import MSelect from '../Layout/MSelect'
-  import { setSearchTerm, performSearch } from '../../vuex/modules/collection/actions'
+  import { setSearchTerm, performSearch, resetSearchTerm } from '../../vuex/modules/collection/actions'
   import { searchUsers } from '../../vuex/modules/collection/users-actions'
-  import { search } from '../../vuex/modules/collection/getters'
+  import { searchTerm } from '../../vuex/modules/collection/getters'
 
   export default {
     directives: {
@@ -82,12 +82,13 @@
     },
     vuex: {
       getters: {
-        search
+        searchTerm
       },
       actions: {
         setSearchTerm,
         performSearch,
-        searchUsers
+        searchUsers,
+        resetSearchTerm
       }
     },
     data () {
@@ -102,9 +103,6 @@
       },
       newSearch () {
         this.performSearch('users', '%kuzzle')
-      },
-      removeSearchTerm () {
-        this.setSearchTerm('')
       }
     }
   }

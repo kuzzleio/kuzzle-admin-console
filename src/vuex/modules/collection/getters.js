@@ -10,8 +10,8 @@ export const selectedDocuments = state => {
   return state.collection.selectedDocuments
 }
 
-export const search = state => {
-  return state.collection.search
+export const searchTerm = state => {
+  return state.collection.searchTerm
 }
 
 export const basicFilters = state => {
