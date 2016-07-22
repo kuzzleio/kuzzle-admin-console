@@ -5,9 +5,13 @@ import {
   TOGGLE_SELECT_DOCUMENT,
   SET_PAGINATION,
   SET_SEARCH_TERM,
-  RESET_SEARCH_TERM
+  RESET_SEARCH_TERM,
+  ADD_GROUP_BASIC_FILTER,
+  ADD_AND_BASIC_FILTER,
+  REMOVE_AND_BASIC_FILTER
 } from './mutation-types'
 
+const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
 const state = {
   selectedDocuments: [],
   documents: [],
@@ -18,7 +22,7 @@ const state = {
   searchTerm: null,
   pagination: {},
   filters: {
-    basic: {},
+    basic: [[emptyBasicFilter]],
     advanced: {}
   }
 }
@@ -53,6 +57,26 @@ export const mutations = {
   },
   [RESET_SEARCH_TERM] (state) {
     state.searchTerm = null
+  },
+  [ADD_GROUP_BASIC_FILTER] (state) {
+    state.filters.basic.push([emptyBasicFilter])
+  },
+  [ADD_AND_BASIC_FILTER] (state, groupIndex) {
+    state.filters.basic[groupIndex].push(emptyBasicFilter)
+  },
+  [REMOVE_AND_BASIC_FILTER] (state, groupIndex, filterIndex) {
+    if (state.filters.basic.length === 1 && state.filters.basic[0].length === 1) {
+      state.filters.basic[0].splice(0, 1)
+      state.filters.basic[0].push(emptyBasicFilter)
+      return
+    }
+
+    if (state.filters.basic[groupIndex].length === 1 && state.filters.basic.length > 1) {
+      state.filters.basic.splice(groupIndex, 1)
+      return
+    }
+
+    state.filters.basic[groupIndex].splice(filterIndex, 1)
   }
 }
 

@@ -26,33 +26,45 @@
           <tab name="json"><a href="">Raw JSON Mode</a></tab>
 
           <div slot="contents" class="card">
-            <div class="col s12 filter-content">
+            <div class="col s12">
               <div v-if="tabActive === 'basic'">
-                <div class="row">
+                <div class="row filter-content">
                   <div class="col s8">
 
                     <div class="row block-and">
                       <p><i class="fa fa-search"></i>Query</p>
-                      <div class="row dots block-content">
-                        <div class="col s4">
-                          <input placeholder="Attribute" type="text" class="validate">
+                      <div v-for="(groupIndex, group) in basicFilters" class="row block-content">
+                        <div v-for="(filterIndex, filter) in group" track-by="$index" class="row dots group">
+                          <div class="col s4">
+                            <input placeholder="Attribute" type="text" class="validate" :value="filter.attribute">
+                          </div>
+                          <div class="col s2">
+                            <select v-m-select>
+                              <option value="match">Match</option>
+                            </select>
+                          </div>
+                          <div class="col s3">
+                            <input placeholder="Value" type="text" class="validate" :value="filter.value">
+                          </div>
+                          <div class="col s2">
+                            <i class="fa fa-times remove-filter"
+                              @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
+                            <button
+                              v-if="$index === group.length - 1"
+                              class="inline btn waves-effect waves-light"
+                              @click="addAndBasicFilter(groupIndex)">
+                                <i class="fa fa-plus left"></i>And
+                            </button>
+                          </div>
                         </div>
-                        <div class="col s4">
-                          <select v-m-select>
-                            <option value="match">Match</option>
-                          </select>
-                        </div>
-                        <div class="col s3">
-                          <input placeholder="Placeholder" type="text" class="validate">
-                        </div>
-                        <div class="col s3">
-                          <button class="inline btn waves-effect waves-light"><i class="fa fa-plus left"></i>And</button>
-                        </div>
+                        <p v-if="filterIndex !== basicFilters.length - 1">Or</p>
                       </div>
                     </div>
 
                     <div class="row">
-                      <button class="btn waves-effect waves-light"><i class="fa fa-plus left"></i>Or</button>
+                      <button class="btn waves-effect waves-light" @click="addGroupBasicFilter">
+                        <i class="fa fa-plus left"></i>Or
+                      </button>
                     </div>
 
                     <div class="row block-sort">
@@ -72,7 +84,7 @@
 
                   </div>
                 </div>
-                    <div class="row actions card-action">
+                    <div class="row card-action">
                       <button class="btn waves-effect waves-light">Search</button>
                       <button class="btn waves-effect waves-light">Reset</button>
                     </div>
@@ -96,9 +108,9 @@
   import Tabs from '../Layout/Tabs'
   import Tab from '../Layout/Tab'
   import MSelect from '../Layout/MSelect'
-  import { setSearchTerm, performSearch, resetSearchTerm } from '../../vuex/modules/collection/actions'
+  import { setSearchTerm, performSearch, resetSearchTerm, addGroupBasicFilter, addAndBasicFilter, removeAndBasicFilter } from '../../vuex/modules/collection/actions'
   import { searchUsers } from '../../vuex/modules/collection/users-actions'
-  import { searchTerm } from '../../vuex/modules/collection/getters'
+  import { searchTerm, basicFilters } from '../../vuex/modules/collection/getters'
 
   const ESC_KEY = 27
 
@@ -112,13 +124,17 @@
     },
     vuex: {
       getters: {
-        searchTerm
+        searchTerm,
+        basicFilters
       },
       actions: {
         setSearchTerm,
         performSearch,
         searchUsers,
-        resetSearchTerm
+        resetSearchTerm,
+        addGroupBasicFilter,
+        addAndBasicFilter,
+        removeAndBasicFilter
       }
     },
     data () {
@@ -202,45 +218,52 @@
     }
 
     .filter-content {
-      margin-top: 15px;
-
+      margin-bottom: 0;
       .dots {
         border-left: 1px dotted rgba(0,0,0,0.26);
         padding-bottom: 5px;
       }
       .block-and {
         margin-bottom: 5px;
+        i.remove-filter {
+          margin-top: 25px;
+          color: grey;
+          cursor: pointer;
+        }
         button {
           i.left {
             margin-right: 8px;
           }
           padding-left: 10px;
           padding-right: 10px;
-          margin-top: 6px;
+          margin-left: 10px;
         }
       }
       .block-sort {
-        margin-top: 30px;
+        margin-top: 40px;
         margin-bottom: 0;
       }
       .block-content {
         margin-left: 5px;
+        margin-bottom: 5px;
+        .group {
+          margin-bottom: 0;
+        }
       }
       p {
+        margin-bottom: 10px;
+        margin-top: 10px;
         i {
           font-size: 1.1em;
           margin-right: 10px;
         }
       }
-
-      .actions {
-        &.card-action {
-          padding: 10px;
-          button {
-            margin-top: 10px;
-            margin-right: 10px;
-          }
-        }
+    }
+    .card-action {
+      padding: 15px;
+      margin-bottom: 0;
+      button {
+        margin-right: 10px;
       }
     }
   }
