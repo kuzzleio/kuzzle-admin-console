@@ -2,7 +2,7 @@
   <div>
     <aside>
       <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
-        <li v-link-active>
+        <li>
           <nav>
             <div class="nav-wrapper">
               <form>
@@ -14,7 +14,7 @@
             </div>
           </nav>
         </li>
-        <li v-link-active>
+        <li>
           <treeview :tree="indexesAndCollections"></treeview>
         </li>
       </ul>

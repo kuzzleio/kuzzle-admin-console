@@ -1,6 +1,6 @@
 <template>
   <ul class="indexes">
-    <li v-for="(key, index) in tree" v-bind:class="{ 'open': treeState[key] }">
+    <li v-for="(key, index) in tree" v-bind:class="{ 'open': openBranches[key] }">
       <i class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch(key)"></i>
       <a class="tree-item truncate"
          v-link="{name: 'DataIndex', params: {index: index.name}}">
@@ -31,12 +31,12 @@
     props: ['tree'],
     data () {
       return {
-        treeState: []
+        openBranches: []
       }
     },
     methods: {
       toggleBranch (index) {
-        Vue.set(this.treeState, index, !this.treeState[index])
+        Vue.set(this.openBranches, index, !this.openBranches[index])
       }
     }
   }
@@ -72,8 +72,8 @@ ul.indexes li
 a,
 i.tree-toggle
 {
-  line-height: 40px;
-  height: 40px;
+  line-height: 32px;
+  height: 32px;
 }
 
 a.tree-item
@@ -82,9 +82,16 @@ a.tree-item
   margin: 0 15px;
 }
 
-i
+a.tree-item.active
+{
+  font-weight: bold;
+  color: #d54f58;
+}
+
+i.fa
 {
   margin-right: 5px;
+  color: rgb(100, 100, 100);
 }
 
 i.tree-toggle
