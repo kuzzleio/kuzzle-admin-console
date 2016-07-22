@@ -89,10 +89,10 @@ i.tree-toggle
 {
   position: absolute;
   cursor: pointer;
-  padding: 0 10px 0 0;
-  margin: 0;
+  padding: 0 10px 0 10px;
+  margin: 0 0 0 -10px;
   transition-duration: .2s;
-  transform-origin: 25% 50%;
+  transform-origin: 50% 50%;
 }
 
 /** open-closed state **/
