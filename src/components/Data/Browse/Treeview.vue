@@ -3,14 +3,18 @@
     <li v-for="(key, index) in tree" v-bind:class="{ 'open': openBranches[key] }">
       <i class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch(key)"></i>
       <a class="tree-item truncate"
-         v-link="{name: 'DataIndex', params: {index: index.name}}">
-        <strong><i class="fa fa-database" aria-hidden="true"></i>{{index.name}}</strong>
+         v-link="{name: 'DataIndex', params: {index: index.name}}"
+         v-bind:class="{ 'active': $route.params.index == index.name && !$route.params.collection }">
+        <i class="fa fa-database" aria-hidden="true"></i>
+        <strong>{{index.name}}</strong>
       </a>
       <ul class="collections">
         <li v-for="collection in index.collections.stored">
           <a class="tree-item truncate"
-             v-link="{name: 'DataIndexCollection', params: {index: index.name, collection: collection}}">
-             <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>{{collection}}
+             v-link="{name: 'DataIndexCollection', params: {index: index.name, collection: collection}}"
+             v-bind:class="{ 'active': $route.params.collection == collection }">
+             <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
+             {{collection}}
            </a>
         </li>
         <li v-for="collection in index.collections.realtime">
@@ -92,6 +96,12 @@ i.fa
 {
   margin-right: 5px;
   color: rgb(100, 100, 100);
+}
+
+i.fa:hover
+{
+  margin-right: 5px;
+  color: rgb(50, 50, 50);
 }
 
 i.tree-toggle
