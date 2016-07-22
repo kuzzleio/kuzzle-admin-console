@@ -10,11 +10,14 @@
         <li v-for="collection in index.collections.stored">
           <a class="tree-item truncate"
              v-link="{name: 'DataIndexCollection', params: {index: index.name, collection: collection}}">
-             <i class="fa fa-th-list" aria-hidden="true"></i>{{collection}}
+             <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>{{collection}}
            </a>
         </li>
         <li v-for="collection in index.collections.realtime">
-          <a href="#" class="truncate">{{collection}}</a>
+          <a class="tree-item truncate">
+            <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
+            {{collection}}
+          </a>
         </li>
       </ul>
     </li>
@@ -66,7 +69,6 @@ ul.indexes li
   position: relative;
 }
 
-li,
 a,
 i.tree-toggle
 {
