@@ -1,12 +1,12 @@
 <template>
   <ul class="indexes">
     <li v-for="(key, index) in tree" v-bind:class="{ 'open': openBranches[key] }">
-      <i class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch(key)"></i>
+      <i v-if="collectionCount(index)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch(key)"></i>
       <!-- v-link="{name: 'DataIndex', params: {index: index.name}}" -->
       <a class="tree-item truncate"
          v-bind:class="{ 'active': $route.params.index == index.name && !$route.params.collection }">
         <i class="fa fa-database" aria-hidden="true"></i>
-        <strong>{{index.name}}</strong>
+        <strong>{{index.name}}</strong> ({{collectionCount(index)}})
       </a>
       <ul class="collections">
         <li v-for="collection in index.collections.stored">
@@ -41,6 +41,23 @@
     methods: {
       toggleBranch (index) {
         Vue.set(this.openBranches, index, !this.openBranches[index])
+      },
+      collectionCount (index) {
+        let count = 0
+
+        if (!index.collections) {
+          return 0
+        }
+
+        if (index.collections.stored) {
+          count += index.collections.stored.length
+        }
+
+        if (index.collections.realtime) {
+          count += index.collections.realtime.length
+        }
+
+        return count
       }
     }
   }
