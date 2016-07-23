@@ -4,16 +4,16 @@
       <div class="col s9 quick-search">
         <div class="row">
           <form>
-            <div class="col s6">
+            <div class="col s7">
               <div class="search-bar">
                 <i class="fa fa-search search"></i>
-                <input type="text" placeholder="Search something..." @input="setSearchTerm" :value="searchTerm"/>
+                <input type="text" placeholder="Search something..." v-model="searchTerm"/>
                 <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-                <i class="fa fa-times remove-search" @click="resetSearchTerm"></i>
+                <i class="fa fa-times remove-search" @click="searchTerm = null"></i>
               </div>
             </div>
             <div class="col s3">
-              <button type="submit" class="btn waves-effect waves-light" @click="newSearch">Search</button>
+              <button type="submit" class="btn waves-effect waves-light" @click.prevent="quickSearch">Search</button>
             </div>
           </form>
         </div>
@@ -29,22 +29,22 @@
             <div class="col s12">
               <div v-if="tabActive === 'basic'">
                 <div class="row filter-content">
-                  <div class="col s8">
+                  <div class="col s12">
 
                     <div class="row block-and">
                       <p><i class="fa fa-search"></i>Query</p>
-                      <div v-for="(groupIndex, group) in basicFilters" class="row block-content">
+                      <div v-for="(groupIndex, group) in basicFilter" class="row block-content">
                         <div v-for="(filterIndex, filter) in group" track-by="$index" class="row dots group">
                           <div class="col s4">
-                            <input placeholder="Attribute" type="text" class="validate" :value="filter.attribute">
+                            <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute">
                           </div>
                           <div class="col s2">
-                            <select v-m-select>
+                            <select v-m-select v-model="filter.operator">
                               <option value="match">Match</option>
                             </select>
                           </div>
                           <div class="col s3">
-                            <input placeholder="Value" type="text" class="validate" :value="filter.value">
+                            <input placeholder="Value" type="text" class="validate" v-model="filter.value">
                           </div>
                           <div class="col s2">
                             <i class="fa fa-times remove-filter"
@@ -57,7 +57,7 @@
                             </button>
                           </div>
                         </div>
-                        <p v-if="filterIndex !== basicFilters.length - 1">Or</p>
+                        <p v-if="groupIndex < basicFilter.length - 1">Or</p>
                       </div>
                     </div>
 
@@ -69,7 +69,7 @@
 
                     <div class="row block-sort">
                       <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
-                      <div class="row block-content">
+                      <div class="row block-content" >
                         <div class="col s4">
                           <input placeholder="Attribute" type="text" class="validate">
                         </div>
@@ -108,11 +108,9 @@
   import Tabs from '../Layout/Tabs'
   import Tab from '../Layout/Tab'
   import MSelect from '../Layout/MSelect'
-  import { setSearchTerm, performSearch, resetSearchTerm, addGroupBasicFilter, addAndBasicFilter, removeAndBasicFilter } from '../../vuex/modules/collection/actions'
-  import { searchUsers } from '../../vuex/modules/collection/users-actions'
-  import { searchTerm, basicFilters } from '../../vuex/modules/collection/getters'
 
   const ESC_KEY = 27
+  const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
 
   export default {
     directives: {
@@ -122,33 +120,46 @@
       Tabs,
       Tab
     },
-    vuex: {
-      getters: {
-        searchTerm,
-        basicFilters
-      },
-      actions: {
-        setSearchTerm,
-        performSearch,
-        searchUsers,
-        resetSearchTerm,
-        addGroupBasicFilter,
-        addAndBasicFilter,
-        removeAndBasicFilter
-      }
-    },
     data () {
       return {
         displayBlockFilter: true,
-        tabActive: 'basic'
+        tabActive: 'basic',
+        searchTerm: null,
+        basicFilter: [[{...emptyBasicFilter}]],
+        advancedFilter: null
       }
     },
     methods: {
       switchFilter (name) {
         this.tabActive = name
       },
-      newSearch () {
-        this.performSearch('users', '%kuzzle')
+      quickSearch () {
+        this.$emit('filters-quick-search', this.searchTerm)
+      },
+      basicSearch () {
+        this.$emit('filters-basic-search', this.basicFilter)
+      },
+      advancedSearch () {
+        this.$emit('filters-advanced-search', this.advancedFilter)
+      },
+      addGroupBasicFilter () {
+        this.basicFilter.push([{...emptyBasicFilter}])
+      },
+      addAndBasicFilter (groupIndex) {
+        this.basicFilter[groupIndex].push({...emptyBasicFilter})
+      },
+      removeAndBasicFilter (groupIndex, filterIndex) {
+        if (this.basicFilter.length === 1 && this.basicFilter[0].length === 1) {
+          this.basicFilter[0].$set(0, {...emptyBasicFilter})
+          return
+        }
+
+        if (this.basicFilter[groupIndex].length === 1 && this.basicFilter.length > 1) {
+          this.basicFilter.splice(groupIndex, 1)
+          return
+        }
+
+        this.basicFilter[groupIndex].splice(filterIndex, 1)
       }
     },
     ready () {

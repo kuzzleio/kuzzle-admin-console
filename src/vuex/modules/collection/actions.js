@@ -3,10 +3,7 @@ import {
   SET_PAGINATION,
   SET_SEARCH_TERM,
   RECEIVE_DOCUMENTS,
-  RESET_SEARCH_TERM,
-  ADD_GROUP_BASIC_FILTER,
-  ADD_AND_BASIC_FILTER,
-  REMOVE_AND_BASIC_FILTER
+  RESET_SEARCH_TERM
 } from './mutation-types'
 
 import kuzzle from '../../../services/kuzzle'
@@ -38,7 +35,7 @@ export const resetSearchTerm = (store) => {
   store.dispatch(RESET_SEARCH_TERM)
 }
 
-export const performSearch = (store, collection, index) => {
+export const quickSearch = (store, collection, index) => {
   let filter = {}
 
   if (!store.state.collection.searchTerm) {
@@ -67,21 +64,10 @@ export const performSearch = (store, collection, index) => {
       let documents = result.documents.map((document) => {
         return {
           content: document.content,
-          id: document.id}
+          id: document.id
+        }
       })
 
       store.dispatch(RECEIVE_DOCUMENTS, {total: result.total, documents})
     })
-}
-
-export const addGroupBasicFilter = (store) => {
-  store.dispatch(ADD_GROUP_BASIC_FILTER)
-}
-
-export const addAndBasicFilter = (store, groupIndex) => {
-  store.dispatch(ADD_AND_BASIC_FILTER, groupIndex)
-}
-
-export const removeAndBasicFilter = (store, groupIndex, filterIndex) => {
-  store.dispatch(REMOVE_AND_BASIC_FILTER, groupIndex, filterIndex)
 }
