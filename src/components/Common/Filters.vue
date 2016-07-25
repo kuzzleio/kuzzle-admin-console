@@ -264,7 +264,16 @@
     }
   }
 
+  .quick-search {
+    button {
+      margin-top: 8px;
+    }
+  }
+
   .complex-search {
+    margin-top: 8px;
+    button {
+    }
     .search-bar {
       .chip {
         margin-left: 30px;
