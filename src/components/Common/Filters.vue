@@ -74,7 +74,7 @@
                             <a
                               v-if="$index === group.length - 1"
                               class="inline btn waves-effect waves-light"
-                              @click="btn addAndBasicFilter(groupIndex)">
+                              @click="addAndBasicFilter(groupIndex)">
                                 <i class="fa fa-plus left"></i>And
                             </a>
                           </div>
@@ -128,9 +128,9 @@
 </template>
 
 <script>
-  import Tabs from '../Layout/Tabs'
-  import Tab from '../Layout/Tab'
-  import MSelect from '../Layout/MSelect'
+  import Tabs from '../Materialize/Tabs'
+  import Tab from '../Materialize/Tab'
+  import MSelect from '../Materialize/MSelect'
 
   const ESC_KEY = 27
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}

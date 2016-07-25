@@ -18,7 +18,7 @@ describe('Router login redirect', () => {
     })
 
     createRoutes.default(vueRouter)
-    vueRouter.go('/')
+    vueRouter.go({name: 'Home'})
     expect(transition.redirect.calledWith('/login')).to.be.ok
   })
 

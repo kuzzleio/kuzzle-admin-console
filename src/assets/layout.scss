@@ -52,3 +52,21 @@ main {
     transform: translateX(0);
   }
 }
+
+nav .nav-wrapper form, nav .nav-wrapper form .input-field {
+  height: 100%;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+nav .input-field label i {
+  color: #000000;
+}
+
+.subnav {
+  background-color: #ffffff;
+}
+
+.subnav ul a {
+  color: #000000
+}

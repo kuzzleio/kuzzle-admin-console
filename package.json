@@ -2,7 +2,7 @@
   "name": "kuzzle-backoffice",
   "version": "1.0.0",
   "description": "A handy back-office for Kuzzle.io",
-  "author": "Luca Marchesini <luca@kuzzle.io>",
+  "author": "The Kuzzle team <support@kuzzle.io>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",

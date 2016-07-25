@@ -28,7 +28,6 @@
                   @click="toggleSelectDocuments(user.id)"/>
 
                 <label for="checkbox-{{user.id}}" >{{user.id}}</label>
-
                 <label v-if="user.additionalAttribute && user.additionalAttribute.value" class="additional-attribute">
                   ({{user.additionalAttribute.name}}: {{user.additionalAttribute.value}})
                 </label>
@@ -76,10 +75,10 @@
 </template>
 
 <script>
-  import Headline from '../../Layout/Headline'
-  import Pagination from '../../Layout/Pagination'
-  import Dropdown from '../../Layout/Dropdown'
-  import Modal from '../../Layout/Modal'
+  import Headline from '../../Materialize/Headline'
+  import Pagination from '../../Materialize/Pagination'
+  import Dropdown from '../../Materialize/Dropdown'
+  import Modal from '../../Materialize/Modal'
   import Filters from '../../Common/Filters'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
   import { toggleSelectDocuments, performSearch } from '../../../vuex/modules/collection/actions'

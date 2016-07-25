@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  import MainMenu from './Layout/MainMenu'
+  import MainMenu from './Materialize/MainMenu'
   export default {
     components: {
       MainMenu

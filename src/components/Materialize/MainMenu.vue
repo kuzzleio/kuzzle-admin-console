@@ -6,7 +6,9 @@
         <div class="container">
           <ul>
             <li><a>Dashboard</a></li>
-            <li><a>Data</a></li>
+            <li v-link-active>
+              <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
+            </li>
             <li v-link-active>
               <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
             </li>

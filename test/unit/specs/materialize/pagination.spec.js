@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Pagination from '../../../../src/components/Layout/Pagination'
+import Pagination from '../../../../src/components/Materialize/Pagination'
 
 describe('Pagination', () => {
   it('should init default value', () => {
