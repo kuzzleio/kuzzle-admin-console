@@ -13,7 +13,7 @@ describe('Security layout display', () => {
       replace: false
     })
 
-    let router = new VueRouter()
+    let router = new VueRouter({ abstract: true })
     router.map(SecurityRoutes)
 
     router.start(App, 'body')
