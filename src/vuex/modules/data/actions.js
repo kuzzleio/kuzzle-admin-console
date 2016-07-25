@@ -1,7 +1,7 @@
 import kuzzle from '../../../services/kuzzle'
-import q from 'q'
-import { RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS } from './mutation-types'
-import { SET_ERROR } from '../common/mutation-types'
+import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS} from './mutation-types'
+import {SET_ERROR} from '../common/mutation-types'
+import Promise from 'bluebird'
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
@@ -15,24 +15,25 @@ export const listIndexesAndCollections = (store) => {
       }
 
       result.forEach((index) => {
-        let deferred = q.defer()
-
-        promises.push(deferred.promise)
-        kuzzle.listCollections(index, (error, result) => {
-          if (error) {
-            store.dispatch(SET_ERROR, error.message)
-            return
-          }
-          if (index !== '%kuzzle') {
-            indexesAndCollections.push({
-              name: index,
-              collections: result
-            })
-          }
-          deferred.resolve(indexesAndCollections)
+        let promise = new Promise(resolve => {
+          kuzzle.listCollections(index, (error, result) => {
+            if (error) {
+              console.log('error', error)
+              store.dispatch(SET_ERROR, error.message)
+              return
+            }
+            if (index !== '%kuzzle') {
+              indexesAndCollections.push({
+                name: index,
+                collections: result
+              })
+            }
+            resolve(indexesAndCollections)
+          })
         })
+        promises.push(promise)
       })
-      q.all(promises).then(res => {
+      Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
       })
     })
