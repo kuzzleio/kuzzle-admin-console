@@ -28,19 +28,23 @@
           <div slot="contents" class="card">
             <div class="col s12">
               <div v-if="tabActive === 'basic'">
+                <form>
                 <div class="row filter-content">
                   <div class="col s12">
 
                     <div class="row block-and">
                       <p><i class="fa fa-search"></i>Query</p>
-                      <div v-for="(groupIndex, group) in basicFilter" class="row block-content">
-                        <div v-for="(filterIndex, filter) in group" track-by="$index" class="row dots group">
+                      <div v-for="(groupIndex, group) in filters.basic" class="row block-content">
+                        <div v-for="(filterIndex, filter) in group" class="row dots group">
                           <div class="col s4">
                             <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute">
                           </div>
                           <div class="col s2">
-                            <select v-m-select v-model="filter.operator">
+                            <select v-m-select="filter.operator">
                               <option value="match">Match</option>
+                              <option value="not_match">Not match</option>
+                              <option value="equal">Equal</option>
+                              <option value="not_equal">Not equal</option>
                             </select>
                           </div>
                           <div class="col s3">
@@ -49,34 +53,34 @@
                           <div class="col s2">
                             <i class="fa fa-times remove-filter"
                               @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
-                            <button
+                            <a
                               v-if="$index === group.length - 1"
                               class="inline btn waves-effect waves-light"
-                              @click="addAndBasicFilter(groupIndex)">
+                              @click="btn addAndBasicFilter(groupIndex)">
                                 <i class="fa fa-plus left"></i>And
-                            </button>
+                            </a>
                           </div>
                         </div>
-                        <p v-if="groupIndex < basicFilter.length - 1">Or</p>
+                        <p v-if="groupIndex < filters.basic.length - 1">Or</p>
                       </div>
                     </div>
 
                     <div class="row">
-                      <button class="btn waves-effect waves-light" @click="addGroupBasicFilter">
+                      <a class="btn waves-effect waves-light" @click="addGroupBasicFilter">
                         <i class="fa fa-plus left"></i>Or
-                      </button>
+                      </a>
                     </div>
 
                     <div class="row block-sort">
                       <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
                       <div class="row block-content" >
                         <div class="col s4">
-                          <input placeholder="Attribute" type="text" class="validate">
+                          <input placeholder="Attribute" type="text" class="validate" v-model="filters.sort.attribute">
                         </div>
                         <div class="col s2">
-                          <select v-m-select>
-                            <option value="match">asc</option>
-                            <option value="match">desc</option>
+                          <select v-m-select="filters.sort.order">
+                            <option value="asc">asc</option>
+                            <option value="desc">desc</option>
                           </select>
                         </div>
                       </div>
@@ -84,10 +88,11 @@
 
                   </div>
                 </div>
-                    <div class="row card-action">
-                      <button class="btn waves-effect waves-light">Search</button>
-                      <button class="btn waves-effect waves-light">Reset</button>
-                    </div>
+                <div class="row card-action">
+                  <button type="submit" class="btn waves-effect waves-light" @click.prevent="basicSearch">Search</button>
+                  <button class="btn waves-effect waves-light" @click="resetBasicSearch">Reset</button>
+                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -122,11 +127,22 @@
     },
     data () {
       return {
-        displayBlockFilter: true,
+        displayBlockFilter: false,
         tabActive: 'basic',
         searchTerm: null,
-        basicFilter: [[{...emptyBasicFilter}]],
-        advancedFilter: null
+        filters: {
+          basic: [[{...emptyBasicFilter}]],
+          raw: null,
+          sort: {
+            attribute: null,
+            order: 'asc'
+          }
+        }
+      }
+    },
+    events: {
+      'filters-close-block-filter' () {
+        this.displayBlockFilter = false
       }
     },
     methods: {
@@ -137,29 +153,33 @@
         this.$emit('filters-quick-search', this.searchTerm)
       },
       basicSearch () {
-        this.$emit('filters-basic-search', this.basicFilter)
+        this.$emit('filters-basic-search', this.filters.basic, this.filters.sort)
       },
-      advancedSearch () {
-        this.$emit('filters-advanced-search', this.advancedFilter)
+      resetBasicSearch () {
+        this.filters.basic = [[{...emptyBasicFilter}]]
+        this.filters.sort = {attribute: null, order: 'asc'}
+      },
+      rawSearch () {
+        this.$emit('filters-advanced-search', this.filters.raw)
       },
       addGroupBasicFilter () {
-        this.basicFilter.push([{...emptyBasicFilter}])
+        this.filters.basic.push([{...emptyBasicFilter}])
       },
       addAndBasicFilter (groupIndex) {
-        this.basicFilter[groupIndex].push({...emptyBasicFilter})
+        this.filters.basic[groupIndex].push({...emptyBasicFilter})
       },
       removeAndBasicFilter (groupIndex, filterIndex) {
-        if (this.basicFilter.length === 1 && this.basicFilter[0].length === 1) {
-          this.basicFilter[0].$set(0, {...emptyBasicFilter})
+        if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
+          this.filters.basic[0].$set(0, {...emptyBasicFilter})
           return
         }
 
-        if (this.basicFilter[groupIndex].length === 1 && this.basicFilter.length > 1) {
-          this.basicFilter.splice(groupIndex, 1)
+        if (this.filters.basic[groupIndex].length === 1 && this.filters.basic.length > 1) {
+          this.filters.basic.splice(groupIndex, 1)
           return
         }
 
-        this.basicFilter[groupIndex].splice(filterIndex, 1)
+        this.filters.basic[groupIndex].splice(filterIndex, 1)
       }
     },
     ready () {
@@ -241,7 +261,7 @@
           color: grey;
           cursor: pointer;
         }
-        button {
+        a.btn {
           i.left {
             margin-right: 8px;
           }

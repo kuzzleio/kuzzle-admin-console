@@ -2,7 +2,12 @@
   <div>
     <headline title="Users Management"></headline>
 
-    <filters></filters>
+    <filters
+      @filters-quick-search="quickSearch"
+      @filters-basic-search="basicSearch"
+      @filters-raw-search="rawSearch"
+      >
+    </filters>
 
     <div>
       <div class="row">
@@ -73,9 +78,10 @@
   import Dropdown from '../../Layout/Dropdown'
   import Modal from '../../Layout/Modal'
   import Filters from '../../Common/Filters'
-  import { searchUsers, deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
-  import { toggleSelectDocuments, setPagination } from '../../../vuex/modules/collection/actions'
-  import { documents, totalDocuments, selectedDocuments, basicFilters } from '../../../vuex/modules/collection/getters'
+  import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
+  import { toggleSelectDocuments, performSearch } from '../../../vuex/modules/collection/actions'
+  import { documents, totalDocuments, selectedDocuments } from '../../../vuex/modules/collection/getters'
+  import { formatFromQuickSearch, formatPagination, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {
     components: {
@@ -87,17 +93,15 @@
     },
     vuex: {
       actions: {
-        searchUsers,
         deleteUser,
         deleteUsers,
         toggleSelectDocuments,
-        setPagination
+        performSearch
       },
       getters: {
         documents,
         totalDocuments,
-        selectedDocuments,
-        basicFilters
+        selectedDocuments
       }
     },
     data () {
@@ -122,15 +126,23 @@
           .then(() => {
             this.searchUsers()
           })
+      },
+      quickSearch (searchTerm) {
+        this.performSearch('users', '%kuzzle', formatFromQuickSearch(searchTerm), formatPagination(this.currentPage, this.limit))
+      },
+      basicSearch (filters, sorting) {
+        this.performSearch('users', '%kuzzle', formatFromBasicSearch(filters), formatPagination(this.currentPage, this.limit), formatSort(sorting))
+        this.$broadcast('filters-close-block-filter')
+      },
+      rawSearch (filters) {
+
       }
     },
     route: {
       data () {
         this.currentPage = parseInt(this.$route.query.page) || 1
-        this.setPagination(this.currentPage, this.limit)
-        this.searchUsers(this.basicFilters)
+        this.performSearch('users', '%kuzzle', {}, formatPagination(this.currentPage, this.limit))
       }
     }
-
   }
 </script>

@@ -1,9 +1,6 @@
 import {
   TOGGLE_SELECT_DOCUMENT,
-  SET_PAGINATION,
-  SET_SEARCH_TERM,
-  RECEIVE_DOCUMENTS,
-  RESET_SEARCH_TERM
+  RECEIVE_DOCUMENTS
 } from './mutation-types'
 
 import kuzzle from '../../../services/kuzzle'
@@ -16,47 +13,10 @@ export const toggleSelectDocuments = (store, id) => {
   store.dispatch(TOGGLE_SELECT_DOCUMENT, id)
 }
 
-export const setPagination = (store, currentPage, limit) => {
-  if (currentPage === undefined || limit === undefined) {
-    return
-  }
-
-  store.dispatch(SET_PAGINATION, {
-    from: limit * (currentPage - 1),
-    size: limit
-  })
-}
-
-export const setSearchTerm = (store, e) => {
-  store.dispatch(SET_SEARCH_TERM, e.target.value)
-}
-
-export const resetSearchTerm = (store) => {
-  store.dispatch(RESET_SEARCH_TERM)
-}
-
-export const quickSearch = (store, collection, index) => {
-  let filter = {}
-
-  if (!store.state.collection.searchTerm) {
-    filter = store.state.collection.pagination
-  } else {
-    filter = {
-      query: {
-        match_phrase_prefix: {
-          _all: {
-            query: store.state.collection.searchTerm,
-            max_expansions: 50
-          }
-        }
-      },
-      ...store.state.collection.pagination
-    }
-  }
-
+export const performSearch = (store, collection, index, filters, pagination, sort = []) => {
   kuzzle
     .dataCollectionFactory(collection, index)
-    .advancedSearch(filter, (error, result) => {
+    .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
       if (error) {
         return
       }

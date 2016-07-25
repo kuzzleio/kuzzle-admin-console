@@ -2,25 +2,14 @@ import {
   DELETE_DOCUMENT,
   DELETE_DOCUMENTS,
   RECEIVE_DOCUMENTS,
-  TOGGLE_SELECT_DOCUMENT,
-  SET_PAGINATION,
-  SET_SEARCH_TERM
+  TOGGLE_SELECT_DOCUMENT
 } from './mutation-types'
 
-const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
 const state = {
   selectedDocuments: [],
   documents: [],
   total: 0,
-  fields: ['username'],
-  currentCollection: null,
-  currentIndex: null,
-  searchTerm: null,
-  pagination: {},
-  filters: {
-    basic: [[emptyBasicFilter]],
-    advanced: {}
-  }
+  pagination: {}
 }
 
 export const mutations = {
@@ -44,12 +33,6 @@ export const mutations = {
     }
 
     state.selectedDocuments.splice(index, 1)
-  },
-  [SET_PAGINATION] (state, pagination) {
-    state.pagination = pagination
-  },
-  [SET_SEARCH_TERM] (state, searchTerm) {
-    state.searchTerm = searchTerm
   }
 }
 

@@ -1,5 +1,4 @@
 import {
-  RECEIVE_DOCUMENTS,
   DELETE_DOCUMENT,
   DELETE_DOCUMENTS
 } from './mutation-types'
@@ -42,16 +41,4 @@ export const deleteUsers = (store, ids) => {
         })
       })
   })
-}
-
-export const searchUsers = (store, filters = {}) => {
-  kuzzle
-    .security
-    .searchUsers({...filters, ...store.state.collection.pagination}, (error, result) => {
-      if (error) {
-        return
-      }
-
-      store.dispatch(RECEIVE_DOCUMENTS, {total: result.total, documents: result.users})
-    })
 }
