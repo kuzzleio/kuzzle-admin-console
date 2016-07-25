@@ -1,5 +1,5 @@
 export const formatFromQuickSearch = (searchTerm) => {
-  if (searchTerm === '') {
+  if (searchTerm === '' || !searchTerm) {
     return {}
   }
 

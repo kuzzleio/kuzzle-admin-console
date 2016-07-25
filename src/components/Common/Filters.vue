@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <div class="col s9 quick-search">
+      <div v-if="!complexSearch" class="col s9 quick-search">
         <div class="row">
           <form>
             <div class="col s7">
@@ -9,13 +9,31 @@
                 <i class="fa fa-search search"></i>
                 <input type="text" placeholder="Search something..." v-model="searchTerm"/>
                 <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-                <i class="fa fa-times remove-search" @click="searchTerm = null"></i>
+                <i class="fa fa-times remove-search" @click="resetSearchTerm"></i>
               </div>
             </div>
             <div class="col s3">
               <button type="submit" class="btn waves-effect waves-light" @click.prevent="quickSearch">Search</button>
             </div>
           </form>
+        </div>
+      </div>
+      <div v-if="complexSearch" class="col s9 complex-search">
+        <div class="row">
+          <div class="col s7">
+            <div class="search-bar">
+              <i class="fa fa-search search"></i>
+              <div class="chip" @click="displayBlockFilter = true">
+                Complex query here
+                <i class="close fa fa-close" @click.prevent="resetComplexSearch"></i>
+              </div>
+              <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
+              <i class="fa fa-times remove-search" @click="resetComplexSearch"></i>
+            </div>
+          </div>
+          <div class="col s3">
+            <button type="submit" class="btn waves-effect waves-light" @click.prevent="quickSearch">Search</button>
+          </div>
         </div>
       </div>
 
@@ -128,6 +146,7 @@
     data () {
       return {
         displayBlockFilter: false,
+        complexSearch: false,
         tabActive: 'basic',
         searchTerm: null,
         filters: {
@@ -152,15 +171,29 @@
       quickSearch () {
         this.$emit('filters-quick-search', this.searchTerm)
       },
+      resetSearchTerm () {
+        this.searchTerm = null
+      },
       basicSearch () {
         this.$emit('filters-basic-search', this.filters.basic, this.filters.sort)
+        this.complexSearch = true
+      },
+      resetComplexSearch () {
+        this.resetBasicSearch()
+        this.resetRawSearch()
       },
       resetBasicSearch () {
         this.filters.basic = [[{...emptyBasicFilter}]]
         this.filters.sort = {attribute: null, order: 'asc'}
+        this.complexSearch = false
       },
       rawSearch () {
         this.$emit('filters-advanced-search', this.filters.raw)
+        this.complexSearch = true
+      },
+      resetRawSearch () {
+        this.filters.raw = {}
+        this.complexSearch = false
       },
       addGroupBasicFilter () {
         this.filters.basic.push([{...emptyBasicFilter}])
@@ -195,42 +228,55 @@
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .quick-search {
-    button {
-      margin-top: 2px;
+  .search-bar {
+    position: relative;
+
+    a {
+      position: absolute;
+      right: 70px;
+      top: 50%;
+      transform: translateY(-50%);
+      text-decoration: underline;
+    }
+    i {
+      position: absolute;
+      font-size: 1.3rem;
+      margin-left: 4px;
+      color: grey;
+      top: 50%;
+      transform: translateY(-50%);
+      &.remove-search {
+        right: 20px;
+        cursor: pointer;
+      }
+      &.search {
+        pointer-events: none;
+      }
     }
 
+    input {
+      height: 48px;
+      padding-left: 34px;
+      margin-bottom: 0;
+      width: 100%;
+      padding-right: 215px;
+      box-sizing: border-box;
+    }
+  }
+
+  .complex-search {
     .search-bar {
-      position: relative;
-      i {
-        position: absolute;
-        font-size: 1.3rem;
-        margin-left: 4px;
-        margin-top: 13px;
-        color: grey;
-        &.remove-search {
-          right: 20px;
+      .chip {
+        margin-left: 30px;
+        cursor: pointer;
+        i {
+          position: relative;
           cursor: pointer;
-          top: 0;
+          float: right;
+          font-size: 13px;
+          line-height: 32px;
+          padding-left: 8px;
         }
-        &.search {
-          pointer-events: none;
-        }
-      }
-      a {
-        position: absolute;
-        right: 70px;
-        top: 50%;
-        transform: translateY(-50%);
-        text-decoration: underline;
-      }
-      input {
-        height: 48px;
-        padding-left: 34px;
-        margin-bottom: 0;
-        width: 100%;
-        padding-right: 215px;
-        box-sizing: border-box;
       }
     }
   }
