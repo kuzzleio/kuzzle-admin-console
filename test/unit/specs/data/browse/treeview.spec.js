@@ -50,6 +50,8 @@ describe('Treeview component', () => {
 
     tree.collections.stored.push('toto')
     expect(router.app.$refs.treeview.collectionCount(tree)).to.equal(10)
+
+    expect(router.app.$refs.treeview.collectionCount({name: 'empty-index'})).to.equal(0)
   })
 
   it('should correctly toggle index branch', () => {
