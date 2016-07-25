@@ -3,7 +3,7 @@
     <div class="container">
       <ul>
         <li v-link-active>
-          <!-- <a v-link="{name: 'SummaryData', activeClass: 'active'}">Summary</a> -->
+          <a v-link="{name: 'WatchData', activeClass: 'active'}">Watch</a>
         </li>
       </ul>
     </div>

@@ -1,7 +1,7 @@
 <template>
   <header>
-    <nav>
-      <div class="navbar-fixed">
+    <div class="navbar-fixed">
+      <nav>
         <a href="#" class="brand-logo">Logo</a>
         <div class="container">
           <ul>
@@ -20,13 +20,13 @@
             </li>
           </ul>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   </header>
 </template>
 
 <script>
-  import { doLogout } from '../../vuex/modules/auth/actions'
+  import {doLogout} from '../../vuex/modules/auth/actions'
 
   export default {
     vuex: {

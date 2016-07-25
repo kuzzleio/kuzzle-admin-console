@@ -5,3 +5,7 @@ export const indexesAndCollections = state => {
 export const mapping = state => {
   return state.data.mapping
 }
+
+export const notifications = state => {
+  return state.data.notifications
+}
