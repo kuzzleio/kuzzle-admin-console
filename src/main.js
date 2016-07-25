@@ -6,9 +6,9 @@ import { loginFromCookie } from './vuex/modules/auth/actions'
 
 Vue.config.debug = process.env.NODE_ENV !== 'production'
 
-router.start({
-  store,
-  components: { App }
-}, 'body')
-
-loginFromCookie(store)
+loginFromCookie(store, () => {
+  router.start({
+    store,
+    components: { App }
+  }, 'body')
+})
