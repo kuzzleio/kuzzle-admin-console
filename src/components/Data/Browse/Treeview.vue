@@ -22,8 +22,6 @@
 {
   margin-top: 16px;
   padding-left: 15px;
-  padding: 0;
-  margin: 0;
   list-style: none;
 }
 
