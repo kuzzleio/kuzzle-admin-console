@@ -29,6 +29,9 @@
 
                 <label for="checkbox-{{user.id}}" >{{user.id}}</label>
 
+                <label v-if="user.additionalAttribute && user.additionalAttribute.value" class="additional-attribute">
+                  ({{user.additionalAttribute.name}}: {{user.additionalAttribute.value}})
+                </label>
                 <div class="right actions">
                   <a class="action fa fa-pencil"></a>
                   <dropdown :id="user.id">

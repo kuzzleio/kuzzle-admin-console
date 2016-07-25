@@ -80,8 +80,6 @@ export const formatSort = (sorting) => {
     return []
   }
 
-  console.log(sorting.order)
-
   return [
     {[sorting.attribute]: {order: sorting.order}}
   ]
