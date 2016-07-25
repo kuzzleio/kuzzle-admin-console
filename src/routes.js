@@ -1,7 +1,7 @@
 import Login from './components/Login'
 import store from './vuex/store'
 import PluginPage from './components/PluginPage'
-import { isAuthenticated } from './vuex/getters'
+import { isAuthenticated } from './vuex/modules/auth/getters'
 
 export default function createRoutes (router) {
   router.map({
