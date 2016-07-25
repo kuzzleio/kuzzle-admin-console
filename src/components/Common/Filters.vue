@@ -19,7 +19,7 @@
         </div>
       </div>
 
-      <div class="col s8 z-depth-2 open-search" v-if="displayBlockFilter">
+      <div class="col s8 z-depth-2 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive">
           <tab name="basic"><a href="">Basic Mode</a></tab>
@@ -27,7 +27,7 @@
 
           <div slot="contents" class="card">
             <div class="col s12">
-              <div v-if="tabActive === 'basic'">
+              <div v-show="tabActive === 'basic'">
                 <form>
                 <div class="row filter-content">
                   <div class="col s12">

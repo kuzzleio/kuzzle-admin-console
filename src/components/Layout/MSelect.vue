@@ -7,6 +7,7 @@
     id: 'm-select',
     twoWay: true,
     bind () {
+      console.log('ok')
       /* eslint no-undef: 0 */
       setTimeout(() => {
         let $el = $(this.el)
