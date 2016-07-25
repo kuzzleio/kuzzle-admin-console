@@ -14,11 +14,19 @@ backoffice:
     - "3000:3000"
   links:
     - proxy:kuzzle
+    - kuzzle:main
     # add link to elasticsearch in order to perform a dump
     - elasticsearch
   environment:
     - DEBUG_PHANTOM
     - KUZZLE_URL
+    - TRAVIS
+    - TRAVIS_COMMIT
+    - TRAVIS_JOB_NUMBER
+    - TRAVIS_BRANCH
+    - TRAVIS_JOB_ID
+    - TRAVIS_PULL_REQUEST
+    - TRAVIS_REPO_SLUG
 
 kuzzle:
   image: kuzzleio/kuzzle:develop

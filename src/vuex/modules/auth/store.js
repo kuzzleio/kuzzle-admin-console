@@ -8,7 +8,7 @@ const state = {
   rights: null
 }
 
-const mutations = {
+export const mutations = {
   [SET_CURRENT_USER] (state, user) {
     state.user = user
   },
