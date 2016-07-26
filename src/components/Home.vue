@@ -9,6 +9,7 @@
 <script>
   import MainMenu from './Materialize/MainMenu'
   export default {
+    name: 'Home',
     components: {
       MainMenu
     }

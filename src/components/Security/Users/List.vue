@@ -70,6 +70,7 @@
   import {documents, totalDocuments, selectedDocuments} from '../../../vuex/modules/collection/getters'
 
   export default {
+    name: 'UsersList',
     components: {
       Headline,
       Pagination,
