@@ -3,7 +3,7 @@
     <i v-if="collectionCount(index)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
     <!-- v-link="{name: 'DataIndex', params: {index: index.name}}" -->
     <a class="tree-item truncate"
-       v-bind:class="{ 'active': $route.params.index == index.name && !$route.params.collection }">
+       v-bind:class="{ 'active': isIndexActive($route, index.name) }">
       <i class="fa fa-database" aria-hidden="true"></i>
       <strong>{{index.name}}</strong> ({{collectionCount(index)}})
     </a>
@@ -11,7 +11,7 @@
       <li v-for="collection in index.collections.stored">
         <a class="tree-item truncate"
            v-link="{name: 'DataIndexCollection', params: {index: index.name, collection: collection}}"
-           v-bind:class="{ 'active': $route.params.collection == collection }">
+           v-bind:class="{ 'active': isCollectionActive($route, collection) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
            {{collection}}
          </a>
@@ -35,7 +35,7 @@ export default {
     }
   },
   ready: function () {
-    if (this.$route.params.index === this.index.name) {
+    if (this.$route.params && this.$route.params.index === this.index.name) {
       this.open = true
     }
   },
@@ -59,6 +59,17 @@ export default {
       }
 
       return count
+    },
+    isIndexActive (routeObject, indexName) {
+      return routeObject &&
+             routeObject.params &&
+             routeObject.params.index === indexName &&
+             !routeObject.params.collection
+    },
+    isCollectionActive (routeObject, collectionName) {
+      return routeObject &&
+             routeObject.params &&
+             routeObject.params.collection === collectionName
     }
   },
   components: {}
@@ -66,14 +77,6 @@ export default {
 </script>
 
 <style scoped lang="css">
-/*ul,
-li
-{
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}*/
-
 ul.collections
 {
   padding-left: 15px;

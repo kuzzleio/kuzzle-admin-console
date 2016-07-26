@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Treeview from '../../../../../src/components/Data/Browse/Treeview'
+import IndexBranch from '../../../../../src/components/Data/Browse/IndexBranch'
 import VueRouter from 'vue-router'
 import DataRoutes from '../../../../../src/routes/subRoutes/data'
 
@@ -23,16 +23,16 @@ let tree = {
   }
 }
 
-describe('Treeview component', () => {
+describe('IndexBranch component', () => {
   beforeEach(() => {
     Vue.use(VueRouter)
 
     const App = Vue.extend({
-      template: '<div><treeview v-ref:treeview :tree="tree"></treeview></div>',
-      components: { Treeview },
+      template: '<div><index-branch v-ref:indexbranch v-bind:index="tree"></index-branch></div>',
+      components: { IndexBranch },
       data () {
         return {
-          tree: [tree]
+          tree: tree
         }
       },
       replace: false
@@ -46,18 +46,50 @@ describe('Treeview component', () => {
   })
 
   it('should correctly compute collections inside an index', () => {
-    expect(router.app.$refs.treeview.collectionCount(tree)).to.equal(9)
+    expect(router.app.$refs.indexbranch.collectionCount(tree)).to.equal(9)
 
     tree.collections.stored.push('toto')
-    expect(router.app.$refs.treeview.collectionCount(tree)).to.equal(10)
+    expect(router.app.$refs.indexbranch.collectionCount(tree)).to.equal(10)
 
-    expect(router.app.$refs.treeview.collectionCount({name: 'empty-index'})).to.equal(0)
+    expect(router.app.$refs.indexbranch.collectionCount({name: 'empty-index'})).to.equal(0)
   })
 
   it('should correctly toggle index branch', () => {
-    expect(router.app.$refs.treeview.openBranches[0]).to.equal(undefined)
+    expect(router.app.$refs.indexbranch.open).to.equal(false)
 
-    router.app.$refs.treeview.toggleBranch(0)
-    expect(router.app.$refs.treeview.openBranches[0]).to.equal(true)
+    router.app.$refs.indexbranch.toggleBranch()
+    expect(router.app.$refs.indexbranch.open).to.equal(true)
+  })
+
+  it('should correctly determine whether an index is active', () => {
+    let indexName = 'toto'
+    let $route = {
+      params: {
+        index: indexName
+      }
+    }
+
+    expect(router.app.$refs.indexbranch.isIndexActive($route, indexName)).to.equal(true)
+
+    $route.params.index = 'tata'
+    expect(router.app.$refs.indexbranch.isIndexActive($route, indexName)).to.equal(false)
+
+    $route.params.index = indexName
+    $route.params.collection = 'titi'
+    expect(router.app.$refs.indexbranch.isIndexActive($route, indexName)).to.equal(false)
+  })
+
+  it('should correctly determine whether a collection is active', () => {
+    let collectionName = 'tata'
+    let $route = {
+      params: {
+        index: 'toto',
+        collection: collectionName
+      }
+    }
+    expect(router.app.$refs.indexbranch.isCollectionActive($route, collectionName)).to.equal(true)
+
+    $route.params.collection = 'tutu'
+    expect(router.app.$refs.indexbranch.isCollectionActive($route, collectionName)).to.equal(false)
   })
 })
