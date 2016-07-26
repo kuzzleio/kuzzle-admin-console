@@ -19,9 +19,12 @@
             </div>
           </div>
           <div class="row">
-            <div class="col m12">
+            <div class="col m6">
+              <p class="error">{{error}}</p>
+            </div>
+            <div class="col m6">
               <p class="right-align">
-                <button class="btn btn-large waves-effect waves-light" type="submit" name="action">Login</button>
+                <button class="btn waves-effect waves-light" type="submit" name="action">Login</button>
               </p>
             </div>
           </div>
@@ -30,6 +33,13 @@
     </div>
   </div>
 </template>
+
+<style type="text/css" media="screen" scoped>
+  .error {
+    color: #d54f58;
+    font-size: 18px;
+  }
+</style>
 
 <script>
   import {doLogin} from '../vuex/modules/auth/actions'
