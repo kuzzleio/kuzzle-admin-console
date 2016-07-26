@@ -36,6 +36,7 @@ export default {
   },
   methods: {
     toggleBranch () {
+      // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
     },
     collectionCount (index) {
