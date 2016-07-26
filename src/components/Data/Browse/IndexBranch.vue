@@ -34,11 +34,6 @@ export default {
       open: false
     }
   },
-  ready: function () {
-    if (this.$route.params && this.$route.params.index === this.index.name) {
-      this.open = true
-    }
-  },
   methods: {
     toggleBranch () {
       this.open = !this.open
@@ -72,7 +67,11 @@ export default {
              routeObject.params.collection === collectionName
     }
   },
-  components: {}
+  ready: function () {
+    if (this.$route.params && this.$route.params.index === this.index.name) {
+      this.open = true
+    }
+  }
 }
 </script>
 
