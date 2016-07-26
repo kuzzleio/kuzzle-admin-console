@@ -2,7 +2,9 @@
   <header>
     <nav>
       <div class="navbar-fixed">
-        <a href="#" class="brand-logo">Logo</a>
+        <a href="#" class="brand-logo">
+          <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
+        </a>
         <div class="container">
           <ul>
             <li><a>Dashboard</a></li>
@@ -36,3 +38,14 @@
     }
   }
 </script>
+
+<style scoped>
+.brand-logo {
+  height: 100%;
+}
+
+.brand-logo img {
+  height: 100%;
+  padding: 10px;
+}
+</style>
