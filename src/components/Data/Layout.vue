@@ -34,6 +34,7 @@
   import Treeview from './Browse/Treeview'
 
   export default {
+    name: 'DataLayout',
     components: {
       Treeview
     },

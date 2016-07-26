@@ -32,6 +32,7 @@
   import Vue from 'vue'
 
   export default {
+    name: 'Treeview',
     props: ['tree'],
     data () {
       return {

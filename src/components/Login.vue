@@ -46,6 +46,7 @@
   import {getError} from '../vuex/modules/common/getters'
 
   export default {
+    name: 'Login',
     data () {
       return {
         username: null,
