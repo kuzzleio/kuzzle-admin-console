@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col s12">
-      <p class="head">{{$route.params.collection}} - Watch </p>&nbsp;
+      <p class="head">{{$route.params.collection}} - Watch </p>
     </div>
   </div>
 
@@ -34,7 +34,6 @@
   }
 
   .notification-container {
-    #background-color: #383838;
     padding-top: 10px;
   }
 

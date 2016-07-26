@@ -1,14 +1,10 @@
 <template>
   <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse"><i v-bind:class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i> <i class="fa fa-{{notification.icon}}"></i> {{notification.text}} - {{ago}}</div>
-  <div class="collapsible-body" v-if="notification.source"><p>{{notification.source.source}}</p></div>
+  <div class="collapsible-body" v-if="notification.source"><p v-json-formatter="notification.source"></p></div>
 </template>
 
-<!-- header    rgba(243, 237, 211, 0.5) -->
-<!-- body rgba(222, 218, 204, 0.56) -->
 <style type="text/css" media="screen" scoped>
-
   .collapsible-header {
-    #background-color: #2D2D2D;
     border-width: 0;
   }
 
@@ -20,7 +16,10 @@
   .collapsible-body {
     color: #2A2A2A;
     border-width: 0;
-    #background-color: #383838;
+  }
+
+  .collapsible-body p {
+    padding-top: 0;
   }
 
   .unselectable {
@@ -34,12 +33,17 @@
 </style>
 
 <script>
+  import JsonFormatter from '../../../directives/json-formatter.directive'
+
   var moment = require('moment')
 
   export default {
     props: [
       'notification'
     ],
+    directives: {
+      JsonFormatter
+    },
     data () {
       return {
         ago: moment(this.notification.timestamp).fromNow(),

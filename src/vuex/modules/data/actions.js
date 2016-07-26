@@ -1,5 +1,5 @@
 import kuzzle from '../../../services/kuzzle'
-import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS} from './mutation-types'
+import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS, ADD_NOTIFICATION, EMPTY_NOTIFICATION} from './mutation-types'
 import {SET_ERROR} from '../common/mutation-types'
 import Promise from 'bluebird'
 
@@ -60,7 +60,7 @@ let notificationToMessage = notification => {
     collection: notification.collection || '',
     class: '',
     source: {
-      source: JSON.stringify(notification.result._source, null, '\t'),
+      source: notification.result._source,
       metadata: notification.metadata
     },
     expanded: false,

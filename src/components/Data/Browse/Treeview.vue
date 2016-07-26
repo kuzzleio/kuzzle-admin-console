@@ -1,6 +1,6 @@
 <template>
   <ul class="indexes">
-    <li v-for="(key, index) in tree" v-bind:class="{ 'open': openBranches[key] }">
+    <li v-for="(key, index) in tree" v-bind:class="{ 'open': openBranches[key]}">
       <i v-if="collectionCount(index)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch(key)"></i>
       <!-- v-link="{name: 'DataIndex', params: {index: index.name}}" -->
       <a class="tree-item truncate"
