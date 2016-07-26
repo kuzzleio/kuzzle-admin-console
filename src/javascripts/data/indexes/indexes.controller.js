@@ -15,7 +15,8 @@ angular.module('kuzzle.indexes')
     'indexesApi',
     '$window',
     'authorizationApi',
-    function ($scope, $stateParams, $state, indexesApi, $window, authorization) {
+    'Notification',
+    function ($scope, $stateParams, $state, indexesApi, $window, authorization, Notification) {
       $scope.indexData = indexesApi.data;
 
       indexesApi.list();
@@ -36,12 +37,16 @@ angular.module('kuzzle.indexes')
        * Delegate index creation to indexesApi service
        */
       $scope.createIndex = function (index) {
-        indexesApi.create(index, true)
+        indexesApi.create(index)
           .then(function() {
             $state.go('indexes.browse');
           })
-          .catch(err => {
-            console.error(err.message);
+          .catch(error => {
+            Notification.error({
+              delay: 10000,
+              message: '<strong>Got an error while creating index: </strong><br />' + error.message
+            });
+            console.error(error);
           });
       };
 

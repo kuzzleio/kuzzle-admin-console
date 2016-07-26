@@ -21,38 +21,19 @@ angular.module('kuzzle.collectionApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
 
           return deferred.promise;
         },
-        putMapping: function (collection, notify, isCreate) {
+        putMapping: function (collection) {
           var
-            deferred = $q.defer(),
-            messageSuccess,
-            messageError;
-
-          if (isCreate) {
-            messageError = 'Error during collection creation. Please retry.';
-            messageSuccess = 'Collection created!';
-          }
-          else {
-            messageError = 'Error during collection update. Please retry.';
-            messageSuccess = 'Collection updated!';
-          }
+            deferred = $q.defer();
 
           kuzzleSdk
             .dataCollectionFactory(collection.name)
             .dataMappingFactory(collection.schema)
             .apply(function (error) {
               if (error) {
-                if (notify) {
-                  notification.error(messageError);
-                }
-
-                return deferred.reject({error: true, message: error});
+                return deferred.reject(error);
               }
 
-              if (notify) {
-                notification.success(messageSuccess);
-              }
-
-              return deferred.resolve({error: false});
+              return deferred.resolve();
             });
 
           return deferred.promise;
