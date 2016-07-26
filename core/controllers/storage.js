@@ -107,9 +107,8 @@ router.post('/deleteById', function (req, res) {
 
   bufferCancel.add('deleteById', clientId, index, collection, id, true);
   bufferCancel.delayExecution('deleteById', clientId, index, collection, id, function () {
-
     kuzzle
-      .dataCollectionFactory(index, collection)
+      .dataCollectionFactory(collection, index)
       .deleteDocumentPromise(id);
   });
 
