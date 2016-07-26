@@ -27,14 +27,18 @@ angular.module('kuzzle.kuzzleSdk', [])
     rawQuery = kuzzle.query;
 
     kuzzle.query = function (queryArgs, query, options, cb) {
+      var request = {queryArgs, query};
+
+      if (!cb && typeof options === 'function') {
+        cb = options;
+        options = null;
+      }
+      else {
+        request.options = options;
+      }
+
       var proxyCb = function (error, result) {
         if (window.debug) {
-          var request = {queryArgs, query};
-
-          if (typeof options === 'object') {
-            request.options = options;
-          }
-
           if (error) {
             console.error({request, result: error});
           }
