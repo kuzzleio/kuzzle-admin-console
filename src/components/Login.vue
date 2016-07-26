@@ -1,7 +1,9 @@
 <template>
   <div class="container">
     <div class="col m6">
-      <h2 class="center-align">Login</h2>
+      <h2 class="center-align">
+        <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" />
+      </h2>
       <div class="row">
         <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="doLogin(username, password)">
           <div class="row">
