@@ -70,3 +70,8 @@ nav .input-field label i {
 .subnav ul a {
   color: #000000
 }
+
+.error {
+  color: $error-color;
+  font-weight: bold;
+}

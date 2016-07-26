@@ -37,11 +37,11 @@
         </div>
       </div>
 
-      <div class="col s8 z-depth-2 open-search" v-show="displayBlockFilter">
+      <div class="col s8 z-depth-1 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive">
           <tab name="basic"><a href="">Basic Mode</a></tab>
-          <tab name="json"><a href="">Raw JSON Mode</a></tab>
+          <tab name="raw"><a href="">Raw JSON Mode</a></tab>
 
           <div slot="contents" class="card">
             <div class="col s12">
@@ -112,6 +112,22 @@
                 </div>
                 </form>
               </div>
+
+              <div v-show="tabActive === 'raw'">
+                <form>
+                  <json-editor
+                    class="pre_ace"
+                    :content="filters.raw"
+                    @json-editor-receive-json="receiveRawJson"
+                  >
+                  </json-editor>
+                  <div class="row card-action">
+                    <button type="submit" class="btn waves-effect waves-light" @click.prevent="rawSearch">Search</button>
+                    <button class="btn waves-effect waves-light" @click="resetRawSearch">Reset</button>
+                    <span class="error" v-if="jsonInvalid">Your JSON is not valid</span>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </tabs>
@@ -131,6 +147,7 @@
   import Tabs from '../Materialize/Tabs'
   import Tab from '../Materialize/Tab'
   import MSelect from '../Materialize/MSelect'
+  import JsonEditor from '../Common/JsonEditor'
 
   const ESC_KEY = 27
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
@@ -141,7 +158,16 @@
     },
     components: {
       Tabs,
-      Tab
+      Tab,
+      JsonEditor
+    },
+    watch: {
+      'displayBlockFilter' () {
+        this.$broadcast('json-editor-refresh')
+      },
+      'tabActive' () {
+        this.$broadcast('json-editor-refresh')
+      }
     },
     data () {
       return {
@@ -149,19 +175,15 @@
         complexSearch: false,
         tabActive: 'basic',
         searchTerm: null,
+        jsonInvalid: false,
         filters: {
           basic: [[{...emptyBasicFilter}]],
-          raw: null,
+          raw: {},
           sort: {
             attribute: null,
             order: 'asc'
           }
         }
-      }
-    },
-    events: {
-      'filters-close-block-filter' () {
-        this.displayBlockFilter = false
       }
     },
     methods: {
@@ -177,6 +199,7 @@
       basicSearch () {
         this.$emit('filters-basic-search', this.filters.basic, this.filters.sort)
         this.complexSearch = true
+        this.displayBlockFilter = false
       },
       resetComplexSearch () {
         this.resetBasicSearch()
@@ -188,12 +211,24 @@
         this.complexSearch = false
       },
       rawSearch () {
-        this.$emit('filters-advanced-search', this.filters.raw)
-        this.complexSearch = true
+        this.$broadcast('json-editor-request-json')
       },
       resetRawSearch () {
         this.filters.raw = {}
         this.complexSearch = false
+      },
+      receiveRawJson (value) {
+        if (value === null) {
+          this.jsonInvalid = true
+          return
+        }
+
+        this.jsonInvalid = false
+        this.filters.raw = value
+
+        this.$emit('filters-raw-search', this.filters.raw)
+        this.complexSearch = true
+        this.displayBlockFilter = false
       },
       addGroupBasicFilter () {
         this.filters.basic.push([{...emptyBasicFilter}])
@@ -213,6 +248,9 @@
         }
 
         this.filters.basic[groupIndex].splice(filterIndex, 1)
+      },
+      setRawSearch (event) {
+        this.filters.raw = JSON.parse(event.target.value)
       }
     },
     ready () {
@@ -352,5 +390,8 @@
         margin-right: 10px;
       }
     }
+  }
+  .pre_ace, .ace_editor {
+    height: 250px;
   }
 </style>

@@ -130,14 +130,13 @@
           })
       },
       quickSearch (searchTerm) {
-        this.performSearch('users', '%kuzzle', formatFromQuickSearch(searchTerm), formatPagination(this.currentPage, this.limit))
+        this.performSearch('users', '%kuzzle', formatFromQuickSearch(searchTerm), formatPagination(1, this.limit))
       },
       basicSearch (filters, sorting) {
-        this.performSearch('users', '%kuzzle', formatFromBasicSearch(filters), formatPagination(this.currentPage, this.limit), formatSort(sorting))
-        this.$broadcast('filters-close-block-filter')
+        this.performSearch('users', '%kuzzle', formatFromBasicSearch(filters), formatPagination(1, this.limit), formatSort(sorting))
       },
       rawSearch (filters) {
-
+        this.performSearch('users', '%kuzzle', filters, formatPagination(1, this.limit))
       }
     },
     route: {
