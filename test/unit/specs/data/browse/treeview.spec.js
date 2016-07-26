@@ -92,4 +92,29 @@ describe('IndexBranch component', () => {
     $route.params.collection = 'tutu'
     expect(router.app.$refs.indexbranch.isCollectionActive($route, collectionName)).to.equal(false)
   })
+
+  it('should open when ready with active route', () => {
+    // Saving the original route to avoid collisions with other router-enabled
+    // components
+    let originalRoute = {}
+    Object.assign(originalRoute, router.app.$refs.indexbranch.$route)
+
+    router.app.$refs.indexbranch.open = false
+    router.app.$refs.indexbranch.$route = {
+      params: {
+        index: 'toto'
+      },
+      path: '/toto'
+    }
+
+    router.app.$refs.indexbranch.$options.ready[0].call(router.app.$refs.indexbranch)
+    expect(router.app.$refs.indexbranch.open).to.equal(false)
+
+    router.app.$refs.indexbranch.$route.params.index = 'kuzzle-bo-testindex'
+    router.app.$refs.indexbranch.$options.ready[0].call(router.app.$refs.indexbranch)
+    expect(router.app.$refs.indexbranch.open).to.equal(true)
+
+    // Restoring the original route
+    router.app.$refs.indexbranch.$route = originalRoute
+  })
 })
