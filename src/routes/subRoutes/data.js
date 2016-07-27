@@ -1,10 +1,16 @@
 export default {
-  // '/:index': {
-  //   name: 'DataIndex',
-  //   component (resolve) {
-  //     require(['../../components/Data/Index'], resolve)
-  //   }
-  // },
+  '/': {
+    name: 'DataIndexes',
+    component (resolve) {
+      require(['../../components/Data/Indexes/Browse'], resolve)
+    }
+  },
+  '/:index': {
+    name: 'DataIndex',
+    component (resolve) {
+      require(['../../components/Data/Indexes/Summary'], resolve)
+    }
+  },
   '/:index/:collection': {
     name: 'DataIndexCollection',
     component (resolve) {
