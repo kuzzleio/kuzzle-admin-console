@@ -7,7 +7,7 @@
       class="filled-in"
       id="checkbox-{{user.id}}"
       value="{{user.id}}"
-      @click="toggleSelectDocuments(user.id)"/>
+      @click="notifyCheckboxClick"/>
 
     <label for="checkbox-{{user.id}}">{{user.id}}</label>
 
@@ -21,10 +21,10 @@
     <div class="item-content">
       <pre>{{itemContent}}</pre><div class="profile-list">
         <div class="profile-chip chip" v-for="profile in profileList">
-          <a class="truncate" >{{profile}}</a>
+          <a v-link="{name: 'SecurityProfileDetail', params:{ profileId: profile }}" class="truncate" >{{profile}}</a>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <a v-link="{ name: 'SecurityProfilesList' }">Show all...</a>
+          <a v-link="{ name: 'SecurityProfilesList', params: { userId: user.id }}">Show all...</a>
         </div>
       </div>
     </div>
@@ -33,9 +33,13 @@
 
 <script>
 import Dropdown from '../../Materialize/Dropdown'
+const MAX_PROFILES = 5
 
 export default {
   props: ['user'],
+  components: {
+    Dropdown
+  },
   data: function () {
     return {
       collapsed: true
@@ -46,15 +50,17 @@ export default {
       let contentDisplay = {}
       Object.assign(contentDisplay, this.user.content)
       delete contentDisplay.clearPassword
-      delete contentDisplay.profile
+      delete contentDisplay.profilesIds
 
       return JSON.stringify(contentDisplay, ' ', 2)
     },
     profileList () {
-      return ['Papito', 'Stanley', 'Fifi', 'Aslrillwlwsia;aszxczasdsfdfsdfsdfsdfsdfsdfsdfsdfsfjoriejmfff', 'P']
+      return this.user.content.profilesIds.filter((item, idx) => {
+        return idx < MAX_PROFILES
+      })
     },
     showAllProfiles () {
-      return false
+      return this.user.content.profileIds > MAX_PROFILES
     }
   },
   ready: function () {},
@@ -62,10 +68,10 @@ export default {
   methods: {
     toggleCollapse () {
       this.collapsed = !this.collapsed
+    },
+    notifyCheckboxClick () {
+      this.$emit('checkbox-click', this.user.id)
     }
-  },
-  components: {
-    Dropdown
   }
 }
 </script>

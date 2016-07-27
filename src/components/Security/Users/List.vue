@@ -13,7 +13,7 @@
           </a>
           <div class="collection">
             <div class="collection-item" transition="collection" v-for="user in documents" >
-              <user-item :user="user"></user-item>
+              <user-item :user="user" @checkbox-click="toggleSelectDocuments"></user-item>
             </div>
           </div>
 
