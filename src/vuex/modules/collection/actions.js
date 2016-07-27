@@ -3,6 +3,7 @@ import {
   RECEIVE_DOCUMENTS
 } from './mutation-types'
 
+import { paginationFrom, paginationSize } from './getters'
 import kuzzle from '../../../services/kuzzle'
 
 export const toggleSelectDocuments = (store, id) => {
@@ -13,9 +14,14 @@ export const toggleSelectDocuments = (store, id) => {
   store.dispatch(TOGGLE_SELECT_DOCUMENT, id)
 }
 
-export const performSearch = (store, collection, index, filters = {}, pagination = {}, sort = []) => {
+export const performSearch = (store, collection, index, filters = {}, sort = []) => {
   if (!collection || !index) {
     return
+  }
+
+  let pagination = {
+    from: paginationFrom(store.state),
+    size: paginationSize(store.state)
   }
 
   kuzzle

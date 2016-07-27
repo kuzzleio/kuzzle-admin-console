@@ -18,7 +18,6 @@ export const listIndexesAndCollections = (store) => {
         let promise = new Promise(resolve => {
           kuzzle.listCollections(index, (error, result) => {
             if (error) {
-              console.log('error', error)
               store.dispatch(SET_ERROR, error.message)
               return
             }

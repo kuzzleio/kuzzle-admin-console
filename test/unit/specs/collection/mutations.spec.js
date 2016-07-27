@@ -1,6 +1,6 @@
 import { mutations } from '../../../../src/vuex/modules/collection/store'
 
-const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, TOGGLE_SELECT_DOCUMENT, SET_PAGINATION } = mutations
+const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, TOGGLE_SELECT_DOCUMENT } = mutations
 
 describe('collection mutations', () => {
   describe('DELETE_DOCUMENT', () => {
@@ -45,32 +45,6 @@ describe('collection mutations', () => {
 
       TOGGLE_SELECT_DOCUMENT(state, 'doc1')
       expect(state.selectedDocuments).to.eql(['doc3'])
-    })
-  })
-
-  describe('SET_PAGINATION', () => {
-    it('should push the pagination in empty filter', () => {
-      let state = {filters: {}}
-      let pagination = {from: 0, size: 10}
-
-      SET_PAGINATION(state, pagination)
-      expect(state.filters).to.eql(pagination)
-    })
-
-    it('should add the pagination in existing filters', () => {
-      let state = {filters: {filter: {term: {attr: 'value'}}}}
-      let pagination = {from: 10, size: 10}
-
-      SET_PAGINATION(state, pagination)
-      expect(state.filters).to.eql({filter: {term: {attr: 'value'}}, ...pagination})
-    })
-
-    it('should add the pagination and replace the old one in filters', () => {
-      let state = {filters: {filter: {term: {attr: 'value'}}, from: 0, size: 10}}
-      let pagination = {from: 10, size: 10}
-
-      SET_PAGINATION(state, pagination)
-      expect(state.filters).to.eql({filter: {term: {attr: 'value'}}, ...pagination})
     })
   })
 })

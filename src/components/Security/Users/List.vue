@@ -47,9 +47,9 @@
 
             <pagination
               @change-page="changePage"
-              :current-page="currentPage"
-              :limit="limit"
               :total="totalDocuments"
+              :from="paginationFrom"
+              :size="paginationSize"
             ></pagination>
           </div>
 
@@ -87,8 +87,8 @@
   import Filters from '../../Common/Filters'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
   import { toggleSelectDocuments, performSearch } from '../../../vuex/modules/collection/actions'
-  import { documents, totalDocuments, selectedDocuments } from '../../../vuex/modules/collection/getters'
-  import { formatFromQuickSearch, formatPagination, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
+  import { documents, totalDocuments, selectedDocuments, paginationFrom, paginationSize } from '../../../vuex/modules/collection/getters'
+  import { formatFromQuickSearch, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {
     name: 'UsersList',
@@ -109,14 +109,14 @@
       getters: {
         documents,
         totalDocuments,
-        selectedDocuments
+        selectedDocuments,
+        paginationFrom,
+        paginationSize
       }
     },
     data () {
       return {
         displayBulkDelete: true,
-        currentPage: 1,
-        limit: 10,
         initSearch: {}
       }
     },
@@ -126,8 +126,8 @@
       }
     },
     methods: {
-      changePage (currentPage) {
-        this.$router.go({query: {page: currentPage}})
+      changePage (from) {
+        this.$router.go({query: {from}})
       },
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
@@ -137,15 +137,15 @@
           })
       },
       quickSearch (searchTerm) {
-        this.$router.go({query: {quickSearch: searchTerm, page: 1}})
+        this.$router.go({query: {quickSearch: searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
         let basic = JSON.stringify({filters, sorting})
-        this.$router.go({query: {basicSearch: basic, page: 1}})
+        this.$router.go({query: {basicSearch: basic, from: 0}})
       },
       rawSearch (filters) {
         let rawSearch = JSON.stringify(filters)
-        this.$router.go({query: {rawSearch, page: 1}})
+        this.$router.go({query: {rawSearch, from: 0}})
       }
     },
     route: {
@@ -175,7 +175,7 @@
         this.currentPage = parseInt(this.$route.query.page) || 1
 
         // Execute search with corresponding filters
-        this.performSearch('users', '%kuzzle', filters, formatPagination(this.currentPage, this.limit), formatSort(sorting))
+        this.performSearch('users', '%kuzzle', filters, formatSort(sorting))
       }
     }
   }
