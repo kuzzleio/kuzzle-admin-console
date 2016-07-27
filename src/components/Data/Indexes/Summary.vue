@@ -1,9 +1,9 @@
 <template>
-  CollectionSummary
+  IndexesSummary
 </template>
 
 <script>
   export default {
-    name: 'CollectionSummary'
+    name: 'IndexesSummary'
   }
 </script>
