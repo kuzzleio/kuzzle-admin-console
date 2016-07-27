@@ -34,7 +34,6 @@
 
 <script>
   import JsonFormatter from '../../../directives/json-formatter.directive'
-
   var moment = require('moment')
 
   export default {

@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import { mutations } from '../../../../src/vuex/modules/common/store'
 
 const { SET_ERROR, UNSET_ERROR } = mutations

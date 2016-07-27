@@ -17,11 +17,10 @@ export const listIndexesAndCollections = (store) => {
       }
 
       result.forEach((index) => {
-        let promise = new Promise(resolve => {
+        let promise = new Promise((resolve, reject) => {
           kuzzle.listCollections(index, (error, result) => {
-            if (error) {
-              console.log('error', error)
-              store.dispatch(SET_ERROR, error.message)
+            if (error && index !== '%kuzzle') {
+              reject(new Error(error.message))
               return
             }
             if (index !== '%kuzzle') {
@@ -37,6 +36,8 @@ export const listIndexesAndCollections = (store) => {
       })
       Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
+      }).catch(err => {
+        store.dispatch(SET_ERROR, err.message)
       })
     })
 }
