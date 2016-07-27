@@ -20,7 +20,7 @@
       </ul>
     </aside>
     <section>
-      <div>
+      <div class="wrapper">
         <router-view></router-view>
       </div>
     </section>
