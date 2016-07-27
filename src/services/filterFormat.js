@@ -76,7 +76,7 @@ export const formatPagination = (currentPage, limit) => {
 }
 
 export const formatSort = (sorting) => {
-  if (sorting.attribute === null) {
+  if (!sorting.attribute) {
     return []
   }
 

@@ -14,10 +14,15 @@
 
   // translated from http://appcomponents.org/material-components/#!/tabs/sources
   export default {
-    props: ['active'],
+    props: ['active', 'isDisplayed'],
     watch: {
       active (value) {
         this.$emit('tab-changed', value)
+      },
+      isDisplayed () {
+        if (this.isDisplayed) {
+          this.$broadcast('tab-select', this.active)
+        }
       }
     },
     events: {

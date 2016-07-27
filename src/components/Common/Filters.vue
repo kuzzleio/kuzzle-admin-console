@@ -7,9 +7,9 @@
             <div class="col s7">
               <div class="search-bar">
                 <i class="fa fa-search search"></i>
-                <input type="text" placeholder="Search something..." v-model="searchTerm"/>
+                <input type="text" placeholder="Search something..." v-model="filters.quickSearch"/>
                 <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-                <i class="fa fa-times remove-search" @click="resetSearchTerm"></i>
+                <i class="fa fa-times remove-search" @click="resetQuickSearch"></i>
               </div>
             </div>
             <div class="col s3">
@@ -39,7 +39,7 @@
 
       <div class="col s8 z-depth-1 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
-        <tabs @tab-changed="switchFilter" :active="tabActive">
+        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
           <tab name="raw"><a href="">Raw JSON Mode</a></tab>
 
@@ -93,10 +93,10 @@
                       <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
                       <div class="row block-content" >
                         <div class="col s4">
-                          <input placeholder="Attribute" type="text" class="validate" v-model="filters.sort.attribute">
+                          <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
                         </div>
                         <div class="col s2">
-                          <select v-m-select="filters.sort.order">
+                          <select v-m-select="filters.sorting.order">
                             <option value="asc">asc</option>
                             <option value="desc">desc</option>
                           </select>
@@ -115,6 +115,7 @@
 
               <div v-show="tabActive === 'raw'">
                 <form>
+                  <button class="btn waves-effect waves-light" @click="fillRawWithBasic">Fill from basic form</button>
                   <json-editor
                     class="pre_ace"
                     :content="filters.raw"
@@ -148,11 +149,14 @@
   import Tab from '../Materialize/Tab'
   import MSelect from '../Materialize/MSelect'
   import JsonEditor from '../Common/JsonEditor'
+  import { formatFromBasicSearch, formatSort } from '../../services/filterFormat'
 
   const ESC_KEY = 27
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
 
   export default {
+    name: 'Filters',
+    props: ['initSearch'],
     directives: {
       MSelect
     },
@@ -167,6 +171,25 @@
       },
       'tabActive' () {
         this.$broadcast('json-editor-refresh')
+      },
+      'initSearch': {
+        deep: true,
+        handler () {
+          // pre-fill search bar, or form basic search, or json for raw search
+          if (this.initSearch.quickSearch) {
+            this.filters.quickSearch = this.initSearch.quickSearch
+            this.complexSearch = false
+          } else if (this.initSearch.basicSearch) {
+            this.filters.basic = this.initSearch.basicSearch.filters
+            this.filters.sorting = this.initSearch.basicSearch.sorting
+            this.complexSearch = true
+            this.tabActive = 'basic'
+          } else if (this.initSearch.rawSearch) {
+            this.filters.raw = this.initSearch.rawSearch
+            this.complexSearch = true
+            this.tabActive = 'raw'
+          }
+        }
       }
     },
     data () {
@@ -174,12 +197,12 @@
         displayBlockFilter: false,
         complexSearch: false,
         tabActive: 'basic',
-        searchTerm: null,
         jsonInvalid: false,
         filters: {
+          quickSearch: null,
           basic: [[{...emptyBasicFilter}]],
           raw: {},
-          sort: {
+          sorting: {
             attribute: null,
             order: 'asc'
           }
@@ -191,13 +214,13 @@
         this.tabActive = name
       },
       quickSearch () {
-        this.$emit('filters-quick-search', this.searchTerm)
+        this.$emit('filters-quick-search', this.filters.quickSearch)
       },
-      resetSearchTerm () {
-        this.searchTerm = null
+      resetQuickSearch () {
+        this.filters.quickSearch = null
       },
       basicSearch () {
-        this.$emit('filters-basic-search', this.filters.basic, this.filters.sort)
+        this.$emit('filters-basic-search', this.filters.basic, this.filters.sorting)
         this.complexSearch = true
         this.displayBlockFilter = false
       },
@@ -207,8 +230,14 @@
       },
       resetBasicSearch () {
         this.filters.basic = [[{...emptyBasicFilter}]]
-        this.filters.sort = {attribute: null, order: 'asc'}
+        this.filters.sorting = {attribute: null, order: 'asc'}
         this.complexSearch = false
+      },
+      fillRawWithBasic () {
+        let formattedFilter = formatFromBasicSearch(this.filters.basic)
+        let sort = formatSort(this.filters.sorting)
+        this.filters.raw = {...formattedFilter, sort}
+        this.$broadcast('json-editor-refresh')
       },
       rawSearch () {
         this.$broadcast('json-editor-request-json')
@@ -248,9 +277,6 @@
         }
 
         this.filters.basic[groupIndex].splice(filterIndex, 1)
-      },
-      setRawSearch (event) {
-        this.filters.raw = JSON.parse(event.target.value)
       }
     },
     ready () {
@@ -392,6 +418,6 @@
     }
   }
   .pre_ace, .ace_editor {
-    height: 250px;
+    height: 350px;
   }
 </style>

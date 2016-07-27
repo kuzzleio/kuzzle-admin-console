@@ -6,6 +6,7 @@
       @filters-quick-search="quickSearch"
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
+      :init-search="initSearch"
       >
     </filters>
 
@@ -14,10 +15,10 @@
         <div class="col s10 list-document">
           <div v-if="documents.length">
             <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-            <a class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" @click="$broadcast('modal-open', 'bulk-delete')">
+            <button class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" :disabled="!displayBulkDelete" @click="$broadcast('modal-open', 'bulk-delete')">
               <i class="fa fa-minus-circle left"></i>
               Delete
-            </a>
+            </button>
             <div class="collection">
               <div v-for="user in documents" class="collection-item" transition="collection">
                 <input
@@ -110,7 +111,8 @@
       return {
         displayBulkDelete: true,
         currentPage: 1,
-        limit: 10
+        limit: 10,
+        initSearch: {}
       }
     },
     computed: {
@@ -130,19 +132,45 @@
           })
       },
       quickSearch (searchTerm) {
-        this.performSearch('users', '%kuzzle', formatFromQuickSearch(searchTerm), formatPagination(1, this.limit))
+        this.$router.go({query: {quickSearch: searchTerm, page: 1}})
       },
       basicSearch (filters, sorting) {
-        this.performSearch('users', '%kuzzle', formatFromBasicSearch(filters), formatPagination(1, this.limit), formatSort(sorting))
+        let basic = JSON.stringify({filters, sorting})
+        this.$router.go({query: {basicSearch: basic, page: 1}})
       },
       rawSearch (filters) {
-        this.performSearch('users', '%kuzzle', filters, formatPagination(1, this.limit))
+        let rawSearch = JSON.stringify(filters)
+        this.$router.go({query: {rawSearch, page: 1}})
       }
     },
     route: {
       data () {
+        let filters = {}
+        let sorting = {}
+
+        // Manage query quickSearch/basicSearch/rawSearch
+        try {
+          if (this.$route.query.quickSearch) {
+            filters = formatFromQuickSearch(this.$route.query.quickSearch)
+            this.initSearch = {quickSearch: this.$route.query.quickSearch}
+          } else if (this.$route.query.basicSearch) {
+            let basicSearch = JSON.parse(this.$route.query.basicSearch)
+            filters = formatFromBasicSearch(basicSearch.filters)
+            sorting = basicSearch.sorting
+            this.initSearch = {basicSearch}
+          } else if (this.$route.query.rawSearch) {
+            filters = JSON.parse(this.$route.query.rawSearch)
+            this.initSearch = {rawSearch: filters}
+          }
+        } catch (e) {
+          this.initSearch = {}
+        }
+
+        // Manage pagination
         this.currentPage = parseInt(this.$route.query.page) || 1
-        this.performSearch('users', '%kuzzle', {}, formatPagination(this.currentPage, this.limit))
+
+        // Execute search with corresponding filters
+        this.performSearch('users', '%kuzzle', filters, formatPagination(this.currentPage, this.limit), formatSort(sorting))
       }
     }
   }
