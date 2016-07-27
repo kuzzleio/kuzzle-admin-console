@@ -12,22 +12,8 @@
             Delete
           </a>
           <div class="collection">
-            <div v-for="user in documents" class="collection-item" transition="collection">
-              <input
-                type="checkbox"
-                class="filled-in"
-                id="checkbox-{{user.id}}"
-                value="{{user.id}}"
-                @click="toggleSelectDocuments(user.id)"/>
-
-              <label for="checkbox-{{user.id}}">{{user.id}}</label>
-
-              <div class="right actions">
-                <a class="action fa fa-pencil"></a>
-                <dropdown :id="user.id">
-                  <li><a @click="deleteUser(user.id)">Delete</a></li>
-                </dropdown>
-              </div>
+            <div class="collection-item" transition="collection" v-for="user in documents" >
+              <user-item :user="user"></user-item>
             </div>
           </div>
 
@@ -55,7 +41,7 @@
         <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
             Cancel
         </button>
-    </span>
+      </span>
     </modal>
   </div>
 </template>
@@ -63,8 +49,8 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import Pagination from '../../Materialize/Pagination'
-  import Dropdown from '../../Materialize/Dropdown'
   import Modal from '../../Materialize/Modal'
+  import UserItem from './UserItem'
   import {searchUsers, deleteUser, deleteUsers} from '../../../vuex/modules/collection/users-actions'
   import {toggleSelectDocuments, setPagination} from '../../../vuex/modules/collection/actions'
   import {documents, totalDocuments, selectedDocuments} from '../../../vuex/modules/collection/getters'
@@ -73,8 +59,8 @@
     name: 'UsersList',
     components: {
       Headline,
+      UserItem,
       Pagination,
-      Dropdown,
       Modal
     },
     vuex: {
