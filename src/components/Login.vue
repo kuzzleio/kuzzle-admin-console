@@ -1,34 +1,67 @@
 <template>
-  <form id="loginForm" method="post" @submit.prevent="doLogin(username, password)">
-    <span>Welcome to the Kuzzle.io Back-Office</span>
-    <div>
-      <input v-model="username" type="text" name="username" placeholder="Username" required/>
-      <input v-model="password" type="password" name="password" placeholder="Password" required />
+  <div class="container">
+    <div class="col m6">
+      <h2 class="center-align">
+        <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" />
+      </h2>
+      <div class="row">
+        <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="doLogin(username, password)">
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="username" v-model="username" type="text" name="username" required
+                     class="validate"/>
+              <label for="username">Email</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <input v-model="password" type="password" name="password" id="pass" required
+                     class="validate"/>
+              <label for="pass">Password</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col m6">
+              <p class="error">{{error}}</p>
+            </div>
+            <div class="col m6">
+              <p class="right-align">
+                <button class="btn waves-effect waves-light" type="submit" name="action">Login</button>
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-    <button type="submit">Login</button>
-
-    <p class="error">{{error}}</p>
-  </form>
+  </div>
 </template>
 
-<script>
-import { doLogin } from '../vuex/modules/auth/actions'
-import { getError } from '../vuex/modules/common/getters'
+<style type="text/css" media="screen" scoped>
+  .error {
+    color: #d54f58;
+    font-size: 18px;
+  }
+</style>
 
-export default {
-  data () {
-    return {
-      username: null,
-      password: null
-    }
-  },
-  vuex: {
-    actions: {
-      doLogin
+<script>
+  import {doLogin} from '../vuex/modules/auth/actions'
+  import {getError} from '../vuex/modules/common/getters'
+
+  export default {
+    name: 'Login',
+    data () {
+      return {
+        username: null,
+        password: null
+      }
     },
-    getters: {
-      error: getError
+    vuex: {
+      actions: {
+        doLogin
+      },
+      getters: {
+        error: getError
+      }
     }
   }
-}
 </script>
