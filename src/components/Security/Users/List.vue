@@ -91,6 +91,7 @@
   import { formatFromQuickSearch, formatPagination, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {
+    name: 'UsersList',
     components: {
       Headline,
       Pagination,
