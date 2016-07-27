@@ -6,7 +6,10 @@
 
       <div class="row actions">
         <div class="col s9">
-          <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
+          <a class="btn waves-effect waves-light" @click.prevent="$broadcast('modal-open', 'index-create')">
+            <i class="fa fa-plus-circle left"></i>
+            <span>Create</span>
+          </a>
         </div>
 
         <!-- filter must be hidden when there is no indexes -->
@@ -21,7 +24,9 @@
       <div class="row">
         <!-- No index view -->
         <div class="col s12">
-          <a  class="card-title" href="#">
+          <a class="card-title"
+             href="#!"
+             @click.prevent="$broadcast('modal-open', 'index-create')">
             <div class="card-panel hoverable">
               <div class="card-content">
                   There is no indexes yet. You may want to create a new one ?
@@ -41,6 +46,10 @@
         <index-boxed index=""></index-boxed>
         <index-boxed index=""></index-boxed>
         <index-boxed index=""></index-boxed>
+
+        test
+        <modal-create id="index-create"></modal-create>
+
       </div>
 
     </div>
@@ -53,34 +62,29 @@
     justify-content: space-between;
     align-items: flex-end;
 
-  }
-  .input-field {
-    margin-top: 0;
-    label {
-      left: 0;
-    }
-    input {
-      margin-bottom: 0;
+    .input-field {
+      margin-top: 0;
+      label {
+        left: 0;
+      }
+      input {
+        margin-bottom: 0;
+      }
     }
   }
 </style>
 
 <script>
-  import Headline from '../../Materialize/Headline.vue'
-  import IndexBoxed from './Boxed.vue'
+  import Headline from '../../Materialize/Headline'
+  import ModalCreate from './ModalCreate'
+  import IndexBoxed from './Boxed'
 
   export default {
     name: 'IndexesList',
     components: {
       Headline,
+      ModalCreate,
       IndexBoxed
-    },
-    ready () {
-      /*eslint no-undef: 0*/
-      $('.dropdown-button').dropdown({
-        constrain_width: false,
-        belowOrigin: false
-      })
     }
   }
 </script>

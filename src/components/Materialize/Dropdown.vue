@@ -13,15 +13,19 @@
     cursor: pointer;
   }
 
+  .action {
+    padding: 0 7px;
+  }
+
   .icon-small {
-    .fa-ellipsis-v {
+    .action {
       font-size: 1.2rem;
       vertical-align: 2px;
     }
   }
 
   .icon-black {
-    .fa-ellipsis-v {
+    .action {
       color: #111;
     }
   }
