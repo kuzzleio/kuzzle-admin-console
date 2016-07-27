@@ -81,7 +81,6 @@
         constrain_width: false,
         belowOrigin: false
       })
-      console.log($(this.$el).find('.dropdown-button'))
     }
   }
 </script>

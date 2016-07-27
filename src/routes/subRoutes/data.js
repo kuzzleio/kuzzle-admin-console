@@ -2,7 +2,7 @@ export default {
   '/': {
     name: 'DataIndexes',
     component (resolve) {
-      require(['../../components/Data/Indexes/List'], resolve)
+      require(['../../components/Data/Indexes/Browse'], resolve)
     }
   },
   '/:index': {
