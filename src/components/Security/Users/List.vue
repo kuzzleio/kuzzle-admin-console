@@ -6,7 +6,10 @@
       @filters-quick-search="quickSearch"
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
-      :init-search="initSearch"
+      :search-term="searchTerm"
+      :raw-filter="rawFilter"
+      :basic-filter="basicFilter"
+      :sorting="sorting"
       >
     </filters>
 
@@ -87,7 +90,16 @@
   import Filters from '../../Common/Filters'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
   import { toggleSelectDocuments, performSearch } from '../../../vuex/modules/collection/actions'
-  import { documents, totalDocuments, selectedDocuments, paginationFrom, paginationSize } from '../../../vuex/modules/collection/getters'
+  import {
+    documents,
+    totalDocuments,
+    selectedDocuments,
+    paginationFrom,
+    paginationSize,
+    searchTerm,
+    rawFilter,
+    basicFilter,
+    sorting } from '../../../vuex/modules/collection/getters'
   import { formatFromQuickSearch, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {
@@ -111,13 +123,16 @@
         totalDocuments,
         selectedDocuments,
         paginationFrom,
-        paginationSize
+        paginationSize,
+        searchTerm,
+        rawFilter,
+        basicFilter,
+        sorting
       }
     },
     data () {
       return {
-        displayBulkDelete: true,
-        initSearch: {}
+        displayBulkDelete: true
       }
     },
     computed: {
@@ -137,45 +152,41 @@
           })
       },
       quickSearch (searchTerm) {
-        this.$router.go({query: {quickSearch: searchTerm, from: 0}})
+        this.$router.go({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
-        let basic = JSON.stringify({filters, sorting})
-        this.$router.go({query: {basicSearch: basic, from: 0}})
+        let basicFilter = JSON.stringify(filters)
+        this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
       },
       rawSearch (filters) {
-        let rawSearch = JSON.stringify(filters)
-        this.$router.go({query: {rawSearch, from: 0}})
+        let rawFilter = JSON.stringify(filters)
+        this.$router.go({query: {rawFilter, from: 0}})
       }
     },
     route: {
       data () {
         let filters = {}
-        let sorting = {}
-
-        // Manage query quickSearch/basicSearch/rawSearch
-        try {
-          if (this.$route.query.quickSearch) {
-            filters = formatFromQuickSearch(this.$route.query.quickSearch)
-            this.initSearch = {quickSearch: this.$route.query.quickSearch}
-          } else if (this.$route.query.basicSearch) {
-            let basicSearch = JSON.parse(this.$route.query.basicSearch)
-            filters = formatFromBasicSearch(basicSearch.filters)
-            sorting = basicSearch.sorting
-            this.initSearch = {basicSearch}
-          } else if (this.$route.query.rawSearch) {
-            filters = JSON.parse(this.$route.query.rawSearch)
-            this.initSearch = {rawSearch: filters}
-          }
-        } catch (e) {
-          this.initSearch = {}
+        let sorting = []
+        let pagination = {
+          from: this.paginationFrom,
+          size: this.paginationSize
         }
 
-        // Manage pagination
-        this.currentPage = parseInt(this.$route.query.page) || 1
+        // Manage query quickSearch/basicSearch/rawSearch
+        if (this.searchTerm) {
+          filters = formatFromQuickSearch(this.searchTerm)
+        } else if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+
+          if (this.sorting) {
+            sorting = formatSort(this.sorting)
+          }
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+        }
 
         // Execute search with corresponding filters
-        this.performSearch('users', '%kuzzle', filters, formatSort(sorting))
+        this.performSearch('users', '%kuzzle', filters, pagination, sorting)
       }
     }
   }

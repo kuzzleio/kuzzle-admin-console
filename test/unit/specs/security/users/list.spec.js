@@ -1,8 +1,15 @@
 import Vue from 'vue'
-import List from '../../../../../src/components/Security/Users/List'
 import store from '../../../../../src/vuex/store'
 
+let ListInjector = require('inject?../../../../../src/services/filterFormat!../../../../../src/components/Security/Users/List')
+
 describe('Users list', () => {
+  let List = {}
+
+  beforeEach(() => {
+    List = ListInjector()
+  })
+
   describe('Method', () => {
     describe('changePage', () => {
       it('should call the router with correct page', () => {
@@ -16,11 +23,11 @@ describe('Users list', () => {
 
         vm.$refs.list.$router = {go: sinon.spy()}
 
-        vm.$refs.list.changePage(1)
-        expect(vm.$refs.list.$router.go.calledWith({query: {page: 1}})).to.be.equal(true)
+        vm.$refs.list.changePage(0)
+        expect(vm.$refs.list.$router.go.calledWith({query: {from: 0}})).to.be.equal(true)
 
-        vm.$refs.list.changePage(2)
-        expect(vm.$refs.list.$router.go.calledWith({query: {page: 2}})).to.be.equal(true)
+        vm.$refs.list.changePage(10)
+        expect(vm.$refs.list.$router.go.calledWith({query: {from: 10}})).to.be.equal(true)
       })
     })
 
@@ -72,21 +79,37 @@ describe('Users list', () => {
   })
 
   describe('route data', () => {
-    it('should call searchUsers with right parameters', () => {
-      List.route.searchUsers = sinon.spy()
-      List.route.setPagination = sinon.spy()
+    let injectedList = {}
+    let formatFromQuickSearch = sinon.stub()
+    let formatFromBasicSearch = sinon.stub()
 
-      List.route.limit = 10
-      List.route.$route = {query: {}}
-      List.route.data()
-      expect(List.route.setPagination.calledWith(1, 10)).to.be.equal(true)
-      expect(List.route.searchUsers.calledOnce).to.be.equal(true)
+    before(() => {
+      injectedList = ListInjector({
+        '../../../../../src/services/filterFormat': {
+          formatFromQuickSearch,
+          formatFromBasicSearch
+        }
+      })
 
-      List.route.limit = 10
-      List.route.$route = {query: {page: 10}}
-      List.route.data()
-      expect(List.route.setPagination.calledWith(10, 10)).to.be.equal(true)
-      expect(List.route.searchUsers.calledTwice).to.be.equal(true)
+      injectedList.route.performSearch = sinon.spy()
+    })
+
+    it('should call performSearch with no filter if there is nothing in $route', () => {
+      injectedList.route.initSearch = {}
+      injectedList.$route = {query: {}}
+
+      injectedList.route.data()
+      expect(injectedList.route.performSearch.calledWith('users', '%kuzzle', {}, [])).to.be.equal(true)
+    })
+
+    it('should call performSearch with quick search', () => {
+      formatFromQuickSearch.returns({toto: 'tutu'})
+      injectedList.$route = {query: {quickSearch: 'test'}}
+      injectedList.route.data()
+
+      console.log(formatFromQuickSearch.args)
+      expect(formatFromQuickSearch.calledWith(injectedList.$route.query.quickSearch)).to.be.equal(true)
+      // expect(injectedList.route.performSearch.calledWith('users', '%kuzzle', {toto: 'tutu'}, [])).to.be.equal(true)
     })
   })
 })

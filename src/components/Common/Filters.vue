@@ -7,7 +7,7 @@
             <div class="col s7">
               <div class="search-bar">
                 <i class="fa fa-search search"></i>
-                <input type="text" placeholder="Search something..." v-model="filters.quickSearch"/>
+                <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
                 <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
                 <i class="fa fa-times remove-search" @click="resetQuickSearch"></i>
               </div>
@@ -156,7 +156,7 @@
 
   export default {
     name: 'Filters',
-    props: ['initSearch'],
+    props: ['rawFilter', 'basicFilter', 'searchTerm', 'sorting'],
     directives: {
       MSelect
     },
@@ -171,25 +171,6 @@
       },
       'tabActive' () {
         this.$broadcast('json-editor-refresh')
-      },
-      'initSearch': {
-        deep: true,
-        handler () {
-          // pre-fill search bar, or form basic search, or json for raw search
-          if (this.initSearch.quickSearch) {
-            this.filters.quickSearch = this.initSearch.quickSearch
-            this.complexSearch = false
-          } else if (this.initSearch.basicSearch) {
-            this.filters.basic = this.initSearch.basicSearch.filters
-            this.filters.sorting = this.initSearch.basicSearch.sorting
-            this.complexSearch = true
-            this.tabActive = 'basic'
-          } else if (this.initSearch.rawSearch) {
-            this.filters.raw = this.initSearch.rawSearch
-            this.complexSearch = true
-            this.tabActive = 'raw'
-          }
-        }
       }
     },
     data () {
@@ -199,7 +180,7 @@
         tabActive: 'basic',
         jsonInvalid: false,
         filters: {
-          quickSearch: null,
+          searchTerm: null,
           basic: [[{...emptyBasicFilter}]],
           raw: {},
           sorting: {
@@ -214,30 +195,13 @@
         this.tabActive = name
       },
       quickSearch () {
-        this.$emit('filters-quick-search', this.filters.quickSearch)
-      },
-      resetQuickSearch () {
-        this.filters.quickSearch = null
+        this.$emit('filters-quick-search', this.filters.searchTerm)
+        this.complexSearch = false
       },
       basicSearch () {
         this.$emit('filters-basic-search', this.filters.basic, this.filters.sorting)
-        this.complexSearch = true
         this.displayBlockFilter = false
-      },
-      resetComplexSearch () {
-        this.resetBasicSearch()
-        this.resetRawSearch()
-      },
-      resetBasicSearch () {
-        this.filters.basic = [[{...emptyBasicFilter}]]
-        this.filters.sorting = {attribute: null, order: 'asc'}
-        this.complexSearch = false
-      },
-      fillRawWithBasic () {
-        let formattedFilter = formatFromBasicSearch(this.filters.basic)
-        let sort = formatSort(this.filters.sorting)
-        this.filters.raw = {...formattedFilter, sort}
-        this.$broadcast('json-editor-refresh')
+        this.complexSearch = true
       },
       rawSearch () {
         let json = this.$refs.jsoneditor.getJson()
@@ -251,8 +215,25 @@
         this.filters.raw = json
 
         this.$emit('filters-raw-search', this.filters.raw)
-        this.complexSearch = true
         this.displayBlockFilter = false
+        this.complexSearch = true
+      },
+      resetQuickSearch () {
+        this.filters.searchTerm = null
+      },
+      resetBasicSearch () {
+        this.filters.basic = [[{...emptyBasicFilter}]]
+        this.filters.sorting = {attribute: null, order: 'asc'}
+      },
+      resetComplexSearch () {
+        this.resetBasicSearch()
+        this.resetRawSearch()
+      },
+      fillRawWithBasic () {
+        let formattedFilter = formatFromBasicSearch(this.filters.basic)
+        let sort = formatSort(this.filters.sorting)
+        this.filters.raw = {...formattedFilter, sort}
+        this.$broadcast('json-editor-refresh')
       },
       resetRawSearch () {
         this.filters.raw = {}
@@ -279,6 +260,24 @@
       }
     },
     ready () {
+      if (this.searchTerm) {
+        this.filters.searchTerm = this.searchTerm
+      }
+      if (this.basicFilter) {
+        this.filters.basic = this.basicFilter
+        this.complexSearch = true
+        this.tabActive = 'basic'
+
+        if (this.sorting) {
+          this.filters.sorting = this.sorting
+        }
+      }
+      if (this.rawFilter) {
+        this.filters.raw = this.rawFilter
+        this.complexSearch = true
+        this.tabActive = 'raw'
+      }
+
       window.document.addEventListener('keydown', evt => {
         evt = evt || window.event
 
