@@ -21,25 +21,23 @@
       }
     },
     events: {
-      'json-editor-request-json' () {
-        try {
-          let parsedContent = Object.freeze(JSON.parse(this.editor.getValue()))
-          this.$dispatch('json-editor-receive-json', parsedContent)
-        } catch (e) {
-          this.$dispatch('json-editor-receive-json', null)
-        }
-      },
       'json-editor-refresh' () {
         this.editor.renderer.updateFull(true)
-        this.editor.resize()
+      }
+    },
+    methods: {
+      getJson () {
+        try {
+          return Object.freeze(JSON.parse(this.editor.getValue()))
+        } catch (e) {
+          return null
+        }
       }
     },
     watch: {
       content: function () {
         if (this.content) {
           this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
-          this.editor.renderer.updateFull(true)
-          this.editor.resize()
         }
       }
     },

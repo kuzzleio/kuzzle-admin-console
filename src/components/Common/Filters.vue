@@ -117,9 +117,9 @@
                 <form>
                   <button class="btn waves-effect waves-light" @click="fillRawWithBasic">Fill from basic form</button>
                   <json-editor
+                    v-ref:jsoneditor
                     class="pre_ace"
                     :content="filters.raw"
-                    @json-editor-receive-json="receiveRawJson"
                   >
                   </json-editor>
                   <div class="row card-action">
@@ -240,24 +240,23 @@
         this.$broadcast('json-editor-refresh')
       },
       rawSearch () {
-        this.$broadcast('json-editor-request-json')
-      },
-      resetRawSearch () {
-        this.filters.raw = {}
-        this.complexSearch = false
-      },
-      receiveRawJson (value) {
-        if (value === null) {
+        let json = this.$refs.jsoneditor.getJson()
+
+        if (json === null) {
           this.jsonInvalid = true
           return
         }
 
         this.jsonInvalid = false
-        this.filters.raw = value
+        this.filters.raw = json
 
         this.$emit('filters-raw-search', this.filters.raw)
         this.complexSearch = true
         this.displayBlockFilter = false
+      },
+      resetRawSearch () {
+        this.filters.raw = {}
+        this.complexSearch = false
       },
       addGroupBasicFilter () {
         this.filters.basic.push([{...emptyBasicFilter}])
