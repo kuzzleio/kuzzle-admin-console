@@ -15,9 +15,13 @@
         <div class="col s10 list-document">
           <div v-if="documents.length">
             <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-            <button class="btn waves-effect waves-light" :class="displayBulkDelete ? 'red' : 'disabled'" :disabled="!displayBulkDelete" @click="$broadcast('modal-open', 'bulk-delete')">
-              <i class="fa fa-minus-circle left"></i>
-              Delete
+            <button
+              class="btn waves-effect waves-light"
+              :class="displayBulkDelete ? 'red' : 'disabled'"
+              :disabled="!displayBulkDelete"
+              @click="$broadcast('modal-open', 'bulk-delete')">
+                <i class="fa fa-minus-circle left"></i>
+                Delete
             </button>
             <div class="collection">
               <div v-for="user in documents" class="collection-item" transition="collection">
