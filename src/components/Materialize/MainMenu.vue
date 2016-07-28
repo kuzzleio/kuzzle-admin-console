@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import { doLogout } from '../../vuex/modules/auth/actions'
+  import {doLogout} from '../../vuex/modules/auth/actions'
 
   export default {
     vuex: {

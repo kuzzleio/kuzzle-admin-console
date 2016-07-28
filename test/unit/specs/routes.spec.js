@@ -24,7 +24,7 @@ describe('Router login redirect', () => {
 
   it('should not go to login because user already logged', () => {
     let vueRouter = new VueRouter()
-    let transition = { redirect: sinon.spy(), next: sinon.spy(), from: { path: '/' }, to: {path: '/login', auth: true} }
+    let transition = { redirect: sinon.spy(), next: sinon.spy(), from: {name: 'Home'}, to: {name: 'Login', auth: true} }
 
     vueRouter.beforeEach = (f) => {
       f(transition)
