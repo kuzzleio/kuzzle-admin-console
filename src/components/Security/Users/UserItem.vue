@@ -15,7 +15,7 @@
 
     <div class="right actions">
       <dropdown :id="user.id">
-        <li><a @click="deleteUser(user.id)">Delete</a></li>
+        <li><a @click="notifyDeleteClick">Delete</a></li>
       </dropdown>
     </div>
 
@@ -39,7 +39,7 @@ import jsonFormatter from '../../../directives/json-formatter.directive'
 const MAX_PROFILES = 5
 
 export default {
-  name: 'UserList',
+  name: 'UserItem',
   props: ['user'],
   components: {
     Dropdown
@@ -56,10 +56,9 @@ export default {
     itemContent () {
       let contentDisplay = {}
       Object.assign(contentDisplay, this.user.content)
-      delete contentDisplay.clearPassword
       delete contentDisplay.profilesIds
 
-      return contentDisplay // JSON.stringify(contentDisplay, ' ', 2)
+      return contentDisplay
     },
     profileList () {
       return this.user.content.profilesIds.filter((item, idx) => {
@@ -76,6 +75,9 @@ export default {
     },
     notifyCheckboxClick () {
       this.$emit('checkbox-click', this.user.id)
+    },
+    notifyDeleteClick () {
+      this.$emit('delete-click', this.user)
     }
   }
 }
