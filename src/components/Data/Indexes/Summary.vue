@@ -125,8 +125,8 @@
     },
     computed: {
       hasCollection () {
-        return this.collection.realtime.length > 0 ||
-               this.collection.stored.length > 0
+        return this.collections.realtime.length > 0 ||
+                this.collections.stored.length > 0
       }
     },
     vuex: {
