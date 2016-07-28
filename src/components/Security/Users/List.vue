@@ -6,6 +6,7 @@
       @filters-quick-search="quickSearch"
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
+      @filters-refresh-search="refreshSearch"
       :search-term="searchTerm"
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
@@ -150,7 +151,7 @@
     },
     methods: {
       changePage (from) {
-        this.$router.go({query: {from}})
+        this.$router.go({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
@@ -186,6 +187,9 @@
         } catch (e) {
 
         }
+      },
+      refreshSearch () {
+        this.$router.go({query: {...this.$route.query, from: 0}})
       }
     },
     route: {
@@ -204,6 +208,9 @@
           filters = formatFromBasicSearch(this.basicFilter)
         } else if (this.rawFilter) {
           filters = this.rawFilter
+          if (filters.sort) {
+            sorting = filters.sort
+          }
         }
 
         if (this.sorting) {

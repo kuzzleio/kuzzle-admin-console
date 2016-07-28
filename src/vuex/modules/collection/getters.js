@@ -59,5 +59,5 @@ export const paginationFrom = state => {
 }
 
 export const paginationSize = state => {
-  return parseInt(state.route.query.size) || 10
+  return parseInt(state.route.query.size) || 1
 }

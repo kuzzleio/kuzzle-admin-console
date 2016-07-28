@@ -141,7 +141,6 @@
         this.filters.basic = this.basicFilter
       }
 
-      console.log(this.sorting)
       if (this.sorting) {
         this.filters.sorting = this.sorting
       }

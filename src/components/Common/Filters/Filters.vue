@@ -12,8 +12,8 @@
           <div class="col s7">
             <div class="search-bar">
               <i class="fa fa-search search"></i>
-              <div class="chip" @click="displayBlockFilter = true">
-                Complex query here
+              <div class="chip">
+                <span @click="displayBlockFilter = true">Complex query here</span>
                 <i class="close fa fa-close" @click.prevent="resetComplexSearch"></i>
               </div>
               <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
@@ -21,7 +21,7 @@
             </div>
           </div>
           <div class="col s3">
-            <button type="submit" class="btn waves-effect waves-light" @click.prevent="resetComplexSearch">Search</button>
+            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">Search</button>
           </div>
         </div>
       </div>
@@ -114,6 +114,9 @@
       },
       resetComplexSearch () {
         this.$dispatch('filters-raw-search', {})
+      },
+      refreshSearch () {
+        this.$dispatch('filters-refresh-search')
       }
     },
     ready () {
