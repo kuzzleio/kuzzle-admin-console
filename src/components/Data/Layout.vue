@@ -41,7 +41,7 @@
     top: 50px;
   }
   section > section {
-    margin-top: 100px;
+    margin-top: 50px;
   }
 </style>
 

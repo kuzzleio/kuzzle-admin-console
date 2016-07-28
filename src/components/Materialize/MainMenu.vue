@@ -1,7 +1,7 @@
 <template>
   <header>
-    <nav>
-      <div class="navbar-fixed">
+    <div class="navbar-fixed">
+      <nav>
         <a href="#" class="brand-logo">
           <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
         </a>
@@ -22,8 +22,8 @@
             </li>
           </ul>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   </header>
 </template>
 
