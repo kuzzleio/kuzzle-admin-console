@@ -24,7 +24,7 @@
           <a  class="card-title" href="#">
             <div class="card-panel hoverable">
               <div class="card-content">
-                  There is no indexes yet. You may want to create a new one ?
+                  There are no indexes yet. You may want to create a new one ?
               </div>
             </div>
           </a>

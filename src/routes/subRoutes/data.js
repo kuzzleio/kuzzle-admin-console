@@ -23,6 +23,14 @@ export default {
     name: 'DataIndexCollection',
     component (resolve) {
       require(['../../components/Data/Collection'], resolve)
+    },
+    subRoutes: {
+      '/watch': {
+        name: 'WatchData',
+        component (resolve) {
+          require(['../../components/Data/Watch/Layout'], resolve)
+        }
+      }
     }
   }
 }
