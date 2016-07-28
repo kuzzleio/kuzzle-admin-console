@@ -13,6 +13,10 @@
     cursor: pointer;
   }
 
+  .fa-ellipsis-v {
+    padding: 0 7px;
+  }
+
   .icon-small {
     .fa-ellipsis-v {
       font-size: 1.2rem;
@@ -20,9 +24,16 @@
     }
   }
 
+  .icon-medium {
+    .fa-ellipsis-v {
+      font-size: 1.8rem;
+      vertical-align: 2px;
+    }
+  }
+
   .icon-black {
     .fa-ellipsis-v {
-      color: #111;
+      color: #333;
     }
   }
 </style>
