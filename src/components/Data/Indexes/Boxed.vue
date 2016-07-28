@@ -13,7 +13,7 @@
 
         <div class="col s4 right-align">
           <!-- actions related to the index -->
-          <index-dropdown></index-dropdown>
+          <index-dropdown class="icon-small icon-black"></index-dropdown>
         </div>
 
 
@@ -43,7 +43,7 @@
       </div>
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#">Add a collection</a>
+        <a class="btn btn-small" href="#">Create a collection</a>
       </div>
     </div>
   </div>
@@ -75,9 +75,6 @@
   }
   .card-content {
     border-top: 1px solid rgba(160, 160, 160, 0.2);
-  }
-  .card-action {
-
   }
   .switch {
     label {
