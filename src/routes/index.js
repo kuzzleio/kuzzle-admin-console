@@ -33,12 +33,6 @@ export default function createRoutes (router) {
     '/login': {
       name: 'Login',
       component: Login
-    },
-    '/edit-index': {
-      name: 'EditIndex',
-      component (resolve) {
-
-      }
     }
   })
 

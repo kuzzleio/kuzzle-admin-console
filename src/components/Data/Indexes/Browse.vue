@@ -1,8 +1,9 @@
 <template>
-  <headline title="Indexes - Browse"></headline>
+  <div class="wrapper">
+    <headline title="Indexes - Browse"></headline>
 
-  <div class="row">
-    <div class="col s8">
+    <div class="row">
+      <div class="col s8">
 
       <div class="row actions">
         <div class="col s9">
@@ -12,46 +13,45 @@
           </a>
         </div>
 
-        <!-- filter must be hidden when there is no indexes -->
-        <div class="col s3">
-          <div class="input-field left-align">
-            <label for="filter"><i class="fa fa-search"></i> Filter</label>
-            <input id="filter" type="text">
+          <!-- filter must be hidden when there is no indexes -->
+          <div class="col s3">
+            <div class="input-field left-align">
+              <label for="filter"><i class="fa fa-search"></i> Filter</label>
+              <input id="filter" type="text">
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="row">
-        <!-- No index view -->
-        <div class="col s12">
-          <a class="card-title"
+        <div class="row">
+          <!-- No index view -->
+          <div class="col s12">
+            <a class="card-title"
              href="#!"
              @click.prevent="$broadcast('modal-open', 'index-create')">
-            <div class="card-panel hoverable">
-              <div class="card-content">
-                  There is no indexes yet. You may want to create a new one ?
+              <div class="card-panel hoverable">
+                <div class="card-content">
+                    There are no indexes yet. You may want to create a new one ?
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
+          </div>
+
+          <!-- Index listing -->
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+          <index-boxed index=""></index-boxed>
+
+          <modal-create id="index-create"></modal-create>
         </div>
 
-        <!-- Index listing -->
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-        <index-boxed index=""></index-boxed>
-
-        test
-        <modal-create id="index-create"></modal-create>
-
       </div>
-
     </div>
   </div>
 </template>
@@ -62,22 +62,22 @@
     justify-content: space-between;
     align-items: flex-end;
 
-    .input-field {
-      margin-top: 0;
-      label {
-        left: 0;
-      }
-      input {
-        margin-bottom: 0;
-      }
+  }
+  .input-field {
+    margin-top: 0;
+    label {
+      left: 0;
+    }
+    input {
+      margin-bottom: 0;
     }
   }
 </style>
 
 <script>
-  import Headline from '../../Materialize/Headline'
+  import Headline from '../../Materialize/Headline.vue'
   import ModalCreate from './ModalCreate'
-  import IndexBoxed from './Boxed'
+  import IndexBoxed from './Boxed.vue'
 
   export default {
     name: 'IndexesList',
@@ -85,6 +85,13 @@
       Headline,
       ModalCreate,
       IndexBoxed
+    },
+    ready () {
+      /*eslint no-undef: 0*/
+      $('.dropdown-button').dropdown({
+        constrain_width: false,
+        belowOrigin: false
+      })
     }
   }
 </script>

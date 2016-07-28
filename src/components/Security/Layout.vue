@@ -14,7 +14,7 @@
     </ul>
   </aside>
 
-  <section>
+  <section class="view">
     <div class="wrapper">
       <router-view></router-view>
     </div>

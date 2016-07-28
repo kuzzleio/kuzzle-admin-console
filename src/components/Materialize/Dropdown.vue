@@ -24,9 +24,16 @@
     }
   }
 
+  .icon-medium {
+    .fa-ellipsis-v {
+      font-size: 1.8rem;
+      vertical-align: 2px;
+    }
+  }
+
   .icon-black {
     .action {
-      color: #111;
+      color: #333;
     }
   }
 </style>
