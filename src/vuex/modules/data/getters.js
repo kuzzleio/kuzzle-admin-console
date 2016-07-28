@@ -6,6 +6,14 @@ export const mapping = state => {
   return state.data.mapping
 }
 
+export const notifications = state => {
+  return state.data.notifications
+}
+
+export const room = state => {
+  return state.data.room
+}
+
 export const collections = state => {
   return state.data.collections
 }

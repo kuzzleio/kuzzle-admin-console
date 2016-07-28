@@ -1,4 +1,3 @@
-import { expect } from 'chai'
 import { mutations } from '../../../../src/vuex/modules/data/store'
 
 const { RECEIVE_INDEXES_COLLECTIONS, RECEIVE_MAPPING } = mutations
