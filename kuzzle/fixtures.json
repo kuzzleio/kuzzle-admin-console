@@ -154,20 +154,20 @@
       { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "policies": [
-          {"_id": "fake-action"},
-          {"_id": "logout-and-get-user"}
+          {"roleId": "fake-action"},
+          {"roleId": "logout-and-get-user"}
         ]
       },
       { "index": { "_id": "kuzzle-bo-standard" } },
       {
         "policies": [
-          {"_id": "logout-and-get-user"},
-          {"_id": "login-and-check-token"},
-          {"_id": "list-indexes-collections"},
-          {"_id": "read-data", "restrictedTo": [{"index": "kuzzle-bo-testindex"}]},
-          {"_id": "edit-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["editable-collection"]}]},
-          {"_id": "truncate-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["emptiable-collection"]}]},
-          {"_id": "delete-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["not-editable-collection"]}]}
+          {"roleId": "logout-and-get-user"},
+          {"roleId": "login-and-check-token"},
+          {"roleId": "list-indexes-collections"},
+          {"roleId": "read-data", "restrictedTo": [{"index": "kuzzle-bo-testindex"}]},
+          {"roleId": "edit-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["editable-collection"]}]},
+          {"roleId": "truncate-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["emptiable-collection"]}]},
+          {"roleId": "delete-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["not-editable-collection"]}]}
         ]
       }
     ],
@@ -175,21 +175,21 @@
       { "index": { "_id": "kuzzle-bo-admin" } },
       {
         "username": "kuzzle-bo-admin",
-        "profileId": "admin",
+        "profilesIds": ["admin"],
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
       { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "username": "kuzzle-bo-dummy",
-        "profileId": "kuzzle-bo-dummy",
+        "profilesIds": ["kuzzle-bo-dummy"],
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
       { "index": { "_id": "kuzzle-bo-standard" } },
       {
         "username": "kuzzle-bo-standard",
-        "profileId": "kuzzle-bo-standard",
+        "profilesIds": ["kuzzle-bo-standard"],
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       }

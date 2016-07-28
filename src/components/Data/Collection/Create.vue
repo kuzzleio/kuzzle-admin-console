@@ -1,9 +1,9 @@
 <template>
-  CollectionSummary
+  CollectionCreate
 </template>
 
 <script>
   export default {
-    name: 'CollectionSummary'
+    name: 'CollectionCreate'
   }
 </script>

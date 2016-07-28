@@ -51,6 +51,10 @@ describe('IndexBranch component', () => {
       '/:index/:collection': {
         name: 'DataIndexCollection',
         component: TestComponent
+      },
+      '/:index/create': {
+        name: 'Index',
+        component: {}
       }
     })
 

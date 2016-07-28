@@ -1,5 +1,5 @@
 import kuzzle from '../../../services/kuzzle'
-import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS} from './mutation-types'
+import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS, RECEIVE_COLLECTIONS} from './mutation-types'
 import {SET_ERROR} from '../common/mutation-types'
 import Promise from 'bluebird'
 
@@ -45,5 +45,15 @@ export const getMapping = (store, index, collection) => {
       return
     }
     store.dispatch(RECEIVE_MAPPING, res.mapping)
+  })
+}
+
+export const getCollectionsFromIndex = (store, index) => {
+  kuzzle.listCollections(index, (err, res) => {
+    if (err) {
+      store.dispatch(SET_ERROR, err.message)
+      return
+    }
+    store.dispatch(RECEIVE_COLLECTIONS, res)
   })
 }
