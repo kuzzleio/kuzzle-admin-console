@@ -10,6 +10,8 @@
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
       :sorting="sorting"
+      :format-from-basic-search="formatFromBasicSearch"
+      :format-sort="formatSort"
       >
     </filters>
 
@@ -87,7 +89,7 @@
   import Pagination from '../../Materialize/Pagination'
   import Dropdown from '../../Materialize/Dropdown'
   import Modal from '../../Materialize/Modal'
-  import Filters from '../../Common/Filters'
+  import Filters from '../../Common/Filters/Filters'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
   import { toggleSelectDocuments, performSearch } from '../../../vuex/modules/collection/actions'
   import {
@@ -132,7 +134,9 @@
     },
     data () {
       return {
-        displayBulkDelete: true
+        displayBulkDelete: true,
+        formatFromBasicSearch,
+        formatSort
       }
     },
     computed: {
@@ -155,12 +159,20 @@
         this.$router.go({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
-        let basicFilter = JSON.stringify(filters)
-        this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
+        try {
+          let basicFilter = JSON.stringify(filters)
+          this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
+        } catch (e) {
+
+        }
       },
       rawSearch (filters) {
-        let rawFilter = JSON.stringify(filters)
-        this.$router.go({query: {rawFilter, from: 0}})
+        try {
+          let rawFilter = JSON.stringify(filters)
+          this.$router.go({query: {rawFilter, from: 0}})
+        } catch (e) {
+
+        }
       }
     },
     route: {

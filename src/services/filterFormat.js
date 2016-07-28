@@ -21,7 +21,7 @@ export const formatFromBasicSearch = (groups = [[]]) => {
   bool.should = groups.map((filters) => {
     let formattedFilter = {bool: {must: [], must_not: []}}
     filters.forEach((filter) => {
-      if (filter.attribute === null || filter.value === null) {
+      if (filter.attribute === null) {
         return
       }
 

@@ -1,6 +1,7 @@
 import {
   TOGGLE_SELECT_DOCUMENT,
-  RECEIVE_DOCUMENTS
+  RECEIVE_DOCUMENTS,
+  SET_BASIC_FILTER
 } from './mutation-types'
 
 import kuzzle from '../../../services/kuzzle'
@@ -48,6 +49,10 @@ export const performSearch = (store, collection, index, filters = {}, pagination
     })
 }
 
+export const setBasicFilter = (store, basicFilter) => {
+  store.dispatch(SET_BASIC_FILTER, basicFilter)
+}
+
 let getValueAdditionalAttribute = (content, attributePath) => {
   let attribute = attributePath.shift()
 
@@ -57,3 +62,4 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 
   return content[attribute]
 }
+

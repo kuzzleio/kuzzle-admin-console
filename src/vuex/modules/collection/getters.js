@@ -14,12 +14,24 @@ export const searchTerm = state => {
   return state.route.query.searchTerm
 }
 
+/**
+ * @param state
+ * @returns return the basic filter filled with the route
+ */
 export const basicFilter = state => {
   try {
     return JSON.parse(state.route.query.basicFilter)
   } catch (e) {
     return null
   }
+}
+
+/**
+ * @param state
+ * @returns return the basic filter which is in form basic filter -> the real data from form (and not from url)
+ */
+export const basicFilterForm = state => {
+  return state.collection.basicFilter
 }
 
 export const rawFilter = state => {
