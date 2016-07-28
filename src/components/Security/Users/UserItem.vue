@@ -36,6 +36,7 @@ import Dropdown from '../../Materialize/Dropdown'
 const MAX_PROFILES = 5
 
 export default {
+  name: 'UserList',
   props: ['user'],
   components: {
     Dropdown
