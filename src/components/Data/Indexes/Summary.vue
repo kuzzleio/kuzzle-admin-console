@@ -54,7 +54,7 @@
 
       <div class="row">
         <!-- No collection view -->
-        <div class="col s12" v-if="hasCollection">
+        <div class="col s12" v-if="!hasCollection">
           <a  class="card-title" href="#">
             <div class="card-panel hoverable">
               <div class="card-content">
@@ -125,8 +125,7 @@
     },
     computed: {
       hasCollection () {
-        return this.collections.realtime.length > 0 ||
-                this.collections.stored.length > 0
+        return this.collections.realtime.length > 0 || this.collections.stored.length > 0
       }
     },
     vuex: {
