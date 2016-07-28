@@ -17,17 +17,11 @@
 
 <script>
   import JsonEditor from '../../Common/JsonEditor'
-  import { basicFilterForm } from '../../../vuex/modules/collection/getters'
 
   export default {
-    props: ['rawFilter', 'formatFromBasicSearch', 'formatSort'],
+    props: ['rawFilter', 'formatFromBasicSearch', 'formatSort', 'basicFilterForm'],
     components: {
       JsonEditor
-    },
-    vuex: {
-      getters: {
-        basicFilterForm
-      }
     },
     data () {
       return {
@@ -53,8 +47,16 @@
         this.complexSearch = true
       },
       fillRawWithBasic () {
-        let formattedFilter = this.formatFromBasicSearch(this.basicFilterForm.basic)
-        let sort = this.formatSort(this.basicFilterForm.sorting)
+        let formattedFilter = {}
+        let sort = []
+
+        if (this.basicFilterForm.basic) {
+          formattedFilter = this.formatFromBasicSearch(this.basicFilterForm.basic)
+        }
+        if (this.basicFilterForm.sorting) {
+          sort = this.formatSort(this.basicFilterForm.sorting)
+        }
+
         this.filters.raw = {...formattedFilter, sort}
         this.$broadcast('json-editor-refresh')
       },

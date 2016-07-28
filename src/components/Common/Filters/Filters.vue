@@ -37,7 +37,8 @@
               <div v-show="tabActive === 'basic'">
                 <basic-filter
                   :basic-filter="basicFilter"
-                  :sorting="sorting">
+                  :sorting="sorting"
+                  :set-basic-filter="setBasicFilter">
                 </basic-filter>
               </div>
 
@@ -45,7 +46,8 @@
                 <raw-filter
                   :raw-filter="rawFilter"
                   :format-from-basic-search="formatFromBasicSearch"
-                  :format-sort="formatSort">
+                  :format-sort="formatSort"
+                  :basic-filter-form="basicFilterForm">
                 </raw-filter>
               </div>
             </div>
@@ -73,7 +75,7 @@
   const ESC_KEY = 27
   export default {
     name: 'Filters',
-    props: ['rawFilter', 'basicFilter', 'searchTerm', 'sorting', 'formatFromBasicSearch', 'formatSort'],
+    props: ['rawFilter', 'basicFilter', 'setBasicFilter', 'basicFilterForm', 'searchTerm', 'sorting', 'formatFromBasicSearch', 'formatSort'],
     components: {
       Tabs,
       Tab,
@@ -94,10 +96,7 @@
         displayBlockFilter: false,
         complexSearch: false,
         tabActive: 'basic',
-        jsonInvalid: false,
-        filters: {
-          raw: {}
-        }
+        jsonInvalid: false
       }
     },
     methods: {

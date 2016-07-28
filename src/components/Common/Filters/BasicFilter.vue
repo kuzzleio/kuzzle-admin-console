@@ -5,6 +5,7 @@
 
         <div class="row block-and">
           <p><i class="fa fa-search"></i>Query</p>
+
           <div v-for="(groupIndex, group) in filters.basic" class="row block-content">
             <div v-for="(filterIndex, filter) in group" class="row dots group">
               <div class="col s4">
@@ -34,6 +35,7 @@
             </div>
             <p v-if="groupIndex < filters.basic.length - 1">Or</p>
           </div>
+
         </div>
 
         <div class="row">
@@ -46,10 +48,10 @@
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
+              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute" @blur="updateFilter">
             </div>
             <div class="col s2">
-              <select v-m-select="filters.sorting.order">
+              <select v-m-select="filters.sorting.order" @blur="updateFilter">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
               </select>
@@ -70,17 +72,11 @@
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
 
   import MSelect from '../../Materialize/MSelect'
-  import { setBasicFilter } from '../../../vuex/modules/collection/actions'
 
   export default {
-    props: ['basicFilter'],
+    props: ['basicFilter', 'setBasicFilter'],
     directives: {
       MSelect
-    },
-    vuex: {
-      actions: {
-        setBasicFilter
-      }
     },
     data () {
       return {

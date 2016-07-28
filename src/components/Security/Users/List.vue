@@ -12,7 +12,8 @@
       :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
       :format-sort="formatSort"
-      >
+      :set-basic-filter="setBasicFilter"
+      :basic-filter-form="basicFilterForm">
     </filters>
 
     <div>
@@ -91,7 +92,7 @@
   import Modal from '../../Materialize/Modal'
   import Filters from '../../Common/Filters/Filters'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
-  import { toggleSelectDocuments, performSearch } from '../../../vuex/modules/collection/actions'
+  import { toggleSelectDocuments, performSearch, setBasicFilter } from '../../../vuex/modules/collection/actions'
   import {
     documents,
     totalDocuments,
@@ -101,7 +102,8 @@
     searchTerm,
     rawFilter,
     basicFilter,
-    sorting } from '../../../vuex/modules/collection/getters'
+    sorting,
+    basicFilterForm } from '../../../vuex/modules/collection/getters'
   import { formatFromQuickSearch, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {
@@ -118,7 +120,8 @@
         deleteUser,
         deleteUsers,
         toggleSelectDocuments,
-        performSearch
+        performSearch,
+        setBasicFilter
       },
       getters: {
         documents,
@@ -129,7 +132,8 @@
         searchTerm,
         rawFilter,
         basicFilter,
-        sorting
+        sorting,
+        basicFilterForm
       }
     },
     data () {
