@@ -1,5 +1,5 @@
 import kuzzle from '../../../services/kuzzle'
-import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS, ADD_NOTIFICATION, EMPTY_NOTIFICATION} from './mutation-types'
+import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS, ADD_NOTIFICATION, EMPTY_NOTIFICATION, RECEIVE_COLLECTIONS} from './mutation-types'
 import {SET_ERROR} from '../common/mutation-types'
 import Promise from 'bluebird'
 
@@ -136,7 +136,6 @@ export const subscribe = (store, index, collection) => {
 }
 
 export const unsubscribe = (store, room) => {
-  console.log(store, room)
   room.unsubscribe()
 }
 

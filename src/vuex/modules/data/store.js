@@ -3,8 +3,7 @@ import {
   RECEIVE_MAPPING,
   ADD_NOTIFICATION,
   EMPTY_NOTIFICATION,
-  RECEIVE_ROOM
-  RECEIVE_MAPPING,
+  RECEIVE_ROOM,
   RECEIVE_COLLECTIONS
 } from './mutation-types'
 
@@ -12,8 +11,7 @@ const state = {
   indexesAndCollections: undefined,
   mapping: undefined,
   notifications: [],
-  room: undefined
-  mapping: undefined,
+  room: undefined,
   collections: {
     stored: [],
     realtime: []
