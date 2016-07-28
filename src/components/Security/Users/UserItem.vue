@@ -9,10 +9,11 @@
       value="{{user.id}}"
       @click="notifyCheckboxClick"/>
 
-    <label for="checkbox-{{user.id}}">{{user.id}}</label>
+    <label for="checkbox-{{user.id}}" ></label>
+    <!-- The following anchor will go to the user details page -->
+    <label class="item-title"><a>{{user.id}}</a></label>
 
     <div class="right actions">
-      <a class="action fa fa-pencil"></a>
       <dropdown :id="user.id">
         <li><a @click="deleteUser(user.id)">Delete</a></li>
       </dropdown>
@@ -69,8 +70,6 @@ export default {
       return this.user.content.profileIds > MAX_PROFILES
     }
   },
-  ready: function () {},
-  attached: function () {},
   methods: {
     toggleCollapse () {
       this.collapsed = !this.collapsed
@@ -92,6 +91,26 @@ export default {
 
   .collapsed i.item-toggle {
       transform: rotate(-90deg);
+  }
+
+  /* HACK enabling to click on the title without checking the checkbox */
+  label.item-title {
+    cursor: pointer;
+    font-size: 1rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .item-title a {
+    color: #272727;
+  }
+
+  /* HACK for centring the checkbox between the caret and the title */
+  [type="checkbox"] + label {
+    height: 15px;
+    padding-left: 30px;
   }
 
   .item-content {
