@@ -1,5 +1,7 @@
 <template>
-  CollectionBrowse
+  <div class="wrapper">
+    CollectionBrowse
+  </div>
 </template>
 
 <script>

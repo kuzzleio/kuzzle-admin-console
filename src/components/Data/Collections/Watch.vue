@@ -1,25 +1,27 @@
 <template>
-  <headline>
-    {{$route.params.collection}} - Watch
-    <index-dropdown class="icon-medium icon-black" :id="$route.params.index"></index-dropdown>
-  </headline>
+  <div class="wrapper">
+    <headline>
+      {{$route.params.collection}} - Watch
+      <index-dropdown class="icon-medium icon-black" :id="$route.params.index"></index-dropdown>
+    </headline>
 
-  <div class="notification-container">
-    <div class="row">
-      <div class="col s12">
-        <button class="btn waves-effect waves-light" @click="manageSub($route.params.index, $route.params.collection)">
-          <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa"></i>&nbsp;{{subscribed ? 'Unsubscribe' : 'Subscribe'}}
-        </button>
-        <button class="btn waves-effect waves-light" @click="clear">
-          <i class="fa fa-trash"></i>&nbsp;Clear console
-        </button>
-      </div>
-      <div class="col s12">
-        <ul class="collapsible" v-collapsible data-collapsible="expandable">
-          <li v-for="notification in notifications">
-            <notification :notification="notification"></notification>
-          </li>
-        </ul>
+    <div class="notification-container">
+      <div class="row">
+        <div class="col s12">
+          <button class="btn waves-effect waves-light" @click="manageSub($route.params.index, $route.params.collection)">
+            <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa"></i>&nbsp;{{subscribed ? 'Unsubscribe' : 'Subscribe'}}
+          </button>
+          <button class="btn waves-effect waves-light" @click="clear">
+            <i class="fa fa-trash"></i>&nbsp;Clear console
+          </button>
+        </div>
+        <div class="col s12">
+          <ul class="collapsible" v-collapsible data-collapsible="expandable">
+            <li v-for="notification in notifications">
+              <notification :notification="notification"></notification>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

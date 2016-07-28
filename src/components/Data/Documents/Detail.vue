@@ -1,5 +1,7 @@
 <template>
-  DocumentDetail
+  <div class="wrapper">
+    DocumentDetail
+  </div>
 </template>
 
 <script>
