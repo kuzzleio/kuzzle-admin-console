@@ -8,14 +8,14 @@ describe('listIndexesAndCollections action', () => {
     '../../../services/kuzzle': {
       listIndexes (cb) {
         if (triggerError[0]) {
-          cb({message: 'error', stack: 'stack'})
+          cb({message: 'error'})
         } else {
           cb(null, ['index1', 'index2', '%kuzzle'])
         }
       },
       listCollections (index, cb) {
         if (triggerError[1]) {
-          cb({message: 'error', stack: 'stack'})
+          cb({message: 'error'})
         } else {
           cb(null, ['collection1', 'collection2'])
         }
@@ -70,7 +70,7 @@ describe('getMapping test action', () => {
         return {
           getMapping: (cb) => {
             if (triggerError) {
-              cb({message: 'error', stack: 'stack'})
+              cb({message: 'error'})
             } else {
               cb(null, {mapping: 'mapping'})
             }

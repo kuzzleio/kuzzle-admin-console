@@ -3,8 +3,6 @@ import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS, ADD_NOTIFICATION, EMPTY_NO
 import {SET_ERROR} from '../common/mutation-types'
 import Promise from 'bluebird'
 
-let room
-
 export const listIndexesAndCollections = (store) => {
   let promises = []
   kuzzle
@@ -128,7 +126,7 @@ let notificationToMessage = notification => {
 }
 
 export const subscribe = (store, index, collection) => {
-  room = kuzzle.dataCollectionFactory(collection, index).subscribe({}, {users: 'all', state: 'all'}, (err, res) => {
+  return kuzzle.dataCollectionFactory(collection, index).subscribe({}, {users: 'all', state: 'all'}, (err, res) => {
     if (err) {
       return
     }
@@ -137,7 +135,8 @@ export const subscribe = (store, index, collection) => {
   })
 }
 
-export const unsubscribe = () => {
+export const unsubscribe = (store, room) => {
+  console.log(store, room)
   room.unsubscribe()
 }
 

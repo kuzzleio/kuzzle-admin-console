@@ -151,7 +151,7 @@ describe('Watch data', () => {
 
   describe('unsubscribe test', () => {
     it('should call unsubscribe from the room', () => {
-      actions.unsubscribe()
+      actions.unsubscribe({}, {unsubscribe: () => {unsubscribeSpy()}})
       expect(unsubscribeSpy.called).to.be.ok
     })
   })

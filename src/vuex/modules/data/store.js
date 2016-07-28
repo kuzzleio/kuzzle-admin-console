@@ -2,13 +2,15 @@ import {
   RECEIVE_INDEXES_COLLECTIONS,
   RECEIVE_MAPPING,
   ADD_NOTIFICATION,
-  EMPTY_NOTIFICATION
+  EMPTY_NOTIFICATION,
+  RECEIVE_ROOM
 } from './mutation-types'
 
 const state = {
   indexesAndCollections: undefined,
   mapping: undefined,
-  notifications: []
+  notifications: [],
+  room: undefined
 }
 
 export const mutations = {
@@ -23,6 +25,9 @@ export const mutations = {
   },
   [EMPTY_NOTIFICATION] (state) {
     state.notifications = []
+  },
+  [RECEIVE_ROOM] (state, room) {
+    state.room = room
   }
 }
 

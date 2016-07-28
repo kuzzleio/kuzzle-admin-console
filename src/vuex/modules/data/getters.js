@@ -9,3 +9,7 @@ export const mapping = state => {
 export const notifications = state => {
   return state.data.notifications
 }
+
+export const room = state => {
+  return state.data.room
+}

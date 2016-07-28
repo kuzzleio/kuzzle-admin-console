@@ -2,7 +2,7 @@ export default {
   id: 'collapsible',
   bind: () => {
     setTimeout(() => {
-      /* eslint no-undef: 0 */
+      // eslint-disable-next-line no-undef
       jQuery('.collapsible').collapsible({
         accordion: false
       })

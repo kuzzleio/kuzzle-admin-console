@@ -51,7 +51,8 @@
   export default {
     data () {
       return {
-        subscribed: false
+        subscribed: false,
+        room: null
       }
     },
     directives: [
@@ -64,10 +65,10 @@
       manageSub (index, collection) {
         if (!this.subscribed) {
           this.subscribed = true
-          this.subscribe(index, collection)
+          this.room = this.subscribe(index, collection)
         } else {
           this.subscribed = false
-          this.unsubscribe()
+          this.unsubscribe(this.room)
         }
       }
     },
