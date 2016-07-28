@@ -1,5 +1,7 @@
 <template>
-  DocumentCreate
+  <div class="wrapper">
+    DocumentCreate
+  </div>
 </template>
 
 <script>

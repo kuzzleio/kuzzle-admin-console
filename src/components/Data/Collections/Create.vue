@@ -1,5 +1,7 @@
 <template>
-  CollectionCreate
+  <div class="wrapper">
+    CollectionCreate
+  </div>
 </template>
 
 <script>

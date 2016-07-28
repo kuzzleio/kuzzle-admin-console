@@ -1,5 +1,8 @@
 <template>
-  CollectionSummary
+
+  <div class="wrapper">
+    CollectionSummary
+  </div>
 </template>
 
 <script>

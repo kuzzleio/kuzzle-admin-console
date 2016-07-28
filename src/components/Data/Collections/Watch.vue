@@ -1,5 +1,7 @@
 <template>
-  CollectionWatch
+  <div class="wrapper">
+    CollectionWatch
+  </div>
 </template>
 
 <script>
