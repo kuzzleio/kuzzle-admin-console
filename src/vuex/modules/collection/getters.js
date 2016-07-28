@@ -44,7 +44,7 @@ export const rawFilter = state => {
 
 export const sorting = state => {
   if (!state.route.query.sorting) {
-    return []
+    return null
   }
 
   try {

@@ -2,12 +2,12 @@
   <div>
     <div class="row">
       <quick-filter
-        v-if="!displayBlockFilter"
+        v-if="!displayBlockFilter && (!basicFilter && !rawFilter && !sorting)"
         :search-term="searchTerm"
-        @filters-display-complex-search="displayBlockFilter = true">
+        @filters-display-block-filter="displayBlockFilter = true">
       </quick-filter>
 
-      <div v-if="complexSearch" class="col s9 complex-search">
+      <div v-if="(basicFilter || rawFilter || sorting)" class="col s9 complex-search">
         <div class="row">
           <div class="col s7">
             <div class="search-bar">
@@ -21,7 +21,7 @@
             </div>
           </div>
           <div class="col s3">
-            <button type="submit" class="btn waves-effect waves-light" @click.prevent="quickSearch">Search</button>
+            <button type="submit" class="btn waves-effect waves-light" @click.prevent="resetComplexSearch">Search</button>
           </div>
         </div>
       </div>
@@ -38,7 +38,8 @@
                 <basic-filter
                   :basic-filter="basicFilter"
                   :sorting="sorting"
-                  :set-basic-filter="setBasicFilter">
+                  :set-basic-filter="setBasicFilter"
+                  @filters-basic-search="complexSearch = true">
                 </basic-filter>
               </div>
 
@@ -73,6 +74,7 @@
   import RawFilter from './RawFilter'
 
   const ESC_KEY = 27
+
   export default {
     name: 'Filters',
     props: ['rawFilter', 'basicFilter', 'setBasicFilter', 'basicFilterForm', 'searchTerm', 'sorting', 'formatFromBasicSearch', 'formatSort'],
@@ -91,10 +93,17 @@
         this.$broadcast('json-editor-refresh')
       }
     },
+    events: {
+      'filters-basic-search' () {
+        this.displayBlockFilter = false
+      },
+      'filters-raw-search' () {
+        this.displayBlockFilter = false
+      }
+    },
     data () {
       return {
         displayBlockFilter: false,
-        complexSearch: false,
         tabActive: 'basic',
         jsonInvalid: false
       }
@@ -104,8 +113,7 @@
         this.tabActive = name
       },
       resetComplexSearch () {
-        this.resetBasicSearch()
-        this.resetRawSearch()
+        this.$dispatch('filters-raw-search', {})
       }
     },
     ready () {

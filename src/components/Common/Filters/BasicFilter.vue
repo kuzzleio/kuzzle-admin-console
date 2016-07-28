@@ -74,7 +74,7 @@
   import MSelect from '../../Materialize/MSelect'
 
   export default {
-    props: ['basicFilter', 'setBasicFilter'],
+    props: ['basicFilter', 'sorting', 'setBasicFilter'],
     directives: {
       MSelect
     },
@@ -95,7 +95,18 @@
         this.setBasicFilter(JSON.parse(JSON.stringify(this.filters)))
       },
       basicSearch () {
-        this.$dispatch('filters-basic-search', this.filters.basic, this.filters.sorting)
+        let filters = this.filters.basic
+        let sorting = this.filters.sorting
+
+        if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1 && !this.filters.basic[0][0].attribute) {
+          filters = null
+        }
+
+        if (!this.filters.sorting.attribute) {
+          sorting = null
+        }
+
+        this.$dispatch('filters-basic-search', filters, sorting)
       },
       resetBasicSearch () {
         this.filters.basic = [[{...emptyBasicFilter}]]
@@ -128,10 +139,11 @@
     ready () {
       if (this.basicFilter) {
         this.filters.basic = this.basicFilter
+      }
 
-        if (this.sorting) {
-          this.filters.sorting = this.sorting
-        }
+      console.log(this.sorting)
+      if (this.sorting) {
+        this.filters.sorting = this.sorting
       }
 
       this.updateFilter()

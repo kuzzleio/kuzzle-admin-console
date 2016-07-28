@@ -30,19 +30,17 @@
     methods: {
       quickSearch () {
         this.$dispatch('filters-quick-search', this.filters.searchTerm)
-        this.complexSearch = false
       },
       resetQuickSearch () {
         this.filters.searchTerm = null
+        this.$dispatch('filters-quick-search', null)
       },
       displayComplexSearch () {
-        this.$dispatch('filters-display-complex-search')
+        this.$dispatch('filters-display-block-filter')
       }
     },
     ready () {
-      if (this.searchTerm) {
-        this.filters.searchTerm = this.searchTerm
-      }
+      this.filters.searchTerm = this.searchTerm
     }
   }
 </script>

@@ -43,8 +43,6 @@
         this.filters.raw = json
 
         this.$dispatch('filters-raw-search', this.filters.raw)
-        this.displayBlockFilter = false
-        this.complexSearch = true
       },
       fillRawWithBasic () {
         let formattedFilter = {}
@@ -62,13 +60,11 @@
       },
       resetRawSearch () {
         this.filters.raw = {}
-        this.complexSearch = false
       }
     },
     ready () {
       if (this.rawFilter) {
         this.filters.raw = this.rawFilter
-        this.complexSearch = true
         this.tabActive = 'raw'
       }
     }

@@ -163,6 +163,11 @@
         this.$router.go({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
+        if (!filters && !sorting) {
+          this.$router.go({query: {basicFilter: null, sorting: null, from: 0}})
+          return
+        }
+
         try {
           let basicFilter = JSON.stringify(filters)
           this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
@@ -171,6 +176,10 @@
         }
       },
       rawSearch (filters) {
+        if (Object.keys(filters).length === 0) {
+          this.$router.go({query: {basicFilter: null, sorting: null, from: 0}})
+          return
+        }
         try {
           let rawFilter = JSON.stringify(filters)
           this.$router.go({query: {rawFilter, from: 0}})
@@ -193,12 +202,12 @@
           filters = formatFromQuickSearch(this.searchTerm)
         } else if (this.basicFilter) {
           filters = formatFromBasicSearch(this.basicFilter)
-
-          if (this.sorting) {
-            sorting = formatSort(this.sorting)
-          }
         } else if (this.rawFilter) {
           filters = this.rawFilter
+        }
+
+        if (this.sorting) {
+          sorting = formatSort(this.sorting)
         }
 
         // Execute search with corresponding filters
