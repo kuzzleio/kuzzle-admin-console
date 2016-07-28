@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import WatchLayout from '../../../../../src/components/Data/Watch/Layout'
-import Notification from '../../../../../src/components/Data/Watch/Notification'
+import WatchLayout from '../../../../../src/components/Data/Collections/Watch'
+import Notification from '../../../../../src/components/Data/Realtime/Notification'
 import store from '../../../../../src/vuex/store'
 import lolex from 'lolex'
 

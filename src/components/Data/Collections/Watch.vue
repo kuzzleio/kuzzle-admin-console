@@ -1,15 +1,14 @@
 <template>
-  <div class="row">
-    <div class="col s12">
-      <p class="head">{{$route.params.collection}} - Watch </p>
-    </div>
-  </div>
+  <headline>
+    {{$route.params.collection}} - Watch
+    <index-dropdown class="icon-medium icon-black" :id="$route.params.index"></index-dropdown>
+  </headline>
 
   <div class="notification-container">
     <div class="row">
       <div class="col s12">
         <button class="btn waves-effect waves-light" @click="manageSub($route.params.index, $route.params.collection)">
-          <i v-bind:class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa"></i>&nbsp;{{subscribed ? 'Unsubscribe' : 'Subscribe'}}
+          <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa"></i>&nbsp;{{subscribed ? 'Unsubscribe' : 'Subscribe'}}
         </button>
         <button class="btn waves-effect waves-light" @click="clear">
           <i class="fa fa-trash"></i>&nbsp;Clear console
@@ -43,12 +42,14 @@
 </style>
 
 <script>
+  import Headline from '../../Materialize/Headline'
   import jQueryCollapsible from '../../Materialize/collapsible'
   import { subscribe, unsubscribe, clear } from '../../../vuex/modules/data/actions'
   import { notifications } from '../../../vuex/modules/data/getters'
-  import Notification from './Notification'
+  import Notification from '../Realtime/Notification'
 
   export default {
+    name: 'CollectionWatch',
     data () {
       return {
         subscribed: false,
@@ -59,7 +60,8 @@
       jQueryCollapsible
     ],
     components: {
-      Notification
+      Notification,
+      Headline
     },
     methods: {
       manageSub (index, collection) {

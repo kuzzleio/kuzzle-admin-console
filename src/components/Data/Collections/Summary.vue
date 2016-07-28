@@ -1,5 +1,6 @@
 <template>
-  <nav class="subnav">
+  CollectionSummary
+  <!--<nav class="subnav">
     <div class="container">
       <ul>
         <li v-link-active>
@@ -12,7 +13,7 @@
     <div class="wrapper">
       <router-view></router-view>
     </div>
-  </section>
+  </section>-->
 </template>
 
 <script>

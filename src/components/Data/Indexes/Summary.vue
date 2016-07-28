@@ -38,7 +38,7 @@
         <div class="col s9">
           <a class="btn waves-effect waves-light"
              href="#!"
-             v-link="{name: 'CreateCollection', params: {index: $route.params.index}}">
+             v-link="{name: 'DataCreateCollection', params: {index: $route.params.index}}">
             <i class="fa fa-plus-circle left"></i>Create a collection
           </a>
         </div>
@@ -102,9 +102,9 @@
 
 
 <script>
-  import Headline from '../../Materialize/Headline.vue'
-  import IndexDropdown from './Dropdown.vue'
-  import CollectionBoxed from '../Collection/Boxed.vue'
+  import Headline from '../../Materialize/Headline'
+  import IndexDropdown from './Dropdown'
+  import CollectionBoxed from '../Collections/Boxed'
   import {getCollectionsFromIndex} from '../../../vuex/modules/data/actions'
   import {collections} from '../../../vuex/modules/data/getters'
 

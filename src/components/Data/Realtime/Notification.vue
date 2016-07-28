@@ -37,6 +37,7 @@
   var moment = require('moment')
 
   export default {
+    name: 'RealtimeNotification',
     props: [
       'notification'
     ],

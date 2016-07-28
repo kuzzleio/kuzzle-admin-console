@@ -45,15 +45,15 @@ describe('IndexBranch component', () => {
     router = new VueRouter({ abstract: true })
     router.map({
       '/:index': {
-        name: 'DataIndex',
+        name: 'DataIndexSummary',
         component: TestComponent
       },
       '/:index/:collection': {
-        name: 'DataIndexCollection',
+        name: 'DataCollectionBrowse',
         component: TestComponent
       },
       '/:index/create': {
-        name: 'Index',
+        name: 'DataCreateCollection',
         component: {}
       }
     })
