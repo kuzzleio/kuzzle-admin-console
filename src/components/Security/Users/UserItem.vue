@@ -19,7 +19,7 @@
     </div>
 
     <div class="item-content">
-      <pre>{{itemContent}}</pre><div class="profile-list">
+      <pre v-json-formatter="itemContent"></pre><div class="profile-list">
         <div class="profile-chip chip" v-for="profile in profileList">
           <a v-link="{name: 'SecurityProfileDetail', params:{ profileId: profile }}" class="truncate" >{{profile}}</a>
         </div>
@@ -33,6 +33,8 @@
 
 <script>
 import Dropdown from '../../Materialize/Dropdown'
+import jsonFormatter from '../../../directives/json-formatter.directive'
+
 const MAX_PROFILES = 5
 
 export default {
@@ -40,6 +42,9 @@ export default {
   props: ['user'],
   components: {
     Dropdown
+  },
+  directives: {
+    jsonFormatter
   },
   data: function () {
     return {
@@ -53,7 +58,7 @@ export default {
       delete contentDisplay.clearPassword
       delete contentDisplay.profilesIds
 
-      return JSON.stringify(contentDisplay, ' ', 2)
+      return contentDisplay // JSON.stringify(contentDisplay, ' ', 2)
     },
     profileList () {
       return this.user.content.profilesIds.filter((item, idx) => {
