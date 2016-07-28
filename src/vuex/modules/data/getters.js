@@ -13,3 +13,7 @@ export const notifications = state => {
 export const room = state => {
   return state.data.room
 }
+
+export const collections = state => {
+  return state.data.collections
+}

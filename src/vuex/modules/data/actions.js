@@ -143,3 +143,13 @@ export const unsubscribe = (store, room) => {
 export const clear = (store) => {
   store.dispatch(EMPTY_NOTIFICATION)
 }
+
+export const getCollectionsFromIndex = (store, index) => {
+  kuzzle.listCollections(index, (err, res) => {
+    if (err) {
+      store.dispatch(SET_ERROR, err.message)
+      return
+    }
+    store.dispatch(RECEIVE_COLLECTIONS, res)
+  })
+}

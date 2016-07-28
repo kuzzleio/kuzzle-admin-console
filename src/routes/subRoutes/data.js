@@ -9,6 +9,14 @@ export default {
     name: 'DataIndex',
     component (resolve) {
       require(['../../components/Data/Indexes/Summary'], resolve)
+    },
+    subRoutes: {
+      '/create': {
+        name: 'CreateCollection',
+        component (resolve) {
+          require(['../../components/Data/Collection/Create'], resolve)
+        }
+      }
     }
   },
   '/:index/:collection': {
