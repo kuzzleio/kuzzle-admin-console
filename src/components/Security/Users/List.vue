@@ -157,7 +157,10 @@
         this.$broadcast('modal-close', 'bulk-delete')
         this.deleteUsers(this.selectedDocuments)
           .then(() => {
-            this.searchUsers()
+            this.refreshSearch()
+          })
+          .catch(() => {
+            /* TODO: manage error */
           })
       },
       quickSearch (searchTerm) {
@@ -169,24 +172,17 @@
           return
         }
 
-        try {
-          let basicFilter = JSON.stringify(filters)
-          this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
-        } catch (e) {
-
-        }
+        let basicFilter = JSON.stringify(filters)
+        this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
       },
       rawSearch (filters) {
-        if (Object.keys(filters).length === 0) {
-          this.$router.go({query: {basicFilter: null, sorting: null, from: 0}})
+        if (!filters || Object.keys(filters).length === 0) {
+          this.$router.go({query: {rawFilter: null, from: 0}})
           return
         }
-        try {
-          let rawFilter = JSON.stringify(filters)
-          this.$router.go({query: {rawFilter, from: 0}})
-        } catch (e) {
 
-        }
+        let rawFilter = JSON.stringify(filters)
+        this.$router.go({query: {rawFilter, from: 0}})
       },
       refreshSearch () {
         this.$router.go({query: {...this.$route.query, from: 0}})

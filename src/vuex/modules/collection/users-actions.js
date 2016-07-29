@@ -27,11 +27,12 @@ export const deleteUsers = (store, ids) => {
     return
   }
 
-  return new Bluebird((resolve) => {
+  return new Bluebird((resolve, reject) => {
     kuzzle
       .dataCollectionFactory('users', '%kuzzle')
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
         if (error) {
+          reject(new Error(error))
           return
         }
 
