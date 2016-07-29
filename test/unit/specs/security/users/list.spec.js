@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { mockedComponent } from '../../helper'
 import store from '../../../../../src/vuex/store'
 
 let ListInjector = require('!!vue?inject!../../../../../src/components/Security/Users/List')
@@ -21,7 +22,12 @@ describe('Users list', () => {
           basicFilter: sinon.stub(),
           sorting: sinon.stub(),
           basicFilterForm: sinon.stub()
-        }
+        },
+        '../../Common/Filters/Filters': mockedComponent,
+        '../../Materialize/Modal': mockedComponent,
+        '../../Materialize/Dropdown': mockedComponent,
+        '../../Materialize/Pagination': mockedComponent,
+        '../../Materialize/Headline': mockedComponent
       })
 
       let vm = new Vue({
@@ -48,7 +54,12 @@ describe('Users list', () => {
           basicFilter: sinon.stub(),
           sorting: sinon.stub(),
           basicFilterForm: sinon.stub()
-        }
+        },
+        '../../Common/Filters/Filters': mockedComponent,
+        '../../Materialize/Modal': mockedComponent,
+        '../../Materialize/Dropdown': mockedComponent,
+        '../../Materialize/Pagination': mockedComponent,
+        '../../Materialize/Headline': mockedComponent
       })
 
       let vm = new Vue({
@@ -77,7 +88,12 @@ describe('Users list', () => {
           basicFilter: sinon.stub(),
           sorting: sinon.stub(),
           basicFilterForm: sinon.stub()
-        }
+        },
+        '../../Common/Filters/Filters': mockedComponent,
+        '../../Materialize/Modal': mockedComponent,
+        '../../Materialize/Dropdown': mockedComponent,
+        '../../Materialize/Pagination': mockedComponent,
+        '../../Materialize/Headline': mockedComponent
       })
     })
 
@@ -117,7 +133,12 @@ describe('Users list', () => {
             basicFilter: sinon.stub(),
             sorting: sinon.stub(),
             basicFilterForm: sinon.stub()
-          }
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent
         })
       })
 
@@ -197,7 +218,12 @@ describe('Users list', () => {
             basicFilter: sinon.stub(),
             sorting: sinon.stub(),
             basicFilterForm: sinon.stub()
-          }
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent
         })
       })
 
@@ -235,7 +261,12 @@ describe('Users list', () => {
             basicFilter: sinon.stub(),
             sorting: sinon.stub(),
             basicFilterForm: sinon.stub()
-          }
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent
         })
 
         vm = new Vue({
@@ -279,7 +310,12 @@ describe('Users list', () => {
             basicFilter: sinon.stub(),
             sorting: sinon.stub(),
             basicFilterForm: sinon.stub()
-          }
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent
         })
 
         vm = new Vue({
@@ -325,7 +361,12 @@ describe('Users list', () => {
             basicFilter: sinon.stub(),
             sorting: sinon.stub(),
             basicFilterForm: sinon.stub()
-          }
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent
         })
 
         vm = new Vue({
