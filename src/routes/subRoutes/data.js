@@ -25,12 +25,6 @@ export default {
       require(['../../components/Data/Collections/Browse'], resolve)
     }
   },
-  '/:index/:collection/create': {
-    name: 'DataCreateDocument',
-    component (resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
-    }
-  },
   '/:index/:collection/summary': {
     name: 'DataCollectionSummary',
     component (resolve) {
@@ -44,6 +38,12 @@ export default {
     }
   },
   // Documents routes
+  '/:index/:collection/create': {
+    name: 'DataCreateDocument',
+    component (resolve) {
+      require(['../../components/Data/Documents/Create'], resolve)
+    }
+  },
   '/:index/:collection/:document': {
     name: 'DataDocumentDetail',
     component (resolve) {
