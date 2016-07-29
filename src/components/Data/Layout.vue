@@ -18,7 +18,7 @@
       </li>
     </ul>
   </aside>
-  <section>
+  <section class="breadcrumb-view">
     <breadcrumb></breadcrumb>
 
     <section class="view">
@@ -28,6 +28,9 @@
 </template>
 
 <style lang="scss" scoped>
+  .breadcrumb-view {
+    margin-top: 50px;
+  }
   section > section {
     margin-top: 50px;
   }
