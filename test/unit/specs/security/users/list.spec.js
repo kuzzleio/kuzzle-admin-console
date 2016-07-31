@@ -27,7 +27,8 @@ describe('Users list', () => {
         '../../Materialize/Modal': mockedComponent,
         '../../Materialize/Dropdown': mockedComponent,
         '../../Materialize/Pagination': mockedComponent,
-        '../../Materialize/Headline': mockedComponent
+        '../../Materialize/Headline': mockedComponent,
+        './UserItem': mockedComponent
       })
 
       let vm = new Vue({
@@ -59,7 +60,8 @@ describe('Users list', () => {
         '../../Materialize/Modal': mockedComponent,
         '../../Materialize/Dropdown': mockedComponent,
         '../../Materialize/Pagination': mockedComponent,
-        '../../Materialize/Headline': mockedComponent
+        '../../Materialize/Headline': mockedComponent,
+        './UserItem': mockedComponent
       })
 
       let vm = new Vue({
@@ -93,7 +95,8 @@ describe('Users list', () => {
         '../../Materialize/Modal': mockedComponent,
         '../../Materialize/Dropdown': mockedComponent,
         '../../Materialize/Pagination': mockedComponent,
-        '../../Materialize/Headline': mockedComponent
+        '../../Materialize/Headline': mockedComponent,
+        './UserItem': mockedComponent
       })
     })
 
@@ -138,7 +141,8 @@ describe('Users list', () => {
           '../../Materialize/Modal': mockedComponent,
           '../../Materialize/Dropdown': mockedComponent,
           '../../Materialize/Pagination': mockedComponent,
-          '../../Materialize/Headline': mockedComponent
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
         })
       })
 
@@ -223,7 +227,8 @@ describe('Users list', () => {
           '../../Materialize/Modal': mockedComponent,
           '../../Materialize/Dropdown': mockedComponent,
           '../../Materialize/Pagination': mockedComponent,
-          '../../Materialize/Headline': mockedComponent
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
         })
       })
 
@@ -266,7 +271,8 @@ describe('Users list', () => {
           '../../Materialize/Modal': mockedComponent,
           '../../Materialize/Dropdown': mockedComponent,
           '../../Materialize/Pagination': mockedComponent,
-          '../../Materialize/Headline': mockedComponent
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
         })
 
         vm = new Vue({
@@ -315,7 +321,8 @@ describe('Users list', () => {
           '../../Materialize/Modal': mockedComponent,
           '../../Materialize/Dropdown': mockedComponent,
           '../../Materialize/Pagination': mockedComponent,
-          '../../Materialize/Headline': mockedComponent
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
         })
 
         vm = new Vue({
@@ -366,7 +373,8 @@ describe('Users list', () => {
           '../../Materialize/Modal': mockedComponent,
           '../../Materialize/Dropdown': mockedComponent,
           '../../Materialize/Pagination': mockedComponent,
-          '../../Materialize/Headline': mockedComponent
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
         })
 
         vm = new Vue({

@@ -14,8 +14,7 @@ describe('Basic filter component', () => {
       },
       data () {
         return {
-          setBasicFilter: setBasicFilterSpy,
-
+          setBasicFilter: setBasicFilterSpy
         }
       }
     }).$mount()
