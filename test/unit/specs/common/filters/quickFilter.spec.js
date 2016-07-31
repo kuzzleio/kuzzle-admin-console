@@ -21,14 +21,14 @@ describe('Quick filter component', () => {
       sandbox.restore()
     })
 
-    it('should dispatch un event on quickSearch call', () => {
+    it('should dispatch an event on quickSearch call', () => {
       vm.$refs.quick.filters = {searchTerm: 'test'}
       vm.$refs.quick.quickSearch()
 
       expect(vm.$refs.quick.$dispatch.calledWith('filters-quick-search', 'test')).to.be.equal(true)
     })
 
-    it('should dispatch un event on resetQuickSearch call and reset searchTerm', () => {
+    it('should dispatch an event on resetQuickSearch call and reset searchTerm', () => {
       vm.$refs.quick.filters = {searchTerm: 'test'}
       vm.$refs.quick.resetQuickSearch()
 
@@ -36,7 +36,7 @@ describe('Quick filter component', () => {
       expect(vm.$refs.quick.$dispatch.calledWith('filters-quick-search', null)).to.be.equal(true)
     })
 
-    it('should dispatch un event on displayComplexSearch call', () => {
+    it('should dispatch an event on displayComplexSearch call', () => {
       vm.$refs.quick.displayComplexSearch()
 
       expect(vm.$refs.quick.$dispatch.calledWith('filters-display-block-filter')).to.be.equal(true)

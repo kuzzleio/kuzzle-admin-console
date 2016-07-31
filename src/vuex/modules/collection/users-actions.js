@@ -32,12 +32,12 @@ export const deleteUsers = (store, ids) => {
       .dataCollectionFactory('users', '%kuzzle')
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
         if (error) {
-          reject(new Error(error))
+          reject(error)
           return
         }
 
         store.dispatch(DELETE_DOCUMENTS, ids)
-        kuzzle.refreshIndex('myIndex', () => {
+        kuzzle.refreshIndex('%kuzzle', () => {
           resolve()
         })
       })
