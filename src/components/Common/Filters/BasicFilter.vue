@@ -70,6 +70,7 @@
 
 <script>
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
+  const emptySorting = {attribute: null, order: 'asc'}
 
   import MSelect from '../../Materialize/MSelect'
 
@@ -82,10 +83,7 @@
       return {
         filters: {
           basic: [[{...emptyBasicFilter}]],
-          sorting: {
-            attribute: null,
-            order: 'asc'
-          }
+          sorting: {...emptySorting}
         }
       }
     },
@@ -98,7 +96,9 @@
         let filters = this.filters.basic
         let sorting = this.filters.sorting
 
-        if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1 && !this.filters.basic[0][0].attribute) {
+        if (this.filters.basic.length === 1 &&
+          this.filters.basic[0].length === 1 &&
+          !this.filters.basic[0][0].attribute) {
           filters = null
         }
 
@@ -110,7 +110,7 @@
       },
       resetBasicSearch () {
         this.filters.basic = [[{...emptyBasicFilter}]]
-        this.filters.sorting = {attribute: null, order: 'asc'}
+        this.filters.sorting = {...emptySorting}
         this.updateFilter()
       },
       addGroupBasicFilter () {
