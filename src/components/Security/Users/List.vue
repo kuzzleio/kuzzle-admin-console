@@ -30,25 +30,10 @@
                 <i class="fa fa-minus-circle left"></i>
                 Delete
             </button>
-            <div class="collection">
-              <div v-for="user in documents" class="collection-item" transition="collection">
-                <input
-                  type="checkbox"
-                  class="filled-in"
-                  id="checkbox-{{user.id}}"
-                  value="{{user.id}}"
-                  @click="toggleSelectDocuments(user.id)"/>
 
-                <label for="checkbox-{{user.id}}" >{{user.id}}</label>
-                <label v-if="user.additionalAttribute && user.additionalAttribute.value" class="additional-attribute">
-                  ({{user.additionalAttribute.name}}: {{user.additionalAttribute.value}})
-                </label>
-                <div class="right actions">
-                  <a class="action fa fa-pencil"></a>
-                  <dropdown :id="user.id">
-                    <li><a @click="deleteUser(user.id)">Delete</a></li>
-                  </dropdown>
-                </div>
+            <div class="collection">
+              <div class="collection-item" transition="collection" v-for="user in documents" >
+                <user-item :user="user" @checkbox-click="toggleSelectDocuments"></user-item>
               </div>
             </div>
 
@@ -81,7 +66,7 @@
         <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
             Cancel
         </button>
-    </span>
+      </span>
     </modal>
   </div>
 </template>
@@ -89,9 +74,9 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import Pagination from '../../Materialize/Pagination'
-  import Dropdown from '../../Materialize/Dropdown'
   import Modal from '../../Materialize/Modal'
   import Filters from '../../Common/Filters/Filters'
+  import UserItem from './UserItem'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
   import { toggleSelectDocuments, performSearch, setBasicFilter } from '../../../vuex/modules/collection/actions'
   import {
@@ -111,8 +96,8 @@
     name: 'UsersList',
     components: {
       Headline,
+      UserItem,
       Pagination,
-      Dropdown,
       Modal,
       Filters
     },

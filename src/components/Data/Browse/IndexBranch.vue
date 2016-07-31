@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'open': open }">
     <i v-if="collectionCount(index)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
-    <a v-link="{name: 'DataIndex', params: {index: index.name}}" class="tree-item truncate"
+    <a v-link="{name: 'DataIndexSummary', params: {index: index.name}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive($route, index.name) }">
       <i class="fa fa-database" aria-hidden="true"></i>
       <strong>{{index.name}}</strong> ({{collectionCount(index)}})
@@ -9,7 +9,7 @@
     <ul class="collections">
       <li v-for="collection in index.collections.stored">
         <a class="tree-item truncate"
-           v-link="{name: 'DataIndexCollection', params: {index: index.name, collection: collection}}"
+           v-link="{name: 'DataCollectionBrowse', params: {index: index.name, collection: collection}}"
            :class="{ 'active': isCollectionActive($route, collection) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
            {{collection}}

@@ -1,9 +1,9 @@
 <template>
-  CollectionSummary
+  DocumentDropdown
 </template>
 
 <script>
   export default {
-    name: 'CollectionSummary'
+    name: 'DocumentDropdown'
   }
 </script>
