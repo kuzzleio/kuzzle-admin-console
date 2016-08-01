@@ -19,7 +19,18 @@
   import JsonEditor from '../../Common/JsonEditor'
 
   export default {
-    props: ['rawFilter', 'formatFromBasicSearch', 'formatSort', 'basicFilterForm'],
+    props: {
+      rawFilter: {
+        type: Object,
+        'default': {}
+      },
+      formatFromBasicSearch: Function,
+      formatSort: Function,
+      basicFilterForm: {
+        type: Object,
+        'default': {}
+      }
+    },
     components: {
       JsonEditor
     },
@@ -45,17 +56,13 @@
         this.$dispatch('filters-raw-search', this.filters.raw)
       },
       fillRawWithBasic () {
-        let formattedFilter = {}
-        let sort = []
-
         if (this.basicFilterForm.basic) {
-          formattedFilter = this.formatFromBasicSearch(this.basicFilterForm.basic)
+          this.filters.raw = this.formatFromBasicSearch(this.basicFilterForm.basic)
         }
         if (this.basicFilterForm.sorting) {
-          sort = this.formatSort(this.basicFilterForm.sorting)
+          this.filters.raw = {...this.filters.raw, sort: this.formatSort(this.basicFilterForm.sorting)}
         }
 
-        this.filters.raw = {...formattedFilter, sort}
         this.$broadcast('json-editor-refresh')
       },
       resetRawSearch () {
@@ -63,10 +70,7 @@
       }
     },
     ready () {
-      if (this.rawFilter) {
-        this.filters.raw = this.rawFilter
-        this.tabActive = 'raw'
-      }
+      this.filters.raw = this.rawFilter
     }
   }
 </script>

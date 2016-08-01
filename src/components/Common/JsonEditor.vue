@@ -37,7 +37,7 @@
     watch: {
       content: function () {
         if (this.content) {
-          this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
+          this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
         }
       }
     },
