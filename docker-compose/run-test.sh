@@ -4,6 +4,7 @@ kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
 echo "Installing dependencies..."
 npm install
+bower install
 
 echo "Starting Tests..."
 
@@ -21,6 +22,8 @@ return_value=$?
 
 #npm run test
 #return_value=$?
+
+npm run codecov
 
 if [ $return_value -gt 0 ]; then
   mkdir /var/app/dump
