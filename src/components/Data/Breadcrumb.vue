@@ -25,10 +25,10 @@
         </a>
       </li>
 
-      <li v-link-active
+      <li :class="{'in active': isRouteActive($route, ['DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
           v-if="collection">
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', activeClass: 'in active', params: {index: index, collection: collection}}">
+           v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
           <i class="fa fa-th-list" aria-hidden="true"></i>
           {{collection}}
         </a>
