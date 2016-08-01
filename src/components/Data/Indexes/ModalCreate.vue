@@ -12,14 +12,14 @@
       <div class="col s8">
         <div class="input-field left-align">
           <label for="index-name">Index name</label>
-          <input id="index-name" type="text" :class="{'invalid': error}">
+          <input id="index-name" type="text" v-model="index" :class="{'invalid': error}">
         </div>
       </div>
 
       <div class="col s4 error" v-if="error">
-        <div class="red-text">An error has occured during index creation:</div>
+        <div class="red-text">An error has occurred during index creation:</div>
         <span :class="{'truncate': errorTruncated}">
-          {{error.message}}
+          {{error}}
         </span>
         <a href="#!" @click.prevent="toggleTruncatedError()">
           <span v-if="errorTruncated">view more</span>
@@ -31,6 +31,7 @@
 
     <span slot="footer">
       <button
+        @click.prevent="tryCreateIndex(index)"
         href="#!"
         class="waves-effect btn">
           Create
@@ -45,7 +46,7 @@
   </modal>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   .error {
     strong {
       display: block;
@@ -67,6 +68,7 @@
 
 
 <script>
+  import {createIndex} from '../../../vuex/modules/data/actions'
   import Modal from '../../Materialize/Modal.vue'
 
   export default {
@@ -75,18 +77,34 @@
     components: {
       Modal
     },
+    vuex: {
+      actions: {
+        createIndex
+      }
+    },
     methods: {
       toggleTruncatedError () {
         this.errorTruncated = !this.errorTruncated
+      },
+      tryCreateIndex (index) {
+        if (index.trim()) {
+          this.createIndex(index)
+            .then(() => {
+              this.index = ''
+              this.error = ''
+              this.$broadcast('modal-close', this.id)
+            })
+            .catch((err) => {
+              this.error = err.message
+            })
+        }
       }
     },
     data () {
       return {
-        errorTruncated: true,
-        error: {
-          message: 'Illa re sermonum sed oportet sed atque quaedam quidem liberior oportet amicitia severitas mediocre remissior' +
-          'debet illa morum condimentum et omnem dulcior quaedam haudquaquam esse et illa esse gravitatem gravitatem.'
-        }
+        error: '',
+        index: '',
+        errorTruncated: true
       }
     }
   }
