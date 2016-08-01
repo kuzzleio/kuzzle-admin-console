@@ -6,7 +6,7 @@
         <div class="col s11">
           <!-- collection browse link -->
           <a href="#!"
-             v-link="{name: 'DataCollectionBrowse', params: {index: $route.params.index, collection: collection}}">
+             v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
             <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
             <span>{{collection}}</span>
           </a>
@@ -38,7 +38,7 @@
 
   export default {
     name: 'CollectionBoxed',
-    props: ['collection', 'isRealtime'],
+    props: ['index', 'collection', 'isRealtime'],
     components: {
       CollectionDropdown
     }
