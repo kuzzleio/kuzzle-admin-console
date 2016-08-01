@@ -75,15 +75,29 @@
   import MSelect from '../../Materialize/MSelect'
 
   export default {
-    props: ['basicFilter', 'sorting', 'setBasicFilter'],
+    props: {
+      basicFilter: {
+        type: Array,
+        'default' () {
+          return [[{...emptyBasicFilter}]]
+        }
+      },
+      sorting: {
+        type: Object,
+        'default' () {
+          return {...emptySorting}
+        }
+      },
+      setBasicFilter: Function
+    },
     directives: {
       MSelect
     },
     data () {
       return {
         filters: {
-          basic: [[{...emptyBasicFilter}]],
-          sorting: {...emptySorting}
+          basic: null,
+          sorting: null
         }
       }
     },
@@ -118,17 +132,27 @@
         this.updateFilter()
       },
       addAndBasicFilter (groupIndex) {
+        if (!this.filters.basic[groupIndex]) {
+          return false
+        }
+
         this.filters.basic[groupIndex].push({...emptyBasicFilter})
         this.updateFilter()
       },
       removeAndBasicFilter (groupIndex, filterIndex) {
+        if (!this.filters.basic[groupIndex] || !this.filters.basic[groupIndex][filterIndex]) {
+          return false
+        }
+
         if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
           this.filters.basic[0].$set(0, {...emptyBasicFilter})
+          this.updateFilter()
           return
         }
 
         if (this.filters.basic[groupIndex].length === 1 && this.filters.basic.length > 1) {
           this.filters.basic.splice(groupIndex, 1)
+          this.updateFilter()
           return
         }
 
@@ -137,13 +161,8 @@
       }
     },
     ready () {
-      if (this.basicFilter) {
-        this.filters.basic = this.basicFilter
-      }
-
-      if (this.sorting) {
-        this.filters.sorting = this.sorting
-      }
+      this.filters.basic = this.basicFilter
+      this.filters.sorting = this.sorting
 
       this.updateFilter()
     }
