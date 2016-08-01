@@ -1,9 +1,15 @@
 import Vue from 'vue'
 import Promise from 'bluebird'
-import ModalCreate from '../../../../../src/components/Data/Indexes/ModalCreate'
+import { mockedComponent } from '../../helper'
 import store from '../../../../../src/vuex/store'
 
+let ModalCreateInjector = require('!!vue?inject!../../../../../src/components/Data/Indexes/ModalCreate')
+
 describe('ModalCreate tests', () => {
+  let ModalCreate = ModalCreateInjector({
+    '../../Materialize/Modal': mockedComponent
+  })
+
   describe('ModalCreate layout display', () => {
     let vm
 

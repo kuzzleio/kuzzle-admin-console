@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 // helper for testing action with expected mutations
 export const testAction = (action, args, state, expectedMutations, done) => {
   let count = 0
@@ -22,6 +24,8 @@ export const testAction = (action, args, state, expectedMutations, done) => {
     done()
   }
 }
+
+export const mockedComponent = Vue.extend({template: '<div></div>'})
 
 export const testActionPromise = (action, args, state, expectedMutations, done) => {
   let count = 0

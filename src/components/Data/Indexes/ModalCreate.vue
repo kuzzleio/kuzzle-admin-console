@@ -69,7 +69,7 @@
 
 <script>
   import {createIndex} from '../../../vuex/modules/data/actions'
-  import Modal from '../../Materialize/Modal.vue'
+  import Modal from '../../Materialize/Modal'
 
   export default {
     name: 'IndexCreateModal',
