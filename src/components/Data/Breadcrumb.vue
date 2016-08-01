@@ -1,7 +1,7 @@
 <template>
   <nav class="subnav">
     <ul>
-      <li :class="{'active': $route.params.index}">
+      <li :class="{'active': index}">
         <a href="#!"
            v-link="{name: 'DataIndexes'}">
           <i class="fa fa-globe" aria-hidden="true"></i>
@@ -9,53 +9,53 @@
         </a>
       </li>
 
-      <li :class="{'active': $route.params.collection, 'active in': isRouteActive($route, 'DataCreateCollection')}"
-          v-if="$route.params.index">
-        <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: $route.params.index}}">
+      <li :class="{'active': collection, 'active in': isRouteActive($route, 'DataCreateCollection')}"
+          v-if="index">
+        <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: index}}">
           <i class="fa fa-database" aria-hidden="true"></i>
-          {{$route.params.index}}
+          {{index}}
         </a>
       </li>
 
       <li class="link link-active"
           v-if="isRouteActive($route, 'DataCreateCollection')">
         <a href="#!"
-           v-link="{name: 'DataCreateCollection', params: {index: $route.params.index}}">
+           v-link="{name: 'DataCreateCollection', params: {index: index}}">
           Create new collection
         </a>
       </li>
 
       <li v-link-active
-          v-if="$route.params.collection">
+          v-if="collection">
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', activeClass: 'in active', params: {index: $route.params.index, collection: $route.params.collection}}">
+           v-link="{name: 'DataCollectionBrowse', activeClass: 'in active', params: {index: index, collection: collection}}">
           <i class="fa fa-th-list" aria-hidden="true"></i>
-          {{$route.params.collection}}
+          {{collection}}
         </a>
       </li>
 
       <li class="link"
           :class="{'link-active': isRouteActive($route, 'DataCollectionBrowse')}"
-          v-if="$route.params.collection">
+          v-if="collection">
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', params: {index: $route.params.index, collection: $route.params.collection}}">
+           v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
           Browse
         </a>
       </li>
 
       <li class="link"
           :class="{'link-active': isRouteActive($route, 'DataCollectionWatch')}"
-          v-if="$route.params.collection">
-        <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}}">
+          v-if="collection">
+        <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
           Watch
         </a>
       </li>
 
       <li class="link"
           :class="{'link-active': isRouteActive($route, 'DataCollectionSummary')}"
-          v-if="$route.params.collection">
+          v-if="collection">
         <a href="#!"
-           v-link="{name: 'DataCollectionSummary', params: {index: $route.params.index, collection: $route.params.collection}}">
+           v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
           Summary
         </a>
       </li>
@@ -116,6 +116,7 @@
 <script>
   export default {
     name: 'DataBreadcrumb',
+    props: ['index', 'collection'],
     methods: {
       isRouteActive (routeObject, routeName) {
         if (Array.isArray(routeName)) {
