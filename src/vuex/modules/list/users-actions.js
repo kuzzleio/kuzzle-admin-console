@@ -47,7 +47,7 @@ export const deleteUsers = (store, ids) => {
 export const searchUsers = (store) => {
   kuzzle
     .security
-    .searchUsers(store.state.collection.filters, (error, result) => {
+    .searchUsers(store.state.list.filters, (error, result) => {
       if (error) {
         return
       }

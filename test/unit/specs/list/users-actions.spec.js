@@ -3,10 +3,10 @@ import {
   DELETE_DOCUMENT,
   RECEIVE_DOCUMENTS,
   DELETE_DOCUMENTS
-} from '../../../../src/vuex/modules/collection/mutation-types'
+} from '../../../../src/vuex/modules/list/mutation-types'
 import store from '../../../../src/vuex/store'
 
-const actionsInjector = require('inject!../../../../src/vuex/modules/collection/users-actions')
+const actionsInjector = require('inject!../../../../src/vuex/modules/list/users-actions')
 
 describe('Users actions', () => {
   describe('deleteUser action', () => {
@@ -63,7 +63,7 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.searchUsers, [{}], {collection: {filters: {}}}, [], done)
+      testAction(actions.searchUsers, [{}], {list: {filters: {}}}, [], done)
     })
 
     it('should call kuzzle with the right filter', () => {
@@ -78,7 +78,8 @@ describe('Users actions', () => {
 
       let filter = {term: {attr: 'toto'}}
 
-      actions.searchUsers({state: {collection: {filters: filter}}})
+      actions.searchUsers({state: {list: {filters: filter}}})
+
       expect(spySearchUsers.calledWith(filter)).to.equal(true)
     })
 
@@ -94,7 +95,7 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.searchUsers, [{}], {collection: {filters: {}}}, [{ name: RECEIVE_DOCUMENTS, payload: [{total: result.total, documents: result.users}] }], done)
+      testAction(actions.searchUsers, [{}], {list: {filters: {}}}, [{ name: RECEIVE_DOCUMENTS, payload: [{total: result.total, documents: result.users}] }], done)
     })
   })
 

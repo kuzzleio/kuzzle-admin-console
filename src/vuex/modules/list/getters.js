@@ -1,11 +1,11 @@
 export const documents = state => {
-  return state.collection.documents
+  return state.list.documents
 }
 
 export const totalDocuments = state => {
-  return state.collection.total
+  return state.list.total
 }
 
 export const selectedDocuments = state => {
-  return state.collection.selectedDocuments
+  return state.list.selectedDocuments
 }

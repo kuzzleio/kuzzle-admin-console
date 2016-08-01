@@ -1,10 +1,18 @@
 import kuzzle from '../../../services/kuzzle'
-import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS, ADD_NOTIFICATION, EMPTY_NOTIFICATION, RECEIVE_COLLECTIONS} from './mutation-types'
+import {
+  RECEIVE_MAPPING,
+  RECEIVE_INDEXES_COLLECTIONS,
+  ADD_NOTIFICATION,
+  EMPTY_NOTIFICATION,
+  RECEIVE_COLLECTIONS
+} from './mutation-types'
 import {SET_ERROR} from '../common/mutation-types'
 import Promise from 'bluebird'
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
+  let currentIndex
+
   kuzzle
     .listIndexes((error, result) => {
       let indexesAndCollections = []
@@ -22,6 +30,21 @@ export const listIndexesAndCollections = (store) => {
               return
             }
             if (index !== '%kuzzle') {
+              // realtime collections
+              // eslint-disable-next-line no-undef
+              let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+              // Cannot use realtimeCollections.find(...) as it is a prototype in ES6 and is not transpiled by babel
+              for (var i = 0; i < realtimeCollections.length; i++) {
+                if (realtimeCollections[i].index === index) {
+                  currentIndex = realtimeCollections[i]
+                  break
+                }
+              }
+              if (currentIndex) {
+                result.realtime = realtimeCollections.map(o => {
+                  return o.collection
+                })
+              }
               indexesAndCollections.push({
                 name: index,
                 collections: result
@@ -35,6 +58,7 @@ export const listIndexesAndCollections = (store) => {
       Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
       }).catch(err => {
+        console.log('error', err.message)
         store.dispatch(SET_ERROR, err.message)
       })
     })

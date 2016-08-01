@@ -1,4 +1,4 @@
-import { mutations } from '../../../../src/vuex/modules/collection/store'
+import { mutations } from '../../../../src/vuex/modules/list/store'
 
 const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, TOGGLE_SELECT_DOCUMENT, SET_PAGINATION } = mutations
 

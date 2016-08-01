@@ -16,7 +16,9 @@
          </a>
       </li>
       <li v-for="collection in index.collections.realtime">
-        <a class="tree-item truncate">
+        <a class="tree-item truncate"
+           v-link="{name: 'DataCollectionBrowse', params: {index: index.name, collection: collection}}"
+           :class="{ 'active': isCollectionActive($route, collection) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
           {{collection}}
         </a>

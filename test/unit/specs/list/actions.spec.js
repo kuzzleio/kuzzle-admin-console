@@ -2,8 +2,8 @@ import { testAction } from '../helper'
 import {
   TOGGLE_SELECT_DOCUMENT,
   SET_PAGINATION
-} from '../../../../src/vuex/modules/collection/mutation-types'
-import { toggleSelectDocuments, setPagination } from '../../../../src/vuex/modules/collection/actions'
+} from '../../../../src/vuex/modules/list/mutation-types'
+import { toggleSelectDocuments, setPagination } from '../../../../src/vuex/modules/list/actions'
 
 describe('collection actions', () => {
   describe('toggleSelectDocuments', () => {

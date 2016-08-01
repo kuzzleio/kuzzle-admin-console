@@ -65,9 +65,9 @@
   import Pagination from '../../Materialize/Pagination'
   import Dropdown from '../../Materialize/Dropdown'
   import Modal from '../../Materialize/Modal'
-  import {searchUsers, deleteUser, deleteUsers} from '../../../vuex/modules/collection/users-actions'
-  import {toggleSelectDocuments, setPagination} from '../../../vuex/modules/collection/actions'
-  import {documents, totalDocuments, selectedDocuments} from '../../../vuex/modules/collection/getters'
+  import {searchUsers, deleteUser, deleteUsers} from '../../../vuex/modules/list/users-actions'
+  import {toggleSelectDocuments, setPagination} from '../../../vuex/modules/list/actions'
+  import {documents, totalDocuments, selectedDocuments} from '../../../vuex/modules/list/getters'
 
   export default {
     name: 'UsersList',
