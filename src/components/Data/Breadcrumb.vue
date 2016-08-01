@@ -9,7 +9,7 @@
         </a>
       </li>
 
-      <li :class="{'active': collection, 'active in': isRouteActive($route, 'DataCreateCollection')}"
+      <li :class="{'active': collection, 'active in': isRouteActive('DataCreateCollection')}"
           v-if="index">
         <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: index}}">
           <i class="fa fa-database" aria-hidden="true"></i>
@@ -18,14 +18,14 @@
       </li>
 
       <li class="link link-active"
-          v-if="isRouteActive($route, 'DataCreateCollection')">
+          v-if="isRouteActive('DataCreateCollection')">
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: index}}">
           Create new collection
         </a>
       </li>
 
-      <li :class="{'in active': isRouteActive($route, ['DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
+      <li :class="{'in active': isRouteActive(['DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
           v-if="collection">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
@@ -35,7 +35,7 @@
       </li>
 
       <li class="link"
-          :class="{'link-active': isRouteActive($route, 'DataCollectionBrowse')}"
+          :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
           v-if="collection">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
@@ -44,7 +44,7 @@
       </li>
 
       <li class="link"
-          :class="{'link-active': isRouteActive($route, 'DataCollectionWatch')}"
+          :class="{'link-active': isRouteActive('DataCollectionWatch')}"
           v-if="collection">
         <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
           Watch
@@ -52,7 +52,7 @@
       </li>
 
       <li class="link"
-          :class="{'link-active': isRouteActive($route, 'DataCollectionSummary')}"
+          :class="{'link-active': isRouteActive('DataCollectionSummary')}"
           v-if="collection">
         <a href="#!"
            v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
@@ -116,14 +116,14 @@
 <script>
   export default {
     name: 'DataBreadcrumb',
-    props: ['index', 'collection'],
+    props: ['routeName', 'index', 'collection'],
     methods: {
-      isRouteActive (routeObject, routeName) {
+      isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
-          return routeName.indexOf(routeObject.name) >= 0
+          return routeName.indexOf(this.routeName) >= 0
         }
 
-        return routeObject.name === routeName
+        return this.routeName === routeName
       }
     }
   }

@@ -19,7 +19,11 @@
     </ul>
   </aside>
   <section class="breadcrumb-view">
-    <breadcrumb :index="$route.params.index" :collection="$route.params.collection"></breadcrumb>
+    <breadcrumb
+      :route-name="$route.name"
+      :index="$route.params.index"
+      :collection="$route.params.collection">
+    </breadcrumb>
 
     <section class="view">
       <router-view></router-view>
