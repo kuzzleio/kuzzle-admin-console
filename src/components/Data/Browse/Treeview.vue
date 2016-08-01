@@ -1,6 +1,6 @@
 <template>
   <ul class="indexes">
-    <li v-for="(key, index) in tree">
+    <li v-for="(key, index) in tree | orderBy 'name'">
       <index-branch :index="index"></index-branch>
     </li>
   </ul>

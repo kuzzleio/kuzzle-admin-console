@@ -40,8 +40,7 @@
           <index-boxed
             :index="index.name"
             v-if="!filter || index.name.indexOf(filter) >= 0"
-            v-for="index in indexesAndCollections">
-
+            v-for="index in indexesAndCollections | orderBy 'name'">
           </index-boxed>
 
           <modal-create id="index-create"></modal-create>

@@ -66,14 +66,14 @@
           </div>
 
           <collection-boxed
-              v-for="collection in collections.stored"
+              v-for="collection in collections.stored | orderBy 1"
               v-if="!filter || (filter && collection.includes(filter))"
               :collection="collection"
               :is-realtime="false">
           </collection-boxed>
 
           <collection-boxed
-              v-for="collection in collections.realtime"
+              v-for="collection in collections.realtime | orderBy 1"
               v-if="!filter || (filter && collection.includes(filter))"
               :collection="collection"
               :is-realtime="true">
