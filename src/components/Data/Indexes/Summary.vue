@@ -85,7 +85,14 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .switch {
+    label {
+      .lever {
+        margin: 0;
+      }
+    }
+  }
   .actions {
     display: flex;
     justify-content: space-between;
