@@ -7,8 +7,7 @@ export const formatFromQuickSearch = (searchTerm) => {
     query: {
       match_phrase_prefix: {
         _all: {
-          query: searchTerm,
-          max_expansions: 50
+          query: searchTerm
         }
       }
     }
