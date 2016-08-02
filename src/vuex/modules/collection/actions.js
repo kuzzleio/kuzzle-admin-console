@@ -29,7 +29,11 @@ export const performSearch = (store, collection, index, filters = {}, pagination
       let additionalAttributeName = null
 
       if (sort.length > 0) {
-        additionalAttributeName = Object.keys(sort[0])[0]
+        if (typeof sort[0] === 'string') {
+          additionalAttributeName = sort[0]
+        } else {
+          additionalAttributeName = Object.keys(sort[0])[0]
+        }
       }
 
       let documents = result.documents.map((document) => {
@@ -44,7 +48,6 @@ export const performSearch = (store, collection, index, filters = {}, pagination
 
         return object
       })
-
       store.dispatch(RECEIVE_DOCUMENTS, {total: result.total, documents})
     })
 }

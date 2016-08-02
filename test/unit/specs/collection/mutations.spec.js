@@ -1,6 +1,6 @@
 import { mutations } from '../../../../src/vuex/modules/collection/store'
 
-const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, TOGGLE_SELECT_DOCUMENT } = mutations
+const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, TOGGLE_SELECT_DOCUMENT, SET_BASIC_FILTER } = mutations
 
 describe('collection mutations', () => {
   describe('DELETE_DOCUMENT', () => {
@@ -45,6 +45,15 @@ describe('collection mutations', () => {
 
       TOGGLE_SELECT_DOCUMENT(state, 'doc1')
       expect(state.selectedDocuments).to.eql(['doc3'])
+    })
+  })
+
+  describe('SET_BASIC_FILTER', () => {
+    it('should set basicFilter value', () => {
+      let state = {basicFilter: undefined}
+
+      SET_BASIC_FILTER(state, 'filter')
+      expect(state.basicFilter).to.equals('filter')
     })
   })
 })
