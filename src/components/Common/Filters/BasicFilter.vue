@@ -76,18 +76,8 @@
 
   export default {
     props: {
-      basicFilter: {
-        type: Array,
-        'default' () {
-          return [[{...emptyBasicFilter}]]
-        }
-      },
-      sorting: {
-        type: Object,
-        'default' () {
-          return {...emptySorting}
-        }
-      },
+      basicFilter: Array,
+      sorting: Object,
       setBasicFilter: Function
     },
     directives: {
@@ -97,7 +87,7 @@
       return {
         filters: {
           basic: null,
-          sorting: null
+          sorting: {...emptySorting}
         }
       }
     },
@@ -161,8 +151,8 @@
       }
     },
     ready () {
-      this.filters.basic = this.basicFilter
-      this.filters.sorting = this.sorting
+      this.filters.basic = this.basicFilter || [[{...emptyBasicFilter}]]
+      this.filters.sorting = this.sorting || {...emptySorting}
 
       this.updateFilter()
     }

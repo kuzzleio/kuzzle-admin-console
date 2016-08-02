@@ -22,13 +22,17 @@
     props: {
       rawFilter: {
         type: Object,
-        'default': {}
+        'default' () {
+          return {}
+        }
       },
       formatFromBasicSearch: Function,
       formatSort: Function,
       basicFilterForm: {
         type: Object,
-        'default': {}
+        'default' () {
+          return {}
+        }
       }
     },
     components: {
@@ -70,7 +74,7 @@
       }
     },
     ready () {
-      this.filters.raw = this.rawFilter
+      this.filters.raw = this.rawFilter || {}
     }
   }
 </script>

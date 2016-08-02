@@ -30,13 +30,6 @@
         this.select(tab)
       }
     },
-    ready () {
-      if (this.active) {
-        this.$broadcast('tab-select', this.active)
-      }
-
-      window.addEventListener('resize', this.resizeIndicator)
-    },
     data () {
       return {
         indicator: {
@@ -47,11 +40,7 @@
     },
     computed: {
       tabsCount () {
-        if (!this.$children) {
-          return 0
-        } else {
-          return this.$children.length
-        }
+        return this.$children.length
       }
     },
     methods: {
@@ -63,12 +52,9 @@
         let parent = target.parentElement
 
         this.moveIndicator(
-          this.indicator.left,
           target.offsetLeft,
           parent.offsetWidth - target.offsetLeft - target.offsetWidth
         )
-
-        return true
       },
       resizeIndicator () {
         if (!this.activeTab) {
@@ -87,18 +73,17 @@
           indicator.style.left = (index * tabWidth) + 'px'
         }
       },
-      moveIndicator (left, newLeft, newRight) {
+      moveIndicator (newLeft, newRight) {
         let indicator = this.$els.indicator
-
-        // Update indicator
-        if ((newLeft - left) >= 0) {
-          Velocity(indicator, {right: newRight}, {duration: 300, queue: false, easing: 'easeOutQuad'})
-          Velocity(indicator, {left: newLeft}, {duration: 300, queue: false, easing: 'easeOutQuad', delay: 90})
-        } else {
-          Velocity(indicator, {left: newLeft}, {duration: 300, queue: false, easing: 'easeOutQuad'})
-          Velocity(indicator, {right: newRight}, {duration: 300, queue: false, easing: 'easeOutQuad', delay: 90})
-        }
+        Velocity(indicator, {right: newRight, left: newLeft}, {duration: 300, queue: false, easing: 'easeOutQuad'})
       }
+    },
+    ready () {
+      if (this.active) {
+        this.$broadcast('tab-select', this.active)
+      }
+
+      window.addEventListener('resize', this.resizeIndicator)
     }
   }
 </script>

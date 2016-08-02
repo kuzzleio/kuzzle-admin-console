@@ -55,21 +55,23 @@ describe('Filter main component', () => {
       }).$mount()
     })
 
-    it('should pass displayBlockFilter to false on event filters-basic-search (click on button search)', () => {
+    it('should pass displayBlockFilter to false on event filters-basic-search (click on button search)', (done) => {
       vm.$refs.filter.displayBlockFilter = true
       vm.$broadcast('filters-basic-search')
 
       Vue.nextTick(() => {
         expect(vm.$refs.filter.displayBlockFilter).to.be.equal(false)
+        done()
       })
     })
 
-    it('should pass displayBlockFilter to false on event filters-raw-search (click on button search)', () => {
+    it('should pass displayBlockFilter to false on event filters-raw-search (click on button search)', (done) => {
       vm.$refs.filter.displayBlockFilter = true
       vm.$broadcast('filters-raw-search')
 
       Vue.nextTick(() => {
         expect(vm.$refs.filter.displayBlockFilter).to.be.equal(false)
+        done()
       })
     })
   })
