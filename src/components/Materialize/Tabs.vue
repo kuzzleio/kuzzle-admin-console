@@ -75,7 +75,7 @@
       },
       moveIndicator (newLeft, newRight) {
         let indicator = this.$els.indicator
-        Velocity(indicator, {right: newRight, left: newLeft}, {duration: 300, queue: false, easing: 'easeOutQuad'})
+        Velocity(indicator, {left: newLeft, right: newRight}, {duration: 300, queue: false, easing: 'easeOutQuad'})
       }
     },
     ready () {

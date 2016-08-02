@@ -3,12 +3,15 @@ let TabsInjector = require('!!vue?inject!../../../../src/components/Materialize/
 
 describe('Tabs component', () => {
   let sandbox = sinon.sandbox.create()
-  let velocitySpy = sandbox.spy()
+  let velocityStub = sinon.stub()
+  let $emit = {}
+  let $broadcast = {}
   let vm = {}
 
   beforeEach(() => {
+    velocityStub.reset()
     let Tabs = TabsInjector({
-      'velocity-animate': velocitySpy
+      'velocity-animate': velocityStub
     })
     vm = new Vue({
       template: '<div><tabs v-ref:tabs active="something"></tabs></div>',
@@ -17,16 +20,18 @@ describe('Tabs component', () => {
       }
     }).$mount()
 
-    vm.$refs.tabs.$emit = sandbox.spy()
-    vm.$refs.tabs.$broadcast = sandbox.spy()
+    $emit = sandbox.stub(vm.$refs.tabs, '$emit')
+    $broadcast = sandbox.stub(vm.$refs.tabs, '$broadcast')
   })
+
+  afterEach(() => sandbox.restore())
 
   describe('Watcher', () => {
     it('should emit an event on active change', (done) => {
       vm.$refs.tabs.active = 'otherTab'
 
       Vue.nextTick(() => {
-        expect(vm.$refs.tabs.$emit.calledWith('tab-changed', 'otherTab'))
+        expect($emit.calledWith('tab-changed', 'otherTab'))
         done()
       })
     })
@@ -35,7 +40,7 @@ describe('Tabs component', () => {
       vm.$refs.tabs.isDisplayed = false
 
       Vue.nextTick(() => {
-        expect(vm.$refs.tabs.$broadcast.calledOnce).to.be.equal(false)
+        expect($broadcast.calledOnce).to.be.equal(false)
         done()
       })
     })
@@ -45,7 +50,7 @@ describe('Tabs component', () => {
       vm.$refs.tabs.active = 'anotherTab'
 
       Vue.nextTick(() => {
-        expect(vm.$refs.tabs.$broadcast.calledWith('tab-select', 'anotherTab')).to.be.equal(true)
+        expect($broadcast.calledWith('tab-select', 'anotherTab')).to.be.equal(true)
         done()
       })
     })
@@ -53,10 +58,11 @@ describe('Tabs component', () => {
 
   describe('Events', () => {
     it('should call select function on tabs-on-select event', () => {
-      vm.$refs.tabs.select = sandbox.spy()
-      vm.$broadcast('tabs-on-select', 'other')
+      let select = sandbox.stub(vm.$refs.tabs, 'select')
+      $emit.restore()
+      vm.$refs.tabs.$emit('tabs-on-select', 'other')
 
-      expect(vm.$refs.tabs.select.calledWith('other'))
+      expect(select.calledWith('other')).to.be.equal(true)
     })
   })
 
@@ -72,11 +78,11 @@ describe('Tabs component', () => {
   describe('Methods', () => {
     describe('Select', () => {
       it('should call moveIndicator with right parameters', () => {
-        vm.$refs.tabs.moveIndicator = sandbox.spy()
+        let moveIndicator = sandbox.stub(vm.$refs.tabs, 'moveIndicator')
         let tab = {id: 'basic', $el: {offsetLeft: 10, offsetWidth: 20, parentElement: {offsetWidth: 30}}}
 
         vm.$refs.tabs.select(tab)
-        expect(vm.$refs.tabs.moveIndicator.calledWith(10, 0)).to.be.equal(true)
+        expect(moveIndicator.calledWith(10, 0)).to.be.equal(true)
         expect(vm.$refs.tabs.activeTab).to.be.deep.equal(tab)
         expect(vm.$refs.tabs.active).to.be.equal('basic')
       })
@@ -118,7 +124,7 @@ describe('Tabs component', () => {
       it('should call velocity library with new right/left position', () => {
         vm.$refs.tabs.moveIndicator(10, 20)
 
-        expect(velocitySpy.args[0][1]).to.be.deep.equal({right: 20, left: 10})
+        expect(velocityStub.args[0][1]).to.be.deep.equal({right: 20, left: 10})
       })
     })
   })
@@ -126,10 +132,9 @@ describe('Tabs component', () => {
   describe('Ready', () => {
     it('should call broadcast with current active tab', () => {
       let Tabs = TabsInjector({
-        'velocity-animate': velocitySpy
+        'velocity-animate': velocityStub
       })
       document.body.insertAdjacentHTML('afterbegin', '<app></app>')
-      Vue.$broadcast = sandbox.spy()
       vm = new Vue({
         template: '<div><tabs v-ref:tabs active="something"></tabs></div>',
         components: {
@@ -137,15 +142,14 @@ describe('Tabs component', () => {
         }
       }).$mount('app')
 
-      expect(Vue.$broadcast.calledWith('tab-select', 'something'))
+      expect($broadcast.calledWith('tab-select', 'something'))
     })
 
     it('should call broadcast with current active tab', () => {
       let Tabs = TabsInjector({
-        'velocity-animate': velocitySpy
+        'velocity-animate': velocityStub
       })
       document.body.insertAdjacentHTML('afterbegin', '<app></app>')
-      Vue.$broadcast = sandbox.spy()
       vm = new Vue({
         template: '<div><tabs v-ref:tabs></tabs></div>',
         components: {
@@ -153,7 +157,7 @@ describe('Tabs component', () => {
         }
       }).$mount('app')
 
-      expect(Vue.$broadcast.called).to.be.equal(false)
+      expect($broadcast.called).to.be.equal(false)
     })
   })
 })
