@@ -1,4 +1,5 @@
 <template>
+  <div v-toaster></div>
   <router-view></router-view>
 </template>
 
@@ -14,4 +15,3 @@ export default {
   replace: false
 }
 </script>
-

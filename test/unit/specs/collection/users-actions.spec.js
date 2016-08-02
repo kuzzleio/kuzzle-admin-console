@@ -1,7 +1,6 @@
-import { testAction } from '../helper'
+import { testAction, testActionPromise } from '../helper'
 import {
   DELETE_DOCUMENT,
-  RECEIVE_DOCUMENTS,
   DELETE_DOCUMENTS
 } from '../../../../src/vuex/modules/collection/mutation-types'
 import store from '../../../../src/vuex/store'
@@ -33,7 +32,10 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.deleteUser, ['toto'], {}, [], done)
+      testActionPromise(actions.deleteUser, ['toto'], {}, [], done).catch(err => {
+        expect(err.message).to.equals('error')
+        done()
+      })
     })
 
     it('should dispatch delete with right id', (done) => {
@@ -41,60 +43,16 @@ describe('Users actions', () => {
         '../../../services/kuzzle': {
           security: {
             deleteUser (id, cb) {
-              cb(null)
+              cb()
             }
+          },
+          refreshIndex (index, cb) {
+            cb()
           }
         }
       })
 
       testAction(actions.deleteUser, ['toto'], {}, [{ name: DELETE_DOCUMENT, payload: ['toto'] }], done)
-    })
-  })
-
-  describe('searchUsers action', () => {
-    it('shoud do nothing on error from kuzzle', (done) => {
-      const actions = actionsInjector({
-        '../../../services/kuzzle': {
-          security: {
-            searchUsers (filters, cb) {
-              cb(new Error('error'))
-            }
-          }
-        }
-      })
-
-      testAction(actions.searchUsers, [{}], {collection: {filters: {}}}, [], done)
-    })
-
-    it('should call kuzzle with the right filter', () => {
-      let spySearchUsers = sinon.spy()
-      const actions = actionsInjector({
-        '../../../services/kuzzle': {
-          security: {
-            searchUsers: spySearchUsers
-          }
-        }
-      })
-
-      let filter = {term: {attr: 'toto'}}
-
-      actions.searchUsers({state: {collection: {filters: filter}}})
-      expect(spySearchUsers.calledWith(filter)).to.equal(true)
-    })
-
-    it('should dispatch an object with total and users', (done) => {
-      const result = {total: 1, users: [{id: 'toto'}]}
-      const actions = actionsInjector({
-        '../../../services/kuzzle': {
-          security: {
-            searchUsers (filter, cb) {
-              cb(null, result)
-            }
-          }
-        }
-      })
-
-      testAction(actions.searchUsers, [{}], {collection: {filters: {}}}, [{ name: RECEIVE_DOCUMENTS, payload: [{total: result.total, documents: result.users}] }], done)
     })
   })
 
@@ -128,26 +86,10 @@ describe('Users actions', () => {
         }
       })
 
-      testAction(actions.deleteUsers, [['doc1']], {}, [], done)
-    })
-
-    it('should call kuzzle with the right filter', () => {
-      let spyDeleteDocument = sinon.spy()
-      const actions = actionsInjector({
-        '../../../services/kuzzle': {
-          dataCollectionFactory () {
-            return {
-              deleteDocument: spyDeleteDocument
-            }
-          },
-          refreshIndex: sinon.stub()
-        }
+      testActionPromise(actions.deleteUsers, [['doc1']], {}, [], done).catch(err => {
+        expect(err.message).to.equals('error')
+        done()
       })
-
-      let ids = ['doc1', 'doc2']
-
-      actions.deleteUsers({}, ids)
-      expect(spyDeleteDocument.calledWith({filter: {ids: {values: ids}}})).to.equal(true)
     })
 
     it('should dispatch delete documents with right ids', (done) => {

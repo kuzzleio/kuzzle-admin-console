@@ -1,7 +1,6 @@
 <template>
   <div>
     <headline title="Users Management"></headline>
-
     <div>
       <div class="row">
         <div class="col s10">
@@ -143,8 +142,7 @@
           .then(() => {
             this.searchUsers()
           })
-          .catch((error) => {
-            console.error(error)
+          .catch(() => {
             // TODO call setError action here
           })
       }
@@ -156,6 +154,5 @@
         this.searchUsers()
       }
     }
-
   }
 </script>

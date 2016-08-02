@@ -4,16 +4,20 @@ import store from '../../../../../src/vuex/store'
 
 describe('Users list', () => {
   describe('Method', () => {
+    let vm
+
+    beforeEach(() => {
+      vm = new Vue({
+        template: '<div><list v-ref:list></list></div>',
+        components: {
+          List
+        },
+        store: store
+      }).$mount()
+    })
+
     describe('changePage', () => {
       it('should call the router with correct page', () => {
-        let vm = new Vue({
-          template: '<div><list v-ref:list></list></div>',
-          components: {
-            List
-          },
-          store: store
-        }).$mount()
-
         vm.$refs.list.$router = {go: sinon.spy()}
 
         vm.$refs.list.changePage(1)
@@ -26,14 +30,6 @@ describe('Users list', () => {
 
     describe('confirmBulkDelete', () => {
       it('should dispatch event for close the corresponding modal', () => {
-        let vm = new Vue({
-          template: '<div><list v-ref:list></list></div>',
-          components: {
-            List
-          },
-          store: store
-        }).$mount()
-
         vm.$refs.list.$broadcast = sinon.spy()
         vm.$refs.list.deleteUsers = sinon.stub().returns(Promise.resolve())
         vm.$refs.list.searchUsers = sinon.stub()
@@ -44,14 +40,6 @@ describe('Users list', () => {
       })
 
       it('should call delete users with the right list', (done) => {
-        let vm = new Vue({
-          template: '<div><list v-ref:list></list></div>',
-          components: {
-            List
-          },
-          store: store
-        }).$mount()
-
         vm.$refs.list.deleteUsers = sinon.stub().returns(Promise.resolve())
         vm.$refs.list.searchUsers = sinon.spy()
 
@@ -65,6 +53,18 @@ describe('Users list', () => {
 
         setTimeout(() => {
           expect(vm.$refs.list.searchUsers.calledTwice).to.be.equal(true)
+          done()
+        }, 0)
+      })
+    })
+
+    describe('confirmUserDelete', () => {
+      it('should call deleteUser with the right id', (done) => {
+        vm.$refs.list.deleteUser = sinon.stub().returns(Promise.resolve())
+        vm.$refs.list.searchUsers = sinon.spy()
+        vm.$refs.list.confirmUserDelete()
+        setTimeout(() => {
+          expect(vm.$refs.list.searchUsers.called).to.be.ok
           done()
         }, 0)
       })

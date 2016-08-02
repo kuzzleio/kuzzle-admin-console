@@ -9,7 +9,7 @@
       value="{{user.id}}"
       @click="notifyCheckboxClick"/>
 
-    <label for="checkbox-{{user.id}}" ></label>
+    <label for="checkbox-{{user.id}}"></label>
     <!-- The following anchor will go to the user details page -->
     <label class="item-title"><a>{{user.id}}</a></label>
 
