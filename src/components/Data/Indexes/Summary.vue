@@ -68,6 +68,7 @@
           <collection-boxed
               v-for="collection in collections.stored"
               v-if="!filter || (filter && collection.includes(filter))"
+              :index="$route.params.index"
               :collection="collection"
               :is-realtime="false">
           </collection-boxed>
@@ -75,6 +76,7 @@
           <collection-boxed
               v-for="collection in collections.realtime"
               v-if="!filter || (filter && collection.includes(filter))"
+              :index="$route.params.index"
               :collection="collection"
               :is-realtime="true">
           </collection-boxed>

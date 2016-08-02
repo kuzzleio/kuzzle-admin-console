@@ -2,7 +2,7 @@
   <div class="wrapper">
     <headline>
       {{$route.params.collection}} - Watch
-      <index-dropdown class="icon-medium icon-black" :id="$route.params.index"></index-dropdown>
+      <collection-dropdown class="icon-medium icon-black" :id="$route.params.index"></collection-dropdown>
     </headline>
 
     <div class="notification-container">
@@ -49,6 +49,7 @@
   import { subscribe, unsubscribe, clear } from '../../../vuex/modules/data/actions'
   import { notifications } from '../../../vuex/modules/data/getters'
   import Notification from '../Realtime/Notification'
+  import CollectionDropdown from '../Collections/Dropdown'
 
   export default {
     name: 'CollectionWatch',
@@ -63,6 +64,7 @@
     ],
     components: {
       Notification,
+      CollectionDropdown,
       Headline
     },
     methods: {

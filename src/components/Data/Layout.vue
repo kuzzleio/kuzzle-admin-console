@@ -18,16 +18,13 @@
       </li>
     </ul>
   </aside>
-  <section>
-    <nav class="subnav">
-      <div class="container">
-        <ul>
-          <li v-link-active>
-            <!--<a v-link="{name: 'SummaryData', activeClass: 'active'}">Summary</a>-->
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <section class="breadcrumb-view">
+    <breadcrumb
+      :route-name="$route.name"
+      :index="$route.params.index"
+      :collection="$route.params.collection">
+    </breadcrumb>
+
     <section class="view">
       <router-view></router-view>
     </section>
@@ -35,10 +32,8 @@
 </template>
 
 <style lang="scss" scoped>
-  .subnav {
-    position: fixed;
-    z-index: 100;
-    top: 50px;
+  .breadcrumb-view {
+    margin-top: 50px;
   }
   section > section {
     margin-top: 50px;
@@ -50,11 +45,13 @@
   import {getError} from '../../vuex/modules/common/getters'
   import {indexesAndCollections} from '../../vuex/modules/data/getters'
   import Treeview from './Browse/Treeview'
+  import Breadcrumb from './Breadcrumb'
 
   export default {
     name: 'DataLayout',
     components: {
-      Treeview
+      Treeview,
+      Breadcrumb
     },
     ready () {
       this.listIndexesAndCollections()
