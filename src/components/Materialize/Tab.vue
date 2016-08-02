@@ -12,12 +12,12 @@
       name: String
     },
     events: {
-      'tab-select' (id) {
-        if (!id) {
+      'tab-select' (name) {
+        if (!name) {
           return
         }
 
-        this.select(id)
+        this.select(name)
       }
     },
     computed: {
@@ -26,13 +26,6 @@
       },
       index () {
         return this.$parent.$children.indexOf(this)
-      },
-      id () {
-        if (this.name) {
-          return this.name
-        } else {
-          return this.index
-        }
       }
     },
     methods: {
@@ -41,20 +34,8 @@
           this.$dispatch('tabs-on-select', this)
         }
       },
-      select (id) {
-        if (this.id === id) {
-          this.setAsSelected()
-        }
-      }
-    },
-    ready () {
-      let hash = window.location.hash
-      let el = this.$el
-      let anchors = el.getElementsByTagName('A')
-
-      for (let i = 0; i < anchors.length; i++) {
-        let a = anchors[i]
-        if (hash === a.getAttribute('href')) {
+      select (name) {
+        if (this.name === name) {
           this.setAsSelected()
         }
       }

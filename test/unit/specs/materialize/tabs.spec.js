@@ -79,7 +79,7 @@ describe('Tabs component', () => {
     describe('Select', () => {
       it('should call moveIndicator with right parameters', () => {
         let moveIndicator = sandbox.stub(vm.$refs.tabs, 'moveIndicator')
-        let tab = {id: 'basic', $el: {offsetLeft: 10, offsetWidth: 20, parentElement: {offsetWidth: 30}}}
+        let tab = {name: 'basic', $el: {offsetLeft: 10, offsetWidth: 20, parentElement: {offsetWidth: 30}}}
 
         vm.$refs.tabs.select(tab)
         expect(moveIndicator.calledWith(10, 0)).to.be.equal(true)

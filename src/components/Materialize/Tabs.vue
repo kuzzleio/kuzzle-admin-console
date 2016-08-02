@@ -46,7 +46,7 @@
     methods: {
       select (tab) {
         this.activeTab = tab
-        this.active = tab.id
+        this.active = tab.name
 
         let target = tab.$el
         let parent = target.parentElement
