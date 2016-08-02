@@ -14,9 +14,12 @@ let user = {
     username: 'kuzzle-bo-admin'
   }
 }
-let $vm
 
 describe('UserItem component', () => {
+  let $vm
+  let sandbox = sinon.sandbox.create()
+  let $emit
+
   beforeEach(() => {
     Vue.use(VueRouter)
 
@@ -55,7 +58,10 @@ describe('UserItem component', () => {
     router.go('/')
 
     $vm = router.app.$refs.routerview.$refs.useritem
+    $emit = sandbox.stub($vm, '$emit')
   })
+
+  afterEach(() => sandbox.restore())
 
   it('should show correct itemContent', () => {
     expect($vm.itemContent).to.deep.equal({
@@ -96,5 +102,11 @@ describe('UserItem component', () => {
 
     $vm.toggleCollapse()
     expect($vm.collapsed).to.equal(false)
+  })
+
+  it('should correctly emit event on notifyCheckboxClick', () => {
+    $vm.notifyCheckboxClick()
+
+    expect($emit.calledWith('checkbox-click', 'kuzzle-bo-admin')).to.equal(true)
   })
 })
