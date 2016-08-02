@@ -59,14 +59,16 @@ describe('UserItem component', () => {
 
   it('should show correct itemContent', () => {
     expect($vm.itemContent).to.deep.equal({
-      username: 'kuzzle-bo-admin'
+      username: 'kuzzle-bo-admin',
+      clearPassword: 'test'
     })
 
     Vue.set(user.content, 'customProperty', 'customValue')
 
     expect($vm.itemContent).to.deep.equal({
       username: 'kuzzle-bo-admin',
-      customProperty: 'customValue'
+      customProperty: 'customValue',
+      clearPassword: 'test'
     })
   })
 

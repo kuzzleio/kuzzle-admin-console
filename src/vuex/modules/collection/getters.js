@@ -9,3 +9,4 @@ export const totalDocuments = state => {
 export const selectedDocuments = state => {
   return state.collection.selectedDocuments
 }
+
