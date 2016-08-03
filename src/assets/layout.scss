@@ -50,6 +50,15 @@ html{
   font-weight: normal;
 }
 
+#toast-container {
+  .toast {
+    &.error {
+      color: #fff;
+      background-color: $error-color;
+    }
+  }
+}
+
 .side-nav {
   top: $navbar-height;
   overflow: hidden;
