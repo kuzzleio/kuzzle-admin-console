@@ -1,31 +1,6 @@
 <template>
   <div>
     <div class="row">
-      <quick-filter
-        v-if="!displayBlockFilter && (!basicFilter && !rawFilter && !sorting)"
-        :search-term="searchTerm"
-        @filters-display-block-filter="displayBlockFilter = true">
-      </quick-filter>
-
-      <div v-if="(basicFilter || rawFilter || sorting)" class="col s9 complex-search">
-        <div class="row">
-          <div class="col s7">
-            <div class="search-bar">
-              <i class="fa fa-search search"></i>
-              <div class="chip">
-                <span @click="displayBlockFilter = true">Complex query here</span>
-                <i class="close fa fa-close" @click.prevent="resetComplexSearch"></i>
-              </div>
-              <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-              <i class="fa fa-times remove-search" @click="resetComplexSearch"></i>
-            </div>
-          </div>
-          <div class="col s3">
-            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">Search</button>
-          </div>
-        </div>
-      </div>
-
       <div class="col s8 z-depth-1 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
@@ -55,6 +30,33 @@
           </div>
         </tabs>
       </div>
+
+      <quick-filter
+        v-if="(!basicFilter && !rawFilter && !sorting)"
+        :search-term="searchTerm"
+        @filters-display-block-filter="displayBlockFilter = true">
+      </quick-filter>
+
+      <div v-if="(basicFilter || rawFilter || sorting)" class="col s9 complex-search">
+        <div class="row">
+          <div class="col s7">
+            <div class="search-bar">
+              <i class="fa fa-search search"></i>
+              <div class="chip">
+                <span @click="displayBlockFilter = true">Complex query here</span>
+                <i class="close fa fa-close" @click.prevent="resetComplexSearch"></i>
+              </div>
+              <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
+              <i class="fa fa-times remove-search" @click="resetComplexSearch"></i>
+            </div>
+          </div>
+          <div class="col s3">
+            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">Search</button>
+          </div>
+        </div>
+      </div>
+
+
 
       <div
         v-if="displayBlockFilter"

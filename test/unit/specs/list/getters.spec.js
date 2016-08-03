@@ -1,4 +1,4 @@
-import {basicFilter, rawFilter, sorting} from '../../../../src/vuex/modules/collection/getters'
+import {basicFilter, rawFilter, sorting} from '../../../../src/vuex/modules/list/getters'
 
 describe('List getters tests', () => {
   describe('basicFilter tests', () => {

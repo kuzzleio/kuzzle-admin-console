@@ -1,5 +1,5 @@
-import actionsInjector from 'inject!../../../../src/vuex/modules/collection/actions'
-import {testActionPromise} from '../helper'
+import actionsInjector from 'inject!../../../../../src/vuex/modules/collection/actions'
+import {testActionPromise} from '../../helper'
 
 describe('Collections test', () => {
   describe('Create collection test', () => {

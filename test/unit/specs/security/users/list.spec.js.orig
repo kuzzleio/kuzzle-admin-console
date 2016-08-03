@@ -6,6 +6,7 @@ let ListInjector = require('!!vue?inject!../../../../../src/components/Security/
 import Promise from 'bluebird'
 
 describe('Users list', () => {
+<<<<<<< HEAD
   let List
   let vm
   let sandbox = sinon.sandbox.create()
@@ -26,7 +27,7 @@ describe('Users list', () => {
 
   beforeEach(() => {
     List = ListInjector({
-      '../../../vuex/modules/list/getters': {
+      '../../../vuex/modules/collection/getters': {
         documents,
         totalDocuments,
         paginationFrom,
@@ -57,12 +58,105 @@ describe('Users list', () => {
       },
       store: store
     }).$mount()
+=======
+  var List = {}
+
+  describe('Computed', () => {
+    it('displayBulkDelete should returns false if selectedDocuments is empty', () => {
+      List = ListInjector({
+        '../../../vuex/modules/list/getters': {
+          documents: sinon.stub().returns([]),
+          totalDocuments: sinon.stub(),
+          selectedDocuments: sinon.stub().returns([]),
+          paginationFrom: sinon.stub(),
+          paginationSize: sinon.stub(),
+          searchTerm: sinon.stub(),
+          rawFilter: sinon.stub(),
+          basicFilter: sinon.stub(),
+          sorting: sinon.stub(),
+          basicFilterForm: sinon.stub()
+        },
+        '../../Common/Filters/Filters': mockedComponent,
+        '../../Materialize/Modal': mockedComponent,
+        '../../Materialize/Dropdown': mockedComponent,
+        '../../Materialize/Pagination': mockedComponent,
+        '../../Materialize/Headline': mockedComponent,
+        './UserItem': mockedComponent
+      })
+
+      let vm = new Vue({
+        template: '<div><list v-ref:list></list></div>',
+        components: {
+          List
+        },
+        store: store
+      }).$mount()
+
+      expect(vm.$refs.list.displayBulkDelete).to.be.equal(false)
+    })
+
+    it('displayBulkDelete should returns true if selectedDocuments is not empty', () => {
+      List = ListInjector({
+        '../../../vuex/modules/list/getters': {
+          documents: sinon.stub().returns([]),
+          totalDocuments: sinon.stub(),
+          selectedDocuments: sinon.stub().returns(['doc1']),
+          paginationFrom: sinon.stub(),
+          paginationSize: sinon.stub(),
+          searchTerm: sinon.stub(),
+          rawFilter: sinon.stub(),
+          basicFilter: sinon.stub(),
+          sorting: sinon.stub(),
+          basicFilterForm: sinon.stub()
+        },
+        '../../Common/Filters/Filters': mockedComponent,
+        '../../Materialize/Modal': mockedComponent,
+        '../../Materialize/Dropdown': mockedComponent,
+        '../../Materialize/Pagination': mockedComponent,
+        '../../Materialize/Headline': mockedComponent,
+        './UserItem': mockedComponent
+      })
+
+      let vm = new Vue({
+        template: '<div><list v-ref:list></list></div>',
+        components: {
+          List
+        },
+        store: store
+      }).$mount()
+>>>>>>> origin/develop
 
     vm.$refs.list.$router = {go}
     $broadcast = sandbox.stub(vm.$refs.list, '$broadcast')
   })
 
+<<<<<<< HEAD
   afterEach(() => sandbox.restore())
+=======
+  describe('Method', () => {
+    before(() => {
+      List = ListInjector({
+        '../../../vuex/modules/list/getters': {
+          documents: sinon.stub().returns([]),
+          totalDocuments: sinon.stub(),
+          selectedDocuments: sinon.stub(),
+          paginationFrom: sinon.stub(),
+          paginationSize: sinon.stub(),
+          searchTerm: sinon.stub(),
+          rawFilter: sinon.stub(),
+          basicFilter: sinon.stub(),
+          sorting: sinon.stub(),
+          basicFilterForm: sinon.stub()
+        },
+        '../../Common/Filters/Filters': mockedComponent,
+        '../../Materialize/Modal': mockedComponent,
+        '../../Materialize/Dropdown': mockedComponent,
+        '../../Materialize/Pagination': mockedComponent,
+        '../../Materialize/Headline': mockedComponent,
+        './UserItem': mockedComponent
+      })
+    })
+>>>>>>> origin/develop
 
   describe('Computed', () => {
     describe('displayBulkDelete', () => {
@@ -88,7 +182,8 @@ describe('Users list', () => {
     describe('allChecked', () => {
       beforeEach(() => {
         List = ListInjector({
-          '../../../vuex/modules/list/getters': {
+<<<<<<< HEAD
+          '../../../vuex/modules/collection/getters': {
             documents: sandbox.stub().returns([{id: 'doc1'}, {id: 'doc2'}]),
             totalDocuments,
             paginationFrom,
@@ -103,6 +198,19 @@ describe('Users list', () => {
             formatFromQuickSearch,
             formatFromBasicSearch,
             formatSort
+=======
+          '../../../vuex/modules/list/getters': {
+            documents: sinon.stub().returns([]),
+            totalDocuments: sinon.stub(),
+            selectedDocuments: sinon.stub().returns(['doc1', 'doc2']),
+            paginationFrom: sinon.stub(),
+            paginationSize: sinon.stub(),
+            searchTerm: sinon.stub(),
+            rawFilter: sinon.stub(),
+            basicFilter: sinon.stub(),
+            sorting: sinon.stub(),
+            basicFilterForm: sinon.stub()
+>>>>>>> origin/develop
           },
           '../../Common/Filters/Filters': mockedComponent,
           '../../Materialize/Modal': mockedComponent,
@@ -147,7 +255,8 @@ describe('Users list', () => {
     describe('toggleAll', () => {
       it('should empty selected documents if all documents are already selected', () => {
         List = ListInjector({
-          '../../../vuex/modules/list/getters': {
+<<<<<<< HEAD
+          '../../../vuex/modules/collection/getters': {
             documents: sandbox.stub().returns([{id: 'doc1'}, {id: 'doc2'}]),
             totalDocuments,
             paginationFrom,
@@ -162,6 +271,19 @@ describe('Users list', () => {
             formatFromQuickSearch,
             formatFromBasicSearch,
             formatSort
+=======
+          '../../../vuex/modules/list/getters': {
+            documents: sinon.stub().returns([]),
+            totalDocuments: sinon.stub(),
+            selectedDocuments: sinon.stub(),
+            paginationFrom: sinon.stub(),
+            paginationSize: sinon.stub(),
+            searchTerm: sinon.stub(),
+            rawFilter: sinon.stub(),
+            basicFilter: sinon.stub(),
+            sorting: sinon.stub(),
+            basicFilterForm: sinon.stub()
+>>>>>>> origin/develop
           },
           '../../Common/Filters/Filters': mockedComponent,
           '../../Materialize/Modal': mockedComponent,
@@ -187,7 +309,8 @@ describe('Users list', () => {
 
       it('should add all documents in selected documents', () => {
         List = ListInjector({
-          '../../../vuex/modules/list/getters': {
+<<<<<<< HEAD
+          '../../../vuex/modules/collection/getters': {
             documents: sandbox.stub().returns([{id: 'doc1'}, {id: 'doc2'}, {id: 'doc3'}]),
             totalDocuments,
             paginationFrom,
@@ -202,6 +325,19 @@ describe('Users list', () => {
             formatFromQuickSearch,
             formatFromBasicSearch,
             formatSort
+=======
+          '../../../vuex/modules/list/getters': {
+            documents: sinon.stub().returns([]),
+            totalDocuments: sinon.stub(),
+            selectedDocuments: sinon.stub(),
+            paginationFrom: sinon.stub(),
+            paginationSize: sinon.stub(),
+            searchTerm: sinon.stub(),
+            rawFilter: sinon.stub(),
+            basicFilter: sinon.stub(),
+            sorting: sinon.stub(),
+            basicFilterForm: sinon.stub()
+>>>>>>> origin/develop
           },
           '../../Common/Filters/Filters': mockedComponent,
           '../../Materialize/Modal': mockedComponent,
@@ -320,6 +456,44 @@ describe('Users list', () => {
     })
 
     describe('rawSearch', () => {
+<<<<<<< HEAD
+=======
+      let vm = {}
+
+      before(() => {
+        List = ListInjector({
+          '../../../vuex/modules/list/getters': {
+            documents: sinon.stub().returns([]),
+            totalDocuments: sinon.stub(),
+            selectedDocuments: sinon.stub(),
+            paginationFrom: sinon.stub(),
+            paginationSize: sinon.stub(),
+            searchTerm: sinon.stub(),
+            rawFilter: sinon.stub(),
+            basicFilter: sinon.stub(),
+            sorting: sinon.stub(),
+            basicFilterForm: sinon.stub()
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
+        })
+
+        vm = new Vue({
+          template: '<div><list v-ref:list></list></div>',
+          components: {
+            List
+          },
+          store: store
+        }).$mount()
+
+        vm.$refs.list.$router = {go: sinon.spy()}
+      })
+
+>>>>>>> origin/develop
       it('should redirect on empty query if there is no filters', () => {
         vm.$refs.list.rawSearch(null)
         expect(go.calledWith({query: {rawFilter: null, from: 0}})).to.be.equal(true)
@@ -337,6 +511,44 @@ describe('Users list', () => {
     })
 
     describe('refreshSearch', () => {
+<<<<<<< HEAD
+=======
+      let vm = {}
+
+      before(() => {
+        List = ListInjector({
+          '../../../vuex/modules/list/getters': {
+            documents: sinon.stub().returns([]),
+            totalDocuments: sinon.stub(),
+            selectedDocuments: sinon.stub(),
+            paginationFrom: sinon.stub(),
+            paginationSize: sinon.stub(),
+            searchTerm: sinon.stub(),
+            rawFilter: sinon.stub(),
+            basicFilter: sinon.stub(),
+            sorting: sinon.stub(),
+            basicFilterForm: sinon.stub()
+          },
+          '../../Common/Filters/Filters': mockedComponent,
+          '../../Materialize/Modal': mockedComponent,
+          '../../Materialize/Dropdown': mockedComponent,
+          '../../Materialize/Pagination': mockedComponent,
+          '../../Materialize/Headline': mockedComponent,
+          './UserItem': mockedComponent
+        })
+
+        vm = new Vue({
+          template: '<div><list v-ref:list></list></div>',
+          components: {
+            List
+          },
+          store: store
+        }).$mount()
+
+        vm.$refs.list.$router = {go: sinon.spy()}
+      })
+
+>>>>>>> origin/develop
       it('should use existing query and reset from parameter', () => {
         vm.$refs.list.$route = {query: {basicFilter: "{toto: 'tutu'}"}}
         vm.$refs.list.refreshSearch()

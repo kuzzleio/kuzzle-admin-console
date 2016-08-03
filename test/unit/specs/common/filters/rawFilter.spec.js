@@ -71,6 +71,7 @@ describe('Raw Filter component', () => {
               :basic-filter-form="basicFilterForm" 
               :format-from-basic-search="formatFromBasicSearch"
               :format-sort="formatSort"
+              :raw-filter="{}"
             </raw-filter></div>`,
           components: {
             RawFilter

@@ -2,10 +2,10 @@ import { testAction } from '../helper'
 import {
   DELETE_DOCUMENT,
   DELETE_DOCUMENTS
-} from '../../../../src/vuex/modules/collection/mutation-types'
+} from '../../../../src/vuex/modules/list/mutation-types'
 import store from '../../../../src/vuex/store'
 
-const actionsInjector = require('inject!../../../../src/vuex/modules/collection/users-actions')
+const actionsInjector = require('inject!../../../../src/vuex/modules/list/users-actions')
 
 describe('Users actions', () => {
   describe('deleteUser action', () => {
