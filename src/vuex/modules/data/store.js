@@ -7,7 +7,8 @@ import {
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
   RECEIVE_ROOM,
-  ADD_INDEX
+  ADD_INDEX,
+  RECEIVE_DOCUMENTS
 } from './mutation-types'
 
 const state = {
@@ -55,6 +56,10 @@ export const mutations = {
       name: index,
       collections: []
     })
+  },
+  [RECEIVE_DOCUMENTS] (state, documents) {
+    console.log(documents)
+    state.documents = documents
   }
 }
 

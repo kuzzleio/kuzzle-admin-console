@@ -13,3 +13,7 @@ export const notifications = state => {
 export const collections = state => {
   return state.data.collections
 }
+
+export const documents = state => {
+  return state.data.documents
+}

@@ -7,7 +7,8 @@ import {
   ADD_NOTIFICATION,
   EMPTY_NOTIFICATION,
   RECEIVE_COLLECTIONS,
-  ADD_INDEX
+  ADD_INDEX,
+  RECEIVE_DOCUMENTS
 } from './mutation-types'
 
 export const listIndexesAndCollections = (store) => {
@@ -183,5 +184,17 @@ export const createIndex = (store, index) => {
       store.dispatch(ADD_INDEX, index)
       resolve()
     })
+  })
+}
+
+export const getDocuments = (store, index, collection) => {
+  kuzzle.dataCollectionFactory(collection, index).fetchAllDocuments((err, res) => {
+    console.log(res)
+    if (err) {
+      return
+    }
+    store.dispatch(RECEIVE_DOCUMENTS, res.documents.map((o) => {
+      return o.content
+    }))
   })
 }
