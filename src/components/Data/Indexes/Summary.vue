@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{$route.params.index}} - Summary
-      <index-dropdown class="icon-medium icon-black" :id="$route.params.index"></index-dropdown>
+      {{index}} - Summary
+      <index-dropdown class="icon-medium icon-black" :index="index"></index-dropdown>
     </headline>
 
 
@@ -39,7 +39,7 @@
           <div class="col s9">
             <a class="btn waves-effect waves-light"
                href="#!"
-               v-link="{name: 'DataCreateCollection', params: {index: $route.params.index}}">
+               v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <i class="fa fa-plus-circle left"></i>Create a collection
             </a>
           </div>
@@ -59,7 +59,7 @@
             <a  class="card-title" href="#">
               <div class="card-panel hoverable">
                 <div class="card-content">
-                  There is no collection in index <strong>{{$route.params.index}}</strong> yet. You may want to create a new one ?
+                  There is no collection in index <strong>{{index}}</strong> yet. You may want to create a new one ?
                 </div>
               </div>
             </a>
@@ -68,7 +68,7 @@
           <collection-boxed
               v-for="collection in collections.stored | orderBy 1"
               v-if="!filter || (filter && collection.includes(filter))"
-              :index="$route.params.index"
+              :index="index"
               :collection="collection"
               :is-realtime="false">
           </collection-boxed>
@@ -76,7 +76,7 @@
           <collection-boxed
               v-for="collection in collections.realtime | orderBy 1"
               v-if="!filter || (filter && collection.includes(filter))"
-              :index="$route.params.index"
+              :index="index"
               :collection="collection"
               :is-realtime="true">
           </collection-boxed>
@@ -121,6 +121,9 @@
 
   export default {
     name: 'IndexesSummary',
+    props: {
+      index: String
+    },
     components: {
       Headline,
       CollectionBoxed,
@@ -131,8 +134,13 @@
         filter: ''
       }
     },
+    watch: {
+      'index': function (index) {
+        this.getCollectionsFromIndex(index)
+      }
+    },
     ready () {
-      this.getCollectionsFromIndex(this.$route.params.index)
+      this.getCollectionsFromIndex(this.index)
     },
     computed: {
       hasCollection () {

@@ -14,7 +14,11 @@
         </nav>
       </li>
       <li>
-        <treeview :tree="indexesAndCollections"></treeview>
+        <treeview
+          :index="$route.params.index"
+          :collection="$route.params.collection"
+          :tree="indexesAndCollections">
+        </treeview>
       </li>
     </ul>
   </aside>
@@ -26,7 +30,10 @@
     </breadcrumb>
 
     <section class="view">
-      <router-view></router-view>
+      <router-view
+        :index="$route.params.index"
+        :collection="$route.params.collection">
+      </router-view>
     </section>
   </section>
 </template>
