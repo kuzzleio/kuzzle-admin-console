@@ -78,11 +78,10 @@
   import Filters from '../../Common/Filters/Filters'
   import UserItem from './UserItem'
   import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
-  import { toggleSelectDocuments, performSearch, setBasicFilter } from '../../../vuex/modules/collection/actions'
+  import { performSearch, setBasicFilter } from '../../../vuex/modules/collection/actions'
   import {
     documents,
     totalDocuments,
-    selectedDocuments,
     paginationFrom,
     paginationSize,
     searchTerm,
@@ -105,14 +104,12 @@
       actions: {
         deleteUser,
         deleteUsers,
-        toggleSelectDocuments,
         performSearch,
         setBasicFilter
       },
       getters: {
         documents,
         totalDocuments,
-        selectedDocuments,
         paginationFrom,
         paginationSize,
         searchTerm,
@@ -126,7 +123,8 @@
       return {
         displayBulkDelete: true,
         formatFromBasicSearch,
-        formatSort
+        formatSort,
+        selectedDocuments: []
       }
     },
     computed: {
@@ -135,6 +133,16 @@
       }
     },
     methods: {
+      toggleSelectDocuments (id) {
+        let index = this.selectedDocuments.indexOf(id)
+
+        if (index === -1) {
+          this.selectedDocuments.push(id)
+          return
+        }
+
+        this.selectedDocuments.splice(index, 1)
+      },
       changePage (from) {
         this.$router.go({query: {...this.$route.query, from}})
       },
@@ -144,8 +152,8 @@
           .then(() => {
             this.refreshSearch()
           })
-          .catch(() => {
-            /* TODO: manage error */
+          .catch((e) => {
+            this.$dispatch('toast', e.message, 'error')
           })
       },
       quickSearch (searchTerm) {
