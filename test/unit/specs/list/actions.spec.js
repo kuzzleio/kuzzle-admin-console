@@ -3,9 +3,9 @@ import {
   TOGGLE_SELECT_DOCUMENT,
   RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER
-} from '../../../../src/vuex/modules/collection/mutation-types'
-import {toggleSelectDocuments} from '../../../../src/vuex/modules/collection/actions'
-const actionsInjector = require('inject!../../../../src/vuex/modules/collection/actions')
+} from '../../../../src/vuex/modules/list/mutation-types'
+import {toggleSelectDocuments} from '../../../../src/vuex/modules/list/actions'
+const actionsInjector = require('inject!../../../../src/vuex/modules/list/actions')
 
 describe('list actions', () => {
   describe('performSearch tests', () => {
