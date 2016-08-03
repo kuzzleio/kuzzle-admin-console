@@ -1,10 +1,8 @@
 import {testAction} from '../helper'
 import {
-  TOGGLE_SELECT_DOCUMENT,
   RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER
 } from '../../../../src/vuex/modules/list/mutation-types'
-import {toggleSelectDocuments} from '../../../../src/vuex/modules/list/actions'
 const actionsInjector = require('inject!../../../../src/vuex/modules/list/actions')
 
 describe('list actions', () => {
@@ -66,16 +64,6 @@ describe('list actions', () => {
       testAction(actions.performSearch, ['fake', 'fake', {}, {}, ['name.first']], {}, [
         {name: RECEIVE_DOCUMENTS, payload: [{total: fakeResponse.total, documents: [{content: fakeResponse.documents[0].content, id: 'id', additionalAttribute: {name: 'name.first', value: 'toto'}}]}]}
       ], done)
-    })
-  })
-
-  describe('toggleSelectDocuments', () => {
-    it('should do nothing if id is undefined', (done) => {
-      testAction(toggleSelectDocuments, [], {}, [], done)
-    })
-
-    it('should dispatch toggle with right id', (done) => {
-      testAction(toggleSelectDocuments, ['toto'], {}, [{name: TOGGLE_SELECT_DOCUMENT, payload: ['toto']}], done)
     })
   })
 

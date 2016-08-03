@@ -6,10 +6,6 @@ export const totalDocuments = state => {
   return state.list.total
 }
 
-export const selectedDocuments = state => {
-  return state.list.selectedDocuments
-}
-
 export const searchTerm = state => {
   return state.route.query.searchTerm
 }
