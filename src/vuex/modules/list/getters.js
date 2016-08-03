@@ -31,7 +31,7 @@ export const basicFilter = state => {
  * @returns return the basic filter which is in form basic filter -> the real data from form (and not from url)
  */
 export const basicFilterForm = state => {
-  return state.collection.basicFilter
+  return state.list.basicFilter
 }
 
 export const rawFilter = state => {

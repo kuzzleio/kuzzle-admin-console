@@ -10,6 +10,7 @@
 
 <script>
   export default {
+    name: 'JsonEditor',
     props: [
       'content',
       'class',

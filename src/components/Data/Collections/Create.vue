@@ -20,15 +20,26 @@
     <div class="divider"></div>
     <div class="row">
       <p>
-        <input type="checkbox" class="filled-in" id="realtime-collection" v-model="isRealTime" />
+        <input type="checkbox" class="filled-in" id="realtime-collection" v-model="isRealTime"/>
         <label for="realtime-collection">Realtime collection</label>
       </p>
+    </div>
+
+    <div class="row">
+      <json-editor
+        v-ref:jsoneditor
+        class="pre_ace"
+        :content="{}">
+      </json-editor>
     </div>
 
   </div>
 </template>
 
 <style>
+  .pre_ace {
+    min-height: 300px;
+  }
   .error {
     color: #d54f58
   }
@@ -38,11 +49,13 @@
   import Headline from '../../Materialize/Headline'
   import {createCollection} from '../../../vuex/modules/collection/actions'
   import {getError} from '../../../vuex/modules/common/getters'
+  import JsonEditor from '../../Common/JsonEditor'
 
   export default {
     name: 'CollectionCreate',
     components: {
-      Headline
+      Headline,
+      JsonEditor
     },
     data () {
       return {
@@ -53,7 +66,8 @@
     },
     methods: {
       doCreateCollection () {
-        this.createCollection(this.$route.params.index, this.collectionName, this.isRealTime).then(() => {
+        let mapping = this.$refs.jsoneditor.getJson()
+        this.createCollection(this.$route.params.index, this.collectionName, mapping, this.isRealTime).then(() => {
           this.$router.go({name: 'DataIndexSummary', params: {index: this.$route.params.index}})
         }).catch((e) => {
           this.error = e
