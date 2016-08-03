@@ -15,7 +15,7 @@
 
         <div class="col s1 right-align">
           <!-- actions related to the index -->
-          <index-dropdown :id="index" class="icon-small icon-black"></index-dropdown>
+          <index-dropdown :index="index" class="icon-small icon-black"></index-dropdown>
         </div>
 
 
@@ -56,7 +56,9 @@
 
   export default {
     name: 'IndexBoxed',
-    props: ['index'],
+    props: {
+      index: String
+    },
     components: {
       IndexDropdown
     }
