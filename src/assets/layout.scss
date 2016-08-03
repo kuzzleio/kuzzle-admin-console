@@ -45,6 +45,11 @@ main {
   }
 }
 
+html{
+  font-family: "Raleway", sans-serif;
+  font-weight: normal;
+}
+
 #toast-container {
   .toast {
     &.error {
