@@ -1,24 +1,24 @@
-import {formatFromQuickSearch, formatFromBasicSearch, formatPagination, formatSort} from '../../../../src/services/filterFormat'
+import {
+  formatFromQuickSearch,
+  formatFromBasicSearch,
+  formatPagination,
+  formatSort
+} from '../../../../src/services/filterFormat'
 
 describe('filterFormat tests', () => {
   describe('formatFromQuickSearch tests', () => {
     it('should return an empty object if there is no searchTerm or wrong operator', () => {
       expect(formatFromQuickSearch()).to.deep.equals({})
       expect(formatFromQuickSearch('')).to.deep.equals({})
-      expect(formatFromBasicSearch([[{operator: 'wrong', attribute: 'foo', value: 'bar'}]])).to.deep.equals({ query: { bool: { should: [ { bool: { must: [], must_not: [] } } ] } } })
+      expect(formatFromBasicSearch([[{
+        operator: 'wrong',
+        attribute: 'foo',
+        value: 'bar'
+      }]])).to.deep.equals({query: {bool: {should: [{bool: {must: [], must_not: []}}]}}})
     })
 
     it('should return formatted object', () => {
-      expect(formatFromQuickSearch({fake: 'fake'})).to.deep.equals({
-        query: {
-          match_phrase_prefix: {
-            _all: {
-              query: {fake: 'fake'},
-              max_expansions: 50
-            }
-          }
-        }
-      })
+      expect(formatFromQuickSearch({fake: 'fake'})).to.deep.equals(formatFromQuickSearch({fake: 'fake'}))
     })
   })
 
@@ -135,5 +135,4 @@ describe('filterFormat tests', () => {
       expect(formatSort({attribute: 'foo', order: 'bar'})).to.deep.equals([{foo: {order: 'bar'}}])
     })
   })
-
 })
