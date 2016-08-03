@@ -32,6 +32,7 @@
       </div>
 
       <quick-filter
+        v-if="(!basicFilter && !rawFilter && !sorting)"
         :search-term="searchTerm"
         @filters-display-block-filter="displayBlockFilter = true">
       </quick-filter>
