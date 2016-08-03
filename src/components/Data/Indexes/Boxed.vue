@@ -3,17 +3,19 @@
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s8">
+        <div class="col s11">
           <!-- index browse link -->
-          <a href="#!">
+          <a
+            v-link="{name: 'DataIndexSummary', params: {index: index}}"
+            href="#!">
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
-            <span>My index</span>
+            <span>{{index}}</span>
           </a>
         </div>
 
-        <div class="col s4 right-align">
+        <div class="col s1 right-align">
           <!-- actions related to the index -->
-          <index-dropdown class="icon-small icon-black"></index-dropdown>
+          <index-dropdown :id="index" class="icon-small icon-black"></index-dropdown>
         </div>
 
 
@@ -61,7 +63,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   .card-title {
     font-size: 22px;
     padding: 1rem;

@@ -1,13 +1,14 @@
 import kuzzle from '../../../services/kuzzle'
+import {SET_ERROR} from '../common/mutation-types'
+import Promise from 'bluebird'
 import {
   RECEIVE_MAPPING,
   RECEIVE_INDEXES_COLLECTIONS,
   ADD_NOTIFICATION,
   EMPTY_NOTIFICATION,
-  RECEIVE_COLLECTIONS
+  RECEIVE_COLLECTIONS,
+  ADD_INDEX
 } from './mutation-types'
-import {SET_ERROR} from '../common/mutation-types'
-import Promise from 'bluebird'
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
@@ -58,7 +59,6 @@ export const listIndexesAndCollections = (store) => {
       Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
       }).catch(err => {
-        console.log('error', err.message)
         store.dispatch(SET_ERROR, err.message)
       })
     })
@@ -174,5 +174,18 @@ export const getCollectionsFromIndex = (store, index) => {
       return
     }
     store.dispatch(RECEIVE_COLLECTIONS, res)
+  })
+}
+
+export const createIndex = (store, index) => {
+  return new Promise((resolve, reject) => {
+    kuzzle.query({index: index, controller: 'admin', action: 'createIndex'}, {}, (err) => {
+      if (err) {
+        return reject(new Error(err.message))
+      }
+
+      store.dispatch(ADD_INDEX, index)
+      resolve()
+    })
   })
 }
