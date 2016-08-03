@@ -23,6 +23,14 @@
           <div v-if="documents.length">
             <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
             <button
+              class="btn waves-effect waves-light tertiary"
+              @click="toggleAll">
+              <i class="fa left"
+                :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+              ></i>
+              Toggle all
+            </button>
+            <button
               class="btn waves-effect waves-light"
               :class="displayBulkDelete ? 'red' : 'disabled'"
               :disabled="!displayBulkDelete"
@@ -33,7 +41,7 @@
 
             <div class="collection">
               <div class="collection-item" transition="collection" v-for="user in documents" >
-                <user-item :user="user" @checkbox-click="toggleSelectDocuments"></user-item>
+                <user-item :user="user" @checkbox-click="toggleSelectDocuments" :is-checked="isChecked(user.id)"></user-item>
               </div>
             </div>
 
@@ -130,9 +138,24 @@
     computed: {
       displayBulkDelete () {
         return this.selectedDocuments.length > 0
+      },
+      allChecked () {
+        return this.selectedDocuments.length === this.documents.length
       }
     },
     methods: {
+      isChecked (id) {
+        return this.selectedDocuments.indexOf(id) > -1
+      },
+      toggleAll () {
+        if (this.allChecked) {
+          this.selectedDocuments = []
+          return
+        }
+
+        this.selectedDocuments = []
+        this.selectedDocuments = this.documents.map((document) => document.id)
+      },
       toggleSelectDocuments (id) {
         let index = this.selectedDocuments.indexOf(id)
 
