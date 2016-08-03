@@ -7,7 +7,7 @@
       <strong>{{index.name}}</strong> ({{collectionCount(index)}})
     </a>
     <ul class="collections">
-      <li v-for="collection in index.collections.stored">
+      <li v-for="collection in index.collections.stored | orderBy 1">
         <a class="tree-item truncate"
            v-link="{name: 'DataCollectionBrowse', params: {index: index.name, collection: collection}}"
            :class="{ 'active': isCollectionActive($route, collection) }">
@@ -15,7 +15,7 @@
            {{collection}}
          </a>
       </li>
-      <li v-for="collection in index.collections.realtime">
+      <li v-for="collection in index.collections.realtime | orderBy 1">
         <a class="tree-item truncate">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
           {{collection}}

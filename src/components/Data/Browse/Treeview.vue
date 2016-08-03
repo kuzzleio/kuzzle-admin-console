@@ -1,7 +1,7 @@
 <template>
   <ul class="indexes">
-    <li v-for="(key, index) in tree">
-      <index-branch v-bind:index="index"></index-branch>
+    <li v-for="(key, index) in tree | orderBy 'name'">
+      <index-branch :index="index"></index-branch>
     </li>
   </ul>
 </template>

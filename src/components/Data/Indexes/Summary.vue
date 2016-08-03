@@ -66,7 +66,7 @@
           </div>
 
           <collection-boxed
-              v-for="collection in collections.stored"
+              v-for="collection in collections.stored | orderBy 1"
               v-if="!filter || (filter && collection.includes(filter))"
               :index="$route.params.index"
               :collection="collection"
@@ -74,7 +74,7 @@
           </collection-boxed>
 
           <collection-boxed
-              v-for="collection in collections.realtime"
+              v-for="collection in collections.realtime | orderBy 1"
               v-if="!filter || (filter && collection.includes(filter))"
               :index="$route.params.index"
               :collection="collection"
@@ -87,7 +87,14 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .switch {
+    label {
+      .lever {
+        margin: 0;
+      }
+    }
+  }
   .actions {
     display: flex;
     justify-content: space-between;

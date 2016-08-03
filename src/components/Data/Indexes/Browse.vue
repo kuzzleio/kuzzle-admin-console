@@ -17,14 +17,14 @@
           <div class="col s3">
             <div class="input-field left-align">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
-              <input id="filter" type="text">
+              <input id="filter" v-model="filter" type="text">
             </div>
           </div>
         </div>
 
         <div class="row">
           <!-- No index view -->
-          <div class="col s12">
+          <div class="col s12" v-if="!indexesAndCollections">
             <a class="card-title"
              href="#!"
              @click.prevent="$broadcast('modal-open', 'index-create')">
@@ -37,16 +37,11 @@
           </div>
 
           <!-- Index listing -->
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
-          <index-boxed index=""></index-boxed>
+          <index-boxed
+            :index="index.name"
+            v-if="!filter || index.name.indexOf(filter) >= 0"
+            v-for="index in indexesAndCollections | orderBy 'name'">
+          </index-boxed>
 
           <modal-create id="index-create"></modal-create>
         </div>
@@ -56,13 +51,13 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   .actions {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-
   }
+
   .input-field {
     margin-top: 0;
     label {
@@ -75,6 +70,8 @@
 </style>
 
 <script>
+  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
+  import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import Headline from '../../Materialize/Headline.vue'
   import ModalCreate from './ModalCreate'
   import IndexBoxed from './Boxed.vue'
@@ -86,12 +83,21 @@
       ModalCreate,
       IndexBoxed
     },
+    data () {
+      return {
+        filter: ''
+      }
+    },
     ready () {
-      /*eslint no-undef: 0*/
-      $('.dropdown-button').dropdown({
-        constrain_width: false,
-        belowOrigin: false
-      })
+      this.listIndexesAndCollections()
+    },
+    vuex: {
+      actions: {
+        listIndexesAndCollections
+      },
+      getters: {
+        indexesAndCollections
+      }
     }
   }
 </script>
