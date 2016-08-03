@@ -1,4 +1,6 @@
 .btn {
+  font-family: "Roboto", sans-serif;
+
   &.btn-tiny {
     height: 24px;
     line-height: 24px;
@@ -14,4 +16,10 @@
     padding: 0 0.8rem;
     letter-spacing: .1px;
   }
+}
+
+.inline-alert {
+  padding: 15px;
+  border-radius: 3px;
+  margin: 10px 0;
 }

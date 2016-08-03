@@ -133,8 +133,8 @@ let notificationToMessage = notification => {
   return messageItem
 }
 
-export const subscribe = (store, index, collection) => {
-  return kuzzle.dataCollectionFactory(collection, index).subscribe({}, {users: 'all', state: 'all'}, (err, res) => {
+export const subscribe = (store, filter, index, collection) => {
+  return kuzzle.dataCollectionFactory(collection, index).subscribe(filter, {users: 'all', state: 'all'}, (err, res) => {
     if (err) {
       return
     }
