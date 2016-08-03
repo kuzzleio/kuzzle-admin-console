@@ -28,6 +28,7 @@ export const listIndexesAndCollections = (store) => {
               reject(new Error(error.message))
               return
             }
+
             if (index !== '%kuzzle') {
               indexesAndCollections.push({
                 name: index,

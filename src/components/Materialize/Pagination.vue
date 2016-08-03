@@ -59,28 +59,16 @@
   export default {
     props: {
       total: Number,
-      limit: {
-        type: Number,
-        'default': 10
-      },
-      currentPage: Number,
       displayPages: {
         type: Number,
         'default': 9
-      }
-    },
-    watch: {
-      currentPage () {
-        if (this.currentPage > this.pages) {
-          this.setCurrentPage(this.pages)
-        } else if (this.currentPage < 1) {
-          this.setCurrentPage(1)
-        }
-      }
+      },
+      from: Number,
+      size: Number
     },
     computed: {
       pages () {
-        return Math.max(Math.ceil(this.total / this.limit), 1)
+        return Math.max(Math.ceil(this.total / this.size), 1)
       },
       pager () {
         let displayedPages = []
@@ -102,23 +90,29 @@
         }
 
         return displayedPages
+      },
+      currentPage () {
+        if (this.from === 0) {
+          return 1
+        }
+
+        return (this.from / this.size) + 1
       }
     },
     methods: {
-      setCurrentPage (n) {
-        this.currentPage = n
-        this.$dispatch('change-page', this.currentPage)
+      setCurrentPage (currentPage) {
+        this.$dispatch('change-page', (currentPage * this.size) - this.size)
       },
       previousPage () {
         if (this.currentPage > 1) {
           this.currentPage--
-          this.$dispatch('change-page', this.currentPage)
+          this.$dispatch('change-page', ((this.currentPage - 1) * this.size) - this.size)
         }
       },
       nextPage () {
         if (this.currentPage < this.pages) {
           this.currentPage++
-          this.$dispatch('change-page', this.currentPage)
+          this.$dispatch('change-page', ((this.currentPage + 1) * this.size) - this.size)
         }
       }
     }

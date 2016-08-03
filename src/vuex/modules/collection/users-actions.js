@@ -1,5 +1,4 @@
 import {
-  RECEIVE_DOCUMENTS,
   DELETE_DOCUMENT,
   DELETE_DOCUMENTS
 } from './mutation-types'
@@ -28,30 +27,19 @@ export const deleteUsers = (store, ids) => {
     return
   }
 
-  return new Bluebird((resolve) => {
+  return new Bluebird((resolve, reject) => {
     kuzzle
       .dataCollectionFactory('users', '%kuzzle')
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
         if (error) {
+          reject(error)
           return
         }
 
         store.dispatch(DELETE_DOCUMENTS, ids)
-        kuzzle.refreshIndex('myIndex', () => {
+        kuzzle.refreshIndex('%kuzzle', () => {
           resolve()
         })
       })
   })
-}
-
-export const searchUsers = (store) => {
-  kuzzle
-    .security
-    .searchUsers(store.state.collection.filters, (error, result) => {
-      if (error) {
-        return
-      }
-
-      store.dispatch(RECEIVE_DOCUMENTS, {total: result.total, documents: result.users})
-    })
 }

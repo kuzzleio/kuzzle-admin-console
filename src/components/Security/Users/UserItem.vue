@@ -13,6 +13,10 @@
     <!-- The following anchor will go to the user details page -->
     <label class="item-title"><a>{{user.id}}</a></label>
 
+    <label v-if="user.additionalAttribute && user.additionalAttribute.value" class="additional-attribute">
+      ({{user.additionalAttribute.name}}: {{user.additionalAttribute.value}})
+    </label>
+
     <div class="right actions">
       <dropdown :id="user.id">
         <li><a @click="deleteUser(user.id)">Delete</a></li>

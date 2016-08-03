@@ -21,10 +21,12 @@
     "json-formatter-js": "^1.1.0",
     "kuzzle-sdk": "^1.9.1",
     "materialize-css": "0.97.6",
+    "velocity-animate": "^1.2.3",
     "moment": "^2.14.1",
     "vue": "^1.0.21",
     "vue-router": "^0.7.13",
-    "vuex": "^0.8.2"
+    "vuex": "^0.8.2",
+    "vuex-router-sync": "^2.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",
