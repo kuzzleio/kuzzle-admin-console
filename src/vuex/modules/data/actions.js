@@ -12,7 +12,7 @@ import {
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
-  let currentIndex
+  // let currentIndex
 
   kuzzle
     .listIndexes((error, result) => {
@@ -34,18 +34,14 @@ export const listIndexesAndCollections = (store) => {
               // realtime collections
               // eslint-disable-next-line no-undef
               let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-              // Cannot use realtimeCollections.find(...) as it is a prototype in ES6 and is not transpiled by babel
-              for (var i = 0; i < realtimeCollections.length; i++) {
-                if (realtimeCollections[i].index === index) {
-                  currentIndex = realtimeCollections[i]
-                  break
-                }
+              if (!result.realtime) {
+                result.realtime = []
               }
-              if (currentIndex) {
-                result.realtime = realtimeCollections.map(o => {
+              result.realtime.push(...realtimeCollections.map(o => {
+                if (o.index === index) {
                   return o.collection
-                })
-              }
+                }
+              }))
               indexesAndCollections.push({
                 name: index,
                 collections: result
