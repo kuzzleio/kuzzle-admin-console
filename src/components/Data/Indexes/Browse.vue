@@ -5,10 +5,13 @@
     <div class="row">
       <div class="col s8">
 
-        <div class="row actions">
-          <div class="col s9">
-            <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-          </div>
+      <div class="row actions">
+        <div class="col s9">
+          <a class="btn waves-effect waves-light" @click.prevent="$broadcast('modal-open', 'index-create')">
+            <i class="fa fa-plus-circle left"></i>
+            <span>Create</span>
+          </a>
+        </div>
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
@@ -22,7 +25,9 @@
         <div class="row">
           <!-- No index view -->
           <div class="col s12">
-            <a  class="card-title" href="#">
+            <a class="card-title"
+             href="#!"
+             @click.prevent="$broadcast('modal-open', 'index-create')">
               <div class="card-panel hoverable">
                 <div class="card-content">
                     There are no indexes yet. You may want to create a new one ?
@@ -42,6 +47,8 @@
           <index-boxed index=""></index-boxed>
           <index-boxed index=""></index-boxed>
           <index-boxed index=""></index-boxed>
+
+          <modal-create id="index-create"></modal-create>
         </div>
 
       </div>
@@ -69,12 +76,14 @@
 
 <script>
   import Headline from '../../Materialize/Headline.vue'
+  import ModalCreate from './ModalCreate'
   import IndexBoxed from './Boxed.vue'
 
   export default {
     name: 'IndexesList',
     components: {
       Headline,
+      ModalCreate,
       IndexBoxed
     },
     ready () {
