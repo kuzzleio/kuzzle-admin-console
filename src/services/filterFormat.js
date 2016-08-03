@@ -30,7 +30,7 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           match_phrase_prefix: {[filter.attribute]: filter.value}
         })
       } else if (filter.operator === 'not_match') {
-        formattedFilter.bool.must.push({
+        formattedFilter.bool.must_not.push({
           match_phrase_prefix: {[filter.attribute]: filter.value}
         })
       } else if (filter.operator === 'equal') {
@@ -43,11 +43,11 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           }
         })
       } else if (filter.operator === 'not_equal') {
-        formattedFilter.bool.must.push({
+        formattedFilter.bool.must_not.push({
           range: {
             [filter.attribute]: {
-              lt: filter.value,
-              gt: filter.value
+              gte: filter.value,
+              lte: filter.value
             }
           }
         })
