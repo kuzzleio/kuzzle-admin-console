@@ -28,7 +28,8 @@
               <i class="fa left"
                 :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
               ></i>
-              Toggle all
+              <span v-if="allChecked"></span>
+              {{allChecked ? 'Unselect all' : 'Select all'}}
             </button>
             <button
               class="btn waves-effect waves-light"
