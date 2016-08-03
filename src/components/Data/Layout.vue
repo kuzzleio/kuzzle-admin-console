@@ -14,19 +14,26 @@
         </nav>
       </li>
       <li>
-        <treeview :tree="indexesAndCollections"></treeview>
+        <treeview
+          :index="selectedIndex"
+          :collection="selectedCollection"
+          :tree="indexesAndCollections">
+        </treeview>
       </li>
     </ul>
   </aside>
   <section class="breadcrumb-view">
     <breadcrumb
       :route-name="$route.name"
-      :index="$route.params.index"
-      :collection="$route.params.collection">
+      :index="selectedIndex"
+      :collection="selectedCollection">
     </breadcrumb>
 
     <section class="view">
-      <router-view></router-view>
+      <router-view
+        :index="selectedIndex"
+        :collection="selectedCollection">
+      </router-view>
     </section>
   </section>
 </template>
@@ -43,7 +50,7 @@
 <script>
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
   import {getError} from '../../vuex/modules/common/getters'
-  import {indexesAndCollections} from '../../vuex/modules/data/getters'
+  import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Browse/Treeview'
   import Breadcrumb from './Breadcrumb'
 
@@ -61,6 +68,8 @@
         listIndexesAndCollections
       },
       getters: {
+        selectedIndex,
+        selectedCollection,
         error: getError,
         indexesAndCollections
       }

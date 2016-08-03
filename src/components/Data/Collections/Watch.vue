@@ -1,14 +1,18 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{$route.params.collection}} - Watch
-      <collection-dropdown class="icon-medium icon-black" :id="$route.params.index"></collection-dropdown>
+      {{collection}} - Watch
+      <collection-dropdown
+        class="icon-medium icon-black"
+        :index="index"
+        :collection="collection">
+      </collection-dropdown>
     </headline>
 
     <div class="notification-container">
       <div class="row">
         <div class="col s12">
-          <button class="btn waves-effect waves-light" @click="manageSub($route.params.index, $route.params.collection)">
+          <button class="btn waves-effect waves-light" @click="manageSub(index, collection)">
             <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa"></i>&nbsp;{{subscribed ? 'Unsubscribe' : 'Subscribe'}}
           </button>
           <button class="btn-flat waves-effect waves-grey" @click="clear">
@@ -82,6 +86,10 @@
 
   export default {
     name: 'CollectionWatch',
+    props: {
+      index: String,
+      collection: String
+    },
     data () {
       return {
         filter: {foo: 'bar'},

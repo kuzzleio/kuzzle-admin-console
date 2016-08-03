@@ -4,7 +4,7 @@ kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
 echo "Installing dependencies..."
 npm install
-bower install
+bower install --allow-root
 
 echo "Starting Tests..."
 

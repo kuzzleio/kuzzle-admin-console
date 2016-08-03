@@ -73,7 +73,9 @@
 
   export default {
     name: 'IndexCreateModal',
-    props: ['id'],
+    props: {
+      id: String
+    },
     components: {
       Modal
     },
