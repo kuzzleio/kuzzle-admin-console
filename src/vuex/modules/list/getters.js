@@ -1,13 +1,13 @@
 export const documents = state => {
-  return state.collection.documents
+  return state.list.documents
 }
 
 export const totalDocuments = state => {
-  return state.collection.total
+  return state.list.total
 }
 
 export const selectedDocuments = state => {
-  return state.collection.selectedDocuments
+  return state.list.selectedDocuments
 }
 
 export const searchTerm = state => {
@@ -31,7 +31,7 @@ export const basicFilter = state => {
  * @returns return the basic filter which is in form basic filter -> the real data from form (and not from url)
  */
 export const basicFilterForm = state => {
-  return state.collection.basicFilter
+  return state.list.basicFilter
 }
 
 export const rawFilter = state => {

@@ -77,8 +77,8 @@
   import Modal from '../../Materialize/Modal'
   import Filters from '../../Common/Filters/Filters'
   import UserItem from './UserItem'
-  import { deleteUser, deleteUsers } from '../../../vuex/modules/collection/users-actions'
-  import { toggleSelectDocuments, performSearch, setBasicFilter } from '../../../vuex/modules/collection/actions'
+  import { deleteUser, deleteUsers } from '../../../vuex/modules/list/users-actions'
+  import { toggleSelectDocuments, performSearch, setBasicFilter } from '../../../vuex/modules/list/actions'
   import {
     documents,
     totalDocuments,
@@ -89,7 +89,7 @@
     rawFilter,
     basicFilter,
     sorting,
-    basicFilterForm } from '../../../vuex/modules/collection/getters'
+    basicFilterForm } from '../../../vuex/modules/list/getters'
   import { formatFromQuickSearch, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {

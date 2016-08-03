@@ -20,3 +20,4 @@ describe('data watch mutations test', () => {
     expect(state.notifications.length).to.equals(0)
   })
 })
+

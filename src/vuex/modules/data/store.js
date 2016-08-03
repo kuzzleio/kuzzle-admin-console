@@ -3,8 +3,10 @@ import {
   RECEIVE_MAPPING,
   ADD_NOTIFICATION,
   EMPTY_NOTIFICATION,
-  RECEIVE_ROOM,
   RECEIVE_COLLECTIONS,
+  ADD_STORED_COLLECTION,
+  ADD_REALTIME_COLLECTION,
+  RECEIVE_ROOM,
   ADD_INDEX
 } from './mutation-types'
 
@@ -37,6 +39,16 @@ export const mutations = {
   },
   [RECEIVE_COLLECTIONS] (state, collections) {
     state.collections = collections
+  },
+  [ADD_STORED_COLLECTION] (state, index, collection) {
+    state.indexesAndCollections.find((o) => {
+      return o.name === index
+    }).collections.stored.push(collection)
+  },
+  [ADD_REALTIME_COLLECTION] (state, index, collection) {
+    state.indexesAndCollections.find((o) => {
+      return o.name === index
+    }).collections.realtime.push(collection)
   },
   [ADD_INDEX] (state, index) {
     state.indexesAndCollections.push({

@@ -11,7 +11,7 @@ describe('Users list', () => {
   describe('Computed', () => {
     it('displayBulkDelete should returns false if selectedDocuments is empty', () => {
       List = ListInjector({
-        '../../../vuex/modules/collection/getters': {
+        '../../../vuex/modules/list/getters': {
           documents: sinon.stub().returns([]),
           totalDocuments: sinon.stub(),
           selectedDocuments: sinon.stub().returns([]),
@@ -44,7 +44,7 @@ describe('Users list', () => {
 
     it('displayBulkDelete should returns true if selectedDocuments is not empty', () => {
       List = ListInjector({
-        '../../../vuex/modules/collection/getters': {
+        '../../../vuex/modules/list/getters': {
           documents: sinon.stub().returns([]),
           totalDocuments: sinon.stub(),
           selectedDocuments: sinon.stub().returns(['doc1']),
@@ -79,7 +79,7 @@ describe('Users list', () => {
   describe('Method', () => {
     before(() => {
       List = ListInjector({
-        '../../../vuex/modules/collection/getters': {
+        '../../../vuex/modules/list/getters': {
           documents: sinon.stub().returns([]),
           totalDocuments: sinon.stub(),
           selectedDocuments: sinon.stub(),
@@ -125,7 +125,7 @@ describe('Users list', () => {
     describe('confirmBulkDelete', () => {
       before(() => {
         List = ListInjector({
-          '../../../vuex/modules/collection/getters': {
+          '../../../vuex/modules/list/getters': {
             documents: sinon.stub().returns([]),
             totalDocuments: sinon.stub(),
             selectedDocuments: sinon.stub().returns(['doc1', 'doc2']),
@@ -211,7 +211,7 @@ describe('Users list', () => {
     describe('quickSearch', () => {
       before(() => {
         List = ListInjector({
-          '../../../vuex/modules/collection/getters': {
+          '../../../vuex/modules/list/getters': {
             documents: sinon.stub().returns([]),
             totalDocuments: sinon.stub(),
             selectedDocuments: sinon.stub(),
@@ -255,7 +255,7 @@ describe('Users list', () => {
 
       before(() => {
         List = ListInjector({
-          '../../../vuex/modules/collection/getters': {
+          '../../../vuex/modules/list/getters': {
             documents: sinon.stub().returns([]),
             totalDocuments: sinon.stub(),
             selectedDocuments: sinon.stub(),
@@ -305,7 +305,7 @@ describe('Users list', () => {
 
       before(() => {
         List = ListInjector({
-          '../../../vuex/modules/collection/getters': {
+          '../../../vuex/modules/list/getters': {
             documents: sinon.stub().returns([]),
             totalDocuments: sinon.stub(),
             selectedDocuments: sinon.stub(),
@@ -357,7 +357,7 @@ describe('Users list', () => {
 
       before(() => {
         List = ListInjector({
-          '../../../vuex/modules/collection/getters': {
+          '../../../vuex/modules/list/getters': {
             documents: sinon.stub().returns([]),
             totalDocuments: sinon.stub(),
             selectedDocuments: sinon.stub(),
