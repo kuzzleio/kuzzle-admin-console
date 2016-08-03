@@ -15,7 +15,7 @@
       </li>
       <li>
         <treeview
-          :index="currentIndex"
+          :index="selectedIndex"
           :collection="selectedCollection"
           :tree="indexesAndCollections">
         </treeview>
