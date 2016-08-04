@@ -35,7 +35,6 @@ kuzzle:
     - proxy:api
   environment:
     - MQ_BROKER_ENABLED=1
-    - kuzzle_fixtures=/fixtures.json
 
 redis:
   image: redis:3.0-alpine

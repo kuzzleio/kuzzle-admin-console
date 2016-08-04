@@ -46,8 +46,9 @@ export default function createRoutes (router) {
   })
 
   router.beforeEach(transition => {
-    if (!adminAlreadyExists(store.state)) {
+    if (transition.to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
       transition.redirect('/signup')
+      return
     }
 
     if (transition.to.name === 'Login' && isAuthenticated(store.state)) {
