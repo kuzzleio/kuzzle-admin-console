@@ -83,6 +83,7 @@
     &.closed {
       padding: 0;
       height: 0;
+      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0);
     }
 
     z-index: 10;
@@ -92,7 +93,7 @@
     left: 240px;
     line-height: 40px;
     height: 65px;
-    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
     padding: 13px 5px;
     right: 0;
     background-color: #FFF;
