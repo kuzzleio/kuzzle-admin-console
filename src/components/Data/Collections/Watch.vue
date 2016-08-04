@@ -161,6 +161,14 @@
         scrollListener: null
       }
     },
+    watch: {
+      collection: function () {
+        if (this.subscribed) {
+          this.subscribed = false
+          this.unsubscribe(this.room)
+        }
+      }
+    },
     ready () {
       let scrolled = false
       let toolbar = document.getElementById('notification-controls-fixed')
@@ -186,6 +194,7 @@
         clearInterval(this.scrollListener)
       }
       if (this.subscribed) {
+        this.subscribed = false
         this.unsubscribe(this.room)
       }
     },

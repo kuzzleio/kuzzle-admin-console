@@ -1,7 +1,12 @@
 <template>
   <ul class="indexes">
     <li v-for="(key, indexTree) in tree | orderBy 'name'">
-      <index-branch :index-tree="indexTree" :index="index" :collection="collection"></index-branch>
+      <index-branch
+        :route-name="routeName"
+        :index-tree="indexTree"
+        :index="index"
+        :collection="collection">
+      </index-branch>
     </li>
   </ul>
 </template>
@@ -14,6 +19,7 @@
     props: {
       index: String,
       collection: String,
+      routeName: String,
       tree: Array
     },
     components: {

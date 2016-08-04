@@ -15,6 +15,7 @@
       </li>
       <li>
         <treeview
+          :route-name="$route.name"
           :index="selectedIndex"
           :collection="selectedCollection"
           :tree="indexesAndCollections">
@@ -26,7 +27,8 @@
     <breadcrumb
       :route-name="$route.name"
       :index="selectedIndex"
-      :collection="selectedCollection">
+      :collection="selectedCollection"
+      :tree="indexesAndCollections">
     </breadcrumb>
 
     <section class="view">
