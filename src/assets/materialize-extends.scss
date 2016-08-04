@@ -18,6 +18,27 @@
   }
 }
 
+.primary {
+  background-color: $primary-color;
+  &:hover, &:focus {
+    background-color: lighten($primary-color, 5%);
+  }
+}
+
+.secondary {
+  background-color: $secondary-color;
+  &:hover, &:focus {
+    background-color: lighten($secondary-color, 5%);
+  }
+}
+
+.tertiary {
+  background-color: $tertiary-color;
+  &:hover, &:focus {
+    background-color: lighten($tertiary-color, 5%);
+  }
+}
+
 .inline-alert {
   padding: 15px;
   border-radius: 3px;
