@@ -1,54 +1,115 @@
 <template>
-  <div class="wrapper">
-    <headline>
-      {{collection}} - Watch
-      <collection-dropdown
-        class="icon-medium icon-black"
-        :index="index"
-        :collection="collection">
-      </collection-dropdown>
-    </headline>
+  <div>
+    <div class="wrapper">
+      <headline>
+        {{collection}} - Watch
+        <collection-dropdown
+          class="icon-medium icon-black"
+          :index="index"
+          :collection="collection">
+        </collection-dropdown>
+      </headline>
 
-    <div class="notification-container">
-      <div class="row">
-        <div class="col s12">
-          <button class="btn waves-effect waves-light" @click="manageSub(index, collection)">
-            <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa"></i>&nbsp;{{subscribed ? 'Unsubscribe' : 'Subscribe'}}
-          </button>
-          <button class="btn-flat waves-effect waves-grey" @click="clear">
-            <i class="fa fa-trash"></i>&nbsp;Clear console
-          </button>
-        </div>
-
-        <div class="col s12">
-
-          <div class="inline-alert red lighten-4" v-if="!subscribed">
-            <i class="fa fa-pause"></i>
-            <span>You are not currently receiving realtime messages from kuzzle</span>
+      <div id="notification-controls-fixed" class="closed">
+        <div class="row">
+          <div class="col s10">
+            <button class="btn waves-effect waves-light" @click="manageSub(index, collection)">
+              <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
+              {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
+            </button>
+            <button class="btn-flat waves-effect waves-grey" @click="clear">
+              <i class="fa fa-trash-o left"></i>
+              Clear messages
+            </button>
           </div>
 
-          <div class="inline-alert green lighten-4" v-if="subscribed">
-            <i class="fa fa-play"></i>
-            <span>You are receiving realtime messages from kuzzle with filters: </span>
-            <pre class="filter-preview">{{filter | json}}</pre>
+          <div class="col s2 right-align">
+            <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box-2" />
+            <label for="filled-in-box-2">Scroll on new messages</label>
           </div>
-
-          <ul class="collapsible" v-collapsible data-collapsible="expandable">
-            <li v-for="notification in notifications">
-              <notification :notification="notification"></notification>
-            </li>
-          </ul>
         </div>
       </div>
+
+      <div class="row">
+        <div class="subscription-controls">
+          <div class="col s10">
+            <button class="btn waves-effect waves-light" :class="subscribed ? 'orange' : 'green'" @click="manageSub(index, collection)">
+              <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
+              {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
+            </button>
+            <button class="btn-flat waves-effect waves-grey " @click="clear">
+              <i class="fa fa-trash-o left"></i>
+              Clear messages
+            </button>
+          </div>
+
+          <div class="col s2 right-align">
+            <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
+            <label for="filled-in-box">Scroll on new messages</label>
+          </div>
+        </div>
+
+        <div class="col s12">
+          <div v-if="!notifications.length" class="inline-alert grey lighten-3">
+            You have not received any notification yet
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="notification-container" v-scroll-glue:element-tag.body="{items: notifications, active: scrollGlueActive}">
+
+      <ul class="collapsible" v-collapsible data-collapsible="expandable" v-if="notifications.length">
+        <li v-for="notification in notifications">
+          <notification :notification="notification"></notification>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
-<style rel="stylesheet/scss" lang="scss" media="screen" scoped>
+<style rel="stylesheet/scss" lang="scss" media="screen">
   .head {
     float: left;
     font-size: 2rem;
     margin-top: 0;
+  }
+
+  .wrapper {
+    position: relative;
+  }
+
+  #notification-controls-fixed {
+    &.closed {
+      padding: 0;
+      height: 0;
+    }
+
+    overflow: hidden;
+    position: fixed;
+    top: 100px;
+    left: 240px;
+    line-height: 40px;
+    height: 65px;
+    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.4);
+    padding: 13px 5px;
+    right: 0;
+    background-color: #FFF;
+    transition: all .1s;
+  }
+
+  #notification-container {
+    li {
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    li:nth-child(odd) {
+      background-color: #f5f5f5;
+
+      .collapsible-header {
+        background-color: #f5f5f5;
+      }
+    }
   }
 
   .filter-preview {
@@ -66,10 +127,6 @@
     }
   }
 
-  .notification-container {
-    padding-top: 10px;
-  }
-
   .collapsible {
     border-width: 0;
   }
@@ -78,6 +135,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import JsonFormatter from '../../../directives/json-formatter.directive'
+  import ScrollGlue from '../../../directives/scroll-glue.directive'
   import jQueryCollapsible from '../../Materialize/collapsible'
   import { subscribe, unsubscribe, clear } from '../../../vuex/modules/data/actions'
   import { notifications } from '../../../vuex/modules/data/getters'
@@ -92,14 +150,45 @@
     },
     data () {
       return {
-        filter: {foo: 'bar'},
+        filter: {},
+        scrollGlueActive: true,
         subscribed: false,
-        room: null
+        room: null,
+        scrollListener: null
+      }
+    },
+    ready () {
+      let scrolled = false
+      let toolbar = document.getElementById('notification-controls-fixed')
+
+      window.onscroll = function () {
+        scrolled = true
+      }
+
+      this.scrollListener = setInterval(function () {
+        if (scrolled) {
+          scrolled = false
+
+          if (window.scrollY > 130 && toolbar.classList !== '') {
+            toolbar.classList = ''
+          } else if (toolbar.classList !== 'closed') {
+            toolbar.classList = 'closed'
+          }
+        }
+      }, 100)
+    },
+    destroyed () {
+      if (this.scrollListener !== null) {
+        clearInterval(this.scrollListener)
+      }
+      if (this.subscribed) {
+        this.unsubscribe(this.room)
       }
     },
     directives: [
       jQueryCollapsible,
-      JsonFormatter
+      JsonFormatter,
+      ScrollGlue
     ],
     components: {
       Notification,
