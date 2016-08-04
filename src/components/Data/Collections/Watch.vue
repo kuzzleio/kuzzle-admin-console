@@ -10,10 +10,11 @@
         </collection-dropdown>
       </headline>
 
+      <!-- subscription control bar fixed -->
       <div id="notification-controls-fixed" class="closed">
         <div class="row">
           <div class="col s10">
-            <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub(index, collection)">
+            <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub()">
               <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
               {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
             </button>
@@ -29,39 +30,43 @@
           </div>
         </div>
       </div>
+      <!-- /subscription control bar fixed -->
 
       <div class="row">
-        <div class="subscription-controls">
-          <div class="col s10">
-            <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub(index, collection)">
-              <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
-              {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
-            </button>
-            <button class="btn-flat waves-effect waves-grey " @click="clear">
-              <i class="fa fa-trash-o left"></i>
-              Clear messages
-            </button>
-          </div>
-
-          <div class="col s2 right-align">
-            <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
-            <label for="filled-in-box">Scroll on new messages</label>
-          </div>
+        <!-- subscription controls in page flow -->
+        <div class="col s10">
+          <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub()">
+            <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
+            {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
+          </button>
+          <button class="btn-flat waves-effect waves-grey " @click="clear">
+            <i class="fa fa-trash-o left"></i>
+            Clear messages
+          </button>
         </div>
 
+        <div class="col s2 right-align">
+          <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
+          <label for="filled-in-box">Scroll on new messages</label>
+        </div>
+        <!-- /subscription controls in page flow  -->
+
         <div class="col s12">
-          <div v-if="!notifications.length" class="inline-alert grey lighten-3">
+          <div v-if="!hasCurrentNotifications(index, collection, notifications)" class="inline-alert grey lighten-3">
             You have not received any notification yet
           </div>
         </div>
       </div>
     </div>
 
-    <div id="notification-container" v-scroll-glue:element-tag.body="{items: notifications, active: scrollGlueActive}">
-
-      <ul class="collapsible" v-collapsible data-collapsible="expandable" v-if="notifications.length">
-        <li v-for="notification in notifications">
-          <notification :notification="notification" v-if="notification.index === index && notification.collection === collection"></notification>
+    <div id="notification-container"
+         v-if="hasCurrentNotifications(index, collection, notifications)"
+         v-scroll-glue:element-tag.body="{items: notifications, active: scrollGlueActive}">
+      <ul class="collapsible" v-collapsible data-collapsible="expandable">
+        <li v-for="notification in notifications | filterBy index in 'index' | filterBy collection in 'collection'">
+          <notification
+            :notification="notification">
+          </notification>
         </li>
       </ul>
     </div>
@@ -162,7 +167,15 @@
       }
     },
     watch: {
+      index: function () {
+        // trigged when user changed the index of watch data page
+        if (this.subscribed) {
+          this.subscribed = false
+          this.unsubscribe(this.room)
+        }
+      },
       collection: function () {
+        // trigged when user changed the collection of watch data page
         if (this.subscribed) {
           this.subscribed = false
           this.unsubscribe(this.room)
@@ -170,6 +183,7 @@
       }
     },
     ready () {
+      // display the toolbar when user scroll (or when scroll glue is active)
       let scrolled = false
       let toolbar = document.getElementById('notification-controls-fixed')
 
@@ -177,6 +191,7 @@
         scrolled = true
       }
 
+      // delay position checking in an interval instead of onscroll event to reduce lags
       this.scrollListener = setInterval(function () {
         if (scrolled) {
           scrolled = false
@@ -190,6 +205,7 @@
       }, 100)
     },
     destroyed () {
+      // trigged when user leave watch data page
       if (this.scrollListener !== null) {
         clearInterval(this.scrollListener)
       }
@@ -209,10 +225,15 @@
       Headline
     },
     methods: {
-      manageSub (index, collection) {
+      hasCurrentNotifications: function (index, collection, notifications) {
+        return notifications.find((item) => {
+          return item.index === index && item.collection === collection
+        })
+      },
+      manageSub () {
         if (!this.subscribed) {
           this.subscribed = true
-          this.room = this.subscribe(this.filter, index, collection)
+          this.room = this.subscribe(this.filter, this.index, this.collection)
         } else {
           this.subscribed = false
           this.unsubscribe(this.room)
