@@ -1,4 +1,8 @@
 import Kuzzle from 'kuzzle-sdk'
 import config from '../../config'
+import Promise from 'bluebird'
 
-export default new Kuzzle(`http://${config.backend.host}:${config.backend.port}`)
+let kuzzle = Kuzzle(`http://${config.backend.host}:${config.backend.port}`)
+kuzzle.bluebird = Promise
+
+export default kuzzle

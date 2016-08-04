@@ -2,7 +2,8 @@ import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
 import cookie from '../../../services/cookies'
 import { SET_ERROR } from '../common/mutation-types'
-import { SET_CURRENT_USER } from './mutation-types'
+import { SET_CURRENT_USER, SET_ADMIN_EXISTS } from './mutation-types'
+import Promise from 'bluebird'
 
 export const doLogin = (store, username, password) => {
   kuzzle
@@ -26,36 +27,37 @@ export const doLogin = (store, username, password) => {
     })
 }
 
-export const loginFromCookie = (store, cb) => {
-  let user,
-    id
+export const loginFromCookie = (store) => {
+  let user = cookie.get()
 
-  if (kuzzle.state !== 'connected') {
-    id = kuzzle.addListener('connected', () => {
-      loginFromCookie(store, cb)
-      kuzzle.removeListener('connected', id)
-    })
-    return
-  }
-  user = cookie.get()
   if (user) {
-    kuzzle.checkToken(user.jwt, (err, res) => {
-      if (err) {
-        store.dispatch(SET_CURRENT_USER, null)
-        cb()
-        return
-      }
+    return kuzzle
+      .checkTokenPromise(user.jwt)
+      .then(res => {
+        if (res.valid) {
+          kuzzle.setJwtToken(user.jwt)
+          store.dispatch(SET_CURRENT_USER, user)
+          return Promise.resolve(user)
+        }
 
-      if (res.valid) {
-        kuzzle.setJwtToken(user.jwt)
-        store.dispatch(SET_CURRENT_USER, user)
-      }
-
-      cb()
-    })
-  } else {
-    cb()
+        return Promise.resolve(null)
+      })
   }
+
+  return Promise.resolve()
+}
+
+export const checkFirstAdmin = (store) => {
+  return kuzzle
+    .dataCollectionFactory('users', '%kuzzle')
+    .fetchAllDocumentsPromise()
+    .then((res) => {
+      if (res.total > 0) {
+        store.dispatch(SET_ADMIN_EXISTS, true)
+      }
+
+      return Promise.resolve()
+    })
 }
 
 export const doLogout = (store) => {

@@ -1,11 +1,13 @@
 import {
   SET_CURRENT_USER,
-  SET_CURRENT_USER_RIGHTS
+  SET_CURRENT_USER_RIGHTS,
+  SET_ADMIN_EXISTS
 } from './mutation-types'
 
 const state = {
   user: null,
-  rights: null
+  rights: null,
+  adminAlreadyExists: false
 }
 
 export const mutations = {
@@ -14,6 +16,9 @@ export const mutations = {
   },
   [SET_CURRENT_USER_RIGHTS] (state, rights) {
     state.rights = rights
+  },
+  [SET_ADMIN_EXISTS] (state, exists) {
+    state.adminAlreadyExists = exists
   }
 }
 
