@@ -7,7 +7,7 @@ import {
 const state = {
   user: null,
   rights: null,
-  adminAlreadyExists: false
+  adminAlreadyExists: true
 }
 
 export const mutations = {

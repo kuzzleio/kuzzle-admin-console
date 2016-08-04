@@ -52,10 +52,13 @@ export const checkFirstAdmin = (store) => {
     .dataCollectionFactory('users', '%kuzzle')
     .fetchAllDocumentsPromise()
     .then((res) => {
-      if (res.total > 0) {
-        store.dispatch(SET_ADMIN_EXISTS, true)
+      if (res.total === 0) {
+        store.dispatch(SET_ADMIN_EXISTS, false)
       }
 
+      return Promise.resolve()
+    })
+    .catch(() => {
       return Promise.resolve()
     })
 }
