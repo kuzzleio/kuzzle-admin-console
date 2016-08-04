@@ -13,7 +13,7 @@
       <div id="notification-controls-fixed" class="closed">
         <div class="row">
           <div class="col s10">
-            <button class="btn waves-effect waves-light" @click="manageSub(index, collection)">
+            <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub(index, collection)">
               <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
               {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
             </button>
@@ -33,7 +33,7 @@
       <div class="row">
         <div class="subscription-controls">
           <div class="col s10">
-            <button class="btn waves-effect waves-light" :class="subscribed ? 'orange' : 'green'" @click="manageSub(index, collection)">
+            <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub(index, collection)">
               <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
               {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
             </button>
@@ -85,6 +85,7 @@
       height: 0;
     }
 
+    z-index: 10;
     overflow: hidden;
     position: fixed;
     top: 100px;
