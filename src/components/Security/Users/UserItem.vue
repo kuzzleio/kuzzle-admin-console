@@ -7,7 +7,7 @@
       class="filled-in"
       id="checkbox-{{user.id}}"
       value="{{user.id}}"
-      @click="notifyCheckboxClick"/>
+      @click="notifyCheckboxClick" :checked="isChecked"/>
 
     <label for="checkbox-{{user.id}}" ></label>
     <!-- The following anchor will go to the user details page -->
@@ -44,7 +44,10 @@ const MAX_PROFILES = 5
 
 export default {
   name: 'UserList',
-  props: ['user'],
+  props: {
+    user: Object,
+    isChecked: Boolean
+  },
   components: {
     Dropdown
   },
