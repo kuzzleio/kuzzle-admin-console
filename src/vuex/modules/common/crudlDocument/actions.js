@@ -55,7 +55,6 @@ export const toggleSelectDocuments = (store, id) => {
 }
 
 export const performSearch = (store, collection, index, filters = {}, pagination = {}, sort = []) => {
-  console.log('search')
   if (!collection || !index) {
     return
   }
@@ -63,7 +62,6 @@ export const performSearch = (store, collection, index, filters = {}, pagination
   kuzzle
     .dataCollectionFactory(collection, index)
     .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
-      console.log('###', error, result)
       if (error) {
         return
       }

@@ -43,7 +43,7 @@ import jsonFormatter from '../../../directives/json-formatter.directive'
 const MAX_PROFILES = 5
 
 export default {
-  name: 'UserList',
+  name: 'UserItem',
   props: {
     user: Object,
     isChecked: Boolean
@@ -82,7 +82,7 @@ export default {
       this.collapsed = !this.collapsed
     },
     notifyCheckboxClick () {
-      this.$emit('checkbox-click', this.user.id)
+      this.$dispatch('checkbox-click', this.user.id)
     }
   }
 }

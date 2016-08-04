@@ -22,7 +22,7 @@
             <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
             <button
               class="btn waves-effect waves-light tertiary"
-              @click="toggleAll">
+              @click="dispatchToggle">
               <i class="fa left"
                  :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
               ></i>
@@ -37,11 +37,7 @@
               Delete
             </button>
 
-            <div class="collection">
-              <div class="collection-item" transition="collection" v-for="document in documents">
-                <slot></slot>
-              </div>
-            </div>
+            <slot></slot>
 
             <pagination
               @change-page="changePage"
@@ -60,7 +56,7 @@
 
     <modal id="bulk-delete">
       <h4>Users deletion</h4>
-      <p>Do you really want to delete {{selectedDocuments.length}} users?</p>
+      <p>Do you really want to delete {{lengthDocument}} users?</p>
 
       <span slot="footer">
         <button
@@ -88,7 +84,6 @@
     setBasicFilter
   } from '../../vuex/modules/common/crudlDocument/actions'
   import {
-    documents,
     totalDocuments,
     paginationFrom,
     paginationSize,
@@ -109,7 +104,11 @@
     },
     props: [
       'index',
-      'collection'
+      'collection',
+      'documents',
+      'displayBulkDelete',
+      'allChecked',
+      'lengthDocument'
     ],
     vuex: {
       actions: {
@@ -119,7 +118,6 @@
         setBasicFilter
       },
       getters: {
-        documents,
         totalDocuments,
         paginationFrom,
         paginationSize,
@@ -132,43 +130,11 @@
     },
     data () {
       return {
-        displayBulkDelete: true,
         formatFromBasicSearch,
-        formatSort,
-        selectedDocuments: []
-      }
-    },
-    computed: {
-      displayBulkDelete () {
-        return this.selectedDocuments.length > 0
-      },
-      allChecked () {
-        return this.selectedDocuments.length === this.documents.length
+        formatSort
       }
     },
     methods: {
-      isChecked (id) {
-        return this.selectedDocuments.indexOf(id) > -1
-      },
-      toggleAll () {
-        if (this.allChecked) {
-          this.selectedDocuments = []
-          return
-        }
-
-        this.selectedDocuments = []
-        this.selectedDocuments = this.documents.map((document) => document.id)
-      },
-      toggleSelectDocuments (id) {
-        let index = this.selectedDocuments.indexOf(id)
-
-        if (index === -1) {
-          this.selectedDocuments.push(id)
-          return
-        }
-
-        this.selectedDocuments.splice(index, 1)
-      },
       changePage (from) {
         this.$router.go({query: {...this.$route.query, from}})
       },
@@ -205,11 +171,13 @@
       },
       refreshSearch () {
         this.$router.go({query: {...this.$route.query, from: 0}})
+      },
+      dispatchToggle () {
+        this.$dispatch('toggle-foo')
       }
     },
     events: {
       'perform-search' () {
-        console.log('okkk')
         let filters = {}
         let sorting = []
         let pagination = {

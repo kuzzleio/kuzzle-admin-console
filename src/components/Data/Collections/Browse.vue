@@ -7,14 +7,7 @@
 </template>
 
 <script>
-  import CrudlDocument from '../../Common/CrudlDocument'
-  import DocumentItem from './DocumentItem.vue'
-
   export default {
-    name: 'CollectionBrowse',
-    components: {
-      CrudlDocument,
-      DocumentItem
-    }
+    name: 'CollectionBrowse'
   }
 </script>
