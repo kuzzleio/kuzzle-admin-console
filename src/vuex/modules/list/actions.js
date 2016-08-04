@@ -1,18 +1,9 @@
 import {
-  TOGGLE_SELECT_DOCUMENT,
   RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER
 } from './mutation-types'
 
 import kuzzle from '../../../services/kuzzle'
-
-export const toggleSelectDocuments = (store, id) => {
-  if (!id) {
-    return
-  }
-
-  store.dispatch(TOGGLE_SELECT_DOCUMENT, id)
-}
 
 export const performSearch = (store, collection, index, filters = {}, pagination = {}, sort = []) => {
   if (!collection || !index) {
