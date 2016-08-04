@@ -10,10 +10,6 @@ export const notifications = state => {
   return state.data.notifications
 }
 
-export const room = state => {
-  return state.data.room
-}
-
 export const collections = state => {
   return state.data.collections
 }

@@ -12,6 +12,8 @@ import {
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
+  // let currentIndex
+
   kuzzle
     .listIndexes((error, result) => {
       let indexesAndCollections = []
@@ -28,8 +30,18 @@ export const listIndexesAndCollections = (store) => {
               reject(new Error(error.message))
               return
             }
-
             if (index !== '%kuzzle') {
+              // realtime collections
+              // eslint-disable-next-line no-undef
+              let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+              if (!result.realtime) {
+                result.realtime = []
+              }
+              result.realtime.push(...realtimeCollections.map(o => {
+                if (o.index === index) {
+                  return o.collection
+                }
+              }))
               indexesAndCollections.push({
                 name: index,
                 collections: result

@@ -1,6 +1,6 @@
-import { mutations } from '../../../../src/vuex/modules/collection/store'
+import { mutations } from '../../../../src/vuex/modules/list/store'
 
-const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, TOGGLE_SELECT_DOCUMENT, SET_BASIC_FILTER } = mutations
+const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, SET_BASIC_FILTER } = mutations
 
 describe('collection mutations', () => {
   describe('DELETE_DOCUMENT', () => {
@@ -29,22 +29,6 @@ describe('collection mutations', () => {
       DELETE_DOCUMENTS(state, ['doc1', 'doc3'])
       expect(state.documents).to.eql([{id: 'doc2'}])
       expect(state.selectedDocuments).to.eql([])
-    })
-  })
-
-  describe('TOGGLE_SELECT_DOCUMENT', () => {
-    it('should add document in list if id is not already in list', () => {
-      let state = {selectedDocuments: ['doc1', 'doc3']}
-
-      TOGGLE_SELECT_DOCUMENT(state, 'doc2')
-      expect(state.selectedDocuments).to.eql(['doc1', 'doc3', 'doc2'])
-    })
-
-    it('should remove document in list if id is already in list', () => {
-      let state = {selectedDocuments: ['doc1', 'doc3']}
-
-      TOGGLE_SELECT_DOCUMENT(state, 'doc1')
-      expect(state.selectedDocuments).to.eql(['doc3'])
     })
   })
 
