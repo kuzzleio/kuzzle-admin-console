@@ -61,7 +61,7 @@
 
       <ul class="collapsible" v-collapsible data-collapsible="expandable" v-if="notifications.length">
         <li v-for="notification in notifications">
-          <notification :notification="notification"></notification>
+          <notification :notification="notification" v-if="notification.index === index && notification.collection === collection"></notification>
         </li>
       </ul>
     </div>
