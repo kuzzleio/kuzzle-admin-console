@@ -14,7 +14,7 @@
 
         <div class="col s1 right-align">
           <!-- actions related to the index -->
-          <collection-dropdown class="icon-small icon-black" :id="collection" :is-realtime="isRealtime"></collection-dropdown>
+          <collection-dropdown class="icon-small icon-black" :collection="collection" :is-realtime="isRealtime"></collection-dropdown>
         </div>
 
 
