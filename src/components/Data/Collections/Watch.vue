@@ -84,6 +84,8 @@
       padding: 0;
       height: 0;
       box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0);
+      border-bottom-left-radius: 100%;
+      border-bottom-right-radius: 100%;
     }
 
     z-index: 10;
@@ -97,7 +99,7 @@
     padding: 13px 5px;
     right: 0;
     background-color: #FFF;
-    transition: all .1s;
+    transition: all .3s;
   }
 
   #notification-container {
