@@ -8,7 +8,10 @@
   </span>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+  span {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  }
   a.dropdown-button {
     cursor: pointer;
   }

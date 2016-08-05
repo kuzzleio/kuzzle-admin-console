@@ -66,6 +66,7 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
   nav {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     i {
       height: auto;
       margin-right: 3px;

@@ -1,5 +1,5 @@
 .btn {
-  font-family: "Roboto", sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 
   &.btn-tiny {
     height: 24px;
@@ -16,6 +16,10 @@
     padding: 0 0.8rem;
     letter-spacing: .1px;
   }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .primary {

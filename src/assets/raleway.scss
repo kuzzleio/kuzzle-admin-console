@@ -1,0 +1,48 @@
+@font-face {
+  font-family: "Raleway";
+  //src: local(Raleway Thin), url('#{$raleway-font-path}Raleway-Thin.eot');
+  //src: url("#{$raleway-font-path}Raleway-Thin.eot?#iefix") format('embedded-opentype'),
+  //url("#{$raleway-font-path}Raleway-Thin.woff2") format("woff2"),
+  //url("#{$raleway-font-path}Raleway-Thin.woff") format("woff"),
+  src: url("#{$raleway-font-path}Raleway-Thin.ttf") format("truetype");
+  font-weight: 200;
+}
+@font-face {
+  font-family: "Raleway";
+  //src: local(Raleway Light), url('#{$raleway-font-path}Raleway-Light.eot');
+  //src: url("#{$raleway-font-path}Raleway-Light.eot?#iefix") format('embedded-opentype'),
+  //url("#{$raleway-font-path}Raleway-Light.woff2") format("woff2"),
+  //url("#{$raleway-font-path}Raleway-Light.woff") format("woff"),
+  src: url("#{$raleway-font-path}Raleway-Light.ttf") format("truetype");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Raleway";
+  //src: local(Raleway Regular), url('#{$raleway-font-path}Raleway-Regular.eot');
+  //src: url("#{$raleway-font-path}Raleway-Regular.eot?#iefix") format('embedded-opentype'),
+  //url("#{$raleway-font-path}Raleway-Regular.woff2") format("woff2"),
+  //url("#{$raleway-font-path}Raleway-Regular.woff") format("woff"),
+  src: url("#{$raleway-font-path}Raleway-Regular.ttf") format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Raleway";
+  //src: url('#{$raleway-font-path}Raleway-Medium.eot');
+  //src: url("#{$raleway-font-path}Raleway-Medium.eot?#iefix") format('embedded-opentype'),
+  //url("#{$raleway-font-path}Raleway-Medium.woff2") format("woff2"),
+  //url("#{$raleway-font-path}Raleway-Medium.woff") format("woff"),
+  src: url("#{$raleway-font-path}Raleway-Medium.ttf") format("truetype");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Raleway";
+  //src: url('#{$raleway-font-path}Raleway-Bold.eot');
+  //src: url("#{$raleway-font-path}Raleway-Bold.eot?#iefix") format('embedded-opentype'),
+  //url("#{$raleway-font-path}Raleway-Bold.woff2") format("woff2"),
+  //url("#{$raleway-font-path}Raleway-Bold.woff") format("woff"),
+  src: url("#{$raleway-font-path}Raleway-Bold.ttf") format("truetype");
+  font-weight: 700;
+}
