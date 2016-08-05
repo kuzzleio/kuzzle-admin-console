@@ -56,7 +56,7 @@
 
     <modal id="bulk-delete">
       <h4>Users deletion</h4>
-      <p>Do you really want to delete {{lengthDocument}} users?</p>
+      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'user'}}?</p>
 
       <span slot="footer">
         <button
@@ -70,6 +70,23 @@
         </button>
       </span>
     </modal>
+
+    <modal id="single-delete">
+      <h4>Users deletion</h4>
+      <p>Do you really want to delete this user?</p>
+
+      <span slot="footer">
+        <button
+          href="#"
+          class="waves-effect waves-green btn red"
+          @click="confirmSingleDelete(userIdToDelete)">
+            I'm sure!
+        </button>
+        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
+            Cancel
+        </button>
+      </span>
+    </modal>
   </div>
 </template>
 
@@ -78,7 +95,6 @@
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
   import {
-    deleteDocument,
     deleteDocuments,
     performSearch,
     setBasicFilter
@@ -112,7 +128,6 @@
     ],
     vuex: {
       actions: {
-        deleteDocument,
         deleteDocuments,
         performSearch,
         setBasicFilter
@@ -131,7 +146,8 @@
     data () {
       return {
         formatFromBasicSearch,
-        formatSort
+        formatSort,
+        userIdToDelete: ''
       }
     },
     methods: {
@@ -141,6 +157,16 @@
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
         this.deleteDocuments(this.selectedDocuments)
+          .then(() => {
+            this.refreshSearch()
+          })
+          .catch((e) => {
+            this.$dispatch('toast', e.message, 'error')
+          })
+      },
+      confirmSingleDelete (id) {
+        this.$broadcast('modal-close', 'single-delete')
+        this.deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
           })
@@ -178,6 +204,7 @@
     },
     events: {
       'perform-search' () {
+        console.log('searchTerm', this.searchTerm)
         let filters = {}
         let sorting = []
         let pagination = {
@@ -203,6 +230,10 @@
 
         // Execute search with corresponding filters
         this.performSearch(this.collection, this.index, filters, pagination, sorting)
+      },
+      'delete-user' (id) {
+        this.userIdToDelete = id
+        this.$broadcast('modal-open', 'single-delete')
       }
     }
   }

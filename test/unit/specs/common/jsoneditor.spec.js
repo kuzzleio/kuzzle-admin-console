@@ -68,4 +68,7 @@ describe('Json editor tests', () => {
       expect(updateFullSpy.calledOnce).to.be.equal(true)
     })
   })
+
+  describe('ready test', () => {
+  })
 })

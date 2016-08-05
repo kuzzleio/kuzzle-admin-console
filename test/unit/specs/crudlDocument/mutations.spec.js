@@ -1,17 +1,8 @@
-import { mutations } from '../../../../src/vuex/modules/list/store'
+import { mutations } from '../../../../src/vuex/modules/common/crudlDocument/store'
 
-const { DELETE_DOCUMENT, RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, SET_BASIC_FILTER } = mutations
+const { RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, SET_BASIC_FILTER, TOGGLE_SELECT_DOCUMENT } = mutations
 
 describe('collection mutations', () => {
-  describe('DELETE_DOCUMENT', () => {
-    it('should delete the document from list', () => {
-      let state = {documents: [{id: 'doc1'}, {id: 'doc2'}, {id: 'doc3'}]}
-
-      DELETE_DOCUMENT(state, 'doc2')
-      expect(state.documents).to.eql([{id: 'doc1'}, {id: 'doc3'}])
-    })
-  })
-
   describe('RECEIVE_DOCUMENTS', () => {
     it('should add documents and total in store', () => {
       let state = {documents: [{id: 'doc1'}], total: 1}
@@ -38,6 +29,22 @@ describe('collection mutations', () => {
 
       SET_BASIC_FILTER(state, 'filter')
       expect(state.basicFilter).to.equals('filter')
+    })
+  })
+
+  describe('TOGGLE_SELECT_DOCUMENT', () => {
+    it('should add an id', () => {
+      let state = {selectedDocuments: []}
+
+      TOGGLE_SELECT_DOCUMENT(state, 'id')
+      expect(state.selectedDocuments[0]).to.equals('id')
+    })
+
+    it('should remove an id', () => {
+      let state = {selectedDocuments: ['id']}
+
+      TOGGLE_SELECT_DOCUMENT(state, 'id')
+      expect(state.selectedDocuments.length).to.equals(0)
     })
   })
 })

@@ -83,6 +83,9 @@ export default {
     },
     notifyCheckboxClick () {
       this.$dispatch('checkbox-click', this.user.id)
+    },
+    deleteUser () {
+      this.$dispatch('delete-user', this.user.id)
     }
   }
 }

@@ -2,17 +2,15 @@ import kuzzle from '../../../../services/kuzzle'
 import Bluebird from 'bluebird'
 import {
   DELETE_DOCUMENTS,
-  DELETE_DOCUMENT,
   TOGGLE_SELECT_DOCUMENT,
   RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER
 } from './mutation-types'
 
 export const deleteDocuments = (store, index, collection, ids) => {
-  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+  if (!ids || !Array.isArray(ids) || ids.length === 0 || !index || !collection) {
     return
   }
-
   return new Bluebird((resolve, reject) => {
     kuzzle
       .dataCollectionFactory(collection, index)
@@ -23,27 +21,11 @@ export const deleteDocuments = (store, index, collection, ids) => {
         }
 
         store.dispatch(DELETE_DOCUMENTS, ids)
-        kuzzle.refreshIndex('%kuzzle', () => {
+        kuzzle.refreshIndex(index, () => {
           resolve()
         })
       })
   })
-}
-
-export const deleteDocument = (store, id) => {
-  if (!id) {
-    return
-  }
-
-  kuzzle
-    .security
-    .deleteUser(id, error => {
-      if (error) {
-        return
-      }
-
-      store.dispatch(DELETE_DOCUMENT, id)
-    })
 }
 
 export const toggleSelectDocuments = (store, id) => {
