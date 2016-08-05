@@ -23,7 +23,7 @@
     </div>
 
     <div class="col s2 right-align">
-      <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" checked="checked" />
+      <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
       <label for="filled-in-box">Scroll on new messages</label>
     </div>
   </div>
@@ -46,8 +46,10 @@
       warning: Object,
       subscribed: Boolean
     },
-    data: {
-      scrollGlueActive: true
+    data () {
+      return {
+        scrollGlueActive: true
+      }
     },
     methods: {
       toggleSubscription () {

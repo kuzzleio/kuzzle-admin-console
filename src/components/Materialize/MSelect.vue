@@ -6,6 +6,11 @@
   export default {
     id: 'm-select',
     twoWay: true,
+    update (value) {
+      let $el = $(this.el)
+      let $options = $('option[value=' + value + ']', $el)
+      $options.attr('selected', 'selected')
+    },
     bind () {
       /* eslint no-undef: 0 */
       setTimeout(() => {

@@ -7,6 +7,7 @@
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
       @filters-refresh-search="refreshSearch"
+      :available-filters="availableFilters"
       :search-term="searchTerm"
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
@@ -98,7 +99,7 @@
     basicFilter,
     sorting,
     basicFilterForm } from '../../../vuex/modules/list/getters'
-  import { formatFromQuickSearch, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
+  import { availableFilters, formatFromQuickSearch, formatFromBasicSearch, formatSort } from '../../../services/filterFormat'
 
   export default {
     name: 'UsersList',
@@ -132,6 +133,7 @@
       return {
         displayBulkDelete: true,
         formatFromBasicSearch,
+        availableFilters,
         formatSort,
         selectedDocuments: []
       }

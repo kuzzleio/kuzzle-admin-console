@@ -109,7 +109,7 @@
   }
   .subnav {
     position: fixed;
-    z-index: 100;
+    z-index: 300;
     top: 50px;
   }
 </style>

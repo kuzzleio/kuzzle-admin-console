@@ -10,6 +10,23 @@
         </collection-dropdown>
       </headline>
 
+      <filters
+        @filters-basic-search="basicSearch"
+        @filters-raw-search="rawSearch"
+        @filters-refresh-search="refreshSearch"
+        label-search-button="Apply filters"
+        label-complex-query="Quick search disabled, click to open filter builder"
+        :available-filters="availableFilters"
+        :quick-filter-enabled="false"
+        :sorting-enabled="false"
+        :raw-filter="rawFilter"
+        :basic-filter="basicFilter"
+        :format-from-basic-search="formatFromBasicSearch"
+        :format-sort="formatSort"
+        :set-basic-filter="setBasicFilter"
+        :basic-filter-form="basicFilterForm">
+      </filters>
+
       <!-- subscription control bar fixed -->
       <div id="notification-controls-fixed" class="closed">
         <div class="row">
@@ -77,7 +94,7 @@
       border-bottom-right-radius: 100%;
     }
 
-    z-index: 10;
+    z-index: 200;
     overflow: hidden;
     position: fixed;
     top: 100px;
@@ -118,7 +135,11 @@
   import Notification from '../Realtime/Notification'
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
+  import Filters from '../../Common/Filters/Filters'
   import kuzzle from '../../../services/kuzzle'
+  import { setBasicFilter } from '../../../vuex/modules/list/actions'
+  import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/list/getters'
+  import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
 
   let notificationToMessage = notification => {
     var messageItem = {
@@ -201,11 +222,23 @@
       index: String,
       collection: String
     },
+    vuex: {
+      actions: {
+        setBasicFilter
+      },
+      getters: {
+        rawFilter,
+        basicFilter,
+        basicFilterForm
+      }
+    },
     data () {
       return {
         subscribed: false,
         room: null,
-        filter: {},
+        filters: {},
+        availableFilters,
+        formatFromBasicSearch,
         subscribeOptions: {scope: 'all', users: 'all', state: 'all'},
         notifications: [],
         notificationsLengthLimit: 50,
@@ -254,7 +287,7 @@
         if (scrolled) {
           scrolled = false
 
-          if (window.scrollY > 130 && toolbar.classList !== '') {
+          if (window.scrollY > 200 && toolbar.classList !== '') {
             toolbar.classList = ''
           } else if (toolbar.classList !== 'closed') {
             toolbar.classList = 'closed'
@@ -281,16 +314,38 @@
       Notification,
       CollectionDropdown,
       SubscriptionControls,
+      Filters,
       Headline
     },
     methods: {
+      basicSearch (filters) {
+        if (!filters) {
+          this.$router.go({query: {basicFilter: ''}})
+          return
+        }
+
+        let basicFilter = JSON.stringify(filters)
+        this.$router.go({query: {basicFilter}})
+      },
+      rawSearch (filters) {
+        if (!filters) {
+          this.$router.go({query: {rawFilter: ''}})
+          return
+        }
+
+        let rawFilter = JSON.stringify(filters)
+        this.$router.go({query: {rawFilter}})
+      },
+      refreshSearch () {
+        this.$router.go({query: {...this.$route.query}})
+      },
       setScrollGlue (value) {
         this.scrollGlueActive = value
       },
       toggleSubscription () {
         if (!this.subscribed) {
           this.subscribed = true
-          this.room = this.subscribe(this.filter, this.index, this.collection)
+          this.room = this.subscribe(this.filters, this.index, this.collection)
         } else {
           this.subscribed = false
           this.unsubscribe(this.room)
@@ -298,7 +353,7 @@
       },
       subscribe () {
         return kuzzle.dataCollectionFactory(this.collection, this.index)
-          .subscribe(this.filter, this.subscribeOptions, (error, result) => {
+          .subscribe(this.filters, this.subscribeOptions, (error, result) => {
             if (error) {
               return
             }
@@ -337,6 +392,20 @@
       clear () {
         this.warning.message = ''
         this.notifications = []
+      }
+    },
+    route: {
+      data () {
+        let filters = {}
+
+        if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+        }
+
+        this.filters = filters
+        console.log('query data changed', filters)
       }
     }
   }
