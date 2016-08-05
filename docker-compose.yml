@@ -5,7 +5,7 @@ proxy:
     - "7512:7512"
 
 bo:
-  image: kuzzleio/bo:1.0.0-RC4
+  image: kuzzleio/bo:1.0.0-RC5
   ports:
     - "3000:3000"
   links:
@@ -14,7 +14,7 @@ bo:
     - KUZZLE_URL
 
 kuzzle:
-  image: kuzzleio/kuzzle:1.0.0-RC4
+  image: kuzzleio/kuzzle:1.0.0-RC5
   links:
     - elasticsearch
     - redis
@@ -24,4 +24,4 @@ redis:
   image: redis:3.0-alpine
 
 elasticsearch:
-  image: kuzzleio/elasticsearch:2.2
+  image: kuzzleio/elasticsearch:2.3.4
