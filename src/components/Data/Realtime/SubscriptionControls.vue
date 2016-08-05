@@ -1,0 +1,69 @@
+<template>
+  <div>
+    <div class="col s3">
+      <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click.prevent="toggleSubscription()">
+        <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
+        {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
+      </button>
+      <button class="btn-flat waves-effect waves-grey " @click.prevent="clear()">
+        <i class="fa fa-trash-o left"></i>
+        Clear messages
+      </button>
+    </div>
+
+    <div class="col s7 right-align">
+      <i
+        :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle deep-orange-text'"
+        class="fa"
+        v-if="warning.message"
+        aria-hidden="true">
+      </i>
+      <span :class="warning.info ? 'blue-text' : 'deep-orange-text'" v-if="warning.message">{{warning.message}}</span>
+      &nbsp;
+    </div>
+
+    <div class="col s2 right-align">
+      <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" checked="checked" />
+      <label for="filled-in-box">Scroll on new messages</label>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+  button {
+    &.btn-flat {
+      &:focus {
+        background-color: #EEE;
+      }
+    }
+  }
+</style>
+
+<script>
+  export default {
+    name: 'SubscriptionControls',
+    props: {
+      warning: Object,
+      subscribed: Boolean
+    },
+    data: {
+      scrollGlueActive: true
+    },
+    methods: {
+      toggleSubscription () {
+        this.$dispatch('realtime-toggle-subscription')
+      },
+      clear () {
+        this.$dispatch('realtime-clear-messages')
+      }
+    },
+    ready () {
+      this.$dispatch('realtime-scroll-glue', this.scrollGlueActive)
+    },
+    watch: {
+      scrollGlueActive: function (value) {
+        this.$dispatch('realtime-scroll-glue', value)
+      }
+    }
+  }
+</script>

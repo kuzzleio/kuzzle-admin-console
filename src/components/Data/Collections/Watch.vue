@@ -13,64 +13,26 @@
       <!-- subscription control bar fixed -->
       <div id="notification-controls-fixed" class="closed">
         <div class="row">
-          <div class="col s3">
-            <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub()">
-              <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
-              {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
-            </button>
-            <button class="btn-flat waves-effect waves-grey" @click="clear">
-              <i class="fa fa-trash-o left"></i>
-              Clear messages
-            </button>
-          </div>
-
-          <div class="col s7 right-align">
-            <i
-              :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle deep-orange-text'"
-              class="fa"
-              v-if="warning.message"
-              aria-hidden="true">
-            </i>
-            <span :class="warning.info ? 'blue-text' : 'deep-orange-text'" v-if="warning.message" >{{warning.message}}</span>
-            &nbsp;
-          </div>
-
-          <div class="col s2 right-align">
-            <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box-2" />
-            <label for="filled-in-box-2">Scroll on new messages</label>
-          </div>
+          <subscription-controls
+            @realtime-toggle-subscription="toggleSubscription"
+            @realtime-scroll-glue="setScrollGlue"
+            @realtime-clear-messages="clear"
+            :subscribed="subscribed"
+            :warning="warning">
+          </subscription-controls>
         </div>
       </div>
       <!-- /subscription control bar fixed -->
 
       <div class="row">
         <!-- subscription controls in page flow -->
-        <div class="col s3">
-          <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub()">
-            <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
-            {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
-          </button>
-          <button class="btn-flat waves-effect waves-grey " @click="clear">
-            <i class="fa fa-trash-o left"></i>
-            Clear messages
-          </button>
-        </div>
-
-        <div class="col s7 right-align">
-          <i
-            :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle deep-orange-text'"
-            class="fa"
-            v-if="warning.message"
-            aria-hidden="true">
-          </i>
-          <span :class="warning.info ? 'blue-text' : 'deep-orange-text'" v-if="warning.message" >{{warning.message}}</span>
-          &nbsp;
-        </div>
-
-        <div class="col s2 right-align">
-          <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
-          <label for="filled-in-box">Scroll on new messages</label>
-        </div>
+        <subscription-controls
+          @realtime-toggle-subscription="toggleSubscription"
+          @realtime-scroll-glue="setScrollGlue"
+          @realtime-clear-messages="clear"
+          :subscribed="subscribed"
+          :warning="warning">
+        </subscription-controls>
         <!-- /subscription controls in page flow  -->
 
         <div class="col s12">
@@ -143,21 +105,6 @@
     }
   }
 
-  .filter-preview {
-    font-size: 0.8rem;
-    margin-bottom: 0;
-    border-top: solid 1px rgba(255, 255, 255, 0.4);
-    padding-top: 10px;
-  }
-
-  button {
-    &.btn-flat {
-      &:focus {
-        background-color: #EEE;
-      }
-    }
-  }
-
   .collapsible {
     border-width: 0;
   }
@@ -169,6 +116,7 @@
   import ScrollGlue from '../../../directives/scroll-glue.directive'
   import jQueryCollapsible from '../../Materialize/collapsible'
   import Notification from '../Realtime/Notification'
+  import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
   import kuzzle from '../../../services/kuzzle'
 
@@ -332,10 +280,14 @@
     components: {
       Notification,
       CollectionDropdown,
+      SubscriptionControls,
       Headline
     },
     methods: {
-      manageSub () {
+      setScrollGlue (value) {
+        this.scrollGlueActive = value
+      },
+      toggleSubscription () {
         if (!this.subscribed) {
           this.subscribed = true
           this.room = this.subscribe(this.filter, this.index, this.collection)
@@ -368,7 +320,7 @@
                 this.warning.message = 'You are receiving too many messages, try to specify a filter to reduce the amount of messages'
               }
 
-              // two shift to have a display effect on even:odd items
+              // two shift instead of one to have a visual effect on items in the view
               this.notifications.shift()
               this.notifications.shift()
             }
