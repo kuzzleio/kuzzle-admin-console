@@ -27,7 +27,7 @@ var resetProfile = function (profileId, role) {
 var createAdminUser = function (username, password) {
   var userContent = {
     password: password,
-    profile: 'admin'
+    profilesIds: ['admin']
   };
   return kuzzle
     .security
@@ -45,25 +45,28 @@ router.post('/firstAdmin', function (req, res) {
         }
         return q.resolve();
       }
+      else {
+        return q.reject('Kuzzle is unreachable');
+      }
     })
     .then(function () {
       return createAdminUser(req.body.username, req.body.password);
     })
     .then(function () {
       if (req.body.resetroles) {
-        return resetProfile('default', {_id: 'default'});
+        return resetProfile('default', {roleId: 'default'});
       }
       return q.resolve();
     })
     .then(function () {
       if (req.body.resetroles) {
-        return resetProfile('admin', {_id: 'admin', allowInternalIndex: true});
+        return resetProfile('admin', {roleId: 'admin', allowInternalIndex: true});
       }
       return q.resolve();
     })
     .then(function () {
       if (req.body.resetroles) {
-        return resetProfile('anonymous', {_id: 'anonymous'});
+        return resetProfile('anonymous', {roleId: 'anonymous'});
       }
       return q.resolve();
     })

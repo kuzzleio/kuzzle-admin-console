@@ -79,7 +79,7 @@
                     </tr>
                     <tr ng-repeat="(controller, routes) in serverInfo.kuzzle.api.routes">
                         <td ng-bind="controller"></td>
-                        <td><span ng-repeat="route in routes" ng-bind="route + ' '"></span></td>
+                        <td><span ng-repeat="route in routes" ng-bind="route.name + ' '" title="{{ route.method | uppercase }} - {{ route.route }}"></span></td>
                     </tr>
                     </tbody>
                 </table>

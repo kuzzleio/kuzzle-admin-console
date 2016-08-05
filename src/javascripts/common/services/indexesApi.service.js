@@ -119,11 +119,7 @@ angular.module('kuzzle.indexesApi', ['ui-notification', 'kuzzle.kuzzleSdk'])
           index: index
         }, {}, function (error, result) {
           if (error) {
-            deferred.reject({
-              error: true,
-              message: error
-            });
-            return;
+            return deferred.reject(error);
           }
 
           cache.add(index);

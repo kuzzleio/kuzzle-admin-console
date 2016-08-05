@@ -17,8 +17,46 @@ angular.module('kuzzle.kuzzleSdk', [])
     return '%kuzzle';
   })
   .factory('kuzzleSdk', ['kuzzleUrl', function (kuzzleUrl) {
-    return new Kuzzle(kuzzleUrl, {
+    var kuzzle, rawQuery;
+
+    kuzzle = new Kuzzle(kuzzleUrl, {
       defaultIndex: 'mainindex',
       offlineMode: 'auto'
     });
+
+    rawQuery = kuzzle.query;
+
+    kuzzle.query = function (queryArgs, query, options, cb) {
+      var request = {queryArgs, query};
+
+      if (!cb && typeof options === 'function') {
+        cb = options;
+        options = null;
+      }
+      else {
+        request.options = options;
+      }
+
+      var proxyCb = function (error, result) {
+        if (window.debug) {
+          if (error) {
+            console.error({request, result: error});
+          }
+          else {
+            console.info({request, result});
+          }
+        }
+        cb(error, result);
+      };
+
+      rawQuery.call(kuzzle, queryArgs, query, options, proxyCb);
+    };
+
+    // expose kuzzle to the console, to let user interact with kuzzle directly from console
+    window.kuzzle = kuzzle;
+
+    // expose a global debug variable to let user toggle quickly debug mode of kuzzle's queries
+    window.debug = false;
+
+    return kuzzle;
   }]);

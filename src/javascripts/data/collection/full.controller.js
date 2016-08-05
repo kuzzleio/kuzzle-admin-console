@@ -54,16 +54,23 @@ angular.module('kuzzle.collection')
             collection.schema = JSON.parse($scope.collection.schema);
           }
           catch (e) {
-            notification.error('Error parsing schema.');
+            notification.error('Error while parsing mapping.');
             return false;
           }
         }
 
-        collectionApi.putMapping(collection, true, isCreate)
+        collectionApi.putMapping(collection)
           .then(function () {
+            notification.success(isCreate ? 'Collection created!' : 'Collection updated!');
+
             $state.go('collection.browse', {index: $stateParams.index});
           })
           .catch(function (error) {
+            notification.error({
+              delay: 10000,
+              message: '<strong>Got an error while ' + (isCreate ? 'creating' : 'updating') + ' collection: </strong><br />' + error.message
+            });
+
             console.error(error);
           });
       };

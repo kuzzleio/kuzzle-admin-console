@@ -21,15 +21,6 @@
             <div class="col-sm-2 ellipsis" ng-if="profile">
                 <strong class="document-id" ng-bind="document.id"></strong>
             </div>
-
-            <div class="col-sm-2" ng-if="profile">
-                <div class="btn-group-vertical btn-group-xs roles-list">
-                    <a type="button" class="btn btn-default ellipsis"
-                            ng-repeat="role in document.content.roles"
-                            ui-sref="role.full({role: role})"
-                            ng-bind="role._id"></a>
-                </div>
-            </div>
             <!-- /profiles -->
 
             <!-- users -->
@@ -40,15 +31,16 @@
             <div class="col-sm-2" ng-if="user">
                 <div class="btn-group-vertical btn-group-xs profiles-list">
                     <a type="button" class="btn btn-default ellipsis"
-                            ui-sref="profile.full({profile: document.content.profile})"
-                            ng-bind="document.content.profile"></a>
+                            ng-repeat="profile in document.content.profilesIds"
+                            ui-sref="profile.full({profile: profile})"
+                            ng-bind="profile"></a>
                 </div>
             </div>
             <!-- users -->
             <!-- /title col -->
 
             <!-- edit col -->
-            <div ng-class="{'col-sm-6': profile || user, 'col-sm-8': collection || role}">
+            <div ng-class="{'col-sm-6': user, 'col-sm-8': collection || role || profile}">
                 <json-formatter open="0" json="document.content" ng-if="!document.isEdit"></json-formatter>
 
                 <json-edit ng-if="canEdit && document.isEdit" can-edit="canEdit" content="document.json"></json-edit>
