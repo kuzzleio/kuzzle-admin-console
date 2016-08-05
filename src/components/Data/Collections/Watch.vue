@@ -13,7 +13,7 @@
       <!-- subscription control bar fixed -->
       <div id="notification-controls-fixed" class="closed">
         <div class="row">
-          <div class="col s10">
+          <div class="col s3">
             <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub()">
               <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
               {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
@@ -22,6 +22,17 @@
               <i class="fa fa-trash-o left"></i>
               Clear messages
             </button>
+          </div>
+
+          <div class="col s7 right-align">
+            <i
+              :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle deep-orange-text'"
+              class="fa"
+              v-if="warning.message"
+              aria-hidden="true">
+            </i>
+            <span :class="warning.info ? 'blue-text' : 'deep-orange-text'" v-if="warning.message" >{{warning.message}}</span>
+            &nbsp;
           </div>
 
           <div class="col s2 right-align">
@@ -34,7 +45,7 @@
 
       <div class="row">
         <!-- subscription controls in page flow -->
-        <div class="col s10">
+        <div class="col s3">
           <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click="manageSub()">
             <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
             {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
@@ -45,6 +56,17 @@
           </button>
         </div>
 
+        <div class="col s7 right-align">
+          <i
+            :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle deep-orange-text'"
+            class="fa"
+            v-if="warning.message"
+            aria-hidden="true">
+          </i>
+          <span :class="warning.info ? 'blue-text' : 'deep-orange-text'" v-if="warning.message" >{{warning.message}}</span>
+          &nbsp;
+        </div>
+
         <div class="col s2 right-align">
           <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
           <label for="filled-in-box">Scroll on new messages</label>
@@ -52,7 +74,7 @@
         <!-- /subscription controls in page flow  -->
 
         <div class="col s12">
-          <div v-if="!hasCurrentNotifications(index, collection, notifications)" class="inline-alert grey lighten-3">
+          <div v-if="!notifications.length" class="inline-alert grey lighten-3">
             You have not received any notification yet
           </div>
         </div>
@@ -60,10 +82,10 @@
     </div>
 
     <div id="notification-container"
-         v-if="hasCurrentNotifications(index, collection, notifications)"
+         v-if="notifications.length"
          v-scroll-glue:element-tag.body="{items: notifications, active: scrollGlueActive}">
       <ul class="collapsible" v-collapsible data-collapsible="expandable">
-        <li v-for="notification in notifications | filterBy index in 'index' | filterBy collection in 'collection'">
+        <li v-for="notification in notifications">
           <notification
             :notification="notification">
           </notification>
@@ -146,10 +168,84 @@
   import JsonFormatter from '../../../directives/json-formatter.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
   import jQueryCollapsible from '../../Materialize/collapsible'
-  import { subscribe, unsubscribe, clear } from '../../../vuex/modules/data/actions'
-  import { notifications } from '../../../vuex/modules/data/getters'
   import Notification from '../Realtime/Notification'
   import CollectionDropdown from '../Collections/Dropdown'
+  import kuzzle from '../../../services/kuzzle'
+
+  let notificationToMessage = notification => {
+    var messageItem = {
+      id: notification.result._id,
+      text: '',
+      icon: 'file',
+      index: notification.index || '',
+      collection: notification.collection || '',
+      'class': '',
+      source: {
+        source: notification.result._source,
+        metadata: notification.metadata
+      },
+      expanded: false,
+      canEdit: true
+    }
+
+    switch (notification.action) {
+      case 'publish':
+        messageItem.text = 'Received volatile message'
+        messageItem.icon = 'send'
+        messageItem.class = 'message-volatile'
+        messageItem.canEdit = false
+        break
+      case 'create':
+      case 'createOrReplace':
+        messageItem.icon = 'file'
+
+        if (notification.state === 'done') {
+          messageItem.text = 'Created new document'
+          messageItem.class = 'message-created-updated-doc'
+        } else if (notification.state === 'pending') {
+          messageItem.text = 'Creating new document'
+          messageItem.class = 'message-pending'
+        }
+        break
+
+      case 'update':
+        messageItem.text = 'Updated document'
+        messageItem.icon = 'file'
+        messageItem.class = 'message-created-updated-doc'
+        break
+
+      case 'delete':
+        messageItem.icon = 'remove'
+        messageItem.canEdit = false
+        if (notification.state === 'done') {
+          messageItem.text = 'Deleted document'
+          messageItem.class = 'message-deleted-doc'
+        } else if (notification.state === 'pending') {
+          messageItem.text = 'Deleting document'
+          messageItem.class = 'message-pending'
+        }
+        break
+
+      case 'on':
+        messageItem.text = 'A new user is listening to this room'
+        messageItem.icon = 'user'
+        messageItem.class = 'message-user'
+        messageItem.canEdit = false
+        messageItem.source = notification.metadata
+        break
+
+      case 'off':
+        messageItem.text = 'A user exited this room'
+        messageItem.icon = 'user'
+        messageItem.class = 'message-user'
+        messageItem.source = notification.metadata
+        messageItem.canEdit = false
+        break
+    }
+
+    messageItem.timestamp = notification.timestamp
+    return messageItem
+  }
 
   export default {
     name: 'CollectionWatch',
@@ -159,16 +255,24 @@
     },
     data () {
       return {
-        filter: {},
-        scrollGlueActive: true,
         subscribed: false,
         room: null,
+        filter: {},
+        subscribeOptions: {scope: 'all', users: 'all', state: 'all'},
+        notifications: [],
+        notificationsLengthLimit: 50,
+        warning: {message: '', count: 0, lastTime: null, info: false},
+        scrollGlueActive: true,
         scrollListener: null
       }
     },
     watch: {
       index: function () {
         // trigged when user changed the index of watch data page
+        this.notifications = []
+        this.warning.message = ''
+        this.warning.count = 0
+
         if (this.subscribed) {
           this.subscribed = false
           this.unsubscribe(this.room)
@@ -176,6 +280,10 @@
       },
       collection: function () {
         // trigged when user changed the collection of watch data page
+        this.notifications = []
+        this.warning.message = ''
+        this.warning.count = 0
+
         if (this.subscribed) {
           this.subscribed = false
           this.unsubscribe(this.room)
@@ -186,6 +294,8 @@
       // display the toolbar when user scroll (or when scroll glue is active)
       let scrolled = false
       let toolbar = document.getElementById('notification-controls-fixed')
+
+      this.notifications = []
 
       window.onscroll = function () {
         scrolled = true
@@ -225,11 +335,6 @@
       Headline
     },
     methods: {
-      hasCurrentNotifications: function (index, collection, notifications) {
-        return notifications.find((item) => {
-          return item.index === index && item.collection === collection
-        })
-      },
       manageSub () {
         if (!this.subscribed) {
           this.subscribed = true
@@ -238,16 +343,48 @@
           this.subscribed = false
           this.unsubscribe(this.room)
         }
-      }
-    },
-    vuex: {
-      actions: {
-        subscribe,
-        unsubscribe,
-        clear
       },
-      getters: {
-        notifications
+      subscribe () {
+        return kuzzle.dataCollectionFactory(this.collection, this.index)
+          .subscribe(this.filter, this.subscribeOptions, (error, result) => {
+            if (error) {
+              return
+            }
+
+            if (this.notifications.length > this.notificationsLengthLimit) {
+              if (this.warning.message === '') {
+                this.warning.info = true
+                this.warning.message = 'Older notifications are discarded due to huge amount of items displayed'
+              }
+
+              if (Date.now() - this.warning.lastTime < 50) {
+                this.warning.count++
+              }
+
+              this.warning.lastTime = Date.now()
+
+              if (this.warning.count >= 100) {
+                this.warning.info = false
+                this.warning.message = 'You are receiving too many messages, try to specify a filter to reduce the amount of messages'
+              }
+
+              // two shift to have a display effect on even:odd items
+              this.notifications.shift()
+              this.notifications.shift()
+            }
+
+            this.notifications.push(notificationToMessage(result))
+          })
+      },
+      unsubscribe (room) {
+        this.warning.message = ''
+        this.warning.count = 0
+
+        room.unsubscribe()
+      },
+      clear () {
+        this.warning.message = ''
+        this.notifications = []
       }
     }
   }
