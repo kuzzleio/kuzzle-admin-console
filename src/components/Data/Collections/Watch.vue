@@ -406,7 +406,6 @@
         }
 
         this.filters = filters
-        console.log('query data changed', filters)
       }
     }
   }
