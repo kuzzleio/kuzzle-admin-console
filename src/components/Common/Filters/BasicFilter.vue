@@ -125,7 +125,6 @@
 
           this.$dispatch('filters-basic-search', filters, sorting)
         } else {
-          console.log('filters', filters)
           this.$dispatch('filters-basic-search', filters)
         }
       },
