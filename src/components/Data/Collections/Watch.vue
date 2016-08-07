@@ -141,81 +141,6 @@
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/list/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
 
-  let notificationToMessage = notification => {
-    var messageItem = {
-      id: notification.result._id,
-      text: '',
-      icon: 'file',
-      index: notification.index || '',
-      collection: notification.collection || '',
-      'class': '',
-      source: {
-        source: notification.result._source,
-        metadata: notification.metadata
-      },
-      expanded: false,
-      canEdit: true
-    }
-
-    switch (notification.action) {
-      case 'publish':
-        messageItem.text = 'Received volatile message'
-        messageItem.icon = 'send'
-        messageItem.class = 'message-volatile'
-        messageItem.canEdit = false
-        break
-      case 'create':
-      case 'createOrReplace':
-        messageItem.icon = 'file'
-
-        if (notification.state === 'done') {
-          messageItem.text = 'Created new document'
-          messageItem.class = 'message-created-updated-doc'
-        } else if (notification.state === 'pending') {
-          messageItem.text = 'Creating new document'
-          messageItem.class = 'message-pending'
-        }
-        break
-
-      case 'update':
-        messageItem.text = 'Updated document'
-        messageItem.icon = 'file'
-        messageItem.class = 'message-created-updated-doc'
-        break
-
-      case 'delete':
-        messageItem.icon = 'remove'
-        messageItem.canEdit = false
-        if (notification.state === 'done') {
-          messageItem.text = 'Deleted document'
-          messageItem.class = 'message-deleted-doc'
-        } else if (notification.state === 'pending') {
-          messageItem.text = 'Deleting document'
-          messageItem.class = 'message-pending'
-        }
-        break
-
-      case 'on':
-        messageItem.text = 'A new user is listening to this room'
-        messageItem.icon = 'user'
-        messageItem.class = 'message-user'
-        messageItem.canEdit = false
-        messageItem.source = notification.metadata
-        break
-
-      case 'off':
-        messageItem.text = 'A user exited this room'
-        messageItem.icon = 'user'
-        messageItem.class = 'message-user'
-        messageItem.source = notification.metadata
-        messageItem.canEdit = false
-        break
-    }
-
-    messageItem.timestamp = notification.timestamp
-    return messageItem
-  }
-
   export default {
     name: 'CollectionWatch',
     props: {
@@ -248,27 +173,11 @@
       }
     },
     watch: {
-      index: function () {
-        // trigged when user changed the index of watch data page
-        this.notifications = []
-        this.warning.message = ''
-        this.warning.count = 0
-
-        if (this.subscribed) {
-          this.subscribed = false
-          this.unsubscribe(this.room)
-        }
+      index () {
+        this.reset()
       },
-      collection: function () {
-        // trigged when user changed the collection of watch data page
-        this.notifications = []
-        this.warning.message = ''
-        this.warning.count = 0
-
-        if (this.subscribed) {
-          this.subscribed = false
-          this.unsubscribe(this.room)
-        }
+      collection () {
+        this.reset()
       }
     },
     ready () {
@@ -300,10 +209,7 @@
       if (this.scrollListener !== null) {
         clearInterval(this.scrollListener)
       }
-      if (this.subscribed) {
-        this.subscribed = false
-        this.unsubscribe(this.room)
-      }
+      this.reset()
     },
     directives: [
       jQueryCollapsible,
@@ -347,48 +253,134 @@
           this.subscribed = true
           this.room = this.subscribe(this.filters, this.index, this.collection)
         } else {
-          this.subscribed = false
-          this.unsubscribe(this.room)
+          this.reset()
         }
       },
+      notificationToMessage (notification) {
+        var messageItem = {
+          id: notification.result._id,
+          text: '',
+          icon: 'file',
+          index: notification.index || '',
+          collection: notification.collection || '',
+          'class': '',
+          source: {
+            source: notification.result._source,
+            metadata: notification.metadata
+          },
+          expanded: false,
+          canEdit: true
+        }
+
+        switch (notification.action) {
+          case 'publish':
+            messageItem.text = 'Received volatile message'
+            messageItem.icon = 'send'
+            messageItem.class = 'message-volatile'
+            messageItem.canEdit = false
+            break
+          case 'create':
+          case 'createOrReplace':
+            messageItem.icon = 'file'
+
+            if (notification.state === 'done') {
+              messageItem.text = 'Created new document'
+              messageItem.class = 'message-created-updated-doc'
+            } else if (notification.state === 'pending') {
+              messageItem.text = 'Creating new document'
+              messageItem.class = 'message-pending'
+            }
+            break
+
+          case 'update':
+            messageItem.text = 'Updated document'
+            messageItem.icon = 'file'
+            messageItem.class = 'message-created-updated-doc'
+            break
+
+          case 'delete':
+            messageItem.icon = 'remove'
+            messageItem.canEdit = false
+            if (notification.state === 'done') {
+              messageItem.text = 'Deleted document'
+              messageItem.class = 'message-deleted-doc'
+            } else if (notification.state === 'pending') {
+              messageItem.text = 'Deleting document'
+              messageItem.class = 'message-pending'
+            }
+            break
+
+          case 'on':
+            messageItem.text = 'A new user is listening to this room'
+            messageItem.icon = 'user'
+            messageItem.class = 'message-user'
+            messageItem.canEdit = false
+            messageItem.source = notification.metadata
+            break
+
+          case 'off':
+            messageItem.text = 'A user exited this room'
+            messageItem.icon = 'user'
+            messageItem.class = 'message-user'
+            messageItem.source = notification.metadata
+            messageItem.canEdit = false
+            break
+        }
+
+        messageItem.timestamp = notification.timestamp
+        return messageItem
+      },
+      handleMessage (error, result) {
+        if (error) {
+          this.warning.message = error.message
+          return
+        }
+
+        if (this.notifications.length > this.notificationsLengthLimit) {
+          if (this.warning.message === '') {
+            this.warning.info = true
+            this.warning.message = 'Older notifications are discarded due to huge amount of items displayed'
+          }
+
+          if (Date.now() - this.warning.lastTime < 50) {
+            this.warning.count++
+          }
+
+          this.warning.lastTime = Date.now()
+
+          if (this.warning.count >= 100) {
+            this.warning.info = false
+            this.warning.message = 'You are receiving too many messages, try to specify a filter to reduce the amount of messages'
+          }
+
+          // two shift instead of one to have a visual effect on items in the view
+          this.notifications.shift()
+          this.notifications.shift()
+        }
+
+        this.notifications.push(this.notificationToMessage(result))
+      },
       subscribe () {
-        return kuzzle.dataCollectionFactory(this.collection, this.index)
-          .subscribe(this.filters, this.subscribeOptions, (error, result) => {
-            if (error) {
-              this.warning.message = error.message
-              return
-            }
-
-            if (this.notifications.length > this.notificationsLengthLimit) {
-              if (this.warning.message === '') {
-                this.warning.info = true
-                this.warning.message = 'Older notifications are discarded due to huge amount of items displayed'
-              }
-
-              if (Date.now() - this.warning.lastTime < 50) {
-                this.warning.count++
-              }
-
-              this.warning.lastTime = Date.now()
-
-              if (this.warning.count >= 100) {
-                this.warning.info = false
-                this.warning.message = 'You are receiving too many messages, try to specify a filter to reduce the amount of messages'
-              }
-
-              // two shift instead of one to have a visual effect on items in the view
-              this.notifications.shift()
-              this.notifications.shift()
-            }
-
-            this.notifications.push(notificationToMessage(result))
-          })
+        return kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
       },
       unsubscribe (room) {
         this.warning.message = ''
         this.warning.count = 0
 
         room.unsubscribe()
+      },
+      reset () {
+        // trigged when user changed the collection of watch data page
+        this.notifications = []
+        this.warning.message = ''
+        this.warning.count = 0
+
+        if (this.subscribed) {
+          this.subscribed = false
+          this.unsubscribe(this.room)
+        }
       },
       clear () {
         this.warning.message = ''
