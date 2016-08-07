@@ -287,10 +287,10 @@
         if (scrolled) {
           scrolled = false
 
-          if (window.scrollY > 200 && toolbar.classList !== '') {
-            toolbar.classList = ''
-          } else if (toolbar.classList !== 'closed') {
-            toolbar.classList = 'closed'
+          if (window.scrollY > 200 && toolbar.classList.contains('closed')) {
+            toolbar.classList.remove('closed')
+          } else if (window.scrollY <= 200 && !toolbar.classList.contains('closed')) {
+            toolbar.classList.add('closed')
           }
         }
       }, 100)
@@ -355,6 +355,7 @@
         return kuzzle.dataCollectionFactory(this.collection, this.index)
           .subscribe(this.filters, this.subscribeOptions, (error, result) => {
             if (error) {
+              this.warning.message = error.message
               return
             }
 
