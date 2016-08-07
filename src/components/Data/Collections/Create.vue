@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Create a collection in <i>{{$route.params.index}}</i>
+      Create a collection in <i>{{index}}</i>
     </headline>
     <div class="row">
       <div class="col m4">
@@ -12,6 +12,7 @@
             <label for="collectionName">Collection name</label>
           </div>
           <button class="btn waves-effect waves-light">Create</button>
+          <a class="btn-flat waves-effect" v-link="{name: 'DataIndexSummary', params: {index: index}}" >Cancel</a>
           <p class="error">{{error}}</p>
         </form>
       </div>
@@ -56,6 +57,9 @@
     components: {
       Headline,
       JsonEditor
+    },
+    props: {
+      index: String
     },
     data () {
       return {

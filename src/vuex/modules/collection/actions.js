@@ -4,10 +4,24 @@ import Promise from 'bluebird'
 
 export const createCollection = (store, index, collection, mapping, isRealTime) => {
   return new Promise((resolve, reject) => {
+    let collectionExist = store.state.data.indexesAndCollections
+      .filter(indexTree => {
+        return indexTree.name === index
+      })
+      .some(indexTree => {
+        return indexTree.collections.stored.includes(collection) || indexTree.collections.realtime.includes(collection)
+      })
+
     if (!collection) {
       reject(new Error('Invalid collection name'))
       return
     }
+    
+    if (collectionExist) {
+      reject(new Error('Collection "' + collection + '" already exist'))
+      return
+    }
+
     if (isRealTime) {
       // eslint-disable-next-line no-undef
       let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
@@ -18,22 +32,18 @@ export const createCollection = (store, index, collection, mapping, isRealTime) 
       resolve()
       return
     }
-    kuzzle.dataCollectionFactory(collection, index).create(err => {
-      if (err) {
-        reject(new Error(err.message))
-        return
-      }
-      kuzzle
-        .dataCollectionFactory(collection, index)
-        .dataMappingFactory(mapping || {})
-        .apply((err) => {
-          if (err) {
-            reject(new Error(err.message))
-            return
-          }
-          store.dispatch(ADD_STORED_COLLECTION, index, collection)
-          resolve()
-        })
-    })
+
+    kuzzle
+      .dataCollectionFactory(collection, index)
+      .dataMappingFactory(mapping || {})
+      .apply(err => {
+        if (err) {
+          reject(new Error(err.message))
+          return
+        }
+
+        store.dispatch(ADD_STORED_COLLECTION, index, collection)
+        resolve()
+      })
   })
 }

@@ -34,14 +34,20 @@ export const listIndexesAndCollections = (store) => {
               // realtime collections
               // eslint-disable-next-line no-undef
               let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+
+              realtimeCollections = realtimeCollections
+                .filter(o => {
+                  return o.index === index
+                }).map(o => {
+                  return o.collection
+                })
+
               if (!result.realtime) {
                 result.realtime = []
               }
-              result.realtime.push(...realtimeCollections.map(o => {
-                if (o.index === index) {
-                  return o.collection
-                }
-              }))
+
+              result.realtime.push(...realtimeCollections)
+              
               indexesAndCollections.push({
                 name: index,
                 collections: result
