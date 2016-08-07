@@ -10,6 +10,24 @@ import {
   ADD_INDEX
 } from './mutation-types'
 
+const addLocalRealtimeCollections = (result, index) => {
+  // eslint-disable-next-line no-undef
+  let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+
+  realtimeCollections = realtimeCollections
+    .filter(o => {
+      return o.index === index
+    }).map(o => {
+      return o.collection
+    })
+
+  if (!result.realtime) {
+    result.realtime = []
+  }
+
+  result.realtime.push(...realtimeCollections)
+}
+
 export const listIndexesAndCollections = (store) => {
   let promises = []
   // let currentIndex
@@ -31,23 +49,8 @@ export const listIndexesAndCollections = (store) => {
               return
             }
             if (index !== '%kuzzle') {
-              // realtime collections
-              // eslint-disable-next-line no-undef
-              let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+              addLocalRealtimeCollections(result, index)
 
-              realtimeCollections = realtimeCollections
-                .filter(o => {
-                  return o.index === index
-                }).map(o => {
-                  return o.collection
-                })
-
-              if (!result.realtime) {
-                result.realtime = []
-              }
-
-              result.realtime.push(...realtimeCollections)
-              
               indexesAndCollections.push({
                 name: index,
                 collections: result
@@ -170,12 +173,13 @@ export const clear = (store) => {
 }
 
 export const getCollectionsFromIndex = (store, index) => {
-  kuzzle.listCollections(index, (err, res) => {
+  kuzzle.listCollections(index, (err, result) => {
     if (err) {
       store.dispatch(SET_ERROR, err.message)
       return
     }
-    store.dispatch(RECEIVE_COLLECTIONS, res)
+    addLocalRealtimeCollections(result, index)
+    store.dispatch(RECEIVE_COLLECTIONS, result)
   })
 }
 
