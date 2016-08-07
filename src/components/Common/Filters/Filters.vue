@@ -109,7 +109,7 @@
         required: false,
         'default': 'Complex query here'
       },
-      rawFilter: Array,
+      rawFilter: Object,
       basicFilter: Array,
       setBasicFilter: Function,
       basicFilterForm: Object,
@@ -149,6 +149,13 @@
       }
     },
     methods: {
+      handleEsc (evt) {
+        evt = evt || window.event
+
+        if (evt.keyCode === ESC_KEY) {
+          this.displayBlockFilter = false
+        }
+      },
       switchFilter (name) {
         this.tabActive = name
       },
@@ -160,13 +167,10 @@
       }
     },
     ready () {
-      window.document.addEventListener('keydown', evt => {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.displayBlockFilter = false
-        }
-      })
+      window.document.addEventListener('keydown', this.handleEsc)
+    },
+    destroyed () {
+      window.document.removeEventListener('keydown', this.handleEsc)
     }
   }
 </script>
