@@ -17,7 +17,7 @@
           <div class="col s3">
             <div class="input-field left-align">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
-              <input id="filter" v-model="filter" type="text">
+              <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
           </div>
         </div>

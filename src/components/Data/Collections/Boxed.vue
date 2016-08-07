@@ -32,7 +32,8 @@
       -->
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#">Create a document</a>
+        <a class="btn btn-small" href="#" v-if="!isRealtime">Create a document</a>
+        <a class="btn btn-small" href="#" v-if="isRealtime" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">Watch messages</a>
       </div>
     </div>
   </div>
