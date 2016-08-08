@@ -121,7 +121,7 @@
       },
       doCreateCollection () {
         let mapping = this.$refs.jsoneditor.getJson()
-        this.createCollection(this.$route.params.index, this.collectionName, mapping, this.isRealTime).then(() => {
+        this.createCollection(this.index, this.collectionName, mapping, this.isRealTime).then(() => {
           this.$router.go({name: 'DataIndexSummary', params: {index: this.$route.params.index}})
         }).catch((e) => {
           this.error = e

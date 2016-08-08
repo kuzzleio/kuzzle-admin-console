@@ -4,7 +4,16 @@ import Promise from 'bluebird'
 
 export const createCollection = (store, index, collection, mapping, isRealTime) => {
   return new Promise((resolve, reject) => {
-    let collectionExist = store.state.data.indexesAndCollections
+    let indexesAndCollections = []
+    if (store.state && store.state.data) {
+      indexesAndCollections = store.state.data.indexesAndCollections
+    }
+
+    if (!collection) {
+      return reject(new Error('Invalid collection name'))
+    }
+
+    let collectionExist = indexesAndCollections
       .filter(indexTree => {
         return indexTree.name === index
       })
@@ -12,14 +21,8 @@ export const createCollection = (store, index, collection, mapping, isRealTime) 
         return indexTree.collections.stored.includes(collection) || indexTree.collections.realtime.includes(collection)
       })
 
-    if (!collection) {
-      reject(new Error('Invalid collection name'))
-      return
-    }
-    
     if (collectionExist) {
-      reject(new Error('Collection "' + collection + '" already exist'))
-      return
+      return reject(new Error('Collection "' + collection + '" already exist'))
     }
 
     if (isRealTime) {

@@ -135,8 +135,8 @@
   import CollectionDropdown from '../Collections/Dropdown'
   import Filters from '../../Common/Filters/Filters'
   import kuzzle from '../../../services/kuzzle'
-  import { setBasicFilter } from '../../../vuex/modules/list/actions'
-  import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/list/getters'
+  import { setBasicFilter } from '../../../vuex/modules/common/crudlDocument/actions'
+  import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
 
   export default {
