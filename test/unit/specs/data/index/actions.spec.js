@@ -46,12 +46,6 @@ describe('Data index tests', () => {
       }
     })
 
-    it('should dispatch an error', (done) => {
-      testAction(actions.getCollectionsFromIndex, [], {}, [
-        {name: 'SET_ERROR', payload: ['error']}
-      ], done)
-    })
-
     it('should get the collection list from an index', (done) => {
       triggerError = false
       testAction(actions.getCollectionsFromIndex, [], {}, [

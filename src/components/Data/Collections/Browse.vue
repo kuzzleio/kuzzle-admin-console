@@ -1,6 +1,8 @@
 <template>
   <div class="wrapper">
-    CollectionBrowse
+    <crudl-document :index="$route.params.index" :collection="$route.params.collection">
+      <document-item></document-item>
+    </crudl-document>
   </div>
 </template>
 
