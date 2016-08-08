@@ -4,7 +4,7 @@ export function highlight (value, filter) {
 
     if (index >= 0) {
       value = value.substring(0, index) +
-        '<strong style="text-decoration: underline">' +
+        '<strong class="highlight">' +
         value.substring(index, index + filter.length) +
         '</strong>' +
         value.substring(index + filter.length)

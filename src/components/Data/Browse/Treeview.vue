@@ -55,12 +55,8 @@
           return true
         }
 
-        let stored = indexTree.collections.stored.find(collection => {
-          return collection.indexOf(filter) >= 0
-        })
-        let realtime = indexTree.collections.stored.find(collection => {
-          return collection.indexOf(filter) >= 0
-        })
+        let stored = indexTree.collections.stored.some(collection => collection.indexOf(filter) >= 0)
+        let realtime = indexTree.collections.realtime.some(collection => collection.indexOf(filter) >= 0)
 
         return (stored || realtime)
       }
