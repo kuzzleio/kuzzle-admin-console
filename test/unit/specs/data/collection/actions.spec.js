@@ -8,13 +8,6 @@ describe('Collections test', () => {
       '../../../services/kuzzle': {
         dataCollectionFactory: () => {
           return {
-            create: cb => {
-              if (triggerError[0]) {
-                cb({message: 'mock create error'})
-              } else {
-                cb(null, {stored: {}, realtime: {}})
-              }
-            },
             dataMappingFactory: (mapping) => {
               return {
                 apply: cb => {
