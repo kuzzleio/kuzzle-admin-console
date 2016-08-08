@@ -33,7 +33,12 @@ describe('IndexBranch component', () => {
     })
 
     const TestComponent = Vue.extend({
-      template: '<index-branch v-ref:indexbranch v-bind:index="tree"></index-branch>',
+      template: '<index-branch ' +
+                  'v-ref:indexbranch ' +
+                  'v-bind:index="index" ' +
+                  'v-bind:collection="collection" ' +
+                  'v-bind:index-tree="tree">' +
+                '</index-branch>',
       components: { IndexBranch },
       data () {
         return {
@@ -81,47 +86,39 @@ describe('IndexBranch component', () => {
   })
 
   it('should correctly determine whether an index is active', () => {
-    let indexName = 'toto'
-    let $route = {
-      params: {
-        index: indexName
-      }
-    }
+    let indexName = 'index'
+    $vm.index = indexName
+    expect($vm.isIndexActive(indexName)).to.equal(true)
 
-    expect($vm.isIndexActive($route, indexName)).to.equal(true)
+    $vm.index = 'tata'
+    expect($vm.isIndexActive(indexName)).to.equal(false)
 
-    $route.params.index = 'tata'
-    expect($vm.isIndexActive($route, indexName)).to.equal(false)
-
-    $route.params.index = indexName
-    $route.params.collection = 'titi'
-    expect($vm.isIndexActive($route, indexName)).to.equal(false)
+    $vm.collection = 'titi'
+    expect($vm.isIndexActive(indexName)).to.equal(false)
   })
 
   it('should correctly determine whether a collection is active', () => {
-    let collectionName = 'tata'
-    let $route = {
-      params: {
-        index: 'toto',
-        collection: collectionName
-      }
-    }
-    expect($vm.isCollectionActive($route, collectionName)).to.equal(true)
+    let collectionName = 'collection'
+    $vm.collection = collectionName
+    expect($vm.isCollectionActive(collectionName)).to.equal(true)
 
-    $route.params.collection = 'tutu'
-    expect($vm.isCollectionActive($route, collectionName)).to.equal(false)
+    $vm.collection = 'tutu'
+    expect($vm.isCollectionActive(collectionName)).to.equal(false)
   })
 
   it('should open when ready with active route', () => {
-    router.go('/index/collection')
+    $vm.index = 'index'
+    $vm.collection = 'collection'
     $vm.$options.ready[0].call($vm)
     expect($vm.open).to.equal(false)
 
-    router.go('/kuzzle-bo-testindex')
+    $vm.index = 'kuzzle-bo-testindex'
+    $vm.collection = ''
     $vm.$options.ready[0].call($vm)
     expect($vm.open).to.equal(true)
 
-    router.go('/kuzzle-bo-testindex/collection')
+    $vm.index = 'kuzzle-bo-testindex'
+    $vm.collection = 'collection'
     $vm.$options.ready[0].call($vm)
     expect($vm.open).to.equal(true)
   })

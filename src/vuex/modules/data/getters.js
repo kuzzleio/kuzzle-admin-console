@@ -17,3 +17,11 @@ export const collections = state => {
 export const documents = state => {
   return state.data.documents
 }
+
+export const selectedIndex = state => {
+  return state.route.params.index
+}
+
+export const selectedCollection = state => {
+  return state.route.params.collection
+}

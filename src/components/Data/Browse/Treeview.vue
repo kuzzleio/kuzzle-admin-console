@@ -1,7 +1,7 @@
 <template>
   <ul class="indexes">
-    <li v-for="(key, index) in tree | orderBy 'name'">
-      <index-branch :index="index"></index-branch>
+    <li v-for="(key, indexTree) in tree | orderBy 'name'">
+      <index-branch :index-tree="indexTree" :index="index" :collection="collection"></index-branch>
     </li>
   </ul>
 </template>
@@ -11,7 +11,11 @@
 
   export default {
     name: 'Treeview',
-    props: ['tree'],
+    props: {
+      index: String,
+      collection: String,
+      tree: Array
+    },
     components: {
       IndexBranch
     }

@@ -1,3 +1,5 @@
+/* istanbul ignore next */
+
 export default {
   '/users': {
     name: 'SecurityUsersList',
