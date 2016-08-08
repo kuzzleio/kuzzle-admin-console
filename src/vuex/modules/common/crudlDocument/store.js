@@ -1,5 +1,4 @@
 import {
-  DELETE_DOCUMENT,
   DELETE_DOCUMENTS,
   RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER
@@ -13,9 +12,6 @@ const state = {
 }
 
 export const mutations = {
-  [DELETE_DOCUMENT] (state, id) {
-    state.documents = state.documents.filter(element => element.id !== id)
-  },
   [DELETE_DOCUMENTS] (state, ids) {
     state.documents = state.documents.filter(element => ids.indexOf(element.id) === -1)
     state.selectedDocuments = []
