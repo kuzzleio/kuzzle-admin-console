@@ -1,7 +1,6 @@
 import {
   DELETE_DOCUMENTS,
   RECEIVE_DOCUMENTS,
-  TOGGLE_SELECT_DOCUMENT,
   SET_BASIC_FILTER
 } from './mutation-types'
 
@@ -20,16 +19,6 @@ export const mutations = {
   [RECEIVE_DOCUMENTS] (state, result) {
     state.documents = result.documents
     state.total = result.total
-  },
-  [TOGGLE_SELECT_DOCUMENT] (state, id) {
-    let index = state.selectedDocuments.indexOf(id)
-
-    if (index === -1) {
-      state.selectedDocuments.push(id)
-      return
-    }
-
-    state.selectedDocuments.splice(index, 1)
   },
   [SET_BASIC_FILTER] (state, value) {
     state.basicFilter = value

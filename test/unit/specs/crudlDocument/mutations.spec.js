@@ -1,6 +1,6 @@
 import { mutations } from '../../../../src/vuex/modules/common/crudlDocument/store'
 
-const { RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, SET_BASIC_FILTER, TOGGLE_SELECT_DOCUMENT } = mutations
+const { RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, SET_BASIC_FILTER } = mutations
 
 describe('collection mutations', () => {
   describe('RECEIVE_DOCUMENTS', () => {
@@ -29,22 +29,6 @@ describe('collection mutations', () => {
 
       SET_BASIC_FILTER(state, 'filter')
       expect(state.basicFilter).to.equals('filter')
-    })
-  })
-
-  describe('TOGGLE_SELECT_DOCUMENT', () => {
-    it('should add an id', () => {
-      let state = {selectedDocuments: []}
-
-      TOGGLE_SELECT_DOCUMENT(state, 'id')
-      expect(state.selectedDocuments[0]).to.equals('id')
-    })
-
-    it('should remove an id', () => {
-      let state = {selectedDocuments: ['id']}
-
-      TOGGLE_SELECT_DOCUMENT(state, 'id')
-      expect(state.selectedDocuments.length).to.equals(0)
     })
   })
 })

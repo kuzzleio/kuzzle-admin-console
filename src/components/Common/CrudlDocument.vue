@@ -121,9 +121,9 @@
     props: {
       index: String,
       collection: String,
-      documents: Object,
-      displayBulkDelete: Function,
-      allChecked: Function,
+      documents: Array,
+      displayBulkDelete: Boolean,
+      allChecked: Boolean,
       lengthDocument: {
         type: Number,
         default: 0

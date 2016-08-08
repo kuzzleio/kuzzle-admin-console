@@ -2,8 +2,7 @@ import {testAction, testActionPromise} from '../helper'
 import {
   RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER,
-  DELETE_DOCUMENTS,
-  TOGGLE_SELECT_DOCUMENT
+  DELETE_DOCUMENTS
 } from '../../../../src/vuex/modules/common/crudlDocument/mutation-types'
 const actionsInjector = require('inject!../../../../src/vuex/modules/common/crudlDocument/actions')
 
@@ -233,22 +232,6 @@ describe('crudlDocument actions', () => {
         payload: [['doc1', 'doc2']]
       }], done)
       expect(spy.calledOnce).to.be.equal(true)
-    })
-
-    describe('toggleSelectDocuments tests', () => {
-      const actions = actionsInjector({
-        '../../../../services/kuzzle': {}
-      })
-
-      it('should do nothing if no valid id', (done) => {
-        testAction(actions.toggleSelectDocuments, [], {}, [], done)
-      })
-
-      it('should dispatch toggle_select_document', (done) => {
-        testAction(actions.toggleSelectDocuments, ['id'], {}, [
-          {name: TOGGLE_SELECT_DOCUMENT, payload: ['id']}
-        ], done)
-      })
     })
   })
 })
