@@ -23,19 +23,6 @@ describe('listIndexesAndCollections action', () => {
     }
   })
 
-  it('should set an error on listIndexes', (done) => {
-    testAction(actions.listIndexesAndCollections, [], {}, [
-      {name: 'SET_ERROR', payload: ['error']}
-    ], done)
-  })
-
-  it('should set an error on listCollections', (done) => {
-    triggerError = [false, true]
-    testAction(actions.listIndexesAndCollections, [], {}, [
-      {name: 'SET_ERROR', payload: ['error']}
-    ], done)
-  })
-
   it('should get the collections list per indexes but not %kuzzle', (done) => {
     triggerError = [false, false]
     testAction(actions.listIndexesAndCollections, [], {}, [
@@ -77,12 +64,6 @@ describe('getMapping test action', () => {
         }
       }
     }
-  })
-
-  it('should set an error on getMapping', (done) => {
-    testAction(actions.getMapping, [], {}, [
-      {name: 'SET_ERROR', payload: ['error']}
-    ], done)
   })
 
   it('should get the mapping properly', (done) => {

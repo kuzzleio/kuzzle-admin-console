@@ -96,7 +96,6 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import {createCollection} from '../../../vuex/modules/collection/actions'
-  import {getError} from '../../../vuex/modules/common/getters'
   import JsonEditor from '../../Common/JsonEditor'
 
   export default {
@@ -132,9 +131,6 @@
     vuex: {
       actions: {
         createCollection
-      },
-      getters: {
-        getError
       }
     }
   }
