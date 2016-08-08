@@ -69,7 +69,7 @@
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
   const emptySorting = {attribute: null, order: 'asc'}
 
-  import MSelect from '../../Materialize/MSelect'
+  import MSelect from '../../../directives/m-select.directive'
 
   export default {
     props: {
