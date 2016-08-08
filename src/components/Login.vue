@@ -5,7 +5,7 @@
         <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" />
       </h2>
       <div class="row">
-        <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="doLogin(username, password)">
+        <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="login(username, password)">
           <div class="row">
             <div class="input-field col s12">
               <input id="username" v-model="username" type="text" name="username" required
@@ -45,22 +45,29 @@
 
 <script>
   import {doLogin} from '../vuex/modules/auth/actions'
-  import {getError} from '../vuex/modules/common/getters'
 
   export default {
     name: 'Login',
     data () {
       return {
         username: null,
-        password: null
+        password: null,
+        error: null
+      }
+    },
+    methods: {
+      login (username, password) {
+        this.doLogin(username, password).then(() => {
+          // TODO redirect to the previously asked route
+          this.$router.go({name: 'Home'})
+        }).catch((err) => {
+          this.error = err.message
+        })
       }
     },
     vuex: {
       actions: {
         doLogin
-      },
-      getters: {
-        error: getError
       }
     }
   }

@@ -61,7 +61,7 @@ html{
 
 .side-nav {
   top: $navbar-height;
-  overflow: hidden;
+  height: 95%;
 }
 
 @media #{$medium-and-down} {
