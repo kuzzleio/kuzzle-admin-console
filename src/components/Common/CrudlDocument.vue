@@ -118,14 +118,17 @@
       Modal,
       Filters
     },
-    props: [
-      'index',
-      'collection',
-      'documents',
-      'displayBulkDelete',
-      'allChecked',
-      'lengthDocument'
-    ],
+    props: {
+      index: String,
+      collection: String,
+      documents: Object,
+      displayBulkDelete: Function,
+      allChecked: Function,
+      lengthDocument: {
+        type: Number,
+        default: 0
+      }
+    },
     vuex: {
       actions: {
         deleteDocuments,
@@ -199,12 +202,11 @@
         this.$router.go({query: {...this.$route.query, from: 0}})
       },
       dispatchToggle () {
-        this.$dispatch('toggle-foo')
+        this.$dispatch('toggle-all')
       }
     },
     events: {
       'perform-search' () {
-        console.log('searchTerm', this.searchTerm)
         let filters = {}
         let sorting = []
         let pagination = {

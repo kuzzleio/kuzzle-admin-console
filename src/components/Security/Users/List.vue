@@ -73,7 +73,7 @@
       }
     },
     events: {
-      'toggle-foo' () {
+      'toggle-all' () {
         this.toggleAll()
       }
     }
