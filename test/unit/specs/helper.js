@@ -49,6 +49,6 @@ export const testActionPromise = (action, args, state, expectedMutations, done) 
       done()
     }
   }).catch(e => {
-    return Promise.reject(e)
+    return Promise.reject(new Error(e.message))
   })
 }

@@ -24,7 +24,6 @@ let formatFromBasicSearch = sandbox.spy()
 let formatSort = sandbox.spy()
 
 let initInjector = () => {
-  console.log('searchterm', searchTerm)
   CrudlDocument = CrudlDocumentInjector({
     '../../vuex/modules/common/crudlDocument/getters': {
       documents,
