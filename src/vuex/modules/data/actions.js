@@ -1,5 +1,4 @@
 import kuzzle from '../../../services/kuzzle'
-import {SET_ERROR} from '../common/mutation-types'
 import Promise from 'bluebird'
 import {
   RECEIVE_MAPPING,
@@ -19,7 +18,6 @@ export const listIndexesAndCollections = (store) => {
       let indexesAndCollections = []
 
       if (error) {
-        store.dispatch(SET_ERROR, error.message)
         return
       }
 
@@ -54,8 +52,8 @@ export const listIndexesAndCollections = (store) => {
       })
       Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
-      }).catch(err => {
-        store.dispatch(SET_ERROR, err.message)
+      }).catch(() => {
+        return
       })
     })
 }
@@ -63,7 +61,6 @@ export const listIndexesAndCollections = (store) => {
 export const getMapping = (store, index, collection) => {
   kuzzle.dataCollectionFactory(collection, index).getMapping((err, res) => {
     if (err) {
-      store.dispatch(SET_ERROR, err.message)
       return
     }
     store.dispatch(RECEIVE_MAPPING, res.mapping)
@@ -166,7 +163,6 @@ export const clear = (store) => {
 export const getCollectionsFromIndex = (store, index) => {
   kuzzle.listCollections(index, (err, res) => {
     if (err) {
-      store.dispatch(SET_ERROR, err.message)
       return
     }
     store.dispatch(RECEIVE_COLLECTIONS, res)
