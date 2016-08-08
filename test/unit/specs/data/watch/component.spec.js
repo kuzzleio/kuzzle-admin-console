@@ -138,16 +138,19 @@ describe('WatchData tests', () => {
         vm.$refs.watch.subscribe = sinon.stub().returns('KuzzleRoom')
 
         vm.$refs.watch.toggleSubscription()
+
         expect(vm.$refs.watch.subscribe.called).to.be.ok
         expect(vm.$refs.watch.room).to.equal('KuzzleRoom')
       })
 
       it('should call the reset method if there is a subscription', () => {
         vm.$refs.watch.subscribed = true
-        vm.$refs.watch.reset = sinon.spy()
+        vm.$refs.watch.unsubscribe = sinon.spy()
 
         vm.$refs.watch.toggleSubscription()
-        expect(vm.$refs.watch.reset.called).to.be.ok
+
+        expect(vm.$refs.watch.subscribed).to.be.not.ok
+        expect(vm.$refs.watch.unsubscribe.called).to.be.ok
       })
     })
 

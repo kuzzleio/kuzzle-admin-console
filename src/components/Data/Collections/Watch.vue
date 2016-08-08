@@ -28,7 +28,7 @@
       </filters>
 
       <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" class="closed">
+      <div id="notification-controls-fixed" class="closed" v-scroll-glue="{spy: notifications, height: 200, active: scrollGlueActive}">
         <div class="row">
           <subscription-controls
             @realtime-toggle-subscription="toggleSubscription"
@@ -60,9 +60,7 @@
       </div>
     </div>
 
-    <div id="notification-container"
-         v-if="notifications.length"
-         v-scroll-glue:element-tag.body="{items: notifications, active: scrollGlueActive}">
+    <div id="notification-container" v-if="notifications.length">
       <ul class="collapsible" v-collapsible data-collapsible="expandable">
         <li v-for="notification in notifications">
           <notification
@@ -181,28 +179,7 @@
       }
     },
     ready () {
-      // display the toolbar when user scroll (or when scroll glue is active)
-      let scrolled = false
-      let toolbar = document.getElementById('notification-controls-fixed')
-
       this.notifications = []
-
-      window.onscroll = function () {
-        scrolled = true
-      }
-
-      // delay position checking in an interval instead of onscroll event to reduce lags
-      this.scrollListener = setInterval(function () {
-        if (scrolled) {
-          scrolled = false
-
-          if (window.scrollY > 200 && toolbar.classList.contains('closed')) {
-            toolbar.classList.remove('closed')
-          } else if (window.scrollY <= 200 && !toolbar.classList.contains('closed')) {
-            toolbar.classList.add('closed')
-          }
-        }
-      }, 100)
     },
     destroyed () {
       // trigged when user leave watch data page
@@ -253,7 +230,8 @@
           this.subscribed = true
           this.room = this.subscribe(this.filters, this.index, this.collection)
         } else {
-          this.reset()
+          this.subscribed = false
+          this.unsubscribe(this.room)
         }
       },
       notificationToMessage (notification) {
