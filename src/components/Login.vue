@@ -57,7 +57,6 @@
     },
     methods: {
       login (username, password) {
-        console.log('login')
         this.doLogin(username, password).then(() => {
           // TODO redirect to the previously asked route
           this.$router.go({name: 'Home'})
