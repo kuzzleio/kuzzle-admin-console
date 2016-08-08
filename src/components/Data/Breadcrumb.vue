@@ -125,9 +125,9 @@
     },
     methods: {
       isCollectionRealtime () {
-        return this.tree.find((index) => {
+        return this.tree.filter((index) => {
           return (index.name === this.index && index.collections.realtime.indexOf(this.collection) >= 0)
-        })
+        }).length
       },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
