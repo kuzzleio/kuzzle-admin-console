@@ -5,9 +5,8 @@
     </headline>
 
     <div class="row">
-      <div class="col s8">
-
-        <form @submit.prevent="doCreateCollection">
+      <div class="col s12 m10 l8 card">
+        <form class="wrapper" @submit.prevent="doCreateCollection">
           <!-- Required fields -->
           <div class="row">
             <!-- Collection name -->
