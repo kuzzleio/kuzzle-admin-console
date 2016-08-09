@@ -3,7 +3,7 @@
     <headline title="Indexes - Browse"></headline>
 
     <div class="row">
-      <div class="col s8">
+      <div class="col s12 m10 l8">
 
       <div class="row actions">
         <div class="col s9">
