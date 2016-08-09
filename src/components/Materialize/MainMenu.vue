@@ -40,6 +40,9 @@
 </script>
 
 <style scoped>
+header {
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
 .brand-logo {
   height: 100%;
 }
