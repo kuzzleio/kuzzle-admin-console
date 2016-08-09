@@ -1,5 +1,5 @@
 .btn {
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-family: "Roboto", sans-serif;
 
   &.btn-tiny {
     height: 24px;
@@ -18,8 +18,14 @@
   }
 }
 
+strong {
+  font-weight: 600;
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #555;
 }
 
 .primary {
