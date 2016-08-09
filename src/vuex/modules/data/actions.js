@@ -27,21 +27,21 @@ const addLocalRealtimeCollections = (result, index) => {
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
-  // let currentIndex
 
-  kuzzle
-    .listIndexes((error, result) => {
+  return new Promise((resolve, reject) => {
+    kuzzle.listIndexes((error, result) => {
       let indexesAndCollections = []
 
       if (error) {
-        return
+        return reject(new Error(error.message))
       }
 
       result.forEach((index) => {
-        let promise = new Promise((resolve, reject) => {
+        /* eslint-disable */
+        let promise = new Promise((resolveOne, rejectOne) => {
           kuzzle.listCollections(index, (error, result) => {
             if (error && index !== '%kuzzle') {
-              reject(new Error(error.message))
+              rejectOne(new Error(error.message))
               return
             }
             if (index !== '%kuzzle') {
@@ -52,17 +52,21 @@ export const listIndexesAndCollections = (store) => {
                 collections: result
               })
             }
-            resolve(indexesAndCollections)
+            resolveOne(indexesAndCollections)
           })
         })
         promises.push(promise)
+        /* eslint-enable */
       })
+
       Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
-      }).catch(() => {
-        return
+        resolve()
+      }).catch((error) => {
+        return reject(new Error(error.message))
       })
     })
+  })
 }
 
 export const getMapping = (store, index, collection) => {
