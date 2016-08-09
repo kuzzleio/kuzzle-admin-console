@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <div class="col s8 z-depth-1 open-search" v-show="displayBlockFilter">
+      <div class="col s11 m10 l8 z-depth-1 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
@@ -42,9 +42,9 @@
         @filters-display-block-filter="displayBlockFilter = true">
       </quick-filter>
 
-      <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s9 complex-search">
+      <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l9 complex-search">
         <div class="row">
-          <div class="col s7">
+          <div class="col s9 m7 l7">
             <div class="search-bar">
               <i class="fa fa-search search"></i>
               <div class="chip">

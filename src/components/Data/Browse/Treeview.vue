@@ -70,7 +70,6 @@
   margin-top: 16px;
   padding-left: 15px;
   list-style: none;
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
 li
