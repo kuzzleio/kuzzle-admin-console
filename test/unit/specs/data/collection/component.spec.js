@@ -26,11 +26,14 @@ describe('CreateCollection tests', () => {
       }
     })
 
-    it('should return a rejected promise', () => {
+    it('should return a rejected promise', (done) => {
+      sinon.stub(vm.$refs.create, 'createCollection').returns(Promise.resolve())
+      vm.$refs.create.doCreateCollection()
+
       setTimeout(() => {
-        vm.$refs.create.doCreateCollection()
         expect(vm.$refs.create.createCollection.called).to.be.ok
         expect(vm.$refs.create.$router.go.called).to.be.ok
+        done()
       }, 0)
     })
   })
