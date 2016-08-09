@@ -1,9 +1,9 @@
 <template>
-  <div class="col s4">
+  <div class="col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s11">
+        <div class="col s11 truncate">
           <!-- collection browse link -->
           <a href="#!"
              v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">

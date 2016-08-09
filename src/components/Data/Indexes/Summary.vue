@@ -7,18 +7,18 @@
 
 
     <div class="row">
-      <div class="col s3">
+      <div class="col s6 m4 l3">
 
         <div class="row">
-          <div class="col s6">Total documents</div>
+          <div class="col s6 truncate">Total documents</div>
           <div class="col s6 right-align">1 567</div>
         </div>
         <div class="row">
-          <div class="col s6">Index Size</div>
+          <div class="col s6 truncate">Index Size</div>
           <div class="col s6 right-align">64 mb</div>
         </div>
         <div class="row">
-          <div class="col s5">Auto refresh</div>
+          <div class="col s5 truncate">Auto refresh</div>
           <div class="col s7 right-align">
             <div class="switch">
               <label>
@@ -33,7 +33,7 @@
     </div>
 
     <div class="row">
-      <div class="col s8">
+      <div class="col s12 m10 l8">
 
         <div class="row actions">
           <div class="col s9">
