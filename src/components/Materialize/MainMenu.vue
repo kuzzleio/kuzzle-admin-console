@@ -18,6 +18,9 @@
 
           <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li>
+              Howdy <strong>{{user.id}}</strong>!
+            </li>
+            <li>
               <a @click="doLogout">Logout</a>
             </li>
           </ul>
@@ -28,10 +31,14 @@
 </template>
 
 <script>
+  import {user} from '../../vuex/modules/auth/getters'
   import {doLogout} from '../../vuex/modules/auth/actions'
 
   export default {
     vuex: {
+      getters: {
+        user
+      },
       actions: {
         doLogout
       }

@@ -1,65 +1,83 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
-import cookie from '../../../services/cookies'
-import {SET_CURRENT_USER} from './mutation-types'
+import {SessionUser} from '../../../models/SessionUser'
+import {SET_CURRENT_USER, SET_TOKEN_VALID} from './mutation-types'
 
 export const doLogin = (store, username, password) => {
+  let user
+
+  SessionUser.reset()
+
   return new Promise((resolve, reject) => {
     kuzzle
-      .login('local', {username, password}, '1h', (err, res) => {
-        if (err) {
-          return reject(err)
-        }
-        // TODO properly get user information via whoAmI
-        let user = {
-          _id: res._id,
-          jwt: res.jwt
-        }
-        let date = new Date()
-        date.setTime(date.getTime() + 60 * 60 * 1000)
-        cookie.set(`user=${JSON.stringify(user)}; expires=${date.toUTCString()}`)
+      .loginPromise('local', {username, password}, '10s')
+      .then(loginResult => {
+        user = new SessionUser(loginResult._id, loginResult.jwt)
+
+        return kuzzle.whoAmIPromise()
+      })
+      .then(KuzzleUser => {
+        user.params = KuzzleUser.content
+
+        return kuzzle.getMyRightsPromise()
+      })
+      .then(rights => {
+        user.rights = rights
+        user.store()
 
         store.dispatch(SET_CURRENT_USER, user)
+        store.dispatch(SET_TOKEN_VALID, true)
+
+        kuzzle.addListener('jwtTokenExpired', () => {
+          store.dispatch(SET_TOKEN_VALID, false)
+        })
+
         resolve()
+      })
+      .catch(error => {
+        reject(new Error(error.message))
       })
   })
 }
 
 export const loginFromCookie = (store, cb) => {
-  let user,
-    id
+  let user = new SessionUser()
+  let id
 
   if (kuzzle.state !== 'connected') {
     id = kuzzle.addListener('connected', () => {
       loginFromCookie(store, cb)
       kuzzle.removeListener('connected', id)
     })
+
     return
   }
-  user = cookie.get()
-  if (user) {
-    kuzzle.checkToken(user.jwt, (err, res) => {
-      if (err) {
+
+  if (!user.restore()) {
+    return cb()
+  }
+
+  kuzzle.checkTokenPromise(user.token)
+    .then(res => {
+      if (!res.valid) {
         store.dispatch(SET_CURRENT_USER, null)
-        cb()
         return
       }
 
-      if (res.valid) {
-        kuzzle.setJwtToken(user.jwt)
-        store.dispatch(SET_CURRENT_USER, user)
-      }
-
+      kuzzle.setJwtToken(user.token)
+      store.dispatch(SET_CURRENT_USER, user)
+    })
+    .catch(() => {
+      store.dispatch(SET_CURRENT_USER, null)
+    })
+    .finally(() => {
       cb()
     })
-  } else {
-    cb()
-  }
 }
 
 export const doLogout = (store) => {
   kuzzle.logout()
-  cookie.delete()
+  SessionUser.reset()
   store.dispatch(SET_CURRENT_USER, null)
   router.go({name: 'Login'})
 }

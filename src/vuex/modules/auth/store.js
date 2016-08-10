@@ -1,19 +1,19 @@
 import {
   SET_CURRENT_USER,
-  SET_CURRENT_USER_RIGHTS
+  SET_TOKEN_VALID
 } from './mutation-types'
 
 const state = {
   user: null,
-  rights: null
+  tokenValid: false
 }
 
 export const mutations = {
   [SET_CURRENT_USER] (state, user) {
     state.user = user
   },
-  [SET_CURRENT_USER_RIGHTS] (state, rights) {
-    state.rights = rights
+  [SET_TOKEN_VALID] (state, valid) {
+    state.tokenValid = valid
   }
 }
 
