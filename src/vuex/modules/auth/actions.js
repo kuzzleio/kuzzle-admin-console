@@ -40,11 +40,13 @@ export const loginFromCookie = (store) => {
           return Promise.resolve(user)
         }
 
+        store.dispatch(SET_CURRENT_USER, null)
         return Promise.resolve(null)
       })
   }
 
-  return Promise.resolve()
+  store.dispatch(SET_CURRENT_USER, null)
+  return Promise.resolve(null)
 }
 
 export const checkFirstAdmin = (store) => {

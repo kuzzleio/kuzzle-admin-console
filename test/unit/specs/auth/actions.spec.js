@@ -1,4 +1,4 @@
-import { testAction } from '../helper'
+import { testAction, testActionPromise } from '../helper'
 const actionsInjector = require('inject!../../../../src/vuex/modules/auth/actions')
 
 let triggerError = true
@@ -33,16 +33,16 @@ describe('doLogin action', () => {
   })
 })
 
-describe('loginFromCookie action', () => {
+describe.only('loginFromCookie action', () => {
   let kuzzleState = 'connecting'
   const actions = actionsInjector({
     '../../../services/kuzzle': {
       state: kuzzleState,
-      checkToken: (jwt, cb) => {
+      checkTokenPromise: () => {
         if (triggerError) {
-          cb({message: 'error'})
+          return Promise.reject(new Error('error from Kuzzle'))
         } else {
-          cb(null, {valid: true})
+          return Promise.resolve({valid: true})
         }
       },
       setJwtToken: sinon.mock(),
@@ -64,16 +64,20 @@ describe('loginFromCookie action', () => {
 
   it('should login user from cookie', (done) => {
     triggerError = false
-    testAction(actions.loginFromCookie, [], {}, [
+    testActionPromise(actions.loginFromCookie, [], {}, [
       { name: 'SET_CURRENT_USER', payload: [{ _id: 'foo', jwt: 'jwt' }] }
     ], done)
   })
 
   it('should not login user from cookie because the jwt token is wrong', (done) => {
     triggerError = true
-    testAction(actions.loginFromCookie, [], {}, [
+    testActionPromise(actions.loginFromCookie, [], {}, [
       { name: 'SET_CURRENT_USER', payload: [null] }
-    ], done)
+    ])
+      .catch((e) => {
+        expect(e.message).to.be.equal('error from Kuzzle')
+        done()
+      })
   })
 })
 
