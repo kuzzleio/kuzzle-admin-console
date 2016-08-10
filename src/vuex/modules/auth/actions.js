@@ -49,16 +49,14 @@ export const loginFromCookie = (store) => {
 
 export const checkFirstAdmin = (store) => {
   return kuzzle
-    .dataCollectionFactory('users', '%kuzzle')
-    .fetchAllDocumentsPromise()
+    .queryPromise({controller: 'admin', action: 'adminExists'}, {})
     .then((res) => {
-      if (res.total === 0) {
+      if (!res.result) {
         store.dispatch(SET_ADMIN_EXISTS, false)
+        return Promise.resolve()
       }
 
-      return Promise.resolve()
-    })
-    .catch(() => {
+      store.dispatch(SET_ADMIN_EXISTS, true)
       return Promise.resolve()
     })
 }

@@ -51,6 +51,11 @@ export default function createRoutes (router) {
       return
     }
 
+    if (transition.to.name === 'Signup' && adminAlreadyExists(store.state)) {
+      transition.redirect('/login')
+      return
+    }
+
     if (transition.to.name === 'Login' && isAuthenticated(store.state)) {
       transition.redirect(transition.from.path)
       return

@@ -22,21 +22,21 @@
         <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="signup">
           <div class="row">
             <div class="input-field col s12">
-              <input id="username" v-model="username" type="text" name="username"
+              <input id="username" v-model="username" type="text" name="username" required
                      class="validate"/>
               <label for="username">Username</label>
             </div>
           </div>
           <div class="row">
             <div class="input-field col s12">
-              <input v-model="password1" type="password" name="password1" id="pass1"
+              <input v-model="password1" type="password" name="password1" id="pass1" required
                      class="validate"/>
               <label for="pass1">Password</label>
             </div>
           </div>
           <div class="row">
             <div class="input-field col s12">
-              <input v-model="password2" type="password" name="password2" id="pass2"
+              <input v-model="password2" type="password" name="password2" id="pass2" required
                      class="validate"/>
               <label for="pass2">Password (confirmation)</label>
             </div>
@@ -96,10 +96,16 @@
   .message.error {
     margin-top: 25px;
   }
+
+  .preloader-wrapper {
+    width: 35px;
+    height: 35px;
+  }
 </style>
 
 <script>
   import kuzzle from '../services/kuzzle'
+  import { checkFirstAdmin } from '../vuex/modules/auth/actions'
 
   export default {
     name: 'Signup',
@@ -113,8 +119,18 @@
         waiting: false
       }
     },
+    vuex: {
+      actions: {
+        checkFirstAdmin
+      }
+    },
     methods: {
       signup () {
+        if (this.username === '' || this.password1 === '' || this.password2 === '') {
+          this.error = 'All fields are mandatory'
+          return
+        }
+
         if (this.password1 !== this.password2) {
           this.error = 'Password does not match'
           return
@@ -124,8 +140,11 @@
         this.waiting = true
 
         kuzzle
-          .security
-          .createFirstAdminPromise({username: this.username, password: this.password1}, {reset: true})
+          .queryPromise(
+            {controller: 'admin', action: 'createFirstAdmin'},
+            {_id: this.username, body: {username: this.username, password: this.password1, reset: true}})
+          .then(() => this.checkFirstAdmin())
+          .then(() => this.$router.go({name: 'Login'}))
       }
     }
   }
