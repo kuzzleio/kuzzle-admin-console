@@ -1,4 +1,4 @@
-import { testAction } from '../helper'
+import {testAction} from '../helper'
 const actionsInjector = require('inject!../../../../src/vuex/modules/data/actions')
 
 describe('listIndexesAndCollections action', () => {
@@ -17,23 +17,10 @@ describe('listIndexesAndCollections action', () => {
         if (triggerError[1]) {
           cb({message: 'error'})
         } else {
-          cb(null, ['collection1', 'collection2'])
+          cb(null, {stored: ['collection1', 'collection2']})
         }
       }
     }
-  })
-
-  it('should set an error on listIndexes', (done) => {
-    testAction(actions.listIndexesAndCollections, [], {}, [
-      { name: 'SET_ERROR', payload: ['error'] }
-    ], done)
-  })
-
-  it('should set an error on listCollections', (done) => {
-    triggerError = [false, true]
-    testAction(actions.listIndexesAndCollections, [], {}, [
-      { name: 'SET_ERROR', payload: ['error'] }
-    ], done)
   })
 
   it('should get the collections list per indexes but not %kuzzle', (done) => {
@@ -43,19 +30,18 @@ describe('listIndexesAndCollections action', () => {
         [
           {
             name: 'index1',
-            collections: [
-              'collection1',
-              'collection2'
-            ]
+            collections: {
+              stored: ['collection1', 'collection2'],
+              realtime: [undefined]
+            }
           },
           {
             name: 'index2',
-            collections: [
-              'collection1',
-              'collection2'
-            ]
-          }
-        ]
+            collections: {
+              stored: ['collection1', 'collection2'],
+              realtime: [undefined]
+            }
+          }]
       ]}
     ], done)
   })
@@ -78,12 +64,6 @@ describe('getMapping test action', () => {
         }
       }
     }
-  })
-
-  it('should set an error on getMapping', (done) => {
-    testAction(actions.getMapping, [], {}, [
-      {name: 'SET_ERROR', payload: ['error']}
-    ], done)
   })
 
   it('should get the mapping properly', (done) => {

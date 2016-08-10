@@ -59,13 +59,10 @@
       }
     },
     ready () {
-      window.document.addEventListener('keydown', evt => {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.close()
-        }
-      })
+      window.document.addEventListener('keydown', this.handleEsc)
+    },
+    destroyed () {
+      window.document.removeEventListener('keydown', this.handleEsc)
     },
     computed: {
       computedClasses () {
@@ -84,6 +81,13 @@
       }
     },
     methods: {
+      handleEsc (evt) {
+        evt = evt || window.event
+
+        if (evt.keyCode === ESC_KEY) {
+          this.close()
+        }
+      },
       open () {
         this.active = true
       },
@@ -94,7 +98,11 @@
   }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .modal-footer {
+    padding: 8px 26px;
+    height: 66px;
+  }
   .modal {
     &.bottom-modal {
       z-index: 1003;
@@ -135,7 +143,6 @@
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 
-
     -webkit-animation-duration: 0.3s;
     animation-duration: 0.3s;
 
@@ -158,7 +165,6 @@
   .modal-bottom-transition {
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
-
 
     -webkit-animation-duration: 0.3s;
     animation-duration: 0.3s;

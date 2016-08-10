@@ -1,36 +1,77 @@
-import { testAction } from '../helper'
-import {
-  TOGGLE_SELECT_DOCUMENT,
-  SET_PAGINATION
-} from '../../../../src/vuex/modules/collection/mutation-types'
-import { toggleSelectDocuments, setPagination } from '../../../../src/vuex/modules/collection/actions'
+import actionsInjector from 'inject!../../../../src/vuex/modules/collection/actions'
+import {testActionPromise} from '../helper'
 
-describe('collection actions', () => {
-  describe('toggleSelectDocuments', () => {
-    it('should do nothing if id is undefined', (done) => {
-      testAction(toggleSelectDocuments, [], {}, [], done)
+describe('Collections test', () => {
+  describe('Create collection test', () => {
+    let triggerError = [true, true]
+    let actions = actionsInjector({
+      '../../../services/kuzzle': {
+        dataCollectionFactory: () => {
+          return {
+            create: cb => {
+              if (triggerError[0]) {
+                cb({message: 'mock create error'})
+              } else {
+                cb(null, {stored: {}, realtime: {}})
+              }
+            },
+            dataMappingFactory: (mapping) => {
+              return {
+                apply: cb => {
+                  if (triggerError[1]) {
+                    cb({message: 'mock apply error'})
+                  } else {
+                    cb()
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     })
 
-    it('should dispatch toggle with right id', (done) => {
-      testAction(toggleSelectDocuments, ['toto'], {}, [{ name: TOGGLE_SELECT_DOCUMENT, payload: ['toto'] }], done)
-    })
-  })
-
-  describe('setPagination', () => {
-    it('should do nothing if missing parameters', (done) => {
-      testAction(setPagination, [], {}, [], done)
+    beforeEach(() => {
+      // eslint-disable-next-line no-undef
+      localStorage.clear()
     })
 
-    it('should do nothing if missing one parameter', (done) => {
-      testAction(setPagination, [1], {}, [], done)
+    it('should set an error because collection name is invalid', (done) => {
+      testActionPromise(actions.createCollection, [], {}, [], done).catch(e => {
+        expect(e.message).to.equals('Invalid collection name')
+        done()
+      })
     })
 
-    it('should dispatch event with correct from/size with current page 1', (done) => {
-      testAction(setPagination, [1, 10], {}, [{ name: SET_PAGINATION, payload: [{from: 0, size: 10}] }], done)
+    it('should set an error because create() has an error', (done) => {
+      testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], {}, [], done).catch(e => {
+        expect(e.message).to.equals('mock create error')
+        done()
+      })
     })
 
-    it('should dispatch event with correct from/size with current page 10', (done) => {
-      testAction(setPagination, [10, 10], {}, [{ name: SET_PAGINATION, payload: [{from: 90, size: 10}] }], done)
+    it('should set an error because apply() has an error', (done) => {
+      triggerError = [false, true]
+      testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], {}, [], done).catch(e => {
+        expect(e.message).to.equals('mock apply error')
+        done()
+      })
+    })
+
+    it('should create a persisted collection', (done) => {
+      triggerError = [false, false]
+      testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], {}, [
+        {name: 'ADD_STORED_COLLECTION', payload: ['index', 'collection']}
+      ], done)
+    })
+
+    it('should create a realtime collection', (done) => {
+      triggerError = [false, false]
+      testActionPromise(actions.createCollection, ['index', 'collection', undefined, true], {}, [
+        {name: 'ADD_REALTIME_COLLECTION', payload: ['index', 'collection']}
+      ], done)
+      // eslint-disable-next-line no-undef
+      expect(localStorage.getItem('realtimeCollections')).to.deep.equals('[{index: "index", collection: "collection"}]')
     })
   })
 })

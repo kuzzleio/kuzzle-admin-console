@@ -1,19 +1,21 @@
 <template>
-  <div class="col s4">
+  <div class="col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s8">
+        <div class="col s11 truncate">
           <!-- index browse link -->
-          <a href="#!">
+          <a
+            v-link="{name: 'DataIndexSummary', params: {index: index}}"
+            href="#!">
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
-            <span>My index</span>
+            <span>{{index}}</span>
           </a>
         </div>
 
-        <div class="col s4 right-align">
+        <div class="col s1 right-align">
           <!-- actions related to the index -->
-          <index-dropdown class="icon-small icon-black"></index-dropdown>
+          <index-dropdown :index="index" class="icon-small icon-black"></index-dropdown>
         </div>
 
 
@@ -22,15 +24,15 @@
       <!-- index summary, can be removed in first time -->
       <div class="card-content">
         <div class="row">
-          <div class="col s6">Total documents</div>
+          <div class="col s6 truncate">Total documents</div>
           <div class="col s6 right-align">1 567</div>
         </div>
         <div class="row">
-          <div class="col s6">Index Size</div>
+          <div class="col s6 truncate">Index Size</div>
           <div class="col s6 right-align">64 mb</div>
         </div>
         <div class="row">
-          <div class="col s5">Auto refresh</div>
+          <div class="col s5 truncate">Auto refresh</div>
           <div class="col s7 right-align">
             <div class="switch">
               <label>
@@ -54,14 +56,16 @@
 
   export default {
     name: 'IndexBoxed',
-    props: ['index'],
+    props: {
+      index: String
+    },
     components: {
       IndexDropdown
     }
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   .card-title {
     font-size: 22px;
     padding: 1rem;

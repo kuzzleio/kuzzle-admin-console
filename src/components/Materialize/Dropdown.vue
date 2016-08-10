@@ -8,17 +8,20 @@
   </span>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+  span {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  }
   a.dropdown-button {
     cursor: pointer;
   }
 
-  .fa-ellipsis-v {
+  .action {
     padding: 0 7px;
   }
 
   .icon-small {
-    .fa-ellipsis-v {
+    .action {
       font-size: 1.2rem;
       vertical-align: 2px;
     }
@@ -32,7 +35,7 @@
   }
 
   .icon-black {
-    .fa-ellipsis-v {
+    .action {
       color: #333;
     }
   }

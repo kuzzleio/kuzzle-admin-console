@@ -1,10 +1,6 @@
 main {
   padding-left: 240px;
 
-  > section {
-    margin-top: 50px;
-  }
-
   .view {
     h1 {
       margin-top: 0;
@@ -19,30 +15,55 @@ main {
   }
 }
 
-.collection {
-  overflow: inherit;
+.list-document {
+  .no-document {
+    text-align: center;
+  }
+  .collection {
+    overflow: inherit;
 
-  .collection-item {
-    label {
-      color: black;
-      line-height: 21px;
-    }
-    .actions {
-      margin-top: 1px;
-      font-size: 1.3em;
-
-      .action {
-        cursor: pointer;
-        padding: 0 5px 0 5px;
-        margin-left: 5px;
+    .collection-item {
+      label {
+        color: black;
+        line-height: 21px;
       }
+      .additional-attribute {
+        color: grey;
+        font-style: italic;
+      }
+      .actions {
+        margin-top: 1px;
+        font-size: 1.3em;
+
+        .action {
+          cursor: pointer;
+          padding: 0 5px 0 5px;
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+
+html{
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: normal;
+  background-color: #FAFAFA;
+  color: #333;
+}
+
+#toast-container {
+  .toast {
+    &.error {
+      color: #fff;
+      background-color: $error-color;
     }
   }
 }
 
 .side-nav {
   top: $navbar-height;
-  overflow: hidden;
+  height: 95%;
 }
 
 @media #{$medium-and-down} {
@@ -67,4 +88,9 @@ nav .input-field label i {
 
 .subnav ul a {
   color: #000000
+}
+
+.error {
+  color: $error-color;
+  font-weight: bold;
 }

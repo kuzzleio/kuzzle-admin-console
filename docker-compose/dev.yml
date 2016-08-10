@@ -1,5 +1,5 @@
 proxy:
-  image: kuzzleio/proxy:alpine
+  image: kuzzleio/proxy:develop
   ports:
     - "7511:7511"
     - "7512:7512"
@@ -41,4 +41,4 @@ redis:
   image: redis:3.0-alpine
 
 elasticsearch:
-  image: kuzzleio/elasticsearch:2.2
+  image: kuzzleio/elasticsearch:2.3.4

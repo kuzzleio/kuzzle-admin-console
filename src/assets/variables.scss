@@ -1,17 +1,32 @@
 /* 1. Colors
    ========================================================================== */
 
-$primary-color: #00757f;
+$primary-color: #00757F;
+$secondary-color: #45b29d;
+$tertiary-color: #efc94c;
+
 
 /* 3. Buttons
    ========================================================================== */
-
 $button-padding: 0 1rem !default;
 
 /* 9. Fonts
    ========================================================================== */
 
 $roboto-font-path: '../../node_modules/materialize-css/fonts/roboto/' !default;
+$raleway-font-path: './fonts/raleway/';
+
+
+/* 11. Global
+   ========================================================================== */
+
+// Media Query Ranges
+$small-screen-up: 1201px;
+$medium-screen-up: 1760px;
+$large-screen-up: 2000px;
+$small-screen: 1000px;
+$medium-screen: 1400px;
+$large-screen: 1761px;
 
 /* 13. Navigation Bar
    ========================================================================== */

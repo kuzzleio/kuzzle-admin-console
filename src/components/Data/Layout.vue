@@ -14,31 +14,35 @@
         </nav>
       </li>
       <li>
-        <treeview :tree="indexesAndCollections"></treeview>
+        <treeview
+          :route-name="$route.name"
+          :index="selectedIndex"
+          :collection="selectedCollection"
+          :tree="indexesAndCollections">
+        </treeview>
       </li>
     </ul>
   </aside>
-  <section>
-    <nav class="subnav">
-      <div class="container">
-        <ul>
-          <li v-link-active>
-            <!--<a v-link="{name: 'SummaryData', activeClass: 'active'}">Summary</a>-->
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <section class="breadcrumb-view">
+    <breadcrumb
+      :route-name="$route.name"
+      :index="selectedIndex"
+      :collection="selectedCollection"
+      :tree="indexesAndCollections">
+    </breadcrumb>
+
     <section class="view">
-      <router-view></router-view>
+      <router-view
+        :index="selectedIndex"
+        :collection="selectedCollection">
+      </router-view>
     </section>
   </section>
 </template>
 
 <style lang="scss" scoped>
-  .subnav {
-    position: fixed;
-    z-index: 100;
-    top: 50px;
+  .breadcrumb-view {
+    margin-top: 50px;
   }
   section > section {
     margin-top: 50px;
@@ -47,14 +51,15 @@
 
 <script>
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
-  import {getError} from '../../vuex/modules/common/getters'
-  import {indexesAndCollections} from '../../vuex/modules/data/getters'
+  import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Browse/Treeview'
+  import Breadcrumb from './Breadcrumb'
 
   export default {
     name: 'DataLayout',
     components: {
-      Treeview
+      Treeview,
+      Breadcrumb
     },
     ready () {
       this.listIndexesAndCollections()
@@ -64,7 +69,8 @@
         listIndexesAndCollections
       },
       getters: {
-        error: getError,
+        selectedIndex,
+        selectedCollection,
         indexesAndCollections
       }
     }
