@@ -22,7 +22,7 @@
                 <div class="input-field">
                   <button tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
                     <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
-                    {{settingsOpen ? 'Hide settings' : 'Display settings'}}</button>
+                    {{settingsOpen ? 'Hide settings' : 'Show settings'}}</button>
                 </div>
             </div>
           </div>
@@ -36,7 +36,7 @@
             <p class="col s12">
               <i class="fa fa-exclamation-triangle " aria-hidden="true"></i>
               Settings allow you to define mappings which enable cool functionalities such as geo spacial researches.
-              <a href="#!" @click.prevent="settingsOpen = true">click here to display settings</a>
+              <a href="#!" @click.prevent="settingsOpen = true">click here to show settings</a>
             </p>
           </div>
 
