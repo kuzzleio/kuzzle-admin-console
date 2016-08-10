@@ -105,7 +105,7 @@
 
 <script>
   import kuzzle from '../services/kuzzle'
-  import { checkFirstAdmin } from '../vuex/modules/auth/actions'
+  import { setFirstAdmin } from '../vuex/modules/auth/actions'
 
   export default {
     name: 'Signup',
@@ -121,7 +121,7 @@
     },
     vuex: {
       actions: {
-        checkFirstAdmin
+        setFirstAdmin
       }
     },
     methods: {
@@ -143,8 +143,9 @@
           .queryPromise(
             {controller: 'admin', action: 'createFirstAdmin'},
             {_id: this.username, body: {username: this.username, password: this.password1, reset: true}})
-          .then(() => this.checkFirstAdmin())
+          .then(() => this.setFirstAdmin(true))
           .then(() => this.$router.go({name: 'Login'}))
+          .catch(() => this.$router.go({name: 'Login'}))
       }
     }
   }

@@ -61,6 +61,10 @@ export const checkFirstAdmin = (store) => {
     })
 }
 
+export const setFirstAdmin = (store, exists) => {
+  store.dispatch(SET_ADMIN_EXISTS, exists)
+}
+
 export const doLogout = (store) => {
   kuzzle.logout()
   cookie.delete()
