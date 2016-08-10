@@ -89,17 +89,18 @@
         this.errorTruncated = !this.errorTruncated
       },
       tryCreateIndex (index) {
-        if (index.trim()) {
-          this.createIndex(index)
-            .then(() => {
-              this.index = ''
-              this.error = ''
-              this.$broadcast('modal-close', this.id)
-            })
-            .catch((err) => {
-              this.error = err.message
-            })
+        if (!index.trim()) {
+          return
         }
+        this.createIndex(index)
+          .then(() => {
+            this.index = ''
+            this.error = ''
+            this.$broadcast('modal-close', this.id)
+          })
+          .catch(err => {
+            this.error = err.message
+          })
       }
     },
     data () {

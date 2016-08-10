@@ -84,6 +84,9 @@
       }
 
       window.addEventListener('resize', this.resizeIndicator)
+    },
+    destroyed () {
+      window.removeEventListener('resize', this.resizeIndicator)
     }
   }
 </script>

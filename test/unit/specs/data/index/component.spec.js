@@ -5,6 +5,8 @@ import store from '../../../../../src/vuex/store'
 
 let ModalCreateInjector = require('!!vue?inject!../../../../../src/components/Data/Indexes/ModalCreate')
 
+let sandbox = sinon.sandbox.create()
+
 describe('ModalCreate tests', () => {
   let ModalCreate = ModalCreateInjector({
     '../../Materialize/Modal': mockedComponent
@@ -19,37 +21,67 @@ describe('ModalCreate tests', () => {
         components: { ModalCreate },
         replace: false,
         store: store
-      }).$mount()
+      }).$mount().$refs.modal
     })
 
-    it('should call the createIndex method', (done) => {
-      let index = 'testIndex'
-      vm.$refs.modal.createIndex = sinon.stub().returns(Promise.resolve())
-      vm.$refs.modal.$broadcast = sinon.spy()
-      vm.$refs.modal.tryCreateIndex(index)
-
-      setTimeout(() => {
-        expect(vm.$refs.modal.createIndex.called).to.be.ok
-        expect(vm.$refs.modal.createIndex.calledWith(index)).to.be.ok
-        expect(vm.$refs.modal.index).to.be.equal('')
-        expect(vm.$refs.modal.error).to.be.equal('')
-        expect(vm.$refs.modal.$broadcast.called).to.be.ok
-        expect(vm.$refs.modal.$broadcast.calledWith('modal-close', vm.$refs.modal.id)).to.be.ok
-        done()
-      }, 0)
+    afterEach(() => {
+      sandbox.restore()
     })
 
-    it('should catch the message on error', (done) => {
-      let index = 'testIndex'
-      vm.$refs.modal.createIndex = sinon.stub().returns(Promise.reject(new Error('message')))
-      vm.$refs.modal.tryCreateIndex(index)
+    describe('tryCreateIndex', () => {
+      it('should not call the createIndex method if index is empty', (done) => {
+        sandbox.stub(vm, 'createIndex').returns(Promise.resolve())
 
-      setTimeout(() => {
-        expect(vm.$refs.modal.createIndex.called).to.be.ok
-        expect(vm.$refs.modal.createIndex.calledWith(index)).to.be.ok
-        expect(vm.$refs.modal.error).to.be.equal('message')
-        done()
-      }, 0)
+        vm.tryCreateIndex('')
+
+        setTimeout(() => {
+          expect(vm.createIndex.called, 'create index called').to.be.not.ok
+          done()
+        }, 0)
+      })
+
+      it('should call the createIndex method', (done) => {
+        vm.createIndex = sandbox.stub(vm, 'createIndex').returns(Promise.resolve())
+
+        vm.tryCreateIndex('testIndex')
+
+        setTimeout(() => {
+          expect(vm.createIndex.calledWith('testIndex'), 'create index called').to.be.ok
+          done()
+        }, 0)
+      })
+
+      it('should call the reset fields if success', (done) => {
+        let index = 'testIndex'
+        vm.index = index
+        vm.error = 'foo'
+        vm.createIndex = sandbox.stub(vm, 'createIndex').returns(Promise.resolve())
+        vm.$broadcast = sandbox.stub(vm, '$broadcast')
+
+        vm.tryCreateIndex(index)
+
+        setTimeout(() => {
+          expect(vm.index, 'index emptyed').to.equal('')
+          expect(vm.error, 'error emptyed').to.equal('')
+          expect(vm.$broadcast.called, 'event modal-close broadcasted').to.be.ok
+          done()
+        }, 0)
+      })
+
+      it('should catch the message on error', (done) => {
+        let index = 'testIndex'
+        vm.createIndex = sandbox.stub(vm, 'createIndex').returns(Promise.reject(new Error('message')))
+        vm.$broadcast = sandbox.stub(vm, '$broadcast')
+
+        vm.tryCreateIndex(index)
+
+        setTimeout(() => {
+          expect(vm.createIndex.called).to.be.ok
+          expect(vm.createIndex.calledWith(index)).to.be.ok
+          expect(vm.error).to.be.equal('message')
+          done()
+        }, 0)
+      })
     })
   })
 })

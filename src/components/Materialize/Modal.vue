@@ -59,13 +59,10 @@
       }
     },
     ready () {
-      window.document.addEventListener('keydown', evt => {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.close()
-        }
-      })
+      window.document.addEventListener('keydown', this.handleEsc)
+    },
+    destroyed () {
+      window.document.removeEventListener('keydown', this.handleEsc)
     },
     computed: {
       computedClasses () {
@@ -84,6 +81,13 @@
       }
     },
     methods: {
+      handleEsc (evt) {
+        evt = evt || window.event
+
+        if (evt.keyCode === ESC_KEY) {
+          this.close()
+        }
+      },
       open () {
         this.active = true
       },

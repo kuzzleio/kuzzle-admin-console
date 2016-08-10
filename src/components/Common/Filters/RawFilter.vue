@@ -8,7 +8,7 @@
     >
     </json-editor>
     <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light" @click.prevent="rawSearch">Search</button>
+      <button type="submit" class="btn waves-effect waves-light" @click.prevent="rawSearch">{{labelSearchButton}}</button>
       <button class="btn waves-effect waves-light" @click="resetRawSearch">Reset</button>
       <span class="error" v-if="jsonInvalid">Your JSON is not valid</span>
     </div>
@@ -33,6 +33,16 @@
         'default' () {
           return {}
         }
+      },
+      labelSearchButton: {
+        type: String,
+        required: false,
+        'default': 'search'
+      },
+      sortingEnabled: {
+        type: Boolean,
+        required: false,
+        'default': true
       }
     },
     components: {
@@ -63,7 +73,7 @@
         if (this.basicFilterForm.basic) {
           this.filters.raw = this.formatFromBasicSearch(this.basicFilterForm.basic)
         }
-        if (this.basicFilterForm.sorting) {
+        if (this.sortingEnabled && this.basicFilterForm.sorting) {
           this.filters.raw = {...this.filters.raw, sort: this.formatSort(this.basicFilterForm.sorting)}
         }
 

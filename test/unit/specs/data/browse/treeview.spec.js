@@ -57,6 +57,10 @@ describe('IndexBranch component', () => {
         name: 'DataCollectionBrowse',
         component: TestComponent
       },
+      '/:index/:collection/watch': {
+        name: 'DataCollectionWatch',
+        component: TestComponent
+      },
       '/:index/create': {
         name: 'DataCreateCollection',
         component: {}
@@ -69,57 +73,91 @@ describe('IndexBranch component', () => {
     $vm = router.app.$refs.routerview.$refs.indexbranch
   })
 
-  it('should correctly compute collections inside an index', () => {
-    expect($vm.collectionCount(tree)).to.equal(9)
+  describe('getRelativeLink', () => {
+    it('should correctly compute link for persisted collection', () => {
+      let isRealtime = false
+      $vm.routeName = 'DataCollectionSummary'
+      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionSummary')
 
-    tree.collections.stored.push('toto')
-    expect($vm.collectionCount(tree)).to.equal(10)
+      $vm.routeName = 'DataCollectionWatch'
+      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
 
-    expect($vm.collectionCount({name: 'empty-index'})).to.equal(0)
+      $vm.routeName = 'DataCollectionBrowse'
+      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionBrowse')
+    })
+
+    it('should correctly compute link for realtime collection', () => {
+      let isRealtime = true
+      $vm.routeName = 'DataCollectionSummary'
+      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionSummary')
+
+      $vm.routeName = 'DataCollectionWatch'
+      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+
+      $vm.routeName = 'DataCollectionBrowse'
+      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+    })
   })
 
-  it('should correctly toggle index branch', () => {
-    expect($vm.open).to.equal(false)
+  describe('collectionCount', () => {
+    it('should correctly compute collections inside an index', () => {
+      expect($vm.collectionCount(tree)).to.equal(9)
 
-    $vm.toggleBranch()
-    expect($vm.open).to.equal(true)
+      tree.collections.stored.push('toto')
+      expect($vm.collectionCount(tree)).to.equal(10)
+
+      expect($vm.collectionCount({name: 'empty-index'})).to.equal(0)
+    })
   })
 
-  it('should correctly determine whether an index is active', () => {
-    let indexName = 'index'
-    $vm.index = indexName
-    expect($vm.isIndexActive(indexName)).to.equal(true)
+  describe('open', () => {
+    it('should correctly toggle index branch', () => {
+      expect($vm.open).to.equal(false)
 
-    $vm.index = 'tata'
-    expect($vm.isIndexActive(indexName)).to.equal(false)
+      $vm.toggleBranch()
+      expect($vm.open).to.equal(true)
+    })
 
-    $vm.collection = 'titi'
-    expect($vm.isIndexActive(indexName)).to.equal(false)
+    it('should open when ready with active route', () => {
+      $vm.index = 'index'
+      $vm.collection = 'collection'
+      $vm.$options.ready[0].call($vm)
+      expect($vm.open).to.equal(false)
+
+      $vm.index = 'kuzzle-bo-testindex'
+      $vm.collection = ''
+      $vm.$options.ready[0].call($vm)
+      expect($vm.open).to.equal(true)
+
+      $vm.index = 'kuzzle-bo-testindex'
+      $vm.collection = 'collection'
+      $vm.$options.ready[0].call($vm)
+      expect($vm.open).to.equal(true)
+    })
   })
 
-  it('should correctly determine whether a collection is active', () => {
-    let collectionName = 'collection'
-    $vm.collection = collectionName
-    expect($vm.isCollectionActive(collectionName)).to.equal(true)
+  describe('isIndexActive', () => {
+    it('should correctly determine whether an index is active', () => {
+      let indexName = 'index'
+      $vm.index = indexName
+      expect($vm.isIndexActive(indexName)).to.equal(true)
 
-    $vm.collection = 'tutu'
-    expect($vm.isCollectionActive(collectionName)).to.equal(false)
+      $vm.index = 'tata'
+      expect($vm.isIndexActive(indexName)).to.equal(false)
+
+      $vm.collection = 'titi'
+      expect($vm.isIndexActive(indexName)).to.equal(false)
+    })
   })
 
-  it('should open when ready with active route', () => {
-    $vm.index = 'index'
-    $vm.collection = 'collection'
-    $vm.$options.ready[0].call($vm)
-    expect($vm.open).to.equal(false)
+  describe('isCollectionActive', () => {
+    it('should correctly determine whether a collection is active', () => {
+      let collectionName = 'collection'
+      $vm.collection = collectionName
+      expect($vm.isCollectionActive(collectionName)).to.equal(true)
 
-    $vm.index = 'kuzzle-bo-testindex'
-    $vm.collection = ''
-    $vm.$options.ready[0].call($vm)
-    expect($vm.open).to.equal(true)
-
-    $vm.index = 'kuzzle-bo-testindex'
-    $vm.collection = 'collection'
-    $vm.$options.ready[0].call($vm)
-    expect($vm.open).to.equal(true)
+      $vm.collection = 'tutu'
+      expect($vm.isCollectionActive(collectionName)).to.equal(false)
+    })
   })
 })

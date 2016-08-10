@@ -20,9 +20,10 @@ describe('doLogin action', () => {
   })
 
   it('should set an error on login', (done) => {
-    testAction(actions.doLogin, ['user', 'pwd'], {}, [
-      { name: 'SET_ERROR', payload: ['error'] }
-    ], done)
+    testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
+      expect(e.message).to.equals('error')
+      done()
+    })
   })
 
   it('should login a user', (done) => {

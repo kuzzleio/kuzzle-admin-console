@@ -9,14 +9,16 @@
     <ul class="collections">
       <li v-for="collectionTree in indexTree.collections.stored | orderBy 1">
         <a class="tree-item truncate"
-           v-link="{name: 'DataCollectionBrowse', params: {index: indexTree.name, collection: collectionTree}}"
+           v-link="{name: getRelativeLink(false), params: {index: indexTree.name, collection: collectionTree}}"
            :class="{ 'active': isCollectionActive(collectionTree) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
            {{collectionTree}}
          </a>
       </li>
       <li v-for="collectionTree in indexTree.collections.realtime | orderBy 1">
-        <a class="tree-item truncate">
+        <a class="tree-item truncate"
+           v-link="{name: getRelativeLink(true), params: {index: indexTree.name, collection: collectionTree}}"
+           :class="{ 'active': isCollectionActive(collectionTree) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
           {{collectionTree}}
         </a>
@@ -30,6 +32,7 @@ export default {
   props: {
     index: String,
     collection: String,
+    routeName: String,
     indexTree: Object
   },
   data: function () {
@@ -42,6 +45,17 @@ export default {
     toggleBranch () {
       // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
+    },
+    getRelativeLink (isRealtime) {
+      switch (this.routeName) {
+        case 'DataCollectionSummary':
+        case 'DataCollectionWatch':
+          return this.routeName
+        case 'DataCollectionBrowse':
+          return isRealtime ? 'DataCollectionWatch' : this.routeName
+        default:
+          return 'DataCollectionBrowse'
+      }
     },
     collectionCount (index) {
       let count = 0
