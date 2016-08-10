@@ -3,6 +3,7 @@ proxy:
   ports:
     - "7511:7511"
     - "7512:7512"
+    - "7513:7513"
 
 backoffice:
   image: kuzzleio/bo-test:alpine

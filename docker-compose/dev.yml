@@ -4,6 +4,7 @@ proxy:
     - "7511:7511"
     - "7512:7512"
     - "8083:8080"
+    - "7513:7513"
 
 backoffice:
   image: kuzzleio/bo-dev:alpine
