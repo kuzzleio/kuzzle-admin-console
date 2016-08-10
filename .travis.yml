@@ -1,8 +1,4 @@
 sudo: required
-dist: trusty
-language: node_js
-group: stable
-os: linux
 
 services:
 - docker
@@ -11,7 +7,10 @@ env:
   DOCKER_COMPOSE_VERSION: 1.4.2
 
 before_install:
-  - echo https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m`
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
 
 before_script:
   - "curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash"
