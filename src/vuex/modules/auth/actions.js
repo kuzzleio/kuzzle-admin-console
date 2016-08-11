@@ -57,6 +57,7 @@ export const loginFromCookie = (store, cb) => {
   }
 
   if (!user) {
+    store.dispatch(SET_CURRENT_USER, SessionUser())
     return cb()
   }
 
@@ -82,5 +83,6 @@ export const doLogout = (store) => {
   kuzzle.logout()
   userCookies.delete()
   store.dispatch(SET_CURRENT_USER, SessionUser())
+  store.dispatch(SET_TOKEN_VALID, false)
   router.go({name: 'Login'})
 }
