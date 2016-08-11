@@ -46,6 +46,7 @@
     "express": "4.14.0",
     "express-handlebars": "3.0.0",
     "font-awesome": "^4.5.0",
+    "fs": "0.0.2",
     "highcharts": "^4.2.3",
     "jsonformatter": "^0.6.0",
     "kuzzle-sdk": "2.0.0",
@@ -56,6 +57,7 @@
     "rc": "^1.1.6",
     "serve-favicon": "2.3.0",
     "socket.io": "1.4.8",
+    "tls": "0.0.1",
     "tv4": "1.2.7"
   },
   "devDependencies": {

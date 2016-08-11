@@ -194,8 +194,8 @@ module.exports = function makeWebpackConfig () {
   config.plugins = [
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new webpack.DefinePlugin({KUZZLE_URL: JSON.stringify(process.env.KUZZLE_URL)})
+    new webpack.NoErrorsPlugin()
+
     /**
      * We'll use the HtmlWebpackPlugin once all the module dependencies are
      * expressed as require() calls.
@@ -216,7 +216,7 @@ module.exports = function makeWebpackConfig () {
 
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
       // Dedupe modules in the output
-      new webpack.optimize.DedupePlugin(),
+      //new webpack.optimize.DedupePlugin(),
 
       // Reference: http://webpack.github.io/docs/list-of-plugins.html#uglifyjsplugin
       // Minify all javascript, switch loaders to minimizing mode
