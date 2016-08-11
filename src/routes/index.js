@@ -21,7 +21,7 @@ export default function createRoutes (router) {
           },
           subRoutes: SecuritySubRoutes
         },
-        '/data': {
+        '/': {
           name: 'Data',
           component (resolve) {
             require(['../components/Data/Layout'], resolve)

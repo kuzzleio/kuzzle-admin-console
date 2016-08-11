@@ -7,12 +7,19 @@ main {
       font-size: 3rem;
     }
   }
+}
 
-  .wrapper {
-    padding-left: 20px;
-    padding-top: 20px;
+.wrapper {
+  padding: 20px;
+}
 
-  }
+/* remove yellow effect on chrome when autofill inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-transition: color 9999s ease-out, background-color 9999s ease-out;
+  -webkit-transition-delay: 9999s;
 }
 
 .list-document {
@@ -45,7 +52,7 @@ main {
   }
 }
 
-html{
+html {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: normal;
   background-color: #FAFAFA;

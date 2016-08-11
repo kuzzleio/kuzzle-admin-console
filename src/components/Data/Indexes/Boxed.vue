@@ -9,7 +9,7 @@
             v-link="{name: 'DataIndexSummary', params: {index: index}}"
             href="#!">
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
-            <span>{{index}}</span>
+            <span class="name">{{index}}</span>
           </a>
         </div>
 
@@ -66,6 +66,9 @@
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+  .name {
+    font-family: "Roboto", sans-serif;
+  }
   .card-title {
     font-size: 22px;
     padding: 1rem;
