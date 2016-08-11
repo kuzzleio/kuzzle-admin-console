@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { highlight } from '../../../filters/highlight.filter'
+
 export default {
   props: {
     index: String,
@@ -40,6 +42,9 @@ export default {
     return {
       open: false
     }
+  },
+  filters: {
+    highlight
   },
   methods: {
 
