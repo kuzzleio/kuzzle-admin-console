@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import store from '../../../../../src/vuex/store'
-import { mockedComponent } from '../../helper'
+import {mockedComponent} from '../../helper'
 
 let ListInjector = require('!!vue?inject!../../../../../src/components/Security/Users/List')
 
@@ -47,9 +47,6 @@ describe('Users list', () => {
     describe('allChecked', () => {
       beforeEach(() => {
         List = ListInjector({
-          '../../../vuex/modules/common/crudlDocument/getters': {
-            documents: sinon.stub().returns([{id: 'doc1'}, {id: 'doc2'}])
-          },
           './UserItem': mockedComponent,
           '../../Common/CrudlDocument': mockedComponent
         })
@@ -70,6 +67,7 @@ describe('Users list', () => {
 
       it('should return true if there is the same documents number in list and in selectedDocuments', () => {
         vm.$refs.list.selectedDocuments = ['doc1', 'doc2']
+        vm.$refs.list.documents = vm.$refs.list.selectedDocuments
         expect(vm.$refs.list.allChecked).to.be.equal(true)
       })
     })
@@ -111,9 +109,6 @@ describe('Users list', () => {
 
         it('should add all documents in selected documents', () => {
           List = ListInjector({
-            '../../../vuex/modules/common/crudlDocument/getters': {
-              documents: sinon.stub().returns([{id: 'doc1'}, {id: 'doc2'}, {id: 'doc3'}])
-            },
             './UserItem': mockedComponent,
             '../../Common/CrudlDocument': mockedComponent
           })
@@ -126,6 +121,7 @@ describe('Users list', () => {
             store: store
           }).$mount()
 
+          vm.$refs.list.documents = [{id: 'doc1'}, {id: 'doc2'}, {id: 'doc3'}]
           vm.$refs.list.selectedDocuments = ['doc1']
           vm.$refs.list.toggleAll()
 
@@ -149,6 +145,51 @@ describe('Users list', () => {
 
           expect(vm.$refs.list.selectedDocuments).to.be.deep.equal(['doc2'])
         })
+      })
+    })
+  })
+
+  describe('route data tests', () => {
+    describe('perform search tests', () => {
+      let formatFromQuickSearch = sinon.spy()
+      let formatFromBasicSearch = sinon.spy()
+      let formatSort = sinon.spy()
+
+      let initInjector = () => {
+        List = ListInjector({
+          '../../../services/filterFormat': {
+            formatFromQuickSearch,
+            formatFromBasicSearch,
+            formatSort
+          }
+        })
+
+        List.route.performSearch = sinon.stub().returns(Promise.resolve())
+      }
+
+      it('should do a formatFromQuickSearch', () => {
+        initInjector()
+        List.route.searchTerm = sinon.stub().returns({})
+        List.route.data()
+        expect(formatFromQuickSearch.called).to.be.ok
+      })
+
+      it('should do a formatFromBasicSearch', () => {
+        initInjector()
+        List.route.searchTerm = undefined
+        List.route.basicFilter = sinon.stub().returns({})
+        List.route.data()
+        expect(formatFromBasicSearch.called).to.be.ok
+      })
+
+      it('should perform a search with rawFilter', () => {
+        initInjector()
+        List.route.searchTerm = undefined
+        List.route.basicFilter = undefined
+        List.route.sorting = sinon.stub().returns(true)
+        List.route.rawFilter = {sort: 'foo'}
+        List.route.data()
+        expect(formatSort.called).to.be.ok
       })
     })
   })

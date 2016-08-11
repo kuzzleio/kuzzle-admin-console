@@ -4,12 +4,11 @@ const { RECEIVE_DOCUMENTS, DELETE_DOCUMENTS, SET_BASIC_FILTER } = mutations
 
 describe('collection mutations', () => {
   describe('RECEIVE_DOCUMENTS', () => {
-    it('should add documents and total in store', () => {
-      let state = {documents: [{id: 'doc1'}], total: 1}
+    it('should add documents in store', () => {
+      let state = {documents: [{id: 'doc1'}]}
 
-      RECEIVE_DOCUMENTS(state, {documents: [{id: 'doc2'}, {id: 'doc3'}], total: 2})
+      RECEIVE_DOCUMENTS(state, [{id: 'doc2'}, {id: 'doc3'}])
       expect(state.documents).to.eql([{id: 'doc2'}, {id: 'doc3'}])
-      expect(state.total).to.equal(2)
     })
   })
 

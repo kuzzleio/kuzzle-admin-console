@@ -2,7 +2,6 @@ import kuzzle from '../../../../services/kuzzle'
 import Bluebird from 'bluebird'
 import {
   DELETE_DOCUMENTS,
-  RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER
 } from './mutation-types'
 
@@ -31,41 +30,41 @@ export const performSearch = (store, collection, index, filters = {}, pagination
   if (!collection || !index) {
     return
   }
-
-  kuzzle
-    .dataCollectionFactory(collection, index)
-    .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
-      if (error) {
-        return
-      }
-
-      let additionalAttributeName = null
-
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
+  return new Promise((resolve, reject) => {
+    kuzzle
+      .dataCollectionFactory(collection, index)
+      .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
+        if (error) {
+          return reject(error)
         }
-      }
+        let additionalAttributeName = null
 
-      let documents = result.documents.map((document) => {
-        let object = {
-          content: document.content,
-          id: document.id
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+        if (sort.length > 0) {
+          if (typeof sort[0] === 'string') {
+            additionalAttributeName = sort[0]
+          } else {
+            additionalAttributeName = Object.keys(sort[0])[0]
           }
         }
 
-        return object
+        let documents = result.documents.map((document) => {
+          let object = {
+            content: document.content,
+            id: document.id
+          }
+
+          if (additionalAttributeName) {
+            object.additionalAttribute = {
+              name: additionalAttributeName,
+              value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+            }
+          }
+
+          return object
+        })
+        resolve(documents)
       })
-      store.dispatch(RECEIVE_DOCUMENTS, {total: result.total, documents})
-    })
+  })
 }
 
 export const setBasicFilter = (store, basicFilter) => {

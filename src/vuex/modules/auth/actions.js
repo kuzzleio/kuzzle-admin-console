@@ -6,7 +6,7 @@ import {SET_CURRENT_USER} from './mutation-types'
 export const doLogin = (store, username, password) => {
   return new Promise((resolve, reject) => {
     kuzzle
-      .login('local', {username, password}, '1h', (err, res) => {
+      .login('local', {username, password}, '4h', (err, res) => {
         if (err) {
           return reject(err)
         }

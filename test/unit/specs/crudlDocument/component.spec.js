@@ -24,7 +24,6 @@ let formatFromBasicSearch = sandbox.spy()
 let formatSort = sandbox.spy()
 
 let initInjector = () => {
-  console.log('searchterm', searchTerm)
   CrudlDocument = CrudlDocumentInjector({
     '../../vuex/modules/common/crudlDocument/getters': {
       documents,
@@ -51,7 +50,7 @@ let initInjector = () => {
   })
 
   vm = new Vue({
-    template: '<div><crudl-document v-ref:list></crudl-document></div>',
+    template: '<div><crudl-document index="index" collection="collection" v-ref:list></crudl-document></div>',
     components: {
       CrudlDocument
     },
@@ -101,7 +100,7 @@ describe('CrudlDocument component', () => {
         vm.$refs.list.confirmBulkDelete()
 
         setTimeout(() => {
-          expect(deleteUsers.calledWith(['doc1', 'doc2'])).to.be.equal(true)
+          expect(deleteUsers.calledWith('index', 'collection', ['doc1', 'doc2'])).to.be.equal(true)
           expect(refreshSearch.called).to.be.equal(true)
           done()
         }, 0)
@@ -186,35 +185,9 @@ describe('CrudlDocument component', () => {
       })
     })
 
-    describe('perform search tests', () => {
-      it('should do a formatFromQuickSearch', () => {
-        searchTerm = sandbox.stub().returns({})
-        initInjector()
-        vm.$broadcast('perform-search')
-        expect(formatFromQuickSearch.called).to.be.ok
-      })
-
-      it('should do a formatFromBasicSearch', () => {
-        searchTerm = sandbox.stub()
-        basicFilter = sandbox.stub().returns({})
-        initInjector()
-        vm.$broadcast('perform-search')
-        expect(formatFromBasicSearch.called).to.be.ok
-      })
-
-      it('should perform a search with rawFilter', () => {
-        basicFilter = sandbox.stub()
-        rawFilter = sandbox.stub().returns({sort: 'foo'})
-        sorting = sandbox.stub().returns(true)
-        initInjector()
-        vm.$broadcast('perform-search')
-        expect(formatSort.called).to.be.ok
-      })
-    })
-
-    describe('delete-user event tests', () => {
+    describe('delete-document event tests', () => {
       it('should broadcast modal-open', () => {
-        vm.$broadcast('delete-user', 'id')
+        vm.$broadcast('delete-document', 'id')
         expect($broadcast.called).to.be.ok
       })
     })

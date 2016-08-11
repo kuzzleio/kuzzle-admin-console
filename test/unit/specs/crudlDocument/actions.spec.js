@@ -1,6 +1,5 @@
 import {testAction, testActionPromise} from '../helper'
 import {
-  RECEIVE_DOCUMENTS,
   SET_BASIC_FILTER,
   DELETE_DOCUMENTS
 } from '../../../../src/vuex/modules/common/crudlDocument/mutation-types'
@@ -48,46 +47,25 @@ describe('crudlDocument actions', () => {
 
     it('should receive documents', (done) => {
       triggerError = false
-      testAction(actions.performSearch, ['fake', 'fake'], {}, [
-        {
-          name: RECEIVE_DOCUMENTS,
-          payload: [{total: fakeResponse.total, documents: [{content: {name: {first: 'toto'}}, id: 'id'}]}]
-        }
-      ], done)
+      testActionPromise(actions.performSearch, ['fake', 'fake'], {}, [], done)
     })
 
     it('should receive sorted documents with additional attributes for the sort array', (done) => {
       triggerError = false
-      testAction(actions.performSearch, ['fake', 'fake', {}, {}, [{'name.first': 'asc'}]], {}, [
-        {
-          name: RECEIVE_DOCUMENTS,
-          payload: [{
-            total: fakeResponse.total,
-            documents: [{
-              content: fakeResponse.documents[0].content,
-              id: 'id',
-              additionalAttribute: {name: 'name.first', value: 'toto'}
-            }]
-          }]
-        }
-      ], done)
+      testActionPromise(actions.performSearch, ['fake', 'fake', {}, {}, [{'name.first': 'asc'}]], {}, [], done, [{
+        content: fakeResponse.documents[0].content,
+        id: 'id',
+        additionalAttribute: {name: 'name.first', value: 'toto'}
+      }])
     })
 
     it('should receive sorted documents with additional attributes for the sort string', (done) => {
       triggerError = false
-      testAction(actions.performSearch, ['fake', 'fake', {}, {}, ['name.first']], {}, [
-        {
-          name: RECEIVE_DOCUMENTS,
-          payload: [{
-            total: fakeResponse.total,
-            documents: [{
-              content: fakeResponse.documents[0].content,
-              id: 'id',
-              additionalAttribute: {name: 'name.first', value: 'toto'}
-            }]
-          }]
-        }
-      ], done)
+      testActionPromise(actions.performSearch, ['fake', 'fake', {}, {}, ['name.first']], {}, [], done, [{
+        content: fakeResponse.documents[0].content,
+        id: 'id',
+        additionalAttribute: {name: 'name.first', value: 'toto'}
+      }])
     })
   })
 

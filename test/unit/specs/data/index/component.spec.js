@@ -25,6 +25,7 @@ describe('ModalCreate tests', () => {
     it('should call the createIndex method', (done) => {
       let index = 'testIndex'
       vm.$refs.modal.createIndex = sinon.stub().returns(Promise.resolve())
+      vm.$refs.modal.index = 'fooo'
       vm.$refs.modal.$broadcast = sinon.spy()
       vm.$refs.modal.tryCreateIndex(index)
 

@@ -66,7 +66,7 @@ export default {
       delete contentDisplay.clearPassword
       delete contentDisplay.profilesIds
 
-      return contentDisplay // JSON.stringify(contentDisplay, ' ', 2)
+      return contentDisplay
     },
     profileList () {
       return this.user.content.profilesIds.filter((item, idx) => {
@@ -85,7 +85,7 @@ export default {
       this.$dispatch('checkbox-click', this.user.id)
     },
     deleteUser () {
-      this.$dispatch('delete-user', this.user.id)
+      this.$dispatch('delete-document', this.user.id)
     }
   }
 }

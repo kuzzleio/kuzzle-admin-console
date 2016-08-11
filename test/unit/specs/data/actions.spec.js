@@ -3,7 +3,8 @@ const actionsInjector = require('inject!../../../../src/vuex/modules/data/action
 
 describe('listIndexesAndCollections action', () => {
   let triggerError = [true]
-
+  let sandbox = sinon.sandbox.create()
+  
   const actions = actionsInjector({
     '../../../services/kuzzle': {
       listIndexes (cb) {
@@ -17,14 +18,25 @@ describe('listIndexesAndCollections action', () => {
         if (triggerError[1]) {
           cb({message: 'error'})
         } else {
-          cb(null, {stored: ['collection1', 'collection2']})
+          cb(null, {stored: ['collection1', 'collection2'], realtime: []})
         }
       }
     }
   })
 
-  it('should get the collections list per indexes but not %kuzzle', (done) => {
+  afterEach(() => {
+    sandbox.restore()
+  })
+
+  it('should do nothing because an error is catched', (done) => {
+    triggerError = [false, true]
+    testAction(actions.listIndexesAndCollections, [], {}, [], done)
+  })
+
+  it('should get the collections list per indexes but not %kuzzle without any realtime collection', (done) => {
     triggerError = [false, false]
+    // eslint-disable-next-line no-undef
+    localStorage.getItem = sandbox.stub(localStorage, 'getItem').returns(undefined)
     testAction(actions.listIndexesAndCollections, [], {}, [
       {name: 'RECEIVE_INDEXES_COLLECTIONS', payload: [
         [
@@ -32,14 +44,14 @@ describe('listIndexesAndCollections action', () => {
             name: 'index1',
             collections: {
               stored: ['collection1', 'collection2'],
-              realtime: [undefined]
+              realtime: []
             }
           },
           {
             name: 'index2',
             collections: {
               stored: ['collection1', 'collection2'],
-              realtime: [undefined]
+              realtime: []
             }
           }]
       ]}

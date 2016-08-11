@@ -6,9 +6,8 @@ import {
   RECEIVE_COLLECTIONS,
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
-  RECEIVE_ROOM,
   ADD_INDEX,
-  RECEIVE_DOCUMENTS
+  CREATE_DOCUMENT
 } from './mutation-types'
 
 const state = {
@@ -19,7 +18,9 @@ const state = {
   collections: {
     stored: [],
     realtime: []
-  }
+  },
+  documents: [],
+  newDocument: {}
 }
 
 export const mutations = {
@@ -35,21 +36,23 @@ export const mutations = {
   [EMPTY_NOTIFICATION] (state) {
     state.notifications = []
   },
-  [RECEIVE_ROOM] (state, room) {
-    state.room = room
-  },
   [RECEIVE_COLLECTIONS] (state, collections) {
     state.collections = collections
   },
   [ADD_STORED_COLLECTION] (state, index, collection) {
-    state.indexesAndCollections.find((o) => {
-      return o.name === index
-    }).collections.stored.push(collection)
+    for (var i = 0; i < state.indexesAndCollections.length; i++) {
+      if (state.indexesAndCollections[i].name === index) {
+        state.collections.stored.push(collection)
+      }
+    }
+    console.log(state.collections)
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
-    state.indexesAndCollections.find((o) => {
-      return o.name === index
-    }).collections.realtime.push(collection)
+    for (var i = 0; i < state.indexesAndCollections.length; i++) {
+      if (state.indexesAndCollections[i].name === index) {
+        state.collections.realtime.push(collection)
+      }
+    }
   },
   [ADD_INDEX] (state, index) {
     state.indexesAndCollections.push({
@@ -57,9 +60,12 @@ export const mutations = {
       collections: []
     })
   },
-  [RECEIVE_DOCUMENTS] (state, documents) {
-    console.log(documents)
-    state.documents = documents
+  [CREATE_DOCUMENT] (state, partial) {
+    Object.keys(partial).forEach(function (attr) {
+      console.log(attr, partial[attr])
+      state.newDocument[attr] = partial[attr]
+    })
+    console.log(state.newDocument)
   }
 }
 

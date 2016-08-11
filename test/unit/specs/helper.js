@@ -27,7 +27,7 @@ export const testAction = (action, args, state, expectedMutations, done) => {
 
 export const mockedComponent = Vue.extend({template: '<div></div>'})
 
-export const testActionPromise = (action, args, state, expectedMutations, done) => {
+export const testActionPromise = (action, args, state, expectedMutations, done, expectedResultFromPromise) => {
   let count = 0
   // mock dispatch
   const dispatch = (name, ...payload) => {
@@ -42,7 +42,10 @@ export const testActionPromise = (action, args, state, expectedMutations, done) 
     }
   }
   // call the action with mocked store and arguments
-  return action({dispatch, state}, ...args).then(() => {
+  return action({dispatch, state}, ...args).then((res) => {
+    if (expectedResultFromPromise) {
+      expect(res).to.deep.equals(expectedResultFromPromise)
+    }
     // check if no mutations should have been dispatched
     if (expectedMutations.length === 0) {
       expect(count).to.equal(0)
