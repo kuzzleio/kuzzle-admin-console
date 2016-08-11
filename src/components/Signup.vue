@@ -111,9 +111,9 @@
     name: 'Signup',
     data () {
       return {
-        username: null,
-        password1: null,
-        password2: null,
+        username: '',
+        password1: '',
+        password2: '',
         reset: false,
         error: null,
         waiting: false
@@ -142,9 +142,11 @@
         kuzzle
           .queryPromise(
             {controller: 'admin', action: 'createFirstAdmin'},
-            {_id: this.username, body: {username: this.username, password: this.password1, reset: true}})
-          .then(() => this.setFirstAdmin(true))
-          .then(() => this.$router.go({name: 'Login'}))
+            {_id: this.username, body: {username: this.username, password: this.password1, reset: this.reset}})
+          .then(() => {
+            this.setFirstAdmin(true)
+            this.$router.go({name: 'Login'})
+          })
           .catch(() => this.$router.go({name: 'Login'}))
       }
     }
