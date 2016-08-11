@@ -1,15 +1,15 @@
 <template>
-  <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="login(username, password)">
+  <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="login(username, password)">
     <div class="row">
       <div class="input-field col s12">
-        <input id="username" v-model="username" type="text" name="username" required
+        <input id="username" v-model="username" type="text" name="username" required tabindex="1"
                class="validate"/>
         <label for="username">Email</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input v-model="password" type="password" name="password" id="pass" required
+        <input v-model="password" type="password" name="password" id="pass" required tabindex="2"
                class="validate"/>
         <label for="pass">Password</label>
       </div>
@@ -20,7 +20,7 @@
       </div>
       <div class="col m6">
         <p class="right-align">
-          <button class="btn waves-effect waves-light" type="submit" name="action">Login</button>
+          <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
         </p>
       </div>
     </div>
@@ -28,6 +28,9 @@
 </template>
 
 <style type="text/css" media="screen" scoped>
+  #loginForm {
+    margin-top: 15px;
+  }
   .error {
     color: #d54f58;
     font-size: 18px;
