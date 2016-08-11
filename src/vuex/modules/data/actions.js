@@ -12,11 +12,8 @@ const addLocalRealtimeCollections = (result, index) => {
   let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
 
   realtimeCollections = realtimeCollections
-    .filter(o => {
-      return o.index === index
-    }).map(o => {
-      return o.collection
-    })
+    .filter(o => o.index === index)
+    .map(o => o.collection)
 
   if (!result.realtime) {
     result.realtime = []

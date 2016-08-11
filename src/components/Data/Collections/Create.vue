@@ -116,7 +116,11 @@
     },
     methods: {
       cancel () {
-        window.history.back()
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+        }
       },
       doCreateCollection () {
         let mapping = this.$refs.jsoneditor.getJson()
