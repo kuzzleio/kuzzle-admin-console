@@ -14,7 +14,7 @@
             </li>
           </ul>
 
-          <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <ul id="nav-mobile" class="right">
             <li>
               Howdy <strong>{{user.id}}</strong>!
             </li>
@@ -56,8 +56,8 @@ nav {
 }
 .brand-logo {
   height: 100%;
-  left: 50%;
-  right: 50%;
+  left: 45%;
+  right: 55%;
 }
 
 .brand-logo img {

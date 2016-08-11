@@ -90,27 +90,50 @@
     &.in {
       & + li {
         a {
-          padding-left: 25px;
+          padding-left: 20px;
         }
       }
       position: relative;
       &:after {
         content: ' ';
         position: absolute;
-        right: -15px;
+        right: -10px;
         top: 10px;
         width: 0;
         height: 0;
-        border-top: 15px solid transparent;
-        border-bottom: 15px solid transparent;
-        border-left: 15px solid #e6e6e6;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-left: 10px solid #e6e6e6;
       }
     }
   }
+
   .subnav {
     position: fixed;
     z-index: 300;
-    top: 50px;
+    top: 40px;
+  }
+
+  @media only screen and (min-width: 1201px) {
+    .subnav {
+      top: 50px;
+    }
+    li {
+      &.in {
+        & + li {
+          a {
+            padding-left: 25px;
+          }
+        }
+        &:after {
+          right: -15px;
+          top: 10px;
+          border-top: 15px solid transparent;
+          border-bottom: 15px solid transparent;
+          border-left: 15px solid #e6e6e6;
+        }
+      }
+    }
   }
 </style>
 

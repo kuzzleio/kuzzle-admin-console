@@ -69,8 +69,13 @@ html {
 }
 
 .side-nav {
-  top: $navbar-height;
+  top: $navbar-height - 10;
   height: 95%;
+}
+@media #{$medium-and-up} {
+  .side-nav {
+    top: $navbar-height;
+  }
 }
 
 @media #{$medium-and-down} {
