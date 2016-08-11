@@ -1,5 +1,5 @@
 <template>
-  <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="login(username, password)">
+  <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="login()">
     <div class="row">
       <div class="input-field col s12">
         <input id="username" v-model="username" type="text" name="username" required tabindex="1"
@@ -54,8 +54,8 @@
       }
     },
     methods: {
-      login (username, password) {
-        this.doLogin(username, password)
+      login () {
+        this.doLogin(this.username, this.password)
           .then(() => {
             this.onLogin()
           }).catch((err) => {
