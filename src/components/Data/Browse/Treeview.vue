@@ -64,16 +64,25 @@
   }
 </script>
 
-<style scoped>
-.indexes
-{
-  margin-top: 16px;
-  padding-left: 15px;
-  list-style: none;
-}
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .input-field {
+    label {
+      &.active i {
+        color: #444
+      }
+    }
+    input {
+      padding-left: 3rem;
+    }
+  }
 
-li
-{
-  position: relative;
-}
+  .indexes {
+    margin-top: 16px;
+    padding-left: 15px;
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+  }
 </style>
