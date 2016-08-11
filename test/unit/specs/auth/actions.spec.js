@@ -1,12 +1,11 @@
 import Promise from 'bluebird'
 import { testAction, testActionPromise } from '../helper'
-import { SET_TOKEN_VALID } from '../../../../src/vuex/modules/auth/mutation-types'
+import { SET_CURRENT_USER, SET_TOKEN_VALID } from '../../../../src/vuex/modules/auth/mutation-types'
 import SessionUser from '../../../../src/models/SessionUser'
 const actionsInjector = require('inject!../../../../src/vuex/modules/auth/actions')
 
-let triggerError
-
 describe('doLogin action', () => {
+  let triggerError
   let addListenerEvent
   let addListenerCallCB
   let removeAllListenersEvent
@@ -25,7 +24,7 @@ describe('doLogin action', () => {
       loginPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.login) {
-            reject(new Error('error'))
+            reject(new Error('login error'))
           } else {
             resolve({_id: 'foo', jwt: 'jwt'})
           }
@@ -34,7 +33,7 @@ describe('doLogin action', () => {
       whoAmIPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.whoAmI) {
-            reject(new Error('error'))
+            reject(new Error('whoAmI error'))
           } else {
             resolve({content: {foo: 'bar'}})
           }
@@ -43,7 +42,7 @@ describe('doLogin action', () => {
       getMyRightsPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.getMyRights) {
-            reject(new Error('error'))
+            reject(new Error('getMyRights error'))
           } else {
             resolve([{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}])
           }
@@ -75,7 +74,7 @@ describe('doLogin action', () => {
   it('should catch error if login fail', (done) => {
     triggerError.login = true
     testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
-      expect(e.message).to.equals('error')
+      expect(e.message).to.equals('login error')
       done()
     })
   })
@@ -83,7 +82,7 @@ describe('doLogin action', () => {
   it('should catch error if whoAmI fail', (done) => {
     triggerError.whoAmI = true
     testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
-      expect(e.message).to.equals('error')
+      expect(e.message).to.equals('whoAmI error')
       done()
     })
   })
@@ -91,15 +90,15 @@ describe('doLogin action', () => {
   it('should catch error if getMyRights fail', (done) => {
     triggerError.getMyRights = true
     testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
-      expect(e.message).to.equals('error')
+      expect(e.message).to.equals('getMyRights error')
       done()
     })
   })
 
-  it('should dispatch the logged user and the token valid mutation', (done) => {
+  it('should store the user, dispatch user and token-valid mutation', (done) => {
     testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [
       {
-        name: 'SET_CURRENT_USER',
+        name: SET_CURRENT_USER,
         payload: [{
           id: 'foo',
           token: 'jwt',
@@ -108,7 +107,7 @@ describe('doLogin action', () => {
         }]
       },
       {
-        name: 'SET_TOKEN_VALID',
+        name: SET_TOKEN_VALID,
         payload: [true]
       }
     ], done)
@@ -139,91 +138,74 @@ describe('doLogin action', () => {
 
 describe('loginFromCookie action', () => {
   let kuzzleState = 'connecting'
-  let cookieUndefined = false
-  let isTokenValid = true
+  let actions
 
-  const actions = actionsInjector({
-    '../../../services/kuzzle': {
-      state: kuzzleState,
-      checkTokenPromise: () => {
-        return new Promise((resolve, reject) => {
+  const loggedUser = {
+    id: 'foo',
+    token: 'jwt',
+    params: {foo: 'bar'},
+    rights: [{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}]
+  }
+
+  const injectMock = (userInCookie, userIsValid = true, triggerError = false) => {
+    actions = actionsInjector({
+      '../../../services/kuzzle': {
+        state: kuzzleState,
+        checkTokenPromise: () => {
           if (triggerError) {
-            reject(new Error('error'))
+            return Promise.reject(new Error('error from Kuzzle'))
           } else {
-            resolve({valid: isTokenValid})
+            if (userIsValid) {
+              return Promise.resolve({valid: true})
+            }
+
+            return Promise.resolve({valid: false})
           }
-        })
+        },
+        setJwtToken: sinon.mock(),
+        addListener (type, cb) {
+          this.state = 'connected'
+          cb()
+        },
+        removeListener: sinon.mock()
       },
-      setJwtToken: sinon.mock(),
-      addListener (type, cb) {
-        this.state = 'connected'
-        cb()
-      },
-      removeListener: sinon.mock()
-    },
-    '../../../services/userCookies': {
-      get () {
-        return cookieUndefined ? undefined : {
-          id: 'foo',
-          token: 'jwt',
-          params: {foo: 'bar'},
-          rights: [{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}]
+      '../../../services/userCookies': {
+        get () {
+          return userInCookie
         }
       }
-    }
-  })
-
-  beforeEach(() => {
-    kuzzleState = 'connecting'
-    cookieUndefined = false
-    triggerError = false
-    isTokenValid = true
-  })
+    })
+  }
 
   it('should login user from cookie', (done) => {
-    testAction(actions.loginFromCookie, [() => {}], {}, [
-      {
-        name: 'SET_CURRENT_USER',
-        payload: [{
-          id: 'foo',
-          token: 'jwt',
-          params: {foo: 'bar'},
-          rights: [{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}]
-        }]
-      }
-    ], done)
-  })
-
-  it('should not login user from cookie because there is no cookie', (done) => {
-    cookieUndefined = true
-
-    testAction(actions.loginFromCookie, [() => {}], {}, [
-      {
-        name: 'SET_CURRENT_USER',
-        payload: [SessionUser()]
-      }
+    injectMock(loggedUser)
+    testActionPromise(actions.loginFromCookie, [], {}, [
+      { name: SET_CURRENT_USER, payload: [loggedUser] }
     ], done)
   })
 
   it('should not login user from cookie because the jwt token is wrong', (done) => {
-    isTokenValid = false
+    injectMock(loggedUser, true, true)
+    testActionPromise(actions.loginFromCookie, [], {}, [
+      { name: SET_CURRENT_USER, payload: [SessionUser()] }
+    ])
+    .catch((e) => {
+      expect(e.message).to.be.equal('error from Kuzzle')
+      done()
+    })
+  })
 
-    testAction(actions.loginFromCookie, [() => {}], {}, [
-      {
-        name: 'SET_CURRENT_USER',
-        payload: [SessionUser()]
-      }
+  it('should resolve null and do nothing if there is no user', (done) => {
+    injectMock(null)
+    testActionPromise(actions.loginFromCookie, [], {}, [
+      { name: SET_CURRENT_USER, payload: [SessionUser()] }
     ], done)
   })
 
-  it('should not login user from cookie because kuzzle errored', (done) => {
-    triggerError = true
-
-    testAction(actions.loginFromCookie, [() => {}], {}, [
-      {
-        name: 'SET_CURRENT_USER',
-        payload: [SessionUser()]
-      }
+  it('should resolve null and do nothing if there is user in cookie but with bad token', (done) => {
+    injectMock(loggedUser, false)
+    testActionPromise(actions.loginFromCookie, [], {}, [
+      { name: SET_CURRENT_USER, payload: [SessionUser()] }
     ], done)
   })
 })
@@ -233,7 +215,7 @@ describe('logout action', () => {
     '../../../services/kuzzle': {
       logout: sinon.mock()
     },
-    '../../../services/cookie': {
+    '../../../services/userCookies': {
       delete: sinon.mock()
     },
     '../../../services/router': {
@@ -243,8 +225,8 @@ describe('logout action', () => {
 
   it('should logout user', (done) => {
     testAction(actions.doLogout, [], {}, [
-      { name: 'SET_CURRENT_USER', payload: [SessionUser()] },
-      { name: 'SET_TOKEN_VALID', payload: [false] }
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
   })
 })

@@ -55,6 +55,7 @@
     },
     methods: {
       login () {
+        this.error = null
         this.doLogin(this.username, this.password)
           .then(() => {
             this.onLogin()

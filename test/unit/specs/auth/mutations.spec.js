@@ -1,19 +1,20 @@
+import SessionUser from '../../../../src/models/SessionUser'
 import { mutations } from '../../../../src/vuex/modules/auth/store'
 
-const { SET_CURRENT_USER, SET_CURRENT_USER_RIGHTS } = mutations
+const { SET_CURRENT_USER, SET_TOKEN_VALID } = mutations
 
 describe('auth mutations test', () => {
   it('should set the user status', () => {
-    let state = {user: null}
+    let state = {user: SessionUser()}
 
     SET_CURRENT_USER(state, 'foo')
     expect(state.user).to.equals('foo')
   })
 
-  it('should set current user rights', () => {
-    let state = {rights: null}
+  it('should set current token flag', () => {
+    let state = {tokenValid: false}
 
-    SET_CURRENT_USER_RIGHTS(state, 'foo')
-    expect(state.rights).to.equals('foo')
+    SET_TOKEN_VALID(state, true)
+    expect(state.tokenValid).to.equals(true)
   })
 })

@@ -9,9 +9,10 @@ Vue.config.debug = process.env.NODE_ENV !== 'production'
 
 sync(store, router)
 
-loginFromCookie(store, () => {
+loginFromCookie(store).then(() => {
   router.start({
     store,
     components: { App }
   }, 'body')
 })
+.catch(error => console.log(error))
