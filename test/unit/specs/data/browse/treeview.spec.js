@@ -43,12 +43,12 @@ describe('Treeview component', () => {
     })
 
     const TestComponent = Vue.extend({
-      template: '<treeview ' +
-        'v-ref:treeview ' +
-        'v-bind:index="index" ' +
-        'v-bind:collection="collection" ' +
-        'v-bind:index-tree="tree">' +
-        '</treeview>',
+      template: `<treeview
+        v-ref:treeview
+        v-bind:index="index"
+        v-bind:collection="collection"
+        v-bind:index-tree="tree">
+      </treeview>`,
       components: { Treeview },
       data () {
         return {

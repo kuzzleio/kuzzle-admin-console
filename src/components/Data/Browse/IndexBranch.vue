@@ -93,10 +93,10 @@ export default {
     }
   },
   watch: {
-    index: function (index) {
+    index (index) {
       this.isTreeOpen(index, this.indexTree.name)
     },
-    collection: function () {
+    collection () {
       this.isTreeOpen(this.index, this.indexTree.name)
     }
   },
