@@ -2,9 +2,10 @@ import {
   SET_CURRENT_USER,
   SET_TOKEN_VALID
 } from './mutation-types'
+import SessionUser from '../../../models/SessionUser'
 
 const state = {
-  user: null,
+  user: SessionUser(),
   tokenValid: false
 }
 

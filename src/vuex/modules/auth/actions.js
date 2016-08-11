@@ -1,18 +1,20 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
-import {SessionUser} from '../../../models/SessionUser'
+import userCookies from '../../../services/userCookies'
+import SessionUser from '../../../models/SessionUser'
 import {SET_CURRENT_USER, SET_TOKEN_VALID} from './mutation-types'
 
 export const doLogin = (store, username, password) => {
-  let user
+  let user = SessionUser()
 
-  SessionUser.reset()
+  userCookies.delete()
 
   return new Promise((resolve, reject) => {
     kuzzle
-      .loginPromise('local', {username, password}, '10s')
+      .loginPromise('local', {username, password}, '4h')
       .then(loginResult => {
-        user = new SessionUser(loginResult._id, loginResult.jwt)
+        user.id = loginResult._id
+        user.token = loginResult.jwt
 
         return kuzzle.whoAmIPromise()
       })
@@ -23,11 +25,12 @@ export const doLogin = (store, username, password) => {
       })
       .then(rights => {
         user.rights = rights
-        user.store()
+        userCookies.set(user)
 
         store.dispatch(SET_CURRENT_USER, user)
         store.dispatch(SET_TOKEN_VALID, true)
 
+        kuzzle.removeAllListeners('jwtTokenExpired')
         kuzzle.addListener('jwtTokenExpired', () => {
           store.dispatch(SET_TOKEN_VALID, false)
         })
@@ -41,7 +44,7 @@ export const doLogin = (store, username, password) => {
 }
 
 export const loginFromCookie = (store, cb) => {
-  let user = new SessionUser()
+  let user = userCookies.get()
   let id
 
   if (kuzzle.state !== 'connected') {
@@ -53,14 +56,14 @@ export const loginFromCookie = (store, cb) => {
     return
   }
 
-  if (!user.restore()) {
+  if (!user) {
     return cb()
   }
 
   kuzzle.checkTokenPromise(user.token)
     .then(res => {
       if (!res.valid) {
-        store.dispatch(SET_CURRENT_USER, null)
+        store.dispatch(SET_CURRENT_USER, SessionUser())
         return
       }
 
@@ -68,7 +71,7 @@ export const loginFromCookie = (store, cb) => {
       store.dispatch(SET_CURRENT_USER, user)
     })
     .catch(() => {
-      store.dispatch(SET_CURRENT_USER, null)
+      store.dispatch(SET_CURRENT_USER, SessionUser())
     })
     .finally(() => {
       cb()
@@ -77,7 +80,7 @@ export const loginFromCookie = (store, cb) => {
 
 export const doLogout = (store) => {
   kuzzle.logout()
-  SessionUser.reset()
-  store.dispatch(SET_CURRENT_USER, null)
+  userCookies.delete()
+  store.dispatch(SET_CURRENT_USER, SessionUser())
   router.go({name: 'Login'})
 }

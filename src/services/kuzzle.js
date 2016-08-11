@@ -3,6 +3,10 @@ import config from '../../config'
 import Promise from 'bluebird'
 
 Kuzzle.prototype.bluebird = Promise
-let kuzzle = new Kuzzle(config.backend.host)
+
+let kuzzle = new Kuzzle(config.backend.host, {
+  ioPort: config.backend.ioPort,
+  wsPort: config.backend.wsPort
+})
 
 export default kuzzle

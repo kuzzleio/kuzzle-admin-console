@@ -19,7 +19,7 @@
 </style>
 
 <script>
-  import MainMenu from './Materialize/MainMenu'
+  import MainMenu from './Common/MainMenu'
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
   import {tokenValid} from '../vuex/modules/auth/getters'
