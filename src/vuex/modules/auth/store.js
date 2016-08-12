@@ -1,8 +1,9 @@
 import {
   SET_CURRENT_USER,
   SET_TOKEN_VALID,
-SET_ADMIN_EXISTS
+  SET_ADMIN_EXISTS
 } from './mutation-types'
+import SessionUser from '../../../models/SessionUser'
 
 const state = {
   user: SessionUser(),

@@ -212,6 +212,7 @@ describe('loginFromCookie action', () => {
 
 describe('checkFirstAdmin action', () => {
   let kuzzleState = 'connecting'
+  let triggerError = false
   let actions
 
   const injectMock = (exists = true) => {
