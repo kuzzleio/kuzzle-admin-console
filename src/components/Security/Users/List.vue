@@ -52,6 +52,8 @@
     },
     route: {
       data () {
+        this.selectedDocuments = []
+
         let filters = {}
         let sorting = []
         let pagination = {
@@ -75,9 +77,10 @@
         }
 
         // Execute search with corresponding filters
-        this.performSearch('users', '%kuzzle', filters, pagination, sorting).then(res => {
-          this.documents = res
-        })
+        this.performSearch('users', '%kuzzle', filters, pagination, sorting)
+          .then(res => {
+            this.documents = res
+          })
       }
     },
     computed: {

@@ -172,10 +172,12 @@
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
         this.deleteDocuments(this.index, this.collection, this.selectedDocuments)
-          .then(() => {
+          .then((res) => {
+            console.log(res)
             this.refreshSearch()
           })
           .catch((e) => {
+            console.log('error', e)
             this.$dispatch('toast', e.message, 'error')
           })
       },
@@ -211,7 +213,8 @@
         this.$router.go({query: {rawFilter, from: 0}})
       },
       refreshSearch () {
-        this.$router.go({query: {...this.$route.query, from: 0}})
+        console.log('refresh', {query: {...this.$route.query, from: 0}})
+        this.$router.go({query: {...this.$route.query, from: 0}, force: true})
       },
       dispatchToggle () {
         this.$dispatch('toggle-all')

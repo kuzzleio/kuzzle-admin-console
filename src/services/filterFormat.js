@@ -5,10 +5,21 @@ export const formatFromQuickSearch = (searchTerm) => {
 
   return {
     query: {
-      match_phrase_prefix: {
-        _all: {
-          query: searchTerm
-        }
+      bool: {
+        should: [
+          {
+            match_phrase_prefix: {
+              _all: {
+                query: searchTerm
+              }
+            }
+          },
+          {
+            match: {
+              _id: searchTerm
+            }
+          }
+        ]
       }
     }
   }

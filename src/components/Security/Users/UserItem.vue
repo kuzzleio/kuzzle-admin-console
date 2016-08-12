@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }">
+  <div :class="{ 'collapsed': collapsed }" class="item-document">
     <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
@@ -90,73 +90,3 @@ export default {
   }
 }
 </script>
-
-<style lang="css" scoped>
-  i.item-toggle {
-    padding: 0 10px;
-    margin-left: -10px;
-    cursor: pointer;
-    transition-duration: .2s;
-  }
-
-  .collapsed i.item-toggle {
-      transform: rotate(-90deg);
-  }
-
-  /* HACK enabling to click on the title without checking the checkbox */
-  label.item-title {
-    cursor: pointer;
-    font-size: 1rem;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -ms-user-select: none;
-  }
-
-  .item-title a {
-    color: #272727;
-  }
-
-  /* HACK for centring the checkbox between the caret and the title */
-  [type="checkbox"] + label {
-    height: 15px;
-    padding-left: 30px;
-  }
-
-  .item-content {
-    transition-duration: .2s;
-    max-height: 300px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 10px 10px 0 0;
-  }
-
-  .collapsed .item-content {
-    max-height: 0;
-    transition-duration: 0;
-    padding: 0 10px 0 0;
-  }
-
-  .item-content pre {
-    margin: 0;
-    width: 70%;
-    display: inline-block;
-  }
-
-  .item-content .profile-list {
-    display: inline-block;
-    width: 30%;
-    vertical-align: top;
-    text-align: right;
-  }
-
-  .profile-chip {
-    margin: 0 0 5px 5px;
-    max-width: 150px;
-  }
-
-  .show-all-profiles {
-    background-color: transparent;
-  }
-
-</style>

@@ -15,36 +15,6 @@ main {
   }
 }
 
-.list-document {
-  .no-document {
-    text-align: center;
-  }
-  .collection {
-    overflow: inherit;
-
-    .collection-item {
-      label {
-        color: black;
-        line-height: 21px;
-      }
-      .additional-attribute {
-        color: grey;
-        font-style: italic;
-      }
-      .actions {
-        margin-top: 1px;
-        font-size: 1.3em;
-
-        .action {
-          cursor: pointer;
-          padding: 0 5px 0 5px;
-          margin-left: 5px;
-        }
-      }
-    }
-  }
-}
-
 html{
   font-family: "Raleway", sans-serif;
   font-weight: normal;

@@ -1,9 +1,129 @@
 <template>
-  <h1>Roles management</h1>
+  <div>
+    <headline title="Roles Management"></headline>
+
+    <crudl-document index="%kuzzle" collection="roles" :documents="documents" :display-bulk-delete="displayBulkDelete"
+                    :all-checked="allChecked" :selected-documents="selectedDocuments"
+                    :length-document="selectedDocuments.length">
+      <div class="collection">
+        <div class="collection-item" transition="collection" v-for="document in documents">
+          <role-item @checkbox-click="toggleSelectDocuments" :role="document"
+                     :is-checked="isChecked(document.id)"></role-item>
+        </div>
+      </div>
+    </crudl-document>
+  </div>
 </template>
 
 <script>
+  import Headline from '../../Materialize/Headline'
+  import CrudlDocument from '../../Common/CrudlDocument'
+  import RoleItem from './RoleItem'
+  import {performSearch} from '../../../vuex/modules/common/crudlDocument/actions'
+  import {
+    searchTerm,
+    rawFilter,
+    basicFilter
+  } from '../../../vuex/modules/common/crudlDocument/getters'
+  import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
+
   export default {
-    name: 'RolesList'
+    name: 'RoleList',
+    components: {
+      Headline,
+      RoleItem,
+      CrudlDocument
+    },
+    data () {
+      return {
+        selectedDocuments: [],
+        documents: [],
+        $loadingRouteData: null
+      }
+    },
+    vuex: {
+      actions: {
+        performSearch
+      },
+      getters: {
+        searchTerm,
+        rawFilter,
+        basicFilter
+      }
+    },
+    watch: {
+      '$route' () {
+        console.log('ok watch', this.$route)
+      }
+    },
+    route: {
+      data () {
+        this.selectedDocuments = []
+
+        let filters = {}
+        let sorting = []
+        let pagination = {
+          from: this.paginationFrom,
+          size: this.paginationSize
+        }
+        // Manage query quickSearch/basicSearch/rawSearch
+        if (this.searchTerm) {
+          filters = formatFromQuickSearch(this.searchTerm)
+        } else if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+          if (filters.sort) {
+            sorting = filters.sort
+          }
+        }
+
+        if (this.sorting) {
+          sorting = formatSort(this.sorting)
+        }
+
+        // Execute search with corresponding filters
+        this.performSearch('roles', '%kuzzle', filters, pagination, sorting)
+          .then(res => {
+            this.documents = res
+          })
+      }
+    },
+    computed: {
+      displayBulkDelete () {
+        return this.selectedDocuments.length > 0
+      },
+      allChecked () {
+        return this.selectedDocuments.length === this.documents.length
+      }
+    },
+    methods: {
+      isChecked (id) {
+        return this.selectedDocuments.indexOf(id) > -1
+      },
+      toggleAll () {
+        if (this.allChecked) {
+          this.selectedDocuments = []
+          return
+        }
+        this.selectedDocuments = []
+        this.selectedDocuments = this.documents.map((document) => document.id)
+      },
+      toggleSelectDocuments (id) {
+        let index = this.selectedDocuments.indexOf(id)
+
+        if (index === -1) {
+          this.selectedDocuments.push(id)
+          return
+        }
+
+        this.selectedDocuments.splice(index, 1)
+      }
+    },
+    events: {
+      'toggle-all' () {
+        this.toggleAll()
+      }
+    }
   }
 </script>

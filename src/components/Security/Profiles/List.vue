@@ -1,9 +1,123 @@
 <template>
-  <h1>Profiles management</h1>
+  <div>
+    <headline title="Profiles Management"></headline>
+
+    <crudl-document index="%kuzzle" collection="profiles" :documents="documents" :display-bulk-delete="displayBulkDelete"
+                    :all-checked="allChecked" :selected-documents="selectedDocuments"
+                    :length-document="selectedDocuments.length">
+      <div class="collection">
+        <div class="collection-item" transition="collection" v-for="document in documents">
+          <profile-item @checkbox-click="toggleSelectDocuments" :profile="document"
+                     :is-checked="isChecked(document.id)"></profile-item>
+        </div>
+      </div>
+    </crudl-document>
+  </div>
 </template>
 
 <script>
+  import Headline from '../../Materialize/Headline'
+  import CrudlDocument from '../../Common/CrudlDocument'
+  import ProfileItem from './ProfileItem'
+  import {performSearch} from '../../../vuex/modules/common/crudlDocument/actions'
+  import {
+    searchTerm,
+    rawFilter,
+    basicFilter
+  } from '../../../vuex/modules/common/crudlDocument/getters'
+  import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
+
   export default {
-    name: 'ProfilesList'
+    name: 'ProfileList',
+    components: {
+      Headline,
+      ProfileItem,
+      CrudlDocument
+    },
+    data () {
+      return {
+        selectedDocuments: [],
+        documents: []
+      }
+    },
+    vuex: {
+      actions: {
+        performSearch
+      },
+      getters: {
+        searchTerm,
+        rawFilter,
+        basicFilter
+      }
+    },
+    route: {
+      data () {
+        this.selectedDocuments = []
+
+        let filters = {}
+        let sorting = []
+        let pagination = {
+          from: this.paginationFrom,
+          size: this.paginationSize
+        }
+        // Manage query quickSearch/basicSearch/rawSearch
+        if (this.searchTerm) {
+          filters = formatFromQuickSearch(this.searchTerm)
+        } else if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+          if (filters.sort) {
+            sorting = filters.sort
+          }
+        }
+
+        if (this.sorting) {
+          sorting = formatSort(this.sorting)
+        }
+
+        // Execute search with corresponding filters
+        this.performSearch('profiles', '%kuzzle', filters, pagination, sorting)
+          .then(res => {
+            this.documents = res
+          })
+      }
+    },
+    computed: {
+      displayBulkDelete () {
+        return this.selectedDocuments.length > 0
+      },
+      allChecked () {
+        return this.selectedDocuments.length === this.documents.length
+      }
+    },
+    methods: {
+      isChecked (id) {
+        return this.selectedDocuments.indexOf(id) > -1
+      },
+      toggleAll () {
+        if (this.allChecked) {
+          this.selectedDocuments = []
+          return
+        }
+        this.selectedDocuments = []
+        this.selectedDocuments = this.documents.map((document) => document.id)
+      },
+      toggleSelectDocuments (id) {
+        let index = this.selectedDocuments.indexOf(id)
+
+        if (index === -1) {
+          this.selectedDocuments.push(id)
+          return
+        }
+
+        this.selectedDocuments.splice(index, 1)
+      }
+    },
+    events: {
+      'toggle-all' () {
+        this.toggleAll()
+      }
+    }
   }
 </script>
