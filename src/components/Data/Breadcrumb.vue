@@ -36,7 +36,7 @@
 
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
-          v-if="collection">
+          v-if="collection && !isCollectionRealtime()">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
           Browse
@@ -66,6 +66,7 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
   nav {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     i {
       height: auto;
       margin-right: 3px;
@@ -108,7 +109,7 @@
   }
   .subnav {
     position: fixed;
-    z-index: 100;
+    z-index: 300;
     top: 50px;
   }
 </style>
@@ -116,8 +117,18 @@
 <script>
   export default {
     name: 'DataBreadcrumb',
-    props: ['routeName', 'index', 'collection'],
+    props: {
+      routeName: String,
+      index: String,
+      collection: String,
+      tree: Array
+    },
     methods: {
+      isCollectionRealtime () {
+        return this.tree.filter((index) => {
+          return (index.name === this.index && index.collections.realtime.indexOf(this.collection) >= 0)
+        }).length
+      },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
           return routeName.indexOf(this.routeName) >= 0

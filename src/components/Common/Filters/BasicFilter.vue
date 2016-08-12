@@ -13,10 +13,7 @@
               </div>
               <div class="col s2">
                 <select v-m-select="filter.operator" @blur="updateFilter">
-                  <option value="match">Match</option>
-                  <option value="not_match">Not match</option>
-                  <option value="equal">Equal</option>
-                  <option value="not_equal">Not equal</option>
+                  <option v-for="(identifier, label) in availableFilters" value="{{identifier}}">{{label}}</option>
                 </select>
               </div>
               <div class="col s3">
@@ -44,7 +41,7 @@
           </a>
         </div>
 
-        <div class="row block-sort">
+        <div class="row block-sort" v-if="sortingEnabled">
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
@@ -62,7 +59,7 @@
       </div>
     </div>
     <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light" @click.prevent="basicSearch">Search</button>
+      <button type="submit" class="btn waves-effect waves-light" @click.prevent="basicSearch">{{labelSearchButton}}</button>
       <button class="btn waves-effect waves-light" @click="resetBasicSearch">Reset</button>
     </div>
   </form>
@@ -72,13 +69,27 @@
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
   const emptySorting = {attribute: null, order: 'asc'}
 
-  import MSelect from '../../Materialize/MSelect'
+  import MSelect from '../../../directives/m-select.directive'
 
   export default {
     props: {
       basicFilter: Array,
       sorting: Object,
-      setBasicFilter: Function
+      setBasicFilter: Function,
+      availableFilters: {
+        type: Object,
+        required: true
+      },
+      labelSearchButton: {
+        type: String,
+        required: false,
+        'default': 'search'
+      },
+      sortingEnabled: {
+        type: Boolean,
+        required: false,
+        'default': true
+      }
     },
     directives: {
       MSelect
@@ -98,7 +109,6 @@
       },
       basicSearch () {
         let filters = this.filters.basic
-        let sorting = this.filters.sorting
 
         if (this.filters.basic.length === 1 &&
           this.filters.basic[0].length === 1 &&
@@ -106,11 +116,17 @@
           filters = null
         }
 
-        if (!this.filters.sorting.attribute) {
-          sorting = null
-        }
+        if (this.sortingEnabled) {
+          let sorting = this.filters.sorting
 
-        this.$dispatch('filters-basic-search', filters, sorting)
+          if (!this.filters.sorting.attribute) {
+            sorting = null
+          }
+
+          this.$dispatch('filters-basic-search', filters, sorting)
+        } else {
+          this.$dispatch('filters-basic-search', filters)
+        }
       },
       resetBasicSearch () {
         this.filters.basic = [[{...emptyBasicFilter}]]

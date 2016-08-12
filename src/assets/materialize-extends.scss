@@ -1,4 +1,6 @@
 .btn {
+  font-family: "Roboto", sans-serif;
+
   &.btn-tiny {
     height: 24px;
     line-height: 24px;
@@ -14,4 +16,47 @@
     padding: 0 0.8rem;
     letter-spacing: .1px;
   }
+}
+
+.btn-flat {
+  &:focus {
+    background-color: #EEE;
+  }
+}
+
+strong {
+  font-weight: 600;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #555;
+}
+
+.primary {
+  background-color: $primary-color;
+  &:hover, &:focus {
+    background-color: lighten($primary-color, 5%);
+  }
+}
+
+.secondary {
+  background-color: $secondary-color;
+  &:hover, &:focus {
+    background-color: lighten($secondary-color, 5%);
+  }
+}
+
+.tertiary {
+  background-color: $tertiary-color;
+  &:hover, &:focus {
+    background-color: lighten($tertiary-color, 5%);
+  }
+}
+
+.inline-alert {
+  padding: 15px;
+  border-radius: 3px;
+  margin: 10px 0;
 }

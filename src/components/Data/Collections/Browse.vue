@@ -5,7 +5,7 @@
       <collection-dropdown class="icon-medium icon-black" :id="index"></collection-dropdown>
     </headline>
 
-    <crudl-document @create-clicked="createDocument" :index="index" :collection="collection" :documents="documents" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
+    <crudl-document :available-filters="availableFilters" @create-clicked="createDocument" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" :index="index" :collection="collection" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
           <document-item @checkbox-click="toggleSelectDocuments" :document="document" :is-checked="isChecked(document.id)"></document-item>
@@ -17,8 +17,8 @@
 
 <script>
   import Headline from '../../Materialize/Headline'
-  import {performSearch} from '../../../vuex/modules/common/crudlDocument/actions'
-  import jQueryCollapsible from '../../Materialize/collapsible'
+  import { performSearch } from '../../../services/kuzzleWrapper'
+  import jQueryCollapsible from '../../../directives/collapsible.directive'
   import CollectionDropdown from '../Collections/Dropdown'
   import DocumentItem from '../Documents/DocumentItem'
   import CrudlDocument from '../../Common/CrudlDocument'
@@ -27,8 +27,10 @@
     rawFilter,
     basicFilter,
     sorting
+    paginationFrom,
+    paginationSize
   } from '../../../vuex/modules/common/crudlDocument/getters'
-  import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
+  import {formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters} from '../../../services/filterFormat'
 
   export default {
     name: 'CollectionBrowse',
@@ -41,8 +43,10 @@
     },
     data () {
       return {
+        availableFilters,
         selectedDocuments: [],
-        documents: []
+        documents: [],
+        totalDocuments: 0
       }
     },
     components: {
@@ -113,22 +117,21 @@
           sorting = formatSort(this.sorting)
         }
 
-        // Execute search with corresponding filters
-        this.performSearch(this.collection, this.index, filters, pagination, sorting)
+        performSearch(this.$route.params.collection, this.$route.params.index, filters, pagination, sorting)
           .then(res => {
-            this.documents = res
+            this.documents = res.documents
+            this.totalDocuments = res.total
           })
       }
     },
     vuex: {
-      actions: {
-        performSearch
-      },
       getters: {
         searchTerm,
         rawFilter,
         basicFilter,
-        sorting
+        sorting,
+        paginationFrom,
+        paginationSize
       }
     },
     events: {

@@ -6,10 +6,6 @@ export const mapping = state => {
   return state.data.mapping
 }
 
-export const notifications = state => {
-  return state.data.notifications
-}
-
 export const collections = state => {
   return state.data.collections
 }
@@ -20,4 +16,8 @@ export const selectedIndex = state => {
 
 export const selectedCollection = state => {
   return state.route.params.collection
+}
+
+export const newDocument = state => {
+  return state.data.newDocument
 }

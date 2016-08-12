@@ -1,6 +1,11 @@
 <template>
-  <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse"><i v-bind:class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i> <i class="fa fa-{{notification.icon}}"></i> {{notification.text}} - {{ago}}</div>
-  <div class="collapsible-body" v-if="notification.source"><p v-json-formatter="notification.source"></p></div>
+  <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
+    <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
+    <i class="fa fa-{{notification.icon}}"></i> {{notification.text}} - {{ago}}
+  </div>
+  <div class="collapsible-body" v-if="notification.source">
+    <p v-json-formatter="notification.source"></p>
+  </div>
 </template>
 
 <style type="text/css" media="screen" scoped>
@@ -19,7 +24,10 @@
   }
 
   .collapsible-body p {
-    padding-top: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-top: solid 1px rgba(0, 0, 0, 0.1);
+    border-bottom: solid 1px rgba(0, 0, 0, 0.1);
   }
 
   .unselectable {

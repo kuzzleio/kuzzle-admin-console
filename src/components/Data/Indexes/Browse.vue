@@ -3,7 +3,7 @@
     <headline title="Indexes - Browse"></headline>
 
     <div class="row">
-      <div class="col s8">
+      <div class="col s12 m10 l8">
 
       <div class="row actions">
         <div class="col s9">
@@ -17,7 +17,7 @@
           <div class="col s3">
             <div class="input-field left-align">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
-              <input id="filter" v-model="filter" type="text">
+              <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
           </div>
         </div>

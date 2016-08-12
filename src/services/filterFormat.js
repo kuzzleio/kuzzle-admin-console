@@ -1,3 +1,10 @@
+export const availableFilters = {
+  match: 'Match',
+  not_match: 'Not Match',
+  equal: 'Equal',
+  not_equal: 'Not equal'
+}
+
 export const formatFromQuickSearch = (searchTerm) => {
   if (searchTerm === '' || !searchTerm) {
     return {}

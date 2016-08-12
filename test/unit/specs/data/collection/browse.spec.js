@@ -16,7 +16,7 @@ describe('Browse data tests', () => {
   let rawFilter = sandbox.stub().returns()
   let basicFilter = sandbox.stub().returns()
   let sorting = sandbox.stub().returns()
-  let performSearch = sandbox.stub().returns(Promise.resolve())
+  let performSearch = sandbox.stub().returns(Promise.resolve({documents: [], total: 0}))
 
   const mockInjector = () => {
     Browse = BrowseInjector({
@@ -31,7 +31,9 @@ describe('Browse data tests', () => {
         basicFilter,
         sorting
       },
-      '../../../vuex/modules/common/crudlDocument/actions': {performSearch},
+      '../../../services/kuzzleWrapper': {
+        performSearch
+      },
       '../../Materialize/Headline': mockedComponent,
       '../../Materialize/collapsible': mockedComponent,
       '../Collections/Dropdown': mockedDirective,
@@ -132,7 +134,7 @@ describe('Browse data tests', () => {
         searchTerm = sandbox.stub().returns({})
         basicFilter = sandbox.stub().returns(null)
         mockInjector()
-        let performSearch = sandbox.stub(vm.$refs.browse, 'performSearch').returns(Promise.resolve([{toto: 'tata'}]))
+        let performSearch = sandbox.stub(vm.$refs.browse, 'performSearch').returns(Promise.resolve({documents: [{toto: 'tata'}], total: 1}))
 
         vm.$refs.browse.fetchData()
 

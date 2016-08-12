@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row">
-      <div class="col s8 z-depth-1 open-search" v-show="displayBlockFilter">
+      <div class="col s11 m10 l8 z-depth-1 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
@@ -12,6 +12,9 @@
               <div v-show="tabActive === 'basic'">
                 <basic-filter
                   :basic-filter="basicFilter"
+                  :sorting-enabled="sortingEnabled"
+                  :available-filters="availableFilters"
+                  :label-search-button="labelSearchButton"
                   :sorting="sorting"
                   :set-basic-filter="setBasicFilter"
                   @filters-basic-search="complexSearch = true">
@@ -22,6 +25,8 @@
                 <raw-filter
                   :raw-filter="rawFilter"
                   :format-from-basic-search="formatFromBasicSearch"
+                  :sorting-enabled="sortingEnabled"
+                  :label-search-button="labelSearchButton"
                   :format-sort="formatSort"
                   :basic-filter-form="basicFilterForm">
                 </raw-filter>
@@ -32,26 +37,26 @@
       </div>
 
       <quick-filter
-        v-if="(!basicFilter && !rawFilter && !sorting)"
+        v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled"
         :search-term="searchTerm"
         @filters-display-block-filter="displayBlockFilter = true">
       </quick-filter>
 
-      <div v-if="(basicFilter || rawFilter || sorting)" class="col s9 complex-search">
+      <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l9 complex-search">
         <div class="row">
-          <div class="col s7">
+          <div class="col s9 m7 l7">
             <div class="search-bar">
               <i class="fa fa-search search"></i>
               <div class="chip">
-                <span @click="displayBlockFilter = true">Complex query here</span>
-                <i class="close fa fa-close" @click.prevent="resetComplexSearch"></i>
+                <span @click="displayBlockFilter = true">{{labelComplexQuery}}</span>
+                <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
               </div>
               <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
               <i class="fa fa-times remove-search" @click="resetComplexSearch"></i>
             </div>
           </div>
           <div class="col s3">
-            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">Search</button>
+            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
           </div>
         </div>
       </div>
@@ -62,7 +67,7 @@
         v-if="displayBlockFilter"
         @click="displayBlockFilter = false"
         class="lean-overlay"
-        style="z-index: 1000; display: block; opacity: 0;">
+        style="z-index: 90; display: block; opacity: 0;">
       </div>
     </div>
   </div>
@@ -79,7 +84,40 @@
 
   export default {
     name: 'Filters',
-    props: ['rawFilter', 'basicFilter', 'setBasicFilter', 'basicFilterForm', 'searchTerm', 'sorting', 'formatFromBasicSearch', 'formatSort'],
+    props: {
+      availableFilters: {
+        type: Object,
+        required: true
+      },
+      quickFilterEnabled: {
+        type: Boolean,
+        required: false,
+        'default': true
+      },
+      sortingEnabled: {
+        type: Boolean,
+        required: false,
+        'default': true
+      },
+      labelSearchButton: {
+        type: String,
+        required: false,
+        'default': 'search'
+      },
+      labelComplexQuery: {
+        type: String,
+        required: false,
+        'default': 'Complex query here'
+      },
+      rawFilter: Object,
+      basicFilter: Array,
+      setBasicFilter: Function,
+      basicFilterForm: Object,
+      searchTerm: String,
+      sorting: Array,
+      formatFromBasicSearch: Function,
+      formatSort: Function
+    },
     components: {
       Tabs,
       Tab,
@@ -111,6 +149,13 @@
       }
     },
     methods: {
+      handleEsc (evt) {
+        evt = evt || window.event
+
+        if (evt.keyCode === ESC_KEY) {
+          this.displayBlockFilter = false
+        }
+      },
       switchFilter (name) {
         this.tabActive = name
       },
@@ -122,13 +167,10 @@
       }
     },
     ready () {
-      window.document.addEventListener('keydown', evt => {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.displayBlockFilter = false
-        }
-      })
+      window.document.addEventListener('keydown', this.handleEsc)
+    },
+    destroyed () {
+      window.document.removeEventListener('keydown', this.handleEsc)
     }
   }
 </script>
@@ -198,7 +240,7 @@
 
   .open-search {
     position: absolute;
-    z-index: 1001;
+    z-index: 100;
     background-color: #fff;
 
     i.close {

@@ -1,9 +1,9 @@
 proxy:
-  image: kuzzleio/proxy:alpine
+  image: kuzzleio/proxy:develop
   ports:
     - "7511:7511"
     - "7512:7512"
-    - "8083:8080"
+    - "7513:7513"
 
 backoffice:
   image: kuzzleio/bo-dev:alpine
@@ -23,22 +23,17 @@ backoffice:
 
 kuzzle:
   image: kuzzleio/kuzzle:develop
-  command: sh -c "npm install -g node-inspector && /run-debug.sh"
   volumes:
       - "../kuzzle/fixtures.json:/fixtures.json"
-  ports:
-    - "8080:8080"
-    - "8081:8081"
   links:
     - elasticsearch
     - redis
     - proxy:api
   environment:
-    - MQ_BROKER_ENABLED=1
     - kuzzle_fixtures=/fixtures.json
 
 redis:
   image: redis:3.0-alpine
 
 elasticsearch:
-  image: kuzzleio/elasticsearch:2.2
+  image: kuzzleio/elasticsearch:2.3.4

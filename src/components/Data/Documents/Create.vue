@@ -6,7 +6,7 @@
 
     <div class="row">
       <div class="input-field col m2">
-        <input id="id" type="text" name="collection" v-model="id"/>
+        <input id="id" type="text" name="collection" v-model="id" />
         <label for="id">Id (optional)</label>
       </div>
     </div>
@@ -20,7 +20,7 @@
         </fieldset>
       </div>
     </div>
-    <button @click="create">Create</button>
+    <button @click="create" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
   </div>
 </template>
 
@@ -28,6 +28,8 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import Mapping from './Mapping'
+  import {unsetNewDocument} from '../../../vuex/modules/data/actions'
+  import {newDocument} from '../../../vuex/modules/data/getters'
 
   export default {
     name: 'DocumentCreate',
@@ -37,8 +39,29 @@
     },
     methods: {
       create () {
-        this.$broadcast('create-document')
+        if (this.id) {
+          this.newDocument._id = this.id
+        }
+        kuzzle.dataCollectionFactory(this.$route.params.collection, this.$route.params.index).createDocument(this.newDocument, (err, res) => {
+          if (err) {
+            this.$dispatch('toast', err.message, 'error')
+            return
+          }
+          kuzzle.refreshIndex(this.$route.params.index)
+          this.$router.go({name: 'DataCollectionBrowse', params: {index: this.$route.params.index, collection: this.$route.params.collection}})
+        })
       }
+    },
+    vuex: {
+      actions: {
+        unsetNewDocument
+      },
+      getters: {
+        newDocument
+      }
+    },
+    beforeDestroy () {
+      this.unsetNewDocument()
     },
     data () {
       return {

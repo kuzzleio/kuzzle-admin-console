@@ -5,6 +5,7 @@
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
       @filters-refresh-search="refreshSearch"
+      :available-filters="availableFilters"
       :search-term="searchTerm"
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
@@ -103,21 +104,13 @@
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
   import {
-    deleteDocuments,
-    performSearch,
     setBasicFilter
   } from '../../vuex/modules/common/crudlDocument/actions'
   import {
-    totalDocuments,
-    paginationFrom,
-    paginationSize,
-    searchTerm,
-    rawFilter,
-    basicFilter,
-    sorting,
     basicFilterForm
   } from '../../vuex/modules/common/crudlDocument/getters'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
+  import {deleteDocuments} from '../../services/kuzzleWrapper'
 
   export default {
     name: 'CrudlDocument',
@@ -132,26 +125,25 @@
       documents: Array,
       displayBulkDelete: Boolean,
       allChecked: Boolean,
+      totalDocuments: Number,
       lengthDocument: {
         type: Number,
         default: 0
       },
-      selectedDocuments: Array
+      selectedDocuments: Array,
+      paginationFrom: Number,
+      paginationSize: Number,
+      searchTerm: String,
+      rawFilter: String,
+      basicFilter: String,
+      sorting: String,
+      availableFilters: Object
     },
     vuex: {
       actions: {
-        deleteDocuments,
-        performSearch,
         setBasicFilter
       },
       getters: {
-        totalDocuments,
-        paginationFrom,
-        paginationSize,
-        searchTerm,
-        rawFilter,
-        basicFilter,
-        sorting,
         basicFilterForm
       }
     },
@@ -171,7 +163,7 @@
       },
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
-        this.deleteDocuments(this.index, this.collection, this.selectedDocuments)
+        deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
           })
@@ -181,7 +173,7 @@
       },
       confirmSingleDelete (id) {
         this.$broadcast('modal-close', 'single-delete')
-        this.deleteDocuments(this.index, this.collection, [id])
+        deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
           })

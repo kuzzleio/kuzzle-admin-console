@@ -15,7 +15,7 @@ let user = {
   }
 }
 
-describe('UserItem component', () => {
+describe.only('UserItem component', () => {
   let $vm
   let sandbox = sinon.sandbox.create()
   let $emit
