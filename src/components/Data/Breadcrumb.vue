@@ -71,15 +71,22 @@
       height: auto;
       margin-right: 3px;
     }
+    ul {
+      a {
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
   }
   li {
     &.active {
-      background-color: #e6e6e6
+      background-color: #ECECEC
     }
     &.link {
       a:hover {
         background-color: transparent;
-        box-shadow: inset 0px -4px 0px 0px rgba(0,0,0,0.25)
+        box-shadow: inset 0px -4px 0px 0px rgba(0,0,0,0.1)
       }
     }
     &.link-active {
@@ -103,7 +110,7 @@
         height: 0;
         border-top: 10px solid transparent;
         border-bottom: 10px solid transparent;
-        border-left: 10px solid #e6e6e6;
+        border-left: 10px solid #ECECEC;
       }
     }
   }
@@ -130,7 +137,7 @@
           top: 10px;
           border-top: 15px solid transparent;
           border-bottom: 15px solid transparent;
-          border-left: 15px solid #e6e6e6;
+          border-left: 15px solid #ECECEC;
         }
       }
     }

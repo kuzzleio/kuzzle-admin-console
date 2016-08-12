@@ -39,7 +39,10 @@ export const mutations = {
   [ADD_INDEX] (state, index) {
     state.indexesAndCollections.push({
       name: index,
-      collections: []
+      collections: {
+        stored: [],
+        realtime: []
+      }
     })
   }
 }

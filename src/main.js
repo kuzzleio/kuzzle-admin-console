@@ -21,6 +21,7 @@ isConnected()
     return Promise.resolve()
   })
   .then(() => {
+    console.log('---')
     router.start({
       store,
       components: { App }
