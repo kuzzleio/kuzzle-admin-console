@@ -6,9 +6,9 @@ export const testAction = (action, args, state, expectedMutations, done) => {
   // mock dispatch
   const dispatch = (name, ...payload) => {
     const mutation = expectedMutations[count]
-    expect(mutation.name).to.equal(name)
+    expect(mutation.name, 'mutation name must match').to.equal(name)
     if (payload) {
-      expect(mutation.payload).to.deep.equal(payload)
+      expect(mutation.payload, 'mutation payload must match').to.deep.equal(payload)
     }
     count++
     if (count >= expectedMutations.length) {
@@ -20,7 +20,7 @@ export const testAction = (action, args, state, expectedMutations, done) => {
 
   // check if no mutations should have been dispatched
   if (expectedMutations.length === 0) {
-    expect(count).to.equal(0)
+    expect(count, 'too much mutation was called').to.equal(0)
     done()
   }
 }
@@ -32,9 +32,9 @@ export const testActionPromise = (action, args, state, expectedMutations, done) 
   // mock dispatch
   const dispatch = (name, ...payload) => {
     const mutation = expectedMutations[count]
-    expect(mutation.name).to.equal(name)
+    expect(mutation.name, 'mutation name must match').to.equal(name)
     if (payload) {
-      expect(mutation.payload).to.deep.equal(payload)
+      expect(mutation.payload, 'mutation payload must match').to.deep.equal(payload)
     }
     count++
     if (count >= expectedMutations.length) {
@@ -45,7 +45,7 @@ export const testActionPromise = (action, args, state, expectedMutations, done) 
   return action({dispatch, state}, ...args).then(() => {
     // check if no mutations should have been dispatched
     if (expectedMutations.length === 0) {
-      expect(count).to.equal(0)
+      expect(count, 'too much mutation was called').to.equal(0)
       done()
     }
   }).catch(e => {

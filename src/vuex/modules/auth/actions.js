@@ -2,7 +2,8 @@ import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
 import userCookies from '../../../services/userCookies'
 import SessionUser from '../../../models/SessionUser'
-import {SET_CURRENT_USER, SET_TOKEN_VALID} from './mutation-types'
+import {SET_CURRENT_USER, SET_TOKEN_VALID, SET_ADMIN_EXISTS} from './mutation-types'
+import Promise from 'bluebird'
 
 export const doLogin = (store, username, password) => {
   let user = SessionUser()
@@ -74,6 +75,24 @@ export const loginFromCookie = (store) => {
       store.dispatch(SET_CURRENT_USER, user)
       return Promise.resolve(user)
     })
+}
+
+export const checkFirstAdmin = (store) => {
+  return kuzzle
+    .queryPromise({controller: 'admin', action: 'adminExists'}, {})
+    .then((res) => {
+      if (!res.result) {
+        store.dispatch(SET_ADMIN_EXISTS, false)
+        return Promise.resolve()
+      }
+
+      store.dispatch(SET_ADMIN_EXISTS, true)
+      return Promise.resolve()
+    })
+}
+
+export const setFirstAdmin = (store, exists) => {
+  store.dispatch(SET_ADMIN_EXISTS, exists)
 }
 
 export const doLogout = (store) => {

@@ -7,53 +7,63 @@ import {
   ADD_INDEX
 } from './mutation-types'
 
+const addLocalRealtimeCollections = (result, index) => {
+  // eslint-disable-next-line no-undef
+  let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+
+  realtimeCollections = realtimeCollections
+    .filter(o => o.index === index)
+    .map(o => o.collection)
+
+  if (!result.realtime) {
+    result.realtime = []
+  }
+
+  result.realtime.push(...realtimeCollections)
+}
+
 export const listIndexesAndCollections = (store) => {
   let promises = []
-  // let currentIndex
 
-  kuzzle
-    .listIndexes((error, result) => {
+  return new Promise((resolve, reject) => {
+    kuzzle.listIndexes((error, result) => {
       let indexesAndCollections = []
 
       if (error) {
-        return
+        return reject(new Error(error.message))
       }
 
       result.forEach((index) => {
-        let promise = new Promise((resolve, reject) => {
+        /* eslint-disable */
+        let promise = new Promise((resolveOne, rejectOne) => {
           kuzzle.listCollections(index, (error, result) => {
             if (error && index !== '%kuzzle') {
-              reject(new Error(error.message))
+              rejectOne(new Error(error.message))
               return
             }
             if (index !== '%kuzzle') {
-              // realtime collections
-              // eslint-disable-next-line no-undef
-              let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-              if (!result.realtime) {
-                result.realtime = []
-              }
-              result.realtime.push(...realtimeCollections.map(o => {
-                if (o.index === index) {
-                  return o.collection
-                }
-              }))
+              addLocalRealtimeCollections(result, index)
+
               indexesAndCollections.push({
                 name: index,
                 collections: result
               })
             }
-            resolve(indexesAndCollections)
+            resolveOne(indexesAndCollections)
           })
         })
         promises.push(promise)
+        /* eslint-enable */
       })
+
       Promise.all(promises).then(res => {
         store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
-      }).catch(() => {
-        return
+        resolve()
+      }).catch((error) => {
+        return reject(new Error(error.message))
       })
     })
+  })
 }
 
 export const getMapping = (store, index, collection) => {
@@ -66,11 +76,12 @@ export const getMapping = (store, index, collection) => {
 }
 
 export const getCollectionsFromIndex = (store, index) => {
-  kuzzle.listCollections(index, (err, res) => {
+  kuzzle.listCollections(index, (err, result) => {
     if (err) {
       return
     }
-    store.dispatch(RECEIVE_COLLECTIONS, res)
+    addLocalRealtimeCollections(result, index)
+    store.dispatch(RECEIVE_COLLECTIONS, result)
   })
 }
 

@@ -45,7 +45,7 @@
       </div>
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#">Create a collection</a>
+        <a class="btn btn-small" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">Create a collection</a>
       </div>
     </div>
   </div>

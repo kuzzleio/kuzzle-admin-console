@@ -29,15 +29,6 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  button {
-    &.btn-flat {
-      &:focus {
-        background-color: #EEE;
-      }
-    }
-  }
-</style>
 
 <script>
   export default {

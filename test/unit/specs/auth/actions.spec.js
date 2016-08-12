@@ -210,6 +210,72 @@ describe('loginFromCookie action', () => {
   })
 })
 
+describe('checkFirstAdmin action', () => {
+  let kuzzleState = 'connecting'
+  let actions
+
+  const injectMock = (exists = true) => {
+    actions = actionsInjector({
+      '../../../services/kuzzle': {
+        state: kuzzleState,
+        queryPromise: () => {
+          if (triggerError) {
+            return Promise.reject(new Error('error from Kuzzle'))
+          } else {
+            if (exists) {
+              return Promise.resolve({result: true})
+            }
+
+            return Promise.resolve({result: false})
+          }
+        }
+      }
+    })
+  }
+
+  it('should reject if error comes from Kuzzle', (done) => {
+    triggerError = true
+    injectMock({_id: 'foo', jwt: 'jwt'})
+    testActionPromise(actions.checkFirstAdmin, [], {}, [])
+      .catch((e) => {
+        expect(e.message).to.be.equal('error from Kuzzle')
+        done()
+      })
+  })
+
+  it('should dispatch true if admin already exists', (done) => {
+    triggerError = false
+    injectMock(true)
+    testActionPromise(actions.checkFirstAdmin, [], {}, [
+      { name: 'SET_ADMIN_EXISTS', payload: [true] }
+    ], done)
+  })
+
+  it('should dispatch false if there is no admin', (done) => {
+    triggerError = false
+    injectMock(false)
+    testActionPromise(actions.checkFirstAdmin, [], {}, [
+      { name: 'SET_ADMIN_EXISTS', payload: [false] }
+    ], done)
+  })
+})
+
+describe('setFirstAdmin action', () => {
+  let actions = actionsInjector({})
+
+  it('should dispatch true', (done) => {
+    testAction(actions.setFirstAdmin, [true], {}, [
+      { name: 'SET_ADMIN_EXISTS', payload: [true] }
+    ], done)
+  })
+
+  it('should dispatch false', (done) => {
+    testAction(actions.setFirstAdmin, [false], {}, [
+      { name: 'SET_ADMIN_EXISTS', payload: [false] }
+    ], done)
+  })
+})
+
 describe('logout action', () => {
   const actions = actionsInjector({
     '../../../services/kuzzle': {

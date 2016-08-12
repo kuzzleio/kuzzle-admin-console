@@ -9,3 +9,7 @@ export const user = state => {
 export const tokenValid = state => {
   return state.auth.tokenValid
 }
+
+export const adminAlreadyExists = state => {
+  return state.auth.adminAlreadyExists
+}
