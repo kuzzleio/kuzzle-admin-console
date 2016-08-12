@@ -1,4 +1,4 @@
-import {testAction} from '../helper'
+import {testAction, testActionPromise} from '../helper'
 const actionsInjector = require('inject!../../../../src/vuex/modules/data/actions')
 
 describe('listIndexesAndCollections action', () => {
@@ -25,21 +25,21 @@ describe('listIndexesAndCollections action', () => {
 
   it('should get the collections list per indexes but not %kuzzle', (done) => {
     triggerError = [false, false]
-    testAction(actions.listIndexesAndCollections, [], {}, [
+    testActionPromise(actions.listIndexesAndCollections, [], {}, [
       {name: 'RECEIVE_INDEXES_COLLECTIONS', payload: [
         [
           {
             name: 'index1',
             collections: {
               stored: ['collection1', 'collection2'],
-              realtime: [undefined]
+              realtime: []
             }
           },
           {
             name: 'index2',
             collections: {
               stored: ['collection1', 'collection2'],
-              realtime: [undefined]
+              realtime: []
             }
           }]
       ]}

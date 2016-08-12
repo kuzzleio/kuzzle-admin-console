@@ -56,7 +56,7 @@
         <div class="row">
           <!-- No collection view -->
           <div class="col s12" v-if="!hasCollection">
-            <a  class="card-title" href="#">
+            <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <div class="card-panel hoverable">
                 <div class="card-content">
                   There is no collection in index <strong>{{index}}</strong> yet. You may want to create a new one ?

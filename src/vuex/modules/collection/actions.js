@@ -35,21 +35,18 @@ export const createCollection = (store, index, collection, mapping, isRealTime) 
       resolve()
       return
     }
-    kuzzle.dataCollectionFactory(collection, index).create(err => {
-      if (err) {
-        return reject(new Error(err.message))
-      }
-      kuzzle
-        .dataCollectionFactory(collection, index)
-        .dataMappingFactory(mapping || {})
-        .apply((err) => {
-          if (err) {
-            reject(new Error(err.message))
-            return
-          }
-          store.dispatch(ADD_STORED_COLLECTION, index, collection)
-          resolve()
-        })
-    })
+
+    kuzzle
+      .dataCollectionFactory(collection, index)
+      .dataMappingFactory(mapping || {})
+      .apply(err => {
+        if (err) {
+          reject(new Error(err.message))
+          return
+        }
+
+        store.dispatch(ADD_STORED_COLLECTION, index, collection)
+        resolve()
+      })
   })
 }
