@@ -7,7 +7,7 @@ let BrowseInjector = require('!!vue?inject!../../../../../src/components/Securit
 let Browse
 let sandbox = sinon.sandbox.create()
 
-describe('Browse data tests', () => {
+describe.only('User browse data tests', () => {
   let vm
   let formatFromQuickSearch = sandbox.stub()
   let formatFromBasicSearch = sandbox.stub()
@@ -17,6 +17,8 @@ describe('Browse data tests', () => {
   let basicFilter = sandbox.stub().returns()
   let sorting = sandbox.stub().returns()
   let performSearch = sandbox.stub().returns(Promise.resolve())
+  let paginationFrom = sandbox.stub().returns()
+  let paginationSize = sandbox.stub().returns()
 
   const mockInjector = () => {
     Browse = BrowseInjector({
@@ -29,9 +31,11 @@ describe('Browse data tests', () => {
         searchTerm,
         rawFilter,
         basicFilter,
-        sorting
+        sorting,
+        paginationFrom,
+        paginationSize
       },
-      '../../../vuex/modules/common/crudlDocument/actions': {performSearch},
+      '../../../services/kuzzleWrapper': {performSearch},
       '../../Materialize/Headline': mockedComponent,
       '../../Materialize/collapsible': mockedComponent,
       '../Collections/Dropdown': mockedDirective,
@@ -131,8 +135,8 @@ describe('Browse data tests', () => {
       it('should call perfomSearch and get result from this function', (done) => {
         searchTerm = sandbox.stub().returns({})
         basicFilter = sandbox.stub().returns(null)
+        performSearch = sandbox.stub().returns(Promise.resolve({documents: [{toto: 'tata'}], total: 1}))
         mockInjector()
-        let performSearch = sandbox.stub(vm.$refs.browse, 'performSearch').returns(Promise.resolve([{toto: 'tata'}]))
 
         vm.$refs.browse.fetchData()
 

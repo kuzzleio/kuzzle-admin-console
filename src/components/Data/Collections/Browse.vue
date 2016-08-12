@@ -26,7 +26,7 @@
     searchTerm,
     rawFilter,
     basicFilter,
-    sorting
+    sorting,
     paginationFrom,
     paginationSize
   } from '../../../vuex/modules/common/crudlDocument/getters'
@@ -94,6 +94,8 @@
         this.selectedDocuments.splice(index, 1)
       },
       fetchData () {
+        this.selectedDocuments = []
+
         let filters = {}
         let sorting = []
         let pagination = {

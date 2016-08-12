@@ -1,10 +1,7 @@
 <template>
   <div>
-    <headline title="Profiles Management"></headline>
-
-    <crudl-document index="%kuzzle" collection="profiles" :documents="documents" :display-bulk-delete="displayBulkDelete"
-                    :all-checked="allChecked" :selected-documents="selectedDocuments"
-                    :length-document="selectedDocuments.length">
+    <headline title="Users Management"></headline>
+    <crudl-document :available-filters="availableFilters" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" index="%kuzzle" collection="roles" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
           <profile-item @checkbox-click="toggleSelectDocuments" :profile="document"
@@ -19,17 +16,19 @@
   import Headline from '../../Materialize/Headline'
   import CrudlDocument from '../../Common/CrudlDocument'
   import ProfileItem from './ProfileItem'
-  import {performSearch} from '../../../vuex/modules/common/crudlDocument/actions'
   import {
     searchTerm,
     rawFilter,
     basicFilter,
-    sorting
+    sorting,
+    paginationFrom,
+    paginationSize
   } from '../../../vuex/modules/common/crudlDocument/getters'
-  import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
+  import { formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters } from '../../../services/filterFormat'
+  import { performSearch } from '../../../services/kuzzleWrapper'
 
   export default {
-    name: 'ProfileList',
+    name: 'RolesList',
     components: {
       Headline,
       ProfileItem,
@@ -37,19 +36,20 @@
     },
     data () {
       return {
+        availableFilters,
         selectedDocuments: [],
-        documents: []
+        documents: [],
+        totalDocuments: 0
       }
     },
     vuex: {
-      actions: {
-        performSearch
-      },
       getters: {
         searchTerm,
         rawFilter,
         basicFilter,
-        sorting
+        sorting,
+        paginationFrom,
+        paginationSize
       }
     },
     route: {
@@ -117,9 +117,10 @@
         }
 
         // Execute search with corresponding filters
-        this.performSearch('profiles', '%kuzzle', filters, pagination, sorting)
+        performSearch('profiles', '%kuzzle', filters, pagination, sorting)
           .then(res => {
-            this.documents = res
+            this.documents = res.documents
+            this.totalDocuments = res.total
           })
       }
     },
