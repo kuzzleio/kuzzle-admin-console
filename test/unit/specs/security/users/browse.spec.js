@@ -49,8 +49,6 @@ describe('Browse data tests', () => {
     vm.$refs.browse.$router = {go: sandbox.stub()}
   }
 
-  beforeEach(() => mockInjector())
-
   afterEach(() => sandbox.restore())
 
   describe('computed tests', () => {
