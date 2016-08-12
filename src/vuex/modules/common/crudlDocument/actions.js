@@ -1,7 +1,6 @@
 import kuzzle from '../../../../services/kuzzle'
 import Bluebird from 'bluebird'
 import {
-  DELETE_DOCUMENTS,
   SET_BASIC_FILTER
 } from './mutation-types'
 
@@ -18,7 +17,6 @@ export const deleteDocuments = (store, index, collection, ids) => {
           return
         }
 
-        store.dispatch(DELETE_DOCUMENTS, ids)
         kuzzle.refreshIndex(index, () => {
           resolve()
         })
@@ -62,7 +60,7 @@ export const performSearch = (store, collection, index, filters = {}, pagination
 
           return object
         })
-        resolve(documents)
+        resolve({documents: documents, total: result.total})
       })
   })
 }

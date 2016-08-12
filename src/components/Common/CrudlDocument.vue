@@ -104,17 +104,9 @@
   import Filters from './Filters/Filters'
   import {
     deleteDocuments,
-    performSearch,
     setBasicFilter
   } from '../../vuex/modules/common/crudlDocument/actions'
   import {
-    totalDocuments,
-    paginationFrom,
-    paginationSize,
-    searchTerm,
-    rawFilter,
-    basicFilter,
-    sorting,
     basicFilterForm
   } from '../../vuex/modules/common/crudlDocument/getters'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
@@ -132,26 +124,25 @@
       documents: Array,
       displayBulkDelete: Boolean,
       allChecked: Boolean,
+      totalDocuments: Number,
       lengthDocument: {
         type: Number,
         default: 0
       },
-      selectedDocuments: Array
+      selectedDocuments: Array,
+      paginationFrom: Number,
+      paginationSize: Number,
+      searchTerm: String,
+      rawFilter: String,
+      basicFilter: String,
+      sorting: String
     },
     vuex: {
       actions: {
         deleteDocuments,
-        performSearch,
         setBasicFilter
       },
       getters: {
-        totalDocuments,
-        paginationFrom,
-        paginationSize,
-        searchTerm,
-        rawFilter,
-        basicFilter,
-        sorting,
         basicFilterForm
       }
     },

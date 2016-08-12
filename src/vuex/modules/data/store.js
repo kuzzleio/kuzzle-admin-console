@@ -7,7 +7,8 @@ import {
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
   ADD_INDEX,
-  CREATE_DOCUMENT
+  SET_PARTIAL_TO_DOCUMENT,
+  UNSET_NEW_DOCUMENT
 } from './mutation-types'
 
 const state = {
@@ -45,7 +46,6 @@ export const mutations = {
         state.collections.stored.push(collection)
       }
     }
-    console.log(state.collections)
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
     for (var i = 0; i < state.indexesAndCollections.length; i++) {
@@ -60,12 +60,23 @@ export const mutations = {
       collections: []
     })
   },
-  [CREATE_DOCUMENT] (state, partial) {
-    Object.keys(partial).forEach(function (attr) {
-      console.log(attr, partial[attr])
-      state.newDocument[attr] = partial[attr]
-    })
-    console.log(state.newDocument)
+  [SET_PARTIAL_TO_DOCUMENT] (state, path, value) {
+    let splitted = path.split('.')
+
+    // Build an object from a path (path: ['a.b.c.d'] value: 'foo' => {a: {b: {c: {d: 'foo'}}}})
+    splitted.reduce((prev, curr, index) => {
+      if (!splitted[index + 1]) {
+        prev[curr] = value
+      } else {
+        if (!prev[curr]) {
+          prev[curr] = {}
+        }
+      }
+      return prev[curr]
+    }, state.newDocument)
+  },
+  [UNSET_NEW_DOCUMENT] (state) {
+    state.newDocument = {}
   }
 }
 
