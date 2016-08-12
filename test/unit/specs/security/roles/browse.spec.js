@@ -3,7 +3,7 @@ import store from '../../../../../src/vuex/store'
 import { mockedComponent, mockedDirective } from '../../helper'
 import Promise from 'bluebird'
 
-let BrowseInjector = require('!!vue?inject!../../../../../src/components/Data/Collections/Browse')
+let BrowseInjector = require('!!vue?inject!../../../../../src/components/Security/Roles/Browse')
 let Browse
 let sandbox = sinon.sandbox.create()
 
@@ -35,7 +35,7 @@ describe('Browse data tests', () => {
       '../../Materialize/Headline': mockedComponent,
       '../../Materialize/collapsible': mockedComponent,
       '../Collections/Dropdown': mockedDirective,
-      '../Documents/DocumentItem': mockedComponent,
+      './RoleItem': mockedComponent,
       '../../Common/CrudlDocument': mockedComponent
     })
 

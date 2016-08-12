@@ -59,7 +59,7 @@
         if (!this.selectedDocuments || !this.documents) {
           return false
         }
-        
+
         return this.selectedDocuments.length === this.documents.length
       }
     },
@@ -114,9 +114,10 @@
         }
 
         // Execute search with corresponding filters
-        this.performSearch(this.collection, this.index, filters, pagination, sorting).then(res => {
-          this.documents = res
-        })
+        this.performSearch(this.collection, this.index, filters, pagination, sorting)
+          .then(res => {
+            this.documents = res
+          })
       }
     },
     vuex: {

@@ -1,14 +1,14 @@
 <template>
   <div>
-    <headline title="Users Management"></headline>
+    <headline title="Roles Management"></headline>
 
-    <crudl-document index="%kuzzle" collection="users" :documents="documents" :display-bulk-delete="displayBulkDelete"
+    <crudl-document index="%kuzzle" collection="roles" :documents="documents" :display-bulk-delete="displayBulkDelete"
                     :all-checked="allChecked" :selected-documents="selectedDocuments"
                     :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
-          <user-item @checkbox-click="toggleSelectDocuments" :user="document"
-                     :is-checked="isChecked(document.id)"></user-item>
+          <role-item @checkbox-click="toggleSelectDocuments" :role="document"
+                     :is-checked="isChecked(document.id)"></role-item>
         </div>
       </div>
     </crudl-document>
@@ -18,7 +18,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import CrudlDocument from '../../Common/CrudlDocument'
-  import UserItem from './UserItem'
+  import RoleItem from './RoleItem'
   import {performSearch} from '../../../vuex/modules/common/crudlDocument/actions'
   import {
     searchTerm,
@@ -29,16 +29,17 @@
   import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
 
   export default {
-    name: 'UsersList',
+    name: 'RoleList',
     components: {
       Headline,
-      UserItem,
+      RoleItem,
       CrudlDocument
     },
     data () {
       return {
         selectedDocuments: [],
-        documents: []
+        documents: [],
+        $loadingRouteData: null
       }
     },
     vuex: {
@@ -62,6 +63,10 @@
         return this.selectedDocuments.length > 0
       },
       allChecked () {
+        if (!this.selectedDocuments || !this.documents) {
+          return false
+        }
+
         return this.selectedDocuments.length === this.documents.length
       }
     },
@@ -113,7 +118,7 @@
         }
 
         // Execute search with corresponding filters
-        this.performSearch('users', '%kuzzle', filters, pagination, sorting)
+        this.performSearch('roles', '%kuzzle', filters, pagination, sorting)
           .then(res => {
             this.documents = res
           })

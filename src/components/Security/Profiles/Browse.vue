@@ -62,6 +62,10 @@
         return this.selectedDocuments.length > 0
       },
       allChecked () {
+        if (!this.selectedDocuments || !this.documents) {
+          return false
+        }
+
         return this.selectedDocuments.length === this.documents.length
       }
     },
