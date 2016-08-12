@@ -18,6 +18,12 @@
   }
 }
 
+.btn-flat {
+  &:focus {
+    background-color: #EEE;
+  }
+}
+
 strong {
   font-weight: 600;
 }
