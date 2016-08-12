@@ -49,7 +49,7 @@
     "fs": "0.0.2",
     "highcharts": "^4.2.3",
     "jsonformatter": "^0.6.0",
-    "kuzzle-sdk": "2.0.0",
+    "kuzzle-sdk": "2.0.1",
     "leaflet": "^0.7.7",
     "lodash": "4.13.1",
     "morgan": "1.7.0",
