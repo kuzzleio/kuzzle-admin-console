@@ -25,7 +25,9 @@ export const testAction = (action, args, state, expectedMutations, done) => {
   }
 }
 
-export const mockedComponent = Vue.extend({template: '<div></div>'})
+export const mockedComponent = Vue.extend({template: '<div></div>', name: 'Toto'})
+
+export const mockedDirective = Vue.directive('my-test-directive', {})
 
 export const testActionPromise = (action, args, state, expectedMutations, done, expectedResultFromPromise) => {
   let count = 0

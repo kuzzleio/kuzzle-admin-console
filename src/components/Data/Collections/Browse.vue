@@ -1,11 +1,11 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{$route.params.collection}} - Browse
-      <collection-dropdown class="icon-medium icon-black" :id="$route.params.index"></collection-dropdown>
+      {{collection}} - Browse
+      <collection-dropdown class="icon-medium icon-black" :id="index"></collection-dropdown>
     </headline>
 
-    <crudl-document @create-clicked="createDocument" :index="$route.params.index" :collection="$route.params.collection" :documents="documents" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
+    <crudl-document @create-clicked="createDocument" :index="index" :collection="collection" :documents="documents" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
           <document-item @checkbox-click="toggleSelectDocuments" :document="document" :is-checked="isChecked(document.id)"></document-item>
@@ -25,7 +25,8 @@
   import {
     searchTerm,
     rawFilter,
-    basicFilter
+    basicFilter,
+    sorting
   } from '../../../vuex/modules/common/crudlDocument/getters'
   import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
 
@@ -34,6 +35,10 @@
     directives: [
       jQueryCollapsible
     ],
+    props: {
+      index: String,
+      collection: String
+    },
     data () {
       return {
         selectedDocuments: [],
@@ -51,6 +56,10 @@
         return this.selectedDocuments.length > 0
       },
       allChecked () {
+        if (!this.selectedDocuments || !this.documents) {
+          return false
+        }
+        
         return this.selectedDocuments.length === this.documents.length
       }
     },
@@ -79,25 +88,8 @@
         }
 
         this.selectedDocuments.splice(index, 1)
-      }
-    },
-    vuex: {
-      actions: {
-        performSearch
       },
-      getters: {
-        searchTerm,
-        rawFilter,
-        basicFilter
-      }
-    },
-    events: {
-      'toggle-all' () {
-        this.toggleAll()
-      }
-    },
-    route: {
-      data () {
+      fetchData () {
         let filters = {}
         let sorting = []
         let pagination = {
@@ -122,9 +114,33 @@
         }
 
         // Execute search with corresponding filters
-        this.performSearch(this.$route.params.collection, this.$route.params.index, filters, pagination, sorting).then(res => {
+        this.performSearch(this.collection, this.index, filters, pagination, sorting).then(res => {
           this.documents = res
         })
+      }
+    },
+    vuex: {
+      actions: {
+        performSearch
+      },
+      getters: {
+        searchTerm,
+        rawFilter,
+        basicFilter,
+        sorting
+      }
+    },
+    events: {
+      'toggle-all' () {
+        this.toggleAll()
+      },
+      'crudl-refresh-search' () {
+        this.fetchData()
+      }
+    },
+    route: {
+      data () {
+        this.fetchData()
       }
     }
   }

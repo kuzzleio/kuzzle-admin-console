@@ -23,7 +23,8 @@
   import {
     searchTerm,
     rawFilter,
-    basicFilter
+    basicFilter,
+    sorting
   } from '../../../vuex/modules/common/crudlDocument/getters'
   import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
 
@@ -48,45 +49,13 @@
       getters: {
         searchTerm,
         rawFilter,
-        basicFilter
-      }
-    },
-    watch: {
-      '$route' () {
-        console.log('ok watch', this.$route)
+        basicFilter,
+        sorting
       }
     },
     route: {
       data () {
-        this.selectedDocuments = []
-
-        let filters = {}
-        let sorting = []
-        let pagination = {
-          from: this.paginationFrom,
-          size: this.paginationSize
-        }
-        // Manage query quickSearch/basicSearch/rawSearch
-        if (this.searchTerm) {
-          filters = formatFromQuickSearch(this.searchTerm)
-        } else if (this.basicFilter) {
-          filters = formatFromBasicSearch(this.basicFilter)
-        } else if (this.rawFilter) {
-          filters = this.rawFilter
-          if (filters.sort) {
-            sorting = filters.sort
-          }
-        }
-
-        if (this.sorting) {
-          sorting = formatSort(this.sorting)
-        }
-
-        // Execute search with corresponding filters
-        this.performSearch('roles', '%kuzzle', filters, pagination, sorting)
-          .then(res => {
-            this.documents = res
-          })
+        this.fetchData()
       }
     },
     computed: {
@@ -118,11 +87,45 @@
         }
 
         this.selectedDocuments.splice(index, 1)
+      },
+      fetchData () {
+        this.selectedDocuments = []
+
+        let filters = {}
+        let sorting = []
+        let pagination = {
+          from: this.paginationFrom,
+          size: this.paginationSize
+        }
+        // Manage query quickSearch/basicSearch/rawSearch
+        if (this.searchTerm) {
+          filters = formatFromQuickSearch(this.searchTerm)
+        } else if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+          if (filters.sort) {
+            sorting = filters.sort
+          }
+        }
+
+        if (this.sorting) {
+          sorting = formatSort(this.sorting)
+        }
+
+        // Execute search with corresponding filters
+        this.performSearch('roles', '%kuzzle', filters, pagination, sorting)
+          .then(res => {
+            this.documents = res
+          })
       }
     },
     events: {
       'toggle-all' () {
         this.toggleAll()
+      },
+      'crudl-refresh-search' () {
+        this.fetchData()
       }
     }
   }
