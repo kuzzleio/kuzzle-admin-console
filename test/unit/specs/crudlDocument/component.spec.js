@@ -22,6 +22,7 @@ let $broadcast
 let formatFromQuickSearch = sandbox.spy()
 let formatFromBasicSearch = sandbox.spy()
 let formatSort = sandbox.spy()
+let deleteUsers = sandbox.stub().returns(Promise.resolve())
 
 let initInjector = () => {
   CrudlDocument = CrudlDocumentInjector({
@@ -46,7 +47,10 @@ let initInjector = () => {
     '../../Materialize/Dropdown': mockedComponent,
     '../../Materialize/Pagination': mockedComponent,
     '../../Materialize/Headline': mockedComponent,
-    './UserItem': mockedComponent
+    './UserItem': mockedComponent,
+    '../../services/kuzzleWrapper': {
+      deleteDocuments: deleteUsers
+    }
   })
 
   vm = new Vue({
@@ -84,7 +88,6 @@ describe('CrudlDocument component', () => {
 
     describe('confirmBulkDelete', () => {
       it('should dispatch event for closing the corresponding modal', () => {
-        sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
@@ -94,7 +97,6 @@ describe('CrudlDocument component', () => {
 
       it('should call delete users with the right list and refresh the users list', (done) => {
         vm.$refs.list.selectedDocuments = ['doc1', 'doc2']
-        let deleteUsers = sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
         let refreshSearch = sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
@@ -107,7 +109,8 @@ describe('CrudlDocument component', () => {
       })
 
       it('should do nothing if delete was not a success', (done) => {
-        sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.reject(new Error()))
+        deleteUsers = sandbox.stub().returns(Promise.reject(new Error()))
+        initInjector()
         let refreshSearch = sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
@@ -121,7 +124,7 @@ describe('CrudlDocument component', () => {
 
     describe('confirmSingleDelete', () => {
       it('should dispatch event for closing the corresponding modal', () => {
-        sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
+        // sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmSingleDelete('id')

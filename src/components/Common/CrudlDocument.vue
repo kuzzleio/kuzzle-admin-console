@@ -104,13 +104,13 @@
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
   import {
-    deleteDocuments,
     setBasicFilter
   } from '../../vuex/modules/common/crudlDocument/actions'
   import {
     basicFilterForm
   } from '../../vuex/modules/common/crudlDocument/getters'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
+  import {deleteDocuments} from '../../services/kuzzleWrapper'
 
   export default {
     name: 'CrudlDocument',
@@ -141,7 +141,6 @@
     },
     vuex: {
       actions: {
-        deleteDocuments,
         setBasicFilter
       },
       getters: {
@@ -164,7 +163,7 @@
       },
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
-        this.deleteDocuments(this.index, this.collection, this.selectedDocuments)
+        deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
           })
@@ -174,7 +173,7 @@
       },
       confirmSingleDelete (id) {
         this.$broadcast('modal-close', 'single-delete')
-        this.deleteDocuments(this.index, this.collection, [id])
+        deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
           })

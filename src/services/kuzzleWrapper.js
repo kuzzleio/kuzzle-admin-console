@@ -1,4 +1,5 @@
 import kuzzle from './kuzzle'
+import Bluebird from 'bluebird'
 
 export const isConnected = () => {
   if (kuzzle.state !== 'connected') {
@@ -67,6 +68,26 @@ export const performSearch = (collection, index, filters = {}, pagination = {}, 
           return object
         })
         resolve({documents: documents, total: result.total})
+      })
+  })
+}
+
+export const deleteDocuments = (index, collection, ids) => {
+  if (!ids || !Array.isArray(ids) || ids.length === 0 || !index || !collection) {
+    return
+  }
+  return new Bluebird((resolve, reject) => {
+    kuzzle
+      .dataCollectionFactory(collection, index)
+      .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
+        if (error) {
+          reject(error)
+          return
+        }
+
+        kuzzle.refreshIndex(index, () => {
+          resolve()
+        })
       })
   })
 }

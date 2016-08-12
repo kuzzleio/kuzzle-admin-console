@@ -83,14 +83,17 @@ describe('Browse data tests', () => {
 
       let initInjector = () => {
         Browse = BrowseInjector({
+          '../../../vuex/modules/common/crudlDocument/getters': sinon.stub(),
           '../../../services/filterFormat': {
             formatFromQuickSearch,
             formatFromBasicSearch,
             formatSort
+          },
+          '../../../services/kuzzleWrapper': {
+            performSearch: sinon.stub().returns(Promise.resolve())
           }
         })
 
-        Browse.route.performSearch = sinon.stub().returns(Promise.resolve())
         Browse.route.$route = {params: {}}
       }
 
