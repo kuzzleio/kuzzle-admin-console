@@ -5,6 +5,7 @@
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
       @filters-refresh-search="refreshSearch"
+      :available-filters="availableFilters"
       :search-term="searchTerm"
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
@@ -135,7 +136,8 @@
       searchTerm: String,
       rawFilter: String,
       basicFilter: String,
-      sorting: String
+      sorting: String,
+      availableFilters: Object
     },
     vuex: {
       actions: {

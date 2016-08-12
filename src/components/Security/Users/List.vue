@@ -1,10 +1,7 @@
 <template>
   <div>
     <headline title="Users Management"></headline>
-
-    <crudl-document index="%kuzzle" collection="users" :documents="documents" :display-bulk-delete="displayBulkDelete"
-                    :all-checked="allChecked" :selected-documents="selectedDocuments"
-                    :length-document="selectedDocuments.length">
+    <crudl-document :available-filters="availableFilters" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" index="%kuzzle" collection="users" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
           <user-item @checkbox-click="toggleSelectDocuments" :user="document"
@@ -19,13 +16,15 @@
   import Headline from '../../Materialize/Headline'
   import CrudlDocument from '../../Common/CrudlDocument'
   import UserItem from './UserItem'
-  import {performSearch} from '../../../vuex/modules/common/crudlDocument/actions'
   import {
     searchTerm,
     rawFilter,
-    basicFilter
+    basicFilter,
+    paginationFrom,
+    paginationSize
   } from '../../../vuex/modules/common/crudlDocument/getters'
-  import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
+  import {formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters} from '../../../services/filterFormat'
+  import {performSearch} from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UsersList',
@@ -36,18 +35,19 @@
     },
     data () {
       return {
+        availableFilters,
         selectedDocuments: [],
-        documents: []
+        documents: [],
+        totalDocuments: 0
       }
     },
     vuex: {
-      actions: {
-        performSearch
-      },
       getters: {
         searchTerm,
         rawFilter,
-        basicFilter
+        basicFilter,
+        paginationFrom,
+        paginationSize
       }
     },
     route: {
@@ -75,8 +75,9 @@
         }
 
         // Execute search with corresponding filters
-        this.performSearch('users', '%kuzzle', filters, pagination, sorting).then(res => {
-          this.documents = res
+        performSearch('users', '%kuzzle', filters, pagination, sorting).then(res => {
+          this.documents = res.documents
+          this.totalDocuments = res.total
         })
       }
     },

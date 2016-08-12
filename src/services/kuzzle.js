@@ -1,4 +1,4 @@
-import Kuzzle from 'kuzzle-sdk'
+import Kuzzle from 'kuzzle-sdk/dist/kuzzle'
 import config from '../../config'
 import Promise from 'bluebird'
 

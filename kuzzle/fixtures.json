@@ -37,7 +37,14 @@
             "actions": {
               "login": true,
               "checkToken": true,
+
               "getCurrentUser": true
+            }
+          },
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
             }
           },
           "read": {
@@ -54,6 +61,8 @@
             "actions": {
               "logout": true,
               "checkToken": true,
+              "adminExists": true,
+              "createFirstAdmin": true,
               "getCurrentUser": true
             }
           },
@@ -91,6 +100,8 @@
           "auth": {
             "actions": {
               "login": true,
+              "adminExists": true,
+              "createFirstAdmin": true,
               "checkToken": true
             }
           }
