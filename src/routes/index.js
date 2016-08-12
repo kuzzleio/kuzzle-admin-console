@@ -1,6 +1,7 @@
 import Login from '../components/Login'
+import Signup from '../components/Signup'
 import store from '../vuex/store'
-import { isAuthenticated } from '../vuex/modules/auth/getters'
+import { isAuthenticated, adminAlreadyExists } from '../vuex/modules/auth/getters'
 
 import SecuritySubRoutes from './subRoutes/security'
 import DataSubRoutes from './subRoutes/data'
@@ -33,6 +34,10 @@ export default function createRoutes (router) {
     '/login': {
       name: 'Login',
       component: Login
+    },
+    '/signup': {
+      name: 'Signup',
+      component: Signup
     }
   })
 
@@ -41,6 +46,16 @@ export default function createRoutes (router) {
   })
 
   router.beforeEach(transition => {
+    if (transition.to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
+      transition.redirect('/signup')
+      return
+    }
+
+    if (transition.to.name === 'Signup' && adminAlreadyExists(store.state)) {
+      transition.redirect('/login')
+      return
+    }
+
     if (transition.to.name === 'Login' && isAuthenticated(store.state)) {
       transition.redirect(transition.from.path)
       return

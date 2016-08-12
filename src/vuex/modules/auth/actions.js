@@ -1,7 +1,8 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
 import cookie from '../../../services/cookies'
-import {SET_CURRENT_USER} from './mutation-types'
+import { SET_CURRENT_USER, SET_ADMIN_EXISTS } from './mutation-types'
+import Promise from 'bluebird'
 
 export const doLogin = (store, username, password) => {
   return new Promise((resolve, reject) => {
@@ -25,36 +26,44 @@ export const doLogin = (store, username, password) => {
   })
 }
 
-export const loginFromCookie = (store, cb) => {
-  let user,
-    id
+export const loginFromCookie = (store) => {
+  let user = cookie.get()
 
-  if (kuzzle.state !== 'connected') {
-    id = kuzzle.addListener('connected', () => {
-      loginFromCookie(store, cb)
-      kuzzle.removeListener('connected', id)
-    })
-    return
-  }
-  user = cookie.get()
   if (user) {
-    kuzzle.checkToken(user.jwt, (err, res) => {
-      if (err) {
+    return kuzzle
+      .checkTokenPromise(user.jwt)
+      .then(res => {
+        if (res.valid) {
+          kuzzle.setJwtToken(user.jwt)
+          store.dispatch(SET_CURRENT_USER, user)
+          return Promise.resolve(user)
+        }
+
         store.dispatch(SET_CURRENT_USER, null)
-        cb()
-        return
-      }
-
-      if (res.valid) {
-        kuzzle.setJwtToken(user.jwt)
-        store.dispatch(SET_CURRENT_USER, user)
-      }
-
-      cb()
-    })
-  } else {
-    cb()
+        return Promise.resolve(null)
+      })
   }
+
+  store.dispatch(SET_CURRENT_USER, null)
+  return Promise.resolve(null)
+}
+
+export const checkFirstAdmin = (store) => {
+  return kuzzle
+    .queryPromise({controller: 'admin', action: 'adminExists'}, {})
+    .then((res) => {
+      if (!res.result) {
+        store.dispatch(SET_ADMIN_EXISTS, false)
+        return Promise.resolve()
+      }
+
+      store.dispatch(SET_ADMIN_EXISTS, true)
+      return Promise.resolve()
+    })
+}
+
+export const setFirstAdmin = (store, exists) => {
+  store.dispatch(SET_ADMIN_EXISTS, exists)
 }
 
 export const doLogout = (store) => {
