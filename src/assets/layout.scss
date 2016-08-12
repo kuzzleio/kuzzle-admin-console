@@ -9,9 +9,7 @@ main {
   }
 
   .wrapper {
-    padding-left: 20px;
-    padding-top: 20px;
-
+    padding: 20px;
   }
 }
 
@@ -46,8 +44,10 @@ main {
 }
 
 html{
-  font-family: "Raleway", sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: normal;
+  background-color: #FAFAFA;
+  color: #333;
 }
 
 #toast-container {
@@ -56,24 +56,6 @@ html{
       color: #fff;
       background-color: $error-color;
     }
-  }
-}
-
-.primary {
-  background-color: $primary-color;
-}
-
-.secondary {
-  background-color: $secondary-color;
-  &:hover, &:focus {
-    background-color: lighten($secondary-color, 5%);
-  }
-}
-
-.tertiary {
-  background-color: $tertiary-color;
-  &:hover, &:focus {
-    background-color: lighten($tertiary-color, 5%);
   }
 }
 

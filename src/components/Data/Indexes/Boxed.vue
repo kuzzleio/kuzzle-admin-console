@@ -1,9 +1,9 @@
 <template>
-  <div class="col s4">
+  <div class="col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s11">
+        <div class="col s11 truncate">
           <!-- index browse link -->
           <a
             v-link="{name: 'DataIndexSummary', params: {index: index}}"
@@ -24,15 +24,15 @@
       <!-- index summary, can be removed in first time -->
       <div class="card-content">
         <div class="row">
-          <div class="col s6">Total documents</div>
+          <div class="col s6 truncate">Total documents</div>
           <div class="col s6 right-align">1 567</div>
         </div>
         <div class="row">
-          <div class="col s6">Index Size</div>
+          <div class="col s6 truncate">Index Size</div>
           <div class="col s6 right-align">64 mb</div>
         </div>
         <div class="row">
-          <div class="col s5">Auto refresh</div>
+          <div class="col s5 truncate">Auto refresh</div>
           <div class="col s7 right-align">
             <div class="switch">
               <label>
@@ -45,7 +45,7 @@
       </div>
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#">Create a collection</a>
+        <a class="btn btn-small" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">Create a collection</a>
       </div>
     </div>
   </div>

@@ -14,7 +14,19 @@ $button-padding: 0 1rem !default;
    ========================================================================== */
 
 $roboto-font-path: '../../node_modules/materialize-css/fonts/roboto/' !default;
+$raleway-font-path: './fonts/raleway/';
 
+
+/* 11. Global
+   ========================================================================== */
+
+// Media Query Ranges
+$small-screen-up: 1201px;
+$medium-screen-up: 1760px;
+$large-screen-up: 2000px;
+$small-screen: 1000px;
+$medium-screen: 1400px;
+$large-screen: 1761px;
 
 /* 13. Navigation Bar
    ========================================================================== */

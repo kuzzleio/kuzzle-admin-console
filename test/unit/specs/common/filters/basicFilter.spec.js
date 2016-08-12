@@ -42,6 +42,15 @@ describe('Basic filter component', () => {
         expect(vm.$refs.basic.$dispatch.calledWith('filters-basic-search', null, null)).to.be.equal(true)
       })
 
+      it('should dispatch an event without sorting if it is disabled', () => {
+        vm.$refs.basic.filters.basic = [[{attribute: null}]]
+        vm.$refs.basic.sortingEnabled = false
+
+        vm.$refs.basic.basicSearch()
+        expect(vm.$refs.basic.$dispatch.calledWith('filters-basic-search', null)).to.be.equal(true)
+        vm.$refs.basic.sortingEnabled = true
+      })
+
       it('should dispatch an event with filter and null for sorting', () => {
         vm.$refs.basic.filters.basic = [[{attribute: 'username', operator: 'match', value: 'toto'}]]
         vm.$refs.basic.filters.sorting = {attribute: null}

@@ -22,6 +22,12 @@
 
 </template>
 
+<style lang="scss" rel="stylesheet/scss" scoped>
+  aside {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  }
+</style>
+
 <script>
   export default {
     name: 'SecurityLayout'

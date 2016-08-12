@@ -1,9 +1,9 @@
 <template>
-  <div class="col s4">
+  <div class="col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s11">
+        <div class="col s11 truncate">
           <!-- collection browse link -->
           <a href="#!"
              v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
@@ -14,7 +14,12 @@
 
         <div class="col s1 right-align">
           <!-- actions related to the index -->
-          <collection-dropdown class="icon-small icon-black" :id="collection" :is-realtime="isRealtime"></collection-dropdown>
+          <collection-dropdown
+            class="icon-small icon-black"
+            :collection="collection"
+            :index="index"
+            :is-realtime="isRealtime">
+          </collection-dropdown>
         </div>
 
 
@@ -27,7 +32,8 @@
       -->
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#">Create a document</a>
+        <a class="btn btn-small" href="#" v-if="!isRealtime">Create a document</a>
+        <a class="btn btn-small" href="#" v-if="isRealtime" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">Watch messages</a>
       </div>
     </div>
   </div>
