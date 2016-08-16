@@ -40,7 +40,7 @@ describe('Data index tests', () => {
           if (triggerError) {
             cb({message: 'error'})
           } else {
-            cb(null, {stored: {}, realtime: {}})
+            cb(null, {stored: [], realtime: []})
           }
         }
       }
@@ -49,7 +49,7 @@ describe('Data index tests', () => {
     it('should get the collection list from an index', (done) => {
       triggerError = false
       testAction(actions.getCollectionsFromIndex, [], {}, [
-        {name: 'RECEIVE_COLLECTIONS', payload: [{stored: {}, realtime: {}}]}
+        {name: 'RECEIVE_COLLECTIONS', payload: [{stored: [], realtime: []}]}
       ], done)
     })
   })

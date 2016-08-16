@@ -13,7 +13,8 @@ describe('Router login redirect', () => {
 
     const createRoutes = createRoutesInjector({
       '../vuex/modules/auth/getters': {
-        isAuthenticated: sinon.stub().returns(false)
+        isAuthenticated: sinon.stub().returns(false),
+        adminAlreadyExists: sinon.stub().returns(true)
       }
     })
 
@@ -32,13 +33,54 @@ describe('Router login redirect', () => {
 
     const createRoutes = createRoutesInjector({
       '../vuex/modules/auth/getters': {
-        isAuthenticated: sinon.stub().returns(true)
+        isAuthenticated: sinon.stub().returns(true),
+        adminAlreadyExists: sinon.stub().returns(true)
       }
     })
 
     createRoutes.default(vueRouter)
     vueRouter.go('/login')
     expect(transition.redirect.calledWith('/login')).to.not.be.ok
+  })
+
+  it('should go to signup if there is no admin', () => {
+    let vueRouter = new VueRouter()
+    let transition = { redirect: sinon.spy(), next: sinon.spy(), to: { auth: true } }
+
+    vueRouter.beforeEach = (f) => {
+      f(transition)
+    }
+
+    const createRoutes = createRoutesInjector({
+      '../vuex/modules/auth/getters': {
+        isAuthenticated: sinon.stub().returns(false),
+        adminAlreadyExists: sinon.stub().returns(false)
+      }
+    })
+
+    createRoutes.default(vueRouter)
+    vueRouter.go({name: 'Home'})
+    expect(transition.redirect.calledWith('/signup')).to.be.ok
+  })
+
+  it('should not go to signup because admin already exists', () => {
+    let vueRouter = new VueRouter()
+    let transition = { redirect: sinon.spy(), next: sinon.spy(), from: {name: 'Home'}, to: {name: 'Signup', auth: true} }
+
+    vueRouter.beforeEach = (f) => {
+      f(transition)
+    }
+
+    const createRoutes = createRoutesInjector({
+      '../vuex/modules/auth/getters': {
+        isAuthenticated: sinon.stub().returns(true),
+        adminAlreadyExists: sinon.stub().returns(true)
+      }
+    })
+
+    createRoutes.default(vueRouter)
+    vueRouter.go('/signup')
+    expect(transition.redirect.calledWith('/signup')).to.not.be.ok
   })
 
   it('should go to the transition', () => {
@@ -51,7 +93,8 @@ describe('Router login redirect', () => {
 
     const createRoutes = createRoutesInjector({
       '../vuex/modules/auth/getters': {
-        isAuthenticated: sinon.stub().returns(true)
+        isAuthenticated: sinon.stub().returns(true),
+        adminAlreadyExists: sinon.stub().returns(true)
       }
     })
 

@@ -13,6 +13,15 @@
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
+  "keywords": [
+    "kuzzle",
+    "backoffice"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kuzzleio/kuzzle-backoffice.git"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
     "babel-runtime": "^6.0.0",
     "bluebird": "^3.4.1",
