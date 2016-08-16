@@ -19,7 +19,7 @@
 
     <div class="right actions">
       <dropdown :id="document.id">
-        <li><a @click="deleteUser(document.id)">Delete</a></li>
+        <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>
     </div>
 
@@ -45,7 +45,7 @@ export default {
   directives: {
     jsonFormatter
   },
-  data: function () {
+  data () {
     return {
       collapsed: true
     }
@@ -57,7 +57,7 @@ export default {
     notifyCheckboxClick () {
       this.$dispatch('checkbox-click', this.document.id)
     },
-    deleteUser () {
+    deleteDocument () {
       this.$dispatch('delete-document', this.document.id)
     }
   }

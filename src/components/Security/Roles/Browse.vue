@@ -1,7 +1,13 @@
 <template>
   <div>
     <headline title="Roles Management"></headline>
-    <common-browse item-name="RoleItem" collection="roles" index="%kuzzle"></common-browse>
+    <common-browse
+      item-name="RoleItem"
+      collection="roles"
+      index="%kuzzle"
+      @create-clicked="createRole">
+
+    </common-browse>
   </div>
 </template>
 
@@ -14,6 +20,11 @@
     components: {
       CommonBrowse,
       Headline
+    },
+    methods: {
+      createRole () {
+        this.$router.go({name: 'SecurityCreateRole'})
+      }
     },
     route: {
       data () {

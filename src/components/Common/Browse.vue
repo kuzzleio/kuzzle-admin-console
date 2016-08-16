@@ -1,12 +1,29 @@
 <template>
   <div>
-    <crudl-document :available-filters="availableFilters" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" index="index" collection="collection" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
-      <div class="collection">
-        <div class="collection-item" transition="collection" v-for="document in documents">
-          <component :is="itemName" @checkbox-click="toggleSelectDocuments" :document="document"
-                     :is-checked="isChecked(document.id)"></component>
+    <crudl-document
+      :available-filters="availableFilters"
+      :pagination-from="paginationFrom"
+      :sorting="sorting"
+      :basic-filter="basicFilter"
+      :raw-filter="rawFilter"
+      :search-term="searchTerm"
+      :pagination-size="paginationSize"
+      :index="index"
+      :collection="collection"
+      :documents="documents"
+      :total-documents="totalDocuments"
+      :display-bulk-delete="displayBulkDelete"
+      :all-checked="allChecked"
+      :selected-documents="selectedDocuments"
+      :length-document="selectedDocuments.length">
+
+        <div class="collection">
+          <div class="collection-item" transition="collection" v-for="document in documents">
+            <component :is="itemName" @checkbox-click="toggleSelectDocuments" :document="document"
+                       :is-checked="isChecked(document.id)"></component>
+          </div>
         </div>
-      </div>
+
     </crudl-document>
   </div>
 </template>
@@ -16,6 +33,7 @@
   import UserItem from '../Security/Users/UserItem'
   import RoleItem from '../Security/Roles/RoleItem'
   import ProfileItem from '../Security/Profiles/ProfileItem'
+  import DocumentItem from '../Data/Documents/DocumentItem'
   import {
     searchTerm,
     rawFilter,
@@ -38,7 +56,8 @@
       CrudlDocument,
       UserItem,
       RoleItem,
-      ProfileItem
+      ProfileItem,
+      DocumentItem
     },
     data () {
       return {

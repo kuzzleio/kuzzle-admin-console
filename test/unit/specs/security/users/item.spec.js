@@ -1,24 +1,14 @@
 import Vue from 'vue'
 import UserItem from '../../../../../src/components/Security/Users/UserItem'
 import VueRouter from 'vue-router'
+import { mockedComponent } from '../../helper'
 
 let router
-let user = {
-  'id': 'kuzzle-bo-admin',
-  'content': {
-    clearPassword: 'test',
-    profilesIds: [
-      'kuzzle-bo-1',
-      'kuzzle-bo-2'
-    ],
-    username: 'kuzzle-bo-admin'
-  }
-}
 
 describe('UserItem component', () => {
   let $vm
   let sandbox = sinon.sandbox.create()
-  let $emit
+  let $dispatch
 
   beforeEach(() => {
     Vue.use(VueRouter)
@@ -29,11 +19,21 @@ describe('UserItem component', () => {
     })
 
     const TestComponent = Vue.extend({
-      template: '<user-item v-ref:useritem v-bind:user="user"></user-item>',
+      template: '<user-item v-ref:useritem :document="user"></user-item>',
       components: { UserItem },
       data () {
         return {
-          user: user
+          user: {
+            id: 'kuzzle-bo-admin',
+            content: {
+              clearPassword: 'test',
+              profilesIds: [
+                'kuzzle-bo-1',
+                'kuzzle-bo-2'
+              ],
+              username: 'kuzzle-bo-admin'
+            }
+          }
         }
       }
     })
@@ -46,11 +46,11 @@ describe('UserItem component', () => {
       },
       '/security/profile': {
         name: 'SecurityProfilesList',
-        component: TestComponent
+        component: mockedComponent
       },
       '/security/profile/:id': {
         name: 'SecurityProfileDetail',
-        component: TestComponent
+        component: mockedComponent
       }
     })
 
@@ -58,7 +58,7 @@ describe('UserItem component', () => {
     router.go('/')
 
     $vm = router.app.$refs.routerview.$refs.useritem
-    $emit = sandbox.stub($vm, '$emit')
+    $dispatch = sandbox.stub($vm, '$dispatch')
   })
 
   afterEach(() => sandbox.restore())
@@ -68,7 +68,7 @@ describe('UserItem component', () => {
       username: 'kuzzle-bo-admin'
     })
 
-    Vue.set(user.content, 'customProperty', 'customValue')
+    Vue.set($vm.document.content, 'customProperty', 'customValue')
 
     expect($vm.itemContent).to.deep.equal({
       username: 'kuzzle-bo-admin',
@@ -82,7 +82,7 @@ describe('UserItem component', () => {
       'kuzzle-bo-2'
     ])
 
-    user.content.profilesIds.push(
+    $vm.document.content.profilesIds.push(
       'kuzzle-bo-3',
       'kuzzle-bo-4',
       'kuzzle-bo-5',
@@ -107,6 +107,12 @@ describe('UserItem component', () => {
   it('should correctly emit event on notifyCheckboxClick', () => {
     $vm.notifyCheckboxClick()
 
-    expect($emit.calledWith('checkbox-click', 'kuzzle-bo-admin')).to.equal(true)
+    expect($dispatch.calledWith('checkbox-click', 'kuzzle-bo-admin')).to.equal(true)
+  })
+
+  it('should correctly emit event on deleteDocument', () => {
+    $vm.deleteDocument()
+
+    expect($dispatch.calledWith('delete-document', 'kuzzle-bo-admin')).to.equal(true)
   })
 })

@@ -1,7 +1,13 @@
 <template>
   <div>
     <headline title="Users Management"></headline>
-    <common-browse item-name="UserItem" collection="users" index="%kuzzle"></common-browse>
+    <common-browse
+      item-name="UserItem"
+      collection="users"
+      index="%kuzzle"
+      @create-clicked="createUser">
+
+    </common-browse>
   </div>
 </template>
 
@@ -14,6 +20,11 @@
     components: {
       CommonBrowse,
       Headline
+    },
+    methods: {
+      createUser () {
+        this.$router.go({name: 'SecurityCreateUser'})
+      }
     },
     route: {
       data () {
