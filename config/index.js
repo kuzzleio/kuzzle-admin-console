@@ -24,6 +24,7 @@ module.exports = {
   },
   backend: {
     host: process.env.BACKEND_HOST || 'kuzzle',
-    port: process.env.BACKEND_PORT || '7512'
+    ioPort: process.env.BACKEND_IOPORT || 7512,
+    wsPort: process.env.BACKEND_WSPORT || 7513
   }
 }
