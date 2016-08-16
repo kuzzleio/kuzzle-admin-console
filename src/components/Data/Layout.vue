@@ -1,28 +1,10 @@
 <template>
-  <aside>
-    <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
-      <li>
-        <nav>
-          <div class="nav-wrapper">
-            <form>
-              <div class="input-field">
-                <input id="search" type="search" required>
-                <label for="search"><i class="fa fa-search"></i></label>
-              </div>
-            </form>
-          </div>
-        </nav>
-      </li>
-      <li>
-        <treeview
-          :route-name="$route.name"
-          :index="selectedIndex"
-          :collection="selectedCollection"
-          :tree="indexesAndCollections">
-        </treeview>
-      </li>
-    </ul>
-  </aside>
+  <treeview
+    :route-name="$route.name"
+    :index="selectedIndex"
+    :collection="selectedCollection"
+    :tree="indexesAndCollections">
+  </treeview>
   <section class="breadcrumb-view">
     <breadcrumb
       :route-name="$route.name"

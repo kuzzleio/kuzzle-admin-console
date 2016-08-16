@@ -8,7 +8,7 @@
           <a href="#!"
              v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
             <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
-            <span>{{collection}}</span>
+            <span class="name">{{collection}}</span>
           </a>
         </div>
 
@@ -52,6 +52,9 @@
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+  .name {
+    font-family: "Roboto", sans-serif;
+  }
   .card-title {
     font-size: 22px;
     padding: 1rem;

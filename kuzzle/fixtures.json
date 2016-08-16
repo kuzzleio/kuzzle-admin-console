@@ -33,18 +33,19 @@
       { "index": { "_id": "anonymous" } },
       {
         "controllers": {
-          "auth": {
-            "actions": {
-              "login": true,
-              "checkToken": true,
-
-              "getCurrentUser": true
-            }
-          },
           "admin": {
             "actions": {
               "adminExists": true,
               "createFirstAdmin": true
+            }
+          },
+          "auth": {
+            "actions": {
+              "login": true,
+              "checkToken": true,
+              "getMyRights": true,
+              "whoAmI": true,
+              "getCurrentUser": true
             }
           },
           "read": {
@@ -57,12 +58,18 @@
       { "index": { "_id": "default" } },
       {
         "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
           "auth": {
             "actions": {
               "logout": true,
               "checkToken": true,
-              "adminExists": true,
-              "createFirstAdmin": true,
+              "getMyRights": true,
+              "whoAmI": true,
               "getCurrentUser": true
             }
           },
@@ -100,8 +107,6 @@
           "auth": {
             "actions": {
               "login": true,
-              "adminExists": true,
-              "createFirstAdmin": true,
               "checkToken": true
             }
           }

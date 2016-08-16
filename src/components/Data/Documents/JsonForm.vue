@@ -2,21 +2,21 @@
   <fieldset v-if="isNested(content)">
     <legend>{{name}}</legend>
     <div v-for="(nestedName, nestedContent) in content.properties">
-      <mapping :name="nestedName" :full-name-input="path" :content="nestedContent"></mapping>
+      <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
     </div>
   </fieldset>
   <div v-if="!isNested(content)" class="input-field">
-    <mapping-value :name="name" :full-name="path" :content="content"></mapping-value>
+    <json-form-item :name="name" :full-name="path" :content="content"></json-form-item>
   </div>
 </template>
 
 <script>
-  import MappingValue from './MappingValue'
+  import JsonFormItem from './JsonFormItem'
 
   export default {
-    name: 'Mapping',
+    name: 'JsonForm',
     components: {
-      MappingValue
+      JsonFormItem
     },
     computed: {
       path () {
