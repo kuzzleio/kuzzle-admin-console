@@ -1,7 +1,7 @@
 <template>
   <main-menu></main-menu>
 
-  <main>
+  <main class="loader">
     <router-view></router-view>
   </main>
 
@@ -15,6 +15,23 @@
 <style lang="scss" rel="stylesheet/scss" scoped>
   h6 {
     margin-bottom: 40px;
+  }
+  .loader {
+    transition: opacity .5s ease-out;
+    opacity: 1;
+
+    &.loading {
+      opacity: 0.3;
+
+      &:before {
+        content: "loading ...";
+        position: fixed;
+        text-align: center;
+        left: 0;
+        right: 0;
+        bottom: 10px;
+      }
+    }
   }
 </style>
 

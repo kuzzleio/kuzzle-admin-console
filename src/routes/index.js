@@ -46,6 +46,19 @@ export default function createRoutes (router) {
   })
 
   router.beforeEach(transition => {
+    Array.prototype.forEach.call(document.querySelectorAll('.loader'), element => {
+      element.classList.add('loading')
+    })
+    transition.next()
+  })
+
+  router.afterEach(transition => {
+    Array.prototype.forEach.call(document.querySelectorAll('.loader'), element => {
+      element.classList.remove('loading')
+    })
+  })
+
+  router.beforeEach(transition => {
     if (transition.to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
       transition.redirect('/signup')
       return
