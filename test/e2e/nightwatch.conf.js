@@ -21,6 +21,16 @@ module.exports = {
       "silent": true
     },
 
+    "phantom": {
+      "desiredCapabilities" : {
+        "browserName" : "phantomjs",
+        "javascriptEnabled" : true,
+        "acceptSslCerts" : true,
+        "phantomjs.binary.path" : "/usr/local/bin/phantomjs",
+        "phantomjs.cli.args" : []
+      }
+    },
+
     "chrome": {
       "desiredCapabilities": {
         "browserName": "chrome",
