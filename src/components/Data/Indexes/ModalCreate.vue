@@ -9,14 +9,14 @@
 
 
     <div class="row">
-      <div class="col s8">
+      <div class="col s7">
         <div class="input-field left-align">
           <label for="index-name">Index name</label>
           <input id="index-name" type="text" v-model="index" :class="{'invalid': error}">
         </div>
       </div>
 
-      <div class="col s4 error" v-if="error">
+      <div class="col s5 error" v-if="error">
         <div class="red-text">An error has occurred during index creation:</div>
         <span :class="{'truncate': errorTruncated}">
           {{error}}
