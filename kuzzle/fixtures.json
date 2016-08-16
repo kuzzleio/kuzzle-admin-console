@@ -33,6 +33,12 @@
       { "index": { "_id": "anonymous" } },
       {
         "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
           "auth": {
             "actions": {
               "login": true,
@@ -52,6 +58,12 @@
       { "index": { "_id": "default" } },
       {
         "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
           "auth": {
             "actions": {
               "logout": true,

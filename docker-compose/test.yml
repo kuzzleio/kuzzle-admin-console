@@ -1,5 +1,5 @@
 proxy:
-  image: kuzzleio/proxy:alpine
+  image: kuzzleio/proxy:develop
   ports:
     - "7511:7511"
     - "7512:7512"
@@ -39,7 +39,6 @@ kuzzle:
     - proxy:api
   environment:
     - FIXTURES=/fixtures.json
-    - FEATURE_COVERAGE
 
 redis:
   image: redis:3.0-alpine
