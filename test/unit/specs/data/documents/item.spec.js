@@ -1,26 +1,26 @@
 import Vue from 'vue'
 import { mockedComponent, mockedDirective } from '../../helper'
 
-let RoleItemInjector = require('!!vue?inject!../../../../../src/components/Security/Roles/RoleItem')
-let RoleItem
+let DocumentItemInjector = require('!!vue?inject!../../../../../src/components/Data/Documents/DocumentItem')
+let DocumentItem
 let sandbox = sinon.sandbox.create()
 
-describe('User item', () => {
+describe('Document item', () => {
   let vm
 
   before(() => {
-    RoleItem = RoleItemInjector({
+    DocumentItem = DocumentItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
       '../../../directives/json-formatter.directive': mockedDirective
     })
 
     vm = new Vue({
-      template: '<role-item v-ref:item :document="role"></role-item>',
-      components: { RoleItem },
+      template: '<document-item v-ref:item :document="document"></document-item>',
+      components: { DocumentItem },
       data () {
         return {
-          role: {
-            id: 'role-id'
+          document: {
+            id: 'document-id'
           }
         }
       }
@@ -41,13 +41,13 @@ describe('User item', () => {
     it('should correctly emit event on notifyCheckboxClick', () => {
       vm.$refs.item.notifyCheckboxClick()
 
-      expect(vm.$refs.item.$dispatch.calledWith('checkbox-click', 'role-id')).to.equal(true)
+      expect(vm.$refs.item.$dispatch.calledWith('checkbox-click', 'document-id')).to.equal(true)
     })
 
     it('should correctly emit event on deleteDocument', () => {
       vm.$refs.item.deleteDocument()
 
-      expect(vm.$refs.item.$dispatch.calledWith('delete-document', 'role-id')).to.equal(true)
+      expect(vm.$refs.item.$dispatch.calledWith('delete-document', 'document-id')).to.equal(true)
     })
   })
 })

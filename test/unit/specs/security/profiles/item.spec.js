@@ -44,7 +44,7 @@ describe('Profile item', () => {
       expect(vm.$refs.item.$dispatch.calledWith('checkbox-click', 'profile-id')).to.equal(true)
     })
 
-    it('should correctly emit event on deleteUser', () => {
+    it('should correctly emit event on deleteDocument', () => {
       vm.$refs.item.deleteDocument()
 
       expect(vm.$refs.item.$dispatch.calledWith('delete-document', 'profile-id')).to.equal(true)
