@@ -15,7 +15,7 @@
       <div class="col m11">
         <fieldset>
           <div v-for="(name, content) in mapping">
-            <mapping :name="name" :content="content"></mapping>
+            <json-form :name="name" :content="content"></json-form>
           </div>
         </fieldset>
       </div>
@@ -27,7 +27,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
-  import Mapping from './Mapping'
+  import JsonForm from './JsonForm'
   import {unsetNewDocument} from '../../../vuex/modules/data/actions'
   import {newDocument} from '../../../vuex/modules/data/getters'
 
@@ -35,7 +35,7 @@
     name: 'DocumentCreate',
     components: {
       Headline,
-      Mapping
+      JsonForm
     },
     methods: {
       create () {
@@ -61,6 +61,7 @@
       }
     },
     beforeDestroy () {
+      console.log('##', this.unsetNewDocument)
       this.unsetNewDocument()
     },
     data () {

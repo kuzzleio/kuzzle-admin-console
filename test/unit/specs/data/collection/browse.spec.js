@@ -90,7 +90,7 @@ describe('Browse data tests', () => {
             formatSort
           },
           '../../../services/kuzzleWrapper': {
-            performSearch: sinon.stub().returns(Promise.resolve())
+            performSearch: sinon.stub().returns(Promise.resolve({documents: [], total: 0}))
           }
         })
 
