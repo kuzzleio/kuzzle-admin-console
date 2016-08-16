@@ -1,26 +1,26 @@
 <template>
-  <div :class="{ 'open': open }">
+  <div :class="{ 'open': open || filter }">
     <i v-if="collectionCount(indexTree)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
     <a v-link="{name: 'DataIndexSummary', params: {index: indexTree.name}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexTree.name) }">
       <i class="fa fa-database" aria-hidden="true"></i>
-      <strong>{{indexTree.name}}</strong> ({{collectionCount(indexTree)}})
+      {{{indexTree.name | highlight filter}}} ({{collectionCount(indexTree)}})
     </a>
     <ul class="collections">
-      <li v-for="collectionTree in indexTree.collections.stored | orderBy 1">
+      <li v-for="collectionTree in indexTree.collections.stored | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
         <a class="tree-item truncate"
            v-link="{name: getRelativeLink(false), params: {index: indexTree.name, collection: collectionTree}}"
            :class="{ 'active': isCollectionActive(collectionTree) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
-           {{collectionTree}}
+           {{{collectionTree | highlight filter}}}
          </a>
       </li>
-      <li v-for="collectionTree in indexTree.collections.realtime | orderBy 1">
+      <li v-for="collectionTree in indexTree.collections.realtime | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
         <a class="tree-item truncate"
            v-link="{name: getRelativeLink(true), params: {index: indexTree.name, collection: collectionTree}}"
            :class="{ 'active': isCollectionActive(collectionTree) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
-          {{collectionTree}}
+          {{{collectionTree | highlight filter}}}
         </a>
       </li>
     </ul>
@@ -28,9 +28,12 @@
 </template>
 
 <script>
+import { highlight } from '../../../filters/highlight.filter'
+
 export default {
   props: {
     index: String,
+    filter: String,
     collection: String,
     routeName: String,
     indexTree: Object
@@ -39,6 +42,9 @@ export default {
     return {
       open: false
     }
+  },
+  filters: {
+    highlight
   },
   methods: {
 
@@ -87,8 +93,11 @@ export default {
     }
   },
   watch: {
-    index: function (index) {
+    index (index) {
       this.isTreeOpen(index, this.indexTree.name)
+    },
+    collection () {
+      this.isTreeOpen(this.index, this.indexTree.name)
     }
   },
   ready: function () {

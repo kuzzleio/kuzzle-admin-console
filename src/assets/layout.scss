@@ -22,6 +22,10 @@ input:-webkit-autofill:active {
   -webkit-transition-delay: 9999s;
 }
 
+strong {
+  font-weight: 600;
+}
+
 .list-document {
   .no-document {
     text-align: center;
