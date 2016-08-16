@@ -24,7 +24,7 @@
                    @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
                 <a
                   v-if="$index === group.length - 1"
-                  class="inline btn waves-effect waves-light"
+                  class="inline btn btn-small waves-effect waves-light"
                   @click="addAndBasicFilter(groupIndex)">
                   <i class="fa fa-plus left"></i>And
                 </a>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="row">
-          <a class="btn waves-effect waves-light" @click="addGroupBasicFilter">
+          <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
             <i class="fa fa-plus left"></i>Or
           </a>
         </div>
