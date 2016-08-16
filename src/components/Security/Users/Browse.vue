@@ -1,7 +1,7 @@
 <template>
   <div>
     <headline title="Users Management"></headline>
-    <common-browse :item-name="item"></common-browse>
+    <common-browse item-name="UserItem" collection="users" index="%kuzzle"></common-browse>
   </div>
 </template>
 
@@ -11,14 +11,14 @@
 
   export default {
     name: 'UsersBrowse',
-    data () {
-      return {
-        item: 'UserItem'
-      }
-    },
     components: {
       CommonBrowse,
       Headline
+    },
+    route: {
+      data () {
+        this.$broadcast('crudl-refresh-search')
+      }
     }
   }
 </script>

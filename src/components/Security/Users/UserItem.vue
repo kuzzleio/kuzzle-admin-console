@@ -5,21 +5,21 @@
     <input
       type="checkbox"
       class="filled-in"
-      id="checkbox-{{user.id}}"
-      value="{{user.id}}"
+      id="checkbox-{{document.id}}"
+      value="{{document.id}}"
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label for="checkbox-{{user.id}}" ></label>
+    <label for="checkbox-{{document.id}}" ></label>
     <!-- The following anchor will go to the user details page -->
-    <label class="item-title"><a>{{user.id}}</a></label>
+    <label class="item-title"><a>{{document.id}}</a></label>
 
-    <label v-if="user.additionalAttribute && user.additionalAttribute.value" class="additional-attribute">
-      ({{user.additionalAttribute.name}}: {{user.additionalAttribute.value}})
+    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
+      ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
     <div class="right actions">
-      <dropdown :id="user.id">
-        <li><a @click="deleteUser(user.id)">Delete</a></li>
+      <dropdown :id="document.id">
+        <li><a @click="deleteUser(document.id)">Delete</a></li>
       </dropdown>
     </div>
 
@@ -29,7 +29,7 @@
           <a v-link="{name: 'SecurityProfileDetail', params:{ profileId: profile }}" class="truncate" >{{profile}}</a>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <a v-link="{ name: 'SecurityProfilesList', params: { userId: user.id }}">Show all...</a>
+          <a v-link="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</a>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@ const MAX_PROFILES = 5
 export default {
   name: 'UserItem',
   props: {
-    user: Object,
+    document: Object,
     isChecked: Boolean
   },
   components: {
@@ -62,19 +62,19 @@ export default {
   computed: {
     itemContent () {
       let contentDisplay = {}
-      Object.assign(contentDisplay, this.user.content)
+      Object.assign(contentDisplay, this.document.content)
       delete contentDisplay.clearPassword
       delete contentDisplay.profilesIds
 
       return contentDisplay
     },
     profileList () {
-      return this.user.content.profilesIds.filter((item, idx) => {
+      return this.document.content.profilesIds.filter((item, idx) => {
         return idx < MAX_PROFILES
       })
     },
     showAllProfiles () {
-      return this.user.content.profileIds > MAX_PROFILES
+      return this.document.content.profileIds > MAX_PROFILES
     }
   },
   methods: {
@@ -82,10 +82,10 @@ export default {
       this.collapsed = !this.collapsed
     },
     notifyCheckboxClick () {
-      this.$dispatch('checkbox-click', this.user.id)
+      this.$dispatch('checkbox-click', this.document.id)
     },
     deleteUser () {
-      this.$dispatch('delete-document', this.user.id)
+      this.$dispatch('delete-document', this.document.id)
     }
   }
 }

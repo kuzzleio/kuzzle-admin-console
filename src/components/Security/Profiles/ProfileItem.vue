@@ -5,26 +5,26 @@
     <input
       type="checkbox"
       class="filled-in"
-      id="checkbox-{{profile.id}}"
-      value="{{profile.id}}"
+      id="checkbox-{{document.id}}"
+      value="{{document.id}}"
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label for="checkbox-{{profile.id}}" ></label>
+    <label for="checkbox-{{document.id}}" ></label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="item-title"><a>{{profile.id}}</a></label>
+    <label class="item-title"><a>{{document.id}}</a></label>
 
-    <label v-if="profile.additionalAttribute && profile.additionalAttribute.value" class="additional-attribute">
-      ({{profile.additionalAttribute.name}}: {{profile.additionalAttribute.value}})
+    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
+      ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
     <div class="right actions">
-      <dropdown :id="profile.id">
-        <li><a @click="deleteUser(profile.id)">Delete</a></li>
+      <dropdown :id="document.id">
+        <li><a @click="deleteUser(document.id)">Delete</a></li>
       </dropdown>
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="profile.content"></pre>
+      <pre v-json-formatter="document.content"></pre>
     </div>
   </div>
 </template>
@@ -36,7 +36,7 @@ import jsonFormatter from '../../../directives/json-formatter.directive'
 export default {
   name: 'ProfileItem',
   props: {
-    profile: Object,
+    document: Object,
     isChecked: Boolean
   },
   components: {
@@ -55,10 +55,10 @@ export default {
       this.collapsed = !this.collapsed
     },
     notifyCheckboxClick () {
-      this.$dispatch('checkbox-click', this.profile.id)
+      this.$dispatch('checkbox-click', this.document.id)
     },
     deleteUser () {
-      this.$dispatch('delete-document', this.profile.id)
+      this.$dispatch('delete-document', this.document.id)
     }
   }
 }
