@@ -21,11 +21,11 @@
           v-if="isRouteActive('DataCreateCollection')">
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: index}}">
-          Create new collection
+          Create a collection
         </a>
       </li>
 
-      <li :class="{'in active': isRouteActive(['DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
+      <li :class="{'in active': isRouteActive(['DataCreateDocument', 'DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
           v-if="collection">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
@@ -34,9 +34,17 @@
         </a>
       </li>
 
+      <li class="link link-active"
+          v-if="isRouteActive('DataCreateDocument')">
+        <a href="#!"
+           v-link="{name: 'DataCreateCollection', params: {index: index}}">
+          Create a document
+        </a>
+      </li>
+
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
-          v-if="collection && !isCollectionRealtime()">
+          v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
           Browse
@@ -45,7 +53,7 @@
 
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionWatch')}"
-          v-if="collection">
+          v-if="collection && !isRouteActive('DataCreateDocument')">
         <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
           Watch
         </a>
@@ -53,7 +61,7 @@
 
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionSummary')}"
-          v-if="collection">
+          v-if="collection && !isRouteActive('DataCreateDocument')">
         <a href="#!"
            v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
           Summary
