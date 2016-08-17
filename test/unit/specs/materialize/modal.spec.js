@@ -97,7 +97,7 @@ describe('Modal', () => {
       expect(vm.$refs.modal.computedClasses).to.be.equal(null)
     })
 
-    it('computedClasses should return the class "bottom-modal bottom-sheet', () => {
+    it('computedClasses should return the class "bottom-modal bottom-sheet + this.class"', () => {
       vm = new Vue({
         template: '<div><modal v-ref:modal id="myModal" :bottom="bottom"></modal></div>',
         components: {
@@ -111,10 +111,11 @@ describe('Modal', () => {
       }).$mount()
 
       vm.$refs.modal.active = true
-      expect(vm.$refs.modal.computedClasses).to.be.equal('bottom-modal bottom-sheet')
+      vm.$refs.modal.class = 'custom-class'
+      expect(vm.$refs.modal.computedClasses).to.be.equal('bottom-modal bottom-sheet custom-class')
     })
 
-    it('computedClasses should return the class "normal-modal"', () => {
+    it('computedClasses should return the class "normal-modal + this.class"', () => {
       vm = new Vue({
         template: '<div><modal v-ref:modal id="myModal" :bottom="bottom"></modal></div>',
         components: {
@@ -128,7 +129,8 @@ describe('Modal', () => {
       }).$mount()
 
       vm.$refs.modal.active = true
-      expect(vm.$refs.modal.computedClasses).to.be.equal('normal-modal')
+      vm.$refs.modal.class = 'custom-class'
+      expect(vm.$refs.modal.computedClasses).to.be.equal('normal-modal custom-class')
     })
   })
 })

@@ -57,7 +57,10 @@ export const mutations = {
   [ADD_INDEX] (state, index) {
     state.indexesAndCollections.push({
       name: index,
-      collections: []
+      collections: {
+        stored: [],
+        realtime: []
+      }
     })
   },
   [SET_PARTIAL_TO_DOCUMENT] (state, path, value) {

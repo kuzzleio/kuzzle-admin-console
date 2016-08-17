@@ -12,9 +12,7 @@ Vue.config.debug = process.env.NODE_ENV !== 'production'
 sync(store, router)
 
 isConnected()
-  .then(() => {
-    return loginFromCookie(store)
-  })
+  .then(() => loginFromCookie(store))
   .then((user) => {
     if (!user) {
       return checkFirstAdmin(store)
@@ -23,6 +21,7 @@ isConnected()
     return Promise.resolve()
   })
   .then(() => {
+    console.log('---')
     router.start({
       store,
       components: { App }
