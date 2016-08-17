@@ -1,7 +1,8 @@
 <template>
   <div class="wrapper">
     <headline>
-      Create a document
+      {{collection}} - Create a document
+      <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
     <div class="row">
@@ -20,11 +21,13 @@
         </fieldset>
       </div>
     </div>
-    <button @click="create" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
+    <button @click.prevent="create" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
+    <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
   </div>
 </template>
 
 <script>
+  import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import JsonForm from './JsonForm'
@@ -34,6 +37,7 @@
   export default {
     name: 'DocumentCreate',
     components: {
+      CollectionDropdown,
       Headline,
       JsonForm
     },
@@ -42,6 +46,13 @@
       collection: String
     },
     methods: {
+      cancel () {
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataCollectionBrowse', params: {index: this.index, collection: this.collection}})
+        }
+      },
       create () {
         if (this.id) {
           this.newDocument._id = this.id
