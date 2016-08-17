@@ -74,7 +74,7 @@ describe('JsonForm tests', () => {
         }).$mount()
       })
 
-      it('should return the path of the object', (done) => {
+      it('should return the path of the sub object', (done) => {
         Vue.nextTick(() => {
           expect(vm.$refs.jsonform.path).to.equals('bar')
           done()

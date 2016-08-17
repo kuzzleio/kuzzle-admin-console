@@ -23,8 +23,8 @@
   export default {
     name: 'DocumentBrowse',
     props: {
-      collection: String,
-      index: String
+      index: String,
+      collection: String
     },
     components: {
       CommonBrowse,

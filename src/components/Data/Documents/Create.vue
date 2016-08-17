@@ -37,18 +37,22 @@
       Headline,
       JsonForm
     },
+    props: {
+      index: String,
+      collection: String
+    },
     methods: {
       create () {
         if (this.id) {
           this.newDocument._id = this.id
         }
-        kuzzle.dataCollectionFactory(this.$route.params.collection, this.$route.params.index).createDocument(this.newDocument, (err, res) => {
+        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, (err, res) => {
           if (err) {
             this.$dispatch('toast', err.message, 'error')
             return
           }
-          kuzzle.refreshIndex(this.$route.params.index)
-          this.$router.go({name: 'DataCollectionBrowse', params: {index: this.$route.params.index, collection: this.$route.params.collection}})
+          kuzzle.refreshIndex(this.index)
+          this.$router.go({name: 'DataCollectionBrowse', params: {index: this.index, collection: this.collection}})
         })
       }
     },
@@ -61,7 +65,6 @@
       }
     },
     beforeDestroy () {
-      console.log('##', this.unsetNewDocument)
       this.unsetNewDocument()
     },
     data () {
@@ -72,7 +75,7 @@
     },
     route: {
       data () {
-        kuzzle.dataCollectionFactory(this.$route.params.collection, this.$route.params.index).getMapping((err, res) => {
+        kuzzle.dataCollectionFactory(this.collection, this.index).getMapping((err, res) => {
           if (err) {
             return
           }

@@ -29,12 +29,19 @@ describe('create document tests', () => {
             } else {
               cb(null)
             }
+          },
+          getMapping: (cb) => {
+            if (triggerError) {
+              cb(new Error('error'))
+            } else {
+              cb(null, {mapping: {attr: 'falu'}})
+            }
           }
         }),
-        '../../../vuex/modules/data/actions': {
-          unsetNewDocument: unsetNewDocumentSpy
-        },
         refreshIndex: refreshIndexSpy
+      },
+      '../../../vuex/modules/data/actions': {
+        unsetNewDocument: unsetNewDocumentSpy
       }
     })
 
@@ -46,7 +53,7 @@ describe('create document tests', () => {
     }).$mount()
 
     vm.$refs.create.$dispatch = dispatchSpy
-    vm.$refs.create.$route = {params: {collection: 'coll'}}
+    vm.$refs.create.$route = {params: {collection: 'coll', index: 'index'}}
     vm.$refs.create.$router = routerSpy
   })
 
@@ -71,10 +78,29 @@ describe('create document tests', () => {
     })
   })
 
-  // describe('beforeDestroy test', () => {
-  //   it('should unset the document before destroying the component', () => {
-  //     vm.$destroy()
-  //     expect(unsetNewDocumentSpy.called).to.be.ok
-  //   })
-  // })
+  describe('beforeDestroy test', () => {
+    it('should unset the document before destroying the component', () => {
+      vm.$destroy()
+      expect(unsetNewDocumentSpy.called).to.be.ok
+    })
+  })
+
+  describe('route data tests', () => {
+    beforeEach(() => {
+      Create.route.$route = {params: {index: 'index', collection: 'collection'}}
+    })
+
+    it('should do nothing if there is an error', () => {
+      triggerError = true
+      Create.route.data()
+      expect(Create.route.mapping).to.be.undefined
+    })
+
+    it('should correctly set the mapping', () => {
+      triggerError = false
+      Create.route.data()
+      console.log(Create.route.mapping)
+      expect(Create.route.mapping).to.deep.equals({attr: 'falu'})
+    })
+  })
 })
