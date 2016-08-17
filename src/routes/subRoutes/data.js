@@ -6,51 +6,51 @@ export default {
       require(['../../components/Data/Indexes/Browse'], resolve)
     }
   },
-  '/data/:index': {
+  '/:index': {
     name: 'DataIndexSummary',
     component (resolve) {
       require(['../../components/Data/Indexes/Summary'], resolve)
     }
   },
-  '/data/:index/create': {
+  '/:index/create': {
     name: 'DataCreateCollection',
     component (resolve) {
       require(['../../components/Data/Collections/Create'], resolve)
     }
   },
   // Collections routes
-  '/data/:index/:collection': {
+  '/:index/:collection': {
     name: 'DataCollectionBrowse',
     component (resolve) {
       require(['../../components/Data/Collections/Browse'], resolve)
     }
   },
-  '/data/:index/:collection/summary': {
+  '/:index/:collection/summary': {
     name: 'DataCollectionSummary',
     component (resolve) {
       require(['../../components/Data/Collections/Summary'], resolve)
     }
   },
-  '/data/:index/:collection/watch': {
+  '/:index/:collection/watch': {
     name: 'DataCollectionWatch',
     component (resolve) {
       require(['../../components/Data/Collections/Watch'], resolve)
     }
   },
   // Documents routes
-  '/data/:index/:collection/create': {
+  '/:index/:collection/create': {
     name: 'DataCreateDocument',
     component (resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
     }
   },
-  '/data/:index/:collection/:document': {
+  '/:index/:collection/:document': {
     name: 'DataDocumentDetail',
     component (resolve) {
       require(['../../components/Data/Documents/Detail'], resolve)
     }
   },
-  '/data/:index/:collection/:document/edit': {
+  '/:index/:collection/:document/edit': {
     name: 'DataDocumentEdit',
     component (resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
