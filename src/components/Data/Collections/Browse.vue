@@ -1,11 +1,11 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{$route.params.collection}} - Browse
+      {{collection}} - Browse
       <collection-dropdown class="icon-medium icon-black" :id="$route.params.index"></collection-dropdown>
     </headline>
 
-    <crudl-document :available-filters="availableFilters" @create-clicked="createDocument" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" :index="$route.params.index" :collection="$route.params.collection" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
+    <crudl-document :available-filters="availableFilters" @create-clicked="createDocument" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" :index="index" :collection="collection" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
           <document-item @checkbox-click="toggleSelectDocuments" :document="document" :is-checked="isChecked(document.id)"></document-item>
@@ -43,6 +43,10 @@
         documents: [],
         totalDocuments: 0
       }
+    },
+    props: {
+      index: String,
+      collection: String
     },
     components: {
       Headline,
@@ -125,7 +129,7 @@
         }
 
         // Execute search with corresponding filters
-        performSearch(this.$route.params.collection, this.$route.params.index, filters, pagination, sorting).then(res => {
+        performSearch(this.collection, this.index, filters, pagination, sorting).then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total
         })
