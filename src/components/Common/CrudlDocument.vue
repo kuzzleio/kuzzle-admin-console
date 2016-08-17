@@ -135,7 +135,7 @@
       paginationSize: Number,
       searchTerm: String,
       rawFilter: String,
-      basicFilter: String,
+      basicFilter: Array,
       sorting: String,
       availableFilters: Object
     },
