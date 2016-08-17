@@ -25,12 +25,14 @@ kuzzle:
   image: kuzzleio/kuzzle:develop
   volumes:
       - "../kuzzle/fixtures.json:/fixtures.json"
+      - "../kuzzle/mappings.json:/mappings.json"
   links:
     - elasticsearch
     - redis
     - proxy:api
   environment:
     - kuzzle_fixtures=/fixtures.json
+    - kuzzle_mappings=/mappings.json
 
 redis:
   image: redis:3.0-alpine

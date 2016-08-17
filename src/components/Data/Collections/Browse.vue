@@ -2,7 +2,7 @@
   <div class="wrapper">
     <headline>
       {{collection}} - Browse
-      <collection-dropdown class="icon-medium icon-black" :id="$route.params.index"></collection-dropdown>
+      <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
     <crudl-document :available-filters="availableFilters" @create-clicked="createDocument" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" :index="index" :collection="collection" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
