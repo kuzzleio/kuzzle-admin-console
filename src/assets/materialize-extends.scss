@@ -38,6 +38,29 @@ h1, h2, h3, h4, h5, h6 {
   color: #555;
 }
 
+i, span {
+  &.primary, &.secondary, &.tertiary, &.red-color {
+    background: none;
+
+    &:hover, &:focus {
+      background: none;
+    }
+  }
+
+  &.primary {
+    color: $primary-color;
+  }
+  &.secondary {
+    color: $secondary-color;
+  }
+  &.tertiary {
+    color: $tertiary-color;
+  }
+  &.red-color {
+    color: $red-color;
+  }
+}
+
 .primary {
   background-color: $primary-color;
   &:hover, &:focus {
@@ -56,6 +79,13 @@ h1, h2, h3, h4, h5, h6 {
   background-color: $tertiary-color;
   &:hover, &:focus {
     background-color: lighten($tertiary-color, 5%);
+  }
+}
+
+.red-color {
+  background-color: $red-color;
+  &:hover, &:focus {
+    background-color: lighten($red-color, 5%);
   }
 }
 

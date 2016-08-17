@@ -1,6 +1,6 @@
 import kuzzle from './kuzzle'
 
-export const isConnected = () => {
+export const isConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
     return new Promise((resolve, reject) => {
       let id = kuzzle.addListener('connected', () => {
@@ -8,11 +8,11 @@ export const isConnected = () => {
         resolve()
       })
 
-      // Timeout, if kuzzle doesn't respond in 10s -> reject
+      // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
       setTimeout(() => {
         kuzzle.removeListener('connected', id)
         reject()
-      }, 10000)
+      }, timeout)
     })
   }
 
