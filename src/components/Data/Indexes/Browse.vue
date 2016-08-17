@@ -7,7 +7,7 @@
 
       <div class="row actions">
         <div class="col s9">
-          <a class="btn waves-effect waves-light" @click.prevent="$broadcast('modal-open', 'index-create')">
+          <a class="btn waves-effect waves-light primary" @click.prevent="$broadcast('modal-open', 'index-create')">
             <i class="fa fa-plus-circle left"></i>
             <span>Create</span>
           </a>

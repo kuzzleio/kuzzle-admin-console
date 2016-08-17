@@ -9,14 +9,14 @@
     <div class="row">
       <div class="col s6 m4 l3">
 
-        <div class="row">
+        <!--<div class="row">
           <div class="col s6 truncate">Total documents</div>
           <div class="col s6 right-align">1 567</div>
         </div>
         <div class="row">
           <div class="col s6 truncate">Index Size</div>
           <div class="col s6 right-align">64 mb</div>
-        </div>
+        </div>-->
         <div class="row">
           <div class="col s5 truncate">Auto refresh</div>
           <div class="col s7 right-align">
@@ -37,7 +37,7 @@
 
         <div class="row actions">
           <div class="col s9">
-            <a class="btn waves-effect waves-light"
+            <a class="btn waves-effect waves-light primary"
                href="#!"
                v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <i class="fa fa-plus-circle left"></i>Create a collection
@@ -46,7 +46,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align">
+            <div class="input-field left-align" v-if="countCollection > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" type="text" tabindex="1" v-model="filter">
             </div>
@@ -55,7 +55,7 @@
 
         <div class="row">
           <!-- No collection view -->
-          <div class="col s12" v-if="!hasCollection">
+          <div class="col s12" v-if="!countCollection">
             <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <div class="card-panel hoverable">
                 <div class="card-content">
@@ -143,8 +143,8 @@
       this.getCollectionsFromIndex(this.index)
     },
     computed: {
-      hasCollection () {
-        return this.collections.realtime.length > 0 || this.collections.stored.length > 0
+      countCollection () {
+        return this.collections.realtime.length + this.collections.stored.length
       }
     },
     vuex: {
