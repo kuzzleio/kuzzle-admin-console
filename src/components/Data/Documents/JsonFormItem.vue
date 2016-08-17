@@ -1,6 +1,8 @@
 <template>
-  <input :id="name" type="text" name="collection" v-model="value" @input="updatePartial" />
-  <label :for="name">{{name}}</label>
+  <div class="row">
+    <input :id="name" :type="type" name="collection" v-model="value" @input="updatePartial" />
+    <label :for="name">{{name}}</label>
+  </div>
 </template>
 
 <script>
@@ -13,15 +15,38 @@
       content: Object,
       fullName: String
     },
+    ready () {
+      this.getType()
+    },
     data () {
       return {
         value: '',
-        partial: {}
+        partial: {},
+        type: 'text'
       }
     },
     methods: {
       updatePartial () {
         this.setPartial(this.fullName, this.value)
+      },
+      getType () {
+        switch (this.content.type) {
+          case 'boolean':
+            this.type = 'checkbox'
+            break
+          case 'integer':
+          case 'long':
+          case 'short':
+          case 'byte':
+          case 'double':
+          case 'float':
+          case 'binary':
+            this.type = 'number'
+            break
+          default:
+            this.type = 'text'
+            break
+        }
       }
     },
     vuex: {
