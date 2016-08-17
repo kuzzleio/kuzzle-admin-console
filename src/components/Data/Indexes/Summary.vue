@@ -39,7 +39,9 @@
           <div class="col s9">
             <a class="btn waves-effect waves-light primary"
                href="#!"
-               v-link="{name: 'DataCreateCollection', params: {index: index}}">
+               v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+               :class="{unauthorized: !canCreateCollection(index)}"
+               v-link="canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}">
               <i class="fa fa-plus-circle left"></i>Create a collection
             </a>
           </div>
@@ -54,8 +56,18 @@
         </div>
 
         <div class="row">
+          <!-- Not allowed -->
+          <div class="col s12" v-if="!canSearchCollection(index)">
+            <div class="card-panel unauthorized">
+              <div class="card-content">
+                <i class="fa fa-lock left " aria-hidden="true"></i>
+                <em>You are not allowed to list collections in index {{index}}</em>
+              </div>
+            </div>
+          </div>
+
           <!-- No collection view -->
-          <div class="col s12" v-if="!countCollection">
+          <div class="col s12" v-if="canSearchCollection(index) && !countCollection">
             <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <div class="card-panel hoverable">
                 <div class="card-content">
@@ -67,7 +79,7 @@
 
           <collection-boxed
               v-for="collection in collections.stored | orderBy 1"
-              v-if="!filter || (filter && collection.includes(filter))"
+              v-if="canSearchCollection(index) && (!filter || (filter && collection.includes(filter)))"
               :index="index"
               :collection="collection"
               :is-realtime="false">
@@ -75,7 +87,7 @@
 
           <collection-boxed
               v-for="collection in collections.realtime | orderBy 1"
-              v-if="!filter || (filter && collection.includes(filter))"
+              v-if="canSearchCollection(index) && (!filter || (filter && collection.includes(filter)))"
               :index="index"
               :collection="collection"
               :is-realtime="true">
@@ -118,6 +130,8 @@
   import CollectionBoxed from '../Collections/Boxed'
   import {getCollectionsFromIndex} from '../../../vuex/modules/data/actions'
   import {collections} from '../../../vuex/modules/data/getters'
+  import {canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
+  import Title from '../../../directives/title.directive'
 
   export default {
     name: 'IndexesSummary',
@@ -129,6 +143,13 @@
       CollectionBoxed,
       IndexDropdown
     },
+    methods: {
+      canSearchCollection,
+      canCreateCollection
+    },
+    directives: {
+      Title
+    },
     data () {
       return {
         filter: ''
@@ -136,11 +157,15 @@
     },
     watch: {
       'index': function (index) {
-        this.getCollectionsFromIndex(index)
+        if (this.canSearchCollection(index)) {
+          this.getCollectionsFromIndex(index)
+        }
       }
     },
     ready () {
-      this.getCollectionsFromIndex(this.index)
+      if (this.canSearchCollection(this.index)) {
+        this.getCollectionsFromIndex(this.index)
+      }
     },
     computed: {
       countCollection () {

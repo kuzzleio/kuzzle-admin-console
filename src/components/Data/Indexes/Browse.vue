@@ -7,7 +7,10 @@
 
       <div class="row actions">
         <div class="col s9">
-          <a class="btn waves-effect waves-light primary" @click.prevent="$broadcast('modal-open', 'index-create')">
+          <a class="btn waves-effect waves-light primary"
+             v-title="{active: !canCreateIndex(), title: 'Your rights disallow you to create indexes'}"
+             :class="{unauthorized: !canCreateIndex()}"
+             @click.prevent="canCreateIndex() && $broadcast('modal-open', 'index-create')">
             <i class="fa fa-plus-circle left"></i>
             <span>Create</span>
           </a>
@@ -23,8 +26,18 @@
         </div>
 
         <div class="row">
+          <!-- Not allowed -->
+          <div class="col s12" v-if="!canSearchIndex()">
+            <div class="card-panel unauthorized">
+              <div class="card-content">
+                <i class="fa fa-lock left " aria-hidden="true"></i>
+                <em>You are not allowed to list indexes</em>
+              </div>
+            </div>
+          </div>
+
           <!-- No index view -->
-          <div class="col s12" v-if="!indexesAndCollections">
+          <div class="col s12" v-if="canSearchIndex() && !indexesAndCollections">
             <a class="card-title"
              href="#!"
              @click.prevent="$broadcast('modal-open', 'index-create')">
@@ -39,11 +52,11 @@
           <!-- Index listing -->
           <index-boxed
             :index="index.name"
-            v-if="!filter || index.name.indexOf(filter) >= 0"
+            v-if="canSearchIndex() && (!filter || index.name.indexOf(filter) >= 0)"
             v-for="index in indexesAndCollections | orderBy 'name'">
           </index-boxed>
 
-          <modal-create id="index-create"></modal-create>
+          <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
         </div>
 
       </div>
@@ -72,9 +85,11 @@
 <script>
   import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
+  import {canSearchIndex, canCreateIndex} from '../../../services/userAuthorization'
   import Headline from '../../Materialize/Headline.vue'
   import ModalCreate from './ModalCreate'
   import IndexBoxed from './Boxed.vue'
+  import Title from '../../../directives/title.directive'
 
   export default {
     name: 'IndexesList',
@@ -83,13 +98,22 @@
       ModalCreate,
       IndexBoxed
     },
+    directives: {
+      Title
+    },
+    methods: {
+      canSearchIndex,
+      canCreateIndex
+    },
     data () {
       return {
         filter: ''
       }
     },
     ready () {
-      this.listIndexesAndCollections()
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
+      }
     },
     vuex: {
       actions: {

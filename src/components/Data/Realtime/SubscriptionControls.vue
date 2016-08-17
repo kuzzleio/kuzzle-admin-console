@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="col s5 m5 l4">
-      <button class="btn waves-effect waves-light" :class="subscribed ? 'tertiary' : 'primary'" @click.prevent="toggleSubscription()">
+      <button
+        class="btn waves-effect waves-light"
+        v-title="{active: !canSubscribe(index, collection), title: 'You are not allowed to watch realtime messages on collection ' + collection + ' of index ' + index}"
+        :class="{unauthorized: !canSubscribe(index, collection), 'tertiary': subscribed, 'primary': !subscribed}"
+        @click.prevent="canSubscribe(index, collection) && toggleSubscription()">
         <i :class="{'fa-play': !subscribed, 'fa-pause': subscribed}" class="fa left"></i>
         {{subscribed ? 'Unsubscribe' : 'Subscribe'}}
       </button>
@@ -31,11 +35,19 @@
 
 
 <script>
+  import {canSubscribe} from '../../../services/userAuthorization'
+  import Title from '../../../directives/title.directive'
+
   export default {
     name: 'SubscriptionControls',
     props: {
+      index: String,
+      collection: String,
       warning: Object,
       subscribed: Boolean
+    },
+    directives: {
+      Title
     },
     data () {
       return {
@@ -43,6 +55,7 @@
       }
     },
     methods: {
+      canSubscribe,
       toggleSubscription () {
         this.$dispatch('realtime-toggle-subscription')
       },
