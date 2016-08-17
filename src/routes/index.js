@@ -22,7 +22,7 @@ export default function createRoutes (router) {
           },
           subRoutes: SecuritySubRoutes
         },
-        '/': {
+        '/data': {
           name: 'Data',
           component (resolve) {
             require(['../components/Data/Layout'], resolve)
@@ -42,7 +42,8 @@ export default function createRoutes (router) {
   })
 
   router.redirect({
-    '/security': '/security/users'
+    '/security': '/security/users',
+    '/': '/data'
   })
 
   router.beforeEach(transition => {
