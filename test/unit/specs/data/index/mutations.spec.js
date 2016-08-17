@@ -19,7 +19,10 @@ describe('index creation mutations test', () => {
     ADD_INDEX(state, 'myindex')
     expect(state.indexesAndCollections[0]).to.deep.equal({
       name: 'myindex',
-      collections: []
+      collections: {
+        stored: [],
+        realtime: []
+      }
     })
   })
 })

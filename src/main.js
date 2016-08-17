@@ -30,7 +30,7 @@ isConnected()
       components: { App }
     }, 'body')
   })
-  .catch(() => {
+  .catch((e) => {
     setConnection(store, false)
 
     router.start({
