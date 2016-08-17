@@ -46,6 +46,20 @@
   </div>
 </template>
 
+<style rel="stylesheet/scss" lang="scss">
+  fieldset {
+    border: 0;
+
+    legend {
+      font-weight: 600;
+    }
+
+    fieldset {
+      border-left: solid 4px #DDD;
+    }
+  }
+</style>
+
 <script>
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
