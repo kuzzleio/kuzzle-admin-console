@@ -6,23 +6,43 @@
     </headline>
 
     <div class="row">
-      <div class="input-field col m2">
-        <input id="id" type="text" name="collection" v-model="id" />
-        <label for="id">Id (optional)</label>
-      </div>
-    </div>
+      <div class="col s12 m10 l8 card">
 
-    <div class="row">
-      <div class="col m11">
-        <fieldset>
-          <div v-for="(name, content) in mapping">
-            <json-form :name="name" :content="content"></json-form>
+        <form class="wrapper" @submit.prevent="create">
+          <div class="row">
+            <!-- Collection name -->
+            <div class="col s6">
+              <div class="input-field">
+                <input id="id" type="text" name="collection" v-model="id" />
+                <label for="id">Document identifier (optional)</label>
+              </div>
+            </div>
           </div>
-        </fieldset>
+
+          <div class="row">
+            <div class="divider"></div>
+          </div>
+
+          <div class="row">
+            <div class="col m11">
+              <fieldset>
+                <div v-for="(name, content) in mapping">
+                  <json-form :name="name" :content="content"></json-form>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col s6">
+              <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
+              <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+            </div>
+          </div>
+
+        </form>
       </div>
     </div>
-    <button @click.prevent="create" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
-    <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
   </div>
 </template>
 
