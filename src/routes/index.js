@@ -1,12 +1,12 @@
 import Login from '../components/Login'
 import Signup from '../components/Signup'
-import KuzzleDisconnected from '../components/Errors/KuzzleDisconnected'
 import store from '../vuex/store'
 import { isAuthenticated, adminAlreadyExists } from '../vuex/modules/auth/getters'
 import { kuzzleIsConnected } from '../vuex/modules/common/kuzzle/getters'
 
 import SecuritySubRoutes from './subRoutes/security'
 import DataSubRoutes from './subRoutes/data'
+import ErrorSubRoutes from './subRoutes/errors'
 
 export default function createRoutes (router) {
   router.map({
@@ -33,6 +33,14 @@ export default function createRoutes (router) {
         }
       }
     },
+    '/error': {
+      name: 'Error',
+      component (resolve) {
+        require(['../components/Error/Layout'], resolve)
+      },
+      auth: false,
+      subRoutes: ErrorSubRoutes
+    },
     '/login': {
       name: 'Login',
       component: Login
@@ -40,10 +48,6 @@ export default function createRoutes (router) {
     '/signup': {
       name: 'Signup',
       component: Signup
-    },
-    '/kuzzle-disconnected': {
-      name: 'KuzzleDisconnected',
-      component: KuzzleDisconnected
     }
   })
 
@@ -66,12 +70,12 @@ export default function createRoutes (router) {
   })
 
   router.beforeEach(transition => {
-    if (transition.to.name !== 'KuzzleDisconnected' && !kuzzleIsConnected(store.state)) {
-      transition.redirect('/kuzzle-disconnected')
+    if (transition.to.name !== 'KuzzleDisconnectedPage' && !kuzzleIsConnected(store.state)) {
+      transition.redirect('/error/kuzzle-disconnected')
       return
     }
 
-    if (transition.to.name === 'KuzzleDisconnected' && kuzzleIsConnected(store.state)) {
+    if (transition.to.name === 'KuzzleDisconnectedPage' && kuzzleIsConnected(store.state)) {
       transition.redirect('/')
       return
     }

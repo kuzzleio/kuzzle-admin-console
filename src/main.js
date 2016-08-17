@@ -5,7 +5,7 @@ import store from './vuex/store'
 import { sync } from 'vuex-router-sync'
 import { loginFromCookie, checkFirstAdmin } from './vuex/modules/auth/actions'
 import { setConnection } from './vuex/modules/common/kuzzle/actions'
-import { isConnected } from './services/kuzzleWrapper'
+import { isConnected, addDefaultListeners } from './services/kuzzleWrapper'
 import Promise from 'bluebird'
 
 Vue.config.debug = process.env.NODE_ENV !== 'production'
@@ -25,6 +25,8 @@ isConnected()
     return Promise.resolve()
   })
   .then(() => {
+    addDefaultListeners(store)
+
     router.start({
       store,
       components: { App }

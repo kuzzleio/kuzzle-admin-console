@@ -38,6 +38,10 @@ h1, h2, h3, h4, h5, h6 {
   color: #555;
 }
 
+h5 {
+  font-weight: 400;
+}
+
 i, span {
   &.primary, &.secondary, &.tertiary, &.red-color {
     background: none;
