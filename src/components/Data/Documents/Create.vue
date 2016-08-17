@@ -61,7 +61,6 @@
       }
     },
     beforeDestroy () {
-      console.log('##', this.unsetNewDocument)
       this.unsetNewDocument()
     },
     data () {
