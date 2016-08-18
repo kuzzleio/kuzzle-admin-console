@@ -1,6 +1,16 @@
 <template>
   <aside>
-    <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
+    <ul v-if="!canSearchIndex()" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+      <li class="unauthorized">
+        <ul class="indexes">
+          <li>
+            <i class="fa fa-lock" aria-hidden="true"></i>
+            <em>You are not allowed to list indexes</em>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <ul v-if="canSearchIndex()" class="side-nav fixed leftside-navigation ps-container ps-active-y">
       <li>
         <nav>
           <div class="nav-wrapper">
@@ -31,6 +41,7 @@
 </template>
 
 <script>
+  import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
 
   export default {
@@ -50,6 +61,7 @@
       }
     },
     methods: {
+      canSearchIndex,
       filterTree (filter, indexTree) {
         if (filter === '' || indexTree.name.indexOf(filter) >= 0) {
           return true
@@ -73,6 +85,12 @@
     }
     input {
       padding-left: 3rem;
+    }
+  }
+
+  .unauthorized {
+    li {
+      line-height: 24px;
     }
   }
 

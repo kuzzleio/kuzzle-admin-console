@@ -32,8 +32,20 @@
       -->
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#" v-if="!isRealtime" v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}">Create a document</a>
-        <a class="btn btn-small" href="#" v-if="isRealtime" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">Watch messages</a>
+        <a class="btn btn-small" href="#"
+           v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
+           :class="{unauthorized: !canCreateDocument(index, collection)}"
+		   v-link="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection} : {}}"
+           v-if="!isRealtime">
+          Create a document
+        </a>
+        <a class="btn btn-small" href="#"
+           v-if="isRealtime"
+           v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
+           :class="{unauthorized: !canManageRealtime(index, collection)}"
+           v-link="canManageRealtime(index, collection) ? {name: 'DataCollectionWatch', params: {index: index, collection: collection}} : {}">
+          Watch messages
+        </a>
       </div>
     </div>
   </div>
@@ -41,12 +53,21 @@
 
 <script>
   import CollectionDropdown from './Dropdown.vue'
+  import {canCreateDocument, canManageRealtime} from '../../../services/userAuthorization'
+  import Title from '../../../directives/title.directive'
 
   export default {
     name: 'CollectionBoxed',
     props: ['index', 'collection', 'isRealtime'],
     components: {
       CollectionDropdown
+    },
+    methods: {
+      canManageRealtime,
+      canCreateDocument
+    },
+    directives: {
+      Title
     }
   }
 </script>

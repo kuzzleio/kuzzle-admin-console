@@ -32,6 +32,7 @@
 </style>
 
 <script>
+  import {canSearchIndex} from '../../services/userAuthorization'
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
   import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Browse/Treeview'
@@ -43,8 +44,13 @@
       Treeview,
       Breadcrumb
     },
+    methods: {
+      canSearchIndex
+    },
     ready () {
-      this.listIndexesAndCollections()
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
+      }
     },
     vuex: {
       actions: {
