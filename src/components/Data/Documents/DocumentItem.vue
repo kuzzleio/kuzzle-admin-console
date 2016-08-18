@@ -90,7 +90,7 @@
   import Dropdown from '../../Materialize/Dropdown'
 
   export default {
-    name: 'Document',
+    name: 'DocumentItem',
     props: {
       document: Object,
       isChecked: Boolean

@@ -7,10 +7,10 @@ main {
       font-size: 3rem;
     }
   }
-}
 
-.wrapper {
-  padding: 20px;
+  .wrapper {
+    padding: 20px;
+  }
 }
 
 /* remove yellow effect on chrome when autofill inputs */
@@ -56,7 +56,7 @@ strong {
   }
 }
 
-html {
+html{
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: normal;
   background-color: #F8F8F8;

@@ -10,7 +10,7 @@
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
     <label for="checkbox-{{document.id}}" ></label>
-    <!-- The following anchor will go to the user details page -->
+    <!-- The following anchor will go to the profile details page -->
     <label class="item-title"><a>{{document.id}}</a></label>
 
     <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
@@ -24,14 +24,7 @@
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="itemContent"></pre><div class="profile-list">
-        <div class="profile-chip chip" v-for="profile in profileList">
-          <a v-link="{name: 'SecurityProfileDetail', params:{ profileId: profile }}" class="truncate" >{{profile}}</a>
-        </div>
-        <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <a v-link="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</a>
-        </div>
-      </div>
+      <pre v-json-formatter="document.content"></pre>
     </div>
   </div>
 </template>
@@ -40,10 +33,8 @@
 import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
 
-const MAX_PROFILES = 5
-
 export default {
-  name: 'UserItem',
+  name: 'ProfileItem',
   props: {
     document: Object,
     isChecked: Boolean
@@ -57,23 +48,6 @@ export default {
   data () {
     return {
       collapsed: true
-    }
-  },
-  computed: {
-    itemContent () {
-      let contentDisplay = {...this.document.content}
-      delete contentDisplay.clearPassword
-      delete contentDisplay.profilesIds
-
-      return contentDisplay
-    },
-    profileList () {
-      return this.document.content.profilesIds.filter((item, idx) => {
-        return idx < MAX_PROFILES
-      })
-    },
-    showAllProfiles () {
-      return this.document.content.profileIds > MAX_PROFILES
     }
   },
   methods: {

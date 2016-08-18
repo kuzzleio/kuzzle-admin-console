@@ -106,14 +106,18 @@
         if (this.id) {
           this.newDocument._id = this.id
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, (err, res) => {
-          if (err) {
-            this.$dispatch('toast', err.message, 'error')
-            return
-          }
-          kuzzle.refreshIndex(this.index)
-          this.$router.go({name: 'DataCollectionBrowse', params: {index: this.index, collection: this.collection}})
-        })
+
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .createDocument(this.newDocument, (err, res) => {
+            if (err) {
+              this.$dispatch('toast', err.message, 'error')
+              return
+            }
+
+            kuzzle.refreshIndex(this.index)
+            this.$router.go({name: 'DataCollectionBrowse', params: {index: this.index, collection: this.collection}})
+          })
       }
     },
     vuex: {
@@ -135,12 +139,15 @@
     },
     route: {
       data () {
-        kuzzle.dataCollectionFactory(this.collection, this.index).getMapping((err, res) => {
-          if (err) {
-            return
-          }
-          this.mapping = res.mapping
-        })
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .getMapping((err, res) => {
+            if (err) {
+              return
+            }
+            
+            this.mapping = res.mapping
+          })
       }
     }
   }

@@ -58,7 +58,7 @@
     </div>
 
     <modal id="bulk-delete">
-      <h4>Users deletion</h4>
+      <h4>Document deletion</h4>
       <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'document'}}?</p>
 
       <span slot="footer">
@@ -203,6 +203,13 @@
         this.$router.go({query: {rawFilter, from: 0}})
       },
       refreshSearch () {
+        // If we are already on the page, the $router.go function doesn't trigger the route.data() function of top level components...
+        // https://github.com/vuejs/vue-router/issues/296
+        if (this.$route.query.from === '0') {
+          this.$dispatch('crudl-refresh-search')
+          return
+        }
+
         this.$router.go({query: {...this.$route.query, from: 0}})
       },
       dispatchToggle () {

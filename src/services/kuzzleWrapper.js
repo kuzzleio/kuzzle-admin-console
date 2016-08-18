@@ -32,16 +32,18 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 }
 
 export const performSearch = (collection, index, filters = {}, pagination = {}, sort = []) => {
-  if (!collection || !index) {
-    return
-  }
   return new Promise((resolve, reject) => {
+    if (!collection || !index) {
+      return reject(new Error('Missing collection or index'))
+    }
+
     kuzzle
       .dataCollectionFactory(collection, index)
       .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
         if (error) {
           return reject(error)
         }
+
         let additionalAttributeName = null
 
         if (sort.length > 0) {
