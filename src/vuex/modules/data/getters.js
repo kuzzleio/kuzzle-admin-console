@@ -17,3 +17,7 @@ export const selectedIndex = state => {
 export const selectedCollection = state => {
   return state.route.params.collection
 }
+
+export const newDocument = state => {
+  return state.data.newDocument
+}

@@ -1,11 +1,3 @@
-export const documents = state => {
-  return state.crudlDocument.documents
-}
-
-export const totalDocuments = state => {
-  return state.crudlDocument.total
-}
-
 export const selectedDocuments = state => {
   return state.crudlDocument.selectedDocuments
 }

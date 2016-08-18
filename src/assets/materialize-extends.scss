@@ -16,11 +16,32 @@
     padding: 0 0.8rem;
     letter-spacing: .1px;
   }
+
+  &.unauthorized {
+    cursor: not-allowed;
+    background-color: #CCC;
+    box-shadow: 0 0 0 0;
+
+    &:hover, &:focus {
+      background-color: #DDD;
+      box-shadow: 0 0 0 0;
+    }
+  }
 }
 
 .btn-flat {
   &:focus {
     background-color: #EEE;
+  }
+}
+
+.card-panel, .inline-alert {
+  &.unauthorized {
+    .fa-lock {
+      &.left {
+        margin-top: 4px;
+      }
+    }
   }
 }
 
