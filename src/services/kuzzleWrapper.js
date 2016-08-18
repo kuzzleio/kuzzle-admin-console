@@ -1,6 +1,6 @@
 import kuzzle from './kuzzle'
 import { setTokenValid } from '../vuex/modules/auth/actions'
-import { setConnection } from '../vuex/modules/common/kuzzle/actions'
+import { setConnection, setKuzzleHostPort } from '../vuex/modules/common/kuzzle/actions'
 import Promise from 'bluebird'
 
 export const isConnected = (timeout = 1000) => {
@@ -23,7 +23,9 @@ export const isConnected = (timeout = 1000) => {
   return Promise.resolve()
 }
 
-export const addDefaultListeners = (store) => {
+export const initStoreWithKuzzle = (store) => {
+  setKuzzleHostPort(store, kuzzle.host, kuzzle.wsPort)
+
   kuzzle.removeAllListeners('jwtTokenExpired')
   kuzzle.addListener('jwtTokenExpired', () => {
     setTokenValid(store, false)

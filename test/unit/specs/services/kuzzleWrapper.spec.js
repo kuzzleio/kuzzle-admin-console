@@ -184,15 +184,18 @@ describe('Kuzzle wrapper service', () => {
     })
   })
 
-  describe('addDefaultListeners', () => {
+  describe('initStoreWithKuzzle', () => {
     let kuzzleWrapper
     let removeAllListeners = sandbox.stub()
     let setConnection = sandbox.stub()
     let setTokenValid = sandbox.stub()
+    let setKuzzleHostPort = sandbox.stub()
 
     it('should call removeListeners and addListeners with right params', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
+          host: 'toto',
+          wsPort: 8888,
           state: 'connecting',
           addListener (event, cb) {
             cb()
@@ -200,7 +203,8 @@ describe('Kuzzle wrapper service', () => {
           removeAllListeners
         },
         '../vuex/modules/common/kuzzle/actions': {
-          setConnection
+          setConnection,
+          setKuzzleHostPort
         },
         '../vuex/modules/auth/actions': {
           setTokenValid
@@ -208,7 +212,9 @@ describe('Kuzzle wrapper service', () => {
       })
 
       let store = {store: 'mystore'}
-      kuzzleWrapper.addDefaultListeners(store)
+      kuzzleWrapper.initStoreWithKuzzle(store)
+
+      expect(setKuzzleHostPort.calledWith(store, 'toto', 8888)).to.be.equal(true)
 
       expect(removeAllListeners.calledWith('jwtTokenExpired'))
       expect(removeAllListeners.calledWith('disconnected'))

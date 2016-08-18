@@ -13,7 +13,7 @@
 
   <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false">
     <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
-    <kuzzle-disconnected :host="host" :port="port"></kuzzle-disconnected>
+    <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
   </modal>
 </template>
 
@@ -45,9 +45,8 @@
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
   import KuzzleDisconnected from './Error/KuzzleDisconnected'
-  import kuzzle from '../services/kuzzle'
   import { tokenValid } from '../vuex/modules/auth/getters'
-  import { kuzzleIsConnected } from '../vuex/modules/common/kuzzle/getters'
+  import { kuzzleIsConnected, kuzzleHost, kuzzlePort } from '../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'Home',
@@ -60,7 +59,9 @@
     vuex: {
       getters: {
         tokenValid,
-        kuzzleIsConnected
+        kuzzleIsConnected,
+        kuzzleHost,
+        kuzzlePort
       }
     },
     data () {
@@ -88,10 +89,6 @@
 
         this.$broadcast('modal-close', 'kuzzleDisconnected')
       }
-    },
-    ready () {
-      this.host = kuzzle.host
-      this.port = kuzzle.wsPort
     }
   }
 </script>
