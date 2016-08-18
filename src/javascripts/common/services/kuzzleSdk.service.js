@@ -2,12 +2,27 @@ var Kuzzle = require('kuzzle-sdk');
 var config = require('../../config');
 
 angular.module('kuzzle.kuzzleSdk', [])
-  .factory('kuzzleUrl', ['$location', function ($location) {
-    if (typeof config !== 'undefined' && config.kuzzleUrl) {
-      return config.kuzzleUrl;
+  .factory('kuzzleConfig', ['$location', function ($location) {
+    var cfg = {
+      host: $location.$$host,
+      opts: {
+        offlineMode: 'auto',
+        ioPort: 7512,
+        wsPort: 7513
+      }
+    };
+
+    if (config) {
+      if (config.host) {
+        cfg.host = config.host;
+      }
+
+      if (config.opts) {
+        cfg.opts = Object.assign(cfg.opts, config.opts);
+      }
     }
 
-    return $location.$$host + ':7512';
+    return cfg;
   }])
   .factory('kuzzleCoreIndex', function() {
     if (typeof config !== 'undefined' && config.kuzzleCoreIndex) {
@@ -16,13 +31,10 @@ angular.module('kuzzle.kuzzleSdk', [])
 
     return '%kuzzle';
   })
-  .factory('kuzzleSdk', ['kuzzleUrl', function (kuzzleUrl) {
+  .factory('kuzzleSdk', ['kuzzleConfig', function (kuzzleConfig) {
     var kuzzle, rawQuery;
 
-    kuzzle = new Kuzzle(kuzzleUrl, {
-      defaultIndex: 'mainindex',
-      offlineMode: 'auto'
-    });
+    kuzzle = new Kuzzle(kuzzleConfig.host, kuzzleConfig.opts);
 
     rawQuery = kuzzle.query;
 
