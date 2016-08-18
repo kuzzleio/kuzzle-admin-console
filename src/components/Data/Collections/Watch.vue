@@ -10,23 +10,6 @@
         </collection-dropdown>
       </headline>
 
-      <filters
-        @filters-basic-search="basicSearch"
-        @filters-raw-search="rawSearch"
-        @filters-refresh-search="refreshSearch"
-        label-search-button="Apply filters"
-        label-complex-query="Quick search disabled, click to open filter builder"
-        :available-filters="availableFilters"
-        :quick-filter-enabled="false"
-        :sorting-enabled="false"
-        :raw-filter="rawFilter"
-        :basic-filter="basicFilter"
-        :format-from-basic-search="formatFromBasicSearch"
-        :format-sort="formatSort"
-        :set-basic-filter="setBasicFilter"
-        :basic-filter-form="basicFilterForm">
-      </filters>
-
       <!-- subscription control bar fixed -->
       <div id="notification-controls-fixed" class="closed" v-scroll-glue="{spy: notifications, height: 200, active: scrollGlueActive}">
         <div class="row">
@@ -37,6 +20,7 @@
             :index="index"
             :collection="collection"
             :subscribed="subscribed"
+            :scroll-glue-active="scrollGlueActive"
             :warning="warning">
           </subscription-controls>
         </div>
@@ -44,6 +28,27 @@
       <!-- /subscription control bar fixed -->
 
       <div class="row">
+        <div class="col s12 m10 l8 list-document">
+          <filters
+            @filters-basic-search="basicSearch"
+            @filters-raw-search="rawSearch"
+            @filters-refresh-search="refreshSearch"
+            label-search-button="Apply filters"
+            label-complex-query="Quick search disabled, click to open filter builder"
+            :available-filters="availableFilters"
+            :quick-filter-enabled="false"
+            :sorting-enabled="false"
+            :raw-filter="rawFilter"
+            :basic-filter="basicFilter"
+            :format-from-basic-search="formatFromBasicSearch"
+            :format-sort="formatSort"
+            :set-basic-filter="setBasicFilter"
+            :basic-filter-form="basicFilterForm">
+          </filters>
+        </div>
+      </div>
+
+      <div class="row realtime">
         <!-- subscription controls in page flow -->
         <subscription-controls
           @realtime-toggle-subscription="toggleSubscription"
@@ -52,6 +57,7 @@
           :index="index"
           :collection="collection"
           :subscribed="subscribed"
+          :scroll-glue-active="scrollGlueActive"
           :warning="warning">
         </subscription-controls>
         <!-- /subscription controls in page flow  -->
@@ -89,6 +95,10 @@
 
   .wrapper {
     position: relative;
+  }
+
+  .realtime {
+    padding: 0 12px;
   }
 
   #notification-controls-fixed {

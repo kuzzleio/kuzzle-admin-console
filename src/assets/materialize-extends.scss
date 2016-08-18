@@ -1,22 +1,6 @@
 .btn {
   font-family: "Roboto", sans-serif;
 
-  &.btn-tiny {
-    height: 24px;
-    line-height: 24px;
-    font-size: 0.8rem;
-    padding: 0 0.6rem;
-    letter-spacing: .2px;
-  }
-
-  &.btn-small {
-    height: 30px;
-    line-height: 30px;
-    font-size: 0.9rem;
-    padding: 0 0.8rem;
-    letter-spacing: .1px;
-  }
-
   &.unauthorized {
     cursor: not-allowed;
     background-color: #CCC;
@@ -35,6 +19,30 @@
   }
 }
 
+.btn-tiny {
+  height: 24px;
+  line-height: 24px;
+  font-size: 0.77rem;
+  padding: 0 0.6rem;
+  letter-spacing: .2px;
+
+  i {
+    font-size: 1.1rem;
+  }
+}
+
+.btn-small {
+  height: 30px;
+  line-height: 30px;
+  font-size: 0.9rem;
+  padding: 0 0.8rem;
+  letter-spacing: .1px;
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
 .card-panel, .inline-alert {
   &.unauthorized {
     .fa-lock {
@@ -44,6 +52,17 @@
     }
   }
 }
+
+a {
+  &.fluid-hover {
+    transition: color .3s ease-out;
+
+    &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
 
 strong {
   &.highlight {
@@ -84,4 +103,16 @@ h1, h2, h3, h4, h5, h6 {
   padding: 15px;
   border-radius: 3px;
   margin: 10px 0;
+}
+
+.valign-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.row {
+  &.actions {
+    margin-bottom: 5px;
+  }
 }

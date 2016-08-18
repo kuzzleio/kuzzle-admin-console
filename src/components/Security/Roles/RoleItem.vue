@@ -18,8 +18,8 @@
     </label>
 
     <div class="right actions">
-      <dropdown :id="document.id">
-        <li><a @click="deleteDocument(document.id)">Delete</a></li>
+      <dropdown :id="document.id" class="icon-black">
+        <li><a @click="deleteDocument(document.id)">Deleteeeeeeeeee</a></li>
       </dropdown>
     </div>
 

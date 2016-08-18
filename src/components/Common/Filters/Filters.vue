@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col s11 m10 l8 z-depth-1 open-search" v-show="displayBlockFilter">
+    <div class="row filters">
+      <div class="col s12 m12 l12 z-depth-1 open-search" v-show="displayBlockFilter">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
@@ -42,9 +42,9 @@
         @filters-display-block-filter="displayBlockFilter = true">
       </quick-filter>
 
-      <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l9 complex-search">
-        <div class="row">
-          <div class="col s9 m7 l7">
+      <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l12 complex-search">
+        <div class="row valign-bottom">
+          <div class="col s9 m9 l9">
             <div class="search-bar">
               <i class="fa fa-search search"></i>
               <div class="chip">
@@ -52,16 +52,14 @@
                 <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
               </div>
               <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-              <i class="fa fa-times remove-search" @click="resetComplexSearch"></i>
             </div>
           </div>
           <div class="col s3">
-            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
+            <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
+            <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
           </div>
         </div>
       </div>
-
-
 
       <div
         v-if="displayBlockFilter"
@@ -176,12 +174,15 @@
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+  .filters {
+    position: relative;
+  }
   .search-bar {
     position: relative;
 
     a {
       position: absolute;
-      right: 70px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
       text-decoration: underline;
@@ -257,6 +258,14 @@
         border-left: 1px dotted rgba(0,0,0,0.26);
         padding-bottom: 5px;
       }
+      a.btn {
+        i.left {
+          margin-right: 8px;
+        }
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 10px;
+      }
       .block-and {
         margin-bottom: 5px;
         i.remove-filter {
@@ -264,14 +273,7 @@
           color: grey;
           cursor: pointer;
         }
-        a.btn {
-          i.left {
-            margin-right: 8px;
-          }
-          padding-left: 10px;
-          padding-right: 10px;
-          margin-left: 10px;
-        }
+
       }
       .block-sort {
         margin-top: 40px;

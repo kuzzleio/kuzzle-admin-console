@@ -6,6 +6,7 @@
         <div class="col s11 truncate">
           <!-- index browse link -->
           <a
+            class="fluid-hover"
             v-link="{name: 'DataIndexSummary', params: {index: index}}"
             href="#!">
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
@@ -45,7 +46,7 @@
       </div>
 
       <div class="card-action right-align">
-        <a class="btn btn-small"
+        <a class="btn btn-tiny"
            href="#"
            v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
            :class="{unauthorized: !canCreateCollection(index)}"

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'open': open || filter }">
+  <div :class="{ 'open': open || forceOpen || filter }">
     <i v-if="collectionCount(indexTree)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
     <a v-link="{name: 'DataIndexSummary', params: {index: indexTree.name}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexTree.name) }">
@@ -9,7 +9,7 @@
     <ul class="collections">
       <li v-for="collectionTree in indexTree.collections.stored | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
         <a class="tree-item truncate"
-           v-link="{name: getRelativeLink(false), params: {index: indexTree.name, collection: collectionTree}}"
+           v-link="{name: 'DataCollectionBrowse', params: {index: indexTree.name, collection: collectionTree}}"
            :class="{ 'active': isCollectionActive(collectionTree) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
            {{{collectionTree | highlight filter}}}
@@ -17,7 +17,7 @@
       </li>
       <li v-for="collectionTree in indexTree.collections.realtime | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
         <a class="tree-item truncate"
-           v-link="{name: getRelativeLink(true), params: {index: indexTree.name, collection: collectionTree}}"
+           v-link="{name: 'DataCollectionWatch', params: {index: indexTree.name, collection: collectionTree}}"
            :class="{ 'active': isCollectionActive(collectionTree) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
           {{{collectionTree | highlight filter}}}
@@ -32,6 +32,10 @@ import { highlight } from '../../../filters/highlight.filter'
 
 export default {
   props: {
+    forceOpen: {
+      type: Boolean,
+      default: false
+    },
     index: String,
     filter: String,
     collection: String,
@@ -51,17 +55,6 @@ export default {
     toggleBranch () {
       // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
-    },
-    getRelativeLink (isRealtime) {
-      switch (this.routeName) {
-        case 'DataCollectionSummary':
-        case 'DataCollectionWatch':
-          return this.routeName
-        case 'DataCollectionBrowse':
-          return isRealtime ? 'DataCollectionWatch' : this.routeName
-        default:
-          return 'DataCollectionBrowse'
-      }
     },
     collectionCount (index) {
       let count = 0

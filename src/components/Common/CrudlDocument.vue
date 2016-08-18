@@ -1,60 +1,75 @@
 <template>
   <div>
-    <filters
-      @filters-quick-search="quickSearch"
-      @filters-basic-search="basicSearch"
-      @filters-raw-search="rawSearch"
-      @filters-refresh-search="refreshSearch"
-      :available-filters="availableFilters"
-      :search-term="searchTerm"
-      :raw-filter="rawFilter"
-      :basic-filter="basicFilter"
-      :sorting="sorting"
-      :format-from-basic-search="formatFromBasicSearch"
-      :format-sort="formatSort"
-      :set-basic-filter="setBasicFilter"
-      :basic-filter-form="basicFilterForm">
-    </filters>
+    <div class="row">
+      <div class="col s12 m10 l8 list-document">
 
-    <div>
-      <div class="row">
-        <div class="col s10 list-document">
-          <div>
-            <button class="btn waves-effect waves-light left margin-right-5" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+        <filters
+          @filters-quick-search="quickSearch"
+          @filters-basic-search="basicSearch"
+          @filters-raw-search="rawSearch"
+          @filters-refresh-search="refreshSearch"
+          :available-filters="availableFilters"
+          :search-term="searchTerm"
+          :raw-filter="rawFilter"
+          :basic-filter="basicFilter"
+          :sorting="sorting"
+          :format-from-basic-search="formatFromBasicSearch"
+          :format-sort="formatSort"
+          :set-basic-filter="setBasicFilter"
+          :basic-filter-form="basicFilterForm">
+        </filters>
+
+
+        <div class="row actions">
+          <div class="col s6">
+            <button class="btn btn-small waves-effect waves-light left margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+            <button
+              class="btn btn-small waves-effect waves-light"
+              :class="displayBulkDelete ? 'red' : 'disabled'"
+              :disabled="!displayBulkDelete"
+              @click="$broadcast('modal-open', 'bulk-delete')">
+              <i class="fa fa-minus-circle left"></i>
+              Delete
+            </button>
+          </div>
+          <div class="col s6 right-align">
             <div v-if="documents.length">
               <button
-                class="btn waves-effect waves-light tertiary"
+                class="btn btn-small waves-effect waves-light tertiary"
                 @click="dispatchToggle">
                 <i class="fa left"
                    :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
                 ></i>
                 Toggle all
               </button>
-              <button
-                class="btn waves-effect waves-light"
-                :class="displayBulkDelete ? 'red' : 'disabled'"
-                :disabled="!displayBulkDelete"
-                @click="$broadcast('modal-open', 'bulk-delete')">
-                <i class="fa fa-minus-circle left"></i>
-                Delete
-              </button>
-
-              <slot></slot>
-
-              <pagination
-                @change-page="changePage"
-                :total="totalDocuments"
-                :from="paginationFrom"
-                :size="paginationSize"
-              ></pagination>
             </div>
           </div>
+        </div>
 
-          <div v-if="!documents.length" class="no-document">
-            There is no result corresponding to your search!
+        <div class="row">
+          <div class="col s12">
+            <div v-if="!documents.length" class="no-document">
+              There is no result corresponding to your search!
+            </div>
+
+            <slot v-if="documents.length"></slot>
           </div>
         </div>
+
+        <div class="row">
+          <div class="col s12">
+            <pagination
+              @change-page="changePage"
+              :total="totalDocuments"
+              :from="paginationFrom"
+              :size="paginationSize"
+            ></pagination>
+          </div>
+        </div>
+
+
       </div>
+
     </div>
 
     <modal id="bulk-delete">
@@ -62,16 +77,16 @@
       <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'document'}}?</p>
 
       <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn red"
-          @click="confirmBulkDelete()">
-            I'm sure!
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
-            Cancel
-        </button>
-      </span>
+            <button
+              href="#"
+              class="waves-effect waves-green btn red"
+              @click="confirmBulkDelete()">
+                I'm sure!
+            </button>
+            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
+                Cancel
+            </button>
+          </span>
     </modal>
 
     <modal id="single-delete">
@@ -79,17 +94,19 @@
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn red"
-          @click="confirmSingleDelete(documentIdToDelete)">
-            I'm sure!
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
-            Cancel
-        </button>
-      </span>
+            <button
+              href="#"
+              class="waves-effect waves-green btn red"
+              @click="confirmSingleDelete(documentIdToDelete)">
+                I'm sure!
+            </button>
+            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
+                Cancel
+            </button>
+          </span>
     </modal>
+
+
   </div>
 </template>
 

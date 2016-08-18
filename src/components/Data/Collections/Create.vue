@@ -71,7 +71,7 @@
           <!-- Actions -->
           <div class="row">
             <div class="col s6">
-                <button tabindex="5" type="submit" class="btn waves-effect waves-light">Create</button>
+                <button tabindex="5" type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
                 <p class="error">{{error}}</p>
             </div>

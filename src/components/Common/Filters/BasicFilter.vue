@@ -24,7 +24,7 @@
                    @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
                 <a
                   v-if="$index === group.length - 1"
-                  class="inline btn btn-small waves-effect waves-light"
+                  class="inline btn btn-tiny waves-effect waves-light"
                   @click="addAndBasicFilter(groupIndex)">
                   <i class="fa fa-plus left"></i>And
                 </a>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="row">
-          <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
+          <a class="btn btn-tiny waves-effect waves-light" @click="addGroupBasicFilter">
             <i class="fa fa-plus left"></i>Or
           </a>
         </div>
@@ -59,8 +59,8 @@
       </div>
     </div>
     <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light" @click.prevent="basicSearch">{{labelSearchButton}}</button>
-      <button class="btn waves-effect waves-light" @click="resetBasicSearch">Reset</button>
+      <button type="submit" class="btn waves-effect waves-light primary" @click.prevent="basicSearch">{{labelSearchButton}}</button>
+      <button class="btn-flat waves-effect waves-light" @click="resetBasicSearch">Reset</button>
     </div>
   </form>
 </template>

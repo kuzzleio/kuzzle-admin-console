@@ -1,6 +1,6 @@
 <template>
   <form>
-    <button class="btn waves-effect waves-light" @click="fillRawWithBasic">Fill from basic form</button>
+    <button class="btn btn-small waves-effect waves-light" @click="fillRawWithBasic">Fill from basic form</button>
     <json-editor
       v-ref:jsoneditor
       class="pre_ace"

@@ -1,16 +1,16 @@
 <template>
   <div class="row">
-    <form>
-      <div class="col s7">
+    <form class="valign-bottom">
+      <div class="col s9">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
           <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
           <a href="#" @click.prevent="displayComplexSearch">More query options</a>
-          <i class="fa fa-times remove-search" @click="resetQuickSearch"></i>
         </div>
       </div>
       <div class="col s3">
-        <button type="submit" class="btn waves-effect waves-light" @click.prevent="quickSearch">Search</button>
+        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="quickSearch">Search</button>
+        <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">reset</button>
       </div>
     </form>
   </div>

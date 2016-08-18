@@ -1,48 +1,53 @@
 <template>
-  <nav class="subnav">
+  <div class="nav-breadcrumb">
     <ul>
-      <li :class="{'active': index}">
+      <li :class="{'active': selectedIndex}">
         <a href="#!"
            v-link="{name: 'DataIndexes'}">
-          <i class="fa fa-globe" aria-hidden="true"></i>
-          Indexes
+          Data
         </a>
       </li>
 
-      <li :class="{'active': collection, 'active in': isRouteActive('DataCreateCollection')}"
-          v-if="index">
-        <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: index}}">
-          <i class="fa fa-database" aria-hidden="true"></i>
-          {{index}}
+      <li :class="{'active': selectedCollection, 'active in': isRouteActive('DataCreateCollection')}"
+          v-if="selectedIndex">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
+        <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
+          {{selectedIndex}}
         </a>
       </li>
 
       <li class="link link-active"
           v-if="isRouteActive('DataCreateCollection')">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
         <a href="#!"
-           v-link="{name: 'DataCreateCollection', params: {index: index}}">
+           v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
           Create a collection
         </a>
       </li>
 
       <li :class="{'in active': isRouteActive(['DataCreateDocument', 'DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
-          v-if="collection">
+          v-if="selectedCollection">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
-          <i class="fa fa-th-list" aria-hidden="true"></i>
-          {{collection}}
+           v-link="isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataCollectionBrowse', params: {index: selectedIndex, collection: selectedCollection}}">
+          {{selectedCollection}}
         </a>
       </li>
 
       <li class="link link-active"
           v-if="isRouteActive('DataCreateDocument')">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
         <a href="#!"
-           v-link="{name: 'DataCreateCollection', params: {index: index}}">
+           v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
           Create a document
         </a>
       </li>
 
-      <li class="link"
+      <!--<li class="link"
           :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
           v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
         <a href="#!"
@@ -66,59 +71,39 @@
            v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
           Summary
         </a>
-      </li>
+      </li>-->
     </ul>
-  </nav>
+  </div>
 
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  nav {
+  .nav-breadcrumb {
+    margin-bottom: 1.68rem;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     i {
       height: auto;
       margin-right: 3px;
     }
     ul {
+      color: #AAA;
+
+      padding: 0;
+      margin: 0;
+
+      .separator {
+        margin-left: 3px;
+      }
+
+      li {
+        display: inline-block;
+      }
       a {
+        color: #AAA;
+
         &:hover {
-          background-color: rgba(0, 0, 0, 0.05);
+          color: #444;
         }
-      }
-    }
-  }
-  li {
-    &.active {
-      background-color: #ECECEC
-    }
-    &.link {
-      a:hover {
-        background-color: transparent;
-        box-shadow: inset 0px -4px 0px 0px rgba(0,0,0,0.1)
-      }
-    }
-    &.link-active {
-      a {
-        box-shadow: inset 0px -4px 0px 0px rgba(0,0,0,0.15)
-      }
-    }
-    &.in {
-      & + li {
-        a {
-          padding-left: 20px;
-        }
-      }
-      position: relative;
-      &:after {
-        content: ' ';
-        position: absolute;
-        right: -10px;
-        top: 10px;
-        width: 0;
-        height: 0;
-        border-top: 10px solid transparent;
-        border-bottom: 10px solid transparent;
-        border-left: 10px solid #ECECEC;
       }
     }
   }
@@ -153,18 +138,20 @@
 </style>
 
 <script>
+  import {canSearchIndex} from '../../services/userAuthorization'
+  import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
+  import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
+
   export default {
     name: 'DataBreadcrumb',
     props: {
-      routeName: String,
-      index: String,
-      collection: String,
-      tree: Array
+      routeName: String
     },
     methods: {
+      canSearchIndex,
       isCollectionRealtime () {
-        return this.tree.filter((index) => {
-          return (index.name === this.index && index.collections.realtime.indexOf(this.collection) >= 0)
+        return this.indexesAndCollections.filter((index) => {
+          return (index.name === this.selectedIndex && index.collections.realtime.indexOf(this.selectedCollection) >= 0)
         }).length
       },
       isRouteActive (routeName) {
@@ -173,6 +160,21 @@
         }
 
         return this.routeName === routeName
+      }
+    },
+    ready () {
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
+      }
+    },
+    vuex: {
+      actions: {
+        listIndexesAndCollections
+      },
+      getters: {
+        selectedIndex,
+        selectedCollection,
+        indexesAndCollections
       }
     }
   }
