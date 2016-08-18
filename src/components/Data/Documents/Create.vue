@@ -24,7 +24,7 @@
           </div>
 
           <div class="row">
-            <div class="col m11">
+            <div class="col s12">
               <fieldset>
                 <div v-for="(name, content) in mapping">
                   <json-form :name="name" :content="content"></json-form>
@@ -49,13 +49,28 @@
 <style rel="stylesheet/scss" lang="scss">
   fieldset {
     border: 0;
+    margin: 0;
+    padding: 0;
 
     legend {
-      font-weight: 600;
+      border: 0;
+      padding: 0;
+      font-weight: 300;
+      left: -4px;
+      position: absolute;
+      top: -27px;
+      font-family: "Roboto", Arial, sans-serif;
     }
 
     fieldset {
-      border-left: solid 4px #DDD;
+      border-left: solid 3px #EEE;
+      position: relative;
+      margin: 45px 0 15px 0;
+      padding: 0 0 0 1em;
+
+      &:hover, &:focus, &.active {
+        border-left: solid 3px #DDD;
+      }
     }
   }
 </style>
