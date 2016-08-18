@@ -1,6 +1,6 @@
 import { mutations } from '../../../../../src/vuex/modules/data/store'
 
-const { RECEIVE_COLLECTIONS, ADD_INDEX } = mutations
+const { RECEIVE_COLLECTIONS, ADD_INDEX, ADD_STORED_COLLECTION, ADD_REALTIME_COLLECTION } = mutations
 
 describe('data watch mutations test', () => {
   it('should set the collection list', () => {
@@ -24,5 +24,33 @@ describe('index creation mutations test', () => {
         realtime: []
       }
     })
+  })
+})
+
+describe('collection creation mutations test', () => {
+  it('should add a stored collection', () => {
+    let state = {
+      indexesAndCollections: [{name: 'oof'}, {name: 'foo'}],
+      collections: {
+        stored: [],
+        realtime: []
+      }
+    }
+
+    ADD_STORED_COLLECTION(state, 'foo', 'bar')
+    expect(state.collections).to.deep.equal({stored: ['bar'], realtime: []})
+  })
+
+  it('should add a realtime collection', () => {
+    let state = {
+      indexesAndCollections: [{name: 'oof'}, {name: 'foo'}],
+      collections: {
+        stored: [],
+        realtime: []
+      }
+    }
+
+    ADD_REALTIME_COLLECTION(state, 'foo', 'bar')
+    expect(state.collections).to.deep.equal({stored: [], realtime: ['bar']})
   })
 })

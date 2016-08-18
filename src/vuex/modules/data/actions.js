@@ -4,7 +4,9 @@ import {
   RECEIVE_MAPPING,
   RECEIVE_INDEXES_COLLECTIONS,
   RECEIVE_COLLECTIONS,
-  ADD_INDEX
+  ADD_INDEX,
+  SET_PARTIAL_TO_DOCUMENT,
+  UNSET_NEW_DOCUMENT
 } from './mutation-types'
 
 const addLocalRealtimeCollections = (result, index) => {
@@ -96,4 +98,12 @@ export const createIndex = (store, index) => {
       resolve()
     })
   })
+}
+
+export const setPartial = (store, path, value) => {
+  store.dispatch(SET_PARTIAL_TO_DOCUMENT, path, value)
+}
+
+export const unsetNewDocument = (store) => {
+  store.dispatch(UNSET_NEW_DOCUMENT)
 }

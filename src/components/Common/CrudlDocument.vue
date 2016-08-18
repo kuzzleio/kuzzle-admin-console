@@ -5,6 +5,7 @@
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
       @filters-refresh-search="refreshSearch"
+      :available-filters="availableFilters"
       :search-term="searchTerm"
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
@@ -18,37 +19,39 @@
     <div>
       <div class="row">
         <div class="col s10 list-document">
-          <div v-if="documents.length">
-            <a class="btn waves-effect waves-light"><i class="fa fa-plus-circle left"></i>Create</a>
-            <button
-              class="btn waves-effect waves-light tertiary"
-              @click="dispatchToggle">
-              <i class="fa left"
-                 :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-              ></i>
-              Toggle all
-            </button>
-            <button
-              class="btn waves-effect waves-light"
-              :class="displayBulkDelete ? 'red' : 'disabled'"
-              :disabled="!displayBulkDelete"
-              @click="$broadcast('modal-open', 'bulk-delete')">
-              <i class="fa fa-minus-circle left"></i>
-              Delete
-            </button>
+          <div>
+            <button class="btn waves-effect waves-light left margin-right-5" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+            <div v-if="documents.length">
+              <button
+                class="btn waves-effect waves-light tertiary"
+                @click="dispatchToggle">
+                <i class="fa left"
+                   :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+                ></i>
+                Toggle all
+              </button>
+              <button
+                class="btn waves-effect waves-light"
+                :class="displayBulkDelete ? 'red' : 'disabled'"
+                :disabled="!displayBulkDelete"
+                @click="$broadcast('modal-open', 'bulk-delete')">
+                <i class="fa fa-minus-circle left"></i>
+                Delete
+              </button>
 
-            <slot></slot>
+              <slot></slot>
 
-            <pagination
-              @change-page="changePage"
-              :total="totalDocuments"
-              :from="paginationFrom"
-              :size="paginationSize"
-            ></pagination>
+              <pagination
+                @change-page="changePage"
+                :total="totalDocuments"
+                :from="paginationFrom"
+                :size="paginationSize"
+              ></pagination>
+            </div>
           </div>
 
           <div v-if="!documents.length" class="no-document">
-            There is no user corresponding to your search!
+            There is no result corresponding to your search!
           </div>
         </div>
       </div>
@@ -56,7 +59,7 @@
 
     <modal id="bulk-delete">
       <h4>Users deletion</h4>
-      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'user'}}?</p>
+      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'document'}}?</p>
 
       <span slot="footer">
         <button
@@ -73,13 +76,13 @@
 
     <modal id="single-delete">
       <h4>Users deletion</h4>
-      <p>Do you really want to delete this user?</p>
+      <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
         <button
           href="#"
           class="waves-effect waves-green btn red"
-          @click="confirmSingleDelete(userIdToDelete)">
+          @click="confirmSingleDelete(documentIdToDelete)">
             I'm sure!
         </button>
         <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
@@ -90,26 +93,24 @@
   </div>
 </template>
 
+<style type="text/css" media="screen" scoped>
+  .margin-right-5 {
+    margin-right: 5px;
+  }
+</style>
+
 <script>
   import Pagination from '../Materialize/Pagination'
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
   import {
-    deleteDocuments,
-    performSearch,
     setBasicFilter
   } from '../../vuex/modules/common/crudlDocument/actions'
   import {
-    totalDocuments,
-    paginationFrom,
-    paginationSize,
-    searchTerm,
-    rawFilter,
-    basicFilter,
-    sorting,
     basicFilterForm
   } from '../../vuex/modules/common/crudlDocument/getters'
-  import {formatFromQuickSearch, formatFromBasicSearch, formatSort} from '../../services/filterFormat'
+  import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
+  import {deleteDocuments} from '../../services/kuzzleWrapper'
 
   export default {
     name: 'CrudlDocument',
@@ -124,25 +125,25 @@
       documents: Array,
       displayBulkDelete: Boolean,
       allChecked: Boolean,
+      totalDocuments: Number,
       lengthDocument: {
         type: Number,
         default: 0
-      }
+      },
+      selectedDocuments: Array,
+      paginationFrom: Number,
+      paginationSize: Number,
+      searchTerm: String,
+      rawFilter: String,
+      basicFilter: Array,
+      sorting: String,
+      availableFilters: Object
     },
     vuex: {
       actions: {
-        deleteDocuments,
-        performSearch,
         setBasicFilter
       },
       getters: {
-        totalDocuments,
-        paginationFrom,
-        paginationSize,
-        searchTerm,
-        rawFilter,
-        basicFilter,
-        sorting,
         basicFilterForm
       }
     },
@@ -150,16 +151,19 @@
       return {
         formatFromBasicSearch,
         formatSort,
-        userIdToDelete: ''
+        documentIdToDelete: ''
       }
     },
     methods: {
+      create () {
+        this.$dispatch('create-clicked')
+      },
       changePage (from) {
         this.$router.go({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
         this.$broadcast('modal-close', 'bulk-delete')
-        this.deleteDocuments(this.selectedDocuments)
+        deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
           })
@@ -169,7 +173,7 @@
       },
       confirmSingleDelete (id) {
         this.$broadcast('modal-close', 'single-delete')
-        this.deleteDocuments(this.index, this.collection, [id])
+        deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
           })
@@ -206,35 +210,8 @@
       }
     },
     events: {
-      'perform-search' () {
-        let filters = {}
-        let sorting = []
-        let pagination = {
-          from: this.paginationFrom,
-          size: this.paginationSize
-        }
-
-        // Manage query quickSearch/basicSearch/rawSearch
-        if (this.searchTerm) {
-          filters = formatFromQuickSearch(this.searchTerm)
-        } else if (this.basicFilter) {
-          filters = formatFromBasicSearch(this.basicFilter)
-        } else if (this.rawFilter) {
-          filters = this.rawFilter
-          if (filters.sort) {
-            sorting = filters.sort
-          }
-        }
-
-        if (this.sorting) {
-          sorting = formatSort(this.sorting)
-        }
-
-        // Execute search with corresponding filters
-        this.performSearch(this.collection, this.index, filters, pagination, sorting)
-      },
-      'delete-user' (id) {
-        this.userIdToDelete = id
+      'delete-document' (id) {
+        this.documentIdToDelete = id
         this.$broadcast('modal-open', 'single-delete')
       }
     }
