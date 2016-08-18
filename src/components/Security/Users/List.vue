@@ -1,11 +1,11 @@
 <template>
   <div>
     <headline title="Users Management"></headline>
-
-    <crudl-document index="%kuzzle" collection="users" :documents="documents" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :length-document="selectedDocuments.length">
+    <crudl-document :available-filters="availableFilters" :pagination-from="paginationFrom" :sorting="sorting" :basic-filter="basicFilter" :raw-filter="rawFilter" :search-term="searchTerm" :pagination-size="paginationSize" index="%kuzzle" collection="users" :documents="documents" :total-documents="totalDocuments" :display-bulk-delete="displayBulkDelete" :all-checked="allChecked" :selected-documents="selectedDocuments" :length-document="selectedDocuments.length">
       <div class="collection">
         <div class="collection-item" transition="collection" v-for="document in documents">
-          <user-item @checkbox-click="toggleSelectDocuments" :user="document" :is-checked="isChecked(document.id)"></user-item>
+          <user-item @checkbox-click="toggleSelectDocuments" :user="document"
+                     :is-checked="isChecked(document.id)"></user-item>
         </div>
       </div>
     </crudl-document>
@@ -16,7 +16,15 @@
   import Headline from '../../Materialize/Headline'
   import CrudlDocument from '../../Common/CrudlDocument'
   import UserItem from './UserItem'
-  import {documents} from '../../../vuex/modules/common/crudlDocument/getters'
+  import {
+    searchTerm,
+    rawFilter,
+    basicFilter,
+    paginationFrom,
+    paginationSize
+  } from '../../../vuex/modules/common/crudlDocument/getters'
+  import {formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters} from '../../../services/filterFormat'
+  import {performSearch} from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UsersList',
@@ -27,17 +35,50 @@
     },
     data () {
       return {
-        selectedDocuments: []
+        availableFilters,
+        selectedDocuments: [],
+        documents: [],
+        totalDocuments: 0
       }
     },
     vuex: {
       getters: {
-        documents
+        searchTerm,
+        rawFilter,
+        basicFilter,
+        paginationFrom,
+        paginationSize
       }
     },
     route: {
       data () {
-        this.$broadcast('perform-search')
+        let filters = {}
+        let sorting = []
+        let pagination = {
+          from: this.paginationFrom,
+          size: this.paginationSize
+        }
+        // Manage query quickSearch/basicSearch/rawSearch
+        if (this.searchTerm) {
+          filters = formatFromQuickSearch(this.searchTerm)
+        } else if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+          if (filters.sort) {
+            sorting = filters.sort
+          }
+        }
+
+        if (this.sorting) {
+          sorting = formatSort(this.sorting)
+        }
+
+        // Execute search with corresponding filters
+        performSearch('users', '%kuzzle', filters, pagination, sorting).then(res => {
+          this.documents = res.documents
+          this.totalDocuments = res.total
+        })
       }
     },
     computed: {
@@ -57,7 +98,6 @@
           this.selectedDocuments = []
           return
         }
-
         this.selectedDocuments = []
         this.selectedDocuments = this.documents.map((document) => document.id)
       },

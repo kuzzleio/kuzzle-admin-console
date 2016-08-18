@@ -22,6 +22,7 @@ let $broadcast
 let formatFromQuickSearch = sandbox.spy()
 let formatFromBasicSearch = sandbox.spy()
 let formatSort = sandbox.spy()
+let deleteUsers = sandbox.stub().returns(Promise.resolve())
 
 let initInjector = () => {
   CrudlDocument = CrudlDocumentInjector({
@@ -46,11 +47,14 @@ let initInjector = () => {
     '../../Materialize/Dropdown': mockedComponent,
     '../../Materialize/Pagination': mockedComponent,
     '../../Materialize/Headline': mockedComponent,
-    './UserItem': mockedComponent
+    './UserItem': mockedComponent,
+    '../../services/kuzzleWrapper': {
+      deleteDocuments: deleteUsers
+    }
   })
 
   vm = new Vue({
-    template: '<div><crudl-document v-ref:list></crudl-document></div>',
+    template: '<div><crudl-document index="index" collection="collection" v-ref:list></crudl-document></div>',
     components: {
       CrudlDocument
     },
@@ -84,7 +88,6 @@ describe('CrudlDocument component', () => {
 
     describe('confirmBulkDelete', () => {
       it('should dispatch event for closing the corresponding modal', () => {
-        sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
@@ -94,20 +97,20 @@ describe('CrudlDocument component', () => {
 
       it('should call delete users with the right list and refresh the users list', (done) => {
         vm.$refs.list.selectedDocuments = ['doc1', 'doc2']
-        let deleteUsers = sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
         let refreshSearch = sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
 
         setTimeout(() => {
-          expect(deleteUsers.calledWith(['doc1', 'doc2'])).to.be.equal(true)
+          expect(deleteUsers.calledWith('index', 'collection', ['doc1', 'doc2'])).to.be.equal(true)
           expect(refreshSearch.called).to.be.equal(true)
           done()
         }, 0)
       })
 
       it('should do nothing if delete was not a success', (done) => {
-        sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.reject(new Error()))
+        deleteUsers = sandbox.stub().returns(Promise.reject(new Error()))
+        initInjector()
         let refreshSearch = sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
@@ -121,7 +124,7 @@ describe('CrudlDocument component', () => {
 
     describe('confirmSingleDelete', () => {
       it('should dispatch event for closing the corresponding modal', () => {
-        sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
+        // sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmSingleDelete('id')
@@ -185,35 +188,9 @@ describe('CrudlDocument component', () => {
       })
     })
 
-    describe('perform search tests', () => {
-      it('should do a formatFromQuickSearch', () => {
-        searchTerm = sandbox.stub().returns({})
-        initInjector()
-        vm.$broadcast('perform-search')
-        expect(formatFromQuickSearch.called).to.be.ok
-      })
-
-      it('should do a formatFromBasicSearch', () => {
-        searchTerm = sandbox.stub()
-        basicFilter = sandbox.stub().returns({})
-        initInjector()
-        vm.$broadcast('perform-search')
-        expect(formatFromBasicSearch.called).to.be.ok
-      })
-
-      it('should perform a search with rawFilter', () => {
-        basicFilter = sandbox.stub()
-        rawFilter = sandbox.stub().returns({sort: 'foo'})
-        sorting = sandbox.stub().returns(true)
-        initInjector()
-        vm.$broadcast('perform-search')
-        expect(formatSort.called).to.be.ok
-      })
-    })
-
-    describe('delete-user event tests', () => {
+    describe('delete-document event tests', () => {
       it('should broadcast modal-open', () => {
-        vm.$broadcast('delete-user', 'id')
+        vm.$broadcast('delete-document', 'id')
         expect($broadcast.called).to.be.ok
       })
     })

@@ -173,6 +173,7 @@
       {
         "policies": [
           {"roleId": "fake-action"},
+          {"roleId": "login-and-check-token"},
           {"roleId": "logout-and-get-user"}
         ]
       },

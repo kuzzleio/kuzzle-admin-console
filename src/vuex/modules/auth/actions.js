@@ -53,17 +53,6 @@ export const loginFromCookie = (store) => {
     return Promise.resolve(user)
   }
 
-  if (kuzzle.state !== 'connected') {
-    return new Promise((resolve, reject) => {
-      let id = kuzzle.addListener('connected', () => {
-        kuzzle.removeListener('connected', id)
-        loginFromCookie(store)
-          .then(user => resolve(user))
-          .catch(error => reject(error))
-      })
-    })
-  }
-
   return kuzzle.checkTokenPromise(user.token)
     .then(res => {
       if (!res.valid) {
