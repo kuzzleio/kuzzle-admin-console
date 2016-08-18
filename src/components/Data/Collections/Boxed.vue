@@ -35,7 +35,7 @@
         <a class="btn btn-small" href="#"
            v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canCreateDocument(index, collection)}"
-		   v-link="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection} : {}}"
+		       v-link="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}} : {}"
            v-if="!isRealtime">
           Create a document
         </a>

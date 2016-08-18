@@ -119,8 +119,8 @@ export const canDeleteUser = () => {
 // Security access
 
 export const canManageRealtime = (index, collection) => {
-  return !canSubscribe(index, collection) ||
-    !canPublish(index, collection)
+  return canSubscribe(index, collection) ||
+    canPublish(index, collection)
 }
 
 export const canManageDocuments = (index, collection) => {
