@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-const createRoutesInjector = require('inject?../vuex/modules/auth/getters!../../../src/routes/index')
+const createRoutesInjector = require('inject!../../../src/routes/index')
 import VueRouter from 'vue-router'
 
 describe('Router login redirect', () => {
@@ -15,6 +15,9 @@ describe('Router login redirect', () => {
       '../vuex/modules/auth/getters': {
         isAuthenticated: sinon.stub().returns(false),
         adminAlreadyExists: sinon.stub().returns(true)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(true)
       }
     })
 
@@ -35,6 +38,9 @@ describe('Router login redirect', () => {
       '../vuex/modules/auth/getters': {
         isAuthenticated: sinon.stub().returns(true),
         adminAlreadyExists: sinon.stub().returns(true)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(true)
       }
     })
 
@@ -55,6 +61,9 @@ describe('Router login redirect', () => {
       '../vuex/modules/auth/getters': {
         isAuthenticated: sinon.stub().returns(false),
         adminAlreadyExists: sinon.stub().returns(false)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(true)
       }
     })
 
@@ -75,12 +84,62 @@ describe('Router login redirect', () => {
       '../vuex/modules/auth/getters': {
         isAuthenticated: sinon.stub().returns(true),
         adminAlreadyExists: sinon.stub().returns(true)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(true)
       }
     })
 
     createRoutes.default(vueRouter)
     vueRouter.go('/signup')
     expect(transition.redirect.calledWith('/signup')).to.not.be.ok
+  })
+
+  it('should go to error kuzzle disconnected if kuzzle is not connected', () => {
+    let vueRouter = new VueRouter()
+    let transition = { redirect: sinon.spy(), next: sinon.spy(), to: { auth: true } }
+
+    vueRouter.beforeEach = (f) => {
+      f(transition)
+    }
+
+    const createRoutes = createRoutesInjector({
+      '../vuex/modules/auth/getters': {
+        isAuthenticated: sinon.stub().returns(false),
+        adminAlreadyExists: sinon.stub().returns(false)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(false)
+      }
+    })
+
+    createRoutes.default(vueRouter)
+    vueRouter.go({name: 'Home'})
+    expect(transition.redirect.calledWith('/error/kuzzle-disconnected')).to.be.ok
+  })
+
+  it('should go to home because kuzzle is connected', () => {
+    let vueRouter = new VueRouter()
+    let transition = { redirect: sinon.spy(), next: sinon.spy(), from: {name: 'Home'}, to: {name: 'KuzzleDisconnectedPage'} }
+
+    vueRouter.beforeEach = (f) => {
+      f(transition)
+    }
+
+    const createRoutes = createRoutesInjector({
+      '../vuex/modules/auth/getters': {
+        isAuthenticated: sinon.stub().returns(true),
+        adminAlreadyExists: sinon.stub().returns(true)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(true)
+      }
+    })
+
+    createRoutes.default(vueRouter)
+    vueRouter.go('/error/kuzzle-disconnected')
+    console.log(transition.redirect.args)
+    expect(transition.redirect.calledWith('/')).to.be.ok
   })
 
   it('should go to the transition', () => {
@@ -95,6 +154,9 @@ describe('Router login redirect', () => {
       '../vuex/modules/auth/getters': {
         isAuthenticated: sinon.stub().returns(true),
         adminAlreadyExists: sinon.stub().returns(true)
+      },
+      '../vuex/modules/common/kuzzle/getters': {
+        kuzzleIsConnected: sinon.stub().returns(true)
       }
     })
 
