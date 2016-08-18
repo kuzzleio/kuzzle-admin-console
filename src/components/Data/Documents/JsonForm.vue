@@ -1,5 +1,5 @@
 <template>
-  <fieldset v-if="isNested(content)">
+  <fieldset v-if="isNested(content)" @click.prevent="foo()">
     <legend>{{name}}</legend>
     <div v-for="(nestedName, nestedContent) in content.properties">
       <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
@@ -32,6 +32,9 @@
       fullNameInput: String
     },
     methods: {
+      foo () {
+        console.log('foo', window.event)
+      },
       isNested (content) {
         return !!content.properties
       }
