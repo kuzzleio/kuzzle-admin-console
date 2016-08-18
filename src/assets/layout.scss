@@ -59,7 +59,7 @@ strong {
 html{
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: normal;
-  background-color: #FAFAFA;
+  background-color: #F8F8F8;
   color: #333;
 }
 
@@ -73,8 +73,13 @@ html{
 }
 
 .side-nav {
-  top: $navbar-height;
+  top: $navbar-height - 10;
   height: 95%;
+}
+@media #{$medium-and-up} {
+  .side-nav {
+    top: $navbar-height;
+  }
 }
 
 @media #{$medium-and-down} {

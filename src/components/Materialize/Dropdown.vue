@@ -8,7 +8,7 @@
   </span>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   span {
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   }
@@ -36,7 +36,7 @@
 
   .icon-black {
     .action {
-      color: #333;
+      color: #666;
     }
   }
 </style>

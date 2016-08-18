@@ -21,11 +21,11 @@
           v-if="isRouteActive('DataCreateCollection')">
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: index}}">
-          Create new collection
+          Create a collection
         </a>
       </li>
 
-      <li :class="{'in active': isRouteActive(['DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
+      <li :class="{'in active': isRouteActive(['DataCreateDocument', 'DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
           v-if="collection">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
@@ -34,9 +34,17 @@
         </a>
       </li>
 
+      <li class="link link-active"
+          v-if="isRouteActive('DataCreateDocument')">
+        <a href="#!"
+           v-link="{name: 'DataCreateCollection', params: {index: index}}">
+          Create a document
+        </a>
+      </li>
+
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
-          v-if="collection && !isCollectionRealtime()">
+          v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
         <a href="#!"
            v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
           Browse
@@ -45,7 +53,7 @@
 
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionWatch')}"
-          v-if="collection">
+          v-if="collection && !isRouteActive('DataCreateDocument')">
         <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
           Watch
         </a>
@@ -53,7 +61,7 @@
 
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionSummary')}"
-          v-if="collection">
+          v-if="collection && !isRouteActive('DataCreateDocument')">
         <a href="#!"
            v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
           Summary
@@ -71,15 +79,22 @@
       height: auto;
       margin-right: 3px;
     }
+    ul {
+      a {
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
   }
   li {
     &.active {
-      background-color: #e6e6e6
+      background-color: #ECECEC
     }
     &.link {
       a:hover {
         background-color: transparent;
-        box-shadow: inset 0px -4px 0px 0px rgba(0,0,0,0.25)
+        box-shadow: inset 0px -4px 0px 0px rgba(0,0,0,0.1)
       }
     }
     &.link-active {
@@ -90,27 +105,50 @@
     &.in {
       & + li {
         a {
-          padding-left: 25px;
+          padding-left: 20px;
         }
       }
       position: relative;
       &:after {
         content: ' ';
         position: absolute;
-        right: -15px;
+        right: -10px;
         top: 10px;
         width: 0;
         height: 0;
-        border-top: 15px solid transparent;
-        border-bottom: 15px solid transparent;
-        border-left: 15px solid #e6e6e6;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-left: 10px solid #ECECEC;
       }
     }
   }
+
   .subnav {
     position: fixed;
     z-index: 300;
-    top: 50px;
+    top: 40px;
+  }
+
+  @media only screen and (min-width: 1201px) {
+    .subnav {
+      top: 50px;
+    }
+    li {
+      &.in {
+        & + li {
+          a {
+            padding-left: 25px;
+          }
+        }
+        &:after {
+          right: -15px;
+          top: 10px;
+          border-top: 15px solid transparent;
+          border-bottom: 15px solid transparent;
+          border-left: 15px solid #ECECEC;
+        }
+      }
+    }
   }
 </style>
 

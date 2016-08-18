@@ -1,92 +1,117 @@
 <template>
-  <div class="container">
-    <div class="col m6">
-      <h2 class="center-align">
-        <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice"/>
-      </h2>
-      <div class="row message-warning">
-        <div class="col s6 offset-s3">
-          <div class="card-panel primary">
-            <div class="white-text">
-              You're about to create your first admin account!
+  <div class="signup">
+    <div class="container">
+      <div class="row">
+        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
+          <div class="row">
+            <div class="col s12">
+              <h2 class="center-align logo">
+                <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" style="width: 60%" />
+              </h2>
             </div>
-            <div class="white-text">
+          </div>
+          <div class="row message-warning">
+            <h5>First admin creation</h5>
+            <div class="divider"></div>
+            <div class="message">
               <i class="fa fa-warning"></i>
-              If you want to secure your Kuzzle, you have to check the "reset" checkbox.
+              If you want to secure your Kuzzle, you have to check the <em>"reset"</em> checkbox.
               If you do so, be sure to configure default and anonymous roles afterward.
             </div>
           </div>
-        </div>
-      </div>
-      <div class="row">
-        <form class="col s6 offset-s3" id="loginForm" method="post" @submit.prevent="signup">
           <div class="row">
-            <div class="input-field col s12">
-              <input id="username" v-model="username" type="text" name="username" required
-                     class="validate"/>
-              <label for="username">Username</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12">
-              <input v-model="password1" type="password" name="password1" id="pass1" required
-                     class="validate"/>
-              <label for="pass1">Password</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12">
-              <input v-model="password2" type="password" name="password2" id="pass2" required
-                     class="validate"/>
-              <label for="pass2">Password (confirmation)</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s12 reset">
-              <input v-model="reset" type="checkbox" class="filled-in" id="reset"/>
-              <label for="reset">Reset default and anonymous rights?</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col m6">
-              <p class="message error">{{error}}</p>
-            </div>
-            <div class="col m6">
-              <div class="preloader-wrapper active right" v-if="waiting" >
-                <div class="spinner-layer">
-                  <div class="circle-clipper left">
-                    <div class="circle"></div>
-                  </div>
-                  <div class="gap-patch">
-                    <div class="circle"></div>
-                  </div>
-                  <div class="circle-clipper right">
-                    <div class="circle"></div>
-                  </div>
+            <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="signup">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input id="username" v-model="username" type="text" name="username" required
+                         class="validate"/>
+                  <label for="username">Username</label>
                 </div>
               </div>
-              <button v-show="!waiting" class="btn waves-effect waves-light right" type="submit" name="action">
-                Create my first admin
-              </button>
-            </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input v-model="password1" type="password" name="password1" id="pass1" required
+                         class="validate"/>
+                  <label for="pass1">Password</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12">
+                  <input v-model="password2" type="password" name="password2" id="pass2" required
+                         class="validate"/>
+                  <label for="pass2">Password (confirmation)</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="input-field col s12 reset">
+                  <input v-model="reset" type="checkbox" class="filled-in" id="reset"/>
+                  <label for="reset">Reset default and anonymous rights?</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col m6">
+                  <p class="message error">{{error}}</p>
+                </div>
+                <div class="col m6">
+                  <div class="preloader-wrapper active right" v-if="waiting" >
+                    <div class="spinner-layer">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="gap-patch">
+                        <div class="circle"></div>
+                      </div>
+                      <div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <button v-show="!waiting" class="btn waves-effect waves-light right" type="submit" name="action">
+                    Create my first admin
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .row.message-warning {
-    margin-bottom: 0;
+  .signup {
+    position: fixed;
+    top:0;
+    left:0;
+    bottom: 0;
+    right: 0;
+    padding-top: 50px;
+    height: 100%;
+    overflow: auto;
+    background: linear-gradient(45deg, rgba(31,77,81,1) 0%,rgba(0,75,82,1) 22%,rgba(18,105,109,1) 75%,rgba(0,117,127,1) 100%);
+  }
+  .logo {
+    margin-top: 60px;
+  }
+
+  .message-warning {
+    padding: 25px;
+    background-color: #e4e4e4;
+
+    .divider {
+      background-color: #CCC;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      font-family: "Roboto", sans-serif;
+      font-weight: 300;
+    }
   }
 
   [type="checkbox"] + label {
     line-height: 19px;
-  }
-
-  .row {
-    margin-bottom: 5px;
   }
 
   .reset.input-field {
