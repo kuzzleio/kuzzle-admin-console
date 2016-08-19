@@ -35,6 +35,8 @@ describe('Security roles create', () => {
     vm.$refs.create.$router = {go: sandbox.stub()}
   }
 
+  afterEach(() => sandbox.restore())
+
   describe('Methods', () => {
     describe('create', () => {
       it('should do nothing if id or content are null or empty', () => {
