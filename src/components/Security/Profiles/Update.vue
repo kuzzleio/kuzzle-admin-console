@@ -46,9 +46,9 @@
       kuzzle
         .security
         .getProfilePromise(this.$route.params.id)
-        .then((role) => {
-          this.id = role.id
-          this.content = role.content
+        .then((profile) => {
+          this.id = profile.id
+          this.content = profile.content
         })
         .catch((e) => {
           this.$dispatch('toast', e.message, 'error')

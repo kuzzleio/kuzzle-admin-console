@@ -35,3 +35,17 @@ let vm = new Vue({
 vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
 vm.$mount('app')
 ```
+
+#### How to test with $dispatch in ready
+```
+$dispatch = sandbox.stub(Vue.prototype, '$dispatch')
+document.body.insertAdjacentHTML('afterbegin', '<app></app>')
+let vm = new Vue({
+    template: '<div><my-component v-ref:component"></my-component></div>',
+    components: {
+      MyComponent
+    }
+})
+vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
+vm.$mount('app')
+```
