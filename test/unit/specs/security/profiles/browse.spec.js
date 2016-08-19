@@ -28,7 +28,7 @@ describe('Browse profiles', () => {
   describe('Methods', () => {
     it('should redirect on right url on createprofile call', () => {
       vm.$refs.browse.createProfile()
-      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'SecurityCreateProfile'})).to.be.equal(true)
+      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'SecurityProfilesCreate'})).to.be.equal(true)
     })
   })
 

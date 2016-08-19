@@ -3,7 +3,7 @@
   title="Update role"
   :content="content"
   :update-id="id"
-  @security-create::create="create"
+  @security-create::create="update"
   @security-create::cancel="cancel">
   </create>
 </template>
@@ -23,7 +23,7 @@
       }
     },
     methods: {
-      create (content) {
+      update (content) {
         if (!content || Object.keys(content).length === 0) {
           return
         }
