@@ -29,7 +29,6 @@
     padding-top: 50px;
     height: 100%;
     overflow: auto;
-    background: linear-gradient(45deg, rgba(31,77,81,1) 0%,rgba(0,75,82,1) 22%,rgba(18,105,109,1) 75%,rgba(0,117,127,1) 100%);
   }
   .logo {
     margin-top: 60px;

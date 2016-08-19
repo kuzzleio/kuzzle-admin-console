@@ -31,11 +31,6 @@ export const doLogin = (store, username, password) => {
         store.dispatch(SET_CURRENT_USER, user)
         store.dispatch(SET_TOKEN_VALID, true)
 
-        kuzzle.removeAllListeners('jwtTokenExpired')
-        kuzzle.addListener('jwtTokenExpired', () => {
-          store.dispatch(SET_TOKEN_VALID, false)
-        })
-
         resolve()
       })
       .catch(error => {
@@ -44,13 +39,17 @@ export const doLogin = (store, username, password) => {
   })
 }
 
+export const setTokenValid = (store, isValid) => {
+  store.dispatch(SET_TOKEN_VALID, isValid)
+}
+
 export const loginFromCookie = (store) => {
   let user = userCookies.get()
 
   if (!user) {
     user = SessionUser()
-    store.dispatch(SET_CURRENT_USER, user)
-    return Promise.resolve(user)
+    store.dispatch(SET_CURRENT_USER, SessionUser())
+    return Promise.resolve(SessionUser())
   }
 
   return kuzzle.checkTokenPromise(user.token)

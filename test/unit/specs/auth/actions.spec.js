@@ -6,21 +6,9 @@ const actionsInjector = require('inject!../../../../src/vuex/modules/auth/action
 
 describe('doLogin action', () => {
   let triggerError
-  let addListenerEvent
-  let addListenerCallCB
-  let removeAllListenersEvent
 
   const actions = actionsInjector({
     '../../../services/kuzzle': {
-      removeAllListeners (event) {
-        removeAllListenersEvent = event
-      },
-      addListener (event, cb) {
-        addListenerEvent = event
-        if (addListenerCallCB) {
-          cb()
-        }
-      },
       loginPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.login) {
@@ -60,10 +48,6 @@ describe('doLogin action', () => {
   })
 
   beforeEach(() => {
-    addListenerEvent = false
-    removeAllListenersEvent = false
-    addListenerCallCB = false
-
     triggerError = {
       login: false,
       whoAmI: false,
@@ -111,28 +95,6 @@ describe('doLogin action', () => {
         payload: [true]
       }
     ], done)
-  })
-
-  it('should register jwtTokenExpired kuzzle listener', (done) => {
-    let mutationJwtTokenExpired = false
-    let store = {
-      dispatch (event, value) {
-        if (event === SET_TOKEN_VALID && value === false) {
-          mutationJwtTokenExpired = true
-        }
-      }
-    }
-
-    addListenerCallCB = true
-
-    actions.doLogin(store, 'user', 'pwd')
-      .then(() => {
-        expect(removeAllListenersEvent).to.equals('jwtTokenExpired')
-        expect(addListenerEvent).to.equals('jwtTokenExpired')
-        expect(mutationJwtTokenExpired).to.be.ok
-
-        done()
-      })
   })
 })
 
@@ -293,6 +255,22 @@ describe('logout action', () => {
   it('should logout user', (done) => {
     testAction(actions.doLogout, [], {}, [
       { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
+    ], done)
+  })
+})
+
+describe('setTokenValid', () => {
+  const actions = actionsInjector({})
+
+  it('should dispatch event with true', (done) => {
+    testAction(actions.setTokenValid, [true], {}, [
+      { name: SET_TOKEN_VALID, payload: [true] }
+    ], done)
+  })
+
+  it('should dispatch event with false', (done) => {
+    testAction(actions.setTokenValid, [false], {}, [
       { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
   })
