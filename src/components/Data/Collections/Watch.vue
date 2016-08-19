@@ -27,26 +27,7 @@
       </div>
       <!-- /subscription control bar fixed -->
 
-
-      <div class="nav">
-        <ul>
-          <li>
-            <a href="#!" v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}, strict: true}">
-              Browse
-            </a>
-          </li>
-          <li>
-            <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}, strict: true}">
-              Watch
-            </a>
-          </li>
-          <li>
-            <a href="#!" v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}, strict: true}">
-              Summary
-            </a>
-          </li>
-        </ul>
-      </div>
+      <collection-tabs></collection-tabs>
 
       <div class="card-panel">
       <div class="row">
@@ -110,20 +91,6 @@
 </template>
 
 <style rel="stylesheet/scss" lang="scss" media="screen">
-  .nav li {
-    display: inline-block;
-    a {
-      padding: 10px 8px;
-      text-transform: uppercase;
-      color: #666;
-      letter-spacing: 1px;
-      margin: 0 10px;
-
-      &.v-link-active {
-        border-bottom: solid 2px #00757F;
-      }
-    }
-  }
   .head {
     float: left;
     font-size: 2rem;
@@ -150,12 +117,12 @@
     z-index: 200;
     overflow: hidden;
     position: fixed;
-    top: 100px;
+    top: 50px;
     left: 240px;
-    line-height: 40px;
-    height: 65px;
+    line-height: 20px;
+    height: 50px;
     box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
-    padding: 13px 5px;
+    padding: 10px 5px;
     right: 0;
     background-color: #FFF;
     transition: all .3s;
@@ -181,6 +148,7 @@
 </style>
 
 <script>
+  import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
   import JsonFormatter from '../../../directives/json-formatter.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
@@ -250,6 +218,7 @@
       ScrollGlue
     ],
     components: {
+      CollectionTabs,
       Notification,
       CollectionDropdown,
       SubscriptionControls,

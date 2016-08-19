@@ -70,7 +70,7 @@
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
-           v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
+           v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
           create a document
         </a>
       </li>

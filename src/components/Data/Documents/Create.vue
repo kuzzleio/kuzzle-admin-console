@@ -5,43 +5,43 @@
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
-    <div class="row">
-      <div class="col s12 m10 l8 card">
 
-        <form class="wrapper" @submit.prevent="create">
-          <div class="row">
-            <!-- Collection name -->
-            <div class="col s6">
-              <div class="input-field">
-                <input id="id" type="text" name="collection" v-model="id" />
-                <label for="id">Document identifier (optional)</label>
+    <collection-tabs></collection-tabs>
+
+    <div class="card-panel">
+      <form class="wrapper" @submit.prevent="create">
+        <div class="row">
+          <!-- Collection name -->
+          <div class="col s6">
+            <div class="input-field">
+              <input id="id" type="text" name="collection" v-model="id" />
+              <label for="id">Document identifier (optional)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="divider"></div>
+        </div>
+
+        <div class="row">
+          <div class="col s12">
+            <fieldset>
+              <div v-for="(name, content) in mapping">
+                <json-form :name="name" :content="content"></json-form>
               </div>
-            </div>
+            </fieldset>
           </div>
+        </div>
 
-          <div class="row">
-            <div class="divider"></div>
+        <div class="row">
+          <div class="col s6">
+            <button type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
+            <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
           </div>
+        </div>
 
-          <div class="row">
-            <div class="col s12">
-              <fieldset>
-                <div v-for="(name, content) in mapping">
-                  <json-form :name="name" :content="content"></json-form>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col s6">
-              <button type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
-              <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
-            </div>
-          </div>
-
-        </form>
-      </div>
+      </form>
     </div>
   </div>
 </template>
@@ -76,6 +76,7 @@
 </style>
 
 <script>
+  import CollectionTabs from '../Collections/Tabs.vue'
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
@@ -86,6 +87,7 @@
   export default {
     name: 'DocumentCreate',
     components: {
+      CollectionTabs,
       CollectionDropdown,
       Headline,
       JsonForm

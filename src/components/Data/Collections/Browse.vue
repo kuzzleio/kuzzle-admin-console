@@ -5,25 +5,7 @@
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
-    <div class="nav">
-      <ul>
-        <li>
-          <a href="#!" v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}, strict: true}">
-            Browse
-          </a>
-        </li>
-        <li>
-          <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
-            Watch
-          </a>
-        </li>
-        <li>
-          <a href="#!" v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
-            Summary
-          </a>
-        </li>
-      </ul>
-    </div>
+    <collection-tabs></collection-tabs>
 
     <div class="card-panel">
       <common-browse
@@ -37,24 +19,8 @@
   </div>
 </template>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-  .nav li {
-    display: inline-block;
-    a {
-      padding: 10px 8px;
-      text-transform: uppercase;
-      color: #666;
-      letter-spacing: 1px;
-      margin: 0 10px;
-
-      &.v-link-active {
-        border-bottom: solid 2px #00757F;
-      }
-    }
-  }
-</style>
-
 <script>
+  import CollectionTabs from './Tabs'
   import CommonBrowse from '../../Common/Browse'
   import Headline from '../../Materialize/Headline'
   import CollectionDropdown from '../Collections/Dropdown'
@@ -66,6 +32,7 @@
       collection: String
     },
     components: {
+      CollectionTabs,
       CommonBrowse,
       Headline,
       CollectionDropdown
