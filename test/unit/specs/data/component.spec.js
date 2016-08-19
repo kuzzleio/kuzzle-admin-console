@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import DataRoutes from '../../../../src/routes/subRoutes/data'
-import Breadcrumb from '../../../../src/components/Data/Breadcrumb'
+import Breadcrumb from '../../../../src/components/Common/Breadcrumb'
 
 describe('Breadcrumb tests', () => {
   describe('Breadcrumb layout display', () => {
