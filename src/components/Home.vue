@@ -10,6 +10,11 @@
     <h6>Please, relogin</h6>
     <login-form :on-login="onLogin"></login-form>
   </modal>
+
+  <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false">
+    <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
+    <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
+  </modal>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -39,14 +44,31 @@
   import MainMenu from './Common/MainMenu'
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
-  import {tokenValid} from '../vuex/modules/auth/getters'
+  import KuzzleDisconnected from './Error/KuzzleDisconnected'
+  import { tokenValid } from '../vuex/modules/auth/getters'
+  import { kuzzleIsConnected, kuzzleHost, kuzzlePort } from '../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'Home',
     components: {
       LoginForm,
       MainMenu,
-      Modal
+      Modal,
+      KuzzleDisconnected
+    },
+    vuex: {
+      getters: {
+        tokenValid,
+        kuzzleIsConnected,
+        kuzzleHost,
+        kuzzlePort
+      }
+    },
+    data () {
+      return {
+        host: null,
+        port: null
+      }
     },
     methods: {
       onLogin () {
@@ -58,11 +80,14 @@
         if (!valid) {
           this.$broadcast('modal-open', 'tokenExpired')
         }
-      }
-    },
-    vuex: {
-      getters: {
-        tokenValid
+      },
+      kuzzleIsConnected (isConnected) {
+        if (!isConnected) {
+          this.$broadcast('modal-open', 'kuzzleDisconnected')
+          return
+        }
+
+        this.$broadcast('modal-close', 'kuzzleDisconnected')
       }
     }
   }

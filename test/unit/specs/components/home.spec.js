@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 import store from '../../../../src/vuex/store'
 import { mockedComponent } from '../helper'
 const homeInjector = require('!!vue?inject!../../../../src/components/Home')
@@ -10,7 +9,7 @@ describe('Home.vue tests', () => {
   let $broadcast
   let sandbox = sinon.sandbox.create()
 
-  let injectMock = () => {
+  before(() => {
     Home = homeInjector({
       './Common/MainMenu': mockedComponent,
       './Common/Login/Form': mockedComponent,
@@ -20,37 +19,16 @@ describe('Home.vue tests', () => {
       }
     })
 
-    Vue.use(VueRouter)
-
-    const App = Vue.extend({
+    vm = new Vue({
       template: '<div><home v-ref:home></home></div>',
       components: { Home },
-      store,
-      replace: false
-    })
+      store
+    }).$mount()
 
-    let router = new VueRouter({ abstract: true })
-    router.map({
-      '/foo': {
-        name: 'foo',
-        component: mockedComponent
-      }
-    })
-
-    router.start(App, 'body')
-    router.go('/foo')
-
-    vm = router.app
-  }
-
-  afterEach(() => {
-    sandbox.reset()
-  })
-
-  beforeEach(() => {
-    injectMock()
     $broadcast = sandbox.stub(vm.$refs.home, '$broadcast')
   })
+
+  afterEach(() => sandbox.reset())
 
   describe('watch tests', () => {
     describe('tokenValid', () => {
@@ -66,6 +44,22 @@ describe('Home.vue tests', () => {
         Home.watch.tokenValid(true)
 
         expect(Home.watch.$broadcast.called).to.be.not.ok
+      })
+    })
+
+    describe('kuzzleIsConnected', () => {
+      it('should close the modal if kuzzle is connected', () => {
+        Home.watch.$broadcast = sandbox.stub()
+        Home.watch.kuzzleIsConnected(true)
+
+        expect(Home.watch.$broadcast.calledWith('modal-close', 'kuzzleDisconnected')).to.be.equal(true)
+      })
+
+      it('should open the modal if kuzzle is connected', () => {
+        Home.watch.$broadcast = sandbox.stub()
+        Home.watch.kuzzleIsConnected(false)
+
+        expect(Home.watch.$broadcast.calledWith('modal-open', 'kuzzleDisconnected')).to.be.equal(true)
       })
     })
   })

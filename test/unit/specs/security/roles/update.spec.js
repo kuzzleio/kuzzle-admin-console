@@ -24,15 +24,16 @@ describe.only('Security roles update', () => {
       }
     })
 
-    vm = new Vue({
+    document.body.insertAdjacentHTML('afterbegin', '<app></app>')
+    let vm = new Vue({
       template: '<div><update v-ref:update></update></div>',
       components: {Update},
       replace: false,
       store: store
-    }).$mount()
+    })
 
-    $dispatch = sandbox.stub(vm.$refs.create, '$dispatch')
-    vm.$refs.update.$router = {go: sandbox.stub()}
+    vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
+    vm.$mount('app')
   }
 
   describe('Methods', () => {
