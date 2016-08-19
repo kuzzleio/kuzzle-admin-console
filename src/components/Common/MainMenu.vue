@@ -60,6 +60,7 @@ nav {
     font-weight: 500;
 
     &.nav {
+      font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 400;

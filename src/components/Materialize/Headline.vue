@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import Breadcrumb from '../Data/Breadcrumb'
+  import Breadcrumb from '../Common/Breadcrumb'
 
   export default {
     name: 'headline',

@@ -1,15 +1,46 @@
 <template>
   <div class="nav-breadcrumb">
-    <ul>
-      <li :class="{'active': selectedIndex}">
+    <ul v-if="$route.path.indexOf('/security') === 0">
+      <li>
         <a href="#!"
-           v-link="{name: 'DataIndexes'}">
-          Data
+           v-link="{name: 'Security'}">
+          security
         </a>
       </li>
 
-      <li :class="{'active': selectedCollection, 'active in': isRouteActive('DataCreateCollection')}"
-          v-if="selectedIndex">
+      <li v-if="isRouteActive('SecurityUsersList')">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
+        <a href="#!" v-link="{name: 'SecurityUsersList'}">
+          users
+        </a>
+      </li>
+
+      <li v-if="isRouteActive('SecurityProfilesList')">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
+        <a href="#!" v-link="{name: 'SecurityProfilesList'}">
+          profiles
+        </a>
+      </li>
+
+      <li v-if="isRouteActive('SecurityRolesList')">
+        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
+
+        <a href="#!" v-link="{name: 'SecurityRolesList'}">
+          roles
+        </a>
+      </li>
+    </ul>
+    <ul v-if="$route.path.indexOf('/data') === 0">
+      <li>
+        <a href="#!"
+           v-link="{name: 'Data'}">
+          data
+        </a>
+      </li>
+
+      <li v-if="selectedIndex">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
@@ -17,18 +48,16 @@
         </a>
       </li>
 
-      <li class="link link-active"
-          v-if="isRouteActive('DataCreateCollection')">
+      <li v-if="isRouteActive('DataCreateCollection')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
-          Create a collection
+          create a collection
         </a>
       </li>
 
-      <li :class="{'in active': isRouteActive(['DataCreateDocument', 'DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
-          v-if="selectedCollection">
+      <li v-if="selectedCollection">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
@@ -37,13 +66,12 @@
         </a>
       </li>
 
-      <li class="link link-active"
-          v-if="isRouteActive('DataCreateDocument')">
+      <li v-if="isRouteActive('DataCreateDocument')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
-          Create a document
+          create a document
         </a>
       </li>
 
@@ -80,6 +108,7 @@
 <style lang="scss" rel="stylesheet/scss" scoped>
   .nav-breadcrumb {
     margin-bottom: 1.68rem;
+    padding-left: 2px;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     i {
       height: auto;
@@ -107,46 +136,15 @@
       }
     }
   }
-
-  .subnav {
-    position: fixed;
-    z-index: 300;
-    top: 40px;
-  }
-
-  @media only screen and (min-width: 1201px) {
-    .subnav {
-      top: 50px;
-    }
-    li {
-      &.in {
-        & + li {
-          a {
-            padding-left: 25px;
-          }
-        }
-        &:after {
-          right: -15px;
-          top: 10px;
-          border-top: 15px solid transparent;
-          border-bottom: 15px solid transparent;
-          border-left: 15px solid #ECECEC;
-        }
-      }
-    }
-  }
 </style>
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
-  import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
+  import {indexesAndCollections, routeName, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
 
   export default {
     name: 'DataBreadcrumb',
-    props: {
-      routeName: String
-    },
     methods: {
       canSearchIndex,
       isCollectionRealtime () {
@@ -172,6 +170,7 @@
         listIndexesAndCollections
       },
       getters: {
+        routeName,
         selectedIndex,
         selectedCollection,
         indexesAndCollections

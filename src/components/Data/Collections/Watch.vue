@@ -27,6 +27,28 @@
       </div>
       <!-- /subscription control bar fixed -->
 
+
+      <div class="nav">
+        <ul>
+          <li>
+            <a href="#!" v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}, strict: true}">
+              Browse
+            </a>
+          </li>
+          <li>
+            <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}, strict: true}">
+              Watch
+            </a>
+          </li>
+          <li>
+            <a href="#!" v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}, strict: true}">
+              Summary
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-panel">
       <div class="row">
         <div class="col s12 m10 l8 list-document">
           <filters
@@ -83,10 +105,25 @@
         </li>
       </ul>
     </div>
+    </div>
   </div>
 </template>
 
 <style rel="stylesheet/scss" lang="scss" media="screen">
+  .nav li {
+    display: inline-block;
+    a {
+      padding: 10px 8px;
+      text-transform: uppercase;
+      color: #666;
+      letter-spacing: 1px;
+      margin: 0 10px;
+
+      &.v-link-active {
+        border-bottom: solid 2px #00757F;
+      }
+    }
+  }
   .head {
     float: left;
     font-size: 2rem;

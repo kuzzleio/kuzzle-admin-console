@@ -60,7 +60,7 @@
           <div class="col s12" v-if="!canSearchCollection(index)">
             <div class="card-panel unauthorized">
               <div class="card-content">
-                <i class="fa fa-lock left " aria-hidden="true"></i>
+                <i class="fa fa-lock left" aria-hidden="true"></i>
                 <em>You are not allowed to list collections in index {{index}}</em>
               </div>
             </div>
@@ -71,7 +71,7 @@
             <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <div class="card-panel hoverable">
                 <div class="card-content">
-                  There is no collection in index <strong>{{index}}</strong> yet. You may want to create a new one ?
+                  <em>There is no collection in index <strong>{{index}}</strong> yet. You may want to create a new one ?</em>
                 </div>
               </div>
             </a>
