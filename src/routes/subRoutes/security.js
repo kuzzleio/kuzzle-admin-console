@@ -13,13 +13,13 @@ export default {
       require(['../../components/Security/Profiles/Browse'], resolve)
     }
   },
-  '/profile/create': {
+  '/profiles/create': {
     name: 'SecurityProfilesCreate',
     component (resolve) {
       require(['../../components/Security/Profiles/Create'], resolve)
     }
   },
-  '/profile/:id': {
+  '/profiles/:id': {
     name: 'SecurityProfilesUpdate',
     component (resolve) {
       require(['../../components/Security/Profiles/Update'], resolve)
@@ -31,13 +31,13 @@ export default {
       require(['../../components/Security/Roles/Browse'], resolve)
     }
   },
-  '/role/create': {
+  '/roles/create': {
     name: 'SecurityRolesCreate',
     component (resolve) {
       require(['../../components/Security/Roles/Create'], resolve)
     }
   },
-  '/role/:id': {
+  '/roles/:id': {
     name: 'SecurityRolesUpdate',
     component (resolve) {
       require(['../../components/Security/Roles/Update'], resolve)
