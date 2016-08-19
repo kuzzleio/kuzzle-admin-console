@@ -1,6 +1,6 @@
 <template>
   <create
-  title="Create a role"
+  title="Create a profile"
   :content="content"
   @security-create::create="create"
   @security-create::cancel="cancel">
@@ -28,17 +28,17 @@
 
         kuzzle
           .security
-          .createRolePromise(id, content, {replaceIfExist: true})
+          .createProfilePromise(id, content, {replaceIfExist: true})
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityRolesList'})
+            this.$router.go({name: 'SecurityProfilesList'})
           })
           .catch((e) => {
             this.$dispatch('toast', e.message, 'error')
           })
       },
       cancel () {
-        this.$router.go({name: 'SecurityRolesList'})
+        this.$router.go({name: 'SecurityProfilesList'})
       }
     }
   }

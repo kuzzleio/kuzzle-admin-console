@@ -13,16 +13,16 @@ export default {
       require(['../../components/Security/Profiles/Browse'], resolve)
     }
   },
-  '/profiles/create': {
+  '/profile/create': {
     name: 'SecurityProfilesCreate',
     component (resolve) {
-      require(['../../components/Security/Common/Create'], resolve)
+      require(['../../components/Security/Profiles/Create'], resolve)
     }
   },
-  '/profile/:profileId': {
-    name: 'SecurityProfileDetail',
+  '/profile/:id': {
+    name: 'SecurityProfilesUpdate',
     component (resolve) {
-      require(['../../components/Security/Profiles/Detail'], resolve)
+      require(['../../components/Security/Profiles/Update'], resolve)
     }
   },
   '/roles': {
