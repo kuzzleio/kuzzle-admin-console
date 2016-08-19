@@ -13,6 +13,12 @@ export default {
       require(['../../components/Security/Profiles/Browse'], resolve)
     }
   },
+  '/profiles/create': {
+    name: 'SecurityProfilesCreate',
+    component (resolve) {
+      require(['../../components/Security/Common/Create'], resolve)
+    }
+  },
   '/profile/:profileId': {
     name: 'SecurityProfileDetail',
     component (resolve) {
@@ -23,6 +29,18 @@ export default {
     name: 'SecurityRolesList',
     component (resolve) {
       require(['../../components/Security/Roles/Browse'], resolve)
+    }
+  },
+  '/role/create': {
+    name: 'SecurityRolesCreate',
+    component (resolve) {
+      require(['../../components/Security/Roles/Create'], resolve)
+    }
+  },
+  '/role/:id': {
+    name: 'SecurityRolesUpdate',
+    component (resolve) {
+      require(['../../components/Security/Roles/Update'], resolve)
     }
   }
 }

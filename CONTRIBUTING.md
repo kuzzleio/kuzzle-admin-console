@@ -6,4 +6,5 @@
 - getters must be named after the data they get
 
 ###vue
-- event: To be defined
+- events: The event name must be prefixed with the component and suffixed with the action with `::` as separator.  
+Something like `security-create::create`, `filter-raw::search` or `crudl::refresh-search`.

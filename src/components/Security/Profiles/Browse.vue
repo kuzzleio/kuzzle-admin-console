@@ -23,7 +23,7 @@
     },
     methods: {
       createProfile () {
-        this.$router.go({name: 'SecurityCreateProfile'})
+        this.$router.go({name: 'SecurityProfilesCreate'})
       }
     },
     route: {

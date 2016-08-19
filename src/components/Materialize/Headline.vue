@@ -14,7 +14,7 @@
 
 <style lang="scss" rel="stylesheet/scss">
   .headline {
-    margin-bottom: 50px;
+    margin-bottom: 40px;
     a.btn {
       margin-top: 5px;
       margin-left: 15px;
