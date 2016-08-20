@@ -4,9 +4,6 @@
       {{index}} - Create a collection
     </headline>
 
-    <collection-tabs></collection-tabs>
-
-    <div class="card-panel">
     <div class="row">
       <div class="col s12 m10 l8 card">
         <form class="wrapper" @submit.prevent="doCreateCollection">
@@ -83,7 +80,6 @@
 
       </div>
     </div>
-    </div>
   </div>
 </template>
 
@@ -97,7 +93,6 @@
 </style>
 
 <script>
-  import CollectionTabs from './Tabs.vue'
   import Headline from '../../Materialize/Headline'
   import {createCollection} from '../../../vuex/modules/collection/actions'
   import JsonEditor from '../../Common/JsonEditor'
@@ -105,7 +100,6 @@
   export default {
     name: 'CollectionCreate',
     components: {
-      CollectionTabs,
       Headline,
       JsonEditor
     },

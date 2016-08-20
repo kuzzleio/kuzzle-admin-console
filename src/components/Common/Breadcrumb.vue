@@ -48,14 +48,14 @@
         </a>
       </li>
 
-      <li v-if="isRouteActive('DataCreateCollection')">
+      <!--<li v-if="isRouteActive('DataCreateCollection')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
           create a collection
         </a>
-      </li>
+      </li>-->
 
       <li v-if="selectedCollection">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
@@ -66,14 +66,14 @@
         </a>
       </li>
 
-      <li v-if="isRouteActive('DataCreateDocument')">
+      <!--<li v-if="isRouteActive('DataCreateDocument')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
            v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
           create a document
         </a>
-      </li>
+      </li>-->
 
       <!--<li class="link"
           :class="{'link-active': isRouteActive('DataCollectionBrowse')}"

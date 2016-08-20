@@ -2,7 +2,7 @@
   <div>
     <div class="wrapper">
       <headline>
-        {{collection}} - Watch
+        {{collection}}
         <collection-dropdown
           class="icon-medium icon-black"
           :index="index"

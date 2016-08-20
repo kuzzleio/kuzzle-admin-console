@@ -28,17 +28,21 @@
 <style rel="stylesheet/scss" lang="scss" scoped>
   .nav li {
     display: inline-block;
-    &.active {
-      a {
-        border-bottom: solid 2px #00757F;
-      }
-    }
     a {
       padding: 10px 8px;
       text-transform: uppercase;
       color: #666;
       letter-spacing: 1px;
       margin: 0 10px;
+
+      &:hover {
+        border-bottom: solid 2px #CCC;
+      }
+    }
+    &.active {
+      a {
+        border-bottom: solid 2px #00757F;
+      }
     }
   }
 </style>

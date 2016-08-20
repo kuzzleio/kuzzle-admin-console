@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{collection}} - Browse
+      {{collection}}
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
