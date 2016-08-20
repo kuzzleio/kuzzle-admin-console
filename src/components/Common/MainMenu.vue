@@ -71,7 +71,7 @@ nav {
 }
 
 .logo img {
-  height: 53px;
-  padding: 10px 48px 10px 0;
+  height: 50px;
+  padding: 10px 63px 10px 0;
 }
 </style>

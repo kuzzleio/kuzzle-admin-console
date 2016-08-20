@@ -35,7 +35,7 @@
     <div class="row">
       <div class="col s12 m10 l8">
 
-        <div class="row actions">
+        <div class="row actions" v-if="countCollection">
           <div class="col s9">
             <a class="btn btn-small waves-effect waves-light primary"
                href="#!"
@@ -57,25 +57,43 @@
 
         <div class="row">
           <!-- Not allowed -->
-          <div class="col s12" v-if="!canSearchCollection(index)">
-            <div class="card-panel unauthorized">
-              <div class="card-content">
-                <i class="fa fa-lock left" aria-hidden="true"></i>
-                <em>You are not allowed to list collections in index {{index}}</em>
+          <div class="card-panel" v-if="!canSearchCollection(index)">
+            <div class="row valign-bottom empty-set empty-set-condensed">
+              <div class="col s1 offset-s1">
+                <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
+              </div>
+              <div class="col s10">
+                <p>
+                  You are not allowed to list collections in index <strong>{{index}}</strong><br>
+                </p>
+                <p>
+                  <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
+                </p>
               </div>
             </div>
           </div>
 
-          <!-- No collection view -->
-          <div class="col s12" v-if="canSearchCollection(index) && !countCollection">
-            <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
-              <div class="card-panel hoverable">
-                <div class="card-content">
-                  <em>There is no collection in index <strong>{{index}}</strong> yet. You may want to create a new one ?</em>
-                </div>
+          <div class="card-panel" v-if="canSearchCollection(index) && !countCollection">
+            <div class="row valign-bottom empty-set empty-set-condensed">
+              <div class="col s1 offset-s1">
+                <i class="fa fa-6x fa-th-list grey-text text-lighten-1" aria-hidden="true"></i>
               </div>
-            </a>
+              <div class="col s9">
+                <p>
+                  You will see <strong>{{index}}'s</strong> collections here<br/>
+                  <em>For the time there is no one created yet</em>
+                </p>
+                <button v-link="{name: 'DataCreateCollection', params: {index: index}}"
+                        v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+                        :class="{unauthorized: !canCreateCollection(index)}"
+                        class="btn btn-small primary waves-effect waves-light">
+                  <i class="fa fa-plus-circle left"></i>
+                  Create a collection
+                </button>
+              </div>
+            </div>
           </div>
+
 
           <collection-boxed
               v-for="collection in collections.stored | orderBy 1"

@@ -20,7 +20,22 @@
         </filters>
 
 
-        <div class="row actions">
+        <div class="row valign-center empty-set" v-show="!documents.length">
+          <div class="col s2 offset-s1">
+            <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
+          </div>
+          <div class="col s12">
+            <p>
+              There is no result matching your query<br />
+              Please try with other filters.
+            </p>
+            <p>
+              <em>Learn more about filtering syntax on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+            </p>
+          </div>
+        </div>
+
+        <div class="row actions" v-show="documents.length">
           <div class="col s6">
             <button class="btn btn-small waves-effect waves-light left margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
             <button
@@ -46,17 +61,13 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" v-show="documents.length">
           <div class="col s12">
-            <div v-if="!documents.length" class="no-document">
-              There is no result corresponding to your search!
-            </div>
-
             <slot v-if="documents.length"></slot>
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" v-show="documents.length">
           <div class="col s12">
             <pagination
               @change-page="changePage"
@@ -109,12 +120,6 @@
 
   </div>
 </template>
-
-<style type="text/css" media="screen" scoped>
-  .margin-right-5 {
-    margin-right: 5px;
-  }
-</style>
 
 <script>
   import Pagination from '../Materialize/Pagination'

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="valign-center">
     <div class="col s5 m5 l4">
       <button
         class="btn btn-small waves-effect waves-light"

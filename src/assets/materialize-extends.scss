@@ -145,8 +145,30 @@ i, span {
   align-items: flex-end;
 }
 
+.valign-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .row {
   &.actions {
     margin-bottom: 5px;
   }
+}
+
+.fa {
+  &.fa-6x {
+    font-size: 6rem;
+  }
+}
+
+
+.row-margin-bottom-0 {
+  .row {
+    margin-bottom: 0;
+  }
+}
+.margin-bottom-0 {
+  margin-bottom: 0;
 }

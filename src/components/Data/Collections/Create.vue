@@ -8,7 +8,7 @@
       <div class="col s12 m10 l8 card">
         <form class="wrapper" @submit.prevent="doCreateCollection">
           <!-- Required fields -->
-          <div class="row">
+          <div class="row valign-center">
             <!-- Collection name -->
             <div class="col s6">
                 <div class="input-field">

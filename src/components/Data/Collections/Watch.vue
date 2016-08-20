@@ -11,7 +11,7 @@
       </headline>
 
       <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" class="closed" v-scroll-glue="{spy: notifications, height: 200, active: scrollGlueActive}">
+      <div id="notification-controls-fixed" class="closed" v-scroll-glue="{spy: notifications, height: 290, active: scrollGlueActive}">
         <div class="row">
           <subscription-controls
             @realtime-toggle-subscription="toggleSubscription"
@@ -29,68 +29,112 @@
 
       <collection-tabs></collection-tabs>
 
-      <div class="card-panel">
-      <div class="row">
-        <div class="col s12 m10 l8 list-document">
-          <filters
-            @filters-basic-search="basicSearch"
-            @filters-raw-search="rawSearch"
-            @filters-refresh-search="refreshSearch"
-            label-search-button="Apply filters"
-            label-complex-query="Quick search disabled, click to open filter builder"
-            :available-filters="availableFilters"
-            :quick-filter-enabled="false"
-            :sorting-enabled="false"
-            :raw-filter="rawFilter"
-            :basic-filter="basicFilter"
-            :format-from-basic-search="formatFromBasicSearch"
-            :format-sort="formatSort"
-            :set-basic-filter="setBasicFilter"
-            :basic-filter-form="basicFilterForm">
-          </filters>
-        </div>
-      </div>
-
-      <div class="row realtime">
-        <!-- subscription controls in page flow -->
-        <subscription-controls
-          @realtime-toggle-subscription="toggleSubscription"
-          @realtime-scroll-glue="setScrollGlue"
-          @realtime-clear-messages="clear"
-          :index="index"
-          :collection="collection"
-          :subscribed="subscribed"
-          :scroll-glue-active="scrollGlueActive"
-          :warning="warning">
-        </subscription-controls>
-        <!-- /subscription controls in page flow  -->
-
-        <div class="col s12">
-          <div v-if="!canSubscribe(index, collection)" class="inline-alert unauthorized grey lighten-3">
-            <i class="fa fa-lock left" aria-hidden="true"></i>
-            <em>You are not allowed to watch realtime messages on collection {{collection}} of index {{index}}</em>
+      <div class="card-panel" v-if="!canSubscribe(index, collection)">
+        <div class="row valign-bottom empty-set">
+          <div class="col s1 offset-s1">
+            <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
           </div>
-          <div v-if="canSubscribe(index, collection) && !notifications.length" class="inline-alert grey lighten-3">
-            You have not received any notification yet
+          <div class="col s10">
+            <p>
+              You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
+            </p>
+            <p>
+              <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
+            </p>
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="notification-container" v-if="notifications.length">
-      <ul class="collapsible" v-collapsible data-collapsible="expandable">
-        <li v-for="notification in notifications">
-          <notification
-            :notification="notification">
-          </notification>
-        </li>
-      </ul>
-    </div>
+      <div  v-else>
+        <div class="card-panel row-margin-bottom-0">
+          <div class="row ">
+            <div class="col s12 m10 l8 list-document">
+              <filters
+                @filters-basic-search="basicSearch"
+                @filters-raw-search="rawSearch"
+                @filters-refresh-search="refreshSearch"
+                label-search-button="Apply filters"
+                label-complex-query="Quick search disabled, click to open filter builder"
+                :available-filters="availableFilters"
+                :quick-filter-enabled="false"
+                :sorting-enabled="false"
+                :raw-filter="rawFilter"
+                :basic-filter="basicFilter"
+                :format-from-basic-search="formatFromBasicSearch"
+                :format-sort="formatSort"
+                :set-basic-filter="setBasicFilter"
+                :basic-filter-form="basicFilterForm">
+              </filters>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel" v-show="subscribed || notifications.length">
+          <div class="row realtime margin-bottom-0">
+            <!-- subscription controls in page flow -->
+            <subscription-controls
+              @realtime-toggle-subscription="toggleSubscription"
+              @realtime-scroll-glue="setScrollGlue"
+              @realtime-clear-messages="clear"
+              :index="index"
+              :collection="collection"
+              :subscribed="subscribed"
+              :scroll-glue-active="scrollGlueActive"
+              :warning="warning">
+            </subscription-controls>
+            <!-- /subscription controls in page flow  -->
+          </div>
+        </div>
+
+        <div class="card-panel" v-show="canSubscribe(index, collection) && !subscribed && !notifications.length">
+          <div class="row valign-bottom empty-set empty-set-condensed">
+            <div class="col s1 offset-s1">
+              <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
+            </div>
+            <div class="col s10">
+              <p>
+                You have not subscribed yet to the collection <strong>{{collection}}</strong><br>
+                <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+              </p>
+              <button class="btn btn-small primary waves-effect waves-light" @click="toggleSubscription()">
+                <i class="fa left fa-play"></i>
+                subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-panel" v-show="canSubscribe(index, collection) && subscribed && !notifications.length">
+          <div class="row valign-center empty-set empty-set-condensed">
+            <div class="col s1 offset-s1">
+              <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
+            </div>
+            <div class="col s10">
+              <p>
+                Waiting for notification matching your filters ...
+              </p>
+              <p>
+                <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div id="notification-container" v-if="notifications.length">
+          <ul class="collapsible" v-collapsible data-collapsible="expandable">
+            <li v-for="notification in notifications">
+              <notification
+                :notification="notification">
+              </notification>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<style rel="stylesheet/scss" lang="scss" media="screen">
+<style rel="stylesheet/scss" lang="scss">
   .head {
     float: left;
     font-size: 2rem;
@@ -99,10 +143,6 @@
 
   .wrapper {
     position: relative;
-  }
-
-  .realtime {
-    padding: 0 12px;
   }
 
   #notification-controls-fixed {
@@ -134,10 +174,10 @@
       font-size: 0.8rem;
     }
     li:nth-child(odd) {
-      background-color: #f5f5f5;
+      background-color: #F5F5F5;
 
       .collapsible-header {
-        background-color: #f5f5f5;
+        background-color: #F5F5F5;
       }
     }
   }
