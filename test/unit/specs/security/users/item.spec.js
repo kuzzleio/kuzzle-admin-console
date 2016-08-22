@@ -44,12 +44,12 @@ describe('UserItem component', () => {
         name: 'UserItem',
         component: TestComponent
       },
-      '/security/profile': {
+      '/security/profiles': {
         name: 'SecurityProfilesList',
         component: mockedComponent
       },
-      '/security/profile/:id': {
-        name: 'SecurityProfileDetail',
+      '/security/profiles/:id': {
+        name: 'SecurityProfilesUpdate',
         component: mockedComponent
       }
     })

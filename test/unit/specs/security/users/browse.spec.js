@@ -28,7 +28,7 @@ describe('Browse users', () => {
   describe('Methods', () => {
     it('should redirect on right url on createUser call', () => {
       vm.$refs.browse.createUser()
-      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'SecurityCreateUser'})).to.be.equal(true)
+      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'SecurityUsersCreate'})).to.be.equal(true)
     })
   })
 

@@ -28,7 +28,7 @@ describe('Browse roles', () => {
   describe('Methods', () => {
     it('should redirect on right url on createRole call', () => {
       vm.$refs.browse.createRole()
-      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'SecurityCreateRole'})).to.be.equal(true)
+      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'SecurityRolesCreate'})).to.be.equal(true)
     })
   })
 

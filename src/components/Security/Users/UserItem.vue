@@ -26,7 +26,7 @@
     <div class="item-content">
       <pre v-json-formatter="itemContent"></pre><div class="profile-list">
         <div class="profile-chip chip" v-for="profile in profileList">
-          <a v-link="{name: 'SecurityProfileDetail', params:{ profileId: profile }}" class="truncate" >{{profile}}</a>
+          <a v-link="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</a>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
           <a v-link="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</a>

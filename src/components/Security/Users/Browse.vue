@@ -23,7 +23,7 @@
     },
     methods: {
       createUser () {
-        this.$router.go({name: 'SecurityCreateUser'})
+        this.$router.go({name: 'SecurityUsersCreate'})
       }
     },
     route: {
