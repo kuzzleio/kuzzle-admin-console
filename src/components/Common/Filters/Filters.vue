@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row" v-show="displayBlockFilter">
-      <div class="col s12 m12 l8 z-depth-1 open-search">
+      <div class="col s12 m12 l8 z-depth-2 open-search">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>

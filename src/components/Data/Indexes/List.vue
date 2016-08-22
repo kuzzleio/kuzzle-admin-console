@@ -7,12 +7,12 @@
 
         <div class="row actions">
           <div class="col s9">
-            <a class="btn btn-small waves-effect waves-light primary"
+            <a class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateIndex(), title: 'Your rights disallow you to create indexes'}"
                :class="{unauthorized: !canCreateIndex()}"
                @click.prevent="canCreateIndex() && $broadcast('modal-open', 'index-create')">
               <i class="fa fa-plus-circle left"></i>
-              <span>Create</span>
+              <span>Create an index</span>
             </a>
           </div>
 

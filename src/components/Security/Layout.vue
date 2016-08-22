@@ -16,7 +16,7 @@
       </li>
       <li v-link-active class="bold">
         <a v-link="{name: 'SecurityRolesList', activeClass: 'active'}" class="waves-effect">
-          <i class="fa fa-check-square" aria-hidden="true"></i>
+          <i class="fa fa-unlock-alt" aria-hidden="true"></i>
           <span>Roles</span>
         </a>
       </li>
