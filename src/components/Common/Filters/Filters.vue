@@ -1,52 +1,26 @@
 <template>
   <div>
-    <div class="row" v-show="displayBlockFilter">
-      <div class="col s12 m12 l8 z-depth-2 open-search">
-        <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
-        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
-          <tab name="basic"><a href="">Basic Mode</a></tab>
-          <tab name="raw"><a href="">Raw JSON Mode</a></tab>
-
-          <div slot="contents" class="card">
-            <div class="col s12">
-              <div v-show="tabActive === 'basic'">
-                <basic-filter
-                        :basic-filter="basicFilter"
-                        :sorting-enabled="sortingEnabled"
-                        :available-filters="availableFilters"
-                        :label-search-button="labelSearchButton"
-                        :sorting="sorting"
-                        :set-basic-filter="setBasicFilter"
-                        @filters-basic-search="complexSearch = true">
-                </basic-filter>
-              </div>
-
-              <div v-show="tabActive === 'raw'">
-                <raw-filter
-                        :raw-filter="rawFilter"
-                        :format-from-basic-search="formatFromBasicSearch"
-                        :sorting-enabled="sortingEnabled"
-                        :label-search-button="labelSearchButton"
-                        :format-sort="formatSort"
-                        :basic-filter-form="basicFilterForm">
-                </raw-filter>
-              </div>
-            </div>
-          </div>
-        </tabs>
+    <div class="card-panel card-header row-margin-bottom-0">
+      <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="row filters">
+        <quick-filter
+          :search-term="searchTerm"
+          :display-block-filter="displayBlockFilter"
+          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter">
+        </quick-filter>
       </div>
     </div>
 
-    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l12 complex-search">
+    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 complex-search card-panel row-margin-bottom-0">
       <div class="row valign-bottom">
-        <div class="col s9 m9 l9">
+        <div class="col s9">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
             <div @click="displayBlockFilter = true" class="chip">
               <span>{{labelComplexQuery}}</span>
               <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
             </div>
-            <a href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
+            <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
+            <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
           </div>
         </div>
         <div class="col s3">
@@ -56,20 +30,40 @@
       </div>
     </div>
 
-    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="row filters">
+    <div class="row card-panel row-margin-bottom-0 open-search" v-show="displayBlockFilter">
+      <div class="col s12">
+        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
+          <tab name="basic"><a href="">Basic Mode</a></tab>
+          <tab name="raw"><a href="">Raw JSON Mode</a></tab>
 
-      <quick-filter
-        :search-term="searchTerm"
-        @filters-display-block-filter="displayBlockFilter = true">
-      </quick-filter>
+          <div slot="contents" class="card">
+            <div class="col s12">
+              <div v-show="tabActive === 'basic'">
+                <basic-filter
+                  :basic-filter="basicFilter"
+                  :sorting-enabled="sortingEnabled"
+                  :available-filters="availableFilters"
+                  :label-search-button="labelSearchButton"
+                  :sorting="sorting"
+                  :set-basic-filter="setBasicFilter"
+                  @filters-basic-search="complexSearch = true">
+                </basic-filter>
+              </div>
 
-    </div>
-
-    <div
-        v-if="displayBlockFilter"
-        @click="displayBlockFilter = false"
-        class="lean-overlay"
-        style="z-index: 90; display: block; opacity: 0;">
+              <div v-show="tabActive === 'raw'">
+                <raw-filter
+                  :raw-filter="rawFilter"
+                  :format-from-basic-search="formatFromBasicSearch"
+                  :sorting-enabled="sortingEnabled"
+                  :label-search-button="labelSearchButton"
+                  :format-sort="formatSort"
+                  :basic-filter-form="basicFilterForm">
+                </raw-filter>
+              </div>
+            </div>
+          </div>
+        </tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -80,8 +74,6 @@
   import QuickFilter from './QuickFilter'
   import BasicFilter from './BasicFilter'
   import RawFilter from './RawFilter'
-
-  const ESC_KEY = 27
 
   export default {
     name: 'Filters',
@@ -150,13 +142,6 @@
       }
     },
     methods: {
-      handleEsc (evt) {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.displayBlockFilter = false
-        }
-      },
       switchFilter (name) {
         this.tabActive = name
       },
@@ -246,9 +231,10 @@
   }
 
   .open-search {
-    position: absolute;
-    z-index: 100;
     background-color: #fff;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
 
     i.close {
       float: right;
@@ -266,9 +252,8 @@
     }
 
     .filter-content {
-      margin-bottom: 20px;
       .dots {
-        border-left: 1px dotted rgba(0,0,0,0.26);
+        border-left: 1px dotted rgba(0, 0, 0, 0.26);
         padding-bottom: 5px;
       }
       a.btn {
@@ -280,7 +265,6 @@
         margin-left: 10px;
       }
       .block-and {
-        margin-bottom: 5px;
         i.remove-filter {
           margin-top: 25px;
           color: grey;
@@ -289,7 +273,7 @@
 
       }
       .block-sort {
-        margin-top: 40px;
+        margin-top: 20px;
         margin-bottom: 0;
       }
       .block-content {
@@ -315,8 +299,20 @@
         margin-right: 10px;
       }
     }
+
+    input {
+      height: 2rem;
+    }
+
+    .select-wrapper span.caret {
+      top: 10px
+    }
+
+    .select-wrapper input.select-dropdown {
+      height: 2rem;
+    }
   }
   .pre_ace, .ace_editor {
-    height: 350px;
+    height: 250px;
   }
 </style>

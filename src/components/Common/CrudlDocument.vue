@@ -1,22 +1,20 @@
 <template>
   <div>
-    <div class="card-panel card-header row-margin-bottom-0">
-      <filters
-        @filters-quick-search="quickSearch"
-        @filters-basic-search="basicSearch"
-        @filters-raw-search="rawSearch"
-        @filters-refresh-search="refreshSearch"
-        :available-filters="availableFilters"
-        :search-term="searchTerm"
-        :raw-filter="rawFilter"
-        :basic-filter="basicFilter"
-        :sorting="sorting"
-        :format-from-basic-search="formatFromBasicSearch"
-        :format-sort="formatSort"
-        :set-basic-filter="setBasicFilter"
-        :basic-filter-form="basicFilterForm">
-      </filters>
-    </div>
+    <filters
+      @filters-quick-search="quickSearch"
+      @filters-basic-search="basicSearch"
+      @filters-raw-search="rawSearch"
+      @filters-refresh-search="refreshSearch"
+      :available-filters="availableFilters"
+      :search-term="searchTerm"
+      :raw-filter="rawFilter"
+      :basic-filter="basicFilter"
+      :sorting="sorting"
+      :format-from-basic-search="formatFromBasicSearch"
+      :format-sort="formatSort"
+      :set-basic-filter="setBasicFilter"
+      :basic-filter-form="basicFilterForm">
+    </filters>
 
     <div class="card-panel card-body">
       <div class="row valign-center empty-set" v-show="!documents.length">

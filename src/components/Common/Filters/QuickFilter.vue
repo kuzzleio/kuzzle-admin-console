@@ -5,7 +5,8 @@
         <div class="search-bar">
           <i class="fa fa-search search"></i>
           <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
-          <a href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
+          <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
+          <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>
       </div>
       <div class="col s3">
@@ -19,7 +20,7 @@
 <script>
   export default {
     name: 'QuickSearch',
-    props: ['searchTerm'],
+    props: ['searchTerm', 'displayBlockFilter'],
     data () {
       return {
         filters: {
