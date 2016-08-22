@@ -42,8 +42,8 @@
         <div class="col s9 m9 l9">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
-            <div class="chip">
-              <span @click="displayBlockFilter = true">{{labelComplexQuery}}</span>
+            <div @click="displayBlockFilter = true" class="chip">
+              <span>{{labelComplexQuery}}</span>
               <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
             </div>
             <a href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>

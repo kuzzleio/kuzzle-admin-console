@@ -24,7 +24,7 @@
               <em>For the time there is no one created yet</em>
             </p>
             <button v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
-                    class="btn btn-small primary waves-effect waves-light">
+                    class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a document
             </button>

@@ -37,7 +37,7 @@
 
         <div class="row actions" v-if="countCollection">
           <div class="col s9">
-            <a class="btn btn-small waves-effect waves-light primary"
+            <a class="btn waves-effect waves-light primary"
                href="#!"
                v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                :class="{unauthorized: !canCreateCollection(index)}"

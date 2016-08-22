@@ -89,10 +89,10 @@
             </div>
             <div class="col s10">
               <p>
-                You have not subscribed yet to the collection <strong>{{collection}}</strong><br>
+                You did not subscribed yet to the collection <strong>{{collection}}</strong><br>
                 <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
               </p>
-              <button class="btn btn-small primary waves-effect waves-light" @click="toggleSubscription()">
+              <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
                 <i class="fa left fa-play"></i>
                 subscribe
               </button>
