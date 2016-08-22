@@ -1,6 +1,6 @@
 <template>
-  <div class="row">
-    <input :id="name" :type="type" name="collection" v-model="value" @input="updatePartial" />
+  <div class="row input-field">
+    <input :id="name" :type="type" name="collection" v-model="value" @input="updatePartial" step="0.1"/>
     <label :for="name">{{name}}</label>
   </div>
 </template>
@@ -13,9 +13,14 @@
     props: {
       name: String,
       content: Object,
-      fullName: String
+      fullName: String,
+      defaultValue: String
     },
     ready () {
+      if (this.content.val) {
+        this.value = this.content.val
+        this.updatePartial()
+      }
       this.getType()
     },
     data () {
@@ -40,7 +45,6 @@
           case 'byte':
           case 'double':
           case 'float':
-          case 'binary':
             this.type = 'number'
             break
           default:
