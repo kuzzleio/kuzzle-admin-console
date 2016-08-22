@@ -9,6 +9,9 @@ function isActionAllowed (sessionUser, controller, action, index = '*', collecti
 
 // Index CRUDL
 
+export const canSearchIndex = () => {
+  return isActionAllowed(store.state.user, 'read', 'listIndexes')
+}
 export const canCreateIndex = () => {
   return isActionAllowed(store.state.user, 'admin', 'createIndex')
 }
@@ -18,6 +21,9 @@ export const canDeleteIndex = index => {
 
 // Collection CRUDL
 
+export const canSearchCollection = index => {
+  return isActionAllowed(store.state.user, 'read', 'listCollections', index)
+}
 export const canCreateCollection = index => {
   return isActionAllowed(store.state.user, 'write', 'createCollection', index)
 }

@@ -34,6 +34,8 @@
             @realtime-toggle-subscription="toggleSubscription"
             @realtime-scroll-glue="setScrollGlue"
             @realtime-clear-messages="clear"
+            :index="index"
+            :collection="collection"
             :subscribed="subscribed"
             :warning="warning">
           </subscription-controls>
@@ -47,13 +49,19 @@
           @realtime-toggle-subscription="toggleSubscription"
           @realtime-scroll-glue="setScrollGlue"
           @realtime-clear-messages="clear"
+          :index="index"
+          :collection="collection"
           :subscribed="subscribed"
           :warning="warning">
         </subscription-controls>
         <!-- /subscription controls in page flow  -->
 
         <div class="col s12">
-          <div v-if="!notifications.length" class="inline-alert grey lighten-3">
+          <div v-if="!canSubscribe(index, collection)" class="inline-alert unauthorized grey lighten-3">
+            <i class="fa fa-lock left" aria-hidden="true"></i>
+            <em>You are not allowed to watch realtime messages on collection {{collection}} of index {{index}}</em>
+          </div>
+          <div v-if="canSubscribe(index, collection) && !notifications.length" class="inline-alert grey lighten-3">
             You have not received any notification yet
           </div>
         </div>
@@ -129,7 +137,7 @@
   import Headline from '../../Materialize/Headline'
   import JsonFormatter from '../../../directives/json-formatter.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
-  import jQueryCollapsible from '../../../directives/collapsible.directive'
+  import jQueryCollapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
@@ -138,6 +146,7 @@
   import { setBasicFilter } from '../../../vuex/modules/common/crudlDocument/actions'
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
+  import {canSubscribe} from '../../../services/userAuthorization'
 
   export default {
     name: 'CollectionWatch',
@@ -201,6 +210,7 @@
       Headline
     },
     methods: {
+      canSubscribe,
       basicSearch (filters) {
         if (!filters) {
           this.$router.go({query: {basicFilter: ''}})

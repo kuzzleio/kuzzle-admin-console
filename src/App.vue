@@ -5,7 +5,7 @@
 
 <script>
 import {} from './assets/global.scss'
-import Toaster from './directives/toaster.directive'
+import Toaster from './directives/Materialize/toaster.directive'
 
 window.jQuery = window.$ = require('jquery')
 require('materialize-css/dist/js/materialize')

@@ -1,23 +1,45 @@
 import kuzzle from './kuzzle'
-import Bluebird from 'bluebird'
+import { setTokenValid } from '../vuex/modules/auth/actions'
+import { setConnection, setKuzzleHostPort } from '../vuex/modules/common/kuzzle/actions'
+import Promise from 'bluebird'
 
-export const isConnected = () => {
+export const isConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
     return new Promise((resolve, reject) => {
+      // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
+      let timeoutId = setTimeout(() => {
+        kuzzle.removeListener('connected', id)
+        reject(new Error('Kuzzle does not respond'))
+      }, timeout)
+
       let id = kuzzle.addListener('connected', () => {
+        clearTimeout(timeoutId)
         kuzzle.removeListener('connected', id)
         resolve()
       })
-
-      // Timeout, if kuzzle doesn't respond in 10s -> reject
-      setTimeout(() => {
-        kuzzle.removeListener('connected', id)
-        reject()
-      }, 10000)
     })
   }
 
   return Promise.resolve()
+}
+
+export const initStoreWithKuzzle = (store) => {
+  setKuzzleHostPort(store, kuzzle.host, kuzzle.wsPort)
+
+  kuzzle.removeAllListeners('jwtTokenExpired')
+  kuzzle.addListener('jwtTokenExpired', () => {
+    setTokenValid(store, false)
+  })
+
+  kuzzle.removeAllListeners('disconnected')
+  kuzzle.addListener('disconnected', () => {
+    setConnection(store, false)
+  })
+
+  kuzzle.removeAllListeners('reconnected')
+  kuzzle.addListener('reconnected', () => {
+    setConnection(store, true)
+  })
 }
 
 // Helper for performSearch
@@ -32,16 +54,18 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 }
 
 export const performSearch = (collection, index, filters = {}, pagination = {}, sort = []) => {
-  if (!collection || !index) {
-    return
-  }
   return new Promise((resolve, reject) => {
+    if (!collection || !index) {
+      return reject(new Error('Missing collection or index'))
+    }
+
     kuzzle
       .dataCollectionFactory(collection, index)
       .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
         if (error) {
           return reject(error)
         }
+
         let additionalAttributeName = null
 
         if (sort.length > 0) {
@@ -76,7 +100,8 @@ export const deleteDocuments = (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0 || !index || !collection) {
     return
   }
-  return new Bluebird((resolve, reject) => {
+
+  return new Promise((resolve, reject) => {
     kuzzle
       .dataCollectionFactory(collection, index)
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {

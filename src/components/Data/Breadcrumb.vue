@@ -25,10 +25,10 @@
         </a>
       </li>
 
-      <li :class="{'in active': isRouteActive(['DataCreateDocument', 'DataCollectionBrowse', 'DataCollectionWatch', 'DataCollectionSummary'])}"
+      <li :class="{'in active': isRouteActive(['DataCreateDocument', 'DataDocumentsList', 'DataCollectionWatch'])}"
           v-if="collection">
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
+           v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
           <i class="fa fa-th-list" aria-hidden="true"></i>
           {{collection}}
         </a>
@@ -43,10 +43,10 @@
       </li>
 
       <li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
+          :class="{'link-active': isRouteActive('DataDocumentsList')}"
           v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
+           v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
           Browse
         </a>
       </li>
@@ -56,15 +56,6 @@
           v-if="collection && !isRouteActive('DataCreateDocument')">
         <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
           Watch
-        </a>
-      </li>
-
-      <li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionSummary')}"
-          v-if="collection && !isRouteActive('DataCreateDocument')">
-        <a href="#!"
-           v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
-          Summary
         </a>
       </li>
     </ul>

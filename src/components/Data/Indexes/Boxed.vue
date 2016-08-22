@@ -45,7 +45,11 @@
       </div>
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">Create a collection</a>
+        <a class="btn btn-small"
+           href="#"
+           v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+           :class="{unauthorized: !canCreateCollection(index)}"
+           v-link="canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}">Create a collection</a>
       </div>
     </div>
   </div>
@@ -53,11 +57,19 @@
 
 <script>
   import IndexDropdown from './Dropdown.vue'
+  import {canCreateCollection} from '../../../services/userAuthorization'
+  import Title from '../../../directives/title.directive'
 
   export default {
     name: 'IndexBoxed',
     props: {
       index: String
+    },
+    methods: {
+      canCreateCollection
+    },
+    directives: {
+      Title
     },
     components: {
       IndexDropdown
