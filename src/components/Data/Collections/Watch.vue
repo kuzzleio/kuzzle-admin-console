@@ -137,7 +137,7 @@
   import Headline from '../../Materialize/Headline'
   import JsonFormatter from '../../../directives/json-formatter.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
-  import jQueryCollapsible from '../../../directives/collapsible.directive'
+  import jQueryCollapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'

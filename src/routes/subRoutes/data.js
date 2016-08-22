@@ -3,32 +3,19 @@ export default {
   '/': {
     name: 'DataIndexes',
     component (resolve) {
-      require(['../../components/Data/Indexes/Browse'], resolve)
+      require(['../../components/Data/Indexes/List'], resolve)
     }
   },
   '/:index': {
     name: 'DataIndexSummary',
     component (resolve) {
-      require(['../../components/Data/Indexes/Summary'], resolve)
+      require(['../../components/Data/Collections/List'], resolve)
     }
   },
   '/:index/create': {
     name: 'DataCreateCollection',
     component (resolve) {
-      require(['../../components/Data/Collections/Create'], resolve)
-    }
-  },
-  // Collections routes
-  '/:index/:collection': {
-    name: 'DataCollectionBrowse',
-    component (resolve) {
-      require(['../../components/Data/Collections/Browse'], resolve)
-    }
-  },
-  '/:index/:collection/summary': {
-    name: 'DataCollectionSummary',
-    component (resolve) {
-      require(['../../components/Data/Collections/Summary'], resolve)
+      require(['../../components/Data/Collections/CreateOrUpdate'], resolve)
     }
   },
   '/:index/:collection/watch': {
@@ -37,23 +24,22 @@ export default {
       require(['../../components/Data/Collections/Watch'], resolve)
     }
   },
-  // Documents routes
+  '/:index/:collection': {
+    name: 'DataDocumentsList',
+    component (resolve) {
+      require(['../../components/Data/Documents/List'], resolve)
+    }
+  },
   '/:index/:collection/create': {
     name: 'DataCreateDocument',
     component (resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
+      require(['../../components/Data/Documents/CreateOrUpdate'], resolve)
     }
   },
-  '/:index/:collection/:document': {
+  '/:index/:collection/:id': {
     name: 'DataDocumentDetail',
     component (resolve) {
-      require(['../../components/Data/Documents/Detail'], resolve)
-    }
-  },
-  '/:index/:collection/:document/edit': {
-    name: 'DataDocumentEdit',
-    component (resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
+      require(['../../components/Data/Documents/CreateOrUpdate'], resolve)
     }
   }
 }
