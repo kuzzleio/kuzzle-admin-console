@@ -17,17 +17,17 @@
           <div class="col s6 truncate">Index Size</div>
           <div class="col s6 right-align">64 mb</div>
         </div>-->
-        <div class="row">
-          <div class="col s5 truncate">Auto refresh</div>
-          <div class="col s7 right-align">
-            <div class="switch">
-              <label>
-                <input type="checkbox">
-                <span class="lever"></span>
-              </label>
-            </div>
-          </div>
-        </div>
+        <!--<div class="row">-->
+          <!--<div class="col s5 truncate">Auto refresh</div>-->
+          <!--<div class="col s7 right-align">-->
+            <!--<div class="switch">-->
+              <!--<label>-->
+                <!--<input type="checkbox">-->
+                <!--<span class="lever"></span>-->
+              <!--</label>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</div>-->
 
       </div>
     </div>
