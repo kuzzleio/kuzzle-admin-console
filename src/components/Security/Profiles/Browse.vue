@@ -1,6 +1,6 @@
 <template>
   <div>
-    <headline title="Roles Management"></headline>
+    <headline title="Profiles Management"></headline>
     <common-browse
       item-name="ProfileItem"
       collection="profiles"
@@ -23,7 +23,7 @@
     },
     methods: {
       createProfile () {
-        this.$router.go({name: 'SecurityCreateProfile'})
+        this.$router.go({name: 'SecurityProfilesCreate'})
       }
     },
     route: {

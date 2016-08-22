@@ -49,5 +49,12 @@ describe('Profile item', () => {
 
       expect(vm.$refs.item.$dispatch.calledWith('delete-document', 'profile-id')).to.equal(true)
     })
+
+    it('should redirect on right route on update', () => {
+      vm.$refs.item.$router = {go: sandbox.stub()}
+      vm.$refs.item.update()
+
+      expect(vm.$refs.item.$router.go.calledWithMatch({name: 'SecurityProfilesUpdate', params: {id: 'profile-id'}})).to.equal(true)
+    })
   })
 })

@@ -11,7 +11,7 @@
 
     <label for="checkbox-{{document.id}}" ></label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="item-title"><a>{{document.id}}</a></label>
+    <label class="item-title" @click="update()"><a>{{document.id}}</a></label>
 
     <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
@@ -59,6 +59,9 @@ export default {
     },
     deleteDocument () {
       this.$dispatch('delete-document', this.document.id)
+    },
+    update () {
+      this.$router.go({name: 'SecurityRolesUpdate', params: {id: this.document.id}})
     }
   }
 }
