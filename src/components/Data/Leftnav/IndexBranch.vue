@@ -9,7 +9,7 @@
     <ul class="collections">
       <li v-for="collectionTree in indexTree.collections.stored | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
         <a class="tree-item truncate"
-           v-link="{name: 'DataCollectionBrowse', params: {index: indexTree.name, collection: collectionTree}}"
+           v-link="{name: 'DataDocumentsList', params: {index: indexTree.name, collection: collectionTree}}"
            :class="{ 'active': isCollectionActive(indexTree.name, collectionTree) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
            {{{collectionTree | highlight filter}}}

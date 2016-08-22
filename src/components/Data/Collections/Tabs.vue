@@ -1,7 +1,7 @@
 <template>
   <div class="nav">
     <ul>
-      <li :class="{active: isRouteActive('DataCollectionBrowse')}">
+      <li :class="{active: isRouteActive('DataDocumentsList')}">
         <a href="#!" v-link="{name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
           Browse
         </a>

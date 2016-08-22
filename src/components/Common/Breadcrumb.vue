@@ -74,10 +74,10 @@
       </li>-->
 
       <!--<li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionBrowse')}"
+          :class="{'link-active': isRouteActive('DataDocumentsList')}"
           v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
         <a href="#!"
-           v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
+           v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
           Browse
         </a>
       </li>
