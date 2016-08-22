@@ -5,7 +5,7 @@
         <div class="search-bar">
           <i class="fa fa-search search"></i>
           <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
-          <a href="#" @click.prevent="displayComplexSearch">More query options</a>
+          <a href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
         </div>
       </div>
       <div class="col s3">

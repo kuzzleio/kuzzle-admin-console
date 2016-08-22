@@ -1,6 +1,10 @@
 .btn {
   font-family: "Roboto", sans-serif;
 
+  + .btn {
+    margin-left: 10px;
+  }
+
   &.unauthorized {
     cursor: not-allowed;
     background-color: #CCC;
@@ -58,7 +62,7 @@ a {
     transition: color .3s ease-out;
 
     &:hover {
-      color: $secondary-color;
+      color: #444;
     }
   }
 }
@@ -171,4 +175,18 @@ i, span {
 }
 .margin-bottom-0 {
   margin-bottom: 0;
+}
+
+.card-panel {
+  &.card-header {
+    margin-bottom: 0;
+    background: #FBFBFB;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  &.card-body {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
 }

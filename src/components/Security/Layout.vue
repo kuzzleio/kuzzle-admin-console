@@ -32,6 +32,15 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+  .side-nav {
+    a {
+      i.fa {
+        color: #646464
+      }
+      height: 54px;
+      line-height: 54px;
+    }
+  }
   aside {
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     a {

@@ -8,8 +8,8 @@
     >
     </json-editor>
     <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light" @click.prevent="rawSearch">{{labelSearchButton}}</button>
-      <button class="btn waves-effect waves-light" @click="resetRawSearch">Reset</button>
+      <button type="submit" class="btn primary waves-effect waves-light" @click.prevent="rawSearch">{{labelSearchButton}}</button>
+      <button class="btn-flat waves-effect waves-light" @click="resetRawSearch">Reset</button>
       <span class="error" v-if="jsonInvalid">Your JSON is not valid</span>
     </div>
   </form>

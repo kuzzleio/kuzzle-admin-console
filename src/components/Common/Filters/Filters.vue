@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="row filters">
-      <div class="col s12 m12 l12 z-depth-1 open-search" v-show="displayBlockFilter">
+    <div class="row" v-show="displayBlockFilter">
+      <div class="col s12 m12 l8 z-depth-1 open-search">
         <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
@@ -11,62 +11,65 @@
             <div class="col s12">
               <div v-show="tabActive === 'basic'">
                 <basic-filter
-                  :basic-filter="basicFilter"
-                  :sorting-enabled="sortingEnabled"
-                  :available-filters="availableFilters"
-                  :label-search-button="labelSearchButton"
-                  :sorting="sorting"
-                  :set-basic-filter="setBasicFilter"
-                  @filters-basic-search="complexSearch = true">
+                        :basic-filter="basicFilter"
+                        :sorting-enabled="sortingEnabled"
+                        :available-filters="availableFilters"
+                        :label-search-button="labelSearchButton"
+                        :sorting="sorting"
+                        :set-basic-filter="setBasicFilter"
+                        @filters-basic-search="complexSearch = true">
                 </basic-filter>
               </div>
 
               <div v-show="tabActive === 'raw'">
                 <raw-filter
-                  :raw-filter="rawFilter"
-                  :format-from-basic-search="formatFromBasicSearch"
-                  :sorting-enabled="sortingEnabled"
-                  :label-search-button="labelSearchButton"
-                  :format-sort="formatSort"
-                  :basic-filter-form="basicFilterForm">
+                        :raw-filter="rawFilter"
+                        :format-from-basic-search="formatFromBasicSearch"
+                        :sorting-enabled="sortingEnabled"
+                        :label-search-button="labelSearchButton"
+                        :format-sort="formatSort"
+                        :basic-filter-form="basicFilterForm">
                 </raw-filter>
               </div>
             </div>
           </div>
         </tabs>
       </div>
+    </div>
+
+    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l12 complex-search">
+      <div class="row valign-bottom">
+        <div class="col s9 m9 l9">
+          <div class="search-bar">
+            <i class="fa fa-search search"></i>
+            <div class="chip">
+              <span @click="displayBlockFilter = true">{{labelComplexQuery}}</span>
+              <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
+            </div>
+            <a href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
+          </div>
+        </div>
+        <div class="col s3">
+          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
+          <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="row filters">
 
       <quick-filter
-        v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled"
         :search-term="searchTerm"
         @filters-display-block-filter="displayBlockFilter = true">
       </quick-filter>
 
-      <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 m12 l12 complex-search">
-        <div class="row valign-bottom">
-          <div class="col s9 m9 l9">
-            <div class="search-bar">
-              <i class="fa fa-search search"></i>
-              <div class="chip">
-                <span @click="displayBlockFilter = true">{{labelComplexQuery}}</span>
-                <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
-              </div>
-              <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-            </div>
-          </div>
-          <div class="col s3">
-            <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
-            <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
-          </div>
-        </div>
-      </div>
+    </div>
 
-      <div
+    <div
         v-if="displayBlockFilter"
         @click="displayBlockFilter = false"
         class="lean-overlay"
         style="z-index: 90; display: block; opacity: 0;">
-      </div>
     </div>
   </div>
 </template>
@@ -179,6 +182,7 @@
   }
   .search-bar {
     position: relative;
+    height: 48px;
 
     a {
       position: absolute;
@@ -210,6 +214,7 @@
       width: 100%;
       padding-right: 215px;
       box-sizing: border-box;
+      border-bottom: solid 1px #CCC;
     }
   }
 
@@ -220,11 +225,12 @@
   }
 
   .complex-search {
-    margin-top: 8px;
     button {
     }
     .search-bar {
+      border-bottom: solid 1px #CCC;
       .chip {
+        margin-top: 9px;
         margin-left: 30px;
         cursor: pointer;
         i {
@@ -248,12 +254,19 @@
       float: right;
       font-size: 1.3em;
       cursor: pointer;
-      margin-top: 5px;
+      margin-top: 10px;
+      padding: 7px;
       color: grey;
+
+      &:hover {
+        color: #555;
+        background: #EEE;
+        border-radius: 3px;
+      }
     }
 
     .filter-content {
-      margin-bottom: 0;
+      margin-bottom: 20px;
       .dots {
         border-left: 1px dotted rgba(0,0,0,0.26);
         padding-bottom: 5px;

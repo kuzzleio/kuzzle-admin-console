@@ -7,35 +7,33 @@
 
     <collection-tabs></collection-tabs>
 
-    <div class="card-panel">
-      <common-browse
-        item-name="DocumentItem"
-        :collection="collection"
-        :index="index"
-        @create-clicked="createDocument">
+    <common-browse
+      item-name="DocumentItem"
+      :collection="collection"
+      :index="index"
+      @create-clicked="createDocument">
 
-        <div slot="emptySet">
-          <div class="row valign-bottom empty-set">
-            <div class="col s1 offset-s1">
-              <i class="fa fa-6x fa-file-text-o grey-text text-lighten-1" aria-hidden="true"></i>
-            </div>
-            <div class="col s10">
-              <p>
-                You will see <strong>{{collection}}'s</strong> documents here<br/>
-                <em>For the time there is no one created yet</em>
-              </p>
-              <button v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
-                      class="btn btn-small primary waves-effect waves-light">
-                <i class="fa fa-plus-circle left"></i>
-                Create a document
-              </button>
-            </div>
+      <div slot="emptySet" class="card-panel">
+        <div class="row valign-bottom empty-set">
+          <div class="col s1 offset-s1">
+            <i class="fa fa-6x fa-file-text-o grey-text text-lighten-1" aria-hidden="true"></i>
+          </div>
+          <div class="col s10">
+            <p>
+              You will see <strong>{{collection}}'s</strong> documents here<br/>
+              <em>For the time there is no one created yet</em>
+            </p>
+            <button v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
+                    class="btn btn-small primary waves-effect waves-light">
+              <i class="fa fa-plus-circle left"></i>
+              Create a document
+            </button>
           </div>
         </div>
+      </div>
 
-      </common-browse>
+    </common-browse>
 
-    </div>
   </div>
 </template>
 

@@ -1,86 +1,81 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col s12 m10 l8 list-document">
+    <div class="card-panel card-header row-margin-bottom-0">
+      <filters
+        @filters-quick-search="quickSearch"
+        @filters-basic-search="basicSearch"
+        @filters-raw-search="rawSearch"
+        @filters-refresh-search="refreshSearch"
+        :available-filters="availableFilters"
+        :search-term="searchTerm"
+        :raw-filter="rawFilter"
+        :basic-filter="basicFilter"
+        :sorting="sorting"
+        :format-from-basic-search="formatFromBasicSearch"
+        :format-sort="formatSort"
+        :set-basic-filter="setBasicFilter"
+        :basic-filter-form="basicFilterForm">
+      </filters>
+    </div>
 
-        <filters
-          @filters-quick-search="quickSearch"
-          @filters-basic-search="basicSearch"
-          @filters-raw-search="rawSearch"
-          @filters-refresh-search="refreshSearch"
-          :available-filters="availableFilters"
-          :search-term="searchTerm"
-          :raw-filter="rawFilter"
-          :basic-filter="basicFilter"
-          :sorting="sorting"
-          :format-from-basic-search="formatFromBasicSearch"
-          :format-sort="formatSort"
-          :set-basic-filter="setBasicFilter"
-          :basic-filter-form="basicFilterForm">
-        </filters>
-
-
-        <div class="row valign-center empty-set" v-show="!documents.length">
-          <div class="col s2 offset-s1">
-            <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
-          </div>
-          <div class="col s12">
-            <p>
-              There is no result matching your query<br />
-              Please try with other filters.
-            </p>
-            <p>
-              <em>Learn more about filtering syntax on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
-            </p>
-          </div>
+    <div class="card-panel card-body">
+      <div class="row valign-center empty-set" v-show="!documents.length">
+        <div class="col s2 offset-s1">
+          <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
         </div>
-
-        <div class="row actions" v-show="documents.length">
-          <div class="col s6">
-            <button class="btn btn-small waves-effect waves-light left margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
-            <button
-              class="btn btn-small waves-effect waves-light"
-              :class="displayBulkDelete ? 'red' : 'disabled'"
-              :disabled="!displayBulkDelete"
-              @click="$broadcast('modal-open', 'bulk-delete')">
-              <i class="fa fa-minus-circle left"></i>
-              Delete
-            </button>
-          </div>
-          <div class="col s6 right-align">
-            <div v-if="documents.length">
-              <button
-                class="btn btn-small waves-effect waves-light tertiary"
-                @click="dispatchToggle">
-                <i class="fa left"
-                   :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-                ></i>
-                Toggle all
-              </button>
-            </div>
-          </div>
+        <div class="col s12">
+          <p>
+            There is no result matching your query<br />
+            Please try with other filters.
+          </p>
+          <p>
+            <em>Learn more about filtering syntax on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+          </p>
         </div>
-
-        <div class="row" v-show="documents.length">
-          <div class="col s12">
-            <slot v-if="documents.length"></slot>
-          </div>
-        </div>
-
-        <div class="row" v-show="documents.length">
-          <div class="col s12">
-            <pagination
-              @change-page="changePage"
-              :total="totalDocuments"
-              :from="paginationFrom"
-              :size="paginationSize"
-            ></pagination>
-          </div>
-        </div>
-
-
       </div>
 
+      <div class="row actions" v-show="documents.length">
+        <div class="col s6">
+          <button class="btn btn-small waves-effect waves-light left margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+          <button
+                  class="btn btn-small waves-effect waves-light"
+                  :class="displayBulkDelete ? 'red' : 'disabled'"
+                  :disabled="!displayBulkDelete"
+                  @click="$broadcast('modal-open', 'bulk-delete')">
+            <i class="fa fa-minus-circle left"></i>
+            Delete
+          </button>
+        </div>
+        <div class="col s6 right-align">
+          <div v-if="documents.length">
+            <button
+                    class="btn btn-small waves-effect waves-light tertiary"
+                    @click="dispatchToggle">
+              <i class="fa left"
+                 :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+              ></i>
+              Toggle all
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" v-show="documents.length">
+        <div class="col s12">
+          <slot v-if="documents.length"></slot>
+        </div>
+      </div>
+
+      <div class="row" v-show="documents.length">
+      <div class="col s12">
+        <pagination
+                @change-page="changePage"
+                :total="totalDocuments"
+                :from="paginationFrom"
+                :size="paginationSize"
+        ></pagination>
+      </div>
+    </div>
     </div>
 
     <modal id="bulk-delete">
