@@ -2,18 +2,13 @@
   <div class="nav">
     <ul>
       <li :class="{active: isRouteActive('DataCollectionBrowse')}">
-        <a href="#!" v-link="{name: 'DataCollectionBrowse', params: {index: selectedIndex, collection: selectedCollection}}">
+        <a href="#!" v-link="{name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
           Browse
         </a>
       </li>
       <li :class="{active: isRouteActive('DataCollectionWatch')}">
         <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}}">
           Watch
-        </a>
-      </li>
-      <li :class="{active: isRouteActive('DataCollectionSummary')}">
-        <a href="#!" v-link="{name: 'DataCollectionSummary', params: {index: selectedIndex, collection: selectedCollection}}">
-          Summary
         </a>
       </li>
       <li :class="{active: isRouteActive('DataCreateDocument')}">

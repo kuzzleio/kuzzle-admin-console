@@ -50,7 +50,6 @@
 
       <!--<li v-if="isRouteActive('DataCreateCollection')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
-
         <a href="#!"
            v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
           create a collection
@@ -61,14 +60,13 @@
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <a href="#!"
-           v-link="isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataCollectionBrowse', params: {index: selectedIndex, collection: selectedCollection}}">
+           v-link="isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
           {{selectedCollection}}
         </a>
       </li>
 
       <!--<li v-if="isRouteActive('DataCreateDocument')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
-
         <a href="#!"
            v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
           create a document
@@ -83,7 +81,6 @@
           Browse
         </a>
       </li>
-
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionWatch')}"
           v-if="collection && !isRouteActive('DataCreateDocument')">
@@ -91,7 +88,6 @@
           Watch
         </a>
       </li>
-
       <li class="link"
           :class="{'link-active': isRouteActive('DataCollectionSummary')}"
           v-if="collection && !isRouteActive('DataCreateDocument')">
@@ -116,20 +112,16 @@
     }
     ul {
       color: #AAA;
-
       padding: 0;
       margin: 0;
-
       .separator {
         margin-left: 3px;
       }
-
       li {
         display: inline-block;
       }
       a {
         color: #AAA;
-
         &:hover {
           color: #444;
         }
@@ -142,9 +134,8 @@
   import {canSearchIndex} from '../../services/userAuthorization'
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
   import {indexesAndCollections, routeName, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
-
   export default {
-    name: 'DataBreadcrumb',
+    name: 'CommonBreadcrumb',
     methods: {
       canSearchIndex,
       isCollectionRealtime () {
@@ -156,7 +147,6 @@
         if (Array.isArray(routeName)) {
           return routeName.indexOf(this.routeName) >= 0
         }
-
         return this.routeName === routeName
       }
     },

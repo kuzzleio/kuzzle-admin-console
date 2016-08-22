@@ -7,7 +7,7 @@
           <!-- collection browse link -->
           <a href="#!"
              class="fluid-hover"
-             v-link="{name: 'DataCollectionBrowse', params: {index: index, collection: collection}}">
+             v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
             <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
             <span class="name">{{collection}}</span>
           </a>
