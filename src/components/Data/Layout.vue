@@ -35,7 +35,7 @@
   import {canSearchIndex} from '../../services/userAuthorization'
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
   import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
-  import Treeview from './Browse/Treeview'
+  import Treeview from './Leftnav/Treeview'
   import Breadcrumb from './Breadcrumb'
 
   export default {

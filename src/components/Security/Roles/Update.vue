@@ -9,7 +9,7 @@
 </template>
 
 <script>
-  import Create from '../Common/Create'
+  import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
 
   export default {

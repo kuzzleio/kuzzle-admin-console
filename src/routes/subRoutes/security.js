@@ -4,13 +4,13 @@ export default {
   '/users': {
     name: 'SecurityUsersList',
     component (resolve) {
-      require(['../../components/Security/Users/Browse'], resolve)
+      require(['../../components/Security/Users/List'], resolve)
     }
   },
   '/profiles': {
     name: 'SecurityProfilesList',
     component (resolve) {
-      require(['../../components/Security/Profiles/Browse'], resolve)
+      require(['../../components/Security/Profiles/List'], resolve)
     }
   },
   '/profiles/create': {
@@ -28,7 +28,7 @@ export default {
   '/roles': {
     name: 'SecurityRolesList',
     component (resolve) {
-      require(['../../components/Security/Roles/Browse'], resolve)
+      require(['../../components/Security/Roles/List'], resolve)
     }
   },
   '/roles/create': {
