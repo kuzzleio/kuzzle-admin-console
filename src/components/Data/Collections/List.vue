@@ -96,7 +96,7 @@
           </div>
 
           <!-- Not Collection for filter -->
-          <div class="card-panel card-body" v-if="!countCollectionForFilter">
+          <div class="card-panel card-body" v-if="!countCollectionForFilter && filter">
             <div class="row valign-center empty-set">
               <div class="col s2 offset-s1">
                 <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
