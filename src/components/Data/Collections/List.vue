@@ -96,7 +96,7 @@
           </div>
 
           <!-- Not Collection for filter -->
-          <div class="card-panel card-body" v-if="!countCollectionForFilter && filter">
+          <div class="card-panel card-body" v-if="!isCollectionForFilter && filter">
             <div class="row valign-center empty-set">
               <div class="col s2 offset-s1">
                 <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
@@ -204,9 +204,9 @@
       countCollection () {
         return this.collections.realtime.length + this.collections.stored.length
       },
-      countCollectionForFilter () {
-        return this.$options.filters.filterBy(this.collections.stored, this.filter).length ||
-          this.$options.filters.filterBy(this.collections.realtime, this.filter).length
+      isCollectionForFilter () {
+        return this.$options.filters.filterBy(this.collections.stored, this.filter).length > 0 ||
+          this.$options.filters.filterBy(this.collections.realtime, this.filter).length > 0
       }
     },
     watch: {
