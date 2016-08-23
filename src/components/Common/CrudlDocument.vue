@@ -33,8 +33,17 @@
       </div>
 
       <div class="row actions" v-show="documents.length">
-        <div class="col s6">
-          <button class="btn btn-small waves-effect waves-light left margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+        <div class="col s8">
+          <button
+            class="btn btn-small waves-effect waves-light tertiary"
+            @click="dispatchToggle">
+            <i class="fa left"
+               :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+            ></i>
+            Toggle all
+          </button>
+
+          <button class="btn btn-small waves-effect waves-light margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
           <button
                   class="btn btn-small waves-effect waves-light"
                   :class="displayBulkDelete ? 'red' : 'disabled'"
@@ -43,18 +52,6 @@
             <i class="fa fa-minus-circle left"></i>
             Delete
           </button>
-        </div>
-        <div class="col s6 right-align">
-          <div v-if="documents.length">
-            <button
-                    class="btn btn-small waves-effect waves-light tertiary"
-                    @click="dispatchToggle">
-              <i class="fa left"
-                 :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-              ></i>
-              Toggle all
-            </button>
-          </div>
         </div>
       </div>
 
