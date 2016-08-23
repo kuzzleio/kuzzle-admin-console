@@ -140,3 +140,45 @@ describe('getMapping test action', () => {
     ], done)
   })
 })
+
+describe('setPartial', () => {
+  let actions
+
+  beforeEach(() => {
+    actions = actionsInjector({})
+  })
+
+  it('should dispatch SET_PARTIAL_TO_DOCUMENT mutation', (done) => {
+    testAction(actions.setPartial, ['path', 'value'], {}, [
+      {name: 'SET_PARTIAL_TO_DOCUMENT', payload: ['path', 'value']}
+    ], done)
+  })
+})
+
+describe('setNewDocument', () => {
+  let actions
+
+  beforeEach(() => {
+    actions = actionsInjector({})
+  })
+
+  it('should dispatch SET_NEW_DOCUMENT mutation', (done) => {
+    testAction(actions.setNewDocument, ['document'], {}, [
+      {name: 'SET_NEW_DOCUMENT', payload: ['document']}
+    ], done)
+  })
+})
+
+describe('unsetNewDocument', () => {
+  let actions
+
+  beforeEach(() => {
+    actions = actionsInjector({})
+  })
+
+  it('should dispatch UNSET_NEW_DOCUMENT mutation', (done) => {
+    testAction(actions.unsetNewDocument, [], {}, [
+      {name: 'UNSET_NEW_DOCUMENT', payload: []}
+    ], done)
+  })
+})

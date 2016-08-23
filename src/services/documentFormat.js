@@ -5,9 +5,7 @@ export const addAttributeFromPath = (mapping, path, attr, content) => {
     Vue.set(mapping, attr, content)
     return
   }
-
   let splitted = path.split('.').join('.properties.').concat('.properties').split('.')
-
   // Build an object from a path (path: ['a.b.c.d'] value: 'foo' => {a: {properties: {b: {properties: {c: {properties: {d: 'foo'}}}}}}})
   splitted.reduce((prev, curr, index) => {
     if (!splitted[index + 1]) {

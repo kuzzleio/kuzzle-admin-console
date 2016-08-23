@@ -113,13 +113,13 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import JsonForm from '../../Common/JsonForm/JsonForm'
-  import {unsetNewDocument} from '../../../vuex/modules/data/actions'
+  import {setNewDocument, unsetNewDocument, setPartial} from '../../../vuex/modules/data/actions'
   import {newDocument} from '../../../vuex/modules/data/getters'
   import JsonEditor from '../../Common/JsonEditor'
   import Modal from '../../Materialize/Modal'
-  import MSelect from '../../../directives/m-select.directive'
+  import MSelect from '../../../directives/Materialize/m-select.directive'
   import {addAttributeFromPath, getUpdatedSchema} from '../../../services/documentFormat'
-  import {mergeDeep} from '../../../services/objectHelper'
+  import {mergeDeep, formatGeoPoint} from '../../../services/objectHelper'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -146,10 +146,14 @@
         }
       },
       create () {
-        if (this.id) {
-          this.newDocument._id = this.id
+        if (this.viewState === 'code') {
+          let json = this.$refs.jsoneditor.getJson()
+          this.setNewDocument(json)
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, (err, res) => {
+        if (this.id) {
+          this.setPartial('_id', this.id)
+        }
+        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, err => {
           if (err) {
             this.$dispatch('toast', err.message, 'error')
             return
@@ -161,7 +165,9 @@
       switchEditMode () {
         if (this.viewState === 'code') {
           let json = this.$refs.jsoneditor.getJson()
-          mergeDeep(this.mapping, getUpdatedSchema(json).properties)
+          if (json) {
+            mergeDeep(this.mapping, getUpdatedSchema(json).properties)
+          }
           this.viewState = 'form'
           return
         }
@@ -181,7 +187,9 @@
     },
     vuex: {
       actions: {
-        unsetNewDocument
+        setNewDocument,
+        unsetNewDocument,
+        setPartial
       },
       getters: {
         newDocument
@@ -207,23 +215,7 @@
             return
           }
           this.mapping = res.mapping
-
-          // todo put this in service
-          // restructure object if it is a geo_point so it will be interpreted by jsonform component correctly
-          Object.keys(this.mapping).forEach(o => {
-            if (this.mapping[o].type === 'geo_point') {
-              this.mapping[o] = {
-                properties: {
-                  lat: {
-                    type: 'double'
-                  },
-                  lon: {
-                    type: 'double'
-                  }
-                }
-              }
-            }
-          })
+          formatGeoPoint(this.mapping)
         })
       }
     },

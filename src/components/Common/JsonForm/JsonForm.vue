@@ -10,6 +10,7 @@
     </div>
   </fieldset>
 
+  <!-- Root attributes -->
   <div v-if="!isNested(content)" class="input-field">
     <json-form-item :name="name" :full-name="path" :content="content"></json-form-item>
   </div>

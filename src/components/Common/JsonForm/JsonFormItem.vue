@@ -21,7 +21,7 @@
         this.value = this.content.val
         this.updatePartial()
       }
-      this.getType()
+      this.setType()
     },
     data () {
       return {
@@ -34,7 +34,7 @@
       updatePartial () {
         this.setPartial(this.fullName, this.value)
       },
-      getType () {
+      setType () {
         switch (this.content.type) {
           case 'boolean':
             this.type = 'checkbox'
