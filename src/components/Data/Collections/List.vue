@@ -48,7 +48,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="countCollection > 1">
+            <div class="input-field left-align" v-if="collectionCount > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" type="text" tabindex="1" v-model="filter">
             </div>
@@ -67,7 +67,7 @@
           </div>
 
           <!-- No collection view -->
-          <div class="col s12" v-if="canSearchCollection(index) && !countCollection">
+          <div class="col s12" v-if="canSearchCollection(index) && !collectionCount">
             <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
               <div class="card-panel hoverable">
                 <div class="card-content">
@@ -130,8 +130,9 @@
   import CollectionBoxed from '../Collections/Boxed'
   import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
-  import {canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
+  import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
+  import {getCollectionCount, getCollectionsFromTree} from '../../../services/data'
 
   export default {
     name: 'CollectionsList',
@@ -144,6 +145,7 @@
       IndexDropdown
     },
     methods: {
+      canSearchIndex,
       canSearchCollection,
       canCreateCollection
     },
@@ -157,32 +159,22 @@
     },
     watch: {
       'index': function (index) {
-        this.listIndexesAndCollections()
+        if (this.canSearchIndex()) {
+          this.listIndexesAndCollections()
+        }
       }
     },
     ready () {
-      this.listIndexesAndCollections()
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
+      }
     },
     computed: {
-      countCollection () {
-        let count = 0
-        if (this.collections.realtime) {
-          count += this.collections.realtime.length
-        }
-        if (this.collections.stored) {
-          count += this.collections.stored.length
-        }
-        return count
+      collectionCount () {
+        return getCollectionCount(this.collections)
       },
       collections () {
-        let idx = this.indexesAndCollections.filter((index) => {
-          return index.name === this.index
-        })
-        if (!idx.length) {
-          return []
-        }
-        idx = idx[0]
-        return idx.collections
+        return getCollectionsFromTree(this.indexesAndCollections, this.index)
       }
     },
     vuex: {

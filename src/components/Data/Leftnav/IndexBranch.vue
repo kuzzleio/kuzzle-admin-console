@@ -1,10 +1,10 @@
 <template>
   <div :class="{ 'open': open || filter }">
-    <i v-if="collectionCount(indexTree)" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
+    <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
     <a v-link="{name: 'DataIndexSummary', params: {index: indexTree.name}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexTree.name) }">
       <i class="fa fa-database" aria-hidden="true"></i>
-      {{{indexTree.name | highlight filter}}} ({{collectionCount(indexTree)}})
+      {{{indexTree.name | highlight filter}}} ({{collectionCount}})
     </a>
     <ul class="collections">
       <li v-for="collectionTree in indexTree.collections.stored | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
@@ -29,6 +29,7 @@
 
 <script>
 import { highlight } from '../../../filters/highlight.filter'
+import { getCollectionCount } from '../../../services/data'
 
 export default {
   props: {
@@ -46,6 +47,14 @@ export default {
   filters: {
     highlight
   },
+  computed: {
+    collectionCount () {
+      if (!this.indexTree.collections) {
+        return 0
+      }
+      return getCollectionCount(this.indexTree.collections)
+    }
+  },
   methods: {
 
     toggleBranch () {
@@ -61,23 +70,6 @@ export default {
         default:
           return 'DataDocumentsList'
       }
-    },
-    collectionCount (index) {
-      let count = 0
-
-      if (!index.collections) {
-        return 0
-      }
-
-      if (index.collections.stored) {
-        count += index.collections.stored.length
-      }
-
-      if (index.collections.realtime) {
-        count += index.collections.realtime.length
-      }
-
-      return count
     },
     isTreeOpen (currentIndex, indexName) {
       if (currentIndex === indexName) {
