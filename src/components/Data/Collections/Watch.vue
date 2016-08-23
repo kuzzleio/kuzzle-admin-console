@@ -46,24 +46,22 @@
       </div>
 
       <div v-else>
-        <div class="card-panel card-header row-margin-bottom-0">
-          <filters
-            @filters-basic-search="basicSearch"
-            @filters-raw-search="rawSearch"
-            @filters-refresh-search="refreshSearch"
-            label-search-button="Apply filters"
-            label-complex-query="Quick search disabled, click to open filter builder"
-            :available-filters="availableFilters"
-            :quick-filter-enabled="false"
-            :sorting-enabled="false"
-            :raw-filter="rawFilter"
-            :basic-filter="basicFilter"
-            :format-from-basic-search="formatFromBasicSearch"
-            :format-sort="formatSort"
-            :set-basic-filter="setBasicFilter"
-            :basic-filter-form="basicFilterForm">
-          </filters>
-        </div>
+        <filters
+          @filters-basic-search="basicSearch"
+          @filters-raw-search="rawSearch"
+          @filters-refresh-search="refreshSearch"
+          label-search-button="Apply filters"
+          label-complex-query="Quick search disabled, click to open filter builder"
+          :available-filters="availableFilters"
+          :quick-filter-enabled="false"
+          :sorting-enabled="false"
+          :raw-filter="rawFilter"
+          :basic-filter="basicFilter"
+          :format-from-basic-search="formatFromBasicSearch"
+          :format-sort="formatSort"
+          :set-basic-filter="setBasicFilter"
+          :basic-filter-form="basicFilterForm">
+        </filters>
 
         <div class="card-panel card-body" v-show="subscribed || notifications.length">
           <div class="row realtime margin-bottom-0">

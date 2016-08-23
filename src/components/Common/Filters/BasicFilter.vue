@@ -35,7 +35,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row button-or">
           <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
             <i class="fa fa-plus left"></i>Or
           </a>

@@ -272,6 +272,9 @@
         padding-right: 10px;
         margin-left: 10px;
       }
+      .button-or {
+        margin-bottom: 10px;
+      }
       .block-and {
         i.remove-filter {
           margin-top: 25px;
@@ -281,7 +284,7 @@
 
       }
       .block-sort {
-        margin-top: 20px;
+        margin-top: 15px;
         margin-bottom: 0;
       }
       .block-content {
