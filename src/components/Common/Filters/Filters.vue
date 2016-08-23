@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="card-panel card-header row-margin-bottom-0">
-      <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="row filters">
+    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header row-margin-bottom-0">
+      <div class="row filters">
         <quick-filter
           :search-term="searchTerm"
           :display-block-filter="displayBlockFilter"
@@ -10,20 +10,20 @@
       </div>
     </div>
 
-    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="col s12 complex-search card-panel row-margin-bottom-0">
-      <div class="row valign-bottom">
-        <div class="col s9">
+    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header row-margin-bottom-0 filters">
+      <div class="row">
+        <div class="col s4">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
-            <div @click="displayBlockFilter = true" class="chip">
-              <span>{{labelComplexQuery}}</span>
+            <div class="chip">
+              <span class="label-chip" @click.prevent="displayBlockFilter = true">{{labelComplexQuery}}</span>
               <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
             </div>
             <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
             <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
           </div>
         </div>
-        <div class="col s3">
+        <div class="col s3 actions-quicksearch">
           <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
           <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
         </div>
@@ -31,6 +31,7 @@
     </div>
 
     <div class="row card-panel row-margin-bottom-0 open-search" v-show="displayBlockFilter">
+      <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
       <div class="col s12">
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
@@ -107,7 +108,7 @@
       setBasicFilter: Function,
       basicFilterForm: Object,
       searchTerm: String,
-      sorting: Array,
+      sorting: Object,
       formatFromBasicSearch: Function,
       formatSort: Function
     },
@@ -163,7 +164,9 @@
 
 <style lang="scss" rel="stylesheet/scss">
   .filters {
-    position: relative;
+    .actions-quicksearch {
+      transform: translateY(50%);
+    }
   }
   .search-bar {
     position: relative;
@@ -218,13 +221,16 @@
         margin-top: 9px;
         margin-left: 30px;
         cursor: pointer;
+        .label-chip {
+          display: inline-block;
+          padding-right: 10px;
+        }
         i {
           position: relative;
           cursor: pointer;
           float: right;
           font-size: 13px;
           line-height: 32px;
-          padding-left: 8px;
         }
       }
     }
@@ -235,14 +241,16 @@
     padding-top: 0;
     padding-bottom: 0;
     margin-top: 0;
+    position: relative;
 
     i.close {
       float: right;
       font-size: 1.3em;
       cursor: pointer;
-      margin-top: 10px;
-      padding: 7px;
       color: grey;
+      position: absolute;
+      top: 10px;
+      right: 16px;
 
       &:hover {
         color: #555;

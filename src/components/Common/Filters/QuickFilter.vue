@@ -1,7 +1,7 @@
 <template>
   <div class="row">
-    <form class="valign-bottom">
-      <div class="col s9">
+    <form class="">
+      <div class="col s4">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
           <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
@@ -9,7 +9,7 @@
           <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>
       </div>
-      <div class="col s3">
+      <div class="col s3 actions-quicksearch">
         <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="quickSearch">Search</button>
         <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">reset</button>
       </div>

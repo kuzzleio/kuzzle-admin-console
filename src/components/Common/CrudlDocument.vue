@@ -151,7 +151,7 @@
       searchTerm: String,
       rawFilter: String,
       basicFilter: Array,
-      sorting: String,
+      sorting: Object,
       availableFilters: Object
     },
     vuex: {
