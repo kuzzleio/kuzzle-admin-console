@@ -1,6 +1,6 @@
 import { mutations } from '../../../../../src/vuex/modules/data/store'
 
-const { RECEIVE_COLLECTIONS,
+const {
   ADD_INDEX,
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
@@ -8,16 +8,6 @@ const { RECEIVE_COLLECTIONS,
   RECEIVE_MAPPING,
   SET_PARTIAL_TO_DOCUMENT,
   UNSET_NEW_DOCUMENT } = mutations
-
-describe('RECEIVE_COLLECTIONS test', () => {
-  it('should set the collection list', () => {
-    let state = {collections: null}
-
-    RECEIVE_COLLECTIONS(state, {stored: {foo: 'bar'}, realtime: {bar: 'foo'}})
-    expect(state.collections.stored.foo).to.equals('bar')
-    expect(state.collections.realtime.bar).to.equals('foo')
-  })
-})
 
 describe('ADD_INDEX test', () => {
   it('should add the index with an empty collection set', () => {
@@ -37,28 +27,42 @@ describe('ADD_INDEX test', () => {
 describe('ADD_STORED_COLLECTION test', () => {
   it('should add a stored collection', () => {
     let state = {
-      indexesAndCollections: [{name: 'oof'}, {name: 'foo'}],
-      collections: {
-        stored: [],
-        realtime: []
-      }
+      indexesAndCollections: [
+        {
+          name: 'oof'
+        },
+        {
+          name: 'foo',
+          collections: {
+            stored: [],
+            realtime: []
+          }
+        }
+      ]
     }
 
     ADD_STORED_COLLECTION(state, 'foo', 'bar')
-    expect(state.collections).to.deep.equal({stored: ['bar'], realtime: []})
+    expect(state.indexesAndCollections[1].collections).to.deep.equal({stored: ['bar'], realtime: []})
   })
 
   it('should add a realtime collection', () => {
     let state = {
-      indexesAndCollections: [{name: 'oof'}, {name: 'foo'}],
-      collections: {
-        stored: [],
-        realtime: []
-      }
+      indexesAndCollections: [
+        {
+          name: 'oof'
+        },
+        {
+          name: 'foo',
+          collections: {
+            stored: [],
+            realtime: []
+          }
+        }
+      ]
     }
 
     ADD_REALTIME_COLLECTION(state, 'foo', 'bar')
-    expect(state.collections).to.deep.equal({stored: [], realtime: ['bar']})
+    expect(state.indexesAndCollections[1].collections).to.deep.equal({stored: [], realtime: ['bar']})
   })
 })
 

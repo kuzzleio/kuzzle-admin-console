@@ -3,7 +3,7 @@ import Promise from 'bluebird'
 import {
   RECEIVE_MAPPING,
   RECEIVE_INDEXES_COLLECTIONS,
-  RECEIVE_COLLECTIONS,
+  // RECEIVE_COLLECTIONS,
   ADD_INDEX,
   SET_PARTIAL_TO_DOCUMENT,
   UNSET_NEW_DOCUMENT
@@ -76,16 +76,16 @@ export const getMapping = (store, index, collection) => {
     store.dispatch(RECEIVE_MAPPING, res.mapping)
   })
 }
-
-export const getCollectionsFromIndex = (store, index) => {
-  kuzzle.listCollections(index, (err, result) => {
-    if (err) {
-      return
-    }
-    addLocalRealtimeCollections(result, index)
-    store.dispatch(RECEIVE_COLLECTIONS, result)
-  })
-}
+// 
+// export const getCollectionsFromIndex = (store, index) => {
+//   kuzzle.listCollections(index, (err, result) => {
+//     if (err) {
+//       return
+//     }
+//     addLocalRealtimeCollections(result, index)
+//     // store.dispatch(RECEIVE_COLLECTIONS, result)
+//   })
+// }
 
 export const createIndex = (store, index) => {
   return new Promise((resolve, reject) => {

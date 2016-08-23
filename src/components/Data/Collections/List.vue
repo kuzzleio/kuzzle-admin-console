@@ -128,8 +128,8 @@
   import Headline from '../../Materialize/Headline'
   import IndexDropdown from './Dropdown'
   import CollectionBoxed from '../Collections/Boxed'
-  import {getCollectionsFromIndex} from '../../../vuex/modules/data/actions'
-  import {collections} from '../../../vuex/modules/data/getters'
+  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
+  import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
 
@@ -157,27 +157,40 @@
     },
     watch: {
       'index': function (index) {
-        if (this.canSearchCollection(index)) {
-          this.getCollectionsFromIndex(index)
-        }
+        this.listIndexesAndCollections()
       }
     },
     ready () {
-      if (this.canSearchCollection(this.index)) {
-        this.getCollectionsFromIndex(this.index)
-      }
+      this.listIndexesAndCollections()
     },
     computed: {
       countCollection () {
-        return this.collections.realtime.length + this.collections.stored.length
+        let count = 0
+        if (this.collections.realtime) {
+          count += this.collections.realtime.length
+        }
+        if (this.collections.stored) {
+          count += this.collections.stored.length
+        }
+        return count
+      },
+      collections () {
+        let idx = this.indexesAndCollections.filter((index) => {
+          return index.name === this.index
+        })
+        if (!idx.length) {
+          return []
+        }
+        idx = idx[0]
+        return idx.collections
       }
     },
     vuex: {
       actions: {
-        getCollectionsFromIndex
+        listIndexesAndCollections
       },
       getters: {
-        collections
+        indexesAndCollections
       }
     }
   }
