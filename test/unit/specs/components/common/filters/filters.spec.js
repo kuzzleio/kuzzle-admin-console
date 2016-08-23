@@ -103,17 +103,6 @@ describe('Filter main component', () => {
       expect(vm.$refs.filter.$dispatch.calledWith('filters-raw-search', {})).to.be.equal(true)
     })
 
-    it('should hide block filter on escape key', () => {
-      let evt = {
-        keyCode: 27
-      }
-      vm.$refs.filter.displayBlockFilter = true
-
-      vm.$refs.filter.handleEsc(evt)
-
-      expect(vm.$refs.filter.displayBlockFilter).to.be.not.ok
-    })
-
     it('should dispatch event on refreshSearch', () => {
       vm.$refs.filter.refreshSearch()
 

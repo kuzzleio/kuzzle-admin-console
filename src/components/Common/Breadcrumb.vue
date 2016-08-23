@@ -141,12 +141,13 @@
       isCollectionRealtime () {
         return this.indexesAndCollections.filter((index) => {
           return (index.name === this.selectedIndex && index.collections.realtime.indexOf(this.selectedCollection) >= 0)
-        }).length
+        }).length > 0
       },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
           return routeName.indexOf(this.routeName) >= 0
         }
+
         return this.routeName === routeName
       }
     },

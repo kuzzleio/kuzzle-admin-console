@@ -1,5 +1,6 @@
 import store from '../../../../../../src/vuex/store'
 import Vue from 'vue'
+import { mockedComponent } from '../../../helper'
 
 let CreateInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/CreateOrUpdate')
 let Create
@@ -21,6 +22,9 @@ describe('create document tests', () => {
     unsetNewDocumentSpy = sandbox.stub()
 
     Create = CreateInjector({
+      '../Collections/Tabs.vue': mockedComponent,
+      '../Collections/Dropdown': mockedComponent,
+      '../../Materialize/Headline': mockedComponent,
       '../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
           createDocument: (doc, cb) => {
@@ -40,8 +44,12 @@ describe('create document tests', () => {
         }),
         refreshIndex: refreshIndexSpy
       },
+      '../../Common/JsonForm/JsonForm': mockedComponent,
       '../../../vuex/modules/data/actions': {
         unsetNewDocument: unsetNewDocumentSpy
+      },
+      '../../../vuex/modules/data/getters': {
+        newDocument: sandbox.stub().returns(42)
       }
     })
 

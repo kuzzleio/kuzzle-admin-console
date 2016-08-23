@@ -1,86 +1,121 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import DataRoutes from '../../../../../src/routes/subRoutes/data'
-import Breadcrumb from '../../../../../src/components/Common/Breadcrumb'
+import store from '../../../../../src/vuex/store'
+
+let BreadcrumbInjector = require('!!vue?inject!../../../../../src/components/Common/Breadcrumb')
+let sandbox = sinon.sandbox.create()
+
+Vue.use(VueRouter)
 
 describe('Breadcrumb tests', () => {
-  describe('Breadcrumb layout display', () => {
-    let router
+  let router
+  let Breadcrumb
+  let indexesAndCollections = sandbox.stub().returns([])
+  let listIndexesAndCollections = sandbox.stub()
+  let routeName = sandbox.stub().returns()
+  let selectedIndex = sandbox.stub().returns()
+  let selectedCollection = sandbox.stub().returns()
+  let canSearchIndex = sandbox.stub().returns(true)
 
-    beforeEach(() => {
-      Vue.use(VueRouter)
-
-      const App = Vue.extend({
-        template: '<div><breadcrumb ' +
-          ':route-name="routeName" ' +
-          ':index="index" ' +
-          ':collection="collection" ' +
-          ':tree="tree" ' +
-          'v-ref:breadcrumb>' +
-          '</breadcrumb></div>',
-        components: { Breadcrumb },
-        data () {
-          return {
-            tree: [{
-              name: 'myindex',
-              collections: {
-                realtime: ['realtimeCollection'],
-                stored: ['storedCollection']
-              }
-            }],
-            index: 'myindex',
-            collection: 'realtimeCollection',
-            routeName: 'foo'
-          }
-        },
-        replace: false
-      })
-
-      router = new VueRouter({ abstract: true })
-      router.map(DataRoutes)
-      router.start(App, 'body')
+  const mockInjector = () => {
+    Breadcrumb = BreadcrumbInjector({
+      '../../services/userAuthorization': {
+        canSearchIndex
+      },
+      '../../vuex/modules/data/actions': {
+        listIndexesAndCollections
+      },
+      '../../vuex/modules/data/getters': {
+        indexesAndCollections,
+        routeName,
+        selectedIndex,
+        selectedCollection
+      }
     })
 
+    const App = Vue.extend({
+      template: '<div><breadcrumb v-ref:breadcrumb></breadcrumb></div>',
+      components: { Breadcrumb },
+      replace: false,
+      store
+    })
+
+    router = new VueRouter({ abstract: true })
+    router.map(DataRoutes)
+    router.start(App, 'body')
+  }
+
+  before(() => mockInjector())
+  afterEach(() => sandbox.restore())
+
+  describe('Methods', () => {
     describe('isCollectionRealtime', () => {
       it('should be ok if current index is on the realtime tree', () => {
-        router.app.$refs.breadcrumb.index = 'myindex'
-        router.app.$refs.breadcrumb.collection = 'realtimeCollection'
+        selectedIndex = sandbox.stub().returns('myindex')
+        selectedCollection = sandbox.stub().returns('realtimeCollection')
+        indexesAndCollections = sandbox.stub().returns([{name: 'myindex', collections: {realtime: ['realtimeCollection']}}])
+        mockInjector()
 
-        let isCollectionRealtime = router.app.$refs.breadcrumb.isCollectionRealtime()
-
-        expect(isCollectionRealtime).to.be.ok
+        expect(router.app.$refs.breadcrumb.isCollectionRealtime()).to.be.equal(true)
       })
 
       it('should be not ok if current index is on the stored tree', () => {
-        router.app.$refs.breadcrumb.index = 'myindex'
-        router.app.$refs.breadcrumb.collection = 'storedCollection'
+        selectedIndex = sandbox.stub().returns('myindex')
+        selectedCollection = sandbox.stub().returns('storeCollection')
+        indexesAndCollections = sandbox.stub().returns([{name: 'myindex', collections: {realtime: ['realtimeCollection']}}])
+        mockInjector()
 
-        let isCollectionRealtime = router.app.$refs.breadcrumb.isCollectionRealtime()
-
-        expect(isCollectionRealtime).to.be.not.ok
+        expect(router.app.$refs.breadcrumb.isCollectionRealtime()).to.be.equal(false)
       })
     })
 
     describe('isRouteActive', () => {
       it('should be ok if the route name match with current route', () => {
-        let routeActive = router.app.$refs.breadcrumb.isRouteActive('foo')
-        expect(routeActive).to.be.ok
+        routeName = sandbox.stub().returns('foo')
+        mockInjector()
+
+        expect(router.app.$refs.breadcrumb.isRouteActive('foo')).to.be.equal(true)
       })
 
       it('should be ok if one route match with current route', () => {
-        let routeActive = router.app.$refs.breadcrumb.isRouteActive(['foo', 'bar'])
-        expect(routeActive).to.be.ok
+        routeName = sandbox.stub().returns('foo')
+        mockInjector()
+
+        expect(router.app.$refs.breadcrumb.isRouteActive(['foo', 'bar'])).to.be.equal(true)
       })
 
       it('should be not ok if the route name does not match with current route', () => {
-        let routeActive = router.app.$refs.breadcrumb.isRouteActive('bar')
-        expect(routeActive).to.be.not.ok
+        routeName = sandbox.stub().returns('foo')
+        mockInjector()
+
+        expect(router.app.$refs.breadcrumb.isRouteActive('bar')).to.be.equal(false)
       })
 
       it('should be not ok if no route match with current route', () => {
-        let routeActive = router.app.$refs.breadcrumb.isRouteActive(['bar', 'baz'])
-        expect(routeActive).to.be.not.ok
+        routeName = sandbox.stub().returns('foo')
+        mockInjector()
+
+        expect(router.app.$refs.breadcrumb.isRouteActive(['bar', 'baz'])).to.be.equal(false)
       })
+    })
+  })
+
+  describe('Ready', () => {
+    it('should call listIndexesAndCollections if the user canSearchIndex', () => {
+      canSearchIndex = sandbox.stub().returns(true)
+      listIndexesAndCollections = sandbox.stub()
+      mockInjector()
+
+      expect(listIndexesAndCollections.callCount).be.equal(1)
+    })
+
+    it('should not call listIndexesAndCollections if user can\'t search', () => {
+      canSearchIndex = sandbox.stub().returns(false)
+      listIndexesAndCollections = sandbox.stub()
+      mockInjector()
+
+      expect(listIndexesAndCollections.callCount).be.equal(0)
     })
   })
 })

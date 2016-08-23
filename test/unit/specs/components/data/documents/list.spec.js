@@ -11,8 +11,9 @@ describe('Browse documents', () => {
 
   before(() => {
     Browse = BrowseInjector({
+      '../Collections/Tabs': mockedComponent,
+      '../../Common/List': mockedComponent,
       '../../Materialize/Headline': mockedComponent,
-      '../../Common/Browse': mockedComponent,
       '../Collections/Dropdown': mockedComponent
     })
 

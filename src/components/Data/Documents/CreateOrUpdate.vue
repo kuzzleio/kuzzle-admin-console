@@ -36,8 +36,8 @@
 
         <div class="row">
           <div class="col s6">
-            <button type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
             <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+            <button type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
           </div>
         </div>
 
