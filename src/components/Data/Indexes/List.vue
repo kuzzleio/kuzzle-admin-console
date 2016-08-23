@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row list">
           <!-- Not allowed -->
           <div class="col s12" v-if="!canSearchIndex()">
             <div class="card-panel unauthorized">
@@ -49,11 +49,26 @@
             </a>
           </div>
 
+          <!-- No index for filter -->
+          <div class="card-panel card-body" v-if="!countIndexForFilter">
+            <div class="row valign-center empty-set">
+              <div class="col s2 offset-s1">
+                <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
+              </div>
+              <div class="col s12">
+                <p>
+                  There is no index matching your filter.<br />
+                  Please try with other filter.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- Index listing -->
           <index-boxed
             :index="index.name"
-            v-if="canSearchIndex() && (!filter || index.name.indexOf(filter) >= 0)"
-            v-for="index in indexesAndCollections | orderBy 'name'">
+            v-if="canSearchIndex()"
+            v-for="index in indexesAndCollections | filterBy filter in 'name' | orderBy 'name'">
           </index-boxed>
 
           <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
@@ -80,6 +95,9 @@
       margin-bottom: 0;
     }
   }
+  .list {
+    margin-top: 25px;
+  }
 </style>
 
 <script>
@@ -105,22 +123,27 @@
       canSearchIndex,
       canCreateIndex
     },
-    data () {
-      return {
-        filter: ''
-      }
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
-      }
-    },
     vuex: {
       actions: {
         listIndexesAndCollections
       },
       getters: {
         indexesAndCollections
+      }
+    },
+    data () {
+      return {
+        filter: ''
+      }
+    },
+    computed: {
+      countIndexForFilter () {
+        return this.$options.filters.filterBy(this.indexesAndCollections, this.filter, 'name').length
+      }
+    },
+    ready () {
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
       }
     }
   }

@@ -55,7 +55,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row list">
           <!-- Not allowed -->
           <div class="card-panel" v-if="!canSearchCollection(index)">
             <div class="row valign-bottom empty-set empty-set-condensed">
@@ -73,6 +73,7 @@
             </div>
           </div>
 
+          <!-- Not Collection -->
           <div class="card-panel" v-if="canSearchCollection(index) && !countCollection">
             <div class="row valign-bottom empty-set empty-set-condensed">
               <div class="col s1 offset-s1">
@@ -86,7 +87,7 @@
                 <button v-link="{name: 'DataCreateCollection', params: {index: index}}"
                         v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                         :class="{unauthorized: !canCreateCollection(index)}"
-                        class="btn btn-small primary waves-effect waves-light">
+                        class="btn primary waves-effect waves-light">
                   <i class="fa fa-plus-circle left"></i>
                   Create a collection
                 </button>
@@ -94,18 +95,33 @@
             </div>
           </div>
 
+          <!-- Not Collection for filter -->
+          <div class="card-panel card-body" v-if="!countCollectionForFilter">
+            <div class="row valign-center empty-set">
+              <div class="col s2 offset-s1">
+                <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
+              </div>
+              <div class="col s12">
+                <p>
+                  There is no collection matching your filter.<br />
+                  Please try with other filter.
+                </p>
+              </div>
+            </div>
+          </div>
+
 
           <collection-boxed
-              v-for="collection in collections.stored | orderBy 1"
-              v-if="canSearchCollection(index) && (!filter || (filter && collection.includes(filter)))"
+              v-for="collection in collections.stored | filterBy filter | orderBy 1"
+              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="false">
           </collection-boxed>
 
           <collection-boxed
-              v-for="collection in collections.realtime | orderBy 1"
-              v-if="canSearchCollection(index) && (!filter || (filter && collection.includes(filter)))"
+              v-for="collection in collections.realtime | filterBy filter | orderBy 1"
+              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="true">
@@ -139,6 +155,9 @@
       margin-bottom: 0;
     }
   }
+  .list {
+    margin-top: 25px;
+  }
 </style>
 
 
@@ -168,9 +187,26 @@
     directives: {
       Title
     },
+    vuex: {
+      actions: {
+        getCollectionsFromIndex
+      },
+      getters: {
+        collections
+      }
+    },
     data () {
       return {
         filter: ''
+      }
+    },
+    computed: {
+      countCollection () {
+        return this.collections.realtime.length + this.collections.stored.length
+      },
+      countCollectionForFilter () {
+        return this.$options.filters.filterBy(this.collections.stored, this.filter).length ||
+          this.$options.filters.filterBy(this.collections.realtime, this.filter).length
       }
     },
     watch: {
@@ -183,19 +219,6 @@
     ready () {
       if (this.canSearchCollection(this.index)) {
         this.getCollectionsFromIndex(this.index)
-      }
-    },
-    computed: {
-      countCollection () {
-        return this.collections.realtime.length + this.collections.stored.length
-      }
-    },
-    vuex: {
-      actions: {
-        getCollectionsFromIndex
-      },
-      getters: {
-        collections
       }
     }
   }
