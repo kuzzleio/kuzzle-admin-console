@@ -7,6 +7,7 @@ const { RECEIVE_COLLECTIONS,
   RECEIVE_INDEXES_COLLECTIONS,
   RECEIVE_MAPPING,
   SET_PARTIAL_TO_DOCUMENT,
+  SET_NEW_DOCUMENT,
   UNSET_NEW_DOCUMENT } = mutations
 
 describe('RECEIVE_COLLECTIONS test', () => {
@@ -88,6 +89,15 @@ describe('SET_PARTIAL_TO_DOCUMENT test', () => {
     expect(state.newDocument).to.deep.equals({foo: {bar: 'baz'}})
     SET_PARTIAL_TO_DOCUMENT(state, 'oof', 'barr')
     expect(state.newDocument).to.deep.equals({foo: {bar: 'baz'}, oof: 'barr'})
+  })
+})
+
+describe('SET_NEW_DOCUMENT test', () => {
+  it('should set a new document', () => {
+    let state = {newDocument: {}}
+
+    SET_NEW_DOCUMENT(state, {foo: {bar: 'baz'}})
+    expect(state.newDocument).to.deep.equals({foo: {bar: 'baz'}})
   })
 })
 

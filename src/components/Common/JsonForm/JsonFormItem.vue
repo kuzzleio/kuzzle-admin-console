@@ -1,6 +1,8 @@
 <template>
-  <input :id="name" type="text" name="collection" v-model="value" @input="updatePartial" />
-  <label :for="name">{{name}}</label>
+  <div class="row input-field">
+    <input :id="name" :type="type" name="collection" v-model="value" @input="updatePartial" step="0.1"/>
+    <label :for="name">{{name}}</label>
+  </div>
 </template>
 
 <script>
@@ -11,17 +13,44 @@
     props: {
       name: String,
       content: Object,
-      fullName: String
+      fullName: String,
+      defaultValue: String
+    },
+    ready () {
+      if (this.content.val) {
+        this.value = this.content.val
+        this.updatePartial()
+      }
+      this.setType()
     },
     data () {
       return {
         value: '',
-        partial: {}
+        partial: {},
+        type: 'text'
       }
     },
     methods: {
       updatePartial () {
         this.setPartial(this.fullName, this.value)
+      },
+      setType () {
+        switch (this.content.type) {
+          case 'boolean':
+            this.type = 'checkbox'
+            break
+          case 'integer':
+          case 'long':
+          case 'short':
+          case 'byte':
+          case 'double':
+          case 'float':
+            this.type = 'number'
+            break
+          default:
+            this.type = 'text'
+            break
+        }
       }
     },
     vuex: {
