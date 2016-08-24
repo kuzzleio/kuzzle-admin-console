@@ -23,10 +23,12 @@
 
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
-          <div class="col s6">
-            <div class="input-field">
-              <input id="id" type="text" name="collection" v-model="id"/>
-              <label for="id">Document identifier (optional)</label>
+          <div class="row">
+            <div class="col s6">
+              <div class="input-field">
+                <input id="id" type="text" name="collection" v-model="id"/>
+                <label for="id">Document identifier (optional)</label>
+              </div>
             </div>
           </div>
 
@@ -126,6 +128,14 @@
       position: absolute;
       top: -27px;
       font-family: "Roboto", Arial, sans-serif;
+
+      a {
+        margin-left: 10px;
+        &.btn-tiny {
+          padding: 0;
+          height: 37px;
+        }
+      }
     }
     fieldset {
       border-left: solid 3px #EEE;
