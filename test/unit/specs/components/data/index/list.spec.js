@@ -8,7 +8,7 @@ let sandbox = sinon.sandbox.create()
 let vm
 let $vm
 
-describe.only('List indexes tests', () => {
+describe('List indexes tests', () => {
   let listIndexesAndCollections = sandbox.stub()
   let indexesAndCollections = sandbox.stub().returns([])
   let canSearchIndex = sandbox.stub().returns(true)
