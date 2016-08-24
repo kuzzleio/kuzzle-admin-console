@@ -196,14 +196,17 @@
         if (this.id) {
           this.setPartial('_id', this.id)
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, err => {
-          if (err) {
-            this.$dispatch('toast', err.message, 'error')
-            return
-          }
-          kuzzle.refreshIndex(this.index)
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        })
+
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .createDocumentPromise(this.newDocument)
+          .then(() => {
+            kuzzle.refreshIndex(this.index)
+            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          })
+          .catch((e) => {
+            this.$dispatch('toast', e.message, 'error')
+          })
       },
       switchEditMode () {
         if (this.viewState === 'code') {
