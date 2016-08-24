@@ -21,7 +21,7 @@
           <div class="col s10">
             <p>
               There are no presisted documents in here because the collection <strong>{{collection}}</strong> is currently realtime-only.<br />
-              <em>You can click edit the collection and persist it.</em>
+              <em>You can edit the collection and persist it.</em>
             </p>
             <button v-link="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light">
