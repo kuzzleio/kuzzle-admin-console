@@ -24,7 +24,7 @@
         <div class="col s12">
           <p>
             There is no result matching your query<br />
-            Please try with other filters.
+            Please try with another filters.
           </p>
           <p>
             <em>Learn more about filtering syntax on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
@@ -91,7 +91,7 @@
     </modal>
 
     <modal id="single-delete">
-      <h4>Users deletion</h4>
+      <h4>Delete user</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
