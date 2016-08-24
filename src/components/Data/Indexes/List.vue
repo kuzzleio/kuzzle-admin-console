@@ -43,7 +43,7 @@
              @click.prevent="$broadcast('modal-open', 'index-create')">
               <div class="card-panel hoverable">
                 <div class="card-content">
-                    <em>There is no index yet. You may want to create a new one ?</em>
+                    <em>There is currently no index in your database. You may want to create one.</em>
                 </div>
               </div>
             </a>
@@ -58,7 +58,7 @@
               <div class="col s12">
                 <p>
                   There is no index matching your filter.<br />
-                  Please try with other filter.
+                  Please try with another one.
                 </p>
               </div>
             </div>

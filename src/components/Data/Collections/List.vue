@@ -81,8 +81,8 @@
               </div>
               <div class="col s9">
                 <p>
-                  You will see <strong>{{index}}'s</strong> collections here<br/>
-                  <em>For the time there is no one created yet</em>
+                  Here, you'll see the collections in <strong>{{index}}</strong>. <br/>
+                  <em>There are currently no collection here.</em>
                 </p>
                 <button v-link="{name: 'DataCreateCollection', params: {index: index}}"
                         v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
@@ -104,7 +104,7 @@
               <div class="col s12">
                 <p>
                   There is no collection matching your filter.<br />
-                  Please try with other filter.
+                  Please try with another one.
                 </p>
               </div>
             </div>
