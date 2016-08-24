@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header row-margin-bottom-0">
-      <div class="row filters">
+    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header">
+      <div class="row margin-bottom-0 filters">
         <quick-filter
           :search-term="searchTerm"
           :display-block-filter="displayBlockFilter"
@@ -10,8 +10,8 @@
       </div>
     </div>
 
-    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header row-margin-bottom-0 filters">
-      <div class="row">
+    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header filters">
+      <div class="row margin-bottom-0">
         <div class="col s4">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div class="row card-panel row-margin-bottom-0 open-search" v-show="displayBlockFilter">
+    <div class="row card-panel open-search" v-show="displayBlockFilter">
       <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
       <div class="col s12">
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
@@ -311,16 +311,8 @@
       }
     }
 
-    input {
-      height: 2rem;
-    }
-
     .select-wrapper span.caret {
       top: 10px
-    }
-
-    .select-wrapper input.select-dropdown {
-      height: 2rem;
     }
   }
   .pre_ace, .ace_editor {
