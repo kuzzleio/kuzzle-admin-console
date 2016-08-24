@@ -101,13 +101,13 @@
 </style>
 
 <script>
+  import Headline from '../../Materialize/Headline'
+  import ModalCreate from './ModalCreate'
+  import IndexBoxed from './Boxed'
+  import Title from '../../../directives/title.directive'
   import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canCreateIndex} from '../../../services/userAuthorization'
-  import Headline from '../../Materialize/Headline.vue'
-  import ModalCreate from './ModalCreate'
-  import IndexBoxed from './Boxed.vue'
-  import Title from '../../../directives/title.directive'
 
   export default {
     name: 'IndexesList',

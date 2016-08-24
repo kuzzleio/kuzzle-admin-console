@@ -13,19 +13,19 @@ Something like `security-create::create`, `filter-raw::search` or `crudl::refres
 
 #### How to test ready in a component
 ```
-document.body.insertAdjacentHTML('afterbegin', '<app></app>')
+document.body.insertAdjacentHTML('afterbegin', '<body></body>')
 let vm = new Vue({
     template: '<div><my-component v-ref:component"></my-component></div>',
     components: {
       MyComponent
     }
-}).$mount('app')
+}).$mount('body')
 ```
-The `ready` is triggerd with `mount('app')`. You can also trigger event destroy with `vm.$refs.component.$destroy`.
+The `ready` is triggerd with `mount('body')`. You can also trigger event destroy with `vm.$refs.component.$destroy`.
 
 #### How to test with $router in ready
 ```
-document.body.insertAdjacentHTML('afterbegin', '<app></app>')
+document.body.insertAdjacentHTML('afterbegin', '<body></body>')
 let vm = new Vue({
     template: '<div><my-component v-ref:component"></my-component></div>',
     components: {
@@ -33,13 +33,13 @@ let vm = new Vue({
     }
 })
 vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
-vm.$mount('app')
+vm.$mount('body')
 ```
 
 #### How to test with $dispatch in ready
 ```
 $dispatch = sandbox.stub(Vue.prototype, '$dispatch')
-document.body.insertAdjacentHTML('afterbegin', '<app></app>')
+document.body.insertAdjacentHTML('afterbegin', '<body></body>')
 let vm = new Vue({
     template: '<div><my-component v-ref:component"></my-component></div>',
     components: {
@@ -47,5 +47,5 @@ let vm = new Vue({
     }
 })
 vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
-vm.$mount('app')
+vm.$mount('body')
 ```
