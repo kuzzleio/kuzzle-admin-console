@@ -37,8 +37,8 @@
           </div>
           <div class="col s10">
             <p>
-              You will see <strong>{{collection}}'s</strong> documents here<br/>
-              <em>For the time there is no one created yet</em>
+              Here you'll see the documents in <strong>{{collection}}</strong> <br/>
+              <em>Currently there is no document in this collection.</em>
             </p>
             <button v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light">
