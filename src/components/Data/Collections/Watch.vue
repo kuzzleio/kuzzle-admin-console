@@ -46,22 +46,22 @@
       </div>
 
       <div v-else>
-        <filters
-          @filters-basic-search="basicSearch"
-          @filters-raw-search="rawSearch"
-          @filters-refresh-search="refreshSearch"
-          label-search-button="Apply filters"
-          label-complex-query="Quick search disabled, click to open filter builder"
-          :available-filters="availableFilters"
-          :quick-filter-enabled="false"
-          :sorting-enabled="false"
-          :raw-filter="rawFilter"
-          :basic-filter="basicFilter"
-          :format-from-basic-search="formatFromBasicSearch"
-          :format-sort="formatSort"
-          :set-basic-filter="setBasicFilter"
-          :basic-filter-form="basicFilterForm">
-        </filters>
+          <filters
+            @filters-basic-search="basicSearch"
+            @filters-raw-search="rawSearch"
+            @filters-refresh-search="refreshSearch"
+            label-search-button="Apply filters"
+            label-complex-query="Quick search disabled, click to open filter builder"
+            :available-filters="availableFilters"
+            :quick-filter-enabled="false"
+            :sorting-enabled="false"
+            :raw-filter="rawFilter"
+            :basic-filter="basicFilter"
+            :format-from-basic-search="formatFromBasicSearch"
+            :format-sort="formatSort"
+            :set-basic-filter="setBasicFilter"
+            :basic-filter-form="basicFilterForm">
+          </filters>
 
         <div class="card-panel card-body" v-show="subscribed || notifications.length">
           <div class="row realtime margin-bottom-0">
@@ -87,7 +87,7 @@
             </div>
             <div class="col s10">
               <p>
-                You did not subscribed yet to the collection <strong>{{collection}}</strong><br>
+                You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
                 <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
               </p>
               <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
@@ -105,7 +105,7 @@
             </div>
             <div class="col s10">
               <p>
-                Waiting for notification matching your filters ...
+                Waiting for notifications matching your filters ...
               </p>
               <p>
                 <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>

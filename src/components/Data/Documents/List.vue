@@ -20,7 +20,7 @@
           </div>
           <div class="col s10">
             <p>
-              There are no presisted document in here because the collection <strong>{{collection}}</strong> is currently realtime-only.<br />
+              There is no persistent document in here because the collection <strong>{{collection}}</strong> is currently realtime-only.<br />
               <em>You can edit the collection and persist it.</em>
             </p>
             <button v-link="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
