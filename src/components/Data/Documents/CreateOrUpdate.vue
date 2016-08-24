@@ -51,14 +51,6 @@
               </fieldset>
             </div>
           </div>
-          <div class="row">
-            <div class="col s6">
-              <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
-              <button type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i>
-                Create
-              </button>
-            </div>
-          </div>
         </div>
 
         <!-- Json view -->
@@ -68,9 +60,9 @@
 
         <div class="row">
           <div class="col s6">
+            <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
             <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create
             </button>
-            <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
           </div>
         </div>
       </form>
