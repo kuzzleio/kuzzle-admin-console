@@ -1,21 +1,14 @@
-export const getCollectionCount = (collections) => {
-  let count = 0
-  if (collections.realtime) {
-    count += collections.realtime.length
+export const dedupeRealtimeCollections = (collections) => {
+  if (!collections.realtime) {
+    return collections
   }
-  if (collections.stored) {
-    count += collections.stored.length
-  }
-  return count
-}
 
-export const getCollectionsFromTree = (tree, indexName) => {
-  let idx = tree.filter((index) => {
-    return index.name === indexName
+  let dedupedRealtime = collections.realtime.filter((collection) => {
+    return collections.stored.indexOf(collection) === -1
   })
-  if (!idx.length) {
-    return []
+
+  return {
+    stored: collections.stored,
+    realtime: dedupedRealtime
   }
-  idx = idx[0]
-  return idx.collections
 }

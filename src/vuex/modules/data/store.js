@@ -8,7 +8,8 @@ import {
   ADD_REALTIME_COLLECTION,
   ADD_INDEX,
   SET_PARTIAL_TO_DOCUMENT,
-  UNSET_NEW_DOCUMENT
+  UNSET_NEW_DOCUMENT,
+  SET_NEW_DOCUMENT
 } from './mutation-types'
 
 const state = {
@@ -70,6 +71,9 @@ export const mutations = {
       }
       return prev[curr]
     }, state.newDocument)
+  },
+  [SET_NEW_DOCUMENT] (state, document) {
+    state.newDocument = document
   },
   [UNSET_NEW_DOCUMENT] (state) {
     state.newDocument = {}
