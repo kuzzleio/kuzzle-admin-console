@@ -58,7 +58,7 @@
 
   <modal id="add-attr">
     <h4>Add a new attribute</h4>
-    <form @submit="doAddAttr">
+    <form @submit.prevent="doAddAttr">
       <p>
       <div class="input-field">
         <input id="name" type="text" required v-model="newAttributeName" autofocus/>
@@ -76,10 +76,10 @@
       </p>
 
       <span slot="footer">
-        <button class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
+        <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
             Cancel
-        </button>
-        <button class="waves-effect waves-green btn">
+        </a>
+        <button type="submit" class="waves-effect waves-green btn">
             Add
         </button>
       </span>
@@ -179,16 +179,18 @@
       }
     },
     ready () {
-      kuzzle.dataCollectionFactory(this.collection, this.index).getMapping((err, res) => {
-        if (err) {
-          return
-        }
-        this.mapping = res.mapping
-        formatGeoPoint(this.mapping)
-      })
+      kuzzle
+        .dataCollectionFactory(this.collection, this.index)
+        .getMappingPromise()
+        .then((res) => {
+          this.mapping = res.mapping
+          formatGeoPoint(this.mapping)
+        })
+        .catch(() => {
+          // todo errors
+        })
     },
     events: {
-      // todo rename event
       'add-attribute' (path) {
         this.newAttributePath = path
         this.$broadcast('modal-open', 'add-attr')

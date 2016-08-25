@@ -37,7 +37,7 @@ export default {
     }
   },
   '/:index/:collection/Update/:id': {
-    name: 'DataDocumentDetail',
+    name: 'DataUpdateDocument',
     component (resolve) {
       require(['../../components/Data/Documents/Update'], resolve)
     }

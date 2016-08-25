@@ -68,7 +68,7 @@ describe('Treeview component', () => {
     router.map(dataRoutes)
 
     router.start(App, 'body')
-    router.go('/data/index/collection')
+    router.go('/index/collection')
 
     $vm = router.app.$refs.routerview.$refs.treeview
   })

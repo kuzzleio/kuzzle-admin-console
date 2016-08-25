@@ -14,7 +14,7 @@
     <label class="item-title"><a>{{document.id}}</a></label>
 
     <div class="right actions">
-      <a v-link="{name: 'DataDocumentDetail', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
+      <a v-link="{name: 'DataUpdateDocument', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
       <dropdown :id="document.id">
         <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>

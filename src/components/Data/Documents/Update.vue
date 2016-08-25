@@ -1,14 +1,14 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit document - <span class="bold">{{id}}</span>
+      Edit document - <span class="bold">{{documentToEditId}}</span>
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
     <create-or-update @document-create::create="update" :index="index" :collection="collection" :hide-id="true">
       <div class="row">
         <div class="col s6">
-          <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+          <a @click.prevent="cancel" class="btn-flat waves-effect">Cancel</a>
           <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Update</button>
         </div>
       </div>
@@ -27,7 +27,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
+  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
 
   export default {
@@ -41,11 +41,6 @@
       index: String,
       collection: String
     },
-    data () {
-      return {
-        id: this.$route.params.id
-      }
-    },
     methods: {
       update (viewState, json) {
         if (viewState === 'code') {
@@ -55,14 +50,18 @@
           }
           this.setNewDocument(json)
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).updateDocument(this.id, this.newDocument, err => {
-          if (err) {
-            this.$dispatch('toast', err.message, 'error')
-            return
-          }
-          kuzzle.refreshIndex(this.index)
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        })
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .updateDocumentPromise(this.id, this.newDocument)
+          .then(() => {
+            kuzzle.refreshIndex(this.index)
+            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          })
+          .catch((err) => {
+            if (err) {
+              this.$dispatch('toast', err.message, 'error')
+            }
+          })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -77,19 +76,20 @@
         setNewDocument
       },
       getters: {
-        newDocument
+        newDocument,
+        documentToEditId
       }
     },
     ready () {
       kuzzle
         .dataCollectionFactory(this.collection, this.index)
-        .fetchDocument(this.$route.params.id, (err, res) => {
-          if (err) {
-            this.$dispatch('toast', err.message, 'error')
-            return
-          }
+        .fetchDocumentPromise(documentToEditId)
+        .then(res => {
           this.setNewDocument(res.content)
           this.$broadcast('document-create::fill', res.content)
+        })
+        .catch(err => {
+          this.$dispatch('toast', err.message, 'error')
         })
     }
   }

@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import { mockedComponent, mockedDirective } from '../../../helper'
 import VueRouter from 'vue-router'
-import util from 'util'
 
 let DocumentItemInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/DocumentItem')
 let DocumentItem
 let sandbox = sinon.sandbox.create()
 
-describe.only('Document item', () => {
+describe('Document item', () => {
   let component
   let router
   let vm
@@ -24,7 +23,7 @@ describe.only('Document item', () => {
       replace: false
     })
 
-    component = new Vue({
+    component = Vue.extend({
       template: '<document-item v-ref:item :document="document"></document-item>',
       components: { DocumentItem },
       data () {
@@ -39,21 +38,19 @@ describe.only('Document item', () => {
     router = new VueRouter({ abstract: true })
     router.map({
       '/': {
-        name: 'DataCreateDocument',
+        name: 'foo',
         component: component
       },
       '/:index/:collection/Update/:id': {
-        name: 'DataDocumentDetail',
+        name: 'DataUpdateDocument',
         component: mockedComponent
       }
     })
 
     router.start(App, 'body')
-    router.go({name: 'DataCreateDocument'})
+    router.go('/')
 
     vm = router.app.$refs.routerview
-
-    console.log(util.inspect(vm.$refs, {showHidden: false, depth: null}))
     sandbox.stub(vm.$refs.item, '$dispatch')
   })
 

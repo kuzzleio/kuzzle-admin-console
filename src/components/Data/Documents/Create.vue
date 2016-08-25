@@ -45,14 +45,15 @@
           }
           this.setNewDocument(json)
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, err => {
-          if (err) {
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .createDocumentPromise(this.newDocument)
+          .then(() => {
+            kuzzle.refreshIndex(this.index)
+            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          }).catch(err => {
             this.$dispatch('toast', err.message, 'error')
-            return
-          }
-          kuzzle.refreshIndex(this.index)
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        })
+          })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
