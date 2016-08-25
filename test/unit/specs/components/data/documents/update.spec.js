@@ -101,19 +101,5 @@ describe('Update component test', () => {
         })).to.be.ok
       })
     })
-
-    // describe('ready', () => {
-    //   it('should toast an error on fetchDocument', () => {
-    //     triggerError = true
-    //     mockInjector()
-    //     expect($dispatch.calledWith('toaster', 'error', 'error'))
-    //   })
-    //
-    //   it('should broadcast a fill event', () => {
-    //     triggerError = false
-    //     mockInjector()
-    //     expect($broadcast.calledWith('document-create::fill', {content: 'foo'}))
-    //   })
-    // })
   })
 })
