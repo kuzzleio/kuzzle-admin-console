@@ -35,7 +35,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row button-or">
           <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
             <i class="fa fa-plus left"></i>Or
           </a>
@@ -59,8 +59,8 @@
       </div>
     </div>
     <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light" @click.prevent="basicSearch">{{labelSearchButton}}</button>
-      <button class="btn waves-effect waves-light" @click="resetBasicSearch">Reset</button>
+      <button type="submit" class="btn waves-effect waves-light primary" @click.prevent="basicSearch">{{labelSearchButton}}</button>
+      <button class="btn-flat waves-effect waves-light" @click="resetBasicSearch">Reset</button>
     </div>
   </form>
 </template>

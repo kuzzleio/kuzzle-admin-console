@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { mockedComponent } from '../../../helper'
+import { mockedComponent, mockedDirective } from '../../../helper'
 import SubscriptionControls from '../../../../../../src/components/Data/Realtime/SubscriptionControls'
 import Notification from '../../../../../../src/components/Data/Realtime/Notification'
 import store from '../../../../../../src/vuex/store'
@@ -37,11 +37,18 @@ describe('SubscriptionControls tests', () => {
 })
 describe('WatchData tests', () => {
   let WatchLayout = WatchLayoutInjector({
-    '../../Materialize/Headline': mockedComponent,
+    './Tabs': mockedComponent,
+    '../../../directives/json-formatter.directive': mockedDirective,
+    '../../../directives/scroll-glue.directive': mockedDirective,
+    '../../../directives/Materialize/collapsible.directive': mockedDirective,
     '../Realtime/Notification': mockedComponent,
     '../Realtime/SubscriptionControls': mockedComponent,
     '../Collections/Dropdown': mockedComponent,
     '../../Common/Filters/Filters': mockedComponent,
+    '../../../services/kuzzle': sinon.stub(),
+    '../../../vuex/modules/common/crudlDocument/actions': {
+      setBasicFilter: sinon.stub()
+    },
     '../../../vuex/modules/list/getters': {
       rawFilter: sinon.stub(),
       basicFilter: sinon.stub(),
@@ -50,6 +57,9 @@ describe('WatchData tests', () => {
     '../../../services/filterFormatRealtime': {
       availableFilters: sinon.stub(),
       formatFromBasicSearch: sinon.stub().returns({bar: 'foo'})
+    },
+    '../../../services/userAuthorization': {
+      canSubscribe: sinon.stub()
     }
   })
 

@@ -16,45 +16,61 @@
       :basic-filter-form="basicFilterForm">
     </filters>
 
-    <div>
-      <div class="row">
-        <div class="col s10 list-document">
-          <div>
-            <button class="btn waves-effect waves-light left margin-right-5" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
-            <div v-if="documents.length">
-              <button
-                class="btn waves-effect waves-light tertiary"
-                @click="dispatchToggle">
-                <i class="fa left"
-                   :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-                ></i>
-                Toggle all
-              </button>
-              <button
-                class="btn waves-effect waves-light"
-                :class="displayBulkDelete ? 'red' : 'disabled'"
-                :disabled="!displayBulkDelete"
-                @click="$broadcast('modal-open', 'bulk-delete')">
-                <i class="fa fa-minus-circle left"></i>
-                Delete
-              </button>
+    <div class="card-panel card-body">
+      <div class="row valign-center empty-set" v-show="!documents.length">
+        <div class="col s2 offset-s1">
+          <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
+        </div>
+        <div class="col s12">
+          <p>
+            There is no result matching your query<br />
+            Please try with another filters.
+          </p>
+          <p>
+            <em>Learn more about filtering syntax on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+          </p>
+        </div>
+      </div>
 
-              <slot></slot>
+      <div class="row actions" v-show="documents.length">
+        <div class="col s8">
+          <button
+            class="btn btn-small waves-effect waves-light tertiary"
+            @click="dispatchToggle">
+            <i class="fa left"
+               :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+            ></i>
+            Toggle all
+          </button>
 
-              <pagination
+          <button class="btn btn-small waves-effect waves-light margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+          <button
+                  class="btn btn-small waves-effect waves-light"
+                  :class="displayBulkDelete ? 'red' : 'disabled'"
+                  :disabled="!displayBulkDelete"
+                  @click="$broadcast('modal-open', 'bulk-delete')">
+            <i class="fa fa-minus-circle left"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+
+      <div class="row" v-show="documents.length">
+        <div class="col s12">
+          <slot v-if="documents.length"></slot>
+        </div>
+      </div>
+
+      <div class="row" v-show="documents.length">
+      <div class="col s12">
+        <pagination
                 @change-page="changePage"
                 :total="totalDocuments"
                 :from="paginationFrom"
                 :size="paginationSize"
-              ></pagination>
-            </div>
-          </div>
-
-          <div v-if="!documents.length" class="no-document">
-            There is no result corresponding to your search!
-          </div>
-        </div>
+        ></pagination>
       </div>
+    </div>
     </div>
 
     <modal id="bulk-delete">
@@ -62,42 +78,38 @@
       <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'document'}}?</p>
 
       <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn red"
-          @click="confirmBulkDelete()">
-            I'm sure!
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
-            Cancel
-        </button>
-      </span>
+            <button
+              href="#"
+              class="waves-effect waves-green btn red"
+              @click="confirmBulkDelete()">
+                I'm sure!
+            </button>
+            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
+                Cancel
+            </button>
+          </span>
     </modal>
 
     <modal id="single-delete">
-      <h4>Users deletion</h4>
+      <h4>Delete user</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn red"
-          @click="confirmSingleDelete(documentIdToDelete)">
-            I'm sure!
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
-            Cancel
-        </button>
-      </span>
+            <button
+              href="#"
+              class="waves-effect waves-green btn red"
+              @click="confirmSingleDelete(documentIdToDelete)">
+                I'm sure!
+            </button>
+            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
+                Cancel
+            </button>
+          </span>
     </modal>
+
+
   </div>
 </template>
-
-<style type="text/css" media="screen" scoped>
-  .margin-right-5 {
-    margin-right: 5px;
-  }
-</style>
 
 <script>
   import Pagination from '../Materialize/Pagination'
@@ -136,7 +148,7 @@
       searchTerm: String,
       rawFilter: String,
       basicFilter: Array,
-      sorting: String,
+      sorting: Object,
       availableFilters: Object
     },
     vuex: {

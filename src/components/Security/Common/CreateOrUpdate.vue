@@ -6,29 +6,31 @@
       {{title}} - {{updateId}}
     </headline>
 
-    <form class="wrapper" @submit.prevent="create">
-      <div v-if="!updateId" class="row">
-        <div class="col s3">
-          <div class="input-field">
-            <input id="id" type="text" name="collection" v-model="id"/>
-            <label for="id">Identifier</label>
+    <div class="card-panel">
+      <form class="wrapper" @submit.prevent="create">
+        <div v-if="!updateId" class="row">
+          <div class="col s3">
+            <div class="input-field">
+              <input id="id" type="text" name="collection" v-model="id"/>
+              <label for="id">Identifier</label>
+            </div>
           </div>
         </div>
-      </div>
 
-      <json-editor
-        v-ref:jsoneditor
-        class="pre_ace"
-        :content="content">
-      </json-editor>
+        <json-editor
+          v-ref:jsoneditor
+          class="pre_ace"
+          :content="content">
+        </json-editor>
 
-      <button type="submit" class="btn waves-effect waves-light">
-        <i v-if="!updateId" class="fa fa-plus-circle left"></i>
-        <i v-else class="fa fa-pencil left"></i>
-        {{updateId ? 'Update' : 'Create'}}
-      </button>
-      <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
-    </form>
+        <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+        <button type="submit" class="btn waves-effect waves-light">
+          <i v-if="!updateId" class="fa fa-plus-circle left"></i>
+          <i v-else class="fa fa-pencil left"></i>
+          {{updateId ? 'Update' : 'Create'}}
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 

@@ -1,16 +1,17 @@
 <template>
   <div class="row">
-    <form>
-      <div class="col s7">
+    <form class="">
+      <div class="col s4">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
           <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
-          <a href="#" @click.prevent="displayComplexSearch">More query options</a>
-          <i class="fa fa-times remove-search" @click="resetQuickSearch"></i>
+          <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
+          <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>
       </div>
-      <div class="col s3">
-        <button type="submit" class="btn waves-effect waves-light" @click.prevent="quickSearch">Search</button>
+      <div class="col s3 actions-quicksearch">
+        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="quickSearch">Search</button>
+        <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">reset</button>
       </div>
     </form>
   </div>
@@ -19,7 +20,7 @@
 <script>
   export default {
     name: 'QuickSearch',
-    props: ['searchTerm'],
+    props: ['searchTerm', 'displayBlockFilter'],
     data () {
       return {
         filters: {

@@ -1,5 +1,7 @@
 import store from '../../../../../../../src/vuex/store'
 import Vue from 'vue'
+import { mockedComponent } from '../../../helper'
+import Promise from 'bluebird'
 
 let CreateInjector = require('!!vue?inject!../../../../../../../src/components/Data/Documents/Common/CreateOrUpdate')
 let Create
@@ -35,13 +37,17 @@ describe('create document tests', () => {
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
 
     Create = CreateInjector({
+      '../Collections/Tabs.vue': mockedComponent,
+      '../Collections/Dropdown': mockedComponent,
+      '../../Materialize/Headline': mockedComponent,
+      '../../../services/kuzzle': {
       '../../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
-          createDocument: (doc, cb) => {
+          createDocumentPromise: () => {
             if (triggerError) {
-              cb({message: 'error'})
+              return Promise.reject(new Error('error'))
             } else {
-              cb(null)
+              return Promise.resolve()
             }
           },
           getMapping: (cb) => {
@@ -54,11 +60,17 @@ describe('create document tests', () => {
         }),
         refreshIndex: refreshIndexSpy
       },
+      '../../Common/JsonForm/JsonForm': mockedComponent,
+      '../../../vuex/modules/data/actions': {
       '../../../../vuex/modules/data/actions': {
         unsetNewDocument: unsetNewDocumentSpy,
         setNewDocument: setNewDocumentSpy,
         setPartial: setPartialSpy
       },
+      '../../../vuex/modules/data/getters': {
+        newDocument: sandbox.stub().returns(42)
+      },
+      '../../../services/objectHelper': {
       '../../../../services/objectHelper': {
         mergeDeep: mergeDeepSpy,
         formatGeoPoint: formatGeoPointSpy

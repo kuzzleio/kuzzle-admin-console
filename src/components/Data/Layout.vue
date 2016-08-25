@@ -1,48 +1,32 @@
 <template>
-  <treeview
-    :route-name="$route.name"
-    :index="selectedIndex"
-    :collection="selectedCollection"
-    :tree="indexesAndCollections">
-  </treeview>
-  <section class="breadcrumb-view">
-    <breadcrumb
+  <div>
+    <treeview
       :route-name="$route.name"
       :index="selectedIndex"
       :collection="selectedCollection"
       :tree="indexesAndCollections">
-    </breadcrumb>
-
-    <section class="view">
-      <router-view
-        :index="selectedIndex"
-        :collection="selectedCollection">
-      </router-view>
+    </treeview>
+    <section>
+      <section class="view">
+        <router-view
+          :index="selectedIndex"
+          :collection="selectedCollection">
+        </router-view>
+      </section>
     </section>
-  </section>
+  </div>
 </template>
-
-<style lang="scss" scoped>
-  .breadcrumb-view {
-    margin-top: 50px;
-  }
-  section > section {
-    margin-top: 50px;
-  }
-</style>
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
   import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Leftnav/Treeview'
-  import Breadcrumb from './Breadcrumb'
 
   export default {
     name: 'DataLayout',
     components: {
-      Treeview,
-      Breadcrumb
+      Treeview
     },
     methods: {
       canSearchIndex
