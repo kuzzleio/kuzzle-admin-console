@@ -16,11 +16,11 @@
       <form class="wrapper" @submit.prevent="create">
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
-          <div class="row">
+          <div class="row" v-if="!hideId">
             <!-- Collection name -->
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" v-model="id"/>
+                <input id="id" type="text" name="collection" v-model="id" @input="updatePartial"/>
                 <label for="id">Document identifier (optional)</label>
               </div>
             </div>
@@ -58,10 +58,10 @@
 
   <modal id="add-attr">
     <h4>Add a new attribute</h4>
-    <p>
-    <form>
+    <form @submit="doAddAttr">
+      <p>
       <div class="input-field">
-        <input id="name" type="text" required v-model="newAttributeName"/>
+        <input id="name" type="text" required v-model="newAttributeName" autofocus/>
         <label for="name">Field name</label>
       </div>
       <div class="input-field">
@@ -73,20 +73,17 @@
         </select>
         <label>Attribute type</label>
       </div>
-    </form>
-    </p>
+      </p>
 
-    <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn"
-          @click="doAddAttr">
-            Add
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
+      <span slot="footer">
+        <button class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
             Cancel
         </button>
+        <button class="waves-effect waves-green btn">
+            Add
+        </button>
       </span>
+    </form>
   </modal>
   </div>
 </template>
@@ -117,17 +114,20 @@
     },
     props: {
       index: String,
-      collection: String
+      collection: String,
+      hideId: Boolean
     },
     directives: {
       MSelect
     },
     methods: {
       create () {
-        if (this.id) {
-          this.setPartial('_id', this.id)
+        let json
+
+        if (this.viewState === 'code') {
+          json = this.$refs.jsoneditor.getJson()
         }
-        this.$dispatch('document-create::create', this.viewState, this.json)
+        this.$dispatch('document-create::create', this.viewState, json)
       },
       switchEditMode () {
         if (this.viewState === 'code') {
@@ -150,6 +150,9 @@
         this.newAttributeName = null
         this.newAttributePath = null
         this.$broadcast('modal-close', 'add-attr')
+      },
+      updatePartial () {
+        this.setPartial('_id', this.id)
       }
     },
     vuex: {
@@ -189,6 +192,9 @@
       'add-attribute' (path) {
         this.newAttributePath = path
         this.$broadcast('modal-open', 'add-attr')
+      },
+      'document-create::fill' (document) {
+        this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
       }
     }
   }

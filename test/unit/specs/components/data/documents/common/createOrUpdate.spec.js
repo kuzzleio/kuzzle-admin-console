@@ -1,7 +1,7 @@
-import store from '../../../../../../src/vuex/store'
+import store from '../../../../../../../src/vuex/store'
 import Vue from 'vue'
 
-let CreateInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/CreateOrUpdate')
+let CreateInjector = require('!!vue?inject!../../../../../../../src/components/Data/Documents/Common/CreateOrUpdate')
 let Create
 
 describe('create document tests', () => {
@@ -35,7 +35,7 @@ describe('create document tests', () => {
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
 
     Create = CreateInjector({
-      '../../../services/kuzzle': {
+      '../../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
           createDocument: (doc, cb) => {
             if (triggerError) {
@@ -54,16 +54,16 @@ describe('create document tests', () => {
         }),
         refreshIndex: refreshIndexSpy
       },
-      '../../../vuex/modules/data/actions': {
+      '../../../../vuex/modules/data/actions': {
         unsetNewDocument: unsetNewDocumentSpy,
         setNewDocument: setNewDocumentSpy,
         setPartial: setPartialSpy
       },
-      '../../../services/objectHelper': {
+      '../../../../services/objectHelper': {
         mergeDeep: mergeDeepSpy,
         formatGeoPoint: formatGeoPointSpy
       },
-      '../../../services/documentFormat': {
+      '../../../../services/documentFormat': {
         addAttributeFromPath: addAttributeFromPathSpy,
         getUpdatedSchema: getUpdatedSchemaSpy
       }
@@ -89,41 +89,10 @@ describe('create document tests', () => {
 
   describe('methods tests', () => {
     describe('create method test', () => {
-      it('should dispatch an error toast event', () => {
-        vm.$refs.create.create()
-        expect(dispatchSpy.calledWith('toast', 'error', 'error')).to.be.ok
-      })
-
-      it('should set the document from the json editor', () => {
+      it('should get the json content and dispatch a create event', () => {
         vm.$refs.create.viewState = 'code'
         vm.$refs.create.create()
-        expect(setNewDocumentSpy.calledWith({_id: 42, foo: 'bar'}))
-      })
-
-      it('should create a document and redirect to DataCollectionBrowse', () => {
-        triggerError = false
-        vm.$refs.create.id = '42'
-        vm.$refs.create.create()
-        expect(refreshIndexSpy.called).to.be.ok
-        expect(routerSpy.go.called).to.be.ok
-      })
-    })
-
-    describe('cancel methods', () => {
-      it('should go to the previous route', () => {
-        let spy = sandbox.stub()
-        vm.$refs.create.$router._prevTransition = sandbox.stub()
-        vm.$refs.create.$router._prevTransition.to = sandbox.stub()
-        vm.$refs.create.$router.go = spy
-        vm.$refs.create.cancel()
-        expect(spy.called).to.be.ok
-      })
-
-      it('should go to the DataDocumentsList route', () => {
-        let spy = sandbox.stub()
-        vm.$refs.create.$router.go = spy
-        vm.$refs.create.cancel()
-        expect(spy.calledWith({name: 'DataDocumentsList', params: {collection: 'collection', index: 'index'}})).to.be.ok
+        expect(dispatchSpy.calledWith('document-create::create', 'code', {foo: 'bar'})).to.be.ok
       })
     })
 
@@ -167,25 +136,6 @@ describe('create document tests', () => {
     it('should unset the document before destroying the component', () => {
       vm.$destroy()
       expect(unsetNewDocumentSpy.called).to.be.ok
-    })
-  })
-
-  describe('route data tests', () => {
-    beforeEach(() => {
-      Create.route.$route = {params: {index: 'index', collection: 'collection'}}
-    })
-
-    it('should do nothing if there is an error', () => {
-      triggerError = true
-      Create.route.data()
-      expect(Create.route.mapping).to.be.undefined
-    })
-
-    it('should correctly set the mapping', () => {
-      triggerError = false
-      Create.route.data()
-      console.log(Create.route.mapping)
-      expect(Create.route.mapping).to.deep.equals({attr: 'falu'})
     })
   })
 })

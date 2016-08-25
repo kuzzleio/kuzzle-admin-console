@@ -39,7 +39,7 @@ export default {
   '/:index/:collection/Update/:id': {
     name: 'DataDocumentDetail',
     component (resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
+      require(['../../components/Data/Documents/Update'], resolve)
     }
   }
 }

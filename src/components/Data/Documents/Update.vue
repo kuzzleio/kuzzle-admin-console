@@ -1,21 +1,26 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{collection}} - Create a document
+      Edit document - <span class="bold">{{id}}</span>
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
-    <create-or-update @document-create::create="create" :index="index" :collection="collection">
+    <create-or-update @document-create::create="update" :index="index" :collection="collection" :hide-id="true">
       <div class="row">
         <div class="col s6">
           <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
-          <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
+          <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Update</button>
         </div>
       </div>
     </create-or-update>
   </div>
 </template>
 
+<style scoped>
+  .bold {
+    font-weight: normal;
+  }
+</style>
 
 <script>
   import CollectionDropdown from '../Collections/Dropdown'
@@ -36,8 +41,13 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        id: this.$route.params.id
+      }
+    },
     methods: {
-      create (viewState, json) {
+      update (viewState, json) {
         if (viewState === 'code') {
           if (!json) {
             this.$dispatch('toast', 'Invalid document', 'error')
@@ -45,7 +55,7 @@
           }
           this.setNewDocument(json)
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, err => {
+        kuzzle.dataCollectionFactory(this.collection, this.index).updateDocument(this.id, this.newDocument, err => {
           if (err) {
             this.$dispatch('toast', err.message, 'error')
             return
@@ -63,12 +73,24 @@
       }
     },
     vuex: {
-      getters: {
-        newDocument
-      },
       actions: {
         setNewDocument
+      },
+      getters: {
+        newDocument
       }
+    },
+    ready () {
+      kuzzle
+        .dataCollectionFactory(this.collection, this.index)
+        .fetchDocument(this.$route.params.id, (err, res) => {
+          if (err) {
+            this.$dispatch('toast', err.message, 'error')
+            return
+          }
+          this.setNewDocument(res.content)
+          this.$broadcast('document-create::fill', res.content)
+        })
     }
   }
 </script>
