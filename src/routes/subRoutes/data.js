@@ -15,7 +15,7 @@ export default {
   '/:index/create': {
     name: 'DataCreateCollection',
     component (resolve) {
-      require(['../../components/Data/Collections/CreateOrUpdate'], resolve)
+      require(['../../components/Data/Collections/Create'], resolve)
     }
   },
   '/:index/:collection/watch': {
@@ -27,7 +27,7 @@ export default {
   '/:index/:collection/edit': {
     name: 'DataCollectionEdit',
     component (resolve) {
-      require(['../../components/Data/Collections/CreateOrUpdate'], resolve)
+      require(['../../components/Data/Collections/Update'], resolve)
     }
   },
   '/:index/:collection': {

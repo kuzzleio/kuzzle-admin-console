@@ -81,13 +81,12 @@ export const getMapping = (store, index, collection) => {
 }
 
 export const getCollectionsFromIndex = (store, index) => {
-  kuzzle.listCollections(index, (err, result) => {
-    if (err) {
-      return
-    }
-    addLocalRealtimeCollections(result, index)
-    store.dispatch(RECEIVE_COLLECTIONS, result)
-  })
+  return kuzzle
+    .listCollectionsPromise(index)
+    .then(result => {
+      addLocalRealtimeCollections(result, index)
+      store.dispatch(RECEIVE_COLLECTIONS, result)
+    })
 }
 
 export const createIndex = (store, index) => {
