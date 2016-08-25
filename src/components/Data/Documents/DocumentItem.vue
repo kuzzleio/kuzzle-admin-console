@@ -14,7 +14,7 @@
     <label class="item-title"><a>{{document.id}}</a></label>
 
     <div class="right actions">
-      <dropdown :id="document.id">
+      <dropdown :id="document.id" class="icon-black">
         <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>
     </div>

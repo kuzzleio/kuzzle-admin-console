@@ -2,14 +2,16 @@
   <header>
     <div class="navbar-fixed">
       <nav>
-        <a href="#" class="brand-logo">
-          <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
-        </a>
         <ul>
-            <li v-link-active>
+            <li class="logo">
+              <a href="#" class="">
+                <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
+              </a>
+            </li>
+            <li class="nav" v-link-active>
               <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
             </li>
-            <li v-link-active v-if="hasSecurityRights()">
+            <li class="nav" v-link-active v-if="hasSecurityRights()">
               <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
             </li>
           </ul>
@@ -47,21 +49,29 @@
   }
 </script>
 
-<style scoped>
+<style rel="stylesheet/scss" lang="scss" scoped>
 header {
   font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 nav {
   padding-right: 20px;
+  li {
+    font-family: "Roboto", Arial, sans-serif;
+    font-weight: 500;
+
+    &.nav {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 400;
+    }
+  }
 }
-.brand-logo {
-  height: 100%;
-  left: 45%;
-  right: 55%;
+.logo {
 }
 
-.brand-logo img {
-  height: 100%;
-  padding: 10px;
+.logo img {
+  height: 50px;
+  padding: 10px 63px 10px 0;
 }
 </style>

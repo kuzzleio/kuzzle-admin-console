@@ -27,6 +27,7 @@
         <ul class="indexes">
           <li v-for="(key, indexTree) in tree | orderBy 'name'" v-if="filterTree(filter, indexTree)">
             <index-branch
+              :force-open="key === 0 && tree.length === 1"
               :route-name="routeName"
               :index-tree="indexTree"
               :index="index"

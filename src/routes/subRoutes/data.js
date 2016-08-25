@@ -24,6 +24,12 @@ export default {
       require(['../../components/Data/Collections/Watch'], resolve)
     }
   },
+  '/:index/:collection/edit': {
+    name: 'DataCollectionEdit',
+    component (resolve) {
+      require(['../../components/Data/Collections/CreateOrUpdate'], resolve)
+    }
+  },
   '/:index/:collection': {
     name: 'DataDocumentsList',
     component (resolve) {

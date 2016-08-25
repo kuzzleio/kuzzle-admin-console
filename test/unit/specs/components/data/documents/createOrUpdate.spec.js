@@ -1,5 +1,7 @@
 import store from '../../../../../../src/vuex/store'
 import Vue from 'vue'
+import { mockedComponent } from '../../../helper'
+import Promise from 'bluebird'
 
 let CreateInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/CreateOrUpdate')
 let Create
@@ -35,13 +37,16 @@ describe('create document tests', () => {
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
 
     Create = CreateInjector({
+      '../Collections/Tabs.vue': mockedComponent,
+      '../Collections/Dropdown': mockedComponent,
+      '../../Materialize/Headline': mockedComponent,
       '../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
-          createDocument: (doc, cb) => {
+          createDocumentPromise: () => {
             if (triggerError) {
-              cb({message: 'error'})
+              return Promise.reject(new Error('error'))
             } else {
-              cb(null)
+              return Promise.resolve()
             }
           },
           getMapping: (cb) => {
@@ -54,10 +59,14 @@ describe('create document tests', () => {
         }),
         refreshIndex: refreshIndexSpy
       },
+      '../../Common/JsonForm/JsonForm': mockedComponent,
       '../../../vuex/modules/data/actions': {
         unsetNewDocument: unsetNewDocumentSpy,
         setNewDocument: setNewDocumentSpy,
         setPartial: setPartialSpy
+      },
+      '../../../vuex/modules/data/getters': {
+        newDocument: sandbox.stub().returns(42)
       },
       '../../../services/objectHelper': {
         mergeDeep: mergeDeepSpy,
@@ -89,23 +98,35 @@ describe('create document tests', () => {
 
   describe('methods tests', () => {
     describe('create method test', () => {
-      it('should dispatch an error toast event', () => {
+      it('should dispatch an error toast event', (done) => {
         vm.$refs.create.create()
-        expect(dispatchSpy.calledWith('toast', 'error', 'error')).to.be.ok
+
+        setTimeout(() => {
+          expect(dispatchSpy.calledWith('toast', 'error', 'error')).to.be.ok
+          done()
+        }, 0)
       })
 
-      it('should set the document from the json editor', () => {
+      it('should set the document from the json editor', (done) => {
         vm.$refs.create.viewState = 'code'
         vm.$refs.create.create()
-        expect(setNewDocumentSpy.calledWith({_id: 42, foo: 'bar'}))
+
+        setTimeout(() => {
+          expect(setNewDocumentSpy.calledWith({_id: 42, foo: 'bar'}))
+          done()
+        }, 0)
       })
 
-      it('should create a document and redirect to DataCollectionBrowse', () => {
+      it('should create a document and redirect to DataCollectionBrowse', (done) => {
         triggerError = false
         vm.$refs.create.id = '42'
         vm.$refs.create.create()
-        expect(refreshIndexSpy.called).to.be.ok
-        expect(routerSpy.go.called).to.be.ok
+
+        setTimeout(() => {
+          expect(refreshIndexSpy.called).to.be.ok
+          expect(routerSpy.go.called).to.be.ok
+          done()
+        }, 0)
       })
     })
 
@@ -184,7 +205,6 @@ describe('create document tests', () => {
     it('should correctly set the mapping', () => {
       triggerError = false
       Create.route.data()
-      console.log(Create.route.mapping)
       expect(Create.route.mapping).to.deep.equals({attr: 'falu'})
     })
   })
