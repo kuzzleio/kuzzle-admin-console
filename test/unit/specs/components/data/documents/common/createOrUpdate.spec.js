@@ -1,12 +1,12 @@
 import store from '../../../../../../../src/vuex/store'
 import Vue from 'vue'
-import { mockedComponent } from '../../../helper'
+import { mockedComponent } from '../../../../helper'
 import Promise from 'bluebird'
 
 let CreateInjector = require('!!vue?inject!../../../../../../../src/components/Data/Documents/Common/CreateOrUpdate')
 let Create
 
-describe('create document tests', () => {
+describe('createOrUpdate document tests', () => {
   let sandbox
   let vm
   let dispatchSpy
@@ -22,6 +22,56 @@ describe('create document tests', () => {
   let addAttributeFromPathSpy
   let getUpdatedSchemaSpy
 
+  let mockInjector = () => {
+    Create = CreateInjector({
+      '../../Collections/Tabs': mockedComponent,
+      '../../../../services/kuzzle': {
+        dataCollectionFactory: () => {
+          return {
+            getMappingPromise: () => {
+              if (triggerError) {
+                return Promise.reject('error')
+              }
+              return Promise.resolve({mapping: {foo: 'bar'}})
+            }
+          }
+        },
+        refreshIndex: refreshIndexSpy
+      },
+      '../../../Common/JsonForm/JsonForm': mockedComponent,
+      '../../../../vuex/modules/data/actions': {
+        unsetNewDocument: unsetNewDocumentSpy,
+        setNewDocument: setNewDocumentSpy,
+        setPartial: setPartialSpy
+      },
+      '../../../../vuex/modules/data/getters': {
+        newDocument: sandbox.stub().returns(42)
+      },
+      '../../../../services/objectHelper': {
+        mergeDeep: mergeDeepSpy,
+        formatGeoPoint: formatGeoPointSpy
+      },
+      '../../../../services/documentFormat': {
+        addAttributeFromPath: addAttributeFromPathSpy,
+        getUpdatedSchema: getUpdatedSchemaSpy
+      }
+    })
+
+    document.body.insertAdjacentHTML('afterbegin', '<body></body>')
+    vm = new Vue({
+      template: '<div><create v-ref:create index="index" collection="collection"></create></div>',
+      components: {Create},
+      replace: false,
+      store: store
+    }).$mount('body')
+
+    vm.$refs.create.$dispatch = dispatchSpy
+    vm.$refs.create.$broadcast = broadcastSpy
+    vm.$refs.create.$route = {params: {collection: 'coll', index: 'index'}}
+    vm.$refs.create.$router = routerSpy
+    vm.$refs.create.$refs.jsoneditor = {getJson: sandbox.stub().returns({foo: 'bar'})}
+  }
+
   beforeEach(() => {
     sandbox = sinon.sandbox.create()
     dispatchSpy = sandbox.stub()
@@ -36,63 +86,7 @@ describe('create document tests', () => {
     addAttributeFromPathSpy = sandbox.stub()
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
 
-    Create = CreateInjector({
-      '../Collections/Tabs.vue': mockedComponent,
-      '../Collections/Dropdown': mockedComponent,
-      '../../Materialize/Headline': mockedComponent,
-      '../../../services/kuzzle': {
-      '../../../../services/kuzzle': {
-        dataCollectionFactory: sandbox.stub().returns({
-          createDocumentPromise: () => {
-            if (triggerError) {
-              return Promise.reject(new Error('error'))
-            } else {
-              return Promise.resolve()
-            }
-          },
-          getMapping: (cb) => {
-            if (triggerError) {
-              cb(new Error('error'))
-            } else {
-              cb(null, {mapping: {attr: 'falu'}})
-            }
-          }
-        }),
-        refreshIndex: refreshIndexSpy
-      },
-      '../../Common/JsonForm/JsonForm': mockedComponent,
-      '../../../vuex/modules/data/actions': {
-      '../../../../vuex/modules/data/actions': {
-        unsetNewDocument: unsetNewDocumentSpy,
-        setNewDocument: setNewDocumentSpy,
-        setPartial: setPartialSpy
-      },
-      '../../../vuex/modules/data/getters': {
-        newDocument: sandbox.stub().returns(42)
-      },
-      '../../../services/objectHelper': {
-      '../../../../services/objectHelper': {
-        mergeDeep: mergeDeepSpy,
-        formatGeoPoint: formatGeoPointSpy
-      },
-      '../../../../services/documentFormat': {
-        addAttributeFromPath: addAttributeFromPathSpy,
-        getUpdatedSchema: getUpdatedSchemaSpy
-      }
-    })
-
-    vm = new Vue({
-      template: '<div><create v-ref:create index="index" collection="collection"></create></div>',
-      components: {Create},
-      replace: false,
-      store: store
-    }).$mount()
-
-    vm.$refs.create.$dispatch = dispatchSpy
-    vm.$refs.create.$broadcast = broadcastSpy
-    vm.$refs.create.$route = {params: {collection: 'coll', index: 'index'}}
-    vm.$refs.create.$router = routerSpy
-    vm.$refs.create.$refs.jsoneditor = {getJson: sandbox.stub().returns({foo: 'bar'})}
+    mockInjector()
   })
 
   afterEach(() => {
@@ -148,6 +142,17 @@ describe('create document tests', () => {
     it('should unset the document before destroying the component', () => {
       vm.$destroy()
       expect(unsetNewDocumentSpy.called).to.be.ok
+    })
+  })
+
+  describe('ready', () => {
+    it('should get the mapping of the current collection', (done) => {
+      triggerError = false
+      mockInjector()
+      setTimeout(() => {
+        expect(formatGeoPointSpy.calledWith({foo: 'bar'})).to.be.ok
+        done()
+      }, 0)
     })
   })
 })

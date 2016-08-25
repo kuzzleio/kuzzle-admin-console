@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import store from '../../../../../../src/vuex/store'
+import {mockedComponent} from '../../../helper'
 
 describe('Create component test', () => {
   let CreateInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/Create')
@@ -16,6 +17,9 @@ describe('Create component test', () => {
 
   const mockInjector = () => {
     Create = CreateInjector({
+      './Common/CreateOrUpdate': mockedComponent,
+      '../../Materialize/Headline': mockedComponent,
+      '../Collections/Dropdown': mockedComponent,
       '../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
           createDocumentPromise: () => {

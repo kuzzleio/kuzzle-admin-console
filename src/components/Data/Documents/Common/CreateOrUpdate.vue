@@ -1,26 +1,27 @@
 <template>
-  <div class="row">
-    <div class="switch">
-      <label>
-        Form
-        <input type="checkbox" @click="switchEditMode">
-        <span class="lever"></span>
-        Json
-      </label>
-    </div>
-  </div>
+  <div class="wrapper">
+    <collection-tabs></collection-tabs>
 
-  <div class="row">
-    <div class="col s12 m10 l8 card">
+    <div class="card-panel">
+      <div class="row">
+        <div class="switch">
+          <label>
+            Form
+            <input type="checkbox" @click="switchEditMode" />
+            <span class="lever"></span>
+            Json
+          </label>
+        </div>
+      </div>
 
       <form class="wrapper" @submit.prevent="create">
+
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
-          <div class="row" v-if="!hideId">
-            <!-- Collection name -->
+          <div class="row">
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" v-model="id" @input="updatePartial"/>
+                <input id="id" type="text" name="collection" v-model="id"/>
                 <label for="id">Document identifier (optional)</label>
               </div>
             </div>
@@ -31,11 +32,13 @@
           </div>
 
           <div class="row">
-            <div class="col m11">
+            <div class="col s12">
               <fieldset>
                 <div class="row">
-                  <a class="btn btn-small right" @click="addRootAttr"><i class="fa fa-plus-circle left"></i>new
-                    attribute</a>
+                  <a class="btn btn-small right" @click="addRootAttr">
+                    <i class="fa fa-plus-circle left"></i>
+                    new attribute
+                  </a>
                 </div>
                 <div v-for="(name, content) in mapping">
                   <json-form :name="name" :content="content"></json-form>
@@ -54,43 +57,77 @@
 
       </form>
     </div>
-  </div>
 
-  <modal id="add-attr">
-    <h4>Add a new attribute</h4>
-    <form @submit.prevent="doAddAttr">
+    <modal id="add-attr">
+      <h4>Add a new attribute</h4>
       <p>
-      <div class="input-field">
-        <input id="name" type="text" required v-model="newAttributeName" autofocus/>
-        <label for="name">Field name</label>
-      </div>
-      <div class="input-field">
-        <select v-m-select="newAttributeType">
-          <option value="string" selected>String</option>
-          <option value="number">Number</option>
-          <option value="nested">Object</option>
-          <option value="geopos">Geo position</option>
-        </select>
-        <label>Attribute type</label>
-      </div>
+      <form>
+        <div class="input-field">
+          <input id="name" type="text" required v-model="newAttributeName"/>
+          <label for="name">Field name</label>
+        </div>
+        <div class="input-field">
+          <select v-m-select="newAttributeType">
+            <option value="string" selected>String</option>
+            <option value="number">Number</option>
+            <option value="nested">Object</option>
+            <option value="geopos">Geo position</option>
+          </select>
+          <label>Attribute type</label>
+        </div>
+      </form>
       </p>
 
       <span slot="footer">
+        <button
+          href="#"
+          class="waves-effect waves-green btn"
+          @click="doAddAttr">
+            Add
+        </button>
         <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
             Cancel
         </a>
-        <button type="submit" class="waves-effect waves-green btn">
-            Add
-        </button>
       </span>
-    </form>
-  </modal>
+    </modal>
   </div>
 </template>
 
-<style scoped>
+<style rel="stylesheet/scss" lang="scss">
   .pre_ace, .ace_editor {
     height: 350px;
+  }
+
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    legend {
+      border: 0;
+      padding: 0;
+      font-weight: 300;
+      left: -4px;
+      position: absolute;
+      top: -27px;
+      font-family: "Roboto", Arial, sans-serif;
+
+      a {
+        margin-left: 10px;
+        &.btn-tiny {
+          padding: 0;
+          height: 37px;
+        }
+      }
+    }
+    fieldset {
+      border-left: solid 3px #EEE;
+      position: relative;
+      margin: 45px 0 15px 0;
+      padding: 0 0 0 1em;
+      &:hover, &:focus, &.active {
+        border-left: solid 3px #DDD;
+      }
+    }
   }
 </style>
 
@@ -104,13 +141,15 @@
   import MSelect from '../../../../directives/Materialize/m-select.directive'
   import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
   import {mergeDeep, formatGeoPoint} from '../../../../services/objectHelper'
+  import CollectionTabs from '../../Collections/Tabs'
 
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
       JsonForm,
       JsonEditor,
-      Modal
+      Modal,
+      CollectionTabs
     },
     props: {
       index: String,

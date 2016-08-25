@@ -52,7 +52,7 @@
         }
         kuzzle
           .dataCollectionFactory(this.collection, this.index)
-          .updateDocumentPromise(this.id, this.newDocument)
+          .updateDocumentPromise(this.documentToEditId, this.newDocument)
           .then(() => {
             kuzzle.refreshIndex(this.index)
             this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
@@ -83,7 +83,7 @@
     ready () {
       kuzzle
         .dataCollectionFactory(this.collection, this.index)
-        .fetchDocumentPromise(documentToEditId)
+        .fetchDocumentPromise(this.documentToEditId)
         .then(res => {
           this.setNewDocument(res.content)
           this.$broadcast('document-create::fill', res.content)
