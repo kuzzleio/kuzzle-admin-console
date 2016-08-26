@@ -9,11 +9,11 @@ describe('Create component test', () => {
   let vm
   let $vm
   let $dispatch
+  let $broadcast
   let triggerError = true
 
   let refreshIndexSpy = sandbox.stub()
   let setNewDocumentSpy = sandbox.stub()
-  let goSpy = sandbox.stub()
 
   const mockInjector = () => {
     Create = CreateInjector({
@@ -41,7 +41,9 @@ describe('Create component test', () => {
     }).$mount()
 
     $vm = vm.$refs.create
-    $dispatch = sandbox.stub()
+    $dispatch = sandbox.stub($vm, '$dispatch')
+    $broadcast = sandbox.stub()
+    $vm.$broadcast = $broadcast
     $vm.$dispatch = $dispatch
   }
 
@@ -75,16 +77,9 @@ describe('Create component test', () => {
     })
 
     describe('cancel', () => {
-      it('should go back to the previous route', () => {
-        $vm.$router = {_prevTransition: {to: 'route'}, go: goSpy}
+      it('should broadcast document-create::cancel', () => {
         $vm.cancel()
-        expect(goSpy.called).to.be.ok
-      })
-
-      it('should go to DataDocumentsList', () => {
-        $vm.$router = {go: goSpy}
-        $vm.cancel()
-        expect(goSpy.calledWith({name: 'DataDocumentsList', params: {index: 'index', collection: 'collection'}})).to.be.ok
+        expect($broadcast.calledWith('document-create::cancel')).to.be.ok
       })
     })
   })

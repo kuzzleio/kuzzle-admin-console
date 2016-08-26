@@ -64,11 +64,7 @@
           })
       },
       cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        }
+        this.$broadcast('document-create::cancel')
       }
     },
     vuex: {

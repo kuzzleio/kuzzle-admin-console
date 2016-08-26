@@ -192,6 +192,13 @@
       },
       updatePartial () {
         this.setPartial('_id', this.id)
+      },
+      cancel () {
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+        }
       }
     },
     vuex: {
@@ -230,12 +237,19 @@
         })
     },
     events: {
-      'add-attribute' (path) {
+      'document-create::add-attribute' (path) {
         this.newAttributePath = path
         this.$broadcast('modal-open', 'add-attr')
       },
       'document-create::fill' (document) {
         this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
+      },
+      'document-create::cancel' () {
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+        }
       }
     }
   }
