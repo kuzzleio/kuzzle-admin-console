@@ -1,70 +1,71 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{collection}} - Create a document
+      {{collection}}
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
-    <div class="row">
-      <div class="switch">
-        <label>
-          Form
-          <input type="checkbox" @click="switchEditMode">
-          <span class="lever"></span>
-          Json
-        </label>
+    <collection-tabs></collection-tabs>
+
+    <div class="card-panel">
+      <div class="row">
+        <div class="switch">
+          <label>
+            Form
+            <input type="checkbox" @click="switchEditMode">
+            <span class="lever"></span>
+            Json
+          </label>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col s12 m10 l8 card">
+      <form class="wrapper" @submit.prevent="create">
 
-        <form class="wrapper" @submit.prevent="create">
-          <!-- Form view -->
-          <div class="row" v-if="viewState === 'form'">
-            <div class="row">
-              <!-- Collection name -->
-              <div class="col s6">
-                <div class="input-field">
-                  <input id="id" type="text" name="collection" v-model="id"/>
-                  <label for="id">Document identifier (optional)</label>
-                </div>
+        <!-- Form view -->
+        <div class="row" v-if="viewState === 'form'">
+          <div class="row">
+            <div class="col s6">
+              <div class="input-field">
+                <input id="id" type="text" name="collection" v-model="id"/>
+                <label for="id">Document identifier (optional)</label>
               </div>
             </div>
-
-            <div class="row">
-              <div class="divider"></div>
-            </div>
-
-            <div class="row">
-              <div class="col m11">
-                <fieldset>
-                  <div class="row">
-                    <a class="btn btn-small right" @click="addRootAttr"><i class="fa fa-plus-circle left"></i>new
-                      attribute</a>
-                  </div>
-                  <div v-for="(name, content) in mapping">
-                    <json-form :name="name" :content="content"></json-form>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-
-          <!-- Json view -->
-          <div class="row" v-if="viewState === 'code'">
-            <json-editor class="pre_ace" :content="newDocument" v-ref:jsoneditor></json-editor>
           </div>
 
           <div class="row">
-            <div class="col s6">
-              <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create
-              </button>
-              <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+            <div class="divider"></div>
+          </div>
+
+          <div class="row">
+            <div class="col s12">
+              <fieldset>
+                <div class="row">
+                  <a class="btn btn-small right" @click="addRootAttr">
+                    <i class="fa fa-plus-circle left"></i>
+                    new attribute
+                  </a>
+                </div>
+                <div v-for="(name, content) in mapping">
+                  <json-form :name="name" :content="content"></json-form>
+                </div>
+              </fieldset>
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <!-- Json view -->
+        <div class="row" v-if="viewState === 'code'">
+          <json-editor class="pre_ace" :content="newDocument" v-ref:jsoneditor></json-editor>
+        </div>
+
+        <div class="row">
+          <div class="col s6">
+            <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+            <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
 
     <modal id="add-attr">
@@ -102,13 +103,46 @@
   </div>
 </template>
 
-<style scoped>
+<style rel="stylesheet/scss" lang="scss">
   .pre_ace, .ace_editor {
     height: 350px;
+  }
+
+  fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    legend {
+      border: 0;
+      padding: 0;
+      font-weight: 300;
+      left: -4px;
+      position: absolute;
+      top: -27px;
+      font-family: "Roboto", Arial, sans-serif;
+
+      a {
+        margin-left: 10px;
+        &.btn-tiny {
+          padding: 0;
+          height: 37px;
+        }
+      }
+    }
+    fieldset {
+      border-left: solid 3px #EEE;
+      position: relative;
+      margin: 45px 0 15px 0;
+      padding: 0 0 0 1em;
+      &:hover, &:focus, &.active {
+        border-left: solid 3px #DDD;
+      }
+    }
   }
 </style>
 
 <script>
+  import CollectionTabs from '../Collections/Tabs.vue'
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
@@ -124,6 +158,7 @@
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
+      CollectionTabs,
       CollectionDropdown,
       Headline,
       JsonForm,
@@ -153,14 +188,17 @@
         if (this.id) {
           this.setPartial('_id', this.id)
         }
-        kuzzle.dataCollectionFactory(this.collection, this.index).createDocument(this.newDocument, err => {
-          if (err) {
-            this.$dispatch('toast', err.message, 'error')
-            return
-          }
-          kuzzle.refreshIndex(this.index)
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        })
+
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .createDocumentPromise(this.newDocument)
+          .then(() => {
+            kuzzle.refreshIndex(this.index)
+            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          })
+          .catch((e) => {
+            this.$dispatch('toast', e.message, 'error')
+          })
       },
       switchEditMode () {
         if (this.viewState === 'code') {

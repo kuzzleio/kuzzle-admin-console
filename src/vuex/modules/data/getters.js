@@ -10,6 +10,10 @@ export const selectedIndex = state => {
   return state.route.params.index
 }
 
+export const routeName = state => {
+  return state.route.name
+}
+
 export const selectedCollection = state => {
   return state.route.params.collection
 }

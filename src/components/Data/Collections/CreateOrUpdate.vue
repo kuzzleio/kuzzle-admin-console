@@ -8,7 +8,7 @@
       <div class="col s12 m10 l8 card">
         <form class="wrapper" @submit.prevent="doCreateCollection">
           <!-- Required fields -->
-          <div class="row">
+          <div class="row valign-center">
             <!-- Collection name -->
             <div class="col s6">
                 <div class="input-field">
@@ -71,8 +71,8 @@
           <!-- Actions -->
           <div class="row">
             <div class="col s6">
-                <button tabindex="5" type="submit" class="btn waves-effect waves-light">Create</button>
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
+                <button tabindex="5" type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
                 <p class="error">{{error}}</p>
             </div>
           </div>

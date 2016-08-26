@@ -6,6 +6,7 @@
         <div class="col s11 truncate">
           <!-- collection browse link -->
           <a href="#!"
+             class="fluid-hover"
              v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
             <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
             <span class="name">{{collection}}</span>
@@ -32,14 +33,14 @@
       -->
 
       <div class="card-action right-align">
-        <a class="btn btn-small" href="#"
+        <a class="btn btn-tiny" href="#"
            v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canCreateDocument(index, collection)}"
 		       v-link="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}} : {}"
            v-if="!isRealtime">
           Create a document
         </a>
-        <a class="btn btn-small" href="#"
+        <a class="btn btn-tiny" href="#"
            v-if="isRealtime"
            v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canManageRealtime(index, collection)}"

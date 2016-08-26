@@ -1,20 +1,8 @@
 .btn {
   font-family: "Roboto", sans-serif;
 
-  &.btn-tiny {
-    height: 24px;
-    line-height: 24px;
-    font-size: 0.8rem;
-    padding: 0 0.6rem;
-    letter-spacing: .2px;
-  }
-
-  &.btn-small {
-    height: 30px;
-    line-height: 30px;
-    font-size: 0.9rem;
-    padding: 0 0.8rem;
-    letter-spacing: .1px;
+  + .btn {
+    margin-left: 10px;
   }
 
   &.unauthorized {
@@ -35,6 +23,30 @@
   }
 }
 
+.btn-tiny {
+  height: 24px;
+  line-height: 24px;
+  font-size: 0.77rem;
+  padding: 0 0.6rem;
+  letter-spacing: .2px;
+
+  i {
+    font-size: 1.1rem;
+  }
+}
+
+.btn-small {
+  height: 30px;
+  line-height: 30px;
+  font-size: 0.9rem;
+  padding: 0 0.8rem;
+  letter-spacing: .1px;
+
+  i {
+    font-size: 1.2rem;
+  }
+}
+
 .card-panel, .inline-alert {
   &.unauthorized {
     .fa-lock {
@@ -44,6 +56,17 @@
     }
   }
 }
+
+a {
+  &.fluid-hover {
+    transition: color .3s ease-out;
+
+    &:hover {
+      color: #444;
+    }
+  }
+}
+
 
 strong {
   &.highlight {
@@ -118,4 +141,47 @@ i, span {
   padding: 15px;
   border-radius: 3px;
   margin: 10px 0;
+}
+
+.valign-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.valign-center {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.row {
+  &.actions {
+    margin-bottom: 5px;
+  }
+}
+
+.fa {
+  &.fa-6x {
+    font-size: 6rem;
+  }
+}
+
+
+.margin-bottom-0 {
+  margin-bottom: 0;
+}
+
+.card-panel {
+  &.card-header {
+    margin-bottom: 0;
+    background: #FBFBFB;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  &.card-body {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
 }

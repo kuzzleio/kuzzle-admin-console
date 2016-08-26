@@ -141,8 +141,10 @@ describe('IndexBranch component', () => {
   describe('isCollectionActive', () => {
     it('should correctly determine whether a collection is active', () => {
       let collectionName = 'collection'
+      let indexName = 'indexName'
       $vm.collection = collectionName
-      expect($vm.isCollectionActive(collectionName)).to.equal(true)
+      $vm.index = indexName
+      expect($vm.isCollectionActive(indexName, collectionName)).to.equal(true)
 
       $vm.collection = 'tutu'
       expect($vm.isCollectionActive(collectionName)).to.equal(false)

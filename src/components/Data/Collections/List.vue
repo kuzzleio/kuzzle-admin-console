@@ -6,17 +6,17 @@
     </headline>
 
 
-    <div class="row">
+    <!--<div class="row">
       <div class="col s6 m4 l3">
 
-        <!--<div class="row">
+        <div class="row">
           <div class="col s6 truncate">Total documents</div>
           <div class="col s6 right-align">1 567</div>
         </div>
         <div class="row">
           <div class="col s6 truncate">Index Size</div>
           <div class="col s6 right-align">64 mb</div>
-        </div>-->
+        </div>
         <div class="row">
           <div class="col s5 truncate">Auto refresh</div>
           <div class="col s7 right-align">
@@ -30,12 +30,12 @@
         </div>
 
       </div>
-    </div>
+    </div>-->
 
     <div class="row">
       <div class="col s12 m10 l8">
 
-        <div class="row actions">
+        <div class="row actions" v-if="collectionCount">
           <div class="col s9">
             <a class="btn waves-effect waves-light primary"
                href="#!"
@@ -55,39 +55,73 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row list">
           <!-- Not allowed -->
-          <div class="col s12" v-if="!canSearchCollection(index)">
-            <div class="card-panel unauthorized">
-              <div class="card-content">
-                <i class="fa fa-lock left " aria-hidden="true"></i>
-                <em>You are not allowed to list collections in index {{index}}</em>
+          <div class="card-panel" v-if="!canSearchCollection(index)">
+            <div class="row valign-bottom empty-set empty-set-condensed">
+              <div class="col s1 offset-s1">
+                <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
+              </div>
+              <div class="col s10">
+                <p>
+                  You are not allowed to list collections in index <strong>{{index}}</strong><br>
+                </p>
+                <p>
+                  <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
+                </p>
               </div>
             </div>
           </div>
 
-          <!-- No collection view -->
-          <div class="col s12" v-if="canSearchCollection(index) && !collectionCount">
-            <a  class="card-title" href="#" v-link="{name: 'DataCreateCollection', params: {index: index}}">
-              <div class="card-panel hoverable">
-                <div class="card-content">
-                  There is no collection in index <strong>{{index}}</strong> yet. You may want to create a new one ?
-                </div>
+          <!-- Not Collection -->
+          <div class="card-panel" v-if="canSearchCollection(index) && !collectionCount">
+            <div class="row valign-bottom empty-set empty-set-condensed">
+              <div class="col s1 offset-s1">
+                <i class="fa fa-6x fa-th-list grey-text text-lighten-1" aria-hidden="true"></i>
               </div>
-            </a>
+              <div class="col s9">
+                <p>
+                  Here, you'll see the collections in <strong>{{index}}</strong>. <br/>
+                  <em>There are currently no collection here.</em>
+                </p>
+                <button v-link="{name: 'DataCreateCollection', params: {index: index}}"
+                        v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+                        :class="{unauthorized: !canCreateCollection(index)}"
+                        class="btn primary waves-effect waves-light">
+                  <i class="fa fa-plus-circle left"></i>
+                  Create a collection
+                </button>
+              </div>
+            </div>
           </div>
 
+          <!-- Not Collection for filter -->
+          <div class="card-panel card-body" v-if="!isCollectionForFilter && filter">
+            <div class="row valign-center empty-set">
+              <div class="col s2 offset-s1">
+                <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
+              </div>
+              <div class="col s12">
+                <p>
+                  There is no collection matching your filter.<br />
+                  Please try with another one.
+                </p>
+              </div>
+            </div>
+          </div>
+
+
           <collection-boxed
-              v-for="collection in collections.stored | orderBy 1"
-              v-if="canSearchCollection(index) && (!filter || (filter && collection.includes(filter)))"
+              v-for="collection in collections.stored | filterBy filter | orderBy 1"
+              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="false">
           </collection-boxed>
 
           <collection-boxed
-              v-for="collection in collections.realtime | orderBy 1"
-              v-if="canSearchCollection(index) && (!filter || (filter && collection.includes(filter)))"
+              v-for="collection in collections.realtime | filterBy filter | orderBy 1"
+              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="true">
@@ -121,6 +155,9 @@
       margin-bottom: 0;
     }
   }
+  .list {
+    margin-top: 25px;
+  }
 </style>
 
 
@@ -152,9 +189,29 @@
     directives: {
       Title
     },
+    vuex: {
+      actions: {
+        listIndexesAndCollections
+      },
+      getters: {
+        indexesAndCollections
+      }
+    },
     data () {
       return {
         filter: ''
+      }
+    },
+    computed: {
+      collectionCount () {
+        return getCollectionCount(this.collections)
+      },
+      collections () {
+        return getCollectionsFromTree(this.indexesAndCollections, this.index)
+      },
+      isCollectionForFilter () {
+        return this.$options.filters.filterBy(this.collections.stored, this.filter).length > 0 ||
+          this.$options.filters.filterBy(this.collections.realtime, this.filter).length > 0
       }
     },
     watch: {
@@ -167,22 +224,6 @@
     ready () {
       if (this.canSearchIndex()) {
         this.listIndexesAndCollections()
-      }
-    },
-    computed: {
-      collectionCount () {
-        return getCollectionCount(this.collections)
-      },
-      collections () {
-        return getCollectionsFromTree(this.indexesAndCollections, this.index)
-      }
-    },
-    vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
-      getters: {
-        indexesAndCollections
       }
     }
   }

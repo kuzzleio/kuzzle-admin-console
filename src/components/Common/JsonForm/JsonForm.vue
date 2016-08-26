@@ -1,10 +1,10 @@
 <template>
   <!-- For nested objects -->
   <fieldset v-if="isNested(content)">
-    <legend>{{name}}</legend>
-    <div class="row">
-      <a class="btn btn-small right" @click="addAttribute"><i class="fa fa-plus-circle left"></i>new attribute</a>
-    </div>
+    <legend>
+      {{name}}
+      <a class="btn-floating waves-effect waves-light btn-tiny secondary" @click="addAttribute"><i class="fa fa-plus"></i></a>
+    </legend>
     <div v-for="(nestedName, nestedContent) in content.properties">
       <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
     </div>

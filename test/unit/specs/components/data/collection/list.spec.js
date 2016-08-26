@@ -1,47 +1,149 @@
 import Vue from 'vue'
 import store from '../../../../../../src/vuex/store'
-import { mockedComponent } from '../../../helper'
+import { mockedComponent, mockedDirective } from '../../../helper'
+import VueRouter from 'vue-router'
 
-let BrowseInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/List')
-let Browse
+let ListInjector = require('!!vue?inject!../../../../../../src/components/Data/Collections/List')
+let List
 let sandbox = sinon.sandbox.create()
+let $vm
 
-describe('Browse documents', () => {
-  let vm
+Vue.use(VueRouter)
 
-  before(() => {
-    Browse = BrowseInjector({
+describe('List collections tests', () => {
+  let listIndexesAndCollections = sandbox.stub()
+  let indexesAndCollections = sandbox.stub().returns([{realtime: [], stored: []}])
+  let getCollectionsFromTree = sandbox.stub().returns({realtime: [], stored: []})
+  let canSearchCollection = sandbox.stub().returns(true)
+  let canCreateCollection = sandbox.stub().returns(true)
+  let canSearchIndex = sandbox.stub().returns(true)
+  let getCollectionCount = sandbox.stub().returns(0)
+  let router
+
+  const mockInjector = () => {
+    List = ListInjector({
       '../../Materialize/Headline': mockedComponent,
-      '../../Common/Browse': mockedComponent,
-      '../Collections/Dropdown': mockedComponent
+      './Dropdown': mockedComponent,
+      '../Collections/Boxed': mockedComponent,
+      '../../../vuex/modules/data/actions': {
+        listIndexesAndCollections
+      },
+      '../../../vuex/modules/data/getters': {
+        indexesAndCollections
+      },
+      '../../../services/userAuthorization': {
+        canSearchIndex,
+        canSearchCollection,
+        canCreateCollection
+      },
+      '../../../directives/title.directive': mockedDirective,
+      '../../../services/data': {
+        getCollectionCount,
+        getCollectionsFromTree
+      }
     })
 
-    vm = new Vue({
-      template: '<div><browse v-ref:browse ></browse></div>',
-      components: {Browse},
+    const App = Vue.extend({
+      template: '<div><list v-ref:list></list></div>',
+      components: { List },
       replace: false,
       store: store
-    }).$mount()
+    })
 
-    vm.$refs.browse.$router = {go: sandbox.stub()}
-  })
+    router = new VueRouter({ abstract: true })
+    router.map({
+      '/create': {
+        name: 'DataCreateCollection',
+        component: mockedComponent
+      }
+    })
+    router.start(App, 'body')
 
-  describe('Methods', () => {
-    it('should redirect on right url on createDocument call', () => {
-      vm.$refs.browse.createDocument()
-      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'DataCreateDocument'})).to.be.equal(true)
+    $vm = router.app.$refs.list
+  }
+
+  before(() => mockInjector())
+  afterEach(() => sandbox.restore())
+
+  describe('computed', () => {
+    describe('isCollectionForFilter', () => {
+      it('should return true if a collection in realtime match the filter', () => {
+        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
+        List.computed.filter = 'to'
+        List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
+
+        expect(List.computed.isCollectionForFilter()).to.be.equal(true)
+      })
+
+      it('should return true if a collection in stored match the filter', () => {
+        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
+        List.computed.filter = 'fo'
+        List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
+
+        expect(List.computed.isCollectionForFilter()).to.be.equal(true)
+      })
+
+      it('should return true if a collection in stored and realtime match the filter', () => {
+        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo', 'tuto']}
+        List.computed.filter = 'tu'
+        List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
+
+        expect(List.computed.isCollectionForFilter()).to.be.equal(true)
+      })
+
+      it('should return false if there is no collection matching the filter', () => {
+        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
+        List.computed.filter = 'bar'
+        List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
+
+        expect(List.computed.isCollectionForFilter()).to.be.equal(false)
+      })
     })
   })
 
-  describe('Route', () => {
-    it('should broadcast event when the route change', (done) => {
-      Browse.route.$broadcast = sandbox.stub()
-      Browse.route.data()
+  describe('watch', () => {
+    describe('index', () => {
+      it('should do nothing if the user can\'t search in index', (done) => {
+        canSearchIndex = sandbox.stub().returns(false)
+        mockInjector()
+        listIndexesAndCollections.reset()
 
-      setTimeout(() => {
-        expect(Browse.route.$broadcast.calledWith('crudl-refresh-search')).to.be.equal(true)
-        done()
-      }, 0)
+        $vm.index = 'toto'
+        Vue.nextTick(() => {
+          expect(listIndexesAndCollections.callCount).to.be.equal(0)
+          done()
+        })
+      })
+
+      it('should call listIndexesAndCollections if the user can search in index', (done) => {
+        canSearchIndex = sandbox.stub().returns(true)
+        mockInjector()
+        listIndexesAndCollections.reset()
+
+        $vm.index = 'toto'
+        Vue.nextTick(() => {
+          expect(listIndexesAndCollections.callCount).to.be.equal(1)
+          done()
+        })
+      })
+    })
+  })
+
+  describe('ready', () => {
+    it('should do nothing if user can\'t search in collection', () => {
+      canSearchIndex = sandbox.stub().returns(false)
+      listIndexesAndCollections = sandbox.stub()
+      mockInjector()
+
+      expect(listIndexesAndCollections.callCount).to.be.equal(0)
+    })
+
+    it('should call listIndexesAndCollections if user can search in collection', () => {
+      canSearchIndex = sandbox.stub().returns(true)
+      listIndexesAndCollections = sandbox.stub()
+      mockInjector()
+
+      expect(listIndexesAndCollections.callCount).to.be.equal(1)
     })
   })
 })
