@@ -77,7 +77,8 @@ module.exports = {
     ]
   },
   eslint: {
-    formatter: require('eslint-friendly-formatter')
+    formatter: require('eslint-friendly-formatter'),
+    failOnError: true
   },
   vue: {
     loaders: utils.cssLoaders()
