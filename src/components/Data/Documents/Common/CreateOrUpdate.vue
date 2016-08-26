@@ -7,7 +7,7 @@
         <div class="switch">
           <label>
             Form
-            <input type="checkbox" @click="switchEditMode" />
+            <input type="checkbox" @click="switchEditMode"/>
             <span class="lever"></span>
             Json
           </label>
@@ -18,10 +18,10 @@
 
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
-          <div class="row">
+          <div class="row" v-if="!hideId">
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" v-model="id"/>
+                <input id="id" type="text" name="collection" @input="updatePartial"/>
                 <label for="id">Document identifier (optional)</label>
               </div>
             </div>
@@ -60,35 +60,35 @@
 
     <modal id="add-attr">
       <h4>Add a new attribute</h4>
-      <p>
       <form>
-        <div class="input-field">
-          <input id="name" type="text" required v-model="newAttributeName"/>
-          <label for="name">Field name</label>
-        </div>
-        <div class="input-field">
-          <select v-m-select="newAttributeType">
-            <option value="string" selected>String</option>
-            <option value="number">Number</option>
-            <option value="nested">Object</option>
-            <option value="geopos">Geo position</option>
-          </select>
-          <label>Attribute type</label>
-        </div>
-      </form>
-      </p>
+        <p>
+          <div class="input-field">
+            <input id="name" type="text" required v-model="newAttributeName"/>
+            <label for="name">Field name</label>
+          </div>
+          <div class="input-field">
+            <select v-m-select="newAttributeType">
+              <option value="string" selected>String</option>
+              <option value="number">Number</option>
+              <option value="nested">Object</option>
+              <option value="geopos">Geo position</option>
+            </select>
+            <label>Attribute type</label>
+          </div>
+        </p>
 
-      <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn"
-          @click="doAddAttr">
-            Add
-        </button>
-        <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
-            Cancel
-        </a>
-      </span>
+        <span slot="footer">
+          <button
+            type="submit"
+            class="waves-effect waves-green btn"
+            @click="doAddAttr">
+              Add
+          </button>
+          <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
+              Cancel
+          </a>
+        </span>
+      </form>
     </modal>
   </div>
 </template>
@@ -190,8 +190,8 @@
         this.newAttributePath = null
         this.$broadcast('modal-close', 'add-attr')
       },
-      updatePartial () {
-        this.setPartial('_id', this.id)
+      updatePartial (e) {
+        this.setPartial('_id', e.target.value)
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -216,7 +216,6 @@
     },
     data () {
       return {
-        id: '',
         mapping: {},
         viewState: 'form',
         newAttributeType: 'string',

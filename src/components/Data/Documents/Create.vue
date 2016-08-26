@@ -8,7 +8,7 @@
     <create-or-update @document-create::create="create" :index="index" :collection="collection">
       <div class="row">
         <div class="col s6">
-          <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
+          <a @click.prevent="cancel" class="btn-flat waves-effect">Cancel</a>
           <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
         </div>
       </div>
