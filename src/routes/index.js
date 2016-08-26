@@ -1,14 +1,15 @@
 import Login from '../components/Login'
 import Signup from '../components/Signup'
+import NotFound from '../components/404'
 import store from '../vuex/store'
-import { isAuthenticated, adminAlreadyExists } from '../vuex/modules/auth/getters'
-import { kuzzleIsConnected } from '../vuex/modules/common/kuzzle/getters'
+import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
+import {kuzzleIsConnected} from '../vuex/modules/common/kuzzle/getters'
 
 import SecuritySubRoutes from './subRoutes/security'
 import DataSubRoutes from './subRoutes/data'
 import ErrorSubRoutes from './subRoutes/errors'
 
-export default function createRoutes (router) {
+export default function createRoutes(router) {
   router.map({
     '/': {
       name: 'Home',
@@ -48,6 +49,10 @@ export default function createRoutes (router) {
     '/signup': {
       name: 'Signup',
       component: Signup
+    },
+    '*': {
+      name: 'NotFound',
+      component: NotFound
     }
   })
 
