@@ -1,7 +1,5 @@
 <template>
-  <div class="wrapper">
-    <collection-tabs></collection-tabs>
-
+  <div>
     <div class="card-panel">
       <div class="row">
         <div class="switch">
@@ -32,7 +30,7 @@
           </div>
 
           <div class="row">
-            <div class="col s12">
+            <div class="col s8">
               <fieldset>
                 <div class="row">
                   <a class="btn btn-small right" @click="addRootAttr">
@@ -53,7 +51,18 @@
           <json-editor class="pre_ace" :content="newDocument" v-ref:jsoneditor></json-editor>
         </div>
 
-        <slot></slot>
+        <div class="row">
+          <div class="col s6">
+            <a @click.prevent="cancel" class="btn-flat waves-effect">
+              Cancel
+            </a>
+            <button type="submit" class="btn waves-effect waves-light">
+              <i v-if="!hideId" class="fa fa-plus-circle left"></i>
+              <i v-else class="fa fa-pencil left"></i>
+              {{hideId ? 'Update' : 'Create'}}
+            </button>
+          </div>
+        </div>
 
       </form>
     </div>
@@ -141,15 +150,13 @@
   import MSelect from '../../../../directives/Materialize/m-select.directive'
   import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
   import {mergeDeep, formatGeoPoint} from '../../../../services/objectHelper'
-  import CollectionTabs from '../../Collections/Tabs'
 
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
       JsonForm,
       JsonEditor,
-      Modal,
-      CollectionTabs
+      Modal
     },
     props: {
       index: String,
@@ -166,6 +173,7 @@
         if (this.viewState === 'code') {
           json = this.$refs.jsoneditor.getJson()
         }
+
         this.$dispatch('document-create::create', this.viewState, json)
       },
       switchEditMode () {
@@ -194,11 +202,7 @@
         this.setPartial('_id', e.target.value)
       },
       cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        }
+        this.$dispatch('document-create::cancel')
       }
     },
     vuex: {
@@ -242,13 +246,6 @@
       },
       'document-create::fill' (document) {
         this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
-      },
-      'document-create::cancel' () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        }
       }
     }
   }
