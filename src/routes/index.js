@@ -9,7 +9,7 @@ import SecuritySubRoutes from './subRoutes/security'
 import DataSubRoutes from './subRoutes/data'
 import ErrorSubRoutes from './subRoutes/errors'
 
-export default function createRoutes(router) {
+export default function createRoutes (router) {
   router.map({
     '/': {
       name: 'Home',
