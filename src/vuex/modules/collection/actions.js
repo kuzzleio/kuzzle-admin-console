@@ -7,6 +7,7 @@ export const createCollection = (store, index, collection, mapping, isRealTime) 
   return new Promise((resolve, reject) => {
     let indexesAndCollections = []
     if (store.state && store.state.data) {
+      /** TODO: pass indexesAndCollection in parameter instead of accessing to the store */
       indexesAndCollections = store.state.data.indexesAndCollections
     }
 
@@ -53,12 +54,7 @@ export const createCollection = (store, index, collection, mapping, isRealTime) 
 }
 
 export const fetchCollectionDetail = (store, collections, index, collection) => {
-  if (collections.stored.indexOf(collection) === -1) {
-    if (collections.realtime.indexOf(collection) !== -1) {
-      store.dispatch(RECEIVE_COLLECTION_DETAIL, collection, {}, true)
-      return Promise.resolve()
-    }
-  } else {
+  if (collections.stored.indexOf(collection) !== -1) {
     return kuzzle
       .dataCollectionFactory(collection, index)
       .getMappingPromise()
@@ -66,6 +62,13 @@ export const fetchCollectionDetail = (store, collections, index, collection) => 
         store.dispatch(RECEIVE_COLLECTION_DETAIL, collection, result.mapping, false)
       })
   }
+
+  if (collections.realtime.indexOf(collection) !== -1) {
+    store.dispatch(RECEIVE_COLLECTION_DETAIL, collection, {}, true)
+    return Promise.resolve()
+  }
+
+  return Promise.reject(new Error(`Unknown collection ${collection}`))
 }
 
 export const resetCollectionDetail = (store) => {
