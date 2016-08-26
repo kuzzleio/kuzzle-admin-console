@@ -42,7 +42,7 @@ export const createCollection = (store, index, collection, mapping, isRealTime) 
       .dataMappingFactory(mapping || {})
       .apply(err => {
         if (err) {
-          reject(new Error(err))
+          reject(err)
           return
         }
 

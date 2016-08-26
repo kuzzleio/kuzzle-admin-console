@@ -3,7 +3,6 @@
     <create-or-update
       :headline="headline"
       @collection-create::create="update"
-      @collection-create::cancel="cancel"
       :index="index">
     </create-or-update>
   </div>
@@ -18,7 +17,7 @@
   import kuzzle from '../../../services/kuzzle'
 
   export default {
-    name: 'Update',
+    name: 'CollectionUpdate',
     props: {
       index: String
     },
@@ -40,14 +39,6 @@
         return 'Update ' + this.collectionName
       }
     },
-    ready () {
-      this.getCollectionsFromIndex(this.index)
-        .then(() => this.fetchCollectionDetail(this.collections, this.index, this.collectionName))
-        .catch(e => {
-          this.$dispatch('toast', e.message, 'error')
-          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
-        })
-    },
     methods: {
       update (name, mapping, isRealtime) {
         if (isRealtime) {
@@ -55,7 +46,6 @@
           return
         }
 
-        console.log(name)
         kuzzle
           .dataCollectionFactory(name, this.index)
           .dataMappingFactory(mapping || {})
@@ -66,14 +56,15 @@
           .catch(e => {
             this.$dispatch('toast', e.message, 'error')
           })
-      },
-      cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
-        }
       }
+    },
+    ready () {
+      this.getCollectionsFromIndex(this.index)
+        .then(() => this.fetchCollectionDetail(this.collections, this.index, this.collectionName))
+        .catch(e => {
+          this.$dispatch('toast', e.message, 'error')
+          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+        })
     }
   }
 </script>

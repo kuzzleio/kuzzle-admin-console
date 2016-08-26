@@ -37,11 +37,11 @@ describe('Data index tests', () => {
     let triggerError = true
     let actions = actionsInjector({
       '../../../services/kuzzle': {
-        listCollections: (index, cb) => {
+        listCollectionsPromise: () => {
           if (triggerError) {
-            cb({message: 'error'})
+            return Promise.reject(new Error('error'))
           } else {
-            cb(null, {stored: [], realtime: []})
+            return Promise.resolve({stored: [], realtime: []})
           }
         }
       }
@@ -49,7 +49,7 @@ describe('Data index tests', () => {
 
     it('should get the collection list from an index', (done) => {
       triggerError = false
-      testAction(actions.getCollectionsFromIndex, [], {}, [
+      testActionPromise(actions.getCollectionsFromIndex, [], {}, [
         {name: 'RECEIVE_COLLECTIONS', payload: [{stored: [], realtime: []}]}
       ], done)
     })

@@ -20,7 +20,7 @@ describe('Collections test', () => {
               return {
                 apply: cb => {
                   if (triggerError) {
-                    cb({message: 'mock apply error'})
+                    cb(new Error('mock apply error'))
                   } else {
                     cb()
                   }
@@ -39,17 +39,19 @@ describe('Collections test', () => {
     })
 
     it('should set an error because collection name is invalid', (done) => {
-      testActionPromise(actions.createCollection, [], state, [], done).catch(e => {
-        expect(e.message).to.equals('Invalid collection name')
-        done()
-      })
+      testActionPromise(actions.createCollection, [], state, [], done)
+        .catch(e => {
+          expect(e.message).to.equals('Invalid collection name')
+          done()
+        })
     })
 
     it('should set an error because apply() has an error', (done) => {
-      testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], state, [], done).catch(e => {
-        expect(e.message).to.equals('mock apply error')
-        done()
-      })
+      testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], state, [], done)
+        .catch(e => {
+          expect(e.message).to.equals('mock apply error')
+          done()
+        })
     })
 
     it('should create a persisted collection', (done) => {

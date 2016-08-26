@@ -103,12 +103,12 @@
 
 <script>
   import Headline from '../../Materialize/Headline'
+  import JsonEditor from '../../Common/JsonEditor'
   import { resetCollectionDetail } from '../../../vuex/modules/collection/actions'
   import { mapping, collectionName, collectionIsRealtimeOnly } from '../../../vuex/modules/collection/getters'
-  import JsonEditor from '../../Common/JsonEditor'
 
   export default {
-    name: 'CollectionCreate',
+    name: 'CollectionCreateOrUpdate',
     components: {
       Headline,
       JsonEditor
@@ -145,7 +145,11 @@
         this.$dispatch('collection-create::create', this.name || this.collectionName, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
       },
       cancel () {
-        this.$dispatch('collection-create::cancel')
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+        }
       }
     },
     beforeDestroy () {
