@@ -30,10 +30,10 @@
           </div>
 
           <div class="row">
-            <div class="col s8">
+            <div class="col s7">
               <fieldset>
                 <div class="row">
-                  <a class="btn btn-small right" @click="addRootAttr">
+                  <a class="btn btn-small" @click="addRootAttr">
                     <i class="fa fa-plus-circle left"></i>
                     new attribute
                   </a>
@@ -120,12 +120,9 @@
       top: -27px;
       font-family: "Roboto", Arial, sans-serif;
 
-      a {
-        margin-left: 10px;
-        &.btn-tiny {
-          padding: 0;
-          height: 37px;
-        }
+      i {
+        font-size: 1.3em;
+        cursor: pointer;
       }
     }
     fieldset {
@@ -136,6 +133,16 @@
       &:hover, &:focus, &.active {
         border-left: solid 3px #DDD;
       }
+    }
+  }
+
+  .input-field {
+    a.btn-tiny {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 37px;
+      padding: 0;
     }
   }
 </style>

@@ -3,7 +3,7 @@
   <fieldset v-if="isNested(content)">
     <legend>
       {{name}}
-      <a class="btn-floating waves-effect waves-light btn-tiny secondary" @click="addAttribute"><i class="fa fa-plus"></i></a>
+      <i @click="addAttribute"class="fa fa-plus-circle primary"></i>
     </legend>
     <div v-for="(nestedName, nestedContent) in content.properties">
       <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>

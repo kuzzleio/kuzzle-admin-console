@@ -2,6 +2,8 @@
   <div class="row input-field">
     <input :id="name" :type="type" name="collection" v-model="value" @input="updatePartial" step="0.1"/>
     <label :for="name">{{name}}</label>
+
+    <a class="btn-floating waves-effect waves-light btn-tiny secondary right" @click="addElement"><i class="fa fa-plus"></i></a>
   </div>
 </template>
 
