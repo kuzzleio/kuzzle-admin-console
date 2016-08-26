@@ -130,7 +130,7 @@ describe('List collections tests', () => {
   })
 
   describe('ready', () => {
-    it('should do nothing if user can\'t search in collection', () => {
+    it('should do nothing if user can\'t search in index', () => {
       canSearchIndex = sandbox.stub().returns(false)
       listIndexesAndCollections = sandbox.stub()
       mockInjector()
@@ -138,7 +138,7 @@ describe('List collections tests', () => {
       expect(listIndexesAndCollections.callCount).to.be.equal(0)
     })
 
-    it('should call listIndexesAndCollections if user can search in collection', () => {
+    it('should call listIndexesAndCollections if user can search in index', () => {
       canSearchIndex = sandbox.stub().returns(true)
       listIndexesAndCollections = sandbox.stub()
       mockInjector()

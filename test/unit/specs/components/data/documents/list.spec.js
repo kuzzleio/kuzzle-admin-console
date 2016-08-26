@@ -8,23 +8,35 @@ let sandbox = sinon.sandbox.create()
 
 describe('Browse documents', () => {
   let vm
+  let getCollectionsFromTree = () => { return {realtime: [], stored: []} }
+  let indexesAndCollections = sandbox.stub().returns([{realtime: [], stored: []}])
 
-  before(() => {
+  const mockInjector = () => {
     Browse = BrowseInjector({
       '../Collections/Tabs': mockedComponent,
       '../../Common/List': mockedComponent,
       '../../Materialize/Headline': mockedComponent,
-      '../Collections/Dropdown': mockedComponent
+      '../Collections/Dropdown': mockedComponent,
+      '../../../services/data': {
+        getCollectionsFromTree
+      },
+      '../../../vuex/modules/data/getters': {
+        indexesAndCollections
+      }
     })
 
     vm = new Vue({
-      template: '<div><browse v-ref:browse ></browse></div>',
+      template: '<div><browse v-ref:browse></browse></div>',
       components: {Browse},
       replace: false,
       store: store
     }).$mount()
 
     vm.$refs.browse.$router = {go: sandbox.stub()}
+  }
+
+  before(() => {
+    mockInjector()
   })
 
   describe('Methods', () => {
@@ -43,6 +55,36 @@ describe('Browse documents', () => {
         expect(Browse.route.$broadcast.calledWith('crudl-refresh-search')).to.be.equal(true)
         done()
       }, 0)
+    })
+  })
+
+  describe('Computed', () => {
+    describe('isRealtimeCollection', () => {
+      it('returns false if the collections object is undefined or has no realtime attribute', () => {
+        getCollectionsFromTree = sandbox.stub().returns(undefined)
+        mockInjector()
+        vm.$refs.browse.collection = 'toto'
+        expect(Browse.computed.isRealtimeCollection()).to.be.equal(false)
+
+        getCollectionsFromTree = sandbox.stub().returns({})
+        mockInjector()
+        vm.$refs.browse.collection = 'toto'
+        expect(Browse.computed.isRealtimeCollection()).to.be.equal(false)
+      })
+
+      it('returns true if the collections.realtime object contains the name of the current collection', () => {
+        getCollectionsFromTree = sandbox.stub().returns({realtime: ['toto'], stored: []})
+        mockInjector()
+        vm.$refs.browse.collection = 'toto'
+
+        expect(vm.$refs.browse.isRealtimeCollection).to.be.equal(true)
+      })
+    })
+  })
+
+  describe('Ready', () => {
+    describe('description', () => {
+
     })
   })
 })
