@@ -90,5 +90,3 @@ angular.module('kuzzle.storage')
         }, 1000);
       };
     }]);
-
-export default [ctrlName, collectionsDropDownSearch, cogOptionsCollection];

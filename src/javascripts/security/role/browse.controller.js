@@ -49,4 +49,3 @@ angular.module('kuzzle.role')
     }
   ]);
 
-export default [ctrlName, documentsInline, roleToolbar];
