@@ -1,7 +1,7 @@
 <template>
   <div>
     <create-or-update
-      :headline="Create collection"
+      headline="Create collection"
       @collection-create::create="create"
       :index="index">
     </create-or-update>
