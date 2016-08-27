@@ -25,3 +25,7 @@ export const selectedCollection = state => {
 export const newDocument = state => {
   return state.data.newDocument
 }
+
+export const documentToEditId = state => {
+  return state.route.params.id
+}

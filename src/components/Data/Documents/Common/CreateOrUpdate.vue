@@ -1,10 +1,5 @@
 <template>
   <div class="wrapper">
-    <headline>
-      {{collection}}
-      <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
-    </headline>
-
     <collection-tabs></collection-tabs>
 
     <div class="card-panel">
@@ -12,7 +7,7 @@
         <div class="switch">
           <label>
             Form
-            <input type="checkbox" @click="switchEditMode">
+            <input type="checkbox" @click="switchEditMode"/>
             <span class="lever"></span>
             Json
           </label>
@@ -23,10 +18,10 @@
 
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
-          <div class="row">
+          <div class="row" v-if="!hideId">
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" v-model="id"/>
+                <input id="id" type="text" name="collection" @input="updatePartial"/>
                 <label for="id">Document identifier (optional)</label>
               </div>
             </div>
@@ -58,47 +53,42 @@
           <json-editor class="pre_ace" :content="newDocument" v-ref:jsoneditor></json-editor>
         </div>
 
-        <div class="row">
-          <div class="col s6">
-            <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
-            <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create
-            </button>
-          </div>
-        </div>
+        <slot></slot>
+
       </form>
     </div>
 
     <modal id="add-attr">
       <h4>Add a new attribute</h4>
-      <p>
       <form>
-        <div class="input-field">
-          <input id="name" type="text" required v-model="newAttributeName"/>
-          <label for="name">Field name</label>
-        </div>
-        <div class="input-field">
-          <select v-m-select="newAttributeType">
-            <option value="string" selected>String</option>
-            <option value="number">Number</option>
-            <option value="nested">Object</option>
-            <option value="geopos">Geo position</option>
-          </select>
-          <label>Attribute type</label>
-        </div>
-      </form>
-      </p>
+        <p>
+          <div class="input-field">
+            <input id="name" type="text" required v-model="newAttributeName"/>
+            <label for="name">Field name</label>
+          </div>
+          <div class="input-field">
+            <select v-m-select="newAttributeType">
+              <option value="string" selected>String</option>
+              <option value="number">Number</option>
+              <option value="nested">Object</option>
+              <option value="geopos">Geo position</option>
+            </select>
+            <label>Attribute type</label>
+          </div>
+        </p>
 
-      <span slot="footer">
-        <button
-          href="#"
-          class="waves-effect waves-green btn"
-          @click="doAddAttr">
-            Add
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
-            Cancel
-        </button>
-      </span>
+        <span slot="footer">
+          <button
+            type="submit"
+            class="waves-effect waves-green btn"
+            @click="doAddAttr">
+              Add
+          </button>
+          <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
+              Cancel
+          </a>
+        </span>
+      </form>
     </modal>
   </div>
 </template>
@@ -142,63 +132,41 @@
 </style>
 
 <script>
-  import CollectionTabs from '../Collections/Tabs.vue'
-  import CollectionDropdown from '../Collections/Dropdown'
-  import Headline from '../../Materialize/Headline'
-  import kuzzle from '../../../services/kuzzle'
-  import JsonForm from '../../Common/JsonForm/JsonForm'
-  import {setNewDocument, unsetNewDocument, setPartial} from '../../../vuex/modules/data/actions'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import JsonEditor from '../../Common/JsonEditor'
-  import Modal from '../../Materialize/Modal'
-  import MSelect from '../../../directives/Materialize/m-select.directive'
-  import {addAttributeFromPath, getUpdatedSchema} from '../../../services/documentFormat'
-  import {mergeDeep, formatGeoPoint} from '../../../services/objectHelper'
+  import kuzzle from '../../../../services/kuzzle'
+  import JsonForm from '../../../Common/JsonForm/JsonForm'
+  import {setNewDocument, unsetNewDocument, setPartial} from '../../../../vuex/modules/data/actions'
+  import {newDocument} from '../../../../vuex/modules/data/getters'
+  import JsonEditor from '../../../Common/JsonEditor'
+  import Modal from '../../../Materialize/Modal'
+  import MSelect from '../../../../directives/Materialize/m-select.directive'
+  import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
+  import {mergeDeep, formatGeoPoint} from '../../../../services/objectHelper'
+  import CollectionTabs from '../../Collections/Tabs'
 
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
-      CollectionTabs,
-      CollectionDropdown,
-      Headline,
       JsonForm,
       JsonEditor,
-      Modal
+      Modal,
+      CollectionTabs
+    },
+    props: {
+      index: String,
+      collection: String,
+      hideId: Boolean
     },
     directives: {
       MSelect
     },
-    props: {
-      index: String,
-      collection: String
-    },
     methods: {
-      cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        }
-      },
       create () {
-        if (this.viewState === 'code') {
-          let json = this.$refs.jsoneditor.getJson()
-          this.setNewDocument(json)
-        }
-        if (this.id) {
-          this.setPartial('_id', this.id)
-        }
+        let json
 
-        kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .createDocumentPromise(this.newDocument)
-          .then(() => {
-            kuzzle.refreshIndex(this.index)
-            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-          })
-          .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
-          })
+        if (this.viewState === 'code') {
+          json = this.$refs.jsoneditor.getJson()
+        }
+        this.$dispatch('document-create::create', this.viewState, json)
       },
       switchEditMode () {
         if (this.viewState === 'code') {
@@ -221,6 +189,16 @@
         this.newAttributeName = null
         this.newAttributePath = null
         this.$broadcast('modal-close', 'add-attr')
+      },
+      updatePartial (e) {
+        this.setPartial('_id', e.target.value)
+      },
+      cancel () {
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+        }
       }
     },
     vuex: {
@@ -238,7 +216,6 @@
     },
     data () {
       return {
-        id: '',
         mapping: {},
         viewState: 'form',
         newAttributeType: 'string',
@@ -246,22 +223,32 @@
         newAttributeName: null
       }
     },
-    route: {
-      data () {
-        kuzzle.dataCollectionFactory(this.collection, this.index).getMapping((err, res) => {
-          if (err) {
-            return
-          }
+    ready () {
+      kuzzle
+        .dataCollectionFactory(this.collection, this.index)
+        .getMappingPromise()
+        .then((res) => {
           this.mapping = res.mapping
           formatGeoPoint(this.mapping)
         })
-      }
+        .catch(() => {
+          // todo errors
+        })
     },
     events: {
-      // todo rename event
-      'add-attribute' (path) {
+      'document-create::add-attribute' (path) {
         this.newAttributePath = path
         this.$broadcast('modal-open', 'add-attr')
+      },
+      'document-create::fill' (document) {
+        this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
+      },
+      'document-create::cancel' () {
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+        }
       }
     }
   }

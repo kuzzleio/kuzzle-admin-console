@@ -13,14 +13,15 @@
     props: {
       name: String,
       content: Object,
-      fullName: String,
-      defaultValue: String
+      fullName: String
+    },
+    watch: {
+      content (content) {
+        this.value = content.val
+        this.setType()
+      }
     },
     ready () {
-      if (this.content.val) {
-        this.value = this.content.val
-        this.updatePartial()
-      }
       this.setType()
     },
     data () {
