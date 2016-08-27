@@ -141,6 +141,10 @@
         return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
       },
       indexesCount () {
+        if (!this.indexesAndCollections) {
+          return 0
+        }
+
         return Object.keys(this.indexesAndCollections).length
       }
     },

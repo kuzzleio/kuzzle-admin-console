@@ -29,7 +29,7 @@
             v-for="(indexName, collections) in tree | orderBy '$key'"
             v-if="filterTree(indexName, collections)">
             <index-branch
-              :force-open="key === 0 && Object.keys(tree).length === 1"
+              :force-open="indexesCount === 1"
               :index-name="indexName"
               :route-name="routeName"
               :collections="collections"
@@ -62,6 +62,15 @@
     data () {
       return {
         filter: ''
+      }
+    },
+    computed: {
+      indexesCount () {
+        if (!this.indexesAndCollections) {
+          return 0
+        }
+
+        return Object.keys(this.indexesAndCollections).length
       }
     },
     methods: {

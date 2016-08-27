@@ -88,10 +88,10 @@ export default {
     }
   },
   watch: {
-    index (index) {
+    currentIndex (index) {
       this.isTreeOpen(index, this.indexName)
     },
-    collection () {
+    currentCollection () {
       this.isTreeOpen(this.currentIndex, this.indexName)
     }
   },
