@@ -3,31 +3,29 @@ import VueRouter from 'vue-router'
 import IndexBranch from '../../../../../../src/components/Data/Leftnav/IndexBranch'
 
 let router
+let sandbox = sinon.sandbox.create()
 
-describe('IndexBranch component', () => {
+describe.only('IndexBranch component', () => {
   let $vm
-  let tree
+  let collections
 
-  beforeEach(() => {
+  before(() => {
     Vue.use(VueRouter)
 
-    tree = {
-      'name': 'kuzzle-bo-testindex',
-      'collections': {
-        'stored': [
-          'emptiable-collection',
-          'kuzzle-bo-test',
-          'readonly-collection',
-          'private-collection',
-          'editable-collection',
-          'not-editable-collection'
-        ],
-        'realtime': [
-          'realtime-collection',
-          'rairia-collection',
-          'tatatat-collection'
-        ]
-      }
+    collections = {
+      'stored': [
+        'emptiable-collection',
+        'kuzzle-bo-test',
+        'readonly-collection',
+        'private-collection',
+        'editable-collection',
+        'not-editable-collection'
+      ],
+      'realtime': [
+        'realtime-collection',
+        'rairia-collection',
+        'tatatat-collection'
+      ]
     }
 
     const App = Vue.extend({
@@ -38,14 +36,15 @@ describe('IndexBranch component', () => {
     const TestComponent = Vue.extend({
       template: `<index-branch
         v-ref:indexbranch
-        :index="index"
-        :collection="collection"
-        :index-tree="tree">
+        current-index="myindex"
+        current-collection="mycollection"
+        index-name="kuzzle-bo-testindex"
+        :collections="collections">
       </index-branch>`,
       components: { IndexBranch },
       data () {
         return {
-          tree: tree
+          collections
         }
       }
     })
@@ -76,78 +75,127 @@ describe('IndexBranch component', () => {
     $vm = router.app.$refs.routerview.$refs.indexbranch
   })
 
-  describe('getRelativeLink', () => {
-    it('should correctly compute link for persisted collection', () => {
-      let isRealtime = false
+  afterEach(() => sandbox.restore())
 
-      $vm.routeName = 'DataCollectionWatch'
-      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+  describe('Methods', () => {
+    describe('getRelativeLink', () => {
+      it('should correctly compute link for persisted collection', () => {
+        let isRealtime = false
 
-      $vm.routeName = 'DataDocumentsList'
-      expect($vm.getRelativeLink(isRealtime)).to.equal('DataDocumentsList')
+        $vm.routeName = 'DataCollectionWatch'
+        expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+
+        $vm.routeName = 'DataDocumentsList'
+        expect($vm.getRelativeLink(isRealtime)).to.equal('DataDocumentsList')
+      })
+
+      it('should correctly compute link for realtime collection', () => {
+        let isRealtime = true
+
+        $vm.routeName = 'DataCollectionWatch'
+        expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+
+        $vm.routeName = 'DataDocumentsList'
+        expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+      })
     })
 
-    it('should correctly compute link for realtime collection', () => {
-      let isRealtime = true
+    describe('toggleBranch', () => {
+      it('should correctly toggle index branch', () => {
+        expect($vm.open).to.equal(false)
 
-      $vm.routeName = 'DataCollectionWatch'
-      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+        $vm.toggleBranch()
+        expect($vm.open).to.equal(true)
+      })
+    })
 
-      $vm.routeName = 'DataDocumentsList'
-      expect($vm.getRelativeLink(isRealtime)).to.equal('DataCollectionWatch')
+    describe('testOpen', () => {
+      it('should open when index correspond', () => {
+        $vm.open = false
+
+        $vm.currentIndex = 'toto'
+        $vm.currentCollection = 'collection'
+        $vm.testOpen()
+        expect($vm.open).to.equal(false)
+
+        $vm.currentIndex = 'kuzzle-bo-testindex'
+        $vm.currentCollection = ''
+        $vm.testOpen()
+        expect($vm.open).to.equal(true)
+
+        $vm.currentIndex = 'kuzzle-bo-testindex'
+        $vm.currentCollection = 'collection'
+        $vm.testOpen()
+        expect($vm.open).to.equal(true)
+      })
+    })
+
+    describe('isIndexActive', () => {
+      it('should correctly determine whether an index is active', () => {
+        let indexName = 'index'
+
+        $vm.currentIndex = indexName
+        $vm.currentCollection = null
+        expect($vm.isIndexActive(indexName)).to.equal(true)
+
+        $vm.currentIndex = 'tata'
+        expect($vm.isIndexActive(indexName)).to.equal(false)
+
+        $vm.currentIndex = indexName
+        $vm.currentCollection = 'titi'
+        expect($vm.isIndexActive(indexName)).to.equal(false)
+      })
+    })
+
+    describe('isCollectionActive', () => {
+      it('should correctly determine whether a collection is active', () => {
+        let collectionName = 'collection'
+        let indexName = 'indexName'
+
+        $vm.currentCollection = collectionName
+        $vm.currentIndex = indexName
+        expect($vm.isCollectionActive(indexName, collectionName)).to.equal(true)
+
+        $vm.currentCollection = 'tutu'
+        expect($vm.isCollectionActive(indexName, collectionName)).to.equal(false)
+      })
     })
   })
 
-  describe('open', () => {
-    it('should correctly toggle index branch', () => {
-      expect($vm.open).to.equal(false)
+  describe('Watch', () => {
+    describe('currentIndex', () => {
+      it('should call testOpen when currentIndex is set', (done) => {
+        let testOpen = sandbox.stub($vm, 'testOpen')
+        testOpen.reset()
+        $vm.currentIndex = 'toto'
 
-      $vm.toggleBranch()
-      expect($vm.open).to.equal(true)
+        Vue.nextTick(() => {
+          expect(testOpen.callCount).to.be.equal(1)
+          done()
+        })
+      })
     })
 
-    it('should open when ready with active route', () => {
-      $vm.index = 'index'
-      $vm.collection = 'collection'
-      $vm.$options.ready[0].call($vm)
-      expect($vm.open).to.equal(false)
+    describe('currentCollection', () => {
+      it('should call testOpen when currentCollection is set', (done) => {
+        let testOpen = sandbox.stub($vm, 'testOpen')
+        testOpen.reset()
+        $vm.currentCollection = 'tutu'
 
-      $vm.index = 'kuzzle-bo-testindex'
-      $vm.collection = ''
-      $vm.$options.ready[0].call($vm)
-      expect($vm.open).to.equal(true)
-
-      $vm.index = 'kuzzle-bo-testindex'
-      $vm.collection = 'collection'
-      $vm.$options.ready[0].call($vm)
-      expect($vm.open).to.equal(true)
-    })
-  })
-
-  describe('isIndexActive', () => {
-    it('should correctly determine whether an index is active', () => {
-      let indexName = 'index'
-      $vm.index = indexName
-      expect($vm.isIndexActive(indexName)).to.equal(true)
-
-      $vm.index = 'tata'
-      expect($vm.isIndexActive(indexName)).to.equal(false)
-
-      $vm.collection = 'titi'
-      expect($vm.isIndexActive(indexName)).to.equal(false)
+        Vue.nextTick(() => {
+          expect(testOpen.callCount).to.be.equal(1)
+          done()
+        })
+      })
     })
   })
 
-  describe('isCollectionActive', () => {
-    it('should correctly determine whether a collection is active', () => {
-      let collectionName = 'collection'
-      let indexName = 'indexName'
-      $vm.collection = collectionName
-      $vm.index = indexName
-      expect($vm.isCollectionActive(indexName, collectionName)).to.equal(true)
+  describe('Ready', () => {
+    it('should call testOpen', () => {
+      IndexBranch.testOpen = sandbox.stub()
+      IndexBranch.ready()
 
-      $vm.collection = 'tutu'
-      expect($vm.isCollectionActive(collectionName)).to.equal(false)
+      expect(IndexBranch.testOpen.callCount).to.be.equal(1)
     })
   })
 })

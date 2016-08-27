@@ -2,37 +2,33 @@ import Vue from 'vue'
 import store from '../../../../../../src/vuex/store'
 import { mockedComponent } from '../../../helper'
 
-let BrowseInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/List')
-let Browse
+let ListInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/List')
+let List
 let sandbox = sinon.sandbox.create()
 
-describe('Browse documents', () => {
+describe('List documents', () => {
   let vm
-  let getCollectionsFromTree = () => { return {realtime: [], stored: []} }
-  let indexesAndCollections = sandbox.stub().returns([{realtime: [], stored: []}])
+  let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
 
   const mockInjector = () => {
-    Browse = BrowseInjector({
+    List = ListInjector({
       '../Collections/Tabs': mockedComponent,
       '../../Common/List': mockedComponent,
       '../../Materialize/Headline': mockedComponent,
       '../Collections/Dropdown': mockedComponent,
-      '../../../services/data': {
-        getCollectionsFromTree
-      },
       '../../../vuex/modules/data/getters': {
         indexesAndCollections
       }
     })
 
     vm = new Vue({
-      template: '<div><browse v-ref:browse></browse></div>',
-      components: {Browse},
+      template: '<div><list v-ref:list index="myindex"></list></div>',
+      components: {List},
       replace: false,
       store: store
     }).$mount()
 
-    vm.$refs.browse.$router = {go: sandbox.stub()}
+    vm.$refs.list.$router = {go: sandbox.stub()}
   }
 
   before(() => {
@@ -41,18 +37,18 @@ describe('Browse documents', () => {
 
   describe('Methods', () => {
     it('should redirect on right url on createDocument call', () => {
-      vm.$refs.browse.createDocument()
-      expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'DataCreateDocument'})).to.be.equal(true)
+      vm.$refs.list.createDocument()
+      expect(vm.$refs.list.$router.go.calledWithMatch({name: 'DataCreateDocument'})).to.be.equal(true)
     })
   })
 
   describe('Route', () => {
     it('should broadcast event when the route change', (done) => {
-      Browse.route.$broadcast = sandbox.stub()
-      Browse.route.data()
+      List.route.$broadcast = sandbox.stub()
+      List.route.data()
 
       setTimeout(() => {
-        expect(Browse.route.$broadcast.calledWith('crudl-refresh-search')).to.be.equal(true)
+        expect(List.route.$broadcast.calledWith('crudl-refresh-search')).to.be.equal(true)
         done()
       }, 0)
     })
@@ -61,30 +57,24 @@ describe('Browse documents', () => {
   describe('Computed', () => {
     describe('isRealtimeCollection', () => {
       it('returns false if the collections object is undefined or has no realtime attribute', () => {
-        getCollectionsFromTree = sandbox.stub().returns(undefined)
+        indexesAndCollections = sandbox.stub().returns({})
         mockInjector()
-        vm.$refs.browse.collection = 'toto'
-        expect(Browse.computed.isRealtimeCollection()).to.be.equal(false)
+        vm.$refs.list.collection = 'toto'
+        expect(List.computed.isRealtimeCollection()).to.be.equal(false)
 
-        getCollectionsFromTree = sandbox.stub().returns({})
+        indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
         mockInjector()
-        vm.$refs.browse.collection = 'toto'
-        expect(Browse.computed.isRealtimeCollection()).to.be.equal(false)
+        vm.$refs.list.collection = 'toto'
+        expect(List.computed.isRealtimeCollection()).to.be.equal(false)
       })
 
       it('returns true if the collections.realtime object contains the name of the current collection', () => {
-        getCollectionsFromTree = sandbox.stub().returns({realtime: ['toto'], stored: []})
+        indexesAndCollections = sandbox.stub().returns({myindex: {realtime: ['toto'], stored: []}})
         mockInjector()
-        vm.$refs.browse.collection = 'toto'
+        vm.$refs.list.collection = 'toto'
 
-        expect(vm.$refs.browse.isRealtimeCollection).to.be.equal(true)
+        expect(vm.$refs.list.isRealtimeCollection).to.be.equal(true)
       })
-    })
-  })
-
-  describe('Ready', () => {
-    describe('description', () => {
-
     })
   })
 })

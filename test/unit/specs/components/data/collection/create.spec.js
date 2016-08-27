@@ -13,7 +13,7 @@ describe('Create collection component test', () => {
   let resetCollectionDetail = sandbox.stub().returns()
   let createCollection = sandbox.stub().returns()
   let getCollectionsFromIndex = sandbox.stub().returns(Promise.resolve())
-  let collections = sandbox.stub().returns()
+  let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
   let collectionName = sandbox.stub().returns()
   let $dispatch
 
@@ -29,7 +29,7 @@ describe('Create collection component test', () => {
         getCollectionsFromIndex
       },
       '../../../vuex/modules/data/getters': {
-        collections
+        indexesAndCollections
       },
       '../../../vuex/modules/collection/getters': {
         collectionName
@@ -61,7 +61,7 @@ describe('Create collection component test', () => {
         $vm.create('toto', {toto: 'tutu'}, false)
 
         setTimeout(() => {
-          expect(createCollection.calledWith(store, 'myindex', 'toto', {toto: 'tutu'}, false)).to.be.equal(true)
+          expect(createCollection.calledWith(store, {realtime: [], stored: []}, 'myindex', 'toto', {toto: 'tutu'}, false)).to.be.equal(true)
           expect($dispatch.calledWith('toast', 'kuzzle error', 'error')).to.be.equal(true)
           done()
         }, 0)
@@ -74,7 +74,7 @@ describe('Create collection component test', () => {
         $vm.create('toto', {toto: 'tutu'}, false)
 
         setTimeout(() => {
-          expect(createCollection.calledWith(store, 'myindex', 'toto', {toto: 'tutu'}, false)).to.be.equal(true)
+          expect(createCollection.calledWith(store, {realtime: [], stored: []}, 'myindex', 'toto', {toto: 'tutu'}, false)).to.be.equal(true)
           expect($vm.$router.go.calledWithMatch({name: 'DataIndexSummary', params: {index: 'myindex'}})).to.be.equal(true)
           done()
         }, 0)

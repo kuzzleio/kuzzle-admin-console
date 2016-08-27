@@ -9,9 +9,9 @@ let vm
 let $vm
 
 describe('Update collection component test', () => {
-  let fetchCollectionDetail = sandbox.stub().returns()
+  let fetchCollectionDetail = sandbox.stub().returns(Promise.resolve())
   let getCollectionsFromIndex = sandbox.stub().returns(Promise.resolve())
-  let collections = sandbox.stub().returns()
+  let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
   let collectionName = sandbox.stub().returns()
   let $dispatch
 
@@ -25,7 +25,7 @@ describe('Update collection component test', () => {
         getCollectionsFromIndex
       },
       '../../../vuex/modules/data/getters': {
-        collections
+        indexesAndCollections
       },
       '../../../vuex/modules/collection/getters': {
         collectionName
@@ -113,24 +113,24 @@ describe('Update collection component test', () => {
 
   describe('Ready', () => {
     it('should display toaster with error and go on index summary if the collection doesn\'t exist', (done) => {
-      getCollectionsFromIndex = sandbox.stub().returns(Promise.reject(new Error('not exists')))
+      fetchCollectionDetail = sandbox.stub().returns(Promise.reject(new Error('kuzzle error')))
       mockInjector()
 
       setTimeout(() => {
-        expect($dispatch.calledWith('toast', 'not exists', 'error')).to.be.equal(true)
+        expect($dispatch.calledWith('toast', 'kuzzle error', 'error')).to.be.equal(true)
         expect($vm.$router.go.calledWithMatch({name: 'DataIndexSummary', params: {index: 'myindex'}}))
         done()
       }, 0)
     })
 
     it('should fetch collection detail with right params if the collection exists', (done) => {
-      getCollectionsFromIndex = sandbox.stub().returns(Promise.resolve())
-      collections = sandbox.stub().returns(['toto', 'tutu'])
+      let myindex = {realtime: ['toto'], stored: ['tutu']}
+      indexesAndCollections = sandbox.stub().returns({myindex})
       collectionName = sandbox.stub().returns('titi')
       mockInjector()
 
       setTimeout(() => {
-        expect(fetchCollectionDetail.calledWith(store, ['toto', 'tutu'], 'myindex', 'titi')).to.be.equal(true)
+        expect(fetchCollectionDetail.calledWith(store, myindex, 'myindex', 'titi')).to.be.equal(true)
         done()
       }, 0)
     })

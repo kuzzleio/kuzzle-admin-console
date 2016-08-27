@@ -75,8 +75,8 @@ export default {
           return 'DataDocumentsList'
       }
     },
-    isTreeOpen (currentIndex, indexName) {
-      if (currentIndex === indexName) {
+    testOpen () {
+      if (this.currentIndex === this.indexName) {
         this.open = true
       }
     },
@@ -88,15 +88,15 @@ export default {
     }
   },
   watch: {
-    currentIndex (index) {
-      this.isTreeOpen(index, this.indexName)
+    currentIndex () {
+      this.testOpen()
     },
     currentCollection () {
-      this.isTreeOpen(this.currentIndex, this.indexName)
+      this.testOpen()
     }
   },
-  ready: function () {
-    this.isTreeOpen(this.currentIndex, this.indexName)
+  ready () {
+    this.testOpen()
   }
 }
 </script>

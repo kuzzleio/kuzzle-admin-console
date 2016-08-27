@@ -54,7 +54,7 @@ describe('Breadcrumb tests', () => {
       it('should be ok if current index is on the realtime tree', () => {
         selectedIndex = sandbox.stub().returns('myindex')
         selectedCollection = sandbox.stub().returns('realtimeCollection')
-        indexesAndCollections = sandbox.stub().returns([{name: 'myindex', collections: {realtime: ['realtimeCollection']}}])
+        indexesAndCollections = sandbox.stub().returns({myindex: {realtime: ['realtimeCollection']}})
         mockInjector()
 
         expect(router.app.$refs.breadcrumb.isCollectionRealtime()).to.be.equal(true)
@@ -63,7 +63,7 @@ describe('Breadcrumb tests', () => {
       it('should be not ok if current index is on the stored tree', () => {
         selectedIndex = sandbox.stub().returns('myindex')
         selectedCollection = sandbox.stub().returns('storeCollection')
-        indexesAndCollections = sandbox.stub().returns([{name: 'myindex', collections: {realtime: ['realtimeCollection']}}])
+        indexesAndCollections = sandbox.stub().returns({myindex: {realtime: ['realtimeCollection']}})
         mockInjector()
 
         expect(router.app.$refs.breadcrumb.isCollectionRealtime()).to.be.equal(false)

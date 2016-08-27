@@ -12,12 +12,10 @@ Vue.use(VueRouter)
 
 describe('List collections tests', () => {
   let listIndexesAndCollections = sandbox.stub()
-  let indexesAndCollections = sandbox.stub().returns([{realtime: [], stored: []}])
-  let getCollectionsFromTree = sandbox.stub().returns({realtime: [], stored: []})
+  let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
   let canSearchCollection = sandbox.stub().returns(true)
   let canCreateCollection = sandbox.stub().returns(true)
   let canSearchIndex = sandbox.stub().returns(true)
-  let getCollectionCount = sandbox.stub().returns(0)
   let router
 
   const mockInjector = () => {
@@ -36,11 +34,7 @@ describe('List collections tests', () => {
         canSearchCollection,
         canCreateCollection
       },
-      '../../../directives/title.directive': mockedDirective,
-      '../../../services/data': {
-        getCollectionCount,
-        getCollectionsFromTree
-      }
+      '../../../directives/title.directive': mockedDirective
     })
 
     const App = Vue.extend({
@@ -68,7 +62,8 @@ describe('List collections tests', () => {
   describe('computed', () => {
     describe('isCollectionForFilter', () => {
       it('should return true if a collection in realtime match the filter', () => {
-        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
+        List.computed.index = 'myindex'
+        List.computed.indexesAndCollections = {myindex: {realtime: ['toto', 'tutu'], stored: ['foo']}}
         List.computed.filter = 'to'
         List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
 
@@ -76,7 +71,8 @@ describe('List collections tests', () => {
       })
 
       it('should return true if a collection in stored match the filter', () => {
-        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
+        List.computed.index = 'myindex'
+        List.computed.indexesAndCollections = {myindex: {realtime: ['toto', 'tutu'], stored: ['foo']}}
         List.computed.filter = 'fo'
         List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
 
@@ -84,7 +80,8 @@ describe('List collections tests', () => {
       })
 
       it('should return true if a collection in stored and realtime match the filter', () => {
-        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo', 'tuto']}
+        List.computed.index = 'myindex'
+        List.computed.indexesAndCollections = {myindex: {realtime: ['toto', 'tutu'], stored: ['foo', 'tuto']}}
         List.computed.filter = 'tu'
         List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
 
@@ -92,7 +89,8 @@ describe('List collections tests', () => {
       })
 
       it('should return false if there is no collection matching the filter', () => {
-        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
+        List.computed.index = 'myindex'
+        List.computed.indexesAndCollections = {myindex: {realtime: ['toto', 'tutu'], stored: ['foo']}}
         List.computed.filter = 'bar'
         List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
 
