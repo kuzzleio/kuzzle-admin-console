@@ -57,9 +57,10 @@
   import CommonList from '../../Common/List'
   import Headline from '../../Materialize/Headline'
   import CollectionDropdown from '../Collections/Dropdown'
-  import { collections } from '../../../vuex/modules/data/getters'
-  import { getCollectionsFromIndex } from '../../../vuex/modules/data/actions'
-  import { canSearchCollection } from '../../../services/userAuthorization'
+  import { listIndexesAndCollections } from '../../../vuex/modules/data/actions'
+  import { canSearchIndex } from '../../../services/userAuthorization'
+  import { getCollectionsFromTree } from '../../../services/data'
+  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
 
   export default {
     name: 'DocumentsList',
@@ -74,23 +75,32 @@
       CollectionDropdown
     },
     vuex: {
-      getters: {
-        collections
-      },
       actions: {
-        getCollectionsFromIndex
+        listIndexesAndCollections
+      },
+      getters: {
+        indexesAndCollections
       }
     },
     computed: {
       isRealtimeCollection () {
+        if (!this.collections) {
+          return false
+        }
+        if (!this.collections.realtime) {
+          return false
+        }
         return this.collections.realtime.indexOf(this.collection) !== -1
+      },
+      collections () {
+        return getCollectionsFromTree(this.indexesAndCollections, this.index)
       }
     },
     methods: {
       createDocument () {
         this.$router.go({name: 'DataCreateDocument'})
       },
-      canSearchCollection
+      canSearchIndex
     },
     route: {
       data () {
@@ -101,8 +111,8 @@
       }
     },
     ready () {
-      if (this.canSearchCollection(this.index)) {
-        this.getCollectionsFromIndex(this.index)
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
       }
     }
   }

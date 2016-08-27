@@ -1,9 +1,9 @@
+import Vue from 'vue'
 import {
   RECEIVE_INDEXES_COLLECTIONS,
   RECEIVE_MAPPING,
   ADD_NOTIFICATION,
   EMPTY_NOTIFICATION,
-  RECEIVE_COLLECTIONS,
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
   ADD_INDEX,
@@ -17,17 +17,13 @@ const state = {
   mapping: undefined,
   notifications: [],
   room: undefined,
-  collections: {
-    stored: [],
-    realtime: []
-  },
   documents: [],
   newDocument: {}
 }
 
 export const mutations = {
   [RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
-    state.indexesAndCollections = indexesAndCollections
+    Vue.set(state, 'indexesAndCollections', indexesAndCollections)
   },
   [RECEIVE_MAPPING] (state, mapping) {
     state.mapping = mapping
@@ -38,20 +34,17 @@ export const mutations = {
   [EMPTY_NOTIFICATION] (state) {
     state.notifications = []
   },
-  [RECEIVE_COLLECTIONS] (state, collections) {
-    state.collections = collections
-  },
   [ADD_STORED_COLLECTION] (state, index, collection) {
     for (var i = 0; i < state.indexesAndCollections.length; i++) {
       if (state.indexesAndCollections[i].name === index) {
-        state.collections.stored.push(collection)
+        state.indexesAndCollections[i].collections.stored.push(collection)
       }
     }
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
     for (var i = 0; i < state.indexesAndCollections.length; i++) {
       if (state.indexesAndCollections[i].name === index) {
-        state.collections.realtime.push(collection)
+        state.indexesAndCollections[i].collections.realtime.push(collection)
       }
     }
   },

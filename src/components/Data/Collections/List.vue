@@ -35,7 +35,7 @@
     <div class="row">
       <div class="col s12 m10 l8">
 
-        <div class="row actions" v-if="countCollection">
+        <div class="row actions" v-if="collectionCount">
           <div class="col s9">
             <a class="btn waves-effect waves-light primary"
                href="#!"
@@ -48,7 +48,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="countCollection > 1">
+            <div class="input-field left-align" v-if="collectionCount > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" type="text" tabindex="1" v-model="filter">
             </div>
@@ -74,7 +74,7 @@
           </div>
 
           <!-- Not Collection -->
-          <div class="card-panel" v-if="canSearchCollection(index) && !countCollection">
+          <div class="card-panel" v-if="canSearchCollection(index) && !collectionCount">
             <div class="row valign-bottom empty-set empty-set-condensed">
               <div class="col s1 offset-s1">
                 <i class="fa fa-6x fa-th-list grey-text text-lighten-1" aria-hidden="true"></i>
@@ -165,10 +165,11 @@
   import Headline from '../../Materialize/Headline'
   import IndexDropdown from './Dropdown'
   import CollectionBoxed from '../Collections/Boxed'
-  import {getCollectionsFromIndex} from '../../../vuex/modules/data/actions'
-  import {collections} from '../../../vuex/modules/data/getters'
-  import {canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
+  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
+  import {indexesAndCollections} from '../../../vuex/modules/data/getters'
+  import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
+  import {getCollectionCount, getCollectionsFromTree} from '../../../services/data'
 
   export default {
     name: 'CollectionsList',
@@ -181,6 +182,7 @@
       IndexDropdown
     },
     methods: {
+      canSearchIndex,
       canSearchCollection,
       canCreateCollection
     },
@@ -189,10 +191,10 @@
     },
     vuex: {
       actions: {
-        getCollectionsFromIndex
+        listIndexesAndCollections
       },
       getters: {
-        collections
+        indexesAndCollections
       }
     },
     data () {
@@ -201,8 +203,11 @@
       }
     },
     computed: {
-      countCollection () {
-        return this.collections.realtime.length + this.collections.stored.length
+      collectionCount () {
+        return getCollectionCount(this.collections)
+      },
+      collections () {
+        return getCollectionsFromTree(this.indexesAndCollections, this.index)
       },
       isCollectionForFilter () {
         return this.$options.filters.filterBy(this.collections.stored, this.filter).length > 0 ||
@@ -211,14 +216,14 @@
     },
     watch: {
       'index': function (index) {
-        if (this.canSearchCollection(index)) {
-          this.getCollectionsFromIndex(index)
+        if (this.canSearchIndex()) {
+          this.listIndexesAndCollections()
         }
       }
     },
     ready () {
-      if (this.canSearchCollection(this.index)) {
-        this.getCollectionsFromIndex(this.index)
+      if (this.canSearchIndex()) {
+        this.listIndexesAndCollections()
       }
     }
   }

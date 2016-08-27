@@ -32,28 +32,6 @@ describe('Data index tests', () => {
       ], done)
     })
   })
-
-  describe('getCollectionsFromIndex', () => {
-    let triggerError = true
-    let actions = actionsInjector({
-      '../../../services/kuzzle': {
-        listCollections: (index, cb) => {
-          if (triggerError) {
-            cb({message: 'error'})
-          } else {
-            cb(null, {stored: [], realtime: []})
-          }
-        }
-      }
-    })
-
-    it('should get the collection list from an index', (done) => {
-      triggerError = false
-      testAction(actions.getCollectionsFromIndex, [], {}, [
-        {name: 'RECEIVE_COLLECTIONS', payload: [{stored: [], realtime: []}]}
-      ], done)
-    })
-  })
 })
 
 describe('listIndexesAndCollections action', () => {
