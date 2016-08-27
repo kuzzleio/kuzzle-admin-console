@@ -98,17 +98,6 @@ describe('IndexBranch component', () => {
     })
   })
 
-  describe('collectionCount', () => {
-    it('should correctly compute collections inside an index', () => {
-      expect($vm.collectionCount(tree)).to.equal(9)
-
-      tree.collections.stored.push('toto')
-      expect($vm.collectionCount(tree)).to.equal(10)
-
-      expect($vm.collectionCount({name: 'empty-index'})).to.equal(0)
-    })
-  })
-
   describe('open', () => {
     it('should correctly toggle index branch', () => {
       expect($vm.open).to.equal(false)
