@@ -77,16 +77,11 @@ export const getMapping = (store, index, collection) => {
 }
 
 export const createIndex = (store, index) => {
-  return new Promise((resolve, reject) => {
-    kuzzle.query({index: index, controller: 'admin', action: 'createIndex'}, {}, (err) => {
-      if (err) {
-        return reject(new Error(err.message))
-      }
-
+  return kuzzle
+    .queryPromise({index: index, controller: 'admin', action: 'createIndex'}, {})
+    .then(() => {
       store.dispatch(ADD_INDEX, index)
-      resolve()
     })
-  })
 }
 
 export const setPartial = (store, path, value) => {

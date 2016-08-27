@@ -59,13 +59,7 @@ export const mutations = {
     state.indexesAndCollections[index].realtime.push(collection)
   },
   [ADD_INDEX] (state, index) {
-    state.indexesAndCollections.push({
-      name: index,
-      collections: {
-        stored: [],
-        realtime: []
-      }
-    })
+    state.indexesAndCollections[index] = {realtime: [], stored: []}
   },
   [SET_PARTIAL_TO_DOCUMENT] (state, path, value) {
     let splitted = path.split('.')

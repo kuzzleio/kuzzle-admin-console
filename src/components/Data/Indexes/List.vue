@@ -18,7 +18,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="indexesAndCollections.length > 1">
+            <div class="input-field left-align" v-if="indexesCount > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
@@ -37,7 +37,7 @@
           </div>
 
           <!-- No index view -->
-          <div class="col s12" v-if="canSearchIndex() && !indexesAndCollections.length">
+          <div class="col s12" v-if="canSearchIndex() && !indexesCount">
             <a class="card-title fluid-hover"
              href="#!"
              @click.prevent="$broadcast('modal-open', 'index-create')">
@@ -66,9 +66,9 @@
 
           <!-- Index listing -->
           <index-boxed
-            :index="index.name"
+            :index="indexName"
             v-if="canSearchIndex()"
-            v-for="index in indexesAndCollections | filterBy filter in 'name' | orderBy 'name'">
+            v-for="(indexName, collections) in indexesAndCollections | filterBy filter | orderBy '$key'">
           </index-boxed>
 
           <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
@@ -138,7 +138,10 @@
     },
     computed: {
       countIndexForFilter () {
-        return this.$options.filters.filterBy(this.indexesAndCollections, this.filter, 'name').length
+        return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
+      },
+      indexesCount () {
+        return Object.keys(this.indexesAndCollections).length
       }
     },
     ready () {

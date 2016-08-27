@@ -26,7 +26,7 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="(indexName, collections) in tree | orderBy 'indexName'"
+            v-for="(indexName, collections) in tree | orderBy '$key'"
             v-if="filterTree(indexName, collections)">
             <index-branch
               :force-open="key === 0 && Object.keys(tree).length === 1"
