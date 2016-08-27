@@ -11,8 +11,8 @@
 <script>
   import CreateOrUpdate from './CreateOrUpdate'
   import { fetchCollectionDetail } from '../../../vuex/modules/collection/actions'
-  import { getCollectionsFromIndex } from '../../../vuex/modules/data/actions'
-  import { collections } from '../../../vuex/modules/data/getters'
+  import { listIndexesAndCollections } from '../../../vuex/modules/data/actions'
+  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
   import { collectionName } from '../../../vuex/modules/collection/getters'
   import kuzzle from '../../../services/kuzzle'
 
@@ -27,10 +27,10 @@
     vuex: {
       actions: {
         fetchCollectionDetail,
-        getCollectionsFromIndex
+        listIndexesAndCollections
       },
       getters: {
-        collections,
+        indexesAndCollections,
         collectionName
       }
     },
@@ -59,8 +59,7 @@
       }
     },
     ready () {
-      this.getCollectionsFromIndex(this.index)
-        .then(() => this.fetchCollectionDetail(this.collections, this.index, this.collectionName))
+      this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName)
         .catch(e => {
           this.$dispatch('toast', e.message, 'error')
           this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})

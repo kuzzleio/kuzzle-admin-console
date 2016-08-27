@@ -13,7 +13,7 @@ import {
 } from './mutation-types'
 
 const state = {
-  indexesAndCollections: [],
+  indexesAndCollections: {},
   mapping: undefined,
   notifications: [],
   room: undefined,
@@ -35,18 +35,28 @@ export const mutations = {
     state.notifications = []
   },
   [ADD_STORED_COLLECTION] (state, index, collection) {
-    for (var i = 0; i < state.indexesAndCollections.length; i++) {
-      if (state.indexesAndCollections[i].name === index) {
-        state.indexesAndCollections[i].collections.stored.push(collection)
-      }
+    // for (var i = 0; i < state.indexesAndCollections.length; i++) {
+    //   if (state.indexesAndCollections[i].name === index) {
+    //     state.indexesAndCollections[i].collections.stored.push(collection)
+    //   }
+    // }
+    if (!state.indexesAndCollections[index]) {
+      state.indexesAndCollections[index] = {realtime: [], stored: []}
     }
+
+    state.indexesAndCollections[index].stored.push(collection)
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
-    for (var i = 0; i < state.indexesAndCollections.length; i++) {
-      if (state.indexesAndCollections[i].name === index) {
-        state.indexesAndCollections[i].collections.realtime.push(collection)
-      }
+    // for (var i = 0; i < state.indexesAndCollections.length; i++) {
+    //   if (state.indexesAndCollections[i].name === index) {
+    //     state.indexesAndCollections[i].collections.realtime.push(collection)
+    //   }
+    // }
+    if (!state.indexesAndCollections[index]) {
+      state.indexesAndCollections[index] = {realtime: [], stored: []}
     }
+
+    state.indexesAndCollections[index].realtime.push(collection)
   },
   [ADD_INDEX] (state, index) {
     state.indexesAndCollections.push({

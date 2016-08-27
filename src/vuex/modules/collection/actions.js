@@ -3,54 +3,33 @@ import {ADD_STORED_COLLECTION, ADD_REALTIME_COLLECTION} from '../data/mutation-t
 import { RECEIVE_COLLECTION_DETAIL, RESET_COLLECTION_DETAIL } from './mutation-types'
 import Promise from 'bluebird'
 
-export const createCollection = (store, index, collection, mapping, isRealTime) => {
-  return new Promise((resolve, reject) => {
-    let indexesAndCollections = []
-    if (store.state && store.state.data) {
-      /** TODO: pass indexesAndCollection in parameter instead of accessing to the store */
-      indexesAndCollections = store.state.data.indexesAndCollections
-    }
+export const createCollection = (store, existingCollections, index, collectionName, mapping, isRealTime) => {
+  if (!collectionName) {
+    return Promise.reject(new Error('Invalid collection name'))
+  }
 
-    if (!collection) {
-      return reject(new Error('Invalid collection name'))
-    }
+  if (existingCollections.stored.indexOf(collectionName) !== -1 ||
+    existingCollections.realtime.indexOf(collectionName) !== -1) {
+    return Promise.reject(new Error(`Collection "${collectionName}" already exist`))
+  }
 
-    let collectionExist = indexesAndCollections
-      .filter(indexTree => {
-        return indexTree.name === index
-      })
-      .some(indexTree => {
-        return indexTree.collections.stored.includes(collection) || indexTree.collections.realtime.includes(collection)
-      })
+  if (isRealTime) {
+    // eslint-disable-next-line no-undef
+    let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+    collections.push({index, collectionName})
+    // eslint-disable-next-line no-undef
+    localStorage.setItem('realtimeCollections', JSON.stringify(collections))
+    store.dispatch(ADD_REALTIME_COLLECTION, index, collectionName)
+    return Promise.resolve()
+  }
 
-    if (collectionExist) {
-      return reject(new Error('Collection "' + collection + '" already exist'))
-    }
-
-    if (isRealTime) {
-      // eslint-disable-next-line no-undef
-      let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-      collections.push({index, collection})
-      // eslint-disable-next-line no-undef
-      localStorage.setItem('realtimeCollections', JSON.stringify(collections))
-      store.dispatch(ADD_REALTIME_COLLECTION, index, collection)
-      resolve()
-      return
-    }
-
-    kuzzle
-      .dataCollectionFactory(collection, index)
-      .dataMappingFactory(mapping || {})
-      .apply(err => {
-        if (err) {
-          reject(err)
-          return
-        }
-
-        store.dispatch(ADD_STORED_COLLECTION, index, collection)
-        resolve()
-      })
-  })
+  return kuzzle
+    .dataCollectionFactory(collectionName, index)
+    .dataMappingFactory(mapping || {})
+    .applyPromise()
+    .then(() => {
+      store.dispatch(ADD_STORED_COLLECTION, index, collectionName)
+    })
 }
 
 export const fetchCollectionDetail = (store, collections, index, collection) => {

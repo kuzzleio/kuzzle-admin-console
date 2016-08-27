@@ -30,7 +30,7 @@ export const listIndexesAndCollections = (store) => {
 
   return new Promise((resolve, reject) => {
     kuzzle.listIndexes((error, result) => {
-      let indexesAndCollections = []
+      let indexesAndCollections = {}
 
       if (error) {
         return reject(new Error(error.message))
@@ -48,10 +48,7 @@ export const listIndexesAndCollections = (store) => {
               addLocalRealtimeCollections(result, index)
               result = dedupeRealtimeCollections(result)
 
-              indexesAndCollections.push({
-                name: index,
-                collections: result
-              })
+              indexesAndCollections[index] = result
             }
             resolveOne(indexesAndCollections)
           })
@@ -60,12 +57,12 @@ export const listIndexesAndCollections = (store) => {
         /* eslint-enable */
       })
 
-      Promise.all(promises).then(res => {
-        store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
-        resolve()
-      }).catch((error) => {
-        return reject(new Error(error.message))
-      })
+      Promise.all(promises)
+        .then(res => {
+          store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
+          resolve()
+        })
+        .catch((error) => reject(new Error(error.message)))
     })
   })
 }
@@ -77,15 +74,6 @@ export const getMapping = (store, index, collection) => {
     }
     store.dispatch(RECEIVE_MAPPING, res.mapping)
   })
-}
-
-export const getCollectionsFromIndex = (store, index) => {
-  return kuzzle
-    .listCollectionsPromise(index)
-    .then(result => {
-      addLocalRealtimeCollections(result, index)
-      store.dispatch(RECEIVE_COLLECTIONS, result)
-    })
 }
 
 export const createIndex = (store, index) => {

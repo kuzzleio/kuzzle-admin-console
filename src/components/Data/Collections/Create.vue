@@ -11,9 +11,8 @@
 <script>
   import CreateOrUpdate from './CreateOrUpdate'
   import { fetchCollectionDetail, resetCollectionDetail, createCollection } from '../../../vuex/modules/collection/actions'
-  import { getCollectionsFromIndex } from '../../../vuex/modules/data/actions'
-  import { collections } from '../../../vuex/modules/data/getters'
   import { collectionName } from '../../../vuex/modules/collection/getters'
+  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
 
   export default {
     name: 'CollectionCreate',
@@ -27,17 +26,16 @@
       actions: {
         fetchCollectionDetail,
         resetCollectionDetail,
-        getCollectionsFromIndex,
         createCollection
       },
       getters: {
-        collections,
-        collectionName
+        collectionName,
+        indexesAndCollections
       }
     },
     methods: {
       create (name, mapping, isRealtime) {
-        this.createCollection(this.index, name, mapping, isRealtime)
+        this.createCollection(this.indexesAndCollections[this.index], this.index, name, mapping, isRealtime)
           .then(() => {
             this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
           })

@@ -73,7 +73,7 @@
             </div>
           </div>
 
-          <!-- Not Collection -->
+          <!-- No Collection -->
           <div class="card-panel" v-if="canSearchCollection(index) && !collectionCount">
             <div class="row valign-bottom empty-set empty-set-condensed">
               <div class="col s1 offset-s1">
@@ -112,7 +112,7 @@
 
 
           <collection-boxed
-              v-for="collection in collections.stored | filterBy filter | orderBy 1"
+              v-for="collection in storedCollections | filterBy filter | orderBy 1"
               v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
@@ -120,7 +120,7 @@
           </collection-boxed>
 
           <collection-boxed
-              v-for="collection in collections.realtime | filterBy filter | orderBy 1"
+              v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
               v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
@@ -169,7 +169,6 @@
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
-  import {getCollectionCount, getCollectionsFromTree} from '../../../services/data'
 
   export default {
     name: 'CollectionsList',
@@ -204,14 +203,40 @@
     },
     computed: {
       collectionCount () {
-        return getCollectionCount(this.collections)
-      },
-      collections () {
-        return getCollectionsFromTree(this.indexesAndCollections, this.index)
+        if (!this.indexesAndCollections[this.index]) {
+          return 0
+        }
+
+        return this.indexesAndCollections[this.index].stored.length +
+          this.indexesAndCollections[this.index].realtime.length
       },
       isCollectionForFilter () {
-        return this.$options.filters.filterBy(this.collections.stored, this.filter).length > 0 ||
-          this.$options.filters.filterBy(this.collections.realtime, this.filter).length > 0
+        if (!this.indexesAndCollections[this.index]) {
+          return
+        }
+
+        return this.$options.filters.filterBy(
+            this.indexesAndCollections[this.index].stored,
+            this.filter
+          ).length > 0 ||
+          this.$options.filters.filterBy(
+            this.indexesAndCollections[this.index].realtime,
+            this.filter
+          ).length > 0
+      },
+      storedCollections () {
+        if (!this.indexesAndCollections[this.index]) {
+          return []
+        }
+
+        return this.indexesAndCollections[this.index].stored
+      },
+      realtimeCollections () {
+        if (!this.indexesAndCollections[this.index]) {
+          return []
+        }
+
+        return this.indexesAndCollections[this.index].realtime
       }
     },
     watch: {
