@@ -10,7 +10,6 @@ describe('documentFormat', () => {
       documentFormat = documentFormatInjector({
         'vue': {
           set: (obj, attr, content) => {
-            console.log('vue stub', obj, attr, content)
             obj[attr] = content
           }
         }

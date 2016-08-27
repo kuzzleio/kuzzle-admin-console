@@ -22,8 +22,6 @@ describe('JsonFormItem tests', () => {
         }
       }
     }).$mount(ctx)
-
-    vm.$refs.jsonformitem.value = content
   }
 
   beforeEach(() => {
@@ -48,9 +46,13 @@ describe('JsonFormItem tests', () => {
         initComponent()
       })
 
-      it('should call the vuex setPartial action', () => {
-        vm.$refs.jsonformitem.updatePartial()
-        expect(setPartialSpy.calledWith(store, 'foo', {val: 'bar'})).to.be.ok
+      it('should call the vuex setPartial action', (done) => {
+        vm.content = {val: 'bar'}
+        Vue.nextTick(() => {
+          vm.$refs.jsonformitem.updatePartial()
+          expect(setPartialSpy.calledWith(store, 'foo', 'bar')).to.be.ok
+          done()
+        })
       })
     })
 
@@ -82,18 +84,6 @@ describe('JsonFormItem tests', () => {
         vm.$refs.jsonformitem.setType()
         expect(vm.$refs.jsonformitem.type).to.equals('text')
       })
-    })
-  })
-
-  describe('ready test', () => {
-    it('should set the partial on ready if a content is provided as props', () => {
-      let spy = sandbox.stub(JsonFormItem.methods, 'updatePartial')
-      document.body.insertAdjacentHTML('afterbegin', '<app></app>')
-      content = {val: 'value'}
-
-      JsonFormItem.methods.updatePartial = spy
-      initComponent('app')
-      expect(spy.called).to.be.ok
     })
   })
 })

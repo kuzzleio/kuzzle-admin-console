@@ -138,7 +138,6 @@ describe('Router login redirect', () => {
 
     createRoutes.default(vueRouter)
     vueRouter.go('/error/kuzzle-disconnected')
-    console.log(transition.redirect.args)
     expect(transition.redirect.calledWith('/')).to.be.ok
   })
 

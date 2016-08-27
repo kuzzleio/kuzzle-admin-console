@@ -43,7 +43,7 @@
       },
       addAttribute () {
         // todo format
-        this.$dispatch('add-attribute', this.path)
+        this.$dispatch('document-create::add-attribute', this.path)
       }
     }
   }
