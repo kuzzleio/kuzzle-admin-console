@@ -38,7 +38,7 @@ describe('List collections tests', () => {
     })
 
     const App = Vue.extend({
-      template: '<div><list v-ref:list></list></div>',
+      template: '<div><list v-ref:list index="myindex"></list></div>',
       components: { List },
       replace: false,
       store: store
@@ -95,6 +95,54 @@ describe('List collections tests', () => {
         List.computed.$options = {filters: {filterBy: Vue.filter('filterBy')}}
 
         expect(List.computed.isCollectionForFilter()).to.be.equal(false)
+      })
+    })
+
+    describe('collectionCount', () => {
+      it('should return 0 if there is no current index in store', () => {
+        indexesAndCollections = sandbox.stub().returns({})
+        mockInjector()
+
+        expect($vm.collectionCount).to.be.equal(0)
+      })
+
+      it('should return the right number of collections', () => {
+        indexesAndCollections = sandbox.stub().returns({myindex: {stored: ['toto', 'tutu'], realtime: ['tata']}})
+        mockInjector()
+
+        expect($vm.collectionCount).to.be.equal(3)
+      })
+    })
+
+    describe('storedCollections', () => {
+      it('should returns empty array if there is no current index in store', () => {
+        indexesAndCollections = sandbox.stub().returns({})
+        mockInjector()
+
+        expect($vm.storedCollections).to.deep.equal([])
+      })
+
+      it('should returns an array with all stored collections', () => {
+        indexesAndCollections = sandbox.stub().returns({myindex: {stored: ['toto', 'tutu'], realtime: ['tata']}, other: {}})
+        mockInjector()
+
+        expect($vm.storedCollections).to.deep.equal(['toto', 'tutu'])
+      })
+    })
+
+    describe('realtimeCollections', () => {
+      it('should returns empty array if there is no current index in store', () => {
+        indexesAndCollections = sandbox.stub().returns({})
+        mockInjector()
+
+        expect($vm.realtimeCollections).to.deep.equal([])
+      })
+
+      it('should returns an array with all realtime collections', () => {
+        indexesAndCollections = sandbox.stub().returns({myindex: {stored: ['toto', 'tutu'], realtime: ['tata']}, other: {}})
+        mockInjector()
+
+        expect($vm.realtimeCollections).to.deep.equal(['tata'])
       })
     })
   })
