@@ -1,22 +1,22 @@
 import actionsInjector from 'inject!../../../../../src/vuex/modules/data/actions'
 import {testAction, testActionPromise} from '../../helper'
 
-describe('Data index tests', () => {
+describe('Data module index', () => {
   describe('createIndex', () => {
     let triggerError = true
     let actions = actionsInjector({
       '../../../services/kuzzle': {
-        query: (queryArgs, query, cb) => {
+        queryPromise: (queryArgs, query) => {
           if (triggerError) {
-            cb({message: 'error'})
+            return Promise.reject(new Error('error'))
           } else {
-            cb(null, {})
+            return Promise.resolve({})
           }
         }
       }
     })
 
-    it('should dispatch the created index if success', (done) => {
+    it('should not dispatch the created index if kuzzle reject', (done) => {
       triggerError = true
       testActionPromise(actions.createIndex, ['myindex'], {}, [], done)
         .catch((error) => {
@@ -29,28 +29,6 @@ describe('Data index tests', () => {
       triggerError = false
       testAction(actions.createIndex, ['myindex'], {}, [
         {name: 'ADD_INDEX', payload: ['myindex']}
-      ], done)
-    })
-  })
-
-  describe('getCollectionsFromIndex', () => {
-    let triggerError = true
-    let actions = actionsInjector({
-      '../../../services/kuzzle': {
-        listCollectionsPromise: () => {
-          if (triggerError) {
-            return Promise.reject(new Error('error'))
-          } else {
-            return Promise.resolve({stored: [], realtime: []})
-          }
-        }
-      }
-    })
-
-    it('should get the collection list from an index', (done) => {
-      triggerError = false
-      testActionPromise(actions.getCollectionsFromIndex, [], {}, [
-        {name: 'RECEIVE_COLLECTIONS', payload: [{stored: [], realtime: []}]}
       ], done)
     })
   })
@@ -94,21 +72,16 @@ describe('listIndexesAndCollections action', () => {
     localStorage.getItem = sandbox.stub(localStorage, 'getItem').returns(undefined)
     testAction(actions.listIndexesAndCollections, [], {}, [
       {name: 'RECEIVE_INDEXES_COLLECTIONS', payload: [
-        [
-          {
-            name: 'index1',
-            collections: {
-              stored: ['collection1', 'collection2'],
-              realtime: []
-            }
+        {
+          index1: {
+            stored: ['collection1', 'collection2'],
+            realtime: []
           },
-          {
-            name: 'index2',
-            collections: {
-              stored: ['collection1', 'collection2'],
-              realtime: []
-            }
-          }]
+          index2: {
+            stored: ['collection1', 'collection2'],
+            realtime: []
+          }
+        }
       ]}
     ], done)
   })

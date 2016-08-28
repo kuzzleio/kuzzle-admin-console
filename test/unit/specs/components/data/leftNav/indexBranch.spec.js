@@ -5,11 +5,11 @@ import IndexBranch from '../../../../../../src/components/Data/Leftnav/IndexBran
 let router
 let sandbox = sinon.sandbox.create()
 
-describe.only('IndexBranch component', () => {
+describe('IndexBranch component', () => {
   let $vm
   let collections
 
-  before(() => {
+  beforeEach(() => {
     Vue.use(VueRouter)
 
     collections = {
@@ -166,7 +166,6 @@ describe.only('IndexBranch component', () => {
     describe('currentIndex', () => {
       it('should call testOpen when currentIndex is set', (done) => {
         let testOpen = sandbox.stub($vm, 'testOpen')
-        testOpen.reset()
         $vm.currentIndex = 'toto'
 
         Vue.nextTick(() => {
@@ -179,7 +178,6 @@ describe.only('IndexBranch component', () => {
     describe('currentCollection', () => {
       it('should call testOpen when currentCollection is set', (done) => {
         let testOpen = sandbox.stub($vm, 'testOpen')
-        testOpen.reset()
         $vm.currentCollection = 'tutu'
 
         Vue.nextTick(() => {

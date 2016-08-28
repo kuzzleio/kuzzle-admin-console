@@ -35,11 +35,6 @@ export const mutations = {
     state.notifications = []
   },
   [ADD_STORED_COLLECTION] (state, index, collection) {
-    // for (var i = 0; i < state.indexesAndCollections.length; i++) {
-    //   if (state.indexesAndCollections[i].name === index) {
-    //     state.indexesAndCollections[i].collections.stored.push(collection)
-    //   }
-    // }
     if (!state.indexesAndCollections[index]) {
       state.indexesAndCollections[index] = {realtime: [], stored: []}
     }
@@ -47,11 +42,6 @@ export const mutations = {
     state.indexesAndCollections[index].stored.push(collection)
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
-    // for (var i = 0; i < state.indexesAndCollections.length; i++) {
-    //   if (state.indexesAndCollections[i].name === index) {
-    //     state.indexesAndCollections[i].collections.realtime.push(collection)
-    //   }
-    // }
     if (!state.indexesAndCollections[index]) {
       state.indexesAndCollections[index] = {realtime: [], stored: []}
     }

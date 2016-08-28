@@ -8,6 +8,7 @@ let sandbox = sinon.sandbox.create()
 
 describe('List documents', () => {
   let vm
+  let $vm
   let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
 
   const mockInjector = () => {
@@ -28,7 +29,8 @@ describe('List documents', () => {
       store: store
     }).$mount()
 
-    vm.$refs.list.$router = {go: sandbox.stub()}
+    $vm = vm.$refs.list
+    $vm.$router = {go: sandbox.stub()}
   }
 
   before(() => {
@@ -37,8 +39,8 @@ describe('List documents', () => {
 
   describe('Methods', () => {
     it('should redirect on right url on createDocument call', () => {
-      vm.$refs.list.createDocument()
-      expect(vm.$refs.list.$router.go.calledWithMatch({name: 'DataCreateDocument'})).to.be.equal(true)
+      $vm.createDocument()
+      expect($vm.$router.go.calledWithMatch({name: 'DataCreateDocument'})).to.be.equal(true)
     })
   })
 
@@ -59,21 +61,21 @@ describe('List documents', () => {
       it('returns false if the collections object is undefined or has no realtime attribute', () => {
         indexesAndCollections = sandbox.stub().returns({})
         mockInjector()
-        vm.$refs.list.collection = 'toto'
-        expect(List.computed.isRealtimeCollection()).to.be.equal(false)
+        $vm.collection = 'toto'
+        expect($vm.isRealtimeCollection).to.be.equal(false)
 
-        indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
+        indexesAndCollections = sandbox.stub().returns({myindex: {stored: []}})
         mockInjector()
-        vm.$refs.list.collection = 'toto'
-        expect(List.computed.isRealtimeCollection()).to.be.equal(false)
+        $vm.collection = 'toto'
+        expect($vm.isRealtimeCollection).to.be.equal(false)
       })
 
       it('returns true if the collections.realtime object contains the name of the current collection', () => {
         indexesAndCollections = sandbox.stub().returns({myindex: {realtime: ['toto'], stored: []}})
         mockInjector()
-        vm.$refs.list.collection = 'toto'
+        $vm.collection = 'toto'
 
-        expect(vm.$refs.list.isRealtimeCollection).to.be.equal(true)
+        expect($vm.isRealtimeCollection).to.be.equal(true)
       })
     })
   })

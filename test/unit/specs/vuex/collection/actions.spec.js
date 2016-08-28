@@ -1,14 +1,19 @@
 import actionsInjector from 'inject!../../../../../src/vuex/modules/collection/actions'
 import {testActionPromise} from '../../helper'
 
-describe('Collections test', () => {
-  describe('Create collection test', () => {
+describe('Collections module', () => {
+  describe('Create collection', () => {
     let state = {
       data: {
-        indexesAndCollections: []
+        indexesAndCollections: {}
       }
     }
-    let triggerError = true
+    let existingCollections = {
+      realtime: ['toto'],
+      stored: ['tutu']
+    }
+
+    let triggerError
     let actions = actionsInjector({
       '../../../services/kuzzle': {
         dataCollectionFactory: () => {
@@ -18,11 +23,11 @@ describe('Collections test', () => {
             },
             dataMappingFactory: () => {
               return {
-                apply: cb => {
+                applyPromise: () => {
                   if (triggerError) {
-                    cb(new Error('mock apply error'))
+                    return Promise.reject(new Error('mock apply error'))
                   } else {
-                    cb()
+                    return Promise.resolve()
                   }
                 }
               }
@@ -42,7 +47,7 @@ describe('Collections test', () => {
     beforeEach(() => {
       // eslint-disable-next-line no-undef
       localStorage.clear()
-      triggerError = true
+      triggerError = false
     })
 
     describe('createCollection', () => {
@@ -55,25 +60,45 @@ describe('Collections test', () => {
       })
 
       it('should set an error because apply() has an error', (done) => {
-        testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], state, [], done)
+        triggerError = true
+        testActionPromise(actions.createCollection, [existingCollections, 'index', 'collection', {}, false], state, [], done)
           .catch(e => {
             expect(e.message).to.equals('mock apply error')
             done()
           })
       })
 
+      it('should do nothing because a function already exists with this name in realtime', (done) => {
+        testActionPromise(actions.createCollection, [existingCollections, 'index', 'toto', {}, true], state, [], done)
+          .catch(e => {
+            expect(e.message).to.equals('Collection "toto" already exist')
+            done()
+          })
+      })
+
+      it('should do nothing because a function already exists with this name in realtime', (done) => {
+        testActionPromise(actions.createCollection, [existingCollections, 'index', 'tutu', {}, true], state, [], done)
+          .catch(e => {
+            expect(e.message).to.equals('Collection "tutu" already exist')
+            done()
+          })
+      })
+
       it('should create a persisted collection', (done) => {
         triggerError = false
-        testActionPromise(actions.createCollection, ['index', 'collection', undefined, false], state, [
+        testActionPromise(actions.createCollection, [existingCollections, 'index', 'collection', undefined, false], state, [
           {name: 'ADD_STORED_COLLECTION', payload: ['index', 'collection']}
         ], done)
       })
 
       it('should create a realtime collection', (done) => {
         triggerError = false
-        testActionPromise(actions.createCollection, ['index', 'collection', undefined, true], state, [
-          {name: 'ADD_REALTIME_COLLECTION', payload: ['index', 'collection']}
-        ], done)
+        testActionPromise(actions.createCollection,
+          [existingCollections, 'index', 'collection', undefined, true], state, [
+            {name: 'ADD_REALTIME_COLLECTION', payload: ['index', 'collection']}
+          ], done
+
+        )
         // eslint-disable-next-line no-undef
         expect(localStorage.getItem('realtimeCollections')).to.deep.equals('[{index: "index", collection: "collection"}]')
       })
