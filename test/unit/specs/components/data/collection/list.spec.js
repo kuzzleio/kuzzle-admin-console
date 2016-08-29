@@ -11,10 +11,13 @@ let $vm
 Vue.use(VueRouter)
 
 describe('List collections tests', () => {
-  let getCollectionsFromIndex = sandbox.stub()
-  let collections = sandbox.stub().returns({realtime: [], stored: []})
+  let listIndexesAndCollections = sandbox.stub()
+  let indexesAndCollections = sandbox.stub().returns([{realtime: [], stored: []}])
+  let getCollectionsFromTree = sandbox.stub().returns({realtime: [], stored: []})
   let canSearchCollection = sandbox.stub().returns(true)
   let canCreateCollection = sandbox.stub().returns(true)
+  let canSearchIndex = sandbox.stub().returns(true)
+  let getCollectionCount = sandbox.stub().returns(0)
   let router
 
   const mockInjector = () => {
@@ -23,16 +26,21 @@ describe('List collections tests', () => {
       './Dropdown': mockedComponent,
       '../Collections/Boxed': mockedComponent,
       '../../../vuex/modules/data/actions': {
-        getCollectionsFromIndex
+        listIndexesAndCollections
       },
       '../../../vuex/modules/data/getters': {
-        collections
+        indexesAndCollections
       },
       '../../../services/userAuthorization': {
+        canSearchIndex,
         canSearchCollection,
         canCreateCollection
       },
-      '../../../directives/title.directive': mockedDirective
+      '../../../directives/title.directive': mockedDirective,
+      '../../../services/data': {
+        getCollectionCount,
+        getCollectionsFromTree
+      }
     })
 
     const App = Vue.extend({
@@ -58,14 +66,6 @@ describe('List collections tests', () => {
   afterEach(() => sandbox.restore())
 
   describe('computed', () => {
-    describe('countCollection', () => {
-      it('should return total collection from realtime and stored', () => {
-        List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
-
-        expect(List.computed.countCollection()).to.be.equal(3)
-      })
-    })
-
     describe('isCollectionForFilter', () => {
       it('should return true if a collection in realtime match the filter', () => {
         List.computed.collections = {realtime: ['toto', 'tutu'], stored: ['foo']}
@@ -104,25 +104,25 @@ describe('List collections tests', () => {
   describe('watch', () => {
     describe('index', () => {
       it('should do nothing if the user can\'t search in index', (done) => {
-        canSearchCollection = sandbox.stub().returns(false)
+        canSearchIndex = sandbox.stub().returns(false)
         mockInjector()
-        getCollectionsFromIndex.reset()
+        listIndexesAndCollections.reset()
 
         $vm.index = 'toto'
         Vue.nextTick(() => {
-          expect(getCollectionsFromIndex.callCount).to.be.equal(0)
+          expect(listIndexesAndCollections.callCount).to.be.equal(0)
           done()
         })
       })
 
-      it('should call getCollectionsFromIndex if the user can search in index', (done) => {
-        canSearchCollection = sandbox.stub().returns(true)
+      it('should call listIndexesAndCollections if the user can search in index', (done) => {
+        canSearchIndex = sandbox.stub().returns(true)
         mockInjector()
-        getCollectionsFromIndex.reset()
+        listIndexesAndCollections.reset()
 
         $vm.index = 'toto'
         Vue.nextTick(() => {
-          expect(getCollectionsFromIndex.callCount).to.be.equal(1)
+          expect(listIndexesAndCollections.callCount).to.be.equal(1)
           done()
         })
       })
@@ -130,20 +130,20 @@ describe('List collections tests', () => {
   })
 
   describe('ready', () => {
-    it('should do nothing if user can\'t search in collection', () => {
-      canSearchCollection = sandbox.stub().returns(false)
-      getCollectionsFromIndex = sandbox.stub()
+    it('should do nothing if user can\'t search in index', () => {
+      canSearchIndex = sandbox.stub().returns(false)
+      listIndexesAndCollections = sandbox.stub()
       mockInjector()
 
-      expect(getCollectionsFromIndex.callCount).to.be.equal(0)
+      expect(listIndexesAndCollections.callCount).to.be.equal(0)
     })
 
-    it('should call getCollectionsFromIndex if user can search in collection', () => {
-      canSearchCollection = sandbox.stub().returns(true)
-      getCollectionsFromIndex = sandbox.stub()
+    it('should call listIndexesAndCollections if user can search in index', () => {
+      canSearchIndex = sandbox.stub().returns(true)
+      listIndexesAndCollections = sandbox.stub()
       mockInjector()
 
-      expect(getCollectionsFromIndex.callCount).to.be.equal(1)
+      expect(listIndexesAndCollections.callCount).to.be.equal(1)
     })
   })
 })
