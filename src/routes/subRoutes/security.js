@@ -7,6 +7,12 @@ export default {
       require(['../../components/Security/Users/List'], resolve)
     }
   },
+  '/users/create': {
+    name: 'SecurityUsersCreate',
+    component (resolve) {
+      require(['../../components/Security/Users/Create'], resolve)
+    }
+  },
   '/profiles': {
     name: 'SecurityProfilesList',
     component (resolve) {
