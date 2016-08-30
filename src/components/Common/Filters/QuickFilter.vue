@@ -1,10 +1,10 @@
 <template>
   <div class="row">
     <form class="">
-      <div class="col s4">
+      <div class="col s7">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
-          <input type="text" placeholder="Search something..." v-model="filters.searchTerm"/>
+          <input type="text" placeholder="Search something..." v-model="filters.searchTerm" v-focus />
           <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
           <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>
@@ -18,9 +18,14 @@
 </template>
 
 <script>
+  import Focus from '../../../directives/focus.directive'
+
   export default {
     name: 'QuickSearch',
     props: ['searchTerm', 'displayBlockFilter'],
+    directives: {
+      Focus
+    },
     data () {
       return {
         filters: {

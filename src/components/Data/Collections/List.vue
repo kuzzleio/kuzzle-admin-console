@@ -2,7 +2,6 @@
   <div class="wrapper">
     <headline>
       {{index}}
-      <index-dropdown class="icon-medium icon-black" :index="index"></index-dropdown>
     </headline>
 
 

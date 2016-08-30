@@ -13,16 +13,16 @@
             <div class="col s6">
                 <div class="input-field">
                   <input id="collectionName" type="text" name="collection" required v-model="collectionName"
-                         class="validate" tabindex="1" />
+                         class="validate" tabindex="1" v-focus />
                   <label for="collectionName">Collection name</label>
                 </div>
             </div>
             <!-- Toggle settings open -->
             <div class="col s6">
               <div class="input-field">
-                <button tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
+                <a tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
                   <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
-                  {{settingsOpen ? 'Hide settings' : 'Show settings'}}</button>
+                  {{settingsOpen ? 'Hide settings' : 'Show settings'}}</a>
               </div>
             </div>
           </div>
@@ -96,12 +96,16 @@
   import Headline from '../../Materialize/Headline'
   import {createCollection} from '../../../vuex/modules/collection/actions'
   import JsonEditor from '../../Common/JsonEditor'
+  import Focus from '../../../directives/focus.directive'
 
   export default {
     name: 'CollectionCreate',
     components: {
       Headline,
       JsonEditor
+    },
+    directives: {
+      Focus
     },
     props: {
       index: String
