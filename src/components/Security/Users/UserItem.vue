@@ -63,12 +63,12 @@ export default {
     itemContent () {
       let contentDisplay = {...this.document.content}
       delete contentDisplay.clearPassword
-      delete contentDisplay.profilesIds
+      delete contentDisplay.profileIds
 
       return contentDisplay
     },
     profileList () {
-      return this.document.content.profilesIds.filter((item, idx) => {
+      return this.document.content.profileIds.filter((item, idx) => {
         return idx < MAX_PROFILES
       })
     },

@@ -27,7 +27,7 @@ describe('UserItem component', () => {
             id: 'kuzzle-bo-admin',
             content: {
               clearPassword: 'test',
-              profilesIds: [
+              profileIds: [
                 'kuzzle-bo-1',
                 'kuzzle-bo-2'
               ],
@@ -82,7 +82,7 @@ describe('UserItem component', () => {
       'kuzzle-bo-2'
     ])
 
-    $vm.document.content.profilesIds.push(
+    $vm.document.content.profileIds.push(
       'kuzzle-bo-3',
       'kuzzle-bo-4',
       'kuzzle-bo-5',
