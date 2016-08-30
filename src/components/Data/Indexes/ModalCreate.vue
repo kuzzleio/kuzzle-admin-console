@@ -12,7 +12,7 @@
       <div class="col s7">
         <div class="input-field left-align">
           <label for="index-name">Index name</label>
-          <input id="index-name" type="text" v-model="index" :class="{'invalid': error}">
+          <input id="index-name" type="text" v-model="index" :class="{'invalid': error}" v-focus>
         </div>
       </div>
 
@@ -70,11 +70,15 @@
 <script>
   import {createIndex} from '../../../vuex/modules/data/actions'
   import Modal from '../../Materialize/Modal'
+  import Focus from '../../../directives/focus.directive'
 
   export default {
     name: 'IndexCreateModal',
     props: {
       id: String
+    },
+    directives: {
+      Focus
     },
     components: {
       Modal

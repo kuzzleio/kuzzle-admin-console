@@ -18,7 +18,7 @@
 
           <ul id="nav-mobile" class="right">
             <li>
-              Howdy <strong>{{user.id}}</strong>!
+              <strong>{{user.id}}</strong>!
             </li>
             <li>
               <a @click="doLogout">Logout</a>

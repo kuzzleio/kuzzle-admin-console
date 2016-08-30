@@ -3,15 +3,15 @@
     <div class="row">
       <div class="input-field col s12">
         <input id="username" v-model="username" type="text" name="username" required tabindex="1"
-               class="validate"/>
-        <label for="username">Email</label>
+               class="validate" v-focus />
+        <label for="username" :class="{'active': username}">Email</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
         <input v-model="password" type="password" name="password" id="pass" required tabindex="2"
                class="validate"/>
-        <label for="pass">Password</label>
+        <label for="pass" :class="{'active': password}">Password</label>
       </div>
     </div>
     <div class="row">
@@ -40,11 +40,15 @@
 
 <script>
   import {doLogin} from '../../../vuex/modules/auth/actions'
+  import Focus from '../../../directives/focus.directive'
 
   export default {
     name: 'LoginForm',
     props: {
       onLogin: Function
+    },
+    directives: {
+      Focus
     },
     data () {
       return {

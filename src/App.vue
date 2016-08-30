@@ -17,4 +17,3 @@ export default {
   directives: [Toaster]
 }
 </script>
-
