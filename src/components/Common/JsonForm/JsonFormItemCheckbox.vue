@@ -25,7 +25,6 @@
         this.setPartial(this.fullName, v)
       },
       content (content) {
-        console.log('ici', content)
         this.value = content
       }
     },

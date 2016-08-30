@@ -3,6 +3,7 @@
   <fieldset v-if="isNested(content)">
     <legend>
       {{name}}
+      <i @click="addAttribute"class="fa fa-plus-circle primary"></i>
     </legend>
     <div v-for="(nestedName, nestedContent) in content.properties">
       <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
@@ -64,19 +65,20 @@
         transform: translateY(-120%);
       }
     }
-    a.btn-tiny {
+    .inline-actions {
       position: absolute;
-      -webkit-transform: translateX(110%);
-      transform: translateX(110%);
       right: 0;
       top: 0;
-      height: 30px;
-      padding: 0;
-      width: 30px;
-
-      i {
-        font-size: 1rem;
-        line-height: 32px;
+      -webkit-transform: translateX(110%);
+      transform: translateX(110%);
+      a.btn-tiny {
+        height: 30px;
+        padding: 0;
+        width: 30px;
+        i {
+          font-size: 1rem;
+          line-height: 32px;
+        }
       }
     }
   }

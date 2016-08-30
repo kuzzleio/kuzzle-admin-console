@@ -41,7 +41,11 @@
 
                 <div class="list-fields">
                   <div v-for="(name, content) in mapping">
-                    <json-form :name="name" :content="content"></json-form>
+                    <json-form
+                      :name="name"
+                      :content="content"
+                      @document-create::change-type-attribute="changeTypeAttribute"
+                    ></json-form>
                   </div>
                 </div>
               </div>
@@ -120,9 +124,10 @@
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
   import MSelect from '../../../../directives/Materialize/m-select.directive'
-  import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
+  import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
   import {mergeDeep, formatGeoPoint} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
+  import Vue from 'vue'
 
   let promiseGetMappingResolve
   let promiseGetMappingReject
@@ -169,11 +174,13 @@
         this.viewState = 'code'
       },
       addRootAttr () {
-        this.newAttributePath = '/'
+        this.newAttributePath = ''
         this.$broadcast('modal-open', 'add-attr')
       },
       doAddAttr () {
-        addAttributeFromPath(this.mapping, this.newAttributePath, this.newAttributeName, (this.newAttributeType === 'nested' ? {properties: {}} : {type: this.newAttributeType}))
+        let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
+        Vue.set(refMapping, this.newAttributeName, (this.newAttributeType === 'nested' ? {properties: {}} : {type: this.newAttributeType}))
+
         this.newAttributeType = 'string'
         this.newAttributeName = null
         this.newAttributePath = null
@@ -184,6 +191,16 @@
       },
       cancel () {
         this.$dispatch('document-create::cancel')
+      },
+      changeTypeAttribute (attributePath, name, type) {
+        let refMapping = getRefMappingFromPath(this.mapping, attributePath)
+        let val = ''
+
+        if (type === 'array') {
+          val = [null]
+        }
+
+        Vue.set(refMapping, name, {type, val})
       }
     },
     vuex: {

@@ -3,12 +3,14 @@
     <input :id="name" type="number" :value="content" v-model="value" step="0.1" @focus="display = true" @blur="hideAttribute" />
     <label :for="name" :class="{'active': value}">{{name}}</label>
 
-    <a
-      class="btn-floating waves-effect waves-light btn-tiny secondary right"
-      v-show="display"
-      @click="addArray">
-      <i class="fa fa-plus"></i>
-    </a>
+    <div class="inline-actions">
+      <a
+        class="btn-floating waves-effect waves-light btn-tiny secondary right"
+        v-show="display"
+        @click="addArray">
+        <i class="fa fa-plus"></i>
+      </a>
+    </div>
   </div>
 </template>
 

@@ -3,12 +3,14 @@
     <input :id="name" type="text" :value="content" v-model="value" @focus="display = true" @blur="hideAttribute"/>
     <label :for="name" :class="{'active': value}">{{name}}</label>
 
-    <a
-      class="btn-floating waves-effect waves-light btn-tiny secondary right"
-      v-show="display"
-      @click="addArray">
-      <i class="fa fa-plus"></i>
-    </a>
+    <div class="inline-actions">
+      <a
+        class="btn-floating waves-effect waves-light btn-tiny secondary right"
+        v-show="display"
+        @click="transformToArray">
+        <i class="fa fa-plus"></i>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -39,8 +41,10 @@
           this.display = false
         }, 100)
       },
-      addArray () {
-
+      transformToArray () {
+        let splittedPath = this.fullName.split('.')
+        splittedPath.pop()
+        this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'array')
       }
     },
     vuex: {
