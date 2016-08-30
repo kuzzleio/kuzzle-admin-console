@@ -12,17 +12,21 @@
 
   <!-- Root attributes -->
   <div v-if="!isNested(content)" class="input-field">
-    <json-form-item :name="name" :full-name="path" :content="content"></json-form-item>
+    <component :is="getComponentItem()" :name="name" :full-name="path" :content="content.val"></component>
   </div>
 </template>
 
 <script>
-  import JsonFormItem from './JsonFormItem'
+  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
+  import JsonFormItemNumber from './JsonFormItemNumber'
+  import JsonFormItemText from './JsonFormItemText'
 
   export default {
     name: 'JsonForm',
     components: {
-      JsonFormItem
+      JsonFormItemCheckbox,
+      JsonFormItemNumber,
+      JsonFormItemText
     },
     computed: {
       path () {
@@ -42,8 +46,22 @@
         return !!content.properties
       },
       addAttribute () {
-        // todo format
         this.$dispatch('document-create::add-attribute', this.path)
+      },
+      getComponentItem () {
+        switch (this.content.type) {
+          case 'boolean':
+            return 'JsonFormItemCheckbox'
+          case 'integer':
+          case 'long':
+          case 'short':
+          case 'byte':
+          case 'double':
+          case 'float':
+            return 'JsonFormItemNumber'
+          default:
+            return 'JsonFormItemText'
+        }
       }
     }
   }

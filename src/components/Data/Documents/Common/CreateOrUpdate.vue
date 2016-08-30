@@ -7,7 +7,7 @@
         <div class="switch">
           <label>
             Form
-            <input type="checkbox" @click="switchEditMode"/>
+            <input type="checkbox" @click="switchEditMode" />
             <span class="lever"></span>
             Json
           </label>
@@ -21,7 +21,7 @@
           <div class="row" v-if="!hideId">
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" @input="updatePartial"/>
+                <input id="id" type="text" name="collection" @input="updatePartial" v-focus />
                 <label for="id">Document identifier (optional)</label>
               </div>
             </div>
@@ -142,6 +142,7 @@
   import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
   import {mergeDeep, formatGeoPoint} from '../../../../services/objectHelper'
   import CollectionTabs from '../../Collections/Tabs'
+  import Focus from '../../../../directives/focus.directive'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -157,7 +158,8 @@
       hideId: Boolean
     },
     directives: {
-      MSelect
+      MSelect,
+      Focus
     },
     methods: {
       create () {

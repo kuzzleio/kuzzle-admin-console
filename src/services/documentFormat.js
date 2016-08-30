@@ -25,9 +25,7 @@ export const getUpdatedSchema = jsonDocument => {
     Object.keys(jsonDocument).forEach(o => {
       property = getUpdatedSchema(jsonDocument[o])
       Vue.set(properties, o, property)
-      // properties[o] = property
       Vue.set(properties[o], 'val', jsonDocument[o])
-      // properties[o].val = jsonDocument[o]
     })
     schema = {
       properties: properties,

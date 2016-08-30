@@ -1,6 +1,6 @@
 import store from '../../../../../../../src/vuex/store'
 import Vue from 'vue'
-import { mockedComponent } from '../../../../helper'
+import { mockedComponent, mockedDirective } from '../../../../helper'
 import Promise from 'bluebird'
 
 let CreateInjector = require('!!vue?inject!../../../../../../../src/components/Data/Documents/Common/CreateOrUpdate')
@@ -54,7 +54,8 @@ describe('createOrUpdate document tests', () => {
       '../../../../services/documentFormat': {
         addAttributeFromPath: addAttributeFromPathSpy,
         getUpdatedSchema: getUpdatedSchemaSpy
-      }
+      },
+      '../../../../directives/focus.directive': mockedDirective
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
