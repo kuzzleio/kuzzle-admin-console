@@ -90,6 +90,7 @@
         .then(res => {
           this.setNewDocument(res.content)
           this.$broadcast('document-create::fill', res.content)
+          return null
         })
         .catch(err => {
           this.$dispatch('toast', err.message, 'error')

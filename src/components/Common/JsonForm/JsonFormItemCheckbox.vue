@@ -1,6 +1,6 @@
 <template>
   <div class="row input-field">
-    <input class="filled-in" :id="name" type="checkbox" v-model="value" checked="value" />
+    <input class="filled-in" :id="name" type="checkbox" v-model="value"/>
     <label :for="name">{{name}}</label>
   </div>
 </template>
@@ -25,7 +25,8 @@
         this.setPartial(this.fullName, v)
       },
       content (content) {
-        this.value = content.val
+        console.log('ici', content)
+        this.value = content
       }
     },
     vuex: {

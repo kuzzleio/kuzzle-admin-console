@@ -114,6 +114,7 @@
     height: 66px;
   }
   .modal {
+    overflow-y: visible;
     &.small-modal {
       width: 25%;
     }

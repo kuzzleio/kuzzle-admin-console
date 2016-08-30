@@ -16,7 +16,14 @@ export const addAttributeFromPath = (mapping, path, attr, content) => {
 }
 
 export const getUpdatedSchema = jsonDocument => {
-  let type = typeof jsonDocument
+  let type
+
+  if (Array.isArray(jsonDocument)) {
+    type = 'array'
+  } else {
+    type = typeof jsonDocument
+  }
+
   let property
   let properties = {}
   let schema = {}

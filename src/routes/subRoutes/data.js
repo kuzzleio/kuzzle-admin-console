@@ -36,13 +36,13 @@ export default {
       require(['../../components/Data/Documents/List'], resolve)
     }
   },
-  '/:index/:collection/Create': {
+  '/:index/:collection/create': {
     name: 'DataCreateDocument',
     component (resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
     }
   },
-  '/:index/:collection/Update/:id': {
+  '/:index/:collection/update/:id': {
     name: 'DataUpdateDocument',
     component (resolve) {
       require(['../../components/Data/Documents/Update'], resolve)
