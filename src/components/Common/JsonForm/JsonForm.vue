@@ -34,21 +34,8 @@
           return this.fullNameInput + '.' + this.name
         }
         return this.name
-      }
-    },
-    props: {
-      name: String,
-      content: Object,
-      fullNameInput: String
-    },
-    methods: {
-      isNested (content) {
-        return !!content.properties
       },
-      addAttribute () {
-        this.$dispatch('document-create::add-attribute', this.path)
-      },
-      getComponentItem () {
+      componentItem () {
         switch (this.content.type) {
           case 'boolean':
             return 'JsonFormItemCheckbox'
@@ -62,6 +49,19 @@
           default:
             return 'JsonFormItemText'
         }
+      }
+    },
+    props: {
+      name: String,
+      content: Object,
+      fullNameInput: String
+    },
+    methods: {
+      isNested (content) {
+        return !!content.properties
+      },
+      addAttribute () {
+        this.$dispatch('document-create::add-attribute', this.path)
       }
     }
   }

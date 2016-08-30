@@ -86,7 +86,6 @@
           this.$broadcast('modal-open', 'kuzzleDisconnected')
           return
         }
-
         this.$broadcast('modal-close', 'kuzzleDisconnected')
       }
     }

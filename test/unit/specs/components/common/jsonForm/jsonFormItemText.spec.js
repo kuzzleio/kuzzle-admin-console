@@ -1,19 +1,23 @@
 import store from '../../../../../../src/vuex/store'
 import Vue from 'vue'
 
-let JsonFormItemInjector = require('!!vue?inject!../../../../../../src/components/Common/JsonForm/JsonFormItemText')
+let JsonFormItemTextInjector = require('!!vue?inject!../../../../../../src/components/Common/JsonForm/JsonFormItemText')
 
 describe('JsonFormItemText tests', () => {
-  let sandbox
+  let sandbox = sinon.sandbox.create()
   let JsonFormItemText
   let vm
-  let setPartialSpy
+  let setPartialSpy = sandbox.stub()
+  let value
   let content
 
-  let initComponent = (ctx) => {
-    if (ctx) {
-      document.body.insertAdjacentHTML('afterbegin', '<' + ctx + '></' + ctx + '>')
-    }
+  let initComponent = () => {
+    JsonFormItemText = JsonFormItemTextInjector({
+      '../../../vuex/modules/data/actions': {
+        setPartial: setPartialSpy
+      }
+    })
+
     vm = new Vue({
       template: '<div><json-form-item-text v-ref:jsonformitem :content="content" full-name="foo"></json-form-item-text></div>',
       components: {JsonFormItemText},
@@ -21,15 +25,12 @@ describe('JsonFormItemText tests', () => {
       store: store,
       data () {
         return {
+          value,
           content
         }
       }
-    }).$mount(ctx)
+    }).$mount()
   }
-
-  beforeEach(() => {
-    sandbox = sinon.sandbox.create()
-  })
 
   afterEach(() => {
     sandbox.restore()
@@ -37,55 +38,14 @@ describe('JsonFormItemText tests', () => {
 
   describe('methods tests', () => {
     describe('updatePartial tests', () => {
-      beforeEach(() => {
-        setPartialSpy = sandbox.stub()
-        JsonFormItemText = JsonFormItemInjector({
-          '../../../vuex/modules/data/actions': {
-            setPartial: setPartialSpy
-          }
-        })
-
-        content = 'bar'
+      it('should call the vuex setPartial action when the content changed', (done) => {
         initComponent('body')
-      })
-
-      it('should call the vuex setPartial action', (done) => {
-        vm.value = 'bar'
+        vm.$refs.jsonformitem.content = 'bar'
         Vue.nextTick(() => {
           expect(setPartialSpy.calledWith(store, 'foo', 'bar')).to.be.ok
           done()
         })
       })
     })
-
-    // describe('setType', () => {
-    //   it('should set the type to checkbox', () => {
-    //     content = {type: 'boolean'}
-    //     initComponent()
-    //
-    //     vm.$refs.jsonformitem.setType()
-    //     expect(vm.$refs.jsonformitem.type).to.equals('checkbox')
-    //   })
-    //
-    //   it('should set the type to number', () => {
-    //     let types = ['integer', 'long', 'short', 'byte', 'double', 'float']
-    //
-    //     types.forEach(o => {
-    //       content = {type: o}
-    //       initComponent()
-    //
-    //       vm.$refs.jsonformitem.setType()
-    //       expect(vm.$refs.jsonformitem.type).to.equals('number')
-    //     })
-    //   })
-    //
-    //   it('should set the type to text', () => {
-    //     content = {type: 'other'}
-    //     initComponent()
-    //
-    //     vm.$refs.jsonformitem.setType()
-    //     expect(vm.$refs.jsonformitem.type).to.equals('text')
-    //   })
-    // })
   })
 })
