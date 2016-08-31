@@ -44,7 +44,13 @@
       transformToArray () {
         let splittedPath = this.fullName.split('.')
         splittedPath.pop()
-        this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'array')
+        let value = [null]
+
+        if (this.value) {
+          value = [this.value, null]
+        }
+
+        this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'array', value)
       }
     },
     vuex: {

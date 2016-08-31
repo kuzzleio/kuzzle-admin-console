@@ -7,7 +7,7 @@
       <a
         class="btn-floating waves-effect waves-light btn-tiny secondary right"
         v-show="display"
-        @click="addArray">
+        @click="transformToArray">
         <i class="fa fa-plus"></i>
       </a>
     </div>
@@ -36,8 +36,16 @@
           this.display = false
         }, 100)
       },
-      addArray () {
+      transformToArray () {
+        let splittedPath = this.fullName.split('.')
+        splittedPath.pop()
+        let value = [null]
 
+        if (this.value) {
+          value = [this.value, null]
+        }
+
+        this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'array', value)
       }
     },
     watch: {

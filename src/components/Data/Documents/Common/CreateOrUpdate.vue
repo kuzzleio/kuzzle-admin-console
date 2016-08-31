@@ -192,14 +192,8 @@
       cancel () {
         this.$dispatch('document-create::cancel')
       },
-      changeTypeAttribute (attributePath, name, type) {
+      changeTypeAttribute (attributePath, name, type, val) {
         let refMapping = getRefMappingFromPath(this.mapping, attributePath)
-        let val = ''
-
-        if (type === 'array') {
-          val = [null]
-        }
-
         Vue.set(refMapping, name, {type, val})
       }
     },

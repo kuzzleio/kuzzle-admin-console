@@ -2,26 +2,12 @@
   <div>
     <fieldset>
       {{name}}
-      <div v-for="value in valueItems" track-by="$index" class="array-value">
-        <input
-          :id="name"
-          type="text"
-          v-model="value"/>
 
-        <div class="inline-actions">
-          <a
-            class="btn-floating waves-effect waves-light btn-tiny red"
-            @click="removeElementInArray($index)">
-            <i class="fa fa-minus"></i>
-          </a>
-          <a
-            v-if="$index === valueItems.length - 1"
-            class="btn-floating waves-effect waves-light btn-tiny secondary"
-            @click="addElementInArray">
-            <i class="fa fa-plus"></i>
-          </a>
-        </div>
-      </div>
+      <component
+        :is="componentItem"
+        :value-items="valueItems"
+        :name="name"
+      ></component>
     </fieldset>
   </div>
 </template>
@@ -34,6 +20,8 @@
 
 <script>
   import { setPartial } from '../../../../vuex/modules/data/actions'
+  import JsonFormItemArrayString from './JsonFormItemArrayString'
+  import JsonFormItemArrayNumber from './JsonFormItemArrayNumber'
 
   export default {
     name: 'JsonFormItemArray',
@@ -41,6 +29,10 @@
       name: String,
       content: Array,
       fullName: String
+    },
+    components: {
+      JsonFormItemArrayString,
+      JsonFormItemArrayNumber
     },
     vuex: {
       actions: {
@@ -52,6 +44,20 @@
         valueItems: [],
         partial: {},
         displayItems: []
+      }
+    },
+    computed: {
+      componentItem () {
+        if (this.content.length) {
+          switch (typeof this.content[0]) {
+            case 'number':
+              return 'JsonFormItemArrayNumber'
+            default:
+              return 'JsonFormItemArrayString'
+          }
+        }
+
+        return 'JsonFormItemArray'
       }
     },
     watch: {
@@ -66,21 +72,16 @@
       this.valueItems = [...this.content]
     },
     methods: {
-      addElementInArray () {
-        this.valueItems.$set(this.valueItems.length, null)
-      },
-      removeElementInArray (index) {
-        if (this.valueItems.length === 1) {
-          let splittedPath = this.fullName.split('.')
-          splittedPath.pop()
-          this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'string')
-          return
-        }
-
-        this.valueItems.splice(index, 1)
-      },
       setValue (e, index) {
         this.valueItems.$set(index, e.target.value)
+      }
+    },
+    events: {
+      'json-form-item-array::remove-element' (index) {
+        this.valueItems.splice(index, 1)
+      },
+      'json-form-item-array::add-element' () {
+        this.valueItems.$set(this.valueItems.length, null)
       }
     }
   }
