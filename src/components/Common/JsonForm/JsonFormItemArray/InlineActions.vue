@@ -1,15 +1,17 @@
 <template>
   <div class="inline-actions">
     <a
-      class="btn-floating waves-effect waves-light btn-tiny red"
-      @click="removeElementInArray">
-      <i class="fa fa-minus"></i>
-    </a>
-    <a
       v-if="index === valueItems.length - 1"
       class="btn-floating waves-effect waves-light btn-tiny secondary"
       @click="addElementInArray">
       <i class="fa fa-plus"></i>
+    </a>
+    <a
+      class="btn-floating waves-effect waves-light btn-tiny red"
+      @click="removeElementInArray"
+      v-show="display"
+      >
+      <i class="fa fa-minus"></i>
     </a>
   </div>
 </template>
@@ -22,7 +24,8 @@
       fullName: String,
       name: String,
       type: String,
-      index: Number
+      index: Number,
+      display: Boolean
     },
     methods: {
       addElementInArray () {

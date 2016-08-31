@@ -1,6 +1,6 @@
 <template>
   <div class="row input-field">
-    <input :id="name" type="number" :value="content" v-model="value" step="0.1" @focus="display = true" @blur="hideAttribute" />
+    <input :id="name" type="number" :value="content" v-model="value" step="0.1" @focus="display = true" @blur="hideAttribute" number/>
     <label :for="name" :class="{'active': value}">{{name}}</label>
 
     <div class="inline-actions">

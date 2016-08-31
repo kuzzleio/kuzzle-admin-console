@@ -31,7 +31,7 @@
 
           <div class="row">
             <fieldset>
-              <div class="col s6">
+              <div class="col s7">
                 <div class="row">
                   <a class="btn btn-small" @click="addRootAttr">
                     <i class="fa fa-plus-circle left"></i>
@@ -44,8 +44,8 @@
                     <json-form
                       :name="name"
                       :content="content"
-                      @document-create::change-type-attribute="changeTypeAttribute"
-                    ></json-form>
+                      @document-create::change-type-attribute="changeTypeAttribute">
+                    </json-form>
                   </div>
                 </div>
               </div>

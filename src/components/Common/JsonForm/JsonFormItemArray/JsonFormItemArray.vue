@@ -3,11 +3,12 @@
     <fieldset>
       {{name}}
 
-      <component
-        :is="componentItem"
+      <json-form-item-array-input
         :value-items="valueItems"
         :name="name"
-      ></component>
+        :full-name="fullName"
+        :type="itemType">
+      </json-form-item-array-input>
     </fieldset>
   </div>
 </template>
@@ -20,8 +21,7 @@
 
 <script>
   import { setPartial } from '../../../../vuex/modules/data/actions'
-  import JsonFormItemArrayString from './JsonFormItemArrayString'
-  import JsonFormItemArrayNumber from './JsonFormItemArrayNumber'
+  import JsonFormItemArrayInput from './JsonFormItemArrayInput'
 
   export default {
     name: 'JsonFormItemArray',
@@ -31,8 +31,7 @@
       fullName: String
     },
     components: {
-      JsonFormItemArrayString,
-      JsonFormItemArrayNumber
+      JsonFormItemArrayInput
     },
     vuex: {
       actions: {
@@ -47,17 +46,19 @@
       }
     },
     computed: {
-      componentItem () {
-        if (this.content.length) {
+      itemType () {
+        if (this.content && this.content.length) {
           switch (typeof this.content[0]) {
             case 'number':
-              return 'JsonFormItemArrayNumber'
+              return 'number'
             default:
-              return 'JsonFormItemArrayString'
+              return 'text'
           }
+        } else {
+          this.content.push('')
         }
 
-        return 'JsonFormItemArray'
+        return 'text'
       }
     },
     watch: {

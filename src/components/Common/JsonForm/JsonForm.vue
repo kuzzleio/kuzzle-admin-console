@@ -52,6 +52,7 @@
   }
 
   .input-field {
+    padding-right: 80px;
     input {
       height: 2rem;
       margin-bottom: 10px;
@@ -67,7 +68,7 @@
     }
     .inline-actions {
       position: absolute;
-      right: 0;
+      right: 80px;
       top: 0;
       -webkit-transform: translateX(110%);
       transform: translateX(110%);
