@@ -9,7 +9,7 @@
 <style rel="stylesheet/scss" lang="scss">
   .multiselect__tags {
     border: none !important;
-    border-bottom: 1px solid #9e9e9e !important;
+    border-bottom: 1px solid #e4e1e1 !important;
     border-radius: 0 !important;
     input[type=text],
     input[type=text]:focus:not([readonly]) {
@@ -37,6 +37,14 @@
     components: {
       Multiselect
     },
+    watch: {
+      content () {
+        if (this.content) {
+          this.selected = this.content
+          this.setPartial('profileIds', this.content)
+        }
+      }
+    },
     ready () {
       kuzzle
         .security
@@ -50,11 +58,6 @@
           // todo err
           console.error(err)
         })
-
-      if (this.content) {
-        this.selected = this.content
-        this.setPartial('profileIds', this.content)
-      }
     },
     methods: {
       setProfileIds (selected) {
