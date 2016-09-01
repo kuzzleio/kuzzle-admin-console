@@ -52,6 +52,12 @@
   </div>
 </template>
 
+<style lang="scss" rel="stylesheet/scss">
+  .collection {
+    overflow: visible;
+  }
+</style>
+
 <script>
   import CollectionTabs from '../Collections/Tabs'
   import CommonList from '../../Common/List'

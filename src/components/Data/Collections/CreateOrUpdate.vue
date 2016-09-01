@@ -14,7 +14,7 @@
               <div class="col s6">
                 <div class="input-field">
                   <input id="collectionName" type="text" name="collection" required
-                         class="validate" tabindex="1" v-model="name" :value="collectionName"/>
+                         class="validate" tabindex="1" v-model="name" :value="collectionName" v-focus />
                   <label for="collectionName">Collection name</label>
                 </div>
               </div>
@@ -106,12 +106,16 @@
   import JsonEditor from '../../Common/JsonEditor'
   import { resetCollectionDetail } from '../../../vuex/modules/collection/actions'
   import { mapping, collectionName, collectionIsRealtimeOnly } from '../../../vuex/modules/collection/getters'
+  import Focus from '../../../directives/focus.directive'
 
   export default {
     name: 'CollectionCreateOrUpdate',
     components: {
       Headline,
       JsonEditor
+    },
+    directives: {
+      Focus
     },
     props: {
       index: String,

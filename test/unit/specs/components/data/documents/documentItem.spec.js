@@ -14,7 +14,8 @@ describe('Document item', () => {
   beforeEach(() => {
     DocumentItem = DocumentItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective,
+      '../../../directives/focus.directive': mockedDirective
     })
 
     Vue.use(VueRouter)

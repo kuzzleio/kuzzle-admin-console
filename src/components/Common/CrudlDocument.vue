@@ -44,8 +44,7 @@
           </button>
 
           <button class="btn btn-small waves-effect waves-light margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
-          <button
-                  class="btn btn-small waves-effect waves-light"
+          <button class="btn btn-small waves-effect waves-light"
                   :class="displayBulkDelete ? 'red' : 'disabled'"
                   :disabled="!displayBulkDelete"
                   @click="$broadcast('modal-open', 'bulk-delete')">
@@ -106,8 +105,6 @@
             </button>
           </span>
     </modal>
-
-
   </div>
 </template>
 
