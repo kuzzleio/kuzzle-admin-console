@@ -9,8 +9,6 @@ let vm
 let $vm
 
 describe('Create collection component test', () => {
-  let fetchCollectionDetail = sandbox.stub().returns()
-  let resetCollectionDetail = sandbox.stub().returns()
   let createCollection = sandbox.stub().returns()
   let getCollectionsFromIndex = sandbox.stub().returns(Promise.resolve())
   let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
@@ -21,8 +19,6 @@ describe('Create collection component test', () => {
     Create = CreateInjector({
       './CreateOrUpdate': mockedComponent,
       '../../../vuex/modules/collection/actions': {
-        fetchCollectionDetail,
-        resetCollectionDetail,
         createCollection
       },
       '../../../vuex/modules/data/actions': {

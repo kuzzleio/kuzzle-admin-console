@@ -10,7 +10,7 @@
 
 <script>
   import CreateOrUpdate from './CreateOrUpdate'
-  import { fetchCollectionDetail, resetCollectionDetail, createCollection } from '../../../vuex/modules/collection/actions'
+  import { createCollection } from '../../../vuex/modules/collection/actions'
   import { collectionName } from '../../../vuex/modules/collection/getters'
   import { indexesAndCollections } from '../../../vuex/modules/data/getters'
 
@@ -24,8 +24,6 @@
     },
     vuex: {
       actions: {
-        fetchCollectionDetail,
-        resetCollectionDetail,
         createCollection
       },
       getters: {
