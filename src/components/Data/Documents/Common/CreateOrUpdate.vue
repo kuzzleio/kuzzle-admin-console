@@ -21,8 +21,8 @@
           <div class="row" v-if="!hideId">
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" @input="updatePartial" v-focus />
-                <label for="id">Document identifier (optional)</label>
+                <input id="id" type="text" name="collection" @input="updateId" :value="newDocument._id" v-focus :required="mandatoryId" />
+                <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
               </div>
             </div>
           </div>
@@ -140,7 +140,7 @@
   import Modal from '../../../Materialize/Modal'
   import MSelect from '../../../../directives/Materialize/m-select.directive'
   import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
-  import {mergeDeep, formatGeoPoint} from '../../../../services/objectHelper'
+  import {mergeDeep, formatType} from '../../../../services/objectHelper'
   import CollectionTabs from '../../Collections/Tabs'
   import Focus from '../../../../directives/focus.directive'
 
@@ -155,7 +155,11 @@
     props: {
       index: String,
       collection: String,
-      hideId: Boolean
+      hideId: Boolean,
+      mandatoryId: {
+        default: false,
+        type: Boolean
+      }
     },
     directives: {
       MSelect,
@@ -174,7 +178,11 @@
         if (this.viewState === 'code') {
           let json = this.$refs.jsoneditor.getJson()
           if (json) {
-            mergeDeep(this.mapping, getUpdatedSchema(json).properties)
+            mergeDeep(this.mapping, getUpdatedSchema(json, this.collection).properties)
+            // update document id
+            if (json._id) {
+              this.setPartial('_id', json._id)
+            }
           }
           this.viewState = 'form'
           return
@@ -192,7 +200,7 @@
         this.newAttributePath = null
         this.$broadcast('modal-close', 'add-attr')
       },
-      updatePartial (e) {
+      updateId (e) {
         this.setPartial('_id', e.target.value)
       },
       cancel () {
@@ -231,7 +239,7 @@
         .getMappingPromise()
         .then((res) => {
           this.mapping = res.mapping
-          formatGeoPoint(this.mapping)
+          formatType(this.mapping, this.collection)
         })
         .catch(() => {
           // todo errors
@@ -243,7 +251,7 @@
         this.$broadcast('modal-open', 'add-attr')
       },
       'document-create::fill' (document) {
-        this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
+        this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document, this.collection).properties)
       },
       'document-create::cancel' () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {

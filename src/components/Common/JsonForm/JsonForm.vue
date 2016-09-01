@@ -20,13 +20,15 @@
   import JsonFormItemCheckbox from './JsonFormItemCheckbox'
   import JsonFormItemNumber from './JsonFormItemNumber'
   import JsonFormItemText from './JsonFormItemText'
+  import JsonFormItemProfileIds from './JsonFormItemProfileIds.vue'
 
   export default {
     name: 'JsonForm',
     components: {
       JsonFormItemCheckbox,
       JsonFormItemNumber,
-      JsonFormItemText
+      JsonFormItemText,
+      JsonFormItemProfileIds
     },
     computed: {
       path () {
@@ -46,6 +48,8 @@
           case 'double':
           case 'float':
             return 'JsonFormItemNumber'
+          case 'profileIds':
+            return 'JsonFormItemProfileIds'
           default:
             return 'JsonFormItemText'
         }

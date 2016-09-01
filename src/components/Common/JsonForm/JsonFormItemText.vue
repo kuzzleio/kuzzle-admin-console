@@ -1,6 +1,6 @@
 <template>
   <div class="row input-field">
-    <input :id="name" type="text" v-model="value" />
+    <input :id="name" type="text" v-model="value" :value="content" />
     <label :for="name" :class="{'active': value}">{{name}}</label>
   </div>
 </template>
@@ -23,9 +23,6 @@
     watch: {
       value (v) {
         this.setPartial(this.fullName, v)
-      },
-      content (content) {
-        this.value = content
       }
     },
     vuex: {

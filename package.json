@@ -34,6 +34,7 @@
     "socket.io-client": "^1.4.8",
     "velocity-animate": "^1.2.3",
     "vue": "^1.0.21",
+    "vue-multiselect": "^1.1.2",
     "vue-router": "^0.7.13",
     "vuex": "^0.8.2",
     "vuex-router-sync": "^2.0.2"
