@@ -12,7 +12,7 @@
 
   <!-- Root attributes -->
   <div v-if="!isNested(content)" class="input-field">
-    <component :is="getComponentItem()" :name="name" :full-name="path" :content="content.val"></component>
+    <component :is="componentItem" :name="name" :full-name="path" :content="content.val"></component>
   </div>
 </template>
 
