@@ -8,7 +8,7 @@
 <script>
   import {setPartial} from '../../../vuex/modules/data/actions'
 
-  export default{
+  export default {
     name: 'JsonFormItemText',
     props: {
       content: String,

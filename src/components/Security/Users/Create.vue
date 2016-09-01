@@ -11,7 +11,7 @@
 
 <script>
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate.vue'
-//  import kuzzle from '../../../services/kuzzle'
+  // import kuzzle from '../../../services/kuzzle'
 
   export default {
     name: 'SecurityUsersCreate',
