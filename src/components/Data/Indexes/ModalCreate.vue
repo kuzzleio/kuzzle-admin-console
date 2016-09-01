@@ -96,6 +96,7 @@
         if (!index.trim()) {
           return
         }
+
         this.createIndex(index)
           .then(() => {
             this.index = ''
