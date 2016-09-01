@@ -249,7 +249,7 @@
       'document-create::fill' (document) {
         promiseGetMapping
           .then(() => {
-            this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
+            this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document, this.collection).properties)
           })
       }
     }
