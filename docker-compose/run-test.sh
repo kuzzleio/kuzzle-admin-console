@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
 echo "Installing dependencies..."

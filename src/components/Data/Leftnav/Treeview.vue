@@ -25,14 +25,17 @@
       </li>
       <li>
         <ul class="indexes">
-          <li v-for="(key, indexTree) in tree | orderBy 'name'" v-if="filterTree(filter, indexTree)">
+          <li
+            v-for="(indexName, collections) in tree | orderBy '$key'"
+            v-if="filterTree(indexName, collections)">
             <index-branch
-              :force-open="key === 0 && tree.length === 1"
+              :force-open="indexesCount === 1"
+              :index-name="indexName"
               :route-name="routeName"
-              :index-tree="indexTree"
-              :index="index"
+              :collections="collections"
+              :current-index="index"
               :filter="filter"
-              :collection="collection">
+              :current-collection="collection">
             </index-branch>
           </li>
         </ul>
@@ -51,7 +54,7 @@
       index: String,
       collection: String,
       routeName: String,
-      tree: Array
+      tree: Object
     },
     components: {
       IndexBranch
@@ -61,15 +64,24 @@
         filter: ''
       }
     },
+    computed: {
+      indexesCount () {
+        if (!this.indexesAndCollections) {
+          return 0
+        }
+
+        return Object.keys(this.indexesAndCollections).length
+      }
+    },
     methods: {
       canSearchIndex,
-      filterTree (filter, indexTree) {
-        if (filter === '' || indexTree.name.indexOf(filter) >= 0) {
+      filterTree (indexName, collections) {
+        if (this.filter === '' || indexName.indexOf(this.filter) >= 0) {
           return true
         }
 
-        let stored = indexTree.collections.stored.some(collection => collection.indexOf(filter) >= 0)
-        let realtime = indexTree.collections.realtime.some(collection => collection.indexOf(filter) >= 0)
+        let stored = collections.stored.some(collection => collection.indexOf(this.filter) >= 0)
+        let realtime = collections.realtime.some(collection => collection.indexOf(this.filter) >= 0)
 
         return (stored || realtime)
       }
