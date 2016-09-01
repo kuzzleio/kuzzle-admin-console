@@ -139,9 +139,11 @@
     methods: {
       canSearchIndex,
       isCollectionRealtime () {
-        return this.indexesAndCollections.filter((index) => {
-          return (index.name === this.selectedIndex && index.collections.realtime.indexOf(this.selectedCollection) >= 0)
-        }).length > 0
+        if (!this.indexesAndCollections[this.selectedIndex]) {
+          return false
+        }
+
+        return this.indexesAndCollections[this.selectedIndex].realtime.indexOf(this.selectedCollection) !== -1
       },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {

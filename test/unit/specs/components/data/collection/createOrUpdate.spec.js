@@ -1,40 +1,123 @@
 import Vue from 'vue'
-import {mockedComponent} from '../../../helper'
 import store from '../../../../../../src/vuex/store'
-const createLayoutInjector = require('inject!../../../../../../src/components/Data/Collections/CreateOrUpdate')
+import { mockedComponent } from '../../../helper'
 
-describe('CreateCollection tests', () => {
-  let CreateLayout = createLayoutInjector({
-    '../../Materialize/Headline': mockedComponent,
-    '../../Common/JsonEditor': mockedComponent
-  })
-  describe('CreateCollection layout display', () => {
-    let vm
+let CreateOrUpdateInjector = require('!!vue?inject!../../../../../../src/components/Data/Collections/CreateOrUpdate')
+let CreateOrUpdate
+let sandbox = sinon.sandbox.create()
+let vm
+let $vm
+let $dispatch
 
-    beforeEach(() => {
-      vm = new Vue({
-        template: '<div><create-layout v-ref:create></create-layout></div>',
-        components: {CreateLayout},
-        replace: false,
-        store: store
-      }).$mount()
-      vm.$refs.create.$router = {go: sinon.spy()}
-      vm.$refs.create.$route = {
-        params: {
-          index: 'index'
-        }
+describe('CreateOrUpdate test', () => {
+  let resetCollectionDetail = sandbox.stub().returns()
+  let mapping = sandbox.stub().returns()
+  let collectionName = sandbox.stub().returns()
+  let collectionIsRealtimeOnly = sandbox.stub().returns()
+
+  const mockInjector = () => {
+    CreateOrUpdate = CreateOrUpdateInjector({
+      '../../Materialize/Headline': mockedComponent,
+      '../../Common/JsonEditor': mockedComponent,
+      '../../../vuex/modules/collection/actions': {
+        resetCollectionDetail
+      },
+      '../../../vuex/modules/collection/getters': {
+        mapping,
+        collectionName,
+        collectionIsRealtimeOnly
       }
     })
 
-    it('should return a rejected promise', (done) => {
-      sinon.stub(vm.$refs.create, 'createCollection').returns(Promise.resolve())
-      vm.$refs.create.doCreateCollection()
+    vm = new Vue({
+      template: '<div><create-or-update v-ref:create index="myindex"></create-or-update></div>',
+      components: { CreateOrUpdate },
+      replace: false,
+      store: store
+    }).$mount()
 
-      setTimeout(() => {
-        expect(vm.$refs.create.createCollection.called).to.be.ok
-        expect(vm.$refs.create.$router.go.called).to.be.ok
-        done()
-      }, 0)
+    $vm = vm.$refs.create
+    $dispatch = sandbox.stub($vm, '$dispatch')
+  }
+
+  before(() => mockInjector())
+  afterEach(() => sandbox.restore())
+
+  describe('Watch', () => {
+    describe('collectionIsRealtimeOnly', () => {
+      it('should set isRealtime', () => {
+        mockInjector()
+        CreateOrUpdate.watch.isRealtimeOnly = false
+
+        CreateOrUpdate.watch.collectionIsRealtimeOnly(true)
+        expect(CreateOrUpdate.watch.isRealtimeOnly).to.be.equal(true)
+      })
+    })
+  })
+
+  describe('Methods', () => {
+    describe('Create', () => {
+      it('should dispatch event create with name', () => {
+        mockInjector()
+        $vm.name = 'toto'
+        $vm.$refs = {
+          jsoneditor: {
+            getJson: () => {
+              return {toto: 'tutu'}
+            }
+          }
+        }
+        $vm.isRealtimeOnly = false
+        $vm.create()
+
+        expect($dispatch.calledWith('collection-create::create', 'toto', {toto: 'tutu'}, false))
+      })
+
+      it('should dispatch event create with collectionName', () => {
+        collectionName = sandbox.stub().returns('tutu')
+        mockInjector()
+        $vm.name = null
+        $vm.$refs = {
+          jsoneditor: {
+            getJson: () => {
+              return {toto: 'tutu'}
+            }
+          }
+        }
+        $vm.isRealtimeOnly = false
+        $vm.create()
+
+        expect($dispatch.calledWith('collection-create::create', 'tutu', {toto: 'tutu'}, false))
+      })
+    })
+
+    describe('Cancel', () => {
+      it('should redirect on previous page if the user is from the site', () => {
+        mockInjector()
+
+        $vm.$router = {go: sandbox.stub(), _prevTransition: {to: 'toto'}}
+        $vm.cancel()
+
+        expect($vm.$router.go.calledWith('toto')).to.be.equal(true)
+      })
+
+      it('should redirect on index summary if user come from other site', () => {
+        mockInjector()
+
+        $vm.$router = {go: sandbox.stub(), _prevTransition: {to: null}}
+        $vm.cancel()
+
+        expect($vm.$router.go.calledWith({name: 'DataIndexSummary', params: {index: 'myindex'}})).to.be.equal(true)
+      })
+    })
+  })
+
+  describe('BeforeDestroy', () => {
+    it('should resetCollectionDetail', () => {
+      mockInjector()
+      $vm.$destroy()
+      expect(resetCollectionDetail.callCount).to.be.equal(1)
     })
   })
 })
+
