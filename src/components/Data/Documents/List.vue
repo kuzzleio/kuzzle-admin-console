@@ -59,7 +59,6 @@
   import CollectionDropdown from '../Collections/Dropdown'
   import { listIndexesAndCollections } from '../../../vuex/modules/data/actions'
   import { canSearchIndex } from '../../../services/userAuthorization'
-  import { getCollectionsFromTree } from '../../../services/data'
   import { indexesAndCollections } from '../../../vuex/modules/data/getters'
 
   export default {
@@ -84,16 +83,13 @@
     },
     computed: {
       isRealtimeCollection () {
-        if (!this.collections) {
+        if (!this.indexesAndCollections[this.index]) {
           return false
         }
-        if (!this.collections.realtime) {
+        if (!this.indexesAndCollections[this.index].realtime) {
           return false
         }
-        return this.collections.realtime.indexOf(this.collection) !== -1
-      },
-      collections () {
-        return getCollectionsFromTree(this.indexesAndCollections, this.index)
+        return this.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
       }
     },
     methods: {

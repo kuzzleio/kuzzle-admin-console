@@ -118,7 +118,7 @@ describe('WatchData tests', () => {
         expect(vm.$refs.watch.warning.message).to.equal('Older notifications are discarded due to huge amount of items displayed')
       })
 
-      it('should should not replace existing warning if messages reach length limit', () => {
+      it('should not replace existing warning if messages reach length limit', () => {
         vm.$refs.watch.notifications = ['foo', 'bar']
         vm.$refs.watch.notificationsLengthLimit = 1
         vm.$refs.watch.warning.message = 'foo'

@@ -1,26 +1,26 @@
 <template>
   <div :class="{ 'open': open || filter }">
-    <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch()"></i>
-    <a v-link="{name: 'DataIndexSummary', params: {index: indexTree.name}}" class="tree-item truncate"
-       :class="{ 'active': isIndexActive(indexTree.name) }">
+    <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch"></i>
+    <a v-link="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
+       :class="{ 'active': isIndexActive(indexName) }">
       <i class="fa fa-database" aria-hidden="true"></i>
-      {{{indexTree.name | highlight filter}}} ({{collectionCount}})
+      {{{indexName | highlight filter}}} ({{collectionCount}})
     </a>
     <ul class="collections">
-      <li v-for="collectionTree in indexTree.collections.stored | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
+      <li v-for="collectionName in collections.stored | orderBy 1 | filterBy filter">
         <a class="tree-item truncate"
-           v-link="{name: 'DataDocumentsList', params: {index: indexTree.name, collection: collectionTree}}"
-           :class="{ 'active': isCollectionActive(indexTree.name, collectionTree) }">
+           v-link="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
+           :class="{ 'active': isCollectionActive(indexName, collectionName) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
-           {{{collectionTree | highlight filter}}}
+           {{{collectionName | highlight filter}}}
          </a>
       </li>
-      <li v-for="collectionTree in indexTree.collections.realtime | orderBy 1" v-if="filter === '' || collectionTree.indexOf(filter) >= 0">
+      <li v-for="collectionName in collections.realtime | orderBy 1 | filterBy filter">
         <a class="tree-item truncate"
-           v-link="{name: 'DataCollectionWatch', params: {index: indexTree.name, collection: collectionTree}}"
-           :class="{ 'active': isCollectionActive(indexTree.name, collectionTree) }">
+           v-link="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
+           :class="{ 'active': isCollectionActive(indexName, collectionName) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
-          {{{collectionTree | highlight filter}}}
+          {{{collectionName | highlight filter}}}
         </a>
       </li>
     </ul>
@@ -29,7 +29,6 @@
 
 <script>
 import { highlight } from '../../../filters/highlight.filter'
-import { getCollectionCount } from '../../../services/data'
 
 export default {
   props: {
@@ -37,11 +36,12 @@ export default {
       type: Boolean,
       default: false
     },
-    index: String,
+    indexName: String,
+    currentIndex: String,
     filter: String,
-    collection: String,
+    currentCollection: String,
     routeName: String,
-    indexTree: Object
+    collections: Object
   },
   data: function () {
     return {
@@ -53,14 +53,14 @@ export default {
   },
   computed: {
     collectionCount () {
-      if (!this.indexTree.collections) {
+      if (!this.collections) {
         return 0
       }
-      return getCollectionCount(this.indexTree.collections)
+
+      return this.collections.realtime.length + this.collections.stored.length
     }
   },
   methods: {
-
     toggleBranch () {
       // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
@@ -75,28 +75,28 @@ export default {
           return 'DataDocumentsList'
       }
     },
-    isTreeOpen (currentIndex, indexName) {
-      if (currentIndex === indexName) {
+    testOpen () {
+      if (this.currentIndex === this.indexName) {
         this.open = true
       }
     },
     isIndexActive (indexName) {
-      return this.index === indexName && !this.collection
+      return this.currentIndex === indexName && !this.currentCollection
     },
     isCollectionActive (indexName, collectionName) {
-      return this.index === indexName && this.collection === collectionName
+      return this.currentIndex === indexName && this.currentCollection === collectionName
     }
   },
   watch: {
-    index (index) {
-      this.isTreeOpen(index, this.indexTree.name)
+    currentIndex () {
+      this.testOpen()
     },
-    collection () {
-      this.isTreeOpen(this.index, this.indexTree.name)
+    currentCollection () {
+      this.testOpen()
     }
   },
-  ready: function () {
-    this.isTreeOpen(this.index, this.indexTree.name)
+  ready () {
+    this.testOpen()
   }
 }
 </script>

@@ -1,38 +1,40 @@
 <template>
   <div class="wrapper">
     <headline>
-      {{index}} - Create a collection
+      {{index}} - {{headline}}
     </headline>
 
     <div class="row">
       <div class="col s12 m10 l8 card">
-        <form class="wrapper" @submit.prevent="doCreateCollection">
+        <form class="wrapper" @submit.prevent="create">
           <!-- Required fields -->
-          <div class="row valign-center">
-            <!-- Collection name -->
-            <div class="col s6">
+          <div v-if="!collectionName">
+            <div class="row valign-center">
+              <!-- Collection name -->
+              <div class="col s6">
                 <div class="input-field">
-                  <input id="collectionName" type="text" name="collection" required v-model="collectionName"
-                         class="validate" tabindex="1" />
+                  <input id="collectionName" type="text" name="collection" required
+                         class="validate" tabindex="1" v-model="name" :value="collectionName"/>
                   <label for="collectionName">Collection name</label>
                 </div>
-            </div>
-            <!-- Toggle settings open -->
-            <div class="col s6">
-              <div class="input-field">
-                <button tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
-                  <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
-                  {{settingsOpen ? 'Hide settings' : 'Show settings'}}</button>
+              </div>
+              <!-- Toggle settings open -->
+              <div class="col s6">
+                <div class="input-field">
+                  <button tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
+                    <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
+                    {{settingsOpen ? 'Hide settings' : 'Show settings'}}</button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="row">
-            <div class="divider"></div>
+            <div class="row">
+              <div class="divider"></div>
+            </div>
           </div>
 
           <!-- Helper message about mapping -->
-          <div class="row deep-orange-text" v-show="!settingsOpen">
+          <div class="row deep-orange-text" v-show="!settingsOpen && !collectionName">
             <p class="col s12">
               <i class="fa fa-exclamation-triangle " aria-hidden="true"></i>
               Settings allow you to define mappings which enable cool functionalities such as geo spacial researches.
@@ -41,23 +43,26 @@
           </div>
 
           <!-- Settings (mappings, realtime only ...) -->
-          <div class="row" v-show="settingsOpen">
+          <div class="row" v-show="settingsOpen || collectionName">
             <div class="col s8">
 
               <div class="row">
                 <p>
-                  <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealTime"/>
-                  <label for="realtime-collection">Realtime collection</label>
+                  <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealtimeOnly" :checked="collectionIsRealtimeOnly" :disabled="collectionName && !collectionIsRealtimeOnly"/>
+                  <label for="realtime-collection">
+                    Realtime only
+                    <span v-if="collectionName && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
+                  </label>
                 </p>
               </div>
 
-              <div class="row" v-show="!isRealTime">
+              <div class="row" v-show="!isRealtimeOnly">
                 <p>Mapping:</p>
                 <json-editor
                   tabindex="4"
                   v-ref:jsoneditor
                   class="pre_ace"
-                  :content="{}">
+                  :content="mapping">
                 </json-editor>
               </div>
 
@@ -72,7 +77,11 @@
           <div class="row">
             <div class="col s6">
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-                <button tabindex="5" type="submit" class="btn primary waves-effect waves-light"><i class="fa fa-plus-circle left"></i> Create</button>
+                <button type="submit" class="btn waves-effect waves-light">
+                  <i v-if="!collectionName" class="fa fa-plus-circle left"></i>
+                  <i v-else class="fa fa-pencil left"></i>
+                  {{collectionName ? 'Update' : 'Create'}}
+                </button>
                 <p class="error">{{error}}</p>
             </div>
           </div>
@@ -94,47 +103,57 @@
 
 <script>
   import Headline from '../../Materialize/Headline'
-  import {createCollection} from '../../../vuex/modules/collection/actions'
   import JsonEditor from '../../Common/JsonEditor'
+  import { resetCollectionDetail } from '../../../vuex/modules/collection/actions'
+  import { mapping, collectionName, collectionIsRealtimeOnly } from '../../../vuex/modules/collection/getters'
 
   export default {
-    name: 'CollectionCreate',
+    name: 'CollectionCreateOrUpdate',
     components: {
       Headline,
       JsonEditor
     },
     props: {
-      index: String
+      index: String,
+      headline: String
+    },
+    vuex: {
+      getters: {
+        mapping,
+        collectionName,
+        collectionIsRealtimeOnly
+      },
+      actions: {
+        resetCollectionDetail
+      }
     },
     data () {
       return {
-        collectionName: null,
-        settingsOpen: false,
         error: '',
-        isRealTime: false
+        name: null,
+        isRealtimeOnly: false,
+        settingsOpen: false
+      }
+    },
+    watch: {
+      'collectionIsRealtimeOnly' (value) {
+        this.isRealtimeOnly = value
       }
     },
     methods: {
+      create () {
+        this.$dispatch('collection-create::create', this.name || this.collectionName, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
+      },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
           this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
         }
-      },
-      doCreateCollection () {
-        let mapping = this.$refs.jsoneditor.getJson()
-        this.createCollection(this.index, this.collectionName, mapping, this.isRealTime).then(() => {
-          this.$router.go({name: 'DataIndexSummary', params: {index: this.$route.params.index}})
-        }).catch((e) => {
-          this.error = e
-        })
       }
     },
-    vuex: {
-      actions: {
-        createCollection
-      }
+    beforeDestroy () {
+      this.resetCollectionDetail()
     }
   }
 </script>

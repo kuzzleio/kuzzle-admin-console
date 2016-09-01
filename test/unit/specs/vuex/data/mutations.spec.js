@@ -12,15 +12,12 @@ const {
 
 describe('ADD_INDEX test', () => {
   it('should add the index with an empty collection set', () => {
-    let state = {indexesAndCollections: []}
+    let state = {indexesAndCollections: {}}
 
     ADD_INDEX(state, 'myindex')
-    expect(state.indexesAndCollections[0]).to.deep.equal({
-      name: 'myindex',
-      collections: {
-        stored: [],
-        realtime: []
-      }
+    expect(state.indexesAndCollections['myindex']).to.deep.equal({
+      stored: [],
+      realtime: []
     })
   })
 })
@@ -28,42 +25,36 @@ describe('ADD_INDEX test', () => {
 describe('ADD_STORED_COLLECTION test', () => {
   it('should add a stored collection', () => {
     let state = {
-      indexesAndCollections: [
-        {
-          name: 'oof'
+      indexesAndCollections: {
+        oof: {
+
         },
-        {
-          name: 'foo',
-          collections: {
-            stored: [],
-            realtime: []
-          }
+        foo: {
+          stored: [],
+          realtime: []
         }
-      ]
+      }
     }
 
     ADD_STORED_COLLECTION(state, 'foo', 'bar')
-    expect(state.indexesAndCollections[1].collections).to.deep.equal({stored: ['bar'], realtime: []})
+    expect(state.indexesAndCollections['foo']).to.deep.equal({stored: ['bar'], realtime: []})
   })
 
   it('should add a realtime collection', () => {
     let state = {
-      indexesAndCollections: [
-        {
-          name: 'oof'
+      indexesAndCollections: {
+        oof: {
+
         },
-        {
-          name: 'foo',
-          collections: {
-            stored: [],
-            realtime: []
-          }
+        foo: {
+          stored: [],
+          realtime: []
         }
-      ]
+      }
     }
 
     ADD_REALTIME_COLLECTION(state, 'foo', 'bar')
-    expect(state.indexesAndCollections[1].collections).to.deep.equal({stored: [], realtime: ['bar']})
+    expect(state.indexesAndCollections['foo']).to.deep.equal({stored: [], realtime: ['bar']})
   })
 })
 
@@ -71,8 +62,8 @@ describe('RECEIVE_INDEXES_COLLECTIONS tests', () => {
   it('should set indexes and collections', () => {
     let state = {user: null}
 
-    RECEIVE_INDEXES_COLLECTIONS(state, 'foo')
-    expect(state.indexesAndCollections).to.equals('foo')
+    RECEIVE_INDEXES_COLLECTIONS(state, {foo: {realtime: ['toto'], stored: ['tutu']}})
+    expect(state.indexesAndCollections).to.deep.equal({foo: {realtime: ['toto'], stored: ['tutu']}})
   })
 })
 

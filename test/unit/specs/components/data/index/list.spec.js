@@ -49,11 +49,27 @@ describe('List indexes tests', () => {
   describe('computed', () => {
     describe('countIndexForFilter', () => {
       it('should return total number of index for filter', () => {
-        indexesAndCollections = sandbox.stub().returns([{name: 'toto'}, {name: 'tutu'}, {name: 'foo'}])
+        indexesAndCollections = sandbox.stub().returns({toto: {}, tutu: {}, foo: {}})
         mockInjector()
 
         $vm.filter = 'to'
         expect($vm.countIndexForFilter).to.be.equal(1)
+      })
+    })
+
+    describe('indexesCount', () => {
+      it('should return 0 if there is no index in store', () => {
+        indexesAndCollections = sandbox.stub().returns(null)
+        mockInjector()
+
+        expect($vm.indexesCount).to.be.equal(0)
+      })
+
+      it('should return right number of indexes in store', () => {
+        indexesAndCollections = sandbox.stub().returns({toto: {}, tutu: {}, foo: {}})
+        mockInjector()
+
+        expect($vm.indexesCount).to.be.equal(3)
       })
     })
   })
