@@ -1,28 +1,34 @@
 <template>
   <div class="wrapper">
     <headline>
-      User - Create
+      Edit user - <span class="bold">{{documentToEditId}}</span>
     </headline>
 
     <create-or-update
-      @document-create::create="create"
+      @document-create::create="update"
       @document-create::cancel="cancel"
       index="%kuzzle"
-      collection="users">
+      collection="users"
+      :hide-id="true">
     </create-or-update>
   </div>
 </template>
 
+<style scoped>
+  .bold {
+    font-weight: normal;
+  }
+</style>
 
 <script>
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
+  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
 
   export default {
-    name: 'UserCreate',
+    name: 'DocumentCreateOrUpdate',
     components: {
       Headline,
       CreateOrUpdate
@@ -32,7 +38,7 @@
       collection: String
     },
     methods: {
-      create (viewState, json) {
+      update (viewState, json) {
         if (viewState === 'code') {
           if (!json) {
             this.$dispatch('toast', 'Invalid document', 'error')
@@ -43,12 +49,15 @@
 
         kuzzle
           .security
-          .createUserPromise(this.newDocument._id, this.newDocument)
+          .updateUserPromise(this.documentToEditId, this.newDocument)
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
             this.$router.go({name: 'SecurityUsersList'})
-          }).catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+          })
+          .catch((err) => {
+            if (err) {
+              this.$dispatch('toast', err.message, 'error')
+            }
           })
       },
       cancel () {
@@ -60,12 +69,26 @@
       }
     },
     vuex: {
-      getters: {
-        newDocument
-      },
       actions: {
         setNewDocument
+      },
+      getters: {
+        newDocument,
+        documentToEditId
       }
+    },
+    ready () {
+      kuzzle
+        .security
+        .getUserPromise(this.documentToEditId)
+        .then((res) => {
+          this.setNewDocument(res.content)
+          this.$broadcast('document-create::fill', res.content)
+          return null
+        })
+        .catch(err => {
+          this.$dispatch('toast', err.message, 'error')
+        })
     }
   }
 </script>

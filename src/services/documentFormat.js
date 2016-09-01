@@ -1,18 +1,22 @@
 import Vue from 'vue'
 
-export const addAttributeFromPath = (mapping, path, attr, content) => {
-  if (path === '/') {
-    Vue.set(mapping, attr, content)
-    return
+export const getRefMappingFromPath = (mapping, path) => {
+  if (path === '') {
+    return mapping
   }
+
+  let refMapping = {}
   let splitted = path.split('.').join('.properties.').concat('.properties').split('.')
   // Build an object from a path (path: ['a.b.c.d'] value: 'foo' => {a: {properties: {b: {properties: {c: {properties: {d: 'foo'}}}}}}})
   splitted.reduce((prev, curr, index) => {
     if (!splitted[index + 1]) {
-      Vue.set(prev[curr], attr, content)
+      refMapping = prev[curr]
     }
+
     return prev[curr]
   }, mapping)
+
+  return refMapping
 }
 
 export const getUpdatedSchema = (jsonDocument, collection) => {

@@ -1,7 +1,5 @@
 <template>
-  <div class="wrapper">
-    <collection-tabs></collection-tabs>
-
+  <div>
     <div class="card-panel">
       <div class="row">
         <div class="switch">
@@ -32,19 +30,26 @@
           </div>
 
           <div class="row">
-            <div class="col s12">
-              <fieldset>
+            <fieldset>
+              <div class="col s7">
                 <div class="row">
-                  <a class="btn btn-small right" @click="addRootAttr">
+                  <a class="btn btn-small" @click="addRootAttr">
                     <i class="fa fa-plus-circle left"></i>
                     new attribute
                   </a>
                 </div>
-                <div v-for="(name, content) in mapping">
-                  <json-form :name="name" :content="content"></json-form>
+
+                <div class="list-fields">
+                  <div v-for="(name, content) in mapping">
+                    <json-form
+                      :name="name"
+                      :content="content"
+                      @document-create::change-type-attribute="changeTypeAttribute">
+                    </json-form>
+                  </div>
                 </div>
-              </fieldset>
-            </div>
+              </div>
+            </fieldset>
           </div>
         </div>
 
@@ -53,14 +58,25 @@
           <json-editor class="pre_ace" :content="newDocument" v-ref:jsoneditor></json-editor>
         </div>
 
-        <slot></slot>
+        <div class="row">
+          <div class="col s6">
+            <a @click.prevent="cancel" class="btn-flat waves-effect">
+              Cancel
+            </a>
+            <button type="submit" class="btn waves-effect waves-light">
+              <i v-if="!hideId" class="fa fa-plus-circle left"></i>
+              <i v-else class="fa fa-pencil left"></i>
+              {{hideId ? 'Update' : 'Create'}}
+            </button>
+          </div>
+        </div>
 
       </form>
     </div>
 
-    <modal id="add-attr">
+    <modal id="add-attr" :has-footer="false">
       <h4>Add a new attribute</h4>
-      <form>
+      <form method="post" @submit="doAddAttr">
         <p>
           <div class="input-field">
             <input id="name" type="text" required v-model="newAttributeName"/>
@@ -77,7 +93,7 @@
           </div>
         </p>
 
-        <span slot="footer">
+        <div class="modal-footer">
           <button
             type="submit"
             class="waves-effect waves-green btn"
@@ -87,7 +103,7 @@
           <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
               Cancel
           </a>
-        </span>
+        </div>
       </form>
     </modal>
   </div>
@@ -96,38 +112,6 @@
 <style rel="stylesheet/scss" lang="scss">
   .pre_ace, .ace_editor {
     height: 350px;
-  }
-
-  fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    legend {
-      border: 0;
-      padding: 0;
-      font-weight: 300;
-      left: -4px;
-      position: absolute;
-      top: -27px;
-      font-family: "Roboto", Arial, sans-serif;
-
-      a {
-        margin-left: 10px;
-        &.btn-tiny {
-          padding: 0;
-          height: 37px;
-        }
-      }
-    }
-    fieldset {
-      border-left: solid 3px #EEE;
-      position: relative;
-      margin: 45px 0 15px 0;
-      padding: 0 0 0 1em;
-      &:hover, &:focus, &.active {
-        border-left: solid 3px #DDD;
-      }
-    }
   }
 </style>
 
@@ -139,18 +123,25 @@
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
   import MSelect from '../../../../directives/Materialize/m-select.directive'
-  import {addAttributeFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
+  import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
   import {mergeDeep, formatType} from '../../../../services/objectHelper'
-  import CollectionTabs from '../../Collections/Tabs'
   import Focus from '../../../../directives/focus.directive'
+  import Promise from 'bluebird'
+  import Vue from 'vue'
+
+  let promiseGetMappingResolve
+  let promiseGetMappingReject
+  let promiseGetMapping = new Promise((resolve, reject) => {
+    promiseGetMappingResolve = resolve
+    promiseGetMappingReject = reject
+  })
 
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
       JsonForm,
       JsonEditor,
-      Modal,
-      CollectionTabs
+      Modal
     },
     props: {
       index: String,
@@ -172,6 +163,7 @@
         if (this.viewState === 'code') {
           json = this.$refs.jsoneditor.getJson()
         }
+
         this.$dispatch('document-create::create', this.viewState, json)
       },
       switchEditMode () {
@@ -190,11 +182,13 @@
         this.viewState = 'code'
       },
       addRootAttr () {
-        this.newAttributePath = '/'
+        this.newAttributePath = ''
         this.$broadcast('modal-open', 'add-attr')
       },
       doAddAttr () {
-        addAttributeFromPath(this.mapping, this.newAttributePath, this.newAttributeName, (this.newAttributeType === 'nested' ? {properties: {}} : {type: this.newAttributeType}))
+        let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
+        Vue.set(refMapping, this.newAttributeName, (this.newAttributeType === 'nested' ? {properties: {}} : {type: this.newAttributeType}))
+
         this.newAttributeType = 'string'
         this.newAttributeName = null
         this.newAttributePath = null
@@ -204,11 +198,11 @@
         this.setPartial('_id', e.target.value)
       },
       cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        }
+        this.$dispatch('document-create::cancel')
+      },
+      changeTypeAttribute (attributePath, name, type, val) {
+        let refMapping = getRefMappingFromPath(this.mapping, attributePath)
+        Vue.set(refMapping, name, {type, val})
       }
     },
     vuex: {
@@ -240,9 +234,11 @@
         .then((res) => {
           this.mapping = res.mapping
           formatType(this.mapping, this.collection)
+          promiseGetMappingResolve()
         })
         .catch(() => {
           // todo errors
+          promiseGetMappingReject()
         })
     },
     events: {
@@ -251,14 +247,10 @@
         this.$broadcast('modal-open', 'add-attr')
       },
       'document-create::fill' (document) {
-        this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document, this.collection).properties)
-      },
-      'document-create::cancel' () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-        }
+        promiseGetMapping
+          .then(() => {
+            this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document).properties)
+          })
       }
     }
   }

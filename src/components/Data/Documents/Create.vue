@@ -5,13 +5,13 @@
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
-    <create-or-update @document-create::create="create" :index="index" :collection="collection">
-      <div class="row">
-        <div class="col s6">
-          <a @click.prevent="cancel" class="btn-flat waves-effect">Cancel</a>
-          <button type="submit" class="btn waves-effect waves-light"><i class="fa fa-plus-circle"></i> Create</button>
-        </div>
-      </div>
+    <collection-tabs></collection-tabs>
+
+    <create-or-update
+      @document-create::create="create"
+      @document-create::cancel="cancel"
+      :index="index"
+      :collection="collection">
     </create-or-update>
   </div>
 </template>
@@ -24,13 +24,15 @@
   import CreateOrUpdate from './Common/CreateOrUpdate'
   import {newDocument} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import CollectionTabs from '../Collections/Tabs'
 
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
       Headline,
       CollectionDropdown,
-      CreateOrUpdate
+      CreateOrUpdate,
+      CollectionTabs
     },
     props: {
       index: String,
@@ -45,6 +47,7 @@
           }
           this.setNewDocument(json)
         }
+
         kuzzle
           .dataCollectionFactory(this.collection, this.index)
           .createDocumentPromise(this.newDocument)
@@ -56,7 +59,11 @@
           })
       },
       cancel () {
-        this.$broadcast('document-create::cancel')
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+        }
       }
     },
     vuex: {

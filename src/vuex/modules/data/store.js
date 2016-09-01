@@ -69,6 +69,7 @@ export const mutations = {
           prev[curr] = {}
         }
       }
+
       return prev[curr]
     }, state.newDocument)
   },

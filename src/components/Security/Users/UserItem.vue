@@ -18,6 +18,7 @@
     </label>
 
     <div class="right actions">
+      <a v-link="{name: 'SecurityUsersUpdate', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
       <dropdown :id="document.id" class="icon-black">
         <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>

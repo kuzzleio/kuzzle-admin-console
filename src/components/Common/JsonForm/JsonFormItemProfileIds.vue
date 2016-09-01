@@ -46,7 +46,7 @@
           this.profiles.push(profile.id)
         })
       })
-      console.log(this.content)
+
       if (this.content) {
         this.selected = this.content
         this.setPartial('profileIds', this.content)

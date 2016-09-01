@@ -52,10 +52,16 @@ describe('createOrUpdate document tests', () => {
         formatGeoPoint: formatGeoPointSpy
       },
       '../../../../services/documentFormat': {
-        addAttributeFromPath: addAttributeFromPathSpy,
+        getRefMappingFromPath: addAttributeFromPathSpy,
         getUpdatedSchema: getUpdatedSchemaSpy
       },
-      '../../../../directives/focus.directive': mockedDirective
+      '../../../../directives/focus.directive': mockedDirective,
+      'vue': {
+        set: sandbox.stub()
+      },
+      '../../../Common/JsonEditor': mockedComponent,
+      '../../../Materialize/Modal': mockedComponent,
+      '../../../../directives/Materialize/m-select.directive': mockedDirective
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
@@ -84,7 +90,7 @@ describe('createOrUpdate document tests', () => {
     setPartialSpy = sandbox.stub()
     mergeDeepSpy = sandbox.stub()
     formatGeoPointSpy = sandbox.stub()
-    addAttributeFromPathSpy = sandbox.stub()
+    addAttributeFromPathSpy = sandbox.stub().returns({})
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
 
     mockInjector()
