@@ -8,9 +8,9 @@
 
 <style rel="stylesheet/scss" lang="scss">
   .multiselect__tags {
-    border: none!important;
-    border-bottom: 1px solid #9e9e9e!important;
-    border-radius: 0!important;
+    border: none !important;
+    border-bottom: 1px solid #9e9e9e !important;
+    border-radius: 0 !important;
     input[type=text],
     input[type=text]:focus:not([readonly]) {
       border: none;
@@ -38,14 +38,18 @@
       Multiselect
     },
     ready () {
-      kuzzle.security.searchProfiles({}, (err, res) => {
-        if (err) {
-          return
-        }
-        res.profiles.forEach(profile => {
-          this.profiles.push(profile.id)
+      kuzzle
+        .security
+        .searchProfilesPromise({})
+        .then(res => {
+          res.profiles.forEach(profile => {
+            this.profiles.push(profile.id)
+          })
         })
-      })
+        .catch(err => {
+          // todo err
+          console.error(err)
+        })
 
       if (this.content) {
         this.selected = this.content

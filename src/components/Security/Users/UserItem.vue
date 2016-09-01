@@ -11,7 +11,7 @@
 
     <label for="checkbox-{{document.id}}" ></label>
     <!-- The following anchor will go to the user details page -->
-    <label class="item-title"><a>{{document.id}}</a></label>
+    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
     <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})

@@ -11,7 +11,7 @@
 
     <label for="checkbox-{{document.id}}"></label>
 
-    <label class="item-title"><a>{{document.id}}</a></label>
+    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
     <div class="right actions">
       <a v-link="{name: 'DataUpdateDocument', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>

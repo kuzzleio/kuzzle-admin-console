@@ -11,13 +11,14 @@
 
     <label for="checkbox-{{document.id}}" ></label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="item-title" @click="update()"><a>{{document.id}}</a></label>
+    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
     <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
     <div class="right actions">
+      <a href="#" @click.prevent="update"><i class="fa fa-pencil"></i></a>
       <dropdown :id="document.id" class="icon-black">
         <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>

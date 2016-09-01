@@ -17,7 +17,7 @@ describe('createOrUpdate document tests', () => {
   let setNewDocumentSpy
   let setPartialSpy
   let mergeDeepSpy
-  let formatGeoPointSpy
+  let formatTypeSpy
   let triggerError = true
   let addAttributeFromPathSpy
   let getUpdatedSchemaSpy
@@ -49,7 +49,7 @@ describe('createOrUpdate document tests', () => {
       },
       '../../../../services/objectHelper': {
         mergeDeep: mergeDeepSpy,
-        formatGeoPoint: formatGeoPointSpy
+        formatType: formatTypeSpy
       },
       '../../../../services/documentFormat': {
         getRefMappingFromPath: addAttributeFromPathSpy,
@@ -89,7 +89,7 @@ describe('createOrUpdate document tests', () => {
     setNewDocumentSpy = sandbox.stub()
     setPartialSpy = sandbox.stub()
     mergeDeepSpy = sandbox.stub()
-    formatGeoPointSpy = sandbox.stub()
+    formatTypeSpy = sandbox.stub()
     addAttributeFromPathSpy = sandbox.stub().returns({})
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
 
@@ -157,7 +157,7 @@ describe('createOrUpdate document tests', () => {
       triggerError = false
       mockInjector()
       setTimeout(() => {
-        expect(formatGeoPointSpy.calledWith({foo: 'bar'})).to.be.ok
+        expect(formatTypeSpy.calledWith({foo: 'bar'})).to.be.ok
         done()
       }, 0)
     })
