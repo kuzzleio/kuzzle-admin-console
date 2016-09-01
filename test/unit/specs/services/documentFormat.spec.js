@@ -1,35 +1,33 @@
 import documentFormatInjector from 'inject!../../../../src/services/documentFormat'
 
 describe('documentFormat', () => {
-  let documentFormat
+  let documentFormat = documentFormatInjector({})
 
-  describe('addAttributeFromPath', () => {
+  describe('getRefMappingFromPath', () => {
     let mapping
 
     beforeEach(() => {
-      documentFormat = documentFormatInjector({
-        'vue': {
-          set: (obj, attr, content) => {
-            obj[attr] = content
-          }
-        }
-      })
-
       mapping = {
         a: {
-          properties: {}
+          properties: {
+            b: {
+              properties: {
+                c: 'toto'
+              }
+            }
+          }
         }
       }
     })
 
-    it('should add an attribute if path is root', () => {
-      documentFormat.addAttributeFromPath(mapping, '/', 'foo', 'bar')
-      expect(mapping.foo).to.equals('bar')
+    it('should find path to root', () => {
+      let ref = documentFormat.getRefMappingFromPath(mapping, '')
+      expect(ref).to.equals(mapping)
     })
 
-    it('should add nested attribute', () => {
-      documentFormat.addAttributeFromPath(mapping, 'a', 'b', 'nested!')
-      expect(mapping.a.properties.b).to.equals('nested!')
+    it('should find correct path in object', () => {
+      let ref = documentFormat.getRefMappingFromPath(mapping, 'a.b')
+      expect(ref).to.equals(mapping.a.properties.b.properties)
     })
   })
 

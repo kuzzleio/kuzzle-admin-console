@@ -14,12 +14,14 @@ describe('Create component test', () => {
 
   let refreshIndexSpy = sandbox.stub()
   let setNewDocumentSpy = sandbox.stub()
+  let setNewDocument = sandbox.stub()
 
   const mockInjector = () => {
     Create = CreateInjector({
       './Common/CreateOrUpdate': mockedComponent,
       '../../Materialize/Headline': mockedComponent,
       '../Collections/Dropdown': mockedComponent,
+      '../Collections/Tabs': mockedComponent,
       '../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
           createDocumentPromise: () => {
@@ -30,6 +32,12 @@ describe('Create component test', () => {
           }
         }),
         refreshIndex: refreshIndexSpy
+      },
+      '../../../vuex/modules/data/getters': {
+        newDocument: sandbox.stub()
+      },
+      '../../../vuex/modules/data/actions': {
+        setNewDocument
       }
     })
 
@@ -41,6 +49,7 @@ describe('Create component test', () => {
     }).$mount()
 
     $vm = vm.$refs.create
+    $vm.$router = {_prevTransition: {to: sandbox.stub()}, go: sandbox.stub()}
     $dispatch = sandbox.stub($vm, '$dispatch')
     $broadcast = sandbox.stub()
     $vm.$broadcast = $broadcast
@@ -78,8 +87,9 @@ describe('Create component test', () => {
 
     describe('cancel', () => {
       it('should broadcast document-create::cancel', () => {
+        $vm.$router.go.reset()
         $vm.cancel()
-        expect($broadcast.calledWith('document-create::cancel')).to.be.ok
+        expect($vm.$router.go.callCount).to.be.equal(1)
       })
     })
   })

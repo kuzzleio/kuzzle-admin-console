@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="row input-field">
     <fieldset>
       {{name}}
 

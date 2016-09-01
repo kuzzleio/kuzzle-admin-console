@@ -36,7 +36,15 @@ describe('Update component test', () => {
           }
         }),
         refreshIndex: refreshIndexSpy
-      }
+      },
+      '../../../vuex/modules/data/getters': {
+        newDocument: sandbox.stub(),
+        documentToEditId: sandbox.stub()
+      },
+      '../../../vuex/modules/data/actions': {
+        setNewDocument: sandbox.stub()
+      },
+      '../Collections/Tabs': mockedComponent
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
@@ -48,6 +56,7 @@ describe('Update component test', () => {
     }).$mount('body')
 
     $vm = vm.$refs.update
+    $vm.$router = {_prevTransition: {to: sandbox.stub()}, go: sandbox.stub()}
     $dispatch = sandbox.stub()
     $broadcast = sandbox.stub()
     $vm.setNewDocument = setNewDocumentSpy
@@ -86,8 +95,9 @@ describe('Update component test', () => {
 
     describe('cancel', () => {
       it('should broadcast document-create::cancel', () => {
+        $vm.$router.go.reset()
         $vm.cancel()
-        expect($broadcast.calledWith('document-create::cancel')).to.be.ok
+        expect($vm.$router.go.callCount).to.be.equal(1)
       })
     })
   })

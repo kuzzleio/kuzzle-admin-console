@@ -19,21 +19,6 @@ export const getRefMappingFromPath = (mapping, path) => {
   return refMapping
 }
 
-// export const getPointerFromPath = (mapping, path, attr, content) => {
-//   if (path === '/') {
-//     Vue.set(mapping, attr, content)
-//     return
-//   }
-//   let splitted = path.split('.').join('.properties.').concat('.properties').split('.')
-//   // Build an object from a path (path: ['a.b.c.d'] value: 'foo' => {a: {properties: {b: {properties: {c: {properties: {d: 'foo'}}}}}}})
-//   splitted.reduce((prev, curr, index) => {
-//     if (!splitted[index + 1]) {
-//       Vue.set(prev[curr], attr, content)
-//     }
-//     return prev[curr]
-//   }, mapping)
-// }
-
 export const getUpdatedSchema = jsonDocument => {
   let type
 

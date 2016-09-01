@@ -60,6 +60,9 @@
     .select-wrapper + label {
       top: -14px
     }
+    .select-wrapper input.select-dropdown {
+      border-bottom: 1px solid #e4e1e1;
+    }
     label {
       top: 0.4rem;
       &.active {
