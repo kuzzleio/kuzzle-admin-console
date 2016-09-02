@@ -61,7 +61,7 @@ $ BACKEND_HOST=<BACKEND_HOST> npm run prod
 You can now access to `http://<back-office-ip>:<BACKOFFICE_PORT>`
 
 ### Without the server
-At this point you can choose to only build the `dist/` folder and access to it with your own server:
+You can choose to only build the `dist/` folder and access to it with your own server:
 ```
 $ BACKEND_HOST=<BACKEND_HOST> npm run build
 ```
