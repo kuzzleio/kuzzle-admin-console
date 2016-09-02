@@ -16,9 +16,9 @@
     </div>
     <div class="row">
       <div class="col m6">
-        <p class="error">{{error}}</p>
+        <p class="error col">{{error}}</p>
       </div>
-      <div class="col m6">
+      <div class="col m12">
         <p class="right-align">
           <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
         </p>

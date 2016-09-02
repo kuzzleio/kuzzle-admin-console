@@ -202,7 +202,7 @@
       width: 100%;
       padding-right: 215px;
       box-sizing: border-box;
-      border-bottom: solid 1px #CCC;
+      border-bottom: solid 1px #e4e1e1;
     }
   }
 
@@ -216,7 +216,7 @@
     button {
     }
     .search-bar {
-      border-bottom: solid 1px #CCC;
+      border-bottom: solid 1px #e4e1e1;
       .chip {
         margin-top: 9px;
         margin-left: 30px;

@@ -51,6 +51,10 @@ describe('UserItem component', () => {
       '/security/profiles/:id': {
         name: 'SecurityProfilesUpdate',
         component: mockedComponent
+      },
+      '/users/:id': {
+        name: 'SecurityUsersUpdate',
+        component: mockedComponent
       }
     })
 

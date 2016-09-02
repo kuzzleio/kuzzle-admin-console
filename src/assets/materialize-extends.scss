@@ -185,3 +185,10 @@ i, span {
     border-top-right-radius: 0;
   }
 }
+
+input:not([type]), input[type=text], input[type=password],
+input[type=email], input[type=url], input[type=time],
+input[type=date], input[type=datetime], input[type=datetime-local],
+input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+  border-bottom: 1px solid #e4e1e1;
+}

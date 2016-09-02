@@ -27,10 +27,13 @@ export const mergeDeep = (target, source) => {
 }
 
 /**
- * Restructure object if it is a geo_point so it will be interpreted by jsonform component correctly
+ * Restructure object according to it's type
  * @param document
  */
-export const formatGeoPoint = (document) => {
+export const formatType = (document, collection) => {
+  if (collection === 'users' && document.profileIds !== undefined) {
+    document.profileIds.type = 'profileIds'
+  }
   Object.keys(document).forEach(o => {
     if (document[o].type === 'geo_point') {
       document[o] = {

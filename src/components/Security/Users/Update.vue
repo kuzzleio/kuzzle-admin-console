@@ -1,16 +1,14 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit document - <span class="bold">{{documentToEditId}}</span>
-      <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
+      Edit user - <span class="bold">{{documentToEditId}}</span>
     </headline>
 
-    <collection-tabs></collection-tabs>
     <create-or-update
       @document-create::create="update"
       @document-create::cancel="cancel"
-      :index="index"
-      :collection="collection"
+      index="%kuzzle"
+      collection="users"
       :hide-id="true">
     </create-or-update>
   </div>
@@ -23,21 +21,17 @@
 </style>
 
 <script>
-  import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
-  import CreateOrUpdate from './Common/CreateOrUpdate'
+  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
-  import CollectionTabs from '../Collections/Tabs'
 
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
       Headline,
-      CollectionDropdown,
-      CreateOrUpdate,
-      CollectionTabs
+      CreateOrUpdate
     },
     props: {
       index: String,
@@ -54,11 +48,11 @@
         }
 
         kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .updateDocumentPromise(this.documentToEditId, this.newDocument)
+          .security
+          .updateUserPromise(this.documentToEditId, this.newDocument)
           .then(() => {
-            kuzzle.refreshIndex(this.index)
-            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+            kuzzle.refreshIndex('%kuzzle')
+            this.$router.go({name: 'SecurityUsersList'})
           })
           .catch((err) => {
             if (err) {
@@ -70,7 +64,7 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.go({name: 'SecurityUsersList'})
         }
       }
     },
@@ -85,9 +79,9 @@
     },
     ready () {
       kuzzle
-        .dataCollectionFactory(this.collection, this.index)
-        .fetchDocumentPromise(this.documentToEditId)
-        .then(res => {
+        .security
+        .getUserPromise(this.documentToEditId)
+        .then((res) => {
           this.setNewDocument(res.content)
           this.$broadcast('document-create::fill', res.content)
           return null

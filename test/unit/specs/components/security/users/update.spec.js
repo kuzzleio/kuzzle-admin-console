@@ -3,7 +3,7 @@ import store from '../../../../../../src/vuex/store'
 import {mockedComponent} from '../../../helper'
 
 describe('Update component test', () => {
-  let UpdateInjector = require('!!vue?inject!../../../../../../src/components/Data/Documents/Update')
+  let UpdateInjector = require('!!vue?inject!../../../../../../src/components/Security/Users/Update')
   let Update
   let sandbox = sinon.sandbox.create()
   let vm
@@ -21,20 +21,20 @@ describe('Update component test', () => {
       '../../Materialize/Headline': mockedComponent,
       '../Collections/Dropdown': mockedComponent,
       '../../../services/kuzzle': {
-        dataCollectionFactory: sandbox.stub().returns({
-          updateDocumentPromise: () => {
+        security: {
+          updateUserPromise: () => {
             if (triggerError) {
               return Promise.reject('error')
             }
             return Promise.resolve()
           },
-          fetchDocumentPromise: () => {
+          getUserPromise: () => {
             if (triggerError) {
               return Promise.reject('error')
             }
-            return Promise.resolve({content: 'foo'})
+            return Promise.resolve({content: {}})
           }
-        }),
+        },
         refreshIndex: refreshIndexSpy
       },
       '../../../vuex/modules/data/getters': {
