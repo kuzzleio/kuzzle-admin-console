@@ -21,9 +21,9 @@
               <!-- Toggle settings open -->
               <div class="col s6">
                 <div class="input-field">
-                  <button tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
+                  <a tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
                     <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
-                    {{settingsOpen ? 'Hide settings' : 'Show settings'}}</button>
+                    {{settingsOpen ? 'Hide settings' : 'Show settings'}}</a>
                 </div>
               </div>
             </div>

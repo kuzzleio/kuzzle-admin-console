@@ -16,7 +16,7 @@ export const createCollection = (store, existingCollections, index, collectionNa
   if (isRealTime) {
     // eslint-disable-next-line no-undef
     let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-    collections.push({index, collectionName})
+    collections.push({index, collection: collectionName})
     // eslint-disable-next-line no-undef
     localStorage.setItem('realtimeCollections', JSON.stringify(collections))
     store.dispatch(ADD_REALTIME_COLLECTION, index, collectionName)
