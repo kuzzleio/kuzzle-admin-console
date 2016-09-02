@@ -5,4 +5,5 @@ npm install
 bower install --allow-root
 
 echo "Starting dev server..."
-npm run dev
+# npm run dev
+tail -f /dev/null
