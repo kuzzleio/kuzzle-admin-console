@@ -73,4 +73,16 @@ describe('JsonFormItemProfileIds tests', () => {
       }, 0)
     })
   })
+
+  describe('watch', () => {
+    describe('value', () => {
+      it('should trigger mutation setPartial', () => {
+        initComponent()
+        vm.$refs.jsonformitem.content = 'foo'
+        Vue.nextTick(() => {
+          expect(setPartialSpy.called).to.be.ok
+        })
+      })
+    })
+  })
 })

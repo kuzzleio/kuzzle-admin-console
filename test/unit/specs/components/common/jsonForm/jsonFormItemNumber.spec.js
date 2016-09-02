@@ -2,11 +2,11 @@ import store from '../../../../../../src/vuex/store'
 import Vue from 'vue'
 import lolex from 'lolex'
 
-let JsonFormItemTextInjector = require('!!vue?inject!../../../../../../src/components/Common/JsonForm/JsonFormItemText')
+let JsonFormItemNumberInjector = require('!!vue?inject!../../../../../../src/components/Common/JsonForm/JsonFormItemNumber')
 
-describe('JsonFormItemText tests', () => {
+describe('JsonFormItemNumber tests', () => {
   let sandbox = sinon.sandbox.create()
-  let JsonFormItemText
+  let JsonFormItemNumber
   let vm
   let setPartialSpy = sandbox.stub()
   let value
@@ -14,7 +14,7 @@ describe('JsonFormItemText tests', () => {
   let $dispatch = sandbox.stub()
 
   let initComponent = () => {
-    JsonFormItemText = JsonFormItemTextInjector({
+    JsonFormItemNumber = JsonFormItemNumberInjector({
       '../../../vuex/modules/data/actions': {
         setPartial: setPartialSpy
       }
@@ -22,8 +22,8 @@ describe('JsonFormItemText tests', () => {
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
     vm = new Vue({
-      template: '<div><json-form-item-text v-ref:jsonformitem :content="content" full-name="foo.bar" name="myName"></json-form-item-text></div>',
-      components: {JsonFormItemText},
+      template: '<div><json-form-item-number v-ref:jsonformitem :content="content" full-name="foo.bar" name="myName"></json-form-item-number></div>',
+      components: {JsonFormItemNumber},
       replace: false,
       store: store,
       data () {

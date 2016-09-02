@@ -17,7 +17,7 @@
 <script>
   import {setPartial} from '../../../vuex/modules/data/actions'
 
-  export default{
+  export default {
     name: 'JsonFormItemNumber',
     props: {
       content: Number,

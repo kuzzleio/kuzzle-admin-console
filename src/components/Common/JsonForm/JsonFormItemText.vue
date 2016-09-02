@@ -49,7 +49,6 @@
         if (this.value) {
           value = [this.value, null]
         }
-
         this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'array', value)
       }
     },

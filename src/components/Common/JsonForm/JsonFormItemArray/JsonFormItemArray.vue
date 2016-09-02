@@ -72,11 +72,6 @@
     ready () {
       this.valueItems = [...this.content]
     },
-    methods: {
-      setValue (e, index) {
-        this.valueItems.$set(index, e.target.value)
-      }
-    },
     events: {
       'json-form-item-array::remove-element' (index) {
         this.valueItems.splice(index, 1)

@@ -41,7 +41,12 @@ describe('JsonForm tests', () => {
     }
 
     JsonForm = JsonFormInjector({
-      './JsonFormItem': mockedComponent
+      './JsonFormItem': mockedComponent,
+      './JsonFormItemCheckbox': mockedComponent,
+      './JsonFormItemNumber': mockedComponent,
+      './JsonFormItemText': mockedComponent,
+      './JsonFormItemArray/JsonFormItemArray': mockedComponent,
+      './JsonFormItemProfileIds': mockedComponent
     })
   })
 
@@ -118,6 +123,18 @@ describe('JsonForm tests', () => {
         content = {type: 'text'}
         initComponent()
         expect(vm.$refs.jsonform.componentItem).to.equals('JsonFormItemText')
+      })
+
+      it('should get the component checkbox if the content is an array type', () => {
+        content = {type: 'array'}
+        initComponent()
+        expect(vm.$refs.jsonform.componentItem).to.equals('JsonFormItemArray')
+      })
+
+      it('should get the component checkbox if the content is an array type', () => {
+        content = {type: 'profileIds'}
+        initComponent()
+        expect(vm.$refs.jsonform.componentItem).to.equals('JsonFormItemProfileIds')
       })
     })
   })
