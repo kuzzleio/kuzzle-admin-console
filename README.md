@@ -37,9 +37,9 @@ If you have already a Kuzzle stack running somewhere, be sure that your Kuzzle P
 
 ```
 $ docker pull kuzzleio/backoffice
-$ docker run -p 3000:3000 kuzzleio/backoffice BACKEND_HOST=<BACKEND_HOST> npm run build
+$ docker run -p 3000:3000 -e "BACKEND_HOST=<BACKEND_HOST>" kuzzleio/backoffice
 ```
->Where `BACKEND_HOST` _(default: kuzzle)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy port and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
+>Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy port and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
 
 ## Without Docker
 Be sure to have node v4.4 and bower installed.
@@ -56,7 +56,7 @@ At this point you can choose whether to run with the embed server:
 ```
 $ BACKEND_HOST=<BACKEND_HOST> npm run prod
 ```
->Where `BACKEND_HOST` _(default: kuzzle)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy port and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
+>Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy port and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
 
 You can now access to `http://<back-office-ip>:<BACKOFFICE_PORT>`
 
@@ -65,6 +65,6 @@ You can choose to only build the `dist/` folder and access to it with your own s
 ```
 $ BACKEND_HOST=<BACKEND_HOST> npm run build
 ```
->Where `BACKEND_HOST` _(default: kuzzle)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy port.
+>Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy port.
 
 The `dist` folder is now generated. In order to let this folder be accessible from your browser without CSRF error from browser, you have to create a server web (like with nginx).
