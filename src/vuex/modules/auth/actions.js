@@ -68,8 +68,8 @@ export const loginFromCookie = (store) => {
 export const checkFirstAdmin = (store) => {
   return kuzzle
     .queryPromise({controller: 'admin', action: 'adminExists'}, {})
-    .then((res) => {
-      if (!res.result) {
+    .then(res => {
+      if (!res.result.exists) {
         store.dispatch(SET_ADMIN_EXISTS, false)
         return Promise.resolve()
       }
