@@ -1,4 +1,4 @@
-<template>
+.<template>
   <div>
     <slot name="emptySet" v-if="!(basicFilter || rawFilter || sorting || searchTerm) && totalDocuments === 0"></slot>
     <crudl-document v-else
@@ -113,12 +113,6 @@
         this.selectedDocuments.splice(index, 1)
       },
       hasSearchFilters () {
-        console.log(this.searchTerm)
-        console.log(this.searchTerm !== '')
-        console.log(this.basicFilter)
-        console.log(this.basicFilter.length > 0)
-        console.log(this.rawFilter)
-        console.log(this.rawFilter.length > 0)
         return this.searchTerm !== '' || this.basicFilter.length > 0 || this.rawFilter.length > 0
       },
       fetchData () {

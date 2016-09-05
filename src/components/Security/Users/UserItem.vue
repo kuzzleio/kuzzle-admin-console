@@ -11,20 +11,22 @@
 
     <label for="checkbox-{{document.id}}" ></label>
     <!-- The following anchor will go to the user details page -->
-    <label class="item-title"><a>{{document.id}}</a></label>
+    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
     <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
     <div class="right actions">
+      <a v-link="{name: 'SecurityUsersUpdate', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
       <dropdown :id="document.id" class="icon-black">
         <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="itemContent"></pre><div class="profile-list">
+      <pre v-json-formatter="itemContent"></pre>
+      <div class="profile-list">
         <div class="profile-chip chip" v-for="profile in profileList">
           <a v-link="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</a>
         </div>
