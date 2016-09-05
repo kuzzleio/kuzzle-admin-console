@@ -33,6 +33,9 @@ describe('Update component test', () => {
               return Promise.reject('error')
             }
             return Promise.resolve({content: 'foo'})
+          },
+          subscribe: (filter, cb) => {
+            cb()
           }
         }),
         refreshIndex: refreshIndexSpy
@@ -98,6 +101,12 @@ describe('Update component test', () => {
         $vm.$router.go.reset()
         $vm.cancel()
         expect($vm.$router.go.callCount).to.be.equal(1)
+      })
+    })
+
+    describe('subscribe', () => {
+      it('should show the warning message when someone else edited the same document', () => {
+        expect($vm.show).to.equals(true)
       })
     })
   })
