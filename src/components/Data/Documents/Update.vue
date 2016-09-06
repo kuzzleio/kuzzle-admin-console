@@ -107,16 +107,22 @@
     },
     data () {
       return {
-        show: false
+        show: false,
+        room: null
       }
     },
     ready () {
       this.fetch()
-      kuzzle
+      this.room = kuzzle
         .dataCollectionFactory(this.collection, this.index)
         .subscribe({term: {_id: this.documentToEditId}}, () => {
           this.show = true
         })
+    },
+    destroyed () {
+      if (this.room) {
+        this.room.unsubscribe()
+      }
     }
   }
 </script>

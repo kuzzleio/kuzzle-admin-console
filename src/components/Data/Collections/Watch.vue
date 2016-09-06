@@ -245,6 +245,9 @@
         clearInterval(this.scrollListener)
       }
       this.reset()
+      if (this.room) {
+        this.room.unsubscribe()
+      }
     },
     directives: [
       jQueryCollapsible,
