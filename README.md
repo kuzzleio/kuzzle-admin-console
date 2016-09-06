@@ -3,7 +3,7 @@
 
 # kuzzle Back-office
 
-> A handy back-office for Kuzzle.io
+> This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
 
 # Releases mapping
 | Back-office  | Kuzzle |
@@ -12,14 +12,14 @@
 
 
 # About Kuzzle
-For UI and linked objects developers, Kuzzle is an open-source solution that handles all the data management
+For UI and connected objects developers, Kuzzle is an open-source solution that handles all the data management
 (CRUD, real-time, search, high-level features, etc).
 
 Kuzzle features are accessible through a secured API. It can be used through a large choice of protocols such as REST, Websocket or Message Queuing protocols.
 
 # Installation
 
-This Back-office is just a front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7511) must be accessible from everywhere if you want to use this Back-office.**
+This Back-office is a front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7511) must be accessible from everywhere if you want to use this Back-office.**
 
 ## With Docker
 ### I want to use the all-in-one recipe
@@ -35,7 +35,7 @@ $ BACKOFFICE_PORT=3000 docker-compose up
 After a while, you can access to `http://<your-ip>:3000`.
 
 ### I just want to run the Back-office
-If you have already a Kuzzle stack running somewhere, be sure your Kuzzle Proxy IP and Websocket port (default 7511) is open and accessible from everywhere.
+If you already have a Kuzzle stack running somewhere, be sure your Kuzzle Proxy IP and Websocket port (default 7511) is open and accessible from everywhere.
 
 ```
 $ docker pull kuzzleio/backoffice
@@ -52,7 +52,7 @@ $ npm install
 $ bower install
 ```
 
-At this point you can choose whether to run with the embed server:
+At this point you can choose whether to run with the embed server or without:
 
 ### With the embed server
 ```
@@ -60,10 +60,10 @@ $ BACKEND_HOST=<BACKEND_HOST> npm run prod
 ```
 >Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy sockets ports and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
 
-You can now access to `http://<back-office-ip>:<BACKOFFICE_PORT>`
+You can now access `http://<back-office-ip>:<BACKOFFICE_PORT>`
 
 ### Without the server
-You can choose to only build the `dist/` folder and access to it with your own server:
+You can choose to only build the `dist/` folder and access it with your own server:
 ```
 $ BACKEND_HOST=<BACKEND_HOST> npm run build
 ```
