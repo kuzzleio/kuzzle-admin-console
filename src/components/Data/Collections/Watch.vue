@@ -128,7 +128,7 @@
   </div>
 </template>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
   .head {
     float: left;
     font-size: 2rem;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="json-form">
     <!-- For nested objects -->
     <fieldset v-if="isNested(content)">
       <legend>
@@ -19,71 +19,73 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
-  fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    legend {
-      border: 0;
-      padding: 0;
-      font-weight: 300;
-      left: -4px;
-      position: absolute;
-      top: -27px;
-      font-family: "Roboto", Arial, sans-serif;
-
-      i.fa {
-        font-size: 1.2em;
-        cursor: pointer;
-        margin-left: 5px;
-      }
-    }
+  .json-form {
     fieldset {
-      border-left: solid 3px #EEE;
-      position: relative;
-      margin: 45px 0 15px 0;
-      padding: 0 0 0 1em;
-      &:hover, &:focus, &.active {
-        border-left: solid 3px #DDD;
-      }
-    }
-  }
-
-  .list-fields {
-    margin-top: 25px;
-  }
-
-  .input-field {
-    padding-right: 80px;
-    input {
-      height: 2rem;
-      margin-bottom: 10px;
-    }
-    .select-wrapper + label {
-      top: -14px
-    }
-    .select-wrapper input.select-dropdown {
-      border-bottom: 1px solid #e4e1e1;
-    }
-    label {
-      top: 0.4rem;
-      &.active {
-        transform: translateY(-120%);
-      }
-    }
-    .inline-actions {
-      position: absolute;
-      right: 80px;
-      top: 0;
-      -webkit-transform: translateX(110%);
-      transform: translateX(110%);
-      a.btn-tiny {
-        height: 30px;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      legend {
+        border: 0;
         padding: 0;
-        width: 30px;
-        i {
-          font-size: 1rem;
-          line-height: 32px;
+        font-weight: 300;
+        left: -4px;
+        position: absolute;
+        top: -27px;
+        font-family: "Roboto", Arial, sans-serif;
+
+        i.fa {
+          font-size: 1.2em;
+          cursor: pointer;
+          margin-left: 5px;
+        }
+      }
+      fieldset {
+        border-left: solid 3px #EEE;
+        position: relative;
+        margin: 45px 0 15px 0;
+        padding: 0 0 0 1em;
+        &:hover, &:focus, &.active {
+          border-left: solid 3px #DDD;
+        }
+      }
+    }
+
+    .list-fields {
+      margin-top: 25px;
+    }
+
+    .input-field {
+      padding-right: 80px;
+      input {
+        height: 2rem;
+        margin-bottom: 10px;
+      }
+      .select-wrapper + label {
+        top: -14px
+      }
+      .select-wrapper input.select-dropdown {
+        border-bottom: 1px solid #e4e1e1;
+      }
+      label {
+        top: 0.4rem;
+        &.active {
+          transform: translateY(-120%);
+        }
+      }
+      .inline-actions {
+        position: absolute;
+        right: 80px;
+        top: 0;
+        -webkit-transform: translateX(110%);
+        transform: translateX(110%);
+        a.btn-tiny {
+          height: 30px;
+          padding: 0;
+          width: 30px;
+          i {
+            font-size: 1rem;
+            line-height: 32px;
+          }
         }
       }
     }

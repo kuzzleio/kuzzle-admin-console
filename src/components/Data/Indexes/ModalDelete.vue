@@ -1,24 +1,23 @@
 <template>
-  <form @submit.prevent="tryCreateIndex(index)">
-    <modal :id="id">
+  <form @submit.prevent="tryDeleteIndex(index)">
+    <modal :id="id" class="left-align" >
       <div class="row">
         <div class="col s12">
-          <h4>Index creation</h4>
+          <h4>Index <strong>{{index}}</strong> deletion</h4>
           <div class="divider"></div>
         </div>
       </div>
 
-
       <div class="row">
         <div class="col s7">
           <div class="input-field left-align">
-            <label for="index-name">Index name</label>
-            <input id="index-name" type="text" v-model="index" :class="{'invalid': error}" v-focus>
+            <label for="index-name">Confirm index name</label>
+            <input id="index-name" type="text" v-model="indexConfirmation" :class="{'invalid': error}" v-focus>
           </div>
         </div>
 
         <div class="col s5 error" v-if="error">
-          <div class="red-text">An error has occurred during index creation:</div>
+          <div class="red-text">An error has occurred during index deletion:</div>
           <span :class="{'truncate': errorTruncated}">
             {{error}}
           </span>
@@ -33,9 +32,12 @@
       <span slot="footer">
         <button
           type="submit"
+          :disabled="index !== indexConfirmation"
           href="#!"
+          v-title="{active: index !== indexConfirmation, title: 'You have to confirm your action by typing the name of the index.'}"
+          :class="{unauthorized: index !== indexConfirmation}"
           class="waves-effect btn">
-            Create
+            Delete
         </button>
         <button
           href="#!"
@@ -70,38 +72,41 @@
 
 
 <script>
-  import {createIndex} from '../../../vuex/modules/data/actions'
+  import {deleteIndex} from '../../../vuex/modules/data/actions'
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
+  import Title from '../../../directives/title.directive'
 
   export default {
-    name: 'IndexCreateModal',
+    name: 'IndexDeleteModal',
     props: {
-      id: String
+      id: String,
+      index: String
     },
     directives: {
-      Focus
+      Focus,
+      Title
     },
     components: {
       Modal
     },
     vuex: {
       actions: {
-        createIndex
+        deleteIndex
       }
     },
     methods: {
       toggleTruncatedError () {
         this.errorTruncated = !this.errorTruncated
       },
-      tryCreateIndex (index) {
+      tryDeleteIndex (index) {
         if (!index.trim()) {
           return
         }
 
-        this.createIndex(index)
+        this.deleteIndex(index)
           .then(() => {
-            this.index = ''
+            this.indexConfirmation = ''
             this.error = ''
             this.$broadcast('modal-close', this.id)
           })
@@ -113,7 +118,7 @@
     data () {
       return {
         error: '',
-        index: '',
+        indexConfirmation: '',
         errorTruncated: true
       }
     }

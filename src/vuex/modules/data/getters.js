@@ -2,6 +2,10 @@ export const indexesAndCollections = state => {
   return state.data.indexesAndCollections
 }
 
+export const indexes = state => {
+  return state.data.indexes
+}
+
 export const mapping = state => {
   return state.data.mapping
 }

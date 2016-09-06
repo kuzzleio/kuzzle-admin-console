@@ -22,7 +22,7 @@
   }
 </script>
 
-<style lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss" scoped>
   .headline {
     margin-bottom: 30px;
     a.btn {

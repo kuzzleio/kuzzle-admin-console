@@ -30,26 +30,24 @@
           </div>
 
           <div class="row">
-            <fieldset>
-              <div class="col s7">
-                <div class="row">
-                  <a class="btn btn-small" @click="addRootAttr">
-                    <i class="fa fa-plus-circle left"></i>
-                    new attribute
-                  </a>
-                </div>
+            <div class="col s7">
+              <div class="row">
+                <a class="btn btn-small" @click="addRootAttr">
+                  <i class="fa fa-plus-circle left"></i>
+                  new attribute
+                </a>
+              </div>
 
-                <div class="list-fields">
-                  <div v-for="(name, content) in mapping">
-                    <json-form
-                      :name="name"
-                      :content="content"
-                      @document-create::change-type-attribute="changeTypeAttribute">
-                    </json-form>
-                  </div>
+              <div class="list-fields">
+                <div v-for="(name, content) in mapping">
+                  <json-form
+                    :name="name"
+                    :content="content"
+                    @document-create::change-type-attribute="changeTypeAttribute">
+                  </json-form>
                 </div>
               </div>
-            </fieldset>
+            </div>
           </div>
         </div>
 

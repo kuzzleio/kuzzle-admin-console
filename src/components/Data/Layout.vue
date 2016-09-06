@@ -20,7 +20,7 @@
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
   import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
-  import {indexesAndCollections, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
+  import {selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Leftnav/Treeview'
 
   export default {
@@ -42,8 +42,7 @@
       },
       getters: {
         selectedIndex,
-        selectedCollection,
-        indexesAndCollections
+        selectedCollection
       }
     }
   }
