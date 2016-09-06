@@ -18,7 +18,7 @@ isConnected()
     return loginFromCookie(store)
   })
   .then((user) => {
-    if (!user) {
+    if (!user.id) {
       return checkFirstAdmin(store)
     }
 

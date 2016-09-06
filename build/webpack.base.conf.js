@@ -2,6 +2,7 @@ var path = require('path')
 var config = require('../config')
 var utils = require('./utils')
 var projectRoot = path.resolve(__dirname, '../')
+var webpack = require('webpack')
 
 module.exports = {
   entry: {
@@ -82,5 +83,14 @@ module.exports = {
   },
   vue: {
     loaders: utils.cssLoaders()
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'BACKEND_HOST': JSON.stringify(process.env.BACKEND_HOST),
+        'BACKEND_IOPORT': JSON.stringify(process.env.BACKEND_IOPORT),
+        'BACKEND_WSPORT': JSON.stringify(process.env.BACKEND_WSPORT)
+      }
+    })
+  ]
 }

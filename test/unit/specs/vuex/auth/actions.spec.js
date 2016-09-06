@@ -186,10 +186,10 @@ describe('checkFirstAdmin action', () => {
             return Promise.reject(new Error('error from Kuzzle'))
           } else {
             if (exists) {
-              return Promise.resolve({result: true})
+              return Promise.resolve({result: {exists: true}})
             }
 
-            return Promise.resolve({result: false})
+            return Promise.resolve({result: {exists: false}})
           }
         }
       }
