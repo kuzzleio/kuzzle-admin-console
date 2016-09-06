@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="wrapper">
+    <div class="wrapper watch">
       <headline>
         {{collection}}
         <collection-dropdown
@@ -128,56 +128,58 @@
   </div>
 </template>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-  .head {
-    float: left;
-    font-size: 2rem;
-    margin-top: 0;
-  }
-
-  .wrapper {
-    position: relative;
-  }
-
-  #notification-controls-fixed {
-    &.closed {
-      padding: 0;
-      height: 0;
-      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0);
-      border-bottom-left-radius: 100%;
-      border-bottom-right-radius: 100%;
+<style rel="stylesheet/scss" lang="scss">
+  .watch {
+    .head {
+      float: left;
+      font-size: 2rem;
+      margin-top: 0;
     }
 
-    z-index: 200;
-    overflow: hidden;
-    position: fixed;
-    top: 50px;
-    left: 240px;
-    line-height: 20px;
-    height: 50px;
-    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
-    padding: 10px 5px;
-    right: 0;
-    background-color: #FFF;
-    transition: all .3s;
-  }
-
-  #notification-container {
-    li {
-      font-family: monospace;
-      font-size: 0.8rem;
+    .wrapper {
+      position: relative;
     }
-    li:nth-child(odd) {
-      background-color: #F5F5F5;
 
-      .collapsible-header {
+    #notification-controls-fixed {
+      &.closed {
+        padding: 0;
+        height: 0;
+        box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0);
+        border-bottom-left-radius: 100%;
+        border-bottom-right-radius: 100%;
+      }
+
+      z-index: 200;
+      overflow: hidden;
+      position: fixed;
+      top: 50px;
+      left: 240px;
+      line-height: 20px;
+      height: 50px;
+      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
+      padding: 10px 5px;
+      right: 0;
+      background-color: #FFF;
+      transition: all .3s;
+    }
+
+    #notification-container {
+      li {
+        font-family: monospace;
+        font-size: 0.8rem;
+      }
+      li:nth-child(odd) {
         background-color: #F5F5F5;
+
+        .collapsible-header {
+          background-color: #F5F5F5;
+        }
       }
     }
-  }
 
-  .collapsible {
-    border-width: 0;
+    .collapsible {
+      border-width: 0;
+    }
   }
 </style>
 
