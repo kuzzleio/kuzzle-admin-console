@@ -15,6 +15,8 @@ describe('Update component test', () => {
   let refreshIndexSpy = sandbox.stub()
   let setNewDocumentSpy = sandbox.stub()
 
+  let unsubscribeStub = sandbox.stub()
+
   const mockInjector = () => {
     Update = UpdateInjector({
       './Common/CreateOrUpdate': mockedComponent,
@@ -36,6 +38,9 @@ describe('Update component test', () => {
           },
           subscribe: (filter, cb) => {
             cb()
+            return {
+              unsubscribe: unsubscribeStub
+            }
           }
         }),
         refreshIndex: refreshIndexSpy
@@ -59,7 +64,7 @@ describe('Update component test', () => {
     }).$mount('body')
 
     $vm = vm.$refs.update
-    $vm.$router = {_prevTransition: {to: sandbox.stub()}, go: sandbox.stub()}
+    $vm.$router = {_prevTransition: {to: sandbox.stub()}, go: sandbox.stub(), _children: {$remove: sandbox.stub()}}
     $dispatch = sandbox.stub()
     $broadcast = sandbox.stub()
     $vm.setNewDocument = setNewDocumentSpy
@@ -107,6 +112,13 @@ describe('Update component test', () => {
     describe('subscribe', () => {
       it('should show the warning message when someone else edited the same document', () => {
         expect($vm.show).to.equals(true)
+      })
+    })
+
+    describe('destroyed', () => {
+      it('should unsubscribe from the document', () => {
+        $vm.$destroy()
+        expect(unsubscribeStub.called).to.be.ok
       })
     })
   })
