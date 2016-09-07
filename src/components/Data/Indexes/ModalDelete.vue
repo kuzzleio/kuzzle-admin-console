@@ -34,7 +34,7 @@
           type="submit"
           :disabled="index !== indexConfirmation"
           href="#!"
-          v-title="{active: index !== indexConfirmation, title: 'You have to confirm your action by typing the name of the index.'}"
+          v-title="{active: index === indexConfirmation, position: 'left', title: 'Be careful. This action can not be undone'}"
           :class="{unauthorized: index !== indexConfirmation}"
           class="waves-effect btn">
             Delete

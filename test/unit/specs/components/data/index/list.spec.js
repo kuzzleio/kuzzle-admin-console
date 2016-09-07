@@ -10,7 +10,8 @@ let $vm
 
 describe('List indexes tests', () => {
   let listIndexesAndCollections = sandbox.stub()
-  let indexesAndCollections = sandbox.stub().returns([])
+  let indexes = sandbox.stub().returns([])
+  let indexesAndCollections = sandbox.stub().returns({})
   let canSearchIndex = sandbox.stub().returns(true)
   let canCreateIndex = sandbox.stub().returns(true)
 
@@ -24,6 +25,7 @@ describe('List indexes tests', () => {
         listIndexesAndCollections
       },
       '../../../vuex/modules/data/getters': {
+        indexes,
         indexesAndCollections
       },
       '../../../services/userAuthorization': {
@@ -54,22 +56,6 @@ describe('List indexes tests', () => {
 
         $vm.filter = 'to'
         expect($vm.countIndexForFilter).to.be.equal(1)
-      })
-    })
-
-    describe('indexesCount', () => {
-      it('should return 0 if there is no index in store', () => {
-        indexesAndCollections = sandbox.stub().returns(null)
-        mockInjector()
-
-        expect($vm.indexesCount).to.be.equal(0)
-      })
-
-      it('should return right number of indexes in store', () => {
-        indexesAndCollections = sandbox.stub().returns({toto: {}, tutu: {}, foo: {}})
-        mockInjector()
-
-        expect($vm.indexesCount).to.be.equal(3)
       })
     })
   })

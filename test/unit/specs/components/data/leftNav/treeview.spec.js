@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from '../../../../../../src/vuex/store'
 import { mockedComponent } from '../../../helper'
 import dataRoutes from '../../../../../../src/routes/subRoutes/data'
 import VueRouter from 'vue-router'
@@ -6,21 +7,26 @@ import VueRouter from 'vue-router'
 let TreeviewInjector = require('!!vue?inject!../../../../../../src/components/Data/Leftnav/Treeview')
 
 let router
+let sandbox = sinon.sandbox.create()
 
 describe('Treeview component', () => {
   let $vm
-  let tree
+  let collections
   let Treeview = TreeviewInjector({
     './IndexBranch': mockedComponent,
     '../../../services/userAuthorization': {
-      canSearchIndex: sinon.stub().returns(true)
+      canSearchIndex: sandbox.stub().returns(true)
+    },
+    '../../../vuex/modules/data/getters': {
+      indexes: sandbox.stub().returns([]),
+      indexesAndCollections: sandbox.stub().returns({})
     }
   })
 
   beforeEach(() => {
     Vue.use(VueRouter)
 
-    tree = {
+    collections = {
       'stored': [
         'emptiable-collection',
         'kuzzle-bo-test',
@@ -38,6 +44,7 @@ describe('Treeview component', () => {
 
     const App = Vue.extend({
       template: '<div><router-view v-ref:routerview></router-view></div>',
+      store: store,
       replace: false
     })
 
@@ -46,15 +53,9 @@ describe('Treeview component', () => {
         v-ref:treeview
         index="index"
         collection="collection"
-        route-name="DataIndexSummary"
-        :tree="tree">
+        route-name="DataIndexSummary">
       </treeview>`,
-      components: { Treeview },
-      data () {
-        return {
-          tree
-        }
-      }
+      components: { Treeview }
     })
 
     router = new VueRouter({ abstract: true })
@@ -74,31 +75,31 @@ describe('Treeview component', () => {
   describe('filterTree', () => {
     it('should not hide content if filter is empty', () => {
       $vm.filter = ''
-      let showTree = $vm.filterTree('testindex', tree)
+      let showTree = $vm.filterTree('testindex', collections)
       expect(showTree).to.be.ok
     })
 
     it('should not hide content if filter is contained in the name of index tree', () => {
       $vm.filter = 'test'
-      let showTree = $vm.filterTree('testindex', tree)
+      let showTree = $vm.filterTree('testindex', collections)
       expect(showTree).to.be.ok
     })
 
     it('should not hide content if filter is contained in the stored collections of index tree', () => {
       $vm.filter = 'not-editable-collection'
-      let showTree = $vm.filterTree('testindex', tree)
+      let showTree = $vm.filterTree('testindex', collections)
       expect(showTree).to.be.ok
     })
 
     it('should not hide content if filter is contained in the realtime collections of index tree', () => {
       $vm.filter = 'realtime-collection'
-      let showTree = $vm.filterTree('testindex', tree)
+      let showTree = $vm.filterTree('testindex', collections)
       expect(showTree).to.be.ok
     })
 
     it('should hide content if filter is not found', () => {
       $vm.filter = 'foobarbaznaz'
-      let showTree = $vm.filterTree('testindex', tree)
+      let showTree = $vm.filterTree('testindex', collections)
       expect(showTree).to.be.not.ok
     })
   })

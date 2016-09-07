@@ -56,7 +56,7 @@ export const loginFromCookie = (store) => {
     .then(res => {
       if (!res.valid) {
         store.dispatch(SET_CURRENT_USER, SessionUser())
-        return
+        return Promise.resolve(SessionUser())
       }
 
       kuzzle.setJwtToken(user.token)

@@ -125,7 +125,8 @@ i, span {
 
 .tertiary {
   background-color: $tertiary-color;
-  color: #564D2F;
+  color: #5f5537;
+  text-shadow: 0 1px 0 rgba(255,255,255,.5);
   &:hover, &:focus {
     background-color: lighten($tertiary-color, 5%);
   }
