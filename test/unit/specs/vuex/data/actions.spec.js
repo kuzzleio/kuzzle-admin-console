@@ -32,6 +32,36 @@ describe('Data module index', () => {
       ], done)
     })
   })
+  describe('deleteIndex', () => {
+    let triggerError = true
+    let actions = actionsInjector({
+      '../../../services/kuzzle': {
+        queryPromise: (queryArgs, query) => {
+          if (triggerError) {
+            return Promise.reject(new Error('error'))
+          } else {
+            return Promise.resolve({})
+          }
+        }
+      }
+    })
+
+    it('should not dispatch the deleted index if kuzzle reject', (done) => {
+      triggerError = true
+      testActionPromise(actions.deleteIndex, ['myindex'], {}, [], done)
+        .catch((error) => {
+          expect(error.message).to.be.equal('error')
+          done()
+        })
+    })
+
+    it('should dispatch the deleted index if success', (done) => {
+      triggerError = false
+      testAction(actions.deleteIndex, ['myindex'], {}, [
+        {name: 'DELETE_INDEX', payload: ['myindex']}
+      ], done)
+    })
+  })
 })
 
 describe('listIndexesAndCollections action', () => {
