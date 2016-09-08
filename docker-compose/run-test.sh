@@ -17,17 +17,17 @@ return_value=$?
 
 npm run codecov
 
-if [ $return_value -le 0 ]; then
-  while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
-  do
-   echo "$(date) - still trying connecting to http://$kuzzle"
-   sleep 1
-  done
-  echo "$(date) - successfully connected to Kuzzle"
+#if [ $return_value -le 0 ]; then
+  #while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
+  #do
+  # echo "$(date) - still trying connecting to http://$kuzzle"
+   #sleep 1
+  #done
+  #echo "$(date) - successfully connected to Kuzzle"
 
-  npm run e2e -- --env firefox
-  return_value=$?
-fi
+  #npm run e2e -- --env firefox
+ # return_value=$?
+#fi
 
 if [ $return_value -gt 0 ]; then
   echo "Tests exited with errors. Dumping the state of the system..."
