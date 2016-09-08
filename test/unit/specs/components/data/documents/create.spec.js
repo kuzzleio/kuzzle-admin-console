@@ -84,8 +84,8 @@ describe('Create component test', () => {
         expect(setNewDocumentSpy.called).to.be.ok
       })
 
-      it('should fail if mapping is not well formated', (done) => {
-        triggerMappingError = true
+      it('should create the document and redirect', (done) => {
+        triggerMappingError = false
         triggerError = false
         $vm.$router = {go: sandbox.stub()}
         mockInjector()
