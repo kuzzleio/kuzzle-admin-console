@@ -5,7 +5,29 @@
     <div class="row">
       <div class="col s12 m10 l8">
 
-        <div class="row actions">
+        <!-- No index view -->
+        <div class="card-panel" v-if="canSearchIndex() && !indexes.length">
+          <div class="row valign-bottom empty-set">
+            <div class="col s1 offset-s1">
+              <i class="fa fa-6x fa-database grey-text text-lighten-1" aria-hidden="true"></i>
+            </div>
+            <div class="col s9">
+              <p>
+                Here you'll see the kuzzle's indexes<br/>
+                <em>Currently there is no index.</em>
+              </p>
+              <button @click.prevent="$broadcast('modal-open', 'index-create')"
+                      v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
+                      :class="{unauthorized: !canCreateIndex()}"
+                      class="btn primary waves-effect waves-light">
+                <i class="fa fa-plus-circle left"></i>
+                Create a index
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row actions" v-if="indexes.length">
           <div class="col s9">
             <a class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
@@ -18,7 +40,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="indexesCount > 1">
+            <div class="input-field left-align" v-if="indexes.length > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
@@ -34,19 +56,6 @@
                 <em>You are not allowed to list indexes</em>
               </div>
             </div>
-          </div>
-
-          <!-- No index view -->
-          <div class="col s12" v-if="canSearchIndex() && !indexesCount">
-            <a class="card-title fluid-hover"
-             href="#!"
-             @click.prevent="$broadcast('modal-open', 'index-create')">
-              <div class="card-panel hoverable">
-                <div class="card-content">
-                    <em>There is currently no index in your database. You may want to create one.</em>
-                </div>
-              </div>
-            </a>
           </div>
 
           <!-- No index for filter -->
@@ -68,7 +77,7 @@
           <index-boxed
             :index="indexName"
             v-if="canSearchIndex()"
-            v-for="(indexName, collections) in indexesAndCollections | filterBy filter | orderBy '$key'">
+            v-for="indexName in indexes | filterBy filter | orderBy '$key'">
           </index-boxed>
 
           <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
@@ -106,7 +115,7 @@
   import IndexBoxed from './Boxed'
   import Title from '../../../directives/title.directive'
   import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
-  import {indexesAndCollections} from '../../../vuex/modules/data/getters'
+  import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canCreateIndex} from '../../../services/userAuthorization'
 
   export default {
@@ -128,6 +137,7 @@
         listIndexesAndCollections
       },
       getters: {
+        indexes,
         indexesAndCollections
       }
     },
@@ -139,13 +149,6 @@
     computed: {
       countIndexForFilter () {
         return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
-      },
-      indexesCount () {
-        if (!this.indexesAndCollections) {
-          return 0
-        }
-
-        return Object.keys(this.indexesAndCollections).length
       }
     },
     ready () {

@@ -12,9 +12,13 @@ const {
 
 describe('ADD_INDEX test', () => {
   it('should add the index with an empty collection set', () => {
-    let state = {indexesAndCollections: {}}
+    let state = {
+      indexes: [],
+      indexesAndCollections: {}
+    }
 
     ADD_INDEX(state, 'myindex')
+    expect(state.indexes).to.deep.equal(['myindex'])
     expect(state.indexesAndCollections['myindex']).to.deep.equal({
       stored: [],
       realtime: []

@@ -96,7 +96,7 @@ export default function createRoutes (router) {
     }
 
     if (transition.to.name === 'Login' && isAuthenticated(store.state)) {
-      transition.redirect(transition.from.path)
+      transition.redirect(transition.from.path ? transition.from.path : '/')
       return
     }
 

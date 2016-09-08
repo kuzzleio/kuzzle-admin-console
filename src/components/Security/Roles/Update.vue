@@ -39,7 +39,11 @@
           })
       },
       cancel () {
-        this.$router.go({name: 'SecurityRolesList'})
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.go(this.$router._prevTransition.to)
+        } else {
+          this.$router.go({name: 'SecurityRolesList'})
+        }
       }
     },
     ready () {

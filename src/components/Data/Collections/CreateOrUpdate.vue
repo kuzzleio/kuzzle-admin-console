@@ -44,8 +44,7 @@
 
           <!-- Settings (mappings, realtime only ...) -->
           <div class="row" v-show="settingsOpen || collectionName">
-            <div class="col s8">
-
+            <div class="col s12">
               <div class="row">
                 <p>
                   <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealtimeOnly" :checked="collectionIsRealtimeOnly" :disabled="collectionName && !collectionIsRealtimeOnly"/>
@@ -55,8 +54,11 @@
                   </label>
                 </p>
               </div>
+            </div>
 
-              <div class="row" v-show="!isRealtimeOnly">
+
+            <div class="col s8" v-show="!isRealtimeOnly">
+              <div class="row">
                 <p>Mapping:</p>
                 <json-editor
                   tabindex="4"
@@ -65,7 +67,16 @@
                   :content="mapping">
                 </json-editor>
               </div>
+            </div>
 
+            <div class="col s4" v-show="!isRealtimeOnly">
+              <div class="row">
+                <p class="help">
+                  Mapping is the process of defining how a document,
+                  and the fields it contains, are stored and indexed.
+                  <a href="http://kuzzle.io/api-reference/#updatemapping" target="_blank">Read more about mapping</a>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -77,7 +88,7 @@
           <div class="row">
             <div class="col s6">
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-                <button type="submit" class="btn waves-effect waves-light">
+                <button type="submit" class="btn primary waves-effect waves-light">
                   <i v-if="!collectionName" class="fa fa-plus-circle left"></i>
                   <i v-else class="fa fa-pencil left"></i>
                   {{collectionName ? 'Update' : 'Create'}}
@@ -92,7 +103,11 @@
   </div>
 </template>
 
-<style>
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .help {
+    color: #777;
+    font-size: 0.9rem;
+  }
   .pre_ace {
     min-height: 300px;
   }

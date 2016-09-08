@@ -28,7 +28,11 @@
   export default {
     props: {
       id: String,
-      'class': String,
+      'class': {
+        type: String,
+        'default': '',
+        required: false
+      },
       canClose: {
         type: Boolean,
         'default': true,

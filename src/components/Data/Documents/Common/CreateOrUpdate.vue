@@ -30,26 +30,24 @@
           </div>
 
           <div class="row">
-            <fieldset>
-              <div class="col s7">
-                <div class="row">
-                  <a class="btn btn-small" @click="addRootAttr">
-                    <i class="fa fa-plus-circle left"></i>
-                    new attribute
-                  </a>
-                </div>
+            <div class="col s7">
+              <div class="row">
+                <a class="btn btn-small" @click="addRootAttr">
+                  <i class="fa fa-plus-circle left"></i>
+                  new attribute
+                </a>
+              </div>
 
-                <div class="list-fields">
-                  <div v-for="(name, content) in mapping">
-                    <json-form
-                      :name="name"
-                      :content="content"
-                      @document-create::change-type-attribute="changeTypeAttribute">
-                    </json-form>
-                  </div>
+              <div class="list-fields">
+                <div v-for="(name, content) in mapping">
+                  <json-form
+                    :name="name"
+                    :content="content"
+                    @document-create::change-type-attribute="changeTypeAttribute">
+                  </json-form>
                 </div>
               </div>
-            </fieldset>
+            </div>
           </div>
         </div>
 
@@ -63,7 +61,7 @@
             <a @click.prevent="cancel" class="btn-flat waves-effect">
               Cancel
             </a>
-            <button type="submit" class="btn waves-effect waves-light">
+            <button type="submit" class="btn primary waves-effect waves-light">
               <i v-if="!hideId" class="fa fa-plus-circle left"></i>
               <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
@@ -76,18 +74,20 @@
 
     <modal id="add-attr" :has-footer="false">
       <h4>Add a new attribute</h4>
-      <form method="post" @submit="doAddAttr">
+      <form method="post" @submit.prevent="doAddAttr">
         <p>
           <div class="input-field">
-            <input id="name" type="text" required v-model="newAttributeName"/>
+            <input id="name" type="text" required v-model="newAttributeName" v-focus/>
             <label for="name">Field name</label>
           </div>
           <div class="input-field">
             <select v-m-select="newAttributeType">
               <option value="string" selected>String</option>
-              <option value="number">Number</option>
-              <option value="nested">Object</option>
-              <option value="geopos">Geo position</option>
+              <option value="integer">Integer</option>
+              <option value="float">Float</option>
+              <option value="nested">Nested</option>
+              <option value="object">Object</option>
+              <option value="geo_point">Geo point</option>
             </select>
             <label>Attribute type</label>
           </div>
@@ -96,8 +96,7 @@
         <div class="modal-footer">
           <button
             type="submit"
-            class="waves-effect waves-green btn"
-            @click="doAddAttr">
+            class="waves-effect waves-green btn">
               Add
           </button>
           <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
@@ -164,7 +163,7 @@
           json = this.$refs.jsoneditor.getJson()
         }
 
-        this.$dispatch('document-create::create', this.viewState, json)
+        this.$dispatch('document-create::create', this.viewState, json, this.mapping)
       },
       switchEditMode () {
         if (this.viewState === 'code') {
@@ -187,7 +186,13 @@
       },
       doAddAttr () {
         let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
-        Vue.set(refMapping, this.newAttributeName, (this.newAttributeType === 'nested' ? {properties: {}} : {type: this.newAttributeType}))
+        Vue.set(
+          refMapping,
+          this.newAttributeName,
+          (this.newAttributeType === 'nested' || this.newAttributeType === 'object'
+              ? {type: this.newAttributeType, properties: {}}
+              : {type: this.newAttributeType}
+          ))
 
         this.newAttributeType = 'string'
         this.newAttributeName = null
@@ -201,8 +206,8 @@
         this.$dispatch('document-create::cancel')
       },
       changeTypeAttribute (attributePath, name, type, val) {
-        let refMapping = getRefMappingFromPath(this.mapping, attributePath)
-        Vue.set(refMapping, name, {type, val})
+        getRefMappingFromPath(this.mapping, attributePath)
+        Vue.set(this.mapping, name, {type, val})
       }
     },
     vuex: {

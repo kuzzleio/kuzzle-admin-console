@@ -22,6 +22,7 @@
     props: {
       content: String,
       name: String,
+      type: String,
       fullName: String
     },
     data () {

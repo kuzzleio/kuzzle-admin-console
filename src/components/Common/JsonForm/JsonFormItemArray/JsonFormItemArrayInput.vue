@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss" scoped>
   .array-value {
     position: relative;
   }

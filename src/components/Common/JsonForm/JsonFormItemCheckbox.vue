@@ -13,6 +13,7 @@
     props: {
       content: Boolean,
       name: String,
+      type: String,
       fullName: String
     },
     data () {

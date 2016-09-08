@@ -24,7 +24,7 @@
         </json-editor>
 
         <button @click.prevent="cancel" class="btn-flat waves-effect">Cancel</button>
-        <button type="submit" class="btn waves-effect waves-light">
+        <button type="submit" class="btn primary waves-effect waves-light">
           <i v-if="!updateId" class="fa fa-plus-circle left"></i>
           <i v-else class="fa fa-pencil left"></i>
           {{updateId ? 'Update' : 'Create'}}

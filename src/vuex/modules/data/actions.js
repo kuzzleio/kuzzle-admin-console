@@ -5,6 +5,7 @@ import {
   RECEIVE_MAPPING,
   RECEIVE_INDEXES_COLLECTIONS,
   ADD_INDEX,
+  DELETE_INDEX,
   SET_PARTIAL_TO_DOCUMENT,
   UNSET_NEW_DOCUMENT,
   SET_NEW_DOCUMENT
@@ -81,6 +82,14 @@ export const createIndex = (store, index) => {
     .queryPromise({index: index, controller: 'admin', action: 'createIndex'}, {})
     .then(() => {
       store.dispatch(ADD_INDEX, index)
+    })
+}
+
+export const deleteIndex = (store, index) => {
+  return kuzzle
+    .queryPromise({index: index, controller: 'admin', action: 'deleteIndex'}, {})
+    .then(() => {
+      store.dispatch(DELETE_INDEX, index)
     })
 }
 

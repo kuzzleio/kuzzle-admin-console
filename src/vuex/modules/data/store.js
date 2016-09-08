@@ -7,12 +7,14 @@ import {
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
   ADD_INDEX,
+  DELETE_INDEX,
   SET_PARTIAL_TO_DOCUMENT,
   UNSET_NEW_DOCUMENT,
   SET_NEW_DOCUMENT
 } from './mutation-types'
 
 const state = {
+  indexes: [],
   indexesAndCollections: {},
   mapping: undefined,
   notifications: [],
@@ -23,6 +25,7 @@ const state = {
 
 export const mutations = {
   [RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
+    Vue.set(state, 'indexes', Object.keys(indexesAndCollections))
     Vue.set(state, 'indexesAndCollections', indexesAndCollections)
   },
   [RECEIVE_MAPPING] (state, mapping) {
@@ -36,20 +39,25 @@ export const mutations = {
   },
   [ADD_STORED_COLLECTION] (state, index, collection) {
     if (!state.indexesAndCollections[index]) {
-      state.indexesAndCollections[index] = {realtime: [], stored: []}
+      mutations[ADD_INDEX](state, index)
     }
 
     state.indexesAndCollections[index].stored.push(collection)
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
     if (!state.indexesAndCollections[index]) {
-      state.indexesAndCollections[index] = {realtime: [], stored: []}
+      mutations[ADD_INDEX](state, index)
     }
 
     state.indexesAndCollections[index].realtime.push(collection)
   },
   [ADD_INDEX] (state, index) {
+    state.indexes.push(index)
     state.indexesAndCollections[index] = {realtime: [], stored: []}
+  },
+  [DELETE_INDEX] (state, index) {
+    state.indexes.splice(state.indexes.indexOf(index), 1)
+    state.indexesAndCollections[index] = undefined
   },
   [SET_PARTIAL_TO_DOCUMENT] (state, path, value) {
     let splitted = path.split('.')

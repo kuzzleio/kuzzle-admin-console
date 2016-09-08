@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="json-form">
     <!-- For nested objects -->
     <fieldset v-if="isNested(content)">
       <legend>
         {{name}}
-        <i @click="addAttribute"class="fa fa-plus-circle primary"></i>
+        <i @click="addAttribute" class="fa fa-plus-circle primary"></i>
       </legend>
       <div v-for="(nestedName, nestedContent) in content.properties">
         <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
@@ -13,16 +13,13 @@
 
     <!-- Root attributes -->
     <div v-if="!isNested(content)" class="input-field">
-      <component :is="componentItem" :name="name" :full-name="path" :content="content.val"></component>
+      <component :is="componentItem" :name="name" :full-name="path" :content="content.val" :type="content.type"></component>
     </div>
   </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
-  fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
+  .json-form {
     legend {
       border: 0;
       padding: 0;
@@ -39,6 +36,7 @@
       }
     }
     fieldset {
+      border: 0;
       border-left: solid 3px #EEE;
       position: relative;
       margin: 45px 0 15px 0;
@@ -47,43 +45,43 @@
         border-left: solid 3px #DDD;
       }
     }
-  }
 
-  .list-fields {
-    margin-top: 25px;
-  }
+    .list-fields {
+      margin-top: 25px;
+    }
 
-  .input-field {
-    padding-right: 80px;
-    input {
-      height: 2rem;
-      margin-bottom: 10px;
-    }
-    .select-wrapper + label {
-      top: -14px
-    }
-    .select-wrapper input.select-dropdown {
-      border-bottom: 1px solid #e4e1e1;
-    }
-    label {
-      top: 0.4rem;
-      &.active {
-        transform: translateY(-120%);
+    .input-field {
+      padding-right: 80px;
+      input {
+        height: 2rem;
+        margin-bottom: 10px;
       }
-    }
-    .inline-actions {
-      position: absolute;
-      right: 80px;
-      top: 0;
-      -webkit-transform: translateX(110%);
-      transform: translateX(110%);
-      a.btn-tiny {
-        height: 30px;
-        padding: 0;
-        width: 30px;
-        i {
-          font-size: 1rem;
-          line-height: 32px;
+      .select-wrapper + label {
+        top: -14px
+      }
+      .select-wrapper input.select-dropdown {
+        border-bottom: 1px solid #e4e1e1;
+      }
+      label {
+        top: 0.4rem;
+        &.active {
+          transform: translateY(-120%);
+        }
+      }
+      .inline-actions {
+        position: absolute;
+        right: 80px;
+        top: 0;
+        -webkit-transform: translateX(110%);
+        transform: translateX(110%);
+        a.btn-tiny {
+          height: 30px;
+          padding: 0;
+          width: 30px;
+          i {
+            font-size: 1rem;
+            line-height: 32px;
+          }
         }
       }
     }

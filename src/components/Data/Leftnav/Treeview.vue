@@ -16,7 +16,7 @@
           <div class="nav-wrapper">
             <form>
               <div class="input-field">
-                <input id="search" type="search" v-model="filter">
+                <input id="search" type="search" v-model="filter" placeholder="Search index &amp; collection">
                 <label for="search"><i class="fa fa-search"></i></label>
               </div>
             </form>
@@ -26,13 +26,13 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="(indexName, collections) in tree | orderBy '$key'"
-            v-if="filterTree(indexName, collections)">
+            v-for="indexName in indexes | orderBy '$key'"
+            v-if="filterTree(indexName, indexesAndCollections[indexName])">
             <index-branch
-              :force-open="indexesCount === 1"
+              :force-open="indexes.length === 1"
               :index-name="indexName"
               :route-name="routeName"
-              :collections="collections"
+              :collections="indexesAndCollections[indexName]"
               :current-index="index"
               :filter="filter"
               :current-collection="collection">
@@ -45,6 +45,7 @@
 </template>
 
 <script>
+  import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
 
@@ -53,8 +54,7 @@
     props: {
       index: String,
       collection: String,
-      routeName: String,
-      tree: Object
+      routeName: String
     },
     components: {
       IndexBranch
@@ -62,15 +62,6 @@
     data () {
       return {
         filter: ''
-      }
-    },
-    computed: {
-      indexesCount () {
-        if (!this.indexesAndCollections) {
-          return 0
-        }
-
-        return Object.keys(this.indexesAndCollections).length
       }
     },
     methods: {
@@ -85,6 +76,12 @@
 
         return (stored || realtime)
       }
+    },
+    vuex: {
+      getters: {
+        indexes,
+        indexesAndCollections
+      }
     }
   }
 </script>
@@ -98,6 +95,17 @@
     }
     input {
       padding-left: 3rem;
+
+      &::-webkit-input-placeholder {
+        font-size: 1rem;
+      }
+      &::-moz-placeholder {
+        font-size: 1rem;
+      }
+      &:-ms-input-placeholder,
+      &:-moz-placeholder {
+        font-size: 1rem;
+      }
     }
   }
 
