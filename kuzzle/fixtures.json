@@ -1,5 +1,6 @@
 
 {
+  "kuzzle-bo-testindex-empty": {},
   "kuzzle-bo-testindex": {
     "kuzzle-bo-test": [
       { "index" : {"_id": "ghopper"}},

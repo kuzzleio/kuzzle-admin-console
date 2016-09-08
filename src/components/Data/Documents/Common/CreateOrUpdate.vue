@@ -61,7 +61,7 @@
             <a @click.prevent="cancel" class="btn-flat waves-effect">
               Cancel
             </a>
-            <button type="submit" class="btn waves-effect waves-light">
+            <button type="submit" class="btn primary waves-effect waves-light">
               <i v-if="!hideId" class="fa fa-plus-circle left"></i>
               <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
@@ -83,9 +83,11 @@
           <div class="input-field">
             <select v-m-select="newAttributeType">
               <option value="string" selected>String</option>
-              <option value="number">Number</option>
-              <option value="nested">Object</option>
-              <option value="geopos">Geo position</option>
+              <option value="integer">Integer</option>
+              <option value="float">Float</option>
+              <option value="nested">Nested</option>
+              <option value="object">Object</option>
+              <option value="geo_point">Geo point</option>
             </select>
             <label>Attribute type</label>
           </div>
@@ -184,8 +186,14 @@
         this.$broadcast('modal-open', 'add-attr')
       },
       doAddAttr () {
-        let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
-        Vue.set(refMapping, this.newAttributeName, (this.newAttributeType === 'nested' ? {properties: {}} : {type: this.newAttributeType}))
+        // let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
+        Vue.set(
+          this.mapping,
+          this.newAttributeName,
+          (this.newAttributeType === 'nested' || this.newAttributeType === 'object'
+              ? {type: this.newAttributeType, properties: {}}
+              : {type: this.newAttributeType}
+          ))
 
         this.newAttributeType = 'string'
         this.newAttributeName = null

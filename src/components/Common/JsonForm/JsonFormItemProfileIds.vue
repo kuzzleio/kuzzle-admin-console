@@ -32,6 +32,7 @@
     props: {
       content: Array,
       name: String,
+      type: String,
       fullName: String
     },
     components: {
@@ -53,6 +54,11 @@
           res.profiles.forEach(profile => {
             this.profiles.push(profile.id)
           })
+
+          if (this.content) {
+            this.selected = this.content
+            this.setPartial('profileIds', this.content)
+          }
         })
         .catch(err => {
           // todo err

@@ -4,7 +4,7 @@
     <fieldset v-if="isNested(content)">
       <legend>
         {{name}}
-        <i @click="addAttribute"class="fa fa-plus-circle primary"></i>
+        <i @click="addAttribute" class="fa fa-plus-circle primary"></i>
       </legend>
       <div v-for="(nestedName, nestedContent) in content.properties">
         <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
@@ -13,40 +13,36 @@
 
     <!-- Root attributes -->
     <div v-if="!isNested(content)" class="input-field">
-      <component :is="componentItem" :name="name" :full-name="path" :content="content.val"></component>
+      <component :is="componentItem" :name="name" :full-name="path" :content="content.val" :type="content.type"></component>
     </div>
   </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
   .json-form {
+    legend {
+      border: 0;
+      padding: 0;
+      font-weight: 300;
+      left: -4px;
+      position: absolute;
+      top: -27px;
+      font-family: "Roboto", Arial, sans-serif;
+
+      i.fa {
+        font-size: 1.2em;
+        cursor: pointer;
+        margin-left: 5px;
+      }
+    }
     fieldset {
       border: 0;
-      margin: 0;
-      padding: 0;
-      legend {
-        border: 0;
-        padding: 0;
-        font-weight: 300;
-        left: -4px;
-        position: absolute;
-        top: -27px;
-        font-family: "Roboto", Arial, sans-serif;
-
-        i.fa {
-          font-size: 1.2em;
-          cursor: pointer;
-          margin-left: 5px;
-        }
-      }
-      fieldset {
-        border-left: solid 3px #EEE;
-        position: relative;
-        margin: 45px 0 15px 0;
-        padding: 0 0 0 1em;
-        &:hover, &:focus, &.active {
-          border-left: solid 3px #DDD;
-        }
+      border-left: solid 3px #EEE;
+      position: relative;
+      margin: 45px 0 15px 0;
+      padding: 0 0 0 1em;
+      &:hover, &:focus, &.active {
+        border-left: solid 3px #DDD;
       }
     }
 

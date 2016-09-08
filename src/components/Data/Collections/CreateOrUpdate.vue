@@ -88,7 +88,7 @@
           <div class="row">
             <div class="col s6">
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-                <button type="submit" class="btn waves-effect waves-light">
+                <button type="submit" class="btn primary waves-effect waves-light">
                   <i v-if="!collectionName" class="fa fa-plus-circle left"></i>
                   <i v-else class="fa fa-pencil left"></i>
                   {{collectionName ? 'Update' : 'Create'}}
