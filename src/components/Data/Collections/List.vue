@@ -74,7 +74,7 @@
 
           <!-- No Collection -->
           <div class="card-panel" v-if="canSearchCollection(index) && !collectionCount">
-            <div class="row valign-bottom empty-set empty-set-condensed">
+            <div class="row valign-bottom empty-set empty-set">
               <div class="col s1 offset-s1">
                 <i class="fa fa-6x fa-th-list grey-text text-lighten-1" aria-hidden="true"></i>
               </div>

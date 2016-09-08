@@ -85,7 +85,7 @@
             <div class="col s1 offset-s1">
               <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
             </div>
-            <div class="col s10">
+            <div class="col s8 m9 l10">
               <p>
                 You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
                 <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>

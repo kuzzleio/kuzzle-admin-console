@@ -12,7 +12,7 @@
 
     <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header filters">
       <div class="row margin-bottom-0">
-        <div class="col s4">
+        <div class="col s8 m6 l4" style="min-width: 520px">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
             <div class="chip">
@@ -23,7 +23,7 @@
             <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
           </div>
         </div>
-        <div class="col s3 actions-quicksearch">
+        <div class="col s4 m3 l3 actions-quicksearch">
           <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
           <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
         </div>

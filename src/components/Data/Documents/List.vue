@@ -18,7 +18,7 @@
           <div class="col s1 offset-s1">
             <i class="fa fa-6x fa-file-text-o grey-text text-lighten-1" aria-hidden="true"></i>
           </div>
-          <div class="col s10">
+          <div class="col s8 m9 l10">
             <p>
               There is no persistent document in here because the collection <strong>{{collection}}</strong> is currently realtime-only.<br />
               <em>You can edit the collection and persist it.</em>
@@ -35,7 +35,7 @@
           <div class="col s1 offset-s1">
             <i class="fa fa-6x fa-file-text-o grey-text text-lighten-1" aria-hidden="true"></i>
           </div>
-          <div class="col s10">
+          <div class="col s8 m9 l10">
             <p>
               Here you'll see the documents in <strong>{{collection}}</strong> <br/>
               <em>Currently there is no document in this collection.</em>
