@@ -9,9 +9,19 @@
       value="{{document.id}}"
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label for="checkbox-{{document.id}}" ></label>
+    <label for="checkbox-{{document.id}}"></label>
     <!-- The following anchor will go to the user details page -->
-    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="item-title">
+      <a @click="toggleCollapse">{{document.id}}</a>
+      <div class="profile-list">
+        <div class="profile-chip chip" v-for="profile in profileList">
+          <a v-link="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</a>
+        </div>
+        <div class="chip show-all-profiles" v-if="showAllProfiles">
+          <a v-link="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</a>
+        </div>
+      </div>
+    </label>
 
     <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
@@ -26,17 +36,22 @@
 
     <div class="item-content">
       <pre v-json-formatter="itemContent"></pre>
-      <div class="profile-list">
-        <div class="profile-chip chip" v-for="profile in profileList">
-          <a v-link="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</a>
-        </div>
-        <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <a v-link="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</a>
-        </div>
-      </div>
     </div>
   </div>
 </template>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .profile-list {
+    display: inline-flex;
+  }
+  .profile-chip {
+    opacity: 0.7;
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
+  }
+</style>
 
 <script>
 import Dropdown from '../../Materialize/Dropdown'

@@ -77,7 +77,7 @@
       <form method="post" @submit.prevent="doAddAttr">
         <p>
           <div class="input-field">
-            <input id="name" type="text" required v-model="newAttributeName"  v-focus/>
+            <input id="name" type="text" required v-model="newAttributeName" v-focus/>
             <label for="name">Field name</label>
           </div>
           <div class="input-field">
