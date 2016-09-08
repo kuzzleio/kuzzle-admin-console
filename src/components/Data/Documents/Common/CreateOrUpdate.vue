@@ -74,10 +74,10 @@
 
     <modal id="add-attr" :has-footer="false">
       <h4>Add a new attribute</h4>
-      <form method="post" @submit="doAddAttr">
+      <form method="post" @submit.prevent="doAddAttr">
         <p>
           <div class="input-field">
-            <input id="name" type="text" required v-model="newAttributeName"/>
+            <input id="name" type="text" required v-model="newAttributeName"  v-focus/>
             <label for="name">Field name</label>
           </div>
           <div class="input-field">
@@ -96,8 +96,7 @@
         <div class="modal-footer">
           <button
             type="submit"
-            class="waves-effect waves-green btn"
-            @click="doAddAttr">
+            class="waves-effect waves-green btn">
               Add
           </button>
           <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
