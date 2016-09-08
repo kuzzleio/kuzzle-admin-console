@@ -59,7 +59,8 @@
       }
     },
     ready () {
-      this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName)
+      this.listIndexesAndCollections()
+        .then(() => this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName))
         .catch(e => {
           this.$dispatch('toast', e.message, 'error')
           this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})

@@ -10,6 +10,7 @@ describe('Create component test', () => {
   let $vm
   let $dispatch
   let $broadcast
+  let triggerMappingError = true
   let triggerError = true
 
   let refreshIndexSpy = sandbox.stub()
@@ -24,6 +25,16 @@ describe('Create component test', () => {
       '../Collections/Tabs': mockedComponent,
       '../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
+          dataMappingFactory () {
+            return {
+              applyPromise: () => {
+                if (triggerMappingError) {
+                  return Promise.reject('error')
+                }
+                return Promise.resolve()
+              }
+            }
+          },
           createDocumentPromise: () => {
             if (triggerError) {
               return Promise.reject('error')
@@ -73,7 +84,8 @@ describe('Create component test', () => {
         expect(setNewDocumentSpy.called).to.be.ok
       })
 
-      it('should create the document and redirect', (done) => {
+      it('should fail if mapping is not well formated', (done) => {
+        triggerMappingError = true
         triggerError = false
         $vm.$router = {go: sandbox.stub()}
         mockInjector()

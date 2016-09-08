@@ -39,7 +39,7 @@
       collection: String
     },
     methods: {
-      create (viewState, json) {
+      create (viewState, json, mapping) {
         if (viewState === 'code') {
           if (!json) {
             this.$dispatch('toast', 'Invalid document', 'error')
@@ -50,12 +50,22 @@
 
         kuzzle
           .dataCollectionFactory(this.collection, this.index)
-          .createDocumentPromise(this.newDocument)
+          .dataMappingFactory(mapping || {})
+          .applyPromise()
           .then(() => {
-            kuzzle.refreshIndex(this.index)
-            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-          }).catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+            kuzzle
+              .dataCollectionFactory(this.collection, this.index)
+              .createDocumentPromise(this.newDocument)
+              .then(() => {
+                kuzzle.refreshIndex(this.index)
+                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+              })
+              .catch(err => {
+                this.$dispatch('toast', 'Bad mapping: ' + err.message, 'error')
+              })
+          })
+          .catch(err => {
+            this.$dispatch('toast', 'Bad document: ' + err.message, 'error')
           })
       },
       cancel () {

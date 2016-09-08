@@ -164,7 +164,7 @@
           json = this.$refs.jsoneditor.getJson()
         }
 
-        this.$dispatch('document-create::create', this.viewState, json)
+        this.$dispatch('document-create::create', this.viewState, json, this.mapping)
       },
       switchEditMode () {
         if (this.viewState === 'code') {
@@ -186,9 +186,9 @@
         this.$broadcast('modal-open', 'add-attr')
       },
       doAddAttr () {
-        // let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
+        let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
         Vue.set(
-          this.mapping,
+          refMapping,
           this.newAttributeName,
           (this.newAttributeType === 'nested' || this.newAttributeType === 'object'
               ? {type: this.newAttributeType, properties: {}}
@@ -207,8 +207,8 @@
         this.$dispatch('document-create::cancel')
       },
       changeTypeAttribute (attributePath, name, type, val) {
-        let refMapping = getRefMappingFromPath(this.mapping, attributePath)
-        Vue.set(refMapping, name, {type, val})
+        getRefMappingFromPath(this.mapping, attributePath)
+        Vue.set(this.mapping, name, {type, val})
       }
     },
     vuex: {
