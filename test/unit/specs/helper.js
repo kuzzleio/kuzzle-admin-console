@@ -6,9 +6,9 @@ export const testAction = (action, args, state, expectedMutations, done) => {
   // mock dispatch
   const dispatch = (name, ...payload) => {
     const mutation = expectedMutations[count]
-    expect(mutation.name).to.equal(name)
+    expect(mutation.name, 'mutation name must match').to.equal(name)
     if (payload) {
-      expect(mutation.payload).to.deep.equal(payload)
+      expect(mutation.payload, 'mutation payload must match').to.deep.equal(payload)
     }
     count++
     if (count >= expectedMutations.length) {
@@ -20,21 +20,23 @@ export const testAction = (action, args, state, expectedMutations, done) => {
 
   // check if no mutations should have been dispatched
   if (expectedMutations.length === 0) {
-    expect(count).to.equal(0)
+    expect(count, 'too much mutation was called').to.equal(0)
     done()
   }
 }
 
-export const mockedComponent = Vue.extend({template: '<div></div>'})
+export const mockedComponent = Vue.extend({template: '<div></div>', name: 'Toto'})
 
-export const testActionPromise = (action, args, state, expectedMutations, done) => {
+export const mockedDirective = Vue.directive('my-test-directive', {})
+
+export const testActionPromise = (action, args, state, expectedMutations, done, expectedResultFromPromise) => {
   let count = 0
   // mock dispatch
   const dispatch = (name, ...payload) => {
     const mutation = expectedMutations[count]
-    expect(mutation.name).to.equal(name)
+    expect(mutation.name, 'mutation name must match').to.equal(name)
     if (payload) {
-      expect(mutation.payload).to.deep.equal(payload)
+      expect(mutation.payload, 'mutation payload must match').to.deep.equal(payload)
     }
     count++
     if (count >= expectedMutations.length) {
@@ -42,13 +44,16 @@ export const testActionPromise = (action, args, state, expectedMutations, done) 
     }
   }
   // call the action with mocked store and arguments
-  return action({dispatch, state}, ...args).then(() => {
+  return action({dispatch, state}, ...args).then((res) => {
+    if (expectedResultFromPromise) {
+      expect(res).to.deep.equals(expectedResultFromPromise)
+    }
     // check if no mutations should have been dispatched
     if (expectedMutations.length === 0) {
-      expect(count).to.equal(0)
+      expect(count, 'too much mutation was called').to.equal(0)
       done()
     }
   }).catch(e => {
-    return Promise.reject(e)
+    return Promise.reject(new Error(e.message))
   })
 }

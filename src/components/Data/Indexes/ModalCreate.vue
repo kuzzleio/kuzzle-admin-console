@@ -1,49 +1,51 @@
 <template>
-  <modal :id="id">
-    <div class="row">
-      <div class="col s12">
-        <h4>Index creation</h4>
-        <div class="divider"></div>
-      </div>
-    </div>
-
-
-    <div class="row">
-      <div class="col s8">
-        <div class="input-field left-align">
-          <label for="index-name">Index name</label>
-          <input id="index-name" type="text" v-model="index" :class="{'invalid': error}">
+  <form @submit.prevent="tryCreateIndex(index)">
+    <modal :id="id">
+      <div class="row">
+        <div class="col s12">
+          <h4>Index creation</h4>
+          <div class="divider"></div>
         </div>
       </div>
 
-      <div class="col s4 error" v-if="error">
-        <div class="red-text">An error has occurred during index creation:</div>
-        <span :class="{'truncate': errorTruncated}">
-          {{error}}
-        </span>
-        <a href="#!" @click.prevent="toggleTruncatedError()">
-          <span v-if="errorTruncated">view more</span>
-          <span v-if="!errorTruncated">view less</span>
-        </a>
+
+      <div class="row">
+        <div class="col s7">
+          <div class="input-field left-align">
+            <label for="index-name">Index name</label>
+            <input id="index-name" type="text" v-model="index" :class="{'invalid': error}" v-focus>
+          </div>
+        </div>
+
+        <div class="col s5 error" v-if="error">
+          <div class="red-text">An error has occurred during index creation:</div>
+          <span :class="{'truncate': errorTruncated}">
+            {{error}}
+          </span>
+          <a href="#!" @click.prevent="toggleTruncatedError()">
+            <span v-if="errorTruncated">view more</span>
+            <span v-if="!errorTruncated">view less</span>
+          </a>
+        </div>
+
       </div>
 
-    </div>
-
-    <span slot="footer">
-      <button
-        @click.prevent="tryCreateIndex(index)"
-        href="#!"
-        class="waves-effect btn">
-          Create
-      </button>
-      <button
-        href="#!"
-        class="btn-flat waves-effect waves-grey"
-        @click.prevent="$broadcast('modal-close', id)">
-          Cancel
-      </button>
-    </span>
-  </modal>
+      <span slot="footer">
+        <button
+          type="submit"
+          href="#!"
+          class="waves-effect btn">
+            Create
+        </button>
+        <button
+          href="#!"
+          class="btn-flat waves-effect waves-grey"
+          @click.prevent="$broadcast('modal-close', id)">
+            Cancel
+        </button>
+      </span>
+    </modal>
+  </form>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -70,11 +72,15 @@
 <script>
   import {createIndex} from '../../../vuex/modules/data/actions'
   import Modal from '../../Materialize/Modal'
+  import Focus from '../../../directives/focus.directive'
 
   export default {
     name: 'IndexCreateModal',
     props: {
       id: String
+    },
+    directives: {
+      Focus
     },
     components: {
       Modal
@@ -89,17 +95,19 @@
         this.errorTruncated = !this.errorTruncated
       },
       tryCreateIndex (index) {
-        if (index.trim()) {
-          this.createIndex(index)
-            .then(() => {
-              this.index = ''
-              this.error = ''
-              this.$broadcast('modal-close', this.id)
-            })
-            .catch((err) => {
-              this.error = err.message
-            })
+        if (!index.trim()) {
+          return
         }
+
+        this.createIndex(index)
+          .then(() => {
+            this.index = ''
+            this.error = ''
+            this.$broadcast('modal-close', this.id)
+          })
+          .catch(err => {
+            this.error = err.message
+          })
       }
     },
     data () {

@@ -1,5 +1,6 @@
 
 {
+  "kuzzle-bo-testindex-empty": {},
   "kuzzle-bo-testindex": {
     "kuzzle-bo-test": [
       { "index" : {"_id": "ghopper"}},
@@ -33,10 +34,18 @@
       { "index": { "_id": "anonymous" } },
       {
         "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
           "auth": {
             "actions": {
               "login": true,
               "checkToken": true,
+              "getMyRights": true,
+              "whoAmI": true,
               "getCurrentUser": true
             }
           },
@@ -50,10 +59,18 @@
       { "index": { "_id": "default" } },
       {
         "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
           "auth": {
             "actions": {
               "logout": true,
               "checkToken": true,
+              "getMyRights": true,
+              "whoAmI": true,
               "getCurrentUser": true
             }
           },
@@ -91,6 +108,8 @@
           "auth": {
             "actions": {
               "login": true,
+              "whoAmI": true,
+              "getMyRights": true,
               "checkToken": true
             }
           }
@@ -155,6 +174,7 @@
       {
         "policies": [
           {"roleId": "fake-action"},
+          {"roleId": "login-and-check-token"},
           {"roleId": "logout-and-get-user"}
         ]
       },
@@ -175,21 +195,21 @@
       { "index": { "_id": "kuzzle-bo-admin" } },
       {
         "username": "kuzzle-bo-admin",
-        "profilesIds": ["admin"],
+        "profileIds": ["admin"],
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
       { "index": { "_id": "kuzzle-bo-dummy" } },
       {
         "username": "kuzzle-bo-dummy",
-        "profilesIds": ["kuzzle-bo-dummy"],
+        "profileIds": ["kuzzle-bo-dummy"],
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       },
       { "index": { "_id": "kuzzle-bo-standard" } },
       {
         "username": "kuzzle-bo-standard",
-        "profilesIds": ["kuzzle-bo-standard"],
+        "profileIds": ["kuzzle-bo-standard"],
         "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
         "clearPassword": "test"
       }

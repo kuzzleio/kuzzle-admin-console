@@ -1,0 +1,1 @@
+export const SET_BASIC_FILTER = 'SET_BASIC_FILTER'

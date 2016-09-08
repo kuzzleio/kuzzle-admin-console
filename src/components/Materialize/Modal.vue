@@ -5,7 +5,7 @@
         <div class="modal-content">
           <slot></slot>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" v-if="hasFooter">
           <slot name="footer"></slot>
         </div>
       </slot>
@@ -14,7 +14,7 @@
     <div
       v-if="active"
       transition="modal-overlay"
-      @click="close"
+      @click="canClose && close()"
       class="lean-overlay"
       style="z-index: 1002; display: block; opacity: 0.5;">
     </div>
@@ -28,7 +28,21 @@
   export default {
     props: {
       id: String,
-      'class': String,
+      'class': {
+        type: String,
+        'default': '',
+        required: false
+      },
+      canClose: {
+        type: Boolean,
+        'default': true,
+        required: false
+      },
+      hasFooter: {
+        type: Boolean,
+        'default': true,
+        required: false
+      },
       bottom: Boolean
     },
     events: {
@@ -59,13 +73,10 @@
       }
     },
     ready () {
-      window.document.addEventListener('keydown', evt => {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.close()
-        }
-      })
+      window.document.addEventListener('keydown', this.handleEsc)
+    },
+    destroyed () {
+      window.document.removeEventListener('keydown', this.handleEsc)
     },
     computed: {
       computedClasses () {
@@ -74,16 +85,23 @@
         }
 
         if (this.bottom) {
-          return 'bottom-modal bottom-sheet'
+          return 'bottom-modal bottom-sheet ' + this.class
         }
 
-        return 'normal-modal'
+        return 'normal-modal ' + this.class
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'
       }
     },
     methods: {
+      handleEsc (evt) {
+        evt = evt || window.event
+
+        if (this.canClose && evt.keyCode === ESC_KEY) {
+          this.close()
+        }
+      },
       open () {
         this.active = true
       },
@@ -100,6 +118,10 @@
     height: 66px;
   }
   .modal {
+    overflow-y: visible;
+    &.small-modal {
+      width: 25%;
+    }
     &.bottom-modal {
       z-index: 1003;
       display: block;

@@ -3,13 +3,13 @@ export default {
   '/': {
     name: 'DataIndexes',
     component (resolve) {
-      require(['../../components/Data/Indexes/Browse'], resolve)
+      require(['../../components/Data/Indexes/List'], resolve)
     }
   },
   '/:index': {
     name: 'DataIndexSummary',
     component (resolve) {
-      require(['../../components/Data/Indexes/Summary'], resolve)
+      require(['../../components/Data/Collections/List'], resolve)
     }
   },
   '/:index/create': {
@@ -18,42 +18,34 @@ export default {
       require(['../../components/Data/Collections/Create'], resolve)
     }
   },
-  // Collections routes
-  '/:index/:collection': {
-    name: 'DataCollectionBrowse',
-    component (resolve) {
-      require(['../../components/Data/Collections/Browse'], resolve)
-    }
-  },
-  '/:index/:collection/summary': {
-    name: 'DataCollectionSummary',
-    component (resolve) {
-      require(['../../components/Data/Collections/Summary'], resolve)
-    }
-  },
   '/:index/:collection/watch': {
     name: 'DataCollectionWatch',
     component (resolve) {
       require(['../../components/Data/Collections/Watch'], resolve)
     }
   },
-  // Documents routes
+  '/:index/:collection/edit': {
+    name: 'DataCollectionEdit',
+    component (resolve) {
+      require(['../../components/Data/Collections/Update'], resolve)
+    }
+  },
+  '/:index/:collection': {
+    name: 'DataDocumentsList',
+    component (resolve) {
+      require(['../../components/Data/Documents/List'], resolve)
+    }
+  },
   '/:index/:collection/create': {
     name: 'DataCreateDocument',
     component (resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
     }
   },
-  '/:index/:collection/:document': {
-    name: 'DataDocumentDetail',
+  '/:index/:collection/update/:id': {
+    name: 'DataUpdateDocument',
     component (resolve) {
-      require(['../../components/Data/Documents/Detail'], resolve)
-    }
-  },
-  '/:index/:collection/:document/edit': {
-    name: 'DataDocumentEdit',
-    component (resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
+      require(['../../components/Data/Documents/Update'], resolve)
     }
   }
 }

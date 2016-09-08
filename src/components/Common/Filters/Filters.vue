@@ -1,8 +1,38 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col s8 z-depth-1 open-search" v-show="displayBlockFilter">
-        <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
+    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header">
+      <div class="row margin-bottom-0 filters">
+        <quick-filter
+          :search-term="searchTerm"
+          :display-block-filter="displayBlockFilter"
+          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter">
+        </quick-filter>
+      </div>
+    </div>
+
+    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header filters">
+      <div class="row margin-bottom-0">
+        <div class="col s8 m6 l4" style="min-width: 520px">
+          <div class="search-bar">
+            <i class="fa fa-search search"></i>
+            <div class="chip">
+              <span class="label-chip" @click.prevent="displayBlockFilter = true">{{labelComplexQuery}}</span>
+              <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
+            </div>
+            <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
+            <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
+          </div>
+        </div>
+        <div class="col s4 m3 l3 actions-quicksearch">
+          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
+          <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row card-panel open-search" v-show="displayBlockFilter">
+      <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
+      <div class="col s12">
         <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
           <tab name="basic"><a href="">Basic Mode</a></tab>
           <tab name="raw"><a href="">Raw JSON Mode</a></tab>
@@ -12,6 +42,9 @@
               <div v-show="tabActive === 'basic'">
                 <basic-filter
                   :basic-filter="basicFilter"
+                  :sorting-enabled="sortingEnabled"
+                  :available-filters="availableFilters"
+                  :label-search-button="labelSearchButton"
                   :sorting="sorting"
                   :set-basic-filter="setBasicFilter"
                   @filters-basic-search="complexSearch = true">
@@ -22,6 +55,8 @@
                 <raw-filter
                   :raw-filter="rawFilter"
                   :format-from-basic-search="formatFromBasicSearch"
+                  :sorting-enabled="sortingEnabled"
+                  :label-search-button="labelSearchButton"
                   :format-sort="formatSort"
                   :basic-filter-form="basicFilterForm">
                 </raw-filter>
@@ -29,40 +64,6 @@
             </div>
           </div>
         </tabs>
-      </div>
-
-      <quick-filter
-        v-if="(!basicFilter && !rawFilter && !sorting)"
-        :search-term="searchTerm"
-        @filters-display-block-filter="displayBlockFilter = true">
-      </quick-filter>
-
-      <div v-if="(basicFilter || rawFilter || sorting)" class="col s9 complex-search">
-        <div class="row">
-          <div class="col s7">
-            <div class="search-bar">
-              <i class="fa fa-search search"></i>
-              <div class="chip">
-                <span @click="displayBlockFilter = true">Complex query here</span>
-                <i class="close fa fa-close" @click.prevent="resetComplexSearch"></i>
-              </div>
-              <a href="#" @click.prevent="displayBlockFilter = true">More query options</a>
-              <i class="fa fa-times remove-search" @click="resetComplexSearch"></i>
-            </div>
-          </div>
-          <div class="col s3">
-            <button type="submit" class="btn waves-effect waves-light" @click="refreshSearch">Search</button>
-          </div>
-        </div>
-      </div>
-
-
-
-      <div
-        v-if="displayBlockFilter"
-        @click="displayBlockFilter = false"
-        class="lean-overlay"
-        style="z-index: 1000; display: block; opacity: 0;">
       </div>
     </div>
   </div>
@@ -75,11 +76,42 @@
   import BasicFilter from './BasicFilter'
   import RawFilter from './RawFilter'
 
-  const ESC_KEY = 27
-
   export default {
     name: 'Filters',
-    props: ['rawFilter', 'basicFilter', 'setBasicFilter', 'basicFilterForm', 'searchTerm', 'sorting', 'formatFromBasicSearch', 'formatSort'],
+    props: {
+      availableFilters: {
+        type: Object,
+        required: true
+      },
+      quickFilterEnabled: {
+        type: Boolean,
+        required: false,
+        'default': true
+      },
+      sortingEnabled: {
+        type: Boolean,
+        required: false,
+        'default': true
+      },
+      labelSearchButton: {
+        type: String,
+        required: false,
+        'default': 'search'
+      },
+      labelComplexQuery: {
+        type: String,
+        required: false,
+        'default': 'Complex query here'
+      },
+      rawFilter: Object,
+      basicFilter: Array,
+      setBasicFilter: Function,
+      basicFilterForm: Object,
+      searchTerm: String,
+      sorting: Object,
+      formatFromBasicSearch: Function,
+      formatSort: Function
+    },
     components: {
       Tabs,
       Tab,
@@ -122,24 +154,27 @@
       }
     },
     ready () {
-      window.document.addEventListener('keydown', evt => {
-        evt = evt || window.event
-
-        if (evt.keyCode === ESC_KEY) {
-          this.displayBlockFilter = false
-        }
-      })
+      window.document.addEventListener('keydown', this.handleEsc)
+    },
+    destroyed () {
+      window.document.removeEventListener('keydown', this.handleEsc)
     }
   }
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
+  .filters {
+    .actions-quicksearch {
+      transform: translateY(50%);
+    }
+  }
   .search-bar {
     position: relative;
+    height: 48px;
 
     a {
       position: absolute;
-      right: 70px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
       text-decoration: underline;
@@ -167,6 +202,7 @@
       width: 100%;
       padding-right: 215px;
       box-sizing: border-box;
+      border-bottom: solid 1px #e4e1e1;
     }
   }
 
@@ -177,62 +213,78 @@
   }
 
   .complex-search {
-    margin-top: 8px;
     button {
     }
     .search-bar {
+      border-bottom: solid 1px #e4e1e1;
       .chip {
+        margin-top: 9px;
         margin-left: 30px;
         cursor: pointer;
+        .label-chip {
+          display: inline-block;
+          padding-right: 10px;
+        }
         i {
           position: relative;
           cursor: pointer;
           float: right;
           font-size: 13px;
           line-height: 32px;
-          padding-left: 8px;
         }
       }
     }
   }
 
   .open-search {
-    position: absolute;
-    z-index: 1001;
     background-color: #fff;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    position: relative;
 
     i.close {
       float: right;
       font-size: 1.3em;
       cursor: pointer;
-      margin-top: 5px;
       color: grey;
+      position: absolute;
+      top: 10px;
+      right: 16px;
+
+      &:hover {
+        color: #555;
+        background: #EEE;
+        border-radius: 3px;
+      }
     }
 
     .filter-content {
-      margin-bottom: 0;
       .dots {
-        border-left: 1px dotted rgba(0,0,0,0.26);
+        border-left: 1px dotted rgba(0, 0, 0, 0.26);
         padding-bottom: 5px;
       }
+      a.btn {
+        i.left {
+          margin-right: 8px;
+        }
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-left: 10px;
+      }
+      .button-or {
+        margin-bottom: 10px;
+      }
       .block-and {
-        margin-bottom: 5px;
         i.remove-filter {
           margin-top: 25px;
           color: grey;
           cursor: pointer;
         }
-        a.btn {
-          i.left {
-            margin-right: 8px;
-          }
-          padding-left: 10px;
-          padding-right: 10px;
-          margin-left: 10px;
-        }
+
       }
       .block-sort {
-        margin-top: 40px;
+        margin-top: 15px;
         margin-bottom: 0;
       }
       .block-content {
@@ -258,8 +310,12 @@
         margin-right: 10px;
       }
     }
+
+    .select-wrapper span.caret {
+      top: 10px
+    }
   }
   .pre_ace, .ace_editor {
-    height: 350px;
+    height: 250px;
   }
 </style>

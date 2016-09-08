@@ -1,66 +1,92 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
-import cookie from '../../../services/cookies'
-import { SET_ERROR } from '../common/mutation-types'
-import { SET_CURRENT_USER } from './mutation-types'
+import userCookies from '../../../services/userCookies'
+import SessionUser from '../../../models/SessionUser'
+import {SET_CURRENT_USER, SET_TOKEN_VALID, SET_ADMIN_EXISTS} from './mutation-types'
+import Promise from 'bluebird'
 
 export const doLogin = (store, username, password) => {
-  kuzzle
-    .login('local', {username, password}, '1h', (err, res) => {
-      if (err) {
-        store.dispatch(SET_ERROR, err.message)
-        return
-      }
-      // TODO properly get user information via whoAmI
-      let user = {
-        _id: res._id,
-        jwt: res.jwt
-      }
-      let date = new Date()
-      date.setTime(date.getTime() + 60 * 60 * 1000)
-      cookie.set(`user=${JSON.stringify(user)}; expires=${date.toUTCString()}`)
+  let user = SessionUser()
 
+  userCookies.delete()
+
+  return new Promise((resolve, reject) => {
+    kuzzle
+      .loginPromise('local', {username, password}, '4h')
+      .then(loginResult => {
+        user.id = loginResult._id
+        user.token = loginResult.jwt
+
+        return kuzzle.whoAmIPromise()
+      })
+      .then(KuzzleUser => {
+        user.params = KuzzleUser.content
+
+        return kuzzle.getMyRightsPromise()
+      })
+      .then(rights => {
+        user.rights = rights
+        userCookies.set(user)
+
+        store.dispatch(SET_CURRENT_USER, user)
+        store.dispatch(SET_TOKEN_VALID, true)
+
+        resolve()
+      })
+      .catch(error => {
+        reject(new Error(error.message))
+      })
+  })
+}
+
+export const setTokenValid = (store, isValid) => {
+  store.dispatch(SET_TOKEN_VALID, isValid)
+}
+
+export const loginFromCookie = (store) => {
+  let user = userCookies.get()
+
+  if (!user) {
+    user = SessionUser()
+    store.dispatch(SET_CURRENT_USER, SessionUser())
+    return Promise.resolve(SessionUser())
+  }
+
+  return kuzzle.checkTokenPromise(user.token)
+    .then(res => {
+      if (!res.valid) {
+        store.dispatch(SET_CURRENT_USER, SessionUser())
+        return Promise.resolve(SessionUser())
+      }
+
+      kuzzle.setJwtToken(user.token)
       store.dispatch(SET_CURRENT_USER, user)
-      // TODO redirect to the previously asked route
-      router.go({name: 'Home'})
+      return Promise.resolve(user)
     })
 }
 
-export const loginFromCookie = (store, cb) => {
-  let user,
-    id
-
-  if (kuzzle.state !== 'connected') {
-    id = kuzzle.addListener('connected', () => {
-      loginFromCookie(store, cb)
-      kuzzle.removeListener('connected', id)
-    })
-    return
-  }
-  user = cookie.get()
-  if (user) {
-    kuzzle.checkToken(user.jwt, (err, res) => {
-      if (err) {
-        store.dispatch(SET_CURRENT_USER, null)
-        cb()
-        return
+export const checkFirstAdmin = (store) => {
+  return kuzzle
+    .queryPromise({controller: 'admin', action: 'adminExists'}, {})
+    .then(res => {
+      if (!res.result.exists) {
+        store.dispatch(SET_ADMIN_EXISTS, false)
+        return Promise.resolve()
       }
 
-      if (res.valid) {
-        kuzzle.setJwtToken(user.jwt)
-        store.dispatch(SET_CURRENT_USER, user)
-      }
-
-      cb()
+      store.dispatch(SET_ADMIN_EXISTS, true)
+      return Promise.resolve()
     })
-  } else {
-    cb()
-  }
+}
+
+export const setFirstAdmin = (store, exists) => {
+  store.dispatch(SET_ADMIN_EXISTS, exists)
 }
 
 export const doLogout = (store) => {
   kuzzle.logout()
-  cookie.delete()
-  store.dispatch(SET_CURRENT_USER, null)
+  userCookies.delete()
+  store.dispatch(SET_CURRENT_USER, SessionUser())
+  store.dispatch(SET_TOKEN_VALID, false)
   router.go({name: 'Login'})
 }

@@ -9,10 +9,21 @@ main {
   }
 
   .wrapper {
-    padding-left: 20px;
-    padding-top: 20px;
-
+    padding: 20px;
   }
+}
+
+/* remove yellow effect on chrome when autofill inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-transition: color 9999s ease-out, background-color 9999s ease-out;
+  -webkit-transition-delay: 9999s;
+}
+
+strong {
+  font-weight: 600;
 }
 
 .list-document {
@@ -46,8 +57,10 @@ main {
 }
 
 html{
-  font-family: "Raleway", sans-serif;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
   font-weight: normal;
+  background-color: #F5F5F5;
+  color: #333;
 }
 
 #toast-container {
@@ -59,27 +72,14 @@ html{
   }
 }
 
-.primary {
-  background-color: $primary-color;
-}
-
-.secondary {
-  background-color: $secondary-color;
-  &:hover, &:focus {
-    background-color: lighten($secondary-color, 5%);
-  }
-}
-
-.tertiary {
-  background-color: $tertiary-color;
-  &:hover, &:focus {
-    background-color: lighten($tertiary-color, 5%);
-  }
-}
-
 .side-nav {
-  top: $navbar-height;
-  overflow: hidden;
+  top: $navbar-height - 10;
+  height: 95%;
+}
+@media #{$medium-and-up} {
+  .side-nav {
+    top: $navbar-height;
+  }
 }
 
 @media #{$medium-and-down} {
@@ -98,6 +98,10 @@ nav .input-field label i {
   color: #000000;
 }
 
+.input-field label {
+  left: 0
+}
+
 .subnav {
   background-color: #ffffff;
 }
@@ -109,4 +113,22 @@ nav .input-field label i {
 .error {
   color: $error-color;
   font-weight: bold;
+}
+
+.empty-set {
+  margin: 50px auto;
+  justify-content: flex-start;
+
+  &.empty-set-condensed {
+    margin: 20px auto;
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 26px;
+    font-weight: 300;
+    font-family: "Roboto", Arial, sans-serif;
+  }
+  em {
+    color: #777;
+  }
 }

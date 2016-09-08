@@ -1,17 +1,10 @@
 <template>
   <span>
     <dropdown :id="collection" :class="class">
-      <li v-if="!isRealtime"><a href="#!">Browse documents</a></li>
-      <li><a href="#!">Watch messages</a></li>
-      <li v-if="!isRealtime"><a href="#!">Summary</a></li>
-      <li><a href="#!">View profiles</a></li>
+      <li><a v-link="{name: 'DataCollectionEdit', params: {collection: collection, index: index}}">Edit collection</a></li>
       <li class="divider"></li>
-      <li v-if="isRealtime"><a href="#!">Persist</a></li>
-      <li v-if="!isRealtime"><a href="#!">Edit</a></li>
-      <li v-if="!isRealtime"><a href="#!">Clone</a></li>
-      <li v-if="!isRealtime"><a href="#!">Duplicate</a></li>
-      <li v-if="!isRealtime"><a href="#!">Rename</a></li>
-      <li v-if="!isRealtime"><a href="#!" class="red-text">Truncate</a></li>
+      <li v-if="!isRealtime"><a v-link="{name: 'DataDocumentsList', params: {collection: collection, index: index}}">Browse documents</a></li>
+      <li><a v-link="{name: 'DataCollectionWatch', params: {collection: collection, index: index}}">Watch messages</a></li>
     </dropdown>
   </span>
 </template>
