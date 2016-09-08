@@ -6,6 +6,14 @@
     </headline>
 
     <collection-tabs></collection-tabs>
+    <div class="row" v-if="show">
+      <div class="card horizontal tertiary col m5">
+        <div class="card-content">
+          <span class="card-title">Warning</span>
+          <p>This document has been edited while you were editing it. <a href="#" @click.prevent="fetch">Click here to refresh it</a></p>
+        </div>
+      </div>
+    </div>
     <create-or-update
       @document-create::create="update"
       @document-create::cancel="cancel"
@@ -16,7 +24,7 @@
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   .bold {
     font-weight: normal;
   }
@@ -30,6 +38,8 @@
   import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
   import CollectionTabs from '../Collections/Tabs'
+
+  let room
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -72,6 +82,20 @@
         } else {
           this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
+      },
+      fetch () {
+        this.show = false
+        kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .fetchDocumentPromise(this.documentToEditId)
+          .then(res => {
+            this.setNewDocument(res.content)
+            this.$broadcast('document-create::fill', res.content)
+            return null
+          })
+          .catch(err => {
+            this.$dispatch('toast', err.message, 'error')
+          })
       }
     },
     vuex: {
@@ -83,18 +107,23 @@
         documentToEditId
       }
     },
+    data () {
+      return {
+        show: false
+      }
+    },
     ready () {
-      kuzzle
+      this.fetch()
+      room = kuzzle
         .dataCollectionFactory(this.collection, this.index)
-        .fetchDocumentPromise(this.documentToEditId)
-        .then(res => {
-          this.setNewDocument(res.content)
-          this.$broadcast('document-create::fill', res.content)
-          return null
+        .subscribe({term: {_id: this.documentToEditId}}, () => {
+          this.show = true
         })
-        .catch(err => {
-          this.$dispatch('toast', err.message, 'error')
-        })
+    },
+    destroyed () {
+      if (room) {
+        room.unsubscribe()
+      }
     }
   }
 </script>
