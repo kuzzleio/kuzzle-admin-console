@@ -39,6 +39,8 @@
   import {setNewDocument} from '../../../vuex/modules/data/actions'
   import CollectionTabs from '../Collections/Tabs'
 
+  let room
+
   export default {
     name: 'DocumentCreateOrUpdate',
     components: {
@@ -107,21 +109,20 @@
     },
     data () {
       return {
-        show: false,
-        room: null
+        show: false
       }
     },
     ready () {
       this.fetch()
-      this.room = kuzzle
+      room = kuzzle
         .dataCollectionFactory(this.collection, this.index)
         .subscribe({term: {_id: this.documentToEditId}}, () => {
           this.show = true
         })
     },
     destroyed () {
-      if (this.room) {
-        this.room.unsubscribe()
+      if (room) {
+        room.unsubscribe()
       }
     }
   }
