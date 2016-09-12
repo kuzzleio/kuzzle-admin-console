@@ -1,11 +1,11 @@
-export const documents = state => {
-  return state.collection.documents
+export const mapping = state => {
+  return state.collection.mapping
 }
 
-export const totalDocuments = state => {
-  return state.collection.total
+export const collectionName = state => {
+  return state.route.params.collection
 }
 
-export const selectedDocuments = state => {
-  return state.collection.selectedDocuments
+export const collectionIsRealtimeOnly = state => {
+  return state.collection.isRealtimeOnly
 }

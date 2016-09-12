@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="class">
     <a class="action dropdown-button fa fa-ellipsis-v" data-activates="{{id}}"></a>
 
     <ul id="{{id}}" class='dropdown-content'>
@@ -8,15 +8,42 @@
   </span>
 </template>
 
-<style lang="scss" rel="stylesheet/scss">
+<style lang="scss" rel="stylesheet/scss" scoped>
+  span {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  }
   a.dropdown-button {
     cursor: pointer;
+  }
+
+  .action {
+    padding: 0 7px;
+  }
+
+  .icon-small {
+    .action {
+      font-size: 1.2rem;
+      vertical-align: 2px;
+    }
+  }
+
+  .icon-medium {
+    .fa-ellipsis-v {
+      font-size: 1.4rem;
+      vertical-align: 4px;
+    }
+  }
+
+  .icon-black {
+    .action {
+      color: #666;
+    }
   }
 </style>
 
 <script>
   export default {
-    props: ['id'],
+    props: ['id', 'class'],
     ready () {
       /*eslint no-undef: 0*/
       $(this.$el).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})

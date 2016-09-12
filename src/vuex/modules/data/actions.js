@@ -1,50 +1,106 @@
 import kuzzle from '../../../services/kuzzle'
-import {RECEIVE_MAPPING, RECEIVE_INDEXES_COLLECTIONS} from './mutation-types'
-import {SET_ERROR} from '../common/mutation-types'
+import { dedupeRealtimeCollections } from '../../../services/data'
 import Promise from 'bluebird'
+import {
+  RECEIVE_MAPPING,
+  RECEIVE_INDEXES_COLLECTIONS,
+  ADD_INDEX,
+  DELETE_INDEX,
+  SET_PARTIAL_TO_DOCUMENT,
+  UNSET_NEW_DOCUMENT,
+  SET_NEW_DOCUMENT
+} from './mutation-types'
+
+const addLocalRealtimeCollections = (result, index) => {
+  // eslint-disable-next-line no-undef
+  let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+
+  realtimeCollections = realtimeCollections
+    .filter(o => o.index === index)
+    .map(o => o.collection)
+
+  if (!result.realtime) {
+    result.realtime = []
+  }
+
+  result.realtime.push(...realtimeCollections)
+}
 
 export const listIndexesAndCollections = (store) => {
   let promises = []
-  kuzzle
-    .listIndexes((error, result) => {
-      let indexesAndCollections = []
+
+  return new Promise((resolve, reject) => {
+    kuzzle.listIndexes((error, result) => {
+      let indexesAndCollections = {}
 
       if (error) {
-        store.dispatch(SET_ERROR, error.message)
-        return
+        return reject(new Error(error.message))
       }
 
       result.forEach((index) => {
-        let promise = new Promise(resolve => {
+        /* eslint-disable */
+        let promise = new Promise((resolveOne, rejectOne) => {
           kuzzle.listCollections(index, (error, result) => {
-            if (error) {
-              console.log('error', error)
-              store.dispatch(SET_ERROR, error.message)
+            if (error && index !== '%kuzzle') {
+              rejectOne(new Error(error.message))
               return
             }
             if (index !== '%kuzzle') {
-              indexesAndCollections.push({
-                name: index,
-                collections: result
-              })
+              addLocalRealtimeCollections(result, index)
+              result = dedupeRealtimeCollections(result)
+
+              indexesAndCollections[index] = result
             }
-            resolve(indexesAndCollections)
+            resolveOne(indexesAndCollections)
           })
         })
         promises.push(promise)
+        /* eslint-enable */
       })
-      Promise.all(promises).then(res => {
-        store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
-      })
+
+      Promise.all(promises)
+        .then(res => {
+          store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
+          resolve()
+        })
+        .catch((error) => reject(new Error(error.message)))
     })
+  })
 }
 
 export const getMapping = (store, index, collection) => {
   kuzzle.dataCollectionFactory(collection, index).getMapping((err, res) => {
     if (err) {
-      store.dispatch(SET_ERROR, err.message)
       return
     }
     store.dispatch(RECEIVE_MAPPING, res.mapping)
   })
+}
+
+export const createIndex = (store, index) => {
+  return kuzzle
+    .queryPromise({index: index, controller: 'admin', action: 'createIndex'}, {})
+    .then(() => {
+      store.dispatch(ADD_INDEX, index)
+    })
+}
+
+export const deleteIndex = (store, index) => {
+  return kuzzle
+    .queryPromise({index: index, controller: 'admin', action: 'deleteIndex'}, {})
+    .then(() => {
+      store.dispatch(DELETE_INDEX, index)
+    })
+}
+
+export const setPartial = (store, path, value) => {
+  store.dispatch(SET_PARTIAL_TO_DOCUMENT, path, value)
+}
+
+export const setNewDocument = (store, document) => {
+  store.dispatch(SET_NEW_DOCUMENT, document)
+}
+
+export const unsetNewDocument = (store) => {
+  store.dispatch(UNSET_NEW_DOCUMENT)
 }
