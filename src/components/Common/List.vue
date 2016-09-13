@@ -14,14 +14,19 @@
       :documents="documents"
       :total-documents="totalDocuments"
       :display-bulk-delete="displayBulkDelete"
+      :display-create="displayCreate"
       :all-checked="allChecked"
       :selected-documents="selectedDocuments"
       :length-document="selectedDocuments.length">
 
         <div class="collection">
           <div class="collection-item" transition="collection" v-for="document in documents">
-            <component :is="itemName" @checkbox-click="toggleSelectDocuments" :document="document"
-                       :is-checked="isChecked(document.id)"></component>
+            <component :is="itemName"
+                       @checkbox-click="toggleSelectDocuments"
+                       :document="document"
+                       :is-checked="isChecked(document.id)"
+                       :rights="rightsOnDocument">
+            </component>
           </div>
         </div>
 
@@ -57,7 +62,12 @@
     props: {
       index: String,
       collection: String,
-      itemName: String
+      itemName: String,
+      displayCreate: {
+        type: Boolean,
+        default: false
+      },
+      rightsOnDocument: Object
     },
     components: {
       CrudlDocument,

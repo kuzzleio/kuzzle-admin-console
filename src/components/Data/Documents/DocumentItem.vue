@@ -14,8 +14,12 @@
     <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
     <div class="right actions">
-      <a v-link="{name: 'DataUpdateDocument', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
-      <dropdown :id="document.id" class="icon-black">
+      <a
+        v-link="{name: 'DataUpdateDocument', params: {id: document.id}}"
+        v-if="rights.canEdit">
+        <i class="fa fa-pencil"></i>
+      </a>
+      <dropdown v-if="rights.canDelete" :id="document.id" class="icon-black">
         <li><a @click="deleteDocument(document.id)">Delete</a></li>
       </dropdown>
     </div>
@@ -94,7 +98,8 @@
     name: 'DocumentItem',
     props: {
       document: Object,
-      isChecked: Boolean
+      isChecked: Boolean,
+      rights: Object
     },
     directives: {
       JsonFormatter
