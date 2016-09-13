@@ -11,7 +11,7 @@ describe('Profile item', () => {
   before(() => {
     ProfileItem = ProfileItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter')
     })
 
     vm = new Vue({

@@ -6,7 +6,7 @@ import Promise from 'bluebird'
 let CreateInjector = require('!!vue?inject!../../../../../../../src/components/Data/Documents/Common/CreateOrUpdate')
 let Create
 
-describe('createOrUpdate document tests', () => {
+describe.only('createOrUpdate document tests', () => {
   let sandbox
   let vm
   let dispatchSpy
@@ -30,7 +30,7 @@ describe('createOrUpdate document tests', () => {
           return {
             getMappingPromise: () => {
               if (triggerError) {
-                return Promise.reject('error')
+                return Promise.reject(new Error('error'))
               }
               return Promise.resolve({mapping: {foo: 'bar'}})
             }
@@ -55,13 +55,13 @@ describe('createOrUpdate document tests', () => {
         getRefMappingFromPath: addAttributeFromPathSpy,
         getUpdatedSchema: getUpdatedSchemaSpy
       },
-      '../../../../directives/focus.directive': mockedDirective,
+      '../../../../directives/focus.directive': mockedDirective('focus'),
       'vue': {
         set: sandbox.stub()
       },
       '../../../Common/JsonEditor': mockedComponent,
       '../../../Materialize/Modal': mockedComponent,
-      '../../../../directives/Materialize/m-select.directive': mockedDirective
+      '../../../../directives/Materialize/m-select.directive': mockedDirective('m-select')
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')

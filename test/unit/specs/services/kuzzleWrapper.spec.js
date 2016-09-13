@@ -2,7 +2,7 @@ const kuzzleWrapperInjector = require('inject!../../../../src/services/kuzzleWra
 
 let sandbox = sinon.sandbox.create()
 
-describe.only('Kuzzle wrapper service', () => {
+describe('Kuzzle wrapper service', () => {
   describe('performSearch tests', () => {
     let triggerError = true
     let fakeResponse = {

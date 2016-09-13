@@ -1,6 +1,6 @@
 import store from '../../../../../../src/vuex/store'
 import Vue from 'vue'
-import {mockedDirective} from '../../../helper'
+import {mockedComponent} from '../../../helper'
 
 let JsonFormItemProfileIdsInjector = require('!!vue?inject!../../../../../../src/components/Common/JsonForm/JsonFormItemProfileIds')
 
@@ -29,7 +29,7 @@ describe('JsonFormItemProfileIds tests', () => {
       '../../../vuex/modules/data/actions': {
         setPartial: setPartialSpy
       },
-      'vue-multiselect': mockedDirective
+      'vue-multiselect': mockedComponent
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')

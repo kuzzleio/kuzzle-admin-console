@@ -11,7 +11,7 @@ describe('User item', () => {
   before(() => {
     RoleItem = RoleItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter')
     })
 
     vm = new Vue({

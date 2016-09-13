@@ -186,7 +186,6 @@
 <script>
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
-  import JsonFormatter from '../../../directives/json-formatter.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
   import jQueryCollapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
@@ -253,7 +252,6 @@
     },
     directives: [
       jQueryCollapsible,
-      JsonFormatter,
       ScrollGlue
     ],
     components: {
