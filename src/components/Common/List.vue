@@ -25,7 +25,8 @@
                        @checkbox-click="toggleSelectDocuments"
                        :document="document"
                        :is-checked="isChecked(document.id)"
-                       :rights="rightsOnDocument">
+                       :index="index"
+                       :collection="collection">
             </component>
           </div>
         </div>
@@ -66,8 +67,7 @@
       displayCreate: {
         type: Boolean,
         default: false
-      },
-      rightsOnDocument: Object
+      }
     },
     components: {
       CrudlDocument,

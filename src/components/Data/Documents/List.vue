@@ -18,7 +18,7 @@
             You are not allowed to list documents in collection <strong>{{collection}}</strong><br>
           </p>
           <p>
-            <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
+            <em>Learn more about security &amp; permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
           </p>
         </div>
       </div>
@@ -30,8 +30,7 @@
       :collection="collection"
       :index="index"
       @create-clicked="createDocument"
-      :display-create="canCreateDocument(index, collection)"
-      :rights-on-document="rightsOnDocument">
+      :display-create="canCreateDocument(index, collection)">
 
       <div slot="emptySet" class="card-panel">
         <div v-if="isRealtimeCollection" class="row valign-bottom empty-set">
@@ -111,12 +110,6 @@
           return false
         }
         return this.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-      },
-      rightsOnDocument () {
-        return {
-          canDelete: this.canDeleteDocument(this.index, this.collection),
-          canEdit: this.canEditDocument(this.index, this.collection)
-        }
       }
     },
     methods: {

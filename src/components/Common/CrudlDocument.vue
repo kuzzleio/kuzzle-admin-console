@@ -45,7 +45,9 @@
 
           <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
                   @click.prevent="create",
-                  v-if="displayCreate">
+                  :class="!displayCreate ? 'disabled' : ''"
+                  :disabled="!displayCreate"
+                  title="{{displayCreate ? '' : 'You are not allowed to create a document in this collection'}}">
             <i class="fa fa-plus-circle left"></i>Create
           </button>
 
