@@ -122,9 +122,6 @@
           return false
         }
         return this.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-      },
-      showTooltip () {
-        return !this.canCreateDocument(this.index, this.collection)
       }
     },
     methods: {
