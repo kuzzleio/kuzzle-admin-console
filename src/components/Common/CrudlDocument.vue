@@ -54,7 +54,8 @@
           <button class="btn btn-small waves-effect waves-light"
                   :class="displayBulkDelete ? 'red' : 'disabled'"
                   :disabled="!displayBulkDelete"
-                  @click="$broadcast('modal-open', 'bulk-delete')">
+                  @click="$broadcast('modal-open', 'bulk-delete')"
+                  title="{{displayBulkDelete ? '' : 'You need to select at least one element'}}">
             <i class="fa fa-minus-circle left"></i>
             Delete
           </button>

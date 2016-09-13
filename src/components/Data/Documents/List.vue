@@ -42,7 +42,10 @@
               There is no persistent document in here because the collection <strong>{{collection}}</strong> is currently realtime-only.<br />
               <em>You can edit the collection and persist it.</em>
             </p>
-            <button v-link="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
+            <button :disabled="!canEditCollection(index, collection)"
+                    title="{{!canEditCollection(index, collection) ? 'You are not allowed to edit this collection' : ''}}"
+                    :class="!canEditCollection(index, collection) ? 'disabled' : ''"
+                    v-link="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-pencil left"></i>
               Edit the collection
@@ -59,9 +62,11 @@
               Here you'll see the documents in <strong>{{collection}}</strong> <br/>
               <em>Currently there is no document in this collection.</em>
             </p>
-            <button v-if="canCreateDocument(index, collection)"
+            <button :disabled="!canCreateDocument(index, collection)"
                     v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
-                    class="btn primary waves-effect waves-light">
+                    class="btn primary waves-effect waves-light"
+                    :class="!canCreateDocument(index, collection) ? 'disabled' : ''"
+                    title="{{!canCreateDocument(index, collection) ? 'You are not allowed to create documents in this collection' : ''}}">
               <i class="fa fa-plus-circle left"></i>
               Create a document
             </button>
@@ -78,7 +83,14 @@
   import Headline from '../../Materialize/Headline'
   import CollectionDropdown from '../Collections/Dropdown'
   import { listIndexesAndCollections } from '../../../vuex/modules/data/actions'
-  import { canSearchIndex, canSearchDocument, canCreateDocument, canDeleteDocument, canEditDocument } from '../../../services/userAuthorization'
+  import {
+    canSearchIndex,
+    canSearchDocument,
+    canCreateDocument,
+    canDeleteDocument,
+    canEditDocument,
+    canEditCollection
+  } from '../../../services/userAuthorization'
   import { indexesAndCollections } from '../../../vuex/modules/data/getters'
 
   export default {
@@ -110,6 +122,9 @@
           return false
         }
         return this.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
+      },
+      showTooltip () {
+        return !this.canCreateDocument(this.index, this.collection)
       }
     },
     methods: {
@@ -120,7 +135,8 @@
       canSearchDocument,
       canCreateDocument,
       canDeleteDocument,
-      canEditDocument
+      canEditDocument,
+      canEditCollection
     },
     route: {
       data () {

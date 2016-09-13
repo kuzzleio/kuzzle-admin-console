@@ -21,7 +21,7 @@
       </a>
       <a
         v-if="!canEdit"
-        title="You are not allowed to edit this document">
+        v-title="{active: !canEdit, title: 'You are not allowed to edit this document'}">
         <i class="fa fa-pencil disabled"></i>
       </a>
 
@@ -30,7 +30,7 @@
           <a
             v-bind:class="{'disabled': !canDelete}"
             @click="deleteDocument(document.id)"
-            title="{{canDelete ? '' : 'You are not allowed to delete this document'}}">
+            v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
             Delete
           </a>
         </li>
@@ -107,6 +107,7 @@
   import JsonFormatter from '../../../directives/json-formatter.directive'
   import Dropdown from '../../Materialize/Dropdown'
   import { canEditDocument, canDeleteDocument } from '../../../services/userAuthorization'
+  import title from '../../../directives/title.directive'
 
   export default {
     name: 'DocumentItem',
@@ -117,7 +118,8 @@
       isChecked: Boolean
     },
     directives: {
-      JsonFormatter
+      JsonFormatter,
+      title
     },
     components: {
       Dropdown
