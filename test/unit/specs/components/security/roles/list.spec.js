@@ -17,7 +17,7 @@ describe('Browse roles', () => {
 
     Browse = BrowseInjector({
       '../../Materialize/Headline': mockedComponent,
-      '../../Common/Browse': mockedComponent
+      '../../Common/List': mockedComponent
     })
 
     const App = Vue.extend({

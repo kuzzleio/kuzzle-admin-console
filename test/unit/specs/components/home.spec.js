@@ -1,12 +1,12 @@
 import Vue from 'vue'
-import store from '../../../../src/vuex/store'
+import VueRouter from 'vue-router'
 import { mockedComponent } from '../helper'
 const homeInjector = require('!!vue?inject!../../../../src/components/Home')
 
+Vue.use(VueRouter)
+
 describe('Home.vue tests', () => {
   let Home
-  let vm
-  let $broadcast
   let sandbox = sinon.sandbox.create()
 
   before(() => {
@@ -18,14 +18,6 @@ describe('Home.vue tests', () => {
         tokenValid: sandbox.stub().returns(false)
       }
     })
-
-    vm = new Vue({
-      template: '<div><home v-ref:home></home></div>',
-      components: { Home },
-      store
-    }).$mount()
-
-    $broadcast = sandbox.stub(vm.$refs.home, '$broadcast')
   })
 
   afterEach(() => sandbox.reset())
@@ -67,9 +59,10 @@ describe('Home.vue tests', () => {
   describe('methods tests', () => {
     describe('onLogin', () => {
       it('should close the login modal if value pass to false', () => {
-        vm.$refs.home.onLogin()
+        Home.methods.$broadcast = sandbox.stub()
+        Home.methods.onLogin()
 
-        expect($broadcast.calledWith('modal-close', 'tokenExpired')).to.be.ok
+        expect(Home.methods.$broadcast.calledWith('modal-close', 'tokenExpired')).to.be.ok
       })
     })
   })

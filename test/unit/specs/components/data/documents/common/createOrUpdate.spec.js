@@ -6,7 +6,7 @@ import Promise from 'bluebird'
 let CreateInjector = require('!!vue?inject!../../../../../../../src/components/Data/Documents/Common/CreateOrUpdate')
 let Create
 
-describe.only('createOrUpdate document tests', () => {
+describe('createOrUpdate document tests', () => {
   let sandbox
   let vm
   let dispatchSpy
@@ -47,21 +47,22 @@ describe.only('createOrUpdate document tests', () => {
       '../../../../vuex/modules/data/getters': {
         newDocument: sandbox.stub().returns(42)
       },
-      '../../../../services/objectHelper': {
-        mergeDeep: mergeDeepSpy,
-        formatType: formatTypeSpy
-      },
-      '../../../../services/documentFormat': {
-        getRefMappingFromPath: addAttributeFromPathSpy,
-        getUpdatedSchema: getUpdatedSchemaSpy
-      },
-      '../../../../directives/focus.directive': mockedDirective('focus'),
       'vue': {
         set: sandbox.stub()
       },
       '../../../Common/JsonEditor': mockedComponent,
       '../../../Materialize/Modal': mockedComponent,
-      '../../../../directives/Materialize/m-select.directive': mockedDirective('m-select')
+      '../../../../directives/Materialize/m-select.directive': mockedDirective('m-select'),
+      '../../../../services/documentFormat': {
+        getRefMappingFromPath: addAttributeFromPathSpy,
+        getUpdatedSchema: getUpdatedSchemaSpy
+      },
+      '../../../../services/objectHelper': {
+        mergeDeep: mergeDeepSpy,
+        formatType: formatTypeSpy
+      },
+      'bluebird': cb => cb(sinon.stub(), sinon.stub()),
+      '../../../../directives/focus.directive': mockedDirective('focus')
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
