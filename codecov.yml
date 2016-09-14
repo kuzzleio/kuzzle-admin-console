@@ -5,6 +5,8 @@ coverage:
     project:
       default:
         threshold: 1
+        paths:
+          - "!src/routes/subRoutes/*"
 
     patch:
       default:
