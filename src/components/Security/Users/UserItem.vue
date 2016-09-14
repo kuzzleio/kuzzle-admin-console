@@ -33,7 +33,7 @@
          <i class="fa fa-pencil"></i>
       </a>
       <a v-if="!canEditUser()"
-         v-title="{active: !canEdit, title: 'You are not allowed to edit this user'}">
+         v-title="{active: !canEditUser(), title: 'You are not allowed to edit this user'}">
          <i class="fa fa-pencil disabled"></i>
       </a>
       <dropdown :id="document.id" class="icon-black">

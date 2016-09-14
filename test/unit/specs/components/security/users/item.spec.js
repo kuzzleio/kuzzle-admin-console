@@ -1,10 +1,9 @@
 import Vue from 'vue'
-import UserItem from '../../../../../../src/components/Security/Users/UserItem'
 import VueRouter from 'vue-router'
 import { mockedComponent, mockedDirective } from '../../../helper'
 
 let UserItemInjector = require('!!vue?inject!../../../../../../src/components/Security/Users/UserItem')
-
+let UserItem
 let router
 
 describe('UserItem component', () => {
