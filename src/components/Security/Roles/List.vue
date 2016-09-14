@@ -9,7 +9,8 @@
       item-name="RoleItem"
       collection="roles"
       index="%kuzzle"
-      @create-clicked="createRole">
+      @create-clicked="createRole"
+      :display-create="canCreateRole()">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
