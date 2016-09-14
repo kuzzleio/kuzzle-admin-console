@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Dropdown from '../../../../../src/components/Materialize/Dropdown'
 
-describe.only('Materialize dropdown', () => {
+describe('Materialize dropdown', () => {
   let $vm
 
   before(() => {
