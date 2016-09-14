@@ -3,21 +3,7 @@
     <headline>Users Management</headline>
 
     <!-- Not allowed -->
-    <div class="card-panel" v-if="!canSearchUser()">
-      <div class="row valign-bottom empty-set empty-set-condensed">
-        <div class="col s1 offset-s1">
-          <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
-        </div>
-        <div class="col s10">
-          <p>
-            You are not allowed to access the users list<br>
-          </p>
-          <p>
-            <em>Learn more about security &amp; permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
-          </p>
-        </div>
-      </div>
-    </div>
+    <list-not-allowed v-if="!canSearchUser()"></list-not-allowed>
 
     <common-list
       v-if="canSearchUser()"
@@ -54,12 +40,14 @@
 
 <script>
   import CommonList from '../../Common/List'
+  import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
   import { canSearchUser, canCreateUser } from '../../../services/userAuthorization'
 
   export default {
     name: 'UsersList',
     components: {
+      ListNotAllowed,
       CommonList,
       Headline
     },
