@@ -24,7 +24,8 @@
       item-name="UserItem"
       collection="users"
       index="%kuzzle"
-      @create-clicked="createUser">
+      @create-clicked="createUser"
+      :display-create="canCreateUser()">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
