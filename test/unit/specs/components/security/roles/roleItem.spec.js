@@ -5,13 +5,18 @@ let RoleItemInjector = require('!!vue?inject!../../../../../../src/components/Se
 let RoleItem
 let sandbox = sinon.sandbox.create()
 
-describe('User item', () => {
+describe('Role item', () => {
   let vm
 
   before(() => {
     RoleItem = RoleItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective,
+      '../../../directives/title.directive': mockedDirective,
+      '../../../services/userAuthorization': {
+        canEditRole: sandbox.stub().returns(true),
+        canDeleteRole: sandbox.stub().returns(true)
+      }
     })
 
     vm = new Vue({
