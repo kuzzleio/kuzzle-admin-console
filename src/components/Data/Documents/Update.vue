@@ -17,6 +17,8 @@
     <create-or-update
       @document-create::create="update"
       @document-create::cancel="cancel"
+      @document-create::reset-error="error = null"
+      :error="error"
       :index="index"
       :collection="collection"
       :hide-id="true">
@@ -53,27 +55,42 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        error: '',
+        show: false
+      }
+    },
     methods: {
-      update (viewState, json) {
+      update (viewState, json, mapping) {
+        this.error = ''
+
         if (viewState === 'code') {
           if (!json) {
-            this.$dispatch('toast', 'Invalid document', 'error')
+            this.error = 'The document is invalid, please review it'
             return
           }
           this.setNewDocument(json)
         }
 
-        kuzzle
+        return kuzzle
           .dataCollectionFactory(this.collection, this.index)
-          .updateDocumentPromise(this.documentToEditId, this.newDocument)
+          .dataMappingFactory(mapping || {})
+          .applyPromise()
           .then(() => {
-            kuzzle.refreshIndex(this.index)
-            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+            return kuzzle
+              .dataCollectionFactory(this.collection, this.index)
+              .updateDocumentPromise(this.documentToEditId, this.newDocument)
+              .then(() => {
+                kuzzle.refreshIndex(this.index)
+                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+              })
+              .catch((err) => {
+                this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
+              })
           })
-          .catch((err) => {
-            if (err) {
-              this.$dispatch('toast', err.message, 'error')
-            }
+          .catch(err => {
+            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
           })
       },
       cancel () {
@@ -105,11 +122,6 @@
       getters: {
         newDocument,
         documentToEditId
-      }
-    },
-    data () {
-      return {
-        show: false
       }
     },
     ready () {

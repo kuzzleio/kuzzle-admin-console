@@ -7,6 +7,8 @@
     <create-or-update
       @document-create::create="create"
       @document-create::cancel="cancel"
+      @document-create::reset-error="error = ''"
+      :error="error"
       index="%kuzzle"
       collection="users">
     </create-or-update>
@@ -31,11 +33,18 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        error: ''
+      }
+    },
     methods: {
       create (viewState, json) {
+        this.error = ''
+
         if (viewState === 'code') {
           if (!json) {
-            this.$dispatch('toast', 'Invalid document', 'error')
+            this.error = 'The document is invalid, please review it'
             return
           }
           this.setNewDocument(json)
@@ -48,7 +57,7 @@
             kuzzle.refreshIndex('%kuzzle')
             this.$router.go({name: 'SecurityUsersList'})
           }).catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+            this.error = 'An error occurred while creating user: <br />' + err.message
           })
       },
       cancel () {

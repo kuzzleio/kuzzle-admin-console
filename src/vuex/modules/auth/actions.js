@@ -63,6 +63,7 @@ export const loginFromCookie = (store) => {
       store.dispatch(SET_CURRENT_USER, user)
       return Promise.resolve(user)
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const checkFirstAdmin = (store) => {
@@ -77,6 +78,7 @@ export const checkFirstAdmin = (store) => {
       store.dispatch(SET_ADMIN_EXISTS, true)
       return Promise.resolve()
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const setFirstAdmin = (store, exists) => {

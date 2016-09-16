@@ -153,7 +153,7 @@
             this.totalDocuments = res.total
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$dispatch('toast', 'An error occurred while performing search: <br />' + e.message, 'error')
           })
       }
     },

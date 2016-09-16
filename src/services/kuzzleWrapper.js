@@ -63,7 +63,7 @@ export const performSearch = (collection, index, filters = {}, pagination = {}, 
       .dataCollectionFactory(collection, index)
       .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
         if (error) {
-          return reject(error)
+          return reject(new Error(error.message))
         }
 
         let additionalAttributeName = null
@@ -106,8 +106,7 @@ export const deleteDocuments = (index, collection, ids) => {
       .dataCollectionFactory(collection, index)
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
         if (error) {
-          reject(error)
-          return
+          return reject(new Error(error.message))
         }
 
         kuzzle.refreshIndex(index, () => {

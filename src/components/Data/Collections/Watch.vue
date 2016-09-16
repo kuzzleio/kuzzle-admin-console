@@ -404,9 +404,16 @@
         this.notifications.push(this.notificationToMessage(result))
       },
       subscribe () {
-        return kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
+        console.log('???')
+        try {
+          return kuzzle
+            .dataCollectionFactory(this.collection, this.index)
+            .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
+        } catch (error) {
+          console.log('toto')
+        }
+
+        return null
       },
       unsubscribe (room) {
         this.warning.message = ''

@@ -86,18 +86,22 @@
 
           <!-- Actions -->
           <div class="row">
-            <div class="col s6">
+            <div class="col s5 m4 l4">
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
                 <button type="submit" class="btn primary waves-effect waves-light">
                   <i v-if="!collectionName" class="fa fa-plus-circle left"></i>
                   <i v-else class="fa fa-pencil left"></i>
                   {{collectionName ? 'Update' : 'Create'}}
                 </button>
-                <p class="error">{{error}}</p>
+            </div>
+            <div class="col s7 m8 l8" v-if="error">
+              <div class="card error red white-text">
+                <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+                An error occurred while {{collectionName ? 'updating' : 'creating'}} collection: <br>{{error}}
+              </div>
             </div>
           </div>
         </form>
-
       </div>
     </div>
   </div>
@@ -111,8 +115,25 @@
   .pre_ace {
     min-height: 300px;
   }
+  .actions {
+    margin-left: 0 !important;
+    margin-right: auto;
+  }
   .error {
-    color: #d54f58
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .2);
+    }
   }
 </style>
 
@@ -133,6 +154,7 @@
       Focus
     },
     props: {
+      error: String,
       index: String,
       headline: String
     },
@@ -148,7 +170,6 @@
     },
     data () {
       return {
-        error: '',
         name: null,
         isRealtimeOnly: false,
         settingsOpen: false
@@ -162,6 +183,9 @@
     methods: {
       create () {
         this.$dispatch('collection-create::create', this.name || this.collectionName, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
+      },
+      dismissError () {
+        this.$dispatch('collection-create::reset-error')
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {

@@ -8,7 +8,7 @@ import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 
 window.jQuery = window.$ = require('jquery')
-require('materialize-css/dist/js/materialize')
+require('imports?$=jquery!materialize-css/dist/js/materialize')
 
 import 'font-awesome/css/font-awesome.css'
 

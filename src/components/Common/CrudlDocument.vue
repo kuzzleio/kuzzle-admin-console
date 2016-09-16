@@ -90,7 +90,7 @@
     </modal>
 
     <modal id="single-delete">
-      <h4>Delete user</h4>
+      <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
@@ -143,7 +143,7 @@
       paginationFrom: Number,
       paginationSize: Number,
       searchTerm: String,
-      rawFilter: String,
+      rawFilter: Object,
       basicFilter: Array,
       sorting: Object,
       availableFilters: Object
@@ -171,20 +171,20 @@
         this.$router.go({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
-        this.$broadcast('modal-close', 'bulk-delete')
         deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
+            this.$broadcast('modal-close', 'bulk-delete')
           })
           .catch((e) => {
             this.$dispatch('toast', e.message, 'error')
           })
       },
       confirmSingleDelete (id) {
-        this.$broadcast('modal-close', 'single-delete')
         deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
+            this.$broadcast('modal-close', 'single-delete')
           })
           .catch((e) => {
             this.$dispatch('toast', e.message, 'error')

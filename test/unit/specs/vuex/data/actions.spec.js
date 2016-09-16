@@ -101,18 +101,21 @@ describe('listIndexesAndCollections action', () => {
     // eslint-disable-next-line no-undef
     localStorage.getItem = sandbox.stub(localStorage, 'getItem').returns(undefined)
     testAction(actions.listIndexesAndCollections, [], {}, [
-      {name: 'RECEIVE_INDEXES_COLLECTIONS', payload: [
-        {
-          index1: {
-            stored: ['collection1', 'collection2'],
-            realtime: []
-          },
-          index2: {
-            stored: ['collection1', 'collection2'],
-            realtime: []
+      {
+        name: 'RECEIVE_INDEXES_COLLECTIONS',
+        payload: [
+          {
+            index1: {
+              stored: ['collection1', 'collection2'],
+              realtime: []
+            },
+            index2: {
+              stored: ['collection1', 'collection2'],
+              realtime: []
+            }
           }
-        }
-      ]}
+        ]
+      }
     ], done)
   })
 })

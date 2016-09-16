@@ -45,7 +45,7 @@
   export default {
     props: ['id', 'class'],
     ready () {
-      /*eslint no-undef: 0*/
+      /* eslint no-undef: 0 */
       $(this.$el).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})
     }
   }
