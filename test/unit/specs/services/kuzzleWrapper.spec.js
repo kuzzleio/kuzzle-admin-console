@@ -44,15 +44,18 @@ describe('Kuzzle wrapper service', () => {
       })
     })
 
-    it('should do nothing as there is no collection nor index', () => {
+    it('should reject a promise as there is no collection nor index', (done) => {
       kuzzleWrapper.performSearch()
+        .then(() => {})
+        .catch(err => {
+          expect(err.message).to.equals('Missing collection or index')
+          done()
+        })
     })
 
     it('should reject a promise', (done) => {
       kuzzleWrapper.performSearch('collection', 'index')
-        .then(() => {
-
-        })
+        .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
           done()
@@ -66,6 +69,7 @@ describe('Kuzzle wrapper service', () => {
           expect(res).to.deep.equals(fakeResponse)
           done()
         })
+        .catch((e) => done(e))
     })
 
     it('should receive sorted documents with additional attributes for the sort array', (done) => {
@@ -74,13 +78,8 @@ describe('Kuzzle wrapper service', () => {
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
-        })
+        }).catch(() => {})
     })
-    //
-    // it('should receive sorted documents with additional attributes for the sort string', (done) => {
-    //   triggerError = false
-    //   testActionPromise(kuzzleWrapper.performSearch, ['fake', 'fake', {}, {}, ['name.first']], {}, [], done)
-    // })
   })
 
   describe('deleteDocuments tests', () => {
@@ -114,9 +113,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should reject a promise', (done) => {
       kuzzleWrapper.deleteDocuments('index', 'collection', [42])
-        .then(() => {
-
-        })
+        .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
           done()

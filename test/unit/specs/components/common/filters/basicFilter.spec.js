@@ -8,13 +8,20 @@ describe('Basic filter component', () => {
 
   before(() => {
     vm = new Vue({
-      template: '<div><basic-filter v-ref:basic :set-basic-filter="setBasicFilter"></basic-filter></div>',
+      template: `<div>
+          <basic-filter 
+            v-ref:basic 
+            :set-basic-filter="setBasicFilter"
+            :available-filters="availableFilters">
+          </basic-filter>
+        </div>`,
       components: {
         BasicFilter
       },
       data () {
         return {
-          setBasicFilter: setBasicFilterSpy
+          setBasicFilter: setBasicFilterSpy,
+          availableFilters: {}
         }
       }
     }).$mount()
@@ -206,9 +213,19 @@ describe('Basic filter component', () => {
       BasicFilter.methods.updateFilter = sandbox.spy()
 
       vm = new Vue({
-        template: '<div><basic-filter v-ref:basic></basic-filter></div>',
+        template: `<div>
+            <basic-filter 
+              :available-filters="availableFilters"
+              v-ref:basic>
+            </basic-filter>
+          </div>`,
         components: {
           BasicFilter
+        },
+        data () {
+          return {
+            availableFilters: {}
+          }
         }
       }).$mount('app')
 
@@ -225,14 +242,22 @@ describe('Basic filter component', () => {
       BasicFilter.methods.updateFilter = sandbox.spy()
 
       vm = new Vue({
-        template: '<div><basic-filter v-ref:basic :basic-filter="basicFilterProps" :sorting="sortingProps"></basic-filter></div>',
+        template: `<div>
+            <basic-filter 
+              v-ref:basic 
+              :basic-filter="basicFilterProps" 
+              :available-filters="availableFilters"
+              :sorting="sortingProps">
+            </basic-filter>
+          </div>`,
         components: {
           BasicFilter
         },
         data () {
           return {
             basicFilterProps,
-            sortingProps
+            sortingProps,
+            availableFilters: {}
           }
         }
       }).$mount('app')

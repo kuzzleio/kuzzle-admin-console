@@ -11,8 +11,8 @@ describe('Profile item', () => {
   before(() => {
     ProfileItem = ProfileItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective,
-      '../../../directives/title.directive': mockedDirective,
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/title.directive': mockedDirective('title'),
       '../../../services/userAuthorization': {
         canEditProfile: sandbox.stub().returns(true),
         canDeleteProfile: sandbox.stub().returns(true)

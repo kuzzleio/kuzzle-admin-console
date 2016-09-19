@@ -20,7 +20,7 @@ describe('List indexes tests', () => {
       '../../Materialize/Headline': mockedComponent,
       './ModalCreate': mockedComponent,
       './Boxed': mockedComponent,
-      '../../../directives/title.directive': mockedDirective,
+      '../../../directives/title.directive': mockedDirective('title'),
       '../../../vuex/modules/data/actions': {
         listIndexesAndCollections
       },

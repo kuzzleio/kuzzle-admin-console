@@ -14,8 +14,8 @@ describe('Document item', () => {
   beforeEach(() => {
     DocumentItem = DocumentItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective,
-      '../../../directives/focus.directive': mockedDirective,
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/focus.directive': mockedDirective('focus'),
       '../../../services/userAuthorization': {
         canEditDocument: sandbox.stub().returns(true),
         canDeleteDocument: sandbox.stub().returns(true)

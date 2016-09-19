@@ -11,8 +11,8 @@ describe('Role item', () => {
   before(() => {
     RoleItem = RoleItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective,
-      '../../../directives/title.directive': mockedDirective,
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/title.directive': mockedDirective('title'),
       '../../../services/userAuthorization': {
         canEditRole: sandbox.stub().returns(true),
         canDeleteRole: sandbox.stub().returns(true)
