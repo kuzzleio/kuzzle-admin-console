@@ -68,7 +68,8 @@ describe('Kuzzle wrapper service', () => {
         .then(res => {
           expect(res).to.deep.equals(fakeResponse)
           done()
-        }).catch(() => {})
+        })
+        .catch((e) => done(e))
     })
 
     it('should receive sorted documents with additional attributes for the sort array', (done) => {
