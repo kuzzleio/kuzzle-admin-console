@@ -5,14 +5,22 @@ import Promise from 'bluebird'
 import {mockedComponent} from '../helper'
 const loginInjector = require('!!vue?inject!../../../../src/components/Login')
 
+let onLogin
+
 describe('LoginForm.vue', () => {
   describe('methods Tests', () => {
     let vm
+    onLogin = sinon.spy()
 
     beforeEach(() => {
       vm = new Vue({
-        template: '<div><login-form v-ref:form></login-form></div>',
+        template: '<div><login-form v-ref:form :on-login="onLogin"></login-form></div>',
         components: {LoginForm},
+        data () {
+          return {
+            onLogin
+          }
+        },
         replace: false,
         store: store
       }).$mount()
@@ -30,13 +38,12 @@ describe('LoginForm.vue', () => {
       })
 
       it('should call onLogin callback if success', (done) => {
-        vm.$refs.form.onLogin = sinon.spy()
         vm.$refs.form.doLogin = sinon.stub().returns(Promise.resolve())
         vm.$refs.form.login()
 
         setTimeout(() => {
-          expect(vm.$refs.form.onLogin.called).to.be.ok
-          expect(vm.$refs.form.error).to.be.null
+          expect(onLogin.called).to.be.ok
+          expect(vm.$refs.form.error).to.be.equal('')
           done()
         }, 0)
       })

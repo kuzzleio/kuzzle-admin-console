@@ -85,14 +85,14 @@ describe('Update collection component test', () => {
         }, 0)
       })
 
-      it('should call toaster with error if kuzzle reject', (done) => {
-        let kuzzleStub = sandbox.stub().returns(Promise.reject(new Error('Kuzzle error')))
+      it('should set error if kuzzle reject', (done) => {
+        let kuzzleStub = sandbox.stub().returns(Promise.reject(new Error('kuzzle error')))
         mockInjector(kuzzleStub)
 
         $vm.update('toto', {}, false)
 
         setTimeout(() => {
-          expect($dispatch.calledWith('toast', 'Kuzzle error', 'error')).to.be.equal(true)
+          expect($vm.error).to.be.equal('kuzzle error')
           done()
         }, 0)
       })
