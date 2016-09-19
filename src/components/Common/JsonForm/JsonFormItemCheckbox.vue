@@ -1,7 +1,7 @@
 <template>
   <div class="row input-field">
-    <input class="filled-in" :id="name" type="checkbox" v-model="value" :value="content" :checked="value" />
-    <label :for="name">{{name}}</label>
+    <input class="filled-in" :id="fullName" type="checkbox" v-model="value" :value="content" :checked="value" />
+    <label :for="fullName">{{name}}</label>
   </div>
 </template>
 
