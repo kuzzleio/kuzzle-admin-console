@@ -2,19 +2,19 @@
 
   <aside>
     <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
-      <li v-link-active class="bold">
+      <li v-if="canManageUsers()" v-link-active class="bold">
         <a v-link="{name: 'SecurityUsersList', activeClass: 'active'}" class="waves-effect">
           <i class="fa fa-user" aria-hidden="true"></i>
           <span>Users</span>
         </a>
       </li>
-      <li v-link-active class="bold">
+      <li v-if="canManageProfiles()" v-link-active class="bold">
         <a v-link="{name: 'SecurityProfilesList', activeClass: 'active'}" class="waves-effect">
           <i class="fa fa-users" aria-hidden="true"></i>
           <span>Profiles</span>
         </a>
       </li>
-      <li v-link-active class="bold">
+      <li v-if="canManageRoles()" v-link-active class="bold">
         <a v-link="{name: 'SecurityRolesList', activeClass: 'active'}" class="waves-effect">
           <i class="fa fa-unlock-alt" aria-hidden="true"></i>
           <span>Roles</span>
@@ -53,7 +53,14 @@
 </style>
 
 <script>
+  import { canManageUsers, canManageRoles, canManageProfiles } from '../../services/userAuthorization'
+
   export default {
-    name: 'SecurityLayout'
+    name: 'SecurityLayout',
+    methods: {
+      canManageUsers,
+      canManageRoles,
+      canManageProfiles
+    }
   }
 </script>

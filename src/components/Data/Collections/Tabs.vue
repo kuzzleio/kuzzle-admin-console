@@ -12,7 +12,13 @@
         </a>
       </li>
       <li :class="{active: isRouteActive('DataCreateDocument')}">
-        <a href="#!" v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
+        <a v-if="canCreateDocument(selectedIndex, selectedCollection)"
+          href="#!" v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
+          Create a document
+        </a>
+        <a v-if="!canCreateDocument(selectedIndex, selectedCollection)"
+           class="disabled"
+           title="You are not allowed to create a document in this collection">
           Create a document
         </a>
       </li>
@@ -33,6 +39,10 @@
       &:hover {
         border-bottom: solid 2px #CCC;
       }
+
+      &.disabled {
+        color: #9f9f9f;
+      }
     }
     &.active {
       a {
@@ -43,7 +53,8 @@
 </style>
 
 <script>
-  import {routeName, selectedIndex, selectedCollection} from '../../../vuex/modules/data/getters'
+  import { routeName, selectedIndex, selectedCollection } from '../../../vuex/modules/data/getters'
+  import { canCreateDocument } from '../../../services/userAuthorization'
 
   export default {
     name: 'CollectionTabs',
@@ -54,7 +65,8 @@
         }
 
         return this.routeName === routeName
-      }
+      },
+      canCreateDocument
     },
     vuex: {
       getters: {

@@ -15,9 +15,14 @@ describe('Filter main component', () => {
   describe('Watchers', () => {
     before(() => {
       vm = new Vue({
-        template: '<div><filter v-ref:filter></filter></div>',
+        template: '<div><filter v-ref:filter :available-filters="availableFilters"></filter></div>',
         components: {
           Filter
+        },
+        data () {
+          return {
+            availableFilters: {}
+          }
         }
       }).$mount()
     })
@@ -48,9 +53,14 @@ describe('Filter main component', () => {
   describe('Events', () => {
     before(() => {
       vm = new Vue({
-        template: '<div><filter v-ref:filter></filter></div>',
+        template: '<div><filter v-ref:filter :available-filters="availableFilters"></filter></div>',
         components: {
           Filter
+        },
+        data () {
+          return {
+            availableFilters: {}
+          }
         }
       }).$mount()
     })
@@ -79,9 +89,14 @@ describe('Filter main component', () => {
   describe('Methods', () => {
     before(() => {
       vm = new Vue({
-        template: '<div><filter v-ref:filter></filter></div>',
+        template: '<div><filter v-ref:filter :available-filters="availableFilters"></filter></div>',
         components: {
           Filter
+        },
+        data () {
+          return {
+            availableFilters: {}
+          }
         }
       }).$mount()
     })

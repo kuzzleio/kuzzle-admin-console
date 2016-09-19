@@ -2,11 +2,16 @@
   <div>
     <headline>Users Management</headline>
 
+    <!-- Not allowed -->
+    <list-not-allowed v-if="!canSearchUser()"></list-not-allowed>
+
     <common-list
+      v-if="canSearchUser()"
       item-name="UserItem"
       collection="users"
       index="%kuzzle"
-      @create-clicked="createUser">
+      @create-clicked="createUser"
+      :display-create="canCreateUser()">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
@@ -18,7 +23,10 @@
               Here you'll see the kuzzle's users<br/>
               <em>Currently there is no user.</em>
             </p>
-            <button v-link="{name: 'SecurityUsersCreate'}"
+            <button :disabled="!canCreateUser()"
+                    :class="!canCreateUser() ? 'disabled' : ''"
+                    title="{{!canCreateUser() ? 'You are not allowed to create new users' : ''}}"
+                    v-link="{name: 'SecurityUsersCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a user
@@ -32,18 +40,23 @@
 
 <script>
   import CommonList from '../../Common/List'
+  import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
+  import { canSearchUser, canCreateUser } from '../../../services/userAuthorization'
 
   export default {
     name: 'UsersList',
     components: {
+      ListNotAllowed,
       CommonList,
       Headline
     },
     methods: {
       createUser () {
         this.$router.go({name: 'SecurityUsersCreate'})
-      }
+      },
+      canSearchUser,
+      canCreateUser
     },
     route: {
       data () {

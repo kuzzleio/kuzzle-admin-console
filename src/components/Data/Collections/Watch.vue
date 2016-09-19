@@ -186,7 +186,6 @@
 <script>
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
-  import JsonFormatter from '../../../directives/json-formatter.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
   import jQueryCollapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
@@ -197,7 +196,7 @@
   import { setBasicFilter } from '../../../vuex/modules/common/crudlDocument/actions'
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
-  import {canSubscribe} from '../../../services/userAuthorization'
+  import { canSubscribe } from '../../../services/userAuthorization'
 
   export default {
     name: 'CollectionWatch',
@@ -253,7 +252,6 @@
     },
     directives: [
       jQueryCollapsible,
-      JsonFormatter,
       ScrollGlue
     ],
     components: {

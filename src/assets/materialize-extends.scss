@@ -198,3 +198,8 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
 .modal .modal-footer .btn-flat {
   font-size: 1rem;
 }
+
+.disabled,
+.dropdown-content li > a.disabled {
+  color: $disabled-color;
+}

@@ -56,21 +56,7 @@
 
         <div class="row list">
           <!-- Not allowed -->
-          <div class="card-panel" v-if="!canSearchCollection(index)">
-            <div class="row valign-bottom empty-set empty-set-condensed">
-              <div class="col s1 offset-s1">
-                <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
-              </div>
-              <div class="col s10">
-                <p>
-                  You are not allowed to list collections in index <strong>{{index}}</strong><br>
-                </p>
-                <p>
-                  <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
-                </p>
-              </div>
-            </div>
-          </div>
+          <list-not-allowed v-if="!canSearchCollection(index)"></list-not-allowed>
 
           <!-- No Collection -->
           <div class="card-panel" v-if="canSearchCollection(index) && !collectionCount">
@@ -163,6 +149,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import IndexDropdown from './Dropdown'
+  import ListNotAllowed from '../../Common/ListNotAllowed'
   import CollectionBoxed from '../Collections/Boxed'
   import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
@@ -176,6 +163,7 @@
     },
     components: {
       Headline,
+      ListNotAllowed,
       CollectionBoxed,
       IndexDropdown
     },

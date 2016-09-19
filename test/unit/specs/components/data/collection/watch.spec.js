@@ -1,46 +1,17 @@
 import Vue from 'vue'
 import { mockedComponent, mockedDirective } from '../../../helper'
-import SubscriptionControls from '../../../../../../src/components/Data/Realtime/SubscriptionControls'
 import Notification from '../../../../../../src/components/Data/Realtime/Notification'
 import store from '../../../../../../src/vuex/store'
 import lolex from 'lolex'
 
 let WatchLayoutInjector = require('!!vue?inject!../../../../../../src/components/Data/Collections/Watch')
 
-describe('SubscriptionControls tests', () => {
-  let vm
-
-  beforeEach(() => {
-    vm = new Vue({
-      template: '<div><subscription-controls v-ref:controls></subscription-controls></div>',
-      components: { SubscriptionControls },
-      replace: false,
-      store: store
-    }).$mount()
-  })
-
-  it('toggleSubscription: should dispach realtime-toggle-subscription event', () => {
-    vm.$refs.controls.$dispatch = sinon.spy()
-
-    vm.$refs.controls.toggleSubscription()
-
-    expect(vm.$refs.controls.$dispatch.calledWith('realtime-toggle-subscription')).to.be.ok
-  })
-
-  it('clear: should dispach realtime-clear-messages event', () => {
-    vm.$refs.controls.$dispatch = sinon.spy()
-
-    vm.$refs.controls.clear()
-
-    expect(vm.$refs.controls.$dispatch.calledWith('realtime-clear-messages')).to.be.ok
-  })
-})
 describe('WatchData tests', () => {
   let WatchLayout = WatchLayoutInjector({
     './Tabs': mockedComponent,
-    '../../../directives/json-formatter.directive': mockedDirective,
-    '../../../directives/scroll-glue.directive': mockedDirective,
-    '../../../directives/Materialize/collapsible.directive': mockedDirective,
+    '../../Materialize/Headline': mockedComponent,
+    '../../../directives/scroll-glue.directive': mockedDirective('scroll-glue'),
+    '../../../directives/Materialize/collapsible.directive': mockedDirective('collapsible'),
     '../Realtime/Notification': mockedComponent,
     '../Realtime/SubscriptionControls': mockedComponent,
     '../Collections/Dropdown': mockedComponent,
@@ -49,7 +20,7 @@ describe('WatchData tests', () => {
     '../../../vuex/modules/common/crudlDocument/actions': {
       setBasicFilter: sinon.stub()
     },
-    '../../../vuex/modules/list/getters': {
+    '../../../vuex/modules/common/crudlDocument/getters': {
       rawFilter: sinon.stub(),
       basicFilter: sinon.stub(),
       basicFilterForm: sinon.stub()

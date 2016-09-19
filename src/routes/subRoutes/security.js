@@ -1,4 +1,12 @@
 /* istanbul ignore next */
+import {
+  canCreateUser,
+  canEditUser,
+  canCreateRole,
+  canEditRole,
+  canCreateProfile,
+  canEditProfile
+} from '../../services/userAuthorization'
 
 export default {
   '/users': {
@@ -10,13 +18,21 @@ export default {
   '/users/create': {
     name: 'SecurityUsersCreate',
     component (resolve) {
-      require(['../../components/Security/Users/Create'], resolve)
+      if (!canCreateUser()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Security/Users/Create'], resolve)
+      }
     }
   },
   '/users/:id': {
     name: 'SecurityUsersUpdate',
     component (resolve) {
-      require(['../../components/Security/Users/Update'], resolve)
+      if (!canEditUser()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Security/Users/Update'], resolve)
+      }
     }
   },
   '/profiles': {
@@ -28,13 +44,21 @@ export default {
   '/profiles/create': {
     name: 'SecurityProfilesCreate',
     component (resolve) {
-      require(['../../components/Security/Profiles/Create'], resolve)
+      if (!canCreateProfile()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Security/Profiles/Create'], resolve)
+      }
     }
   },
   '/profiles/:id': {
     name: 'SecurityProfilesUpdate',
     component (resolve) {
-      require(['../../components/Security/Profiles/Update'], resolve)
+      if (!canEditProfile()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Security/Profiles/Update'], resolve)
+      }
     }
   },
   '/roles': {
@@ -46,13 +70,21 @@ export default {
   '/roles/create': {
     name: 'SecurityRolesCreate',
     component (resolve) {
-      require(['../../components/Security/Roles/Create'], resolve)
+      if (!canCreateRole()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Security/Roles/Create'], resolve)
+      }
     }
   },
   '/roles/:id': {
     name: 'SecurityRolesUpdate',
     component (resolve) {
-      require(['../../components/Security/Roles/Update'], resolve)
+      if (!canEditRole()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Security/Roles/Update'], resolve)
+      }
     }
   }
 }

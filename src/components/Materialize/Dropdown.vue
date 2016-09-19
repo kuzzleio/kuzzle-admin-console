@@ -1,8 +1,8 @@
 <template>
   <span :class="class">
-    <a class="action dropdown-button fa fa-ellipsis-v" data-activates="{{id}}"></a>
+    <a class="action dropdown-button fa fa-ellipsis-v" data-activates="{{parsedId}}"></a>
 
-    <ul id="{{id}}" class='dropdown-content'>
+    <ul :id="id" class='dropdown-content'>
       <slot></slot>
     </ul>
   </span>
@@ -44,6 +44,17 @@
 <script>
   export default {
     props: ['id', 'class'],
+    computed: {
+      parsedId () {
+        if (!this.id) {
+          return null
+        }
+
+        let parsed = this.id
+
+        return parsed.replace(/[!"#$%&'()*_+,./:;<=>?@[\]^`{|}~]/g, '\\$&')
+      }
+    },
     ready () {
       /* eslint no-undef: 0 */
       $(this.$el).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})

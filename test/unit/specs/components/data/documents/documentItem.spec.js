@@ -14,8 +14,12 @@ describe('Document item', () => {
   beforeEach(() => {
     DocumentItem = DocumentItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective,
-      '../../../directives/focus.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/focus.directive': mockedDirective('focus'),
+      '../../../services/userAuthorization': {
+        canEditDocument: sandbox.stub().returns(true),
+        canDeleteDocument: sandbox.stub().returns(true)
+      }
     })
 
     Vue.use(VueRouter)
@@ -25,7 +29,7 @@ describe('Document item', () => {
     })
 
     component = Vue.extend({
-      template: '<document-item v-ref:item :document="document"></document-item>',
+      template: '<document-item v-ref:item :document="document" index="foo", collection="bar"></document-item>',
       components: { DocumentItem },
       data () {
         return {
@@ -74,6 +78,13 @@ describe('Document item', () => {
       vm.$refs.item.deleteDocument()
 
       expect(vm.$refs.item.$dispatch.calledWith('delete-document', 'document-id')).to.equal(true)
+    })
+
+    it('canEdit and canDelete should be false if index and collection props are missing', () => {
+      vm.$refs.item.collection = vm.$refs.item.index = undefined
+
+      expect(vm.$refs.item.canDelete).to.equal(false)
+      expect(vm.$refs.item.canEdit).to.equal(false)
     })
   })
 })
