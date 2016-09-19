@@ -11,7 +11,12 @@ describe('Profile item', () => {
   before(() => {
     ProfileItem = ProfileItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter')
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/title.directive': mockedDirective('title'),
+      '../../../services/userAuthorization': {
+        canEditProfile: sandbox.stub().returns(true),
+        canDeleteProfile: sandbox.stub().returns(true)
+      }
     })
 
     vm = new Vue({

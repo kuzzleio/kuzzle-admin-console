@@ -130,6 +130,7 @@ export const canManageDocuments = (index, collection) => {
     canCreateDocument(index, collection) ||
     canDeleteDocument(index, collection)
 }
+
 export const canManageRoles = () => {
   return canReadRole() ||
     canSearchRole() ||

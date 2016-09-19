@@ -1,3 +1,10 @@
+import {
+  canCreateCollection,
+  canEditCollection,
+  canCreateDocument,
+  canEditDocument
+} from '../../services/userAuthorization'
+
 export default {
   // Indexes routes
   '/': {
@@ -15,7 +22,11 @@ export default {
   '/:index/create': {
     name: 'DataCreateCollection',
     component (resolve) {
-      require(['../../components/Data/Collections/Create'], resolve)
+      if (!canCreateCollection()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Data/Collections/Create'], resolve)
+      }
     }
   },
   '/:index/:collection/watch': {
@@ -27,7 +38,11 @@ export default {
   '/:index/:collection/edit': {
     name: 'DataCollectionEdit',
     component (resolve) {
-      require(['../../components/Data/Collections/Update'], resolve)
+      if (!canEditCollection()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Data/Collections/Update'], resolve)
+      }
     }
   },
   '/:index/:collection': {
@@ -39,13 +54,21 @@ export default {
   '/:index/:collection/create': {
     name: 'DataCreateDocument',
     component (resolve) {
-      require(['../../components/Data/Documents/Create'], resolve)
+      if (!canCreateDocument()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Data/Documents/Create'], resolve)
+      }
     }
   },
   '/:index/:collection/update/:id': {
     name: 'DataUpdateDocument',
     component (resolve) {
-      require(['../../components/Data/Documents/Update'], resolve)
+      if (!canEditDocument()) {
+        require(['../../components/Common/PageNotAllowed'], resolve)
+      } else {
+        require(['../../components/Data/Documents/Update'], resolve)
+      }
     }
   }
 }

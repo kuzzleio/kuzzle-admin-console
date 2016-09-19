@@ -196,7 +196,7 @@
   import { setBasicFilter } from '../../../vuex/modules/common/crudlDocument/actions'
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
-  import {canSubscribe} from '../../../services/userAuthorization'
+  import { canSubscribe } from '../../../services/userAuthorization'
 
   export default {
     name: 'CollectionWatch',

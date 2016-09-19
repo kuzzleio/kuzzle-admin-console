@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Promise from 'bluebird'
-import { mockedComponent } from '../../../helper'
+import { mockedComponent, mockedDirective } from '../../../helper'
 import store from '../../../../../../src/vuex/store'
 
 let ModalDeleteInjector = require('!!vue?inject!../../../../../../src/components/Data/Indexes/ModalDelete')
@@ -8,8 +8,14 @@ let ModalDeleteInjector = require('!!vue?inject!../../../../../../src/components
 let sandbox = sinon.sandbox.create()
 
 describe('ModalDelete tests', () => {
+  let removeIndex = sandbox.stub()
   let ModalDelete = ModalDeleteInjector({
-    '../../Materialize/Modal': mockedComponent
+    '../../Materialize/Modal': mockedComponent,
+    '../../../directives/focus.directive': mockedDirective,
+    '../../../directives/title.directive': mockedDirective,
+    '../../../services/localStore': {
+      removeIndex
+    }
   })
 
   describe('ModalDelete layout display', () => {
@@ -40,13 +46,14 @@ describe('ModalDelete tests', () => {
         }, 0)
       })
 
-      it('should call the createIndex method', (done) => {
+      it('should call the deleteIndex method', (done) => {
         vm.deleteIndex = sandbox.stub(vm, 'deleteIndex').returns(Promise.resolve())
 
         vm.tryDeleteIndex('testIndex')
 
         setTimeout(() => {
           expect(vm.deleteIndex.calledWith('testIndex'), 'delete index called').to.be.ok
+          expect(removeIndex.calledWith('testIndex')).to.be.equal(true)
           done()
         }, 0)
       })

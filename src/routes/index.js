@@ -3,6 +3,7 @@ import Signup from '../components/Signup'
 import NotFound from '../components/404'
 import store from '../vuex/store'
 import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
+import {hasSecurityRights} from '../services/userAuthorization'
 import {kuzzleIsConnected} from '../vuex/modules/common/kuzzle/getters'
 
 import SecuritySubRoutes from './subRoutes/security'
@@ -21,7 +22,11 @@ export default function createRoutes (router) {
         '/security': {
           name: 'Security',
           component (resolve) {
-            require(['../components/Security/Layout'], resolve)
+            if (!hasSecurityRights()) {
+              require(['../components/Common/PageNotAllowed'], resolve)
+            } else {
+              require(['../components/Security/Layout'], resolve)
+            }
           },
           subRoutes: SecuritySubRoutes
         },

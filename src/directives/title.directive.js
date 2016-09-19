@@ -7,8 +7,11 @@ export default {
       this.el.setAttribute('data-delay', '50')
       this.el.setAttribute('data-tooltip', value.title)
 
-      // eslint-disable-next-line no-undef
+      /* eslint no-undef: 0 */
       $(this.el).tooltip()
+      $(this.el).on('click', () => {
+        $(this.el).tooltip('remove')
+      })
     }
   }
 }
