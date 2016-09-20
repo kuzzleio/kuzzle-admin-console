@@ -290,8 +290,7 @@
       },
       toggleSubscription () {
         if (!this.subscribed) {
-          this.subscribed = true
-          this.room = this.subscribe(this.filters, this.index, this.collection)
+          this.subscribe(this.filters, this.index, this.collection)
         } else {
           this.subscribed = false
           this.unsubscribe(this.room)
@@ -402,16 +401,19 @@
         this.notifications.push(this.notificationToMessage(result))
       },
       subscribe () {
-        console.log('???')
-        try {
-          return kuzzle
-            .dataCollectionFactory(this.collection, this.index)
-            .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
-        } catch (error) {
-          console.log('toto')
-        }
-
-        return null
+        return kuzzle
+          .dataCollectionFactory(this.collection, this.index)
+          .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
+          .onDone((err, room) => {
+            if (err) {
+              this.room = null
+              this.subscribed = false
+              this.$dispatch('toast', err.message, 'error')
+            } else {
+              this.subscribed = true
+              this.room = room
+            }
+          })
       },
       unsubscribe (room) {
         this.warning.message = ''
