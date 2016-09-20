@@ -1,29 +1,40 @@
 import Kuzzle from 'kuzzle-sdk/dist/kuzzle'
-import config from '../../config'
 import Promise from 'bluebird'
+Kuzzle.prototype.bluebird = Promise
+
+const defaultConfig = {
+  host: 'localhost',
+  ioPort: 7512,
+  wsPort: 7513
+}
 
 let kuzzle
 
-Kuzzle.prototype.bluebird = Promise
+const instantiate = (config = defaultConfig) => {
+  if (!window.WebSocket) {
+    console.warn('No WebSocket support found on current browser, falling back to Socket.io')
+    kuzzle = new Kuzzle(config.host, {
+      connect: 'manual',
+      ioPort: config.ioPort,
+      wsPort: config.wsPort
+    })
+    require(['socket.io-client'], function (socketio) {
+      window.io = socketio
+      kuzzle.connect()
+    })
+  } else {
+    kuzzle = new Kuzzle(config.host, {
+      ioPort: config.ioPort,
+      wsPort: config.wsPort
+    })
+  }
 
-if (!window.WebSocket) {
-  console.warn('No WebSocket support found on current browser, falling back to Socket.io')
-  kuzzle = new Kuzzle(config.backend.host, {
-    connect: 'manual',
-    ioPort: config.backend.ioPort,
-    wsPort: config.backend.wsPort
-  })
-  require(['socket.io-client'], function (socketio) {
-    window.io = socketio
-    kuzzle.connect()
-  })
-} else {
-  kuzzle = new Kuzzle(config.backend.host, {
-    ioPort: config.backend.ioPort,
-    wsPort: config.backend.wsPort
-  })
+  window.kuzzle = kuzzle
+  return kuzzle
 }
 
-window.kuzzle = kuzzle
+export const switchEnvironment = (config = defaultConfig) => {
 
-export default kuzzle
+}
+
+export default kuzzle || instantiate()
