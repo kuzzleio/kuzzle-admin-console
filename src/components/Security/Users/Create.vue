@@ -8,6 +8,7 @@
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = ''"
+      :mandatory-id="true"
       :error="error"
       index="%kuzzle"
       collection="users">
@@ -47,7 +48,16 @@
             this.error = 'The document is invalid, please review it'
             return
           }
+          if (!json._id) {
+            this.error = 'The document must have a field "_id"'
+            return
+          }
           this.setNewDocument(json)
+        }
+
+        if (!this.newDocument._id) {
+          this.error = 'The document identifier is required'
+          return
         }
 
         kuzzle
