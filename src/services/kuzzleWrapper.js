@@ -1,9 +1,9 @@
 import kuzzle from './kuzzle'
 import { setTokenValid } from '../vuex/modules/auth/actions'
-import { setConnection, setKuzzleHostPort } from '../vuex/modules/common/kuzzle/actions'
+import { setKuzzleHostPort } from '../vuex/modules/common/kuzzle/actions'
 import Promise from 'bluebird'
 
-export const isConnected = (timeout = 1000) => {
+export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
     return new Promise((resolve, reject) => {
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
@@ -23,6 +23,18 @@ export const isConnected = (timeout = 1000) => {
   return Promise.resolve()
 }
 
+export const connectToEnvironment = (environment) => {
+  console.log('disconnecting kuzzle...') 
+  if (kuzzle.state === 'connected') {
+    kuzzle.disconnect()    
+  }
+  kuzzle.host = environment.host
+  kuzzle.ioPort = environment.ioPort
+  kuzzle.wsPort = environment.wsPort
+  console.log('connecting kuzzle...') 
+  kuzzle.connect()
+}
+
 export const initStoreWithKuzzle = (store) => {
   setKuzzleHostPort(store, kuzzle.host, kuzzle.wsPort)
 
@@ -31,15 +43,15 @@ export const initStoreWithKuzzle = (store) => {
     setTokenValid(store, false)
   })
 
-  kuzzle.removeAllListeners('disconnected')
-  kuzzle.addListener('disconnected', () => {
-    setConnection(store, false)
-  })
+  // kuzzle.removeAllListeners('disconnected')
+  // kuzzle.addListener('disconnected', () => {
+  //   setConnection(store, null)
+  // })
 
-  kuzzle.removeAllListeners('reconnected')
-  kuzzle.addListener('reconnected', () => {
-    setConnection(store, true)
-  })
+  // kuzzle.removeAllListeners('reconnected')
+  // kuzzle.addListener('reconnected', () => {
+  //   setConnection(store, )
+  // })
 }
 
 // Helper for performSearch

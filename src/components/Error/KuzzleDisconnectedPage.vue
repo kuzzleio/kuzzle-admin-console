@@ -1,11 +1,24 @@
 <template>
-  <div>
-    <div class="col s12">
-      <h4><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h4>
-    </div>
-    <div class="row">
-      <div class="col s12">
-        <kuzzle-disconnected :host="host" :port="port"></kuzzle-disconnected>
+  <div class="container-error">
+    <div class="container">
+      <div class="row">
+        <div class="col card wrapper s6 offset-s3">
+          <div class="col s12">
+            <h1 class="center-align logo">
+              <img src="../../assets/logo.png" alt="Kuzzle Backoffice" style="width: 70%"/>
+            </h1>
+          </div>
+          <div>
+            <div class="col s12">
+              <h4><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h4>
+            </div>
+            <div class="row">
+              <div class="col s12">
+                <kuzzle-disconnected :host="host" :port="port"></kuzzle-disconnected>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

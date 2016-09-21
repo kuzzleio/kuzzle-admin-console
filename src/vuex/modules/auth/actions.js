@@ -43,9 +43,7 @@ export const setTokenValid = (store, isValid) => {
   store.dispatch(SET_TOKEN_VALID, isValid)
 }
 
-export const loginFromCookie = (store) => {
-  let user = userCookies.get()
-
+export const loginFromSession = (store, user) => {
   if (!user) {
     user = SessionUser()
     store.dispatch(SET_CURRENT_USER, SessionUser())
@@ -63,6 +61,11 @@ export const loginFromCookie = (store) => {
       store.dispatch(SET_CURRENT_USER, user)
       return Promise.resolve(user)
     })
+}
+
+export const loginFromCookie = (store) => {
+  let user = userCookies.get()
+  loginFromSession(user)
 }
 
 export const checkFirstAdmin = (store) => {

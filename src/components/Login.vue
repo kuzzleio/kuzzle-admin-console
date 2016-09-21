@@ -45,11 +45,11 @@
     },
     methods: {
       onLogin () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to && this.$router._prevTransition.to.name !== 'Signup') {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.go({name: 'Home'})
-        }
+        // if (this.$router._prevTransition && this.$router._prevTransition.to && this.$router._prevTransition.to.name !== 'Signup') {
+        //   this.$router.go(this.$router._prevTransition.to)
+        // } else {
+        this.$router.go({name: 'Home'})
+        // }
       }
     }
   }
