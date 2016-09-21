@@ -26,9 +26,15 @@ export const isConnected = (timeout = 1000) => {
 export const initStoreWithKuzzle = (store) => {
   setKuzzleHostPort(store, kuzzle.host, kuzzle.wsPort)
 
-  kuzzle.removeAllListeners('jwtTokenExpired')
-  kuzzle.addListener('jwtTokenExpired', () => {
-    setTokenValid(store, false)
+  kuzzle.removeAllListeners('queryError')
+  kuzzle.addListener('queryError', (error) => {
+    switch (error.message) {
+      case 'Token expired':
+      case 'Invalid token':
+      case 'Json Web Token Error':
+        setTokenValid(store, false)
+        break
+    }
   })
 
   kuzzle.removeAllListeners('disconnected')
