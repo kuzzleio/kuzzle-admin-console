@@ -34,7 +34,7 @@ describe('List collections tests', () => {
         canSearchCollection,
         canCreateCollection
       },
-      '../../../directives/title.directive': mockedDirective
+      '../../../directives/title.directive': mockedDirective('title')
     })
 
     const App = Vue.extend({

@@ -3,7 +3,7 @@ import Vue from 'vue'
 import store from '../../../../src/vuex/store'
 import Promise from 'bluebird'
 import {mockedComponent} from '../helper'
-const loginInjector = require('inject!../../../../src/components/Login')
+const loginInjector = require('!!vue?inject!../../../../src/components/Login')
 
 describe('LoginForm.vue', () => {
   describe('methods Tests', () => {

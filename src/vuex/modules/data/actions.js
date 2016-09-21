@@ -63,7 +63,7 @@ export const listIndexesAndCollections = (store) => {
           store.dispatch(RECEIVE_INDEXES_COLLECTIONS, res[0])
           resolve()
         })
-        .catch((error) => reject(new Error(error.message)))
+        .catch((error) => reject(error))
     })
   })
 }
