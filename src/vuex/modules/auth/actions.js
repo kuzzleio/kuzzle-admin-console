@@ -12,7 +12,7 @@ export const doLogin = (store, username, password) => {
 
   return new Promise((resolve, reject) => {
     kuzzle
-      .loginPromise('local', {username, password}, '10s')
+      .loginPromise('local', {username, password}, '4h')
       .then(loginResult => {
         user.id = loginResult._id
         user.token = loginResult.jwt
