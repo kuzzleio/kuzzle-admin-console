@@ -30,6 +30,12 @@ export default function createRoutes (router) {
         }
       }
     },
+    '/signup': {
+      name: 'Signup',
+      component (resolve) {
+        require(['../components/Signup'], resolve)
+      }
+    },
     '/login': {
       name: 'Login',
       component: Login
@@ -59,16 +65,6 @@ export default function createRoutes (router) {
   })
 
   router.beforeEach(transition => {
-    // if (transition.to.name !== 'KuzzleDisconnectedPage' && !kuzzleIsConnected(store.state)) {
-    //   transition.redirect('/error/kuzzle-disconnected')
-    //   return
-    // }
-
-    // if (transition.to.name === 'KuzzleDisconnectedPage' && kuzzleIsConnected(store.state)) {
-    //   transition.redirect('/')
-    //   return
-    // }
-
     if (transition.to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
       transition.redirect('/signup')
       return

@@ -1,6 +1,4 @@
 import {
-  SET_CONNECTION,
-  SET_KUZZLE_HOST_PORT,
   ADD_ENVIRONMENT,
   UPDATE_ENVIRONMENT,
   DELETE_ENVIRONMENT,
@@ -9,9 +7,6 @@ import {
 } from './mutation-types'
 
 const state = {
-  isConnected: false, // TODO deprecate this
-  host: null, // TODO deprecate this
-  port: null, // TODO deprecate this
   environments: {
     'valid': {
       color: 1,
@@ -30,13 +25,6 @@ const state = {
 }
 
 export const mutations = {
-  [SET_CONNECTION] (state, isConnected) {
-    state.isConnected = isConnected
-  },
-  [SET_KUZZLE_HOST_PORT] (state, host, port) {
-    state.host = host
-    state.port = port
-  },
   [ADD_ENVIRONMENT] (state, environment) {
 
   },
@@ -55,9 +43,6 @@ export const mutations = {
   },
   [RESET] (state) {
     state.connectedTo = null
-    state.connected = false
-    state.host = null
-    state.port = null
   }
 }
 

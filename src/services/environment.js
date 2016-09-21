@@ -38,7 +38,6 @@ export const switchEnvironment = (id) => {
   connectToEnvironment(environment)
   waitForConnected(2000)
     .then(() => {
-      console.log('Kuzzle connected.') 
       setConnection(store, id)
       return loginFromSession(store, environment.user)
     })

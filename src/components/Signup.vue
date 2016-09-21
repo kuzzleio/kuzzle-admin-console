@@ -171,7 +171,10 @@
             this.setFirstAdmin(true)
             this.$router.go({name: 'Login'})
           })
-          .catch(() => this.$router.go({name: 'Login'}))
+          .catch((err) => {
+            console.error(err)
+            this.$router.go({name: 'Login'})
+          })
       }
     }
   }

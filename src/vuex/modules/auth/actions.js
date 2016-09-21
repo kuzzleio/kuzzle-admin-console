@@ -54,6 +54,7 @@ export const loginFromSession = (store, user) => {
     .then(res => {
       if (!res.valid) {
         store.dispatch(SET_CURRENT_USER, SessionUser())
+        kuzzle.unsetJwtToken()
         return Promise.resolve(SessionUser())
       }
 
@@ -88,6 +89,7 @@ export const setFirstAdmin = (store, exists) => {
 
 export const doLogout = (store) => {
   kuzzle.logout()
+  kuzzle.unsetJwtToken()
   userCookies.delete()
   store.dispatch(SET_CURRENT_USER, SessionUser())
   store.dispatch(SET_TOKEN_VALID, false)

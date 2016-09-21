@@ -6,13 +6,7 @@
   </div>
 
   <div v-if="kuzzleIsConnected">
-    <div v-if="adminAlreadyExists">
-      <router-view></router-view>
-    </div>
-
-    <div v-if="!adminAlreadyExists">
-      <signup></signup>
-    </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -20,10 +14,8 @@
 import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
-import Signup from './components/Signup'
 import { switchEnvironment } from './services/environment'
 import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
-import { adminAlreadyExists } from './vuex/modules/auth/getters'
 
 window.jQuery = window.$ = require('jquery')
 require('materialize-css/dist/js/materialize')
@@ -34,8 +26,7 @@ export default {
   replace: false,
   directives: [Toaster],
   components: {
-    KuzzleDisconnectedPage,
-    Signup
+    KuzzleDisconnectedPage
   },
   ready () {
     // TODO 
@@ -54,8 +45,7 @@ export default {
   },
   vuex: {
     getters: {
-      kuzzleIsConnected,
-      adminAlreadyExists
+      kuzzleIsConnected
     }
   }
 }

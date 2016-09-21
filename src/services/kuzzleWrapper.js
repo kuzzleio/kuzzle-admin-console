@@ -1,6 +1,5 @@
 import kuzzle from './kuzzle'
 import { setTokenValid } from '../vuex/modules/auth/actions'
-import { setKuzzleHostPort } from '../vuex/modules/common/kuzzle/actions'
 import Promise from 'bluebird'
 
 export const waitForConnected = (timeout = 1000) => {
@@ -24,34 +23,20 @@ export const waitForConnected = (timeout = 1000) => {
 }
 
 export const connectToEnvironment = (environment) => {
-  console.log('disconnecting kuzzle...') 
   if (kuzzle.state === 'connected') {
     kuzzle.disconnect()    
   }
   kuzzle.host = environment.host
   kuzzle.ioPort = environment.ioPort
   kuzzle.wsPort = environment.wsPort
-  console.log('connecting kuzzle...') 
   kuzzle.connect()
 }
 
 export const initStoreWithKuzzle = (store) => {
-  setKuzzleHostPort(store, kuzzle.host, kuzzle.wsPort)
-
   kuzzle.removeAllListeners('jwtTokenExpired')
   kuzzle.addListener('jwtTokenExpired', () => {
     setTokenValid(store, false)
   })
-
-  // kuzzle.removeAllListeners('disconnected')
-  // kuzzle.addListener('disconnected', () => {
-  //   setConnection(store, null)
-  // })
-
-  // kuzzle.removeAllListeners('reconnected')
-  // kuzzle.addListener('reconnected', () => {
-  //   setConnection(store, )
-  // })
 }
 
 // Helper for performSearch
