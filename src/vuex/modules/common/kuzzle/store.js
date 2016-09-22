@@ -35,10 +35,13 @@ export const mutations = {
 
   },
   [CONNECT_TO_ENVIRONMENT] (state, id) {
-    // if (state.environments.keys().indexOf(id) === -1) {
-    //   throw new Error(`The given id ${id} does not correspond to any existing
-    //     environment.`)
-    // }
+    if (id === null) {
+      throw new Error('Cannot connect to a null environment. To reset connection, use the RESET mutation.')
+    }
+    if (Object.keys(state.environments).indexOf(id) === -1) {
+      throw new Error(`The given id ${id} does not correspond to any existing
+        environment.`)
+    }
     state.connectedTo = id
   },
   [RESET] (state) {
