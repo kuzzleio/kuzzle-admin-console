@@ -242,7 +242,8 @@ describe('setFirstAdmin action', () => {
 describe('logout action', () => {
   const actions = actionsInjector({
     '../../../services/kuzzle': {
-      logout: sinon.mock()
+      logout: sinon.mock(),
+      unsetJwtToken: sinon.mock()
     },
     '../../../services/userCookies': {
       delete: sinon.mock()

@@ -66,7 +66,7 @@ export const loginFromSession = (store, user) => {
 
 export const loginFromCookie = (store) => {
   let user = userCookies.get()
-  loginFromSession(user)
+  return loginFromSession(store, user)
 }
 
 export const checkFirstAdmin = (store) => {

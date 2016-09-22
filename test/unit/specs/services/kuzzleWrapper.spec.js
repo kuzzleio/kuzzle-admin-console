@@ -129,7 +129,7 @@ describe('Kuzzle wrapper service', () => {
     })
   })
 
-  describe('isConnected', () => {
+  describe('waitForConnected', () => {
     let kuzzleWrapper
     let removeListener = sandbox.stub()
 
@@ -140,7 +140,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected()
+      kuzzleWrapper.waitForConnected()
         .then(() => done())
         .catch(e => done(e))
     })
@@ -156,7 +156,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected()
+      kuzzleWrapper.waitForConnected()
         .then(() => {
           expect(removeListener.called).to.be.equal(true)
           done()
@@ -173,7 +173,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected(10)
+      kuzzleWrapper.waitForConnected(10)
         .then(() => {
           done(new Error('Promise was resolved'))
         })
@@ -184,9 +184,7 @@ describe('Kuzzle wrapper service', () => {
   describe('initStoreWithKuzzle', () => {
     let kuzzleWrapper
     let removeAllListeners = sandbox.stub()
-    let setConnection = sandbox.stub()
     let setTokenValid = sandbox.stub()
-    let setKuzzleHostPort = sandbox.stub()
 
     it('should call removeListeners and addListeners with right params', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
@@ -199,10 +197,6 @@ describe('Kuzzle wrapper service', () => {
           },
           removeAllListeners
         },
-        '../vuex/modules/common/kuzzle/actions': {
-          setConnection,
-          setKuzzleHostPort
-        },
         '../vuex/modules/auth/actions': {
           setTokenValid
         }
@@ -211,15 +205,8 @@ describe('Kuzzle wrapper service', () => {
       let store = {store: 'mystore'}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      expect(setKuzzleHostPort.calledWith(store, 'toto', 8888)).to.be.equal(true)
-
       expect(removeAllListeners.calledWith('jwtTokenExpired'))
-      expect(removeAllListeners.calledWith('disconnected'))
-      expect(removeAllListeners.calledWith('reconnected'))
-
       expect(setTokenValid.calledWithMatch(store, false))
-      expect(setConnection.calledWithMatch(store, true))
-      expect(setConnection.calledWithMatch(store, false))
     })
   })
 })

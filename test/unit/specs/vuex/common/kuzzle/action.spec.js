@@ -1,20 +1,20 @@
 import { testAction } from '../../../helper'
 const actionsInjector = require('inject!../../../../../../src/vuex/modules/common/kuzzle/actions')
-import { SET_CONNECTION } from '../../../../../../src/vuex/modules/common/kuzzle/mutation-types'
+import { CONNECT_TO_ENVIRONMENT } from '../../../../../../src/vuex/modules/common/kuzzle/mutation-types'
 
 describe('Kuzzle actions', () => {
   describe('setConnection', () => {
     const actions = actionsInjector({})
 
-    it('should dispatch correct mutation with true', (done) => {
-      testAction(actions.setConnection, [true], {}, [
-        { name: SET_CONNECTION, payload: [true] }
+    it('should dispatch correct mutation with given id', (done) => {
+      testAction(actions.setConnection, ['envId'], {}, [
+        { name: CONNECT_TO_ENVIRONMENT, payload: ['envId'] }
       ], done)
     })
 
-    it('should dispatch correct mutation with false', (done) => {
-      testAction(actions.setConnection, [false], {}, [
-        { name: SET_CONNECTION, payload: [false] }
+    it('should dispatch correct mutation with null', (done) => {
+      testAction(actions.setConnection, [null], {}, [
+        { name: CONNECT_TO_ENVIRONMENT, payload: [null] }
       ], done)
     })
   })
