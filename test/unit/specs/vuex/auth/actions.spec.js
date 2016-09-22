@@ -9,6 +9,9 @@ describe('doLogin action', () => {
 
   const actions = actionsInjector({
     '../../../services/kuzzle': {
+      unsetJwtToken () {
+        return this
+      },
       loginPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.login) {
@@ -113,6 +116,7 @@ describe('loginFromCookie action', () => {
     actions = actionsInjector({
       '../../../services/kuzzle': {
         state: kuzzleState,
+        unsetJwtToken: sinon.stub(),
         checkTokenPromise: () => {
           if (triggerError) {
             return Promise.reject(new Error('error from Kuzzle'))
@@ -242,7 +246,8 @@ describe('setFirstAdmin action', () => {
 describe('logout action', () => {
   const actions = actionsInjector({
     '../../../services/kuzzle': {
-      logout: sinon.mock()
+      logout: sinon.mock(),
+      unsetJwtToken: sinon.mock()
     },
     '../../../services/userCookies': {
       delete: sinon.mock()

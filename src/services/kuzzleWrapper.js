@@ -28,12 +28,14 @@ export const initStoreWithKuzzle = (store) => {
 
   kuzzle.removeAllListeners('queryError')
   kuzzle.addListener('queryError', (error) => {
-    switch (error.message) {
-      case 'Token expired':
-      case 'Invalid token':
-      case 'Json Web Token Error':
-        setTokenValid(store, false)
-        break
+    if (error && error.message) {
+      switch (error.message) {
+        case 'Token expired':
+        case 'Invalid token':
+        case 'Json Web Token Error':
+          setTokenValid(store, false)
+          break
+      }
     }
   })
 

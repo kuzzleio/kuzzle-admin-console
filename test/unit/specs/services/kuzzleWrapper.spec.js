@@ -213,7 +213,7 @@ describe('Kuzzle wrapper service', () => {
 
       expect(setKuzzleHostPort.calledWith(store, 'toto', 8888)).to.be.equal(true)
 
-      expect(removeAllListeners.calledWith('jwtTokenExpired'))
+      expect(removeAllListeners.calledWith('queryError'))
       expect(removeAllListeners.calledWith('disconnected'))
       expect(removeAllListeners.calledWith('reconnected'))
 
