@@ -10,3 +10,4 @@ dump/
 docker-compose-custom.yml
 static/bower_components
 phantomjsdriver.log
+*.sublime-*
