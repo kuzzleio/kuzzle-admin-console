@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var path = require('path')
-var rcConf = require('rc')('KUZBO', {
+var rcConf = require('rc')('kuzbo', {
   port: 3000
 })
 var express = require('express')
