@@ -2,7 +2,9 @@
   <div class="toast-error" v-toaster></div>
 
   <div v-if="!kuzzleIsConnected">
-    <kuzzle-disconnected-page></kuzzle-disconnected-page>
+    <error-layout>
+      <kuzzle-disconnected-page></kuzzle-disconnected-page>
+    </error-layout>
   </div>
 
   <div v-if="kuzzleIsConnected">
@@ -14,6 +16,7 @@
 import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
+import ErrorLayout from './components/Error/Layout'
 import { switchEnvironment } from './services/environment'
 import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
 
@@ -26,7 +29,8 @@ export default {
   replace: false,
   directives: [Toaster],
   components: {
-    KuzzleDisconnectedPage
+    KuzzleDisconnectedPage,
+    ErrorLayout
   },
   ready () {
     // TODO 
