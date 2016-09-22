@@ -3,7 +3,7 @@ import {
   , connectToEnvironment
 } from './kuzzleWrapper'
 import store from '../vuex/store'
-import { RESET } from '../vuex/modules/common/kuzzle/mutation-types'
+import { reset } from '../vuex/actions'
 import { environments } from '../vuex/modules/common/kuzzle/getters'
 import { setConnection } from '../vuex/modules/common/kuzzle/actions'
 import { 
@@ -12,7 +12,7 @@ import {
 } from '../vuex/modules/auth/actions'
 
 export const loadEnvironments = () => {
-  return {}   
+
 }
 
 export const createEnvironment = (name, color, host, ioPort, wsPort) => {
@@ -32,11 +32,20 @@ export const setUserToEnvironment = (id, user) => {
 }
 
 export const switchEnvironment = (id) => {
+  if (!id) {
+    throw new Error(`cannot switch to ${id} environment`)
+  }
+
   let environment = environments(store.state)[id]
-  store.dispatch(RESET)
+
+  if (!environment) {
+    throw new Error(`Id ${id} does not match any environment`)
+  }
+
+  reset(store)
 
   connectToEnvironment(environment)
-  waitForConnected(2000)
+  return waitForConnected(2000)
     .then(() => {
       setConnection(store, id)
       return loginFromSession(store, environment.user)
@@ -46,11 +55,6 @@ export const switchEnvironment = (id) => {
         return checkFirstAdmin(store)
       }
       return Promise.resolve()
-    })
-    .catch((err) => {
-      console.error(`Something went wrong. Not been able to connect to ${id}`)
-      console.error(err)
-      setConnection(store, null)
     })
 }
 

@@ -43,6 +43,10 @@ export default {
     //      else connect to lastConnected
     // let environments = loadEnvironments()
     this.switchEnvironment('valid')
+      .catch((err) => {
+        console.error('Something went wrong. Not been able to connect to the selected environment')
+        console.error(err)
+      })
   },
   methods: {
     switchEnvironment

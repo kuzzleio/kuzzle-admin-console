@@ -2,9 +2,10 @@ import {
   ADD_ENVIRONMENT,
   UPDATE_ENVIRONMENT,
   DELETE_ENVIRONMENT,
-  CONNECT_TO_ENVIRONMENT,
-  RESET
+  CONNECT_TO_ENVIRONMENT
 } from './mutation-types'
+
+import { RESET } from '../../../mutation-types'
 
 const state = {
   environments: {
