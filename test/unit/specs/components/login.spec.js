@@ -48,6 +48,16 @@ describe('LoginForm.vue', () => {
         }, 0)
       })
     })
+
+    describe('dismissError', () => {
+      it('should reset error', () => {
+        vm.$refs.form.error = 'error message'
+
+        vm.$refs.form.dismissError()
+
+        expect(vm.$refs.form.error).to.equals('')
+      })
+    })
   })
 })
 
