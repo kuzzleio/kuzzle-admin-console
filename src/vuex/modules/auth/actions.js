@@ -12,6 +12,7 @@ export const doLogin = (store, username, password) => {
 
   return new Promise((resolve, reject) => {
     kuzzle
+      .unsetJwtToken()
       .loginPromise('local', {username, password}, '4h')
       .then(loginResult => {
         user.id = loginResult._id
