@@ -4,9 +4,9 @@
 </template>
 
 <script>
-import {} from './bower_components/ace-builds/src-min-noconflict/ace.js'
-import {} from './bower_components/ace-builds/src-min-noconflict/theme-tomorrow.js'
-import {} from './bower_components/ace-builds/src-min-noconflict/mode-json.js'
+import {} from '../bower_components/ace-builds/src-min-noconflict/ace.js'
+import {} from '../bower_components/ace-builds/src-min-noconflict/theme-tomorrow.js'
+import {} from '../bower_components/ace-builds/src-min-noconflict/mode-json.js'
 
 import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'

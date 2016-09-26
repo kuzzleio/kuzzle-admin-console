@@ -8,5 +8,5 @@ test/e2e/reports
 .idea
 dump/
 docker-compose-custom.yml
-src/bower_components
+bower_components
 phantomjsdriver.log

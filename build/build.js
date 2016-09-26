@@ -16,7 +16,7 @@ rm('-rf', assetsPath)
 mkdir('-p', assetsPath)
 cp('-R', path.join('static', '*'), assetsPath)
 
-cp('-R', path.join('src', 'bower_components', 'ace-builds', 'src-min-noconflict', 'worker-json.js'), path.join(assetsPath, '..'))
+cp('-R', path.join('bower_components', 'ace-builds', 'src-min-noconflict', 'worker-json.js'), path.join(assetsPath, '..'))
 
 webpack(webpackConfig, function (err, stats) {
   spinner.stop()
