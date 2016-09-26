@@ -69,4 +69,4 @@ $ BACKEND_HOST=<BACKEND_HOST> npm run build
 ```
 >Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy sockets port.
 
-The `dist` folder is now generated. In order to let this folder be accessible from your browser without CSRF error, you have to create a server web (like with nginx).
+The `dist` folder is now generated. You can either open the `index.html` file or in order to prevent CSRF error, you can create a web server (like with nginx).
