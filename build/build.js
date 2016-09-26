@@ -8,12 +8,6 @@ var ora = require('ora')
 var webpack = require('webpack')
 var webpackConfig = require('./webpack.prod.conf')
 
-console.log(
-  '  Tip:\n' +
-  '  Built files are meant to be served over an HTTP server.\n' +
-  '  Opening index.html over file:// won\'t work.\n'
-)
-
 var spinner = ora('building for production...')
 spinner.start()
 
@@ -21,9 +15,8 @@ var assetsPath = path.join(config.build.assetsRoot, config.build.assetsSubDirect
 rm('-rf', assetsPath)
 mkdir('-p', assetsPath)
 cp('-R', path.join('static', '*'), assetsPath)
-//
-// mkdir('-p', path.join(assetsPath, 'css', 'static', 'fonts'))
-// cp('-R', 'fonts/*', path.join(assetsPath, 'css', 'static', 'fonts'))
+
+cp('-R', path.join('src', 'bower_components', 'ace-builds', 'src-min-noconflict', 'worker-json.js'), path.join(assetsPath, '..'))
 
 webpack(webpackConfig, function (err, stats) {
   spinner.stop()
