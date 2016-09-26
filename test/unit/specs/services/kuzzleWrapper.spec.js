@@ -80,6 +80,38 @@ describe('Kuzzle wrapper service', () => {
           done()
         }).catch(() => {})
     })
+
+    it('should treat a String sort argument as the field to sort by', (done) => {
+      triggerError = false
+      kuzzleWrapper.performSearch('collection', 'index', {}, {}, ['name.first'])
+        .then(res => {
+          expect(res).to.deep.equals(responseWithAdditionalAttr)
+          done()
+        }).catch(() => {})
+    })
+  })
+
+  describe('connectToEnvironment', () => {
+    let kuzzleWrapper
+    let disconnectMock = sandbox.mock()
+    let connectMock = sandbox.mock()
+
+    beforeEach(() => {
+      kuzzleWrapper = kuzzleWrapperInjector({
+        './kuzzle': {
+          disconnect: disconnectMock,
+          connect: connectMock,
+          state: 'connected'
+        }
+      })
+    })
+
+    it('should disconnect and reconnect kuzzle after setting the environment params', () => {
+      kuzzleWrapper.connectToEnvironment({host: 'toto.toto', ioPort: 7512, wsPort: 7513})
+
+      expect(disconnectMock.called).to.equals(true)
+      expect(connectMock.called).to.equals(true)
+    })
   })
 
   describe('deleteDocuments tests', () => {
@@ -129,7 +161,7 @@ describe('Kuzzle wrapper service', () => {
     })
   })
 
-  describe('isConnected', () => {
+  describe('waitForConnected', () => {
     let kuzzleWrapper
     let removeListener = sandbox.stub()
 
@@ -140,7 +172,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected()
+      kuzzleWrapper.waitForConnected()
         .then(() => done())
         .catch(e => done(e))
     })
@@ -156,7 +188,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected()
+      kuzzleWrapper.waitForConnected()
         .then(() => {
           expect(removeListener.called).to.be.equal(true)
           done()
@@ -173,7 +205,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected(10)
+      kuzzleWrapper.waitForConnected(10)
         .then(() => {
           done(new Error('Promise was resolved'))
         })
@@ -184,9 +216,7 @@ describe('Kuzzle wrapper service', () => {
   describe('initStoreWithKuzzle', () => {
     let kuzzleWrapper
     let removeAllListeners = sandbox.stub()
-    let setConnection = sandbox.stub()
     let setTokenValid = sandbox.stub()
-    let setKuzzleHostPort = sandbox.stub()
 
     it('should call removeListeners and addListeners with right params', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
@@ -199,10 +229,6 @@ describe('Kuzzle wrapper service', () => {
           },
           removeAllListeners
         },
-        '../vuex/modules/common/kuzzle/actions': {
-          setConnection,
-          setKuzzleHostPort
-        },
         '../vuex/modules/auth/actions': {
           setTokenValid
         }
@@ -211,15 +237,8 @@ describe('Kuzzle wrapper service', () => {
       let store = {store: 'mystore'}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      expect(setKuzzleHostPort.calledWith(store, 'toto', 8888)).to.be.equal(true)
-
       expect(removeAllListeners.calledWith('queryError'))
-      expect(removeAllListeners.calledWith('disconnected'))
-      expect(removeAllListeners.calledWith('reconnected'))
-
       expect(setTokenValid.calledWithMatch(store, false))
-      expect(setConnection.calledWithMatch(store, true))
-      expect(setConnection.calledWithMatch(store, false))
     })
   })
 })

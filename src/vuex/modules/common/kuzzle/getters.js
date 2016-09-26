@@ -1,5 +1,5 @@
 export const kuzzleIsConnected = state => {
-  return state.kuzzle.isConnected
+  return state.kuzzle.connectedTo !== null
 }
 
 export const kuzzleHost = state => {
@@ -8,4 +8,8 @@ export const kuzzleHost = state => {
 
 export const kuzzlePort = state => {
   return state.kuzzle.port
+}
+
+export const environments = state => {
+  return state.kuzzle.environments
 }

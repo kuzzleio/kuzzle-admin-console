@@ -116,7 +116,6 @@ describe('loginFromCookie action', () => {
     actions = actionsInjector({
       '../../../services/kuzzle': {
         state: kuzzleState,
-        unsetJwtToken: sinon.stub(),
         checkTokenPromise: () => {
           if (triggerError) {
             return Promise.reject(new Error('error from Kuzzle'))
@@ -129,6 +128,7 @@ describe('loginFromCookie action', () => {
           }
         },
         setJwtToken: sinon.mock(),
+        unsetJwtToken: sinon.mock(),
         addListener (type, cb) {
           this.state = 'connected'
           cb()
@@ -195,7 +195,8 @@ describe('checkFirstAdmin action', () => {
 
             return Promise.resolve({result: {exists: false}})
           }
-        }
+        },
+        unsetJwtToken: sinon.spy()
       }
     })
   }

@@ -50,21 +50,19 @@ describe('KuzzleDisconnectedPage component', () => {
       expect(vm.$refs.disconnected.port).to.be.equal(8888)
     })
 
-    it('should init listeners on reconnect', () => {
+    it('should go home on reconnect', () => {
       mockInjector('reconnected')
       vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
       vm.$mount('app')
 
-      expect(setConnection.calledWith(store, true)).to.be.equal(true)
       expect(vm.$router.go.calledWithMatch({name: 'Home'})).to.be.equal(true)
     })
 
-    it('should init listeners on connected', () => {
+    it('should go home on connected', () => {
       mockInjector('connected')
       vm.$router = {go: sandbox.stub(), _children: {push: sandbox.stub()}}
       vm.$mount('app')
 
-      expect(setConnection.calledWith(store, true)).to.be.equal(true)
       expect(vm.$refs.disconnected.$router.go.calledWithMatch({name: 'Home'})).to.be.equal(true)
     })
   })

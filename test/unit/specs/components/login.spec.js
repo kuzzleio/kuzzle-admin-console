@@ -1,34 +1,34 @@
-import LoginForm from '../../../../src/components/Common/Login/Form'
 import Vue from 'vue'
 import store from '../../../../src/vuex/store'
 import Promise from 'bluebird'
-import {mockedComponent} from '../helper'
+import {mockedComponent, mockedDirective} from '../helper'
 const loginInjector = require('!!vue?inject!../../../../src/components/Login')
-
-let onLogin
+const loginFormInjector = require('!!vue?inject!../../../../src/components/Common/Login/Form')
 
 describe('LoginForm.vue', () => {
   describe('methods Tests', () => {
-    let vm
-    onLogin = sinon.spy()
+    let injectMock = (loginStub) => {
+      let LoginForm = loginFormInjector({
+        '../../../directives/focus.directive': mockedDirective,
+        '../../../vuex/modules/auth/actions': {
+          doLogin: loginStub
+        }
+      })
 
-    beforeEach(() => {
-      vm = new Vue({
-        template: '<div><login-form v-ref:form :on-login="onLogin"></login-form></div>',
+      return new Vue({
+        template: '<div><login-form v-ref:form></login-form></div>',
         components: {LoginForm},
-        data () {
-          return {
-            onLogin
-          }
-        },
         replace: false,
         store: store
       }).$mount()
-    })
+    }
 
     describe('login', () => {
       it('should display the error when login fail', (done) => {
-        vm.$refs.form.doLogin = sinon.stub().returns(Promise.reject(new Error('error')))
+        let vm = injectMock(
+          sinon.stub().returns(Promise.reject(new Error('error')))
+        )
+
         vm.$refs.form.login()
 
         setTimeout(() => {
@@ -38,11 +38,14 @@ describe('LoginForm.vue', () => {
       })
 
       it('should call onLogin callback if success', (done) => {
-        vm.$refs.form.doLogin = sinon.stub().returns(Promise.resolve())
+        let vm = injectMock(
+          sinon.stub().returns(Promise.resolve())
+        )
+        vm.$refs.form.onLogin = sinon.spy()
         vm.$refs.form.login()
 
         setTimeout(() => {
-          expect(onLogin.called).to.be.ok
+          expect(vm.$refs.form.onLogin.called).to.be.ok
           expect(vm.$refs.form.error).to.be.equal('')
           done()
         }, 0)
@@ -51,6 +54,10 @@ describe('LoginForm.vue', () => {
 
     describe('dismissError', () => {
       it('should reset error', () => {
+        let vm = injectMock(
+          sinon.stub().returns(Promise.resolve())
+        )
+
         vm.$refs.form.error = 'error message'
 
         vm.$refs.form.dismissError()

@@ -8,7 +8,7 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "prod": "npm run build && npm start",
-    "start": "./node_modules/.bin/http-server -p ${BACKOFFICE_PORT:=3000} dist/",
+    "start": "./bin/start",
     "unit": "karma start test/unit/karma.conf.js --single-run",
     "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "e2e": "node test/e2e/runner.js",
@@ -25,10 +25,10 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "babel-runtime": "^6.0.0",
-    "bluebird": "^3.4.1",
-    "font-awesome": "^4.6.3",
     "http-server": "^0.9.0",
+    "rc": "^1.1.6"
+  },
+  "devDependencies": {
     "jquery": "^2.1.3",
     "json-formatter-js": "^1.1.0",
     "kuzzle-sdk": "^2.1.3",
@@ -40,9 +40,10 @@
     "vue-multiselect": "^1.1.2",
     "vue-router": "^0.7.13",
     "vuex": "^0.8.2",
-    "vuex-router-sync": "^2.0.2"
-  },
-  "devDependencies": {
+    "vuex-router-sync": "^2.0.2",
+    "babel-runtime": "^6.0.0",
+    "bluebird": "^3.4.1",
+    "font-awesome": "^4.6.3",
     "babel-core": "^6.0.0",
     "babel-loader": "^6.0.0",
     "babel-plugin-transform-runtime": "^6.0.0",
