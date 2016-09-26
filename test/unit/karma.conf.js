@@ -36,13 +36,17 @@ webpackConfig.module.preLoaders = webpackConfig.module.preLoaders || []
 webpackConfig.module.preLoaders.unshift({
   test: /\.js$/,
   loader: 'isparta',
-  include: path.resolve(projectRoot, 'src')
+  include: path.resolve(projectRoot, 'src'),
+  exclude: [
+    /bower_components/
+  ]
 })
 
 // only apply babel for test files when using isparta
 webpackConfig.module.loaders.some(function (loader, i) {
   if (loader.loader === 'babel') {
     loader.include = path.resolve(projectRoot, 'test/unit')
+    loader.exclude = /bower_components/
     return true
   }
 })
