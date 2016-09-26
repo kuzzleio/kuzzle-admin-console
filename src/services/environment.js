@@ -5,16 +5,64 @@ import {
 import store from '../vuex/store'
 import { reset } from '../vuex/actions'
 import { environments } from '../vuex/modules/common/kuzzle/getters'
-import { setConnection } from '../vuex/modules/common/kuzzle/actions'
-import { 
+import {
+  setConnection,
+  addEnvironment
+} from '../vuex/modules/common/kuzzle/actions'
+import {
   loginFromSession
   , checkFirstAdmin
 } from '../vuex/modules/auth/actions'
 
-export const loadEnvironments = () => {
-
+const DEFAULT = 'default'
+export const defaultEnvironment = {
+  host: 'localhost',
+  ioPort: 7512,
+  wsPort: 7513
 }
 
+/**
+ * Loads the environment definitions stored in localStorage, stores them in
+ * the Vuex store, then returns the id of the last connected
+ * environment if available.
+ *
+ * @return {String} the id of the last connected environment.
+ */
+export const loadEnvironments = () => {
+  // eslint-disable-next-line no-undef
+  let loadedEnv = JSON.parse(localStorage.getItem('environments') || '{}')
+
+  if (Object.keys(loadedEnv).length === 0) {
+    loadedEnv = {
+      [DEFAULT]: defaultEnvironment
+    }
+  }
+
+  for (var id in loadedEnv) {
+    addEnvironment(store, id, loadedEnv[id])
+  }
+
+  // eslint-disable-next-line no-undef
+  let lastConnected = localStorage.getItem('lastConnectedEnv')
+
+  if (!lastConnected || Object.keys(loadedEnv).indexOf(lastConnected) === -1) {
+    return Object.keys(loadedEnv)[0]
+  }
+
+  return lastConnected
+}
+
+/**
+ * Creates an environment objects, stores it in the Vuex store and returns it.
+ *
+ * @param  {String} The name of the environment (displayed in the list).
+ * @param  {String} The HEX color code of the main header bar when connected.
+ * @param  {String} The hostname.
+ * @param  {int} The port number for the Socket.IO protocol.
+ * @param  {int} The port number for the Websocket protocol.
+ *
+ * @return {Object} The environment object.
+ */
 export const createEnvironment = (name, color, host, ioPort, wsPort) => {
 
 }
