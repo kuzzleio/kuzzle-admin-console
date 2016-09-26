@@ -172,7 +172,8 @@
             this.$router.go({name: 'Login'})
           })
           .catch((err) => {
-            console.error(err)
+            // TODO manage this on the UI
+            console.error('An error occurred while creating the first admin', err)
             this.$router.go({name: 'Login'})
           })
       }
