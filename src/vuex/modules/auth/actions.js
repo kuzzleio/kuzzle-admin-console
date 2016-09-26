@@ -43,9 +43,7 @@ export const setTokenValid = (store, isValid) => {
   store.dispatch(SET_TOKEN_VALID, isValid)
 }
 
-export const loginFromCookie = (store) => {
-  let user = userCookies.get()
-
+export const loginFromSession = (store, user) => {
   if (!user) {
     user = SessionUser()
     store.dispatch(SET_CURRENT_USER, SessionUser())
@@ -56,6 +54,7 @@ export const loginFromCookie = (store) => {
     .then(res => {
       if (!res.valid) {
         store.dispatch(SET_CURRENT_USER, SessionUser())
+        kuzzle.unsetJwtToken()
         return Promise.resolve(SessionUser())
       }
 
@@ -63,6 +62,11 @@ export const loginFromCookie = (store) => {
       store.dispatch(SET_CURRENT_USER, user)
       return Promise.resolve(user)
     })
+}
+
+export const loginFromCookie = (store) => {
+  let user = userCookies.get()
+  return loginFromSession(store, user)
 }
 
 export const checkFirstAdmin = (store) => {
@@ -85,6 +89,7 @@ export const setFirstAdmin = (store, exists) => {
 
 export const doLogout = (store) => {
   kuzzle.logout()
+  kuzzle.unsetJwtToken()
   userCookies.delete()
   store.dispatch(SET_CURRENT_USER, SessionUser())
   store.dispatch(SET_TOKEN_VALID, false)

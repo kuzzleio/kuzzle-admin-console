@@ -5,10 +5,12 @@
         <div class="col card wrapper s6 offset-s3">
           <div class="col s12">
             <h1 class="center-align logo">
-              <img src="../../assets/logo.png" alt="Kuzzle Backoffice" style="width: 70%"/>
+              <img src="../../assets/logo.png" alt="Kuzzle Backoffice"/>
             </h1>
           </div>
-          <router-view></router-view>
+          <slot>
+            An error occurred.
+          </slot>
         </div>
       </div>
     </div>
@@ -28,6 +30,10 @@
     .logo {
       margin-top: 40px;
       margin-bottom: 25px;
+
+      img {
+        width: 70%
+      }
     }
   }
 </style>

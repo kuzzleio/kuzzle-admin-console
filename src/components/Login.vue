@@ -45,7 +45,9 @@
     },
     methods: {
       onLogin () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to && this.$router._prevTransition.to.name !== 'Signup') {
+        if (this.$router._prevTransition && this.$router._prevTransition.to &&
+          this.$router._prevTransition.to.name !== 'Signup' &&
+          this.$router._prevTransition.to.name !== 'Login') {
           this.$router.go(this.$router._prevTransition.to)
         } else {
           this.$router.go({name: 'Home'})

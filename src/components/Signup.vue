@@ -171,7 +171,11 @@
             this.setFirstAdmin(true)
             this.$router.go({name: 'Login'})
           })
-          .catch(() => this.$router.go({name: 'Login'}))
+          .catch((err) => {
+            // TODO manage this on the UI
+            console.error('An error occurred while creating the first admin', err)
+            this.$router.go({name: 'Login'})
+          })
       }
     }
   }

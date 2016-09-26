@@ -125,6 +125,7 @@ describe('loginFromCookie action', () => {
           }
         },
         setJwtToken: sinon.mock(),
+        unsetJwtToken: sinon.mock(),
         addListener (type, cb) {
           this.state = 'connected'
           cb()
@@ -191,7 +192,8 @@ describe('checkFirstAdmin action', () => {
 
             return Promise.resolve({result: {exists: false}})
           }
-        }
+        },
+        unsetJwtToken: sinon.spy()
       }
     })
   }
@@ -242,7 +244,8 @@ describe('setFirstAdmin action', () => {
 describe('logout action', () => {
   const actions = actionsInjector({
     '../../../services/kuzzle': {
-      logout: sinon.mock()
+      logout: sinon.mock(),
+      unsetJwtToken: sinon.mock()
     },
     '../../../services/userCookies': {
       delete: sinon.mock()

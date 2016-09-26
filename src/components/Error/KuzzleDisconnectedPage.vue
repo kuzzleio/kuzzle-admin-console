@@ -44,12 +44,10 @@
       this.port = kuzzle.wsPort
 
       idReconnect = kuzzle.addListener('reconnected', () => {
-        this.setConnection(true)
         this.$router.go({name: 'Home'})
       })
 
       idConnect = kuzzle.addListener('connected', () => {
-        this.setConnection(true)
         this.$router.go({name: 'Home'})
       })
     },
