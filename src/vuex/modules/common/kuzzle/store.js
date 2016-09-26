@@ -27,7 +27,7 @@ export const mutations = {
     state.environments[id] = environment
   },
   [DELETE_ENVIRONMENT] (state, id) {
-    if (Object.keys(state.environments).indexOf(id) !== -1) {
+    if (Object.keys(state.environments).indexOf(id) === -1) {
       return
     }
     Vue.delete(state.environments, id)

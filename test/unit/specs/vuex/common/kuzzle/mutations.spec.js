@@ -1,5 +1,11 @@
 import { mutations } from '../../../../../../src/vuex/modules/common/kuzzle/store'
-const { CONNECT_TO_ENVIRONMENT, RESET } = mutations
+const {
+  CONNECT_TO_ENVIRONMENT,
+  RESET,
+  ADD_ENVIRONMENT,
+  UPDATE_ENVIRONMENT,
+  DELETE_ENVIRONMENT
+} = mutations
 
 let state
 
@@ -33,6 +39,51 @@ describe('kuzzle environments mutations test', () => {
 
       RESET(state)
       expect(state.connectedTo).to.equals(null)
+    })
+  })
+
+  describe('ADD_ENVIRONMENT', () => {
+    it('should not overwrite an existing environment', () => {
+      expect(ADD_ENVIRONMENT.bind(this, state, 'valid', {})).to.throw(Error)
+    })
+
+    it('should create a new environment', () => {
+      let newEnvironment = {
+        host: 'localhost',
+        wsPort: 7513
+      }
+      ADD_ENVIRONMENT(state, 'new', newEnvironment)
+      expect(state.environments.new).to.deep.equals(newEnvironment)
+    })
+  })
+
+  describe('UPDATE_ENVIRONMENT', () => {
+    it('should throw if the environment does not exist', () => {
+      expect(UPDATE_ENVIRONMENT.bind(this, state, 'unexisting', {})).to.throw(Error)
+      expect(UPDATE_ENVIRONMENT.bind(this, state, null, {})).to.throw(Error)
+      expect(UPDATE_ENVIRONMENT.bind(this, state, undefined, {})).to.throw(Error)
+    })
+
+    it('should update an existing environment', () => {
+      let newEnvironment = {
+        host: 'localhost',
+        wsPort: 7513
+      }
+      UPDATE_ENVIRONMENT(state, 'valid', newEnvironment)
+      expect(state.environments.valid).to.deep.equals(newEnvironment)
+    })
+  })
+
+  describe('DELETE_ENVIRONMENT', () => {
+    it('should return if the environment does not exist', () => {
+      expect(DELETE_ENVIRONMENT.bind(this, state, 'unexisting', {})).to.not.throw(Error)
+      expect(DELETE_ENVIRONMENT.bind(this, state, null, {})).to.not.throw(Error)
+      expect(DELETE_ENVIRONMENT.bind(this, state, undefined, {})).to.not.throw(Error)
+    })
+
+    it('should delete an existing environment', () => {
+      DELETE_ENVIRONMENT(state, 'valid')
+      expect(state.environments).to.not.have.property('valid')
     })
   })
 })

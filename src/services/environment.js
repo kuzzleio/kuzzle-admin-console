@@ -24,14 +24,13 @@ export const defaultEnvironment = {
 /**
  * Loads the environment definitions stored in localStorage, stores them in
  * the Vuex store, then returns the id of the last connected
- * environment if available.
+ * environment if available, or the first environment id available otherwise.
  *
  * @return {String} the id of the last connected environment.
  */
 export const loadEnvironments = () => {
   // eslint-disable-next-line no-undef
   let loadedEnv = JSON.parse(localStorage.getItem('environments') || '{}')
-
   if (Object.keys(loadedEnv).length === 0) {
     loadedEnv = {
       [DEFAULT]: defaultEnvironment
@@ -44,7 +43,6 @@ export const loadEnvironments = () => {
 
   // eslint-disable-next-line no-undef
   let lastConnected = localStorage.getItem('lastConnectedEnv')
-
   if (!lastConnected || Object.keys(loadedEnv).indexOf(lastConnected) === -1) {
     return Object.keys(loadedEnv)[0]
   }

@@ -103,4 +103,74 @@ describe('Environment service', () => {
         })
     })
   })
+
+  describe('loadEnvironments', () => {
+    let envService
+    let addEnvironmentStub = sandbox.stub()
+
+    beforeEach(() => {
+      envService = environmentInjector({
+        '../vuex/store': dummyStore,
+        '../vuex/modules/common/kuzzle/actions': {
+          addEnvironment: addEnvironmentStub
+        }
+      })
+    })
+
+    afterEach(() => {
+      sandbox.restore()
+    })
+
+    it('should create default environment when none are available in localstorage', () => {
+      // eslint-disable-next-line no-undef
+      sandbox.stub(localStorage, 'getItem')
+
+      envService.loadEnvironments()
+      expect(addEnvironmentStub.calledWithMatch(dummyStore, 'default')).to.equals(true)
+    })
+
+    it('should return the first environment when lastConnected is invalid', () => {
+      const SAVED_ENV = 'savedEnvironment'
+
+      // eslint-disable-next-line no-undef
+      let getItem = sandbox.stub(localStorage, 'getItem')
+      getItem
+        .withArgs('environments')
+        .returns(JSON.stringify({
+          [SAVED_ENV]: {}
+        }))
+      getItem
+        .withArgs('lastConnectedEnv')
+        .returns(null)
+
+      let envToConnect = envService.loadEnvironments()
+      expect(envToConnect).to.equals(SAVED_ENV)
+
+      getItem
+        .withArgs('lastConnectedEnv')
+        .returns('tralala')
+
+      envToConnect = envService.loadEnvironments()
+      expect(envToConnect).to.equals(SAVED_ENV)
+    })
+
+    it('should return the lastConnected id when it is valid', () => {
+      const SAVED_ENV = 'savedEnvironment'
+
+      // eslint-disable-next-line no-undef
+      let getItem = sandbox.stub(localStorage, 'getItem')
+      getItem
+        .withArgs('environments')
+        .returns(JSON.stringify({
+          anotherEnv: {},
+          [SAVED_ENV]: {}
+        }))
+      getItem
+        .withArgs('lastConnectedEnv')
+        .returns(SAVED_ENV)
+
+      let envToConnect = envService.loadEnvironments()
+      expect(envToConnect).to.equals(SAVED_ENV)
+    })
+  })
 })
