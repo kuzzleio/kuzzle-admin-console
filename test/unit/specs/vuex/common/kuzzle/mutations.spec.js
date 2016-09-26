@@ -16,8 +16,8 @@ describe('kuzzle environments mutations test', () => {
 
   describe('CONNECT_TO_ENVIRONMENT', () => {
     it('should throw if the id is invalid', () => {
-      expect(CONNECT_TO_ENVIRONMENT.bind(state, 'foo')).to.throw(Error)
-      expect(CONNECT_TO_ENVIRONMENT.bind(state, null)).to.throw(Error)
+      expect(CONNECT_TO_ENVIRONMENT.bind(this, state, 'foo')).to.throw(Error)
+      expect(CONNECT_TO_ENVIRONMENT.bind(this, state, null)).to.throw(Error)
     })
 
     it('should set connectedTo to the valid given id', () => {

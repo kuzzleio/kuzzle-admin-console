@@ -80,6 +80,38 @@ describe('Kuzzle wrapper service', () => {
           done()
         }).catch(() => {})
     })
+
+    it('should treat a String sort argument as the field to sort by', (done) => {
+      triggerError = false
+      kuzzleWrapper.performSearch('collection', 'index', {}, {}, ['name.first'])
+        .then(res => {
+          expect(res).to.deep.equals(responseWithAdditionalAttr)
+          done()
+        }).catch(() => {})
+    })
+  })
+
+  describe('connectToEnvironment', () => {
+    let kuzzleWrapper
+    let disconnectMock = sandbox.mock()
+    let connectMock = sandbox.mock()
+
+    beforeEach(() => {
+      kuzzleWrapper = kuzzleWrapperInjector({
+        './kuzzle': {
+          disconnect: disconnectMock,
+          connect: connectMock,
+          state: 'connected'
+        }
+      })
+    })
+
+    it('should disconnect and reconnect kuzzle after setting the environment params', () => {
+      kuzzleWrapper.connectToEnvironment({host: 'toto.toto', ioPort: 7512, wsPort: 7513})
+
+      expect(disconnectMock.called).to.equals(true)
+      expect(connectMock.called).to.equals(true)
+    })
   })
 
   describe('deleteDocuments tests', () => {
