@@ -4,20 +4,21 @@ let sandbox = sinon.sandbox.create()
 let environment
 let dummyEnvironments = {
   valid: {
-    host: 'localhost'
+    host: 'localhost',
+    user: 'connectedUser'
   },
   invalid: {
     host: 'not.existing.host'
   }
 }
 let dummyStore = {
-  store: {
-    state: {
+  state: {
+    kuzzle: {
       environments: dummyEnvironments,
       connectedTo: null
-    },
-    dispatch: sandbox.stub()
-  }
+    }
+  },
+  dispatch: sandbox.stub()
 }
 let waitForConnectedStub = sandbox.stub().returns(Promise.resolve())
 let connectToEnvironmentStub = sandbox.stub()
@@ -171,6 +172,212 @@ describe('Environment service', () => {
 
       let envToConnect = envService.loadEnvironments()
       expect(envToConnect).to.equals(SAVED_ENV)
+    })
+  })
+
+  describe('validateEnvironment', () => {
+    it('should throw when the name is invalid', () => {
+      expect(environment.validateEnvironment.bind(this)).to.throw(Error)
+      expect(environment.validateEnvironment.bind(this, null)).to.throw(Error)
+      expect(environment.validateEnvironment.bind(this, '')).to.throw(Error)
+    })
+
+    it('should throw when the hostname is invalid', () => {
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name')
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', null)
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', '')
+      ).to.throw(Error)
+    })
+
+    it('should throw if an invalid ioPort is provided', () => {
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost')
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', 'invalid ioPort')
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', -1)
+      ).to.throw(Error)
+    })
+
+    it('should throw when the wsPort is invalid', () => {
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', null)
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', null, null)
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', null, 'invalid wsPort')
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', null, -1)
+      ).to.throw(Error)
+      expect(
+        environment
+          .validateEnvironment
+          .bind(this, 'valid name', 'localhost', null, 7513)
+      ).to.not.throw(Error)
+    })
+  })
+
+  describe('createEnvironment', () => {
+    let envService
+    let addEnvironmentStub = sandbox.stub()
+
+    beforeEach(() => {
+      envService = environmentInjector({
+        '../vuex/store': dummyStore,
+        '../vuex/modules/common/kuzzle/actions': {
+          addEnvironment: addEnvironmentStub
+        }
+      })
+    })
+
+    afterEach(() => {
+      sandbox.restore()
+    })
+
+    it('should assign default color when no color is provided', () => {
+      envService.validateEnvironment = sandbox.spy()
+      let resultEnv = envService.createEnvironment(
+        'environment',
+        null,
+        'localhost',
+        7512,
+        7513
+      )
+      expect(resultEnv.color).to.equals('#00757f')
+    })
+  })
+
+  describe('deleteEnvironment', () => {
+    let envService
+    let deleteEnvironmentStub = sandbox.stub()
+
+    beforeEach(() => {
+      envService = environmentInjector({
+        '../vuex/store': dummyStore,
+        '../vuex/modules/common/kuzzle/actions': {
+          deleteEnvironment: deleteEnvironmentStub
+        }
+      })
+    })
+
+    afterEach(() => {
+      sandbox.restore()
+    })
+
+    it('deletes an environment', () => {
+      sandbox.stub(envService, 'persistEnvironments')
+      envService.deleteEnvironment()
+      expect(envService.deleteEnvironment.bind(this, 'toto')).to.not.throw(Error)
+    })
+  })
+
+  describe('persistEnvironments', () => {
+    it('does not throw when environments are OK', () => {
+      expect(
+        environment
+          .persistEnvironments
+          .bind(this, dummyEnvironments)
+      ).to.not.throw(Error)
+    })
+  })
+
+  describe('updateEnvironment', () => {
+    let envService
+    let updateEnvironmentStub = sandbox.stub()
+
+    beforeEach(() => {
+      envService = environmentInjector({
+        '../vuex/store': dummyStore,
+        '../vuex/modules/common/kuzzle/actions': {
+          updateEnvironment: updateEnvironmentStub
+        }
+      })
+      sandbox.stub(envService, 'persistEnvironments')
+    })
+
+    afterEach(() => {
+      sandbox.restore()
+    })
+
+    it('should throw if the environment does not exist', () => {
+      expect(envService
+        .updateEnvironment.bind(this, 'notExisting')
+      ).to.throw(Error)
+    })
+
+    it('should update with the correct values if the environment exists', () => {
+      const host = 'localhost'
+      const color = '#000'
+      const name = 'toto'
+      const ioPort = 7582
+      const wsPort = 7545
+
+      const updatedEnv = envService
+        .updateEnvironment('valid', name, color, host, ioPort, wsPort)
+
+      expect(updatedEnv.host).to.equals(host)
+      expect(updatedEnv.color).to.equals(color)
+      expect(updatedEnv.name).to.equals(name)
+      expect(updatedEnv.ioPort).to.equals(ioPort)
+      expect(updatedEnv.wsPort).to.equals(wsPort)
+      expect(updatedEnv.user).to.equals(dummyEnvironments['valid'].user)
+    })
+  })
+
+  describe('setUserToCurrentEnviromnent', () => {
+    let envService
+    let updateEnvironmentStub = sandbox.stub()
+
+    beforeEach(() => {
+      envService = environmentInjector({
+        '../vuex/store': dummyStore,
+        '../vuex/modules/common/kuzzle/actions': {
+          updateEnvironment: updateEnvironmentStub
+        }
+      })
+      sandbox.stub(envService, 'persistEnvironments')
+    })
+
+    afterEach(() => {
+      sandbox.restore()
+    })
+
+    it('should not throw', () => {
+      let user = {
+        token: 'token'
+      }
+      expect(envService.setUserToCurrentEnvironment.bind(this, user)).to.not.throw(Error)
+      expect(updateEnvironmentStub.called).to.equals(true)
     })
   })
 })
