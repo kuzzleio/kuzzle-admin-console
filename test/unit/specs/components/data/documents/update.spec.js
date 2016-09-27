@@ -39,7 +39,14 @@ describe('Update component test', () => {
           subscribe: (filter, cb) => {
             cb()
             return {
-              unsubscribe: unsubscribeStub
+              onDone: cbDone => {
+                if (triggerError) {
+                  cbDone(new Error('error'), null)
+                  return
+                }
+
+                cbDone(null, {unsubscribe: unsubscribeStub})
+              }
             }
           }
         }),

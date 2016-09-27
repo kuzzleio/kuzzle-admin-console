@@ -27,5 +27,5 @@ export const newDocument = state => {
 }
 
 export const documentToEditId = state => {
-  return state.route.params.id
+  return decodeURIComponent(state.route.params.id)
 }
