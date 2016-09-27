@@ -377,6 +377,7 @@ describe('Environment service', () => {
         token: 'token'
       }
       expect(envService.setUserToCurrentEnvironment.bind(this, user)).to.not.throw(Error)
+      expect(envService.setUserToCurrentEnvironment.bind(this, null)).to.not.throw(Error)
       expect(updateEnvironmentStub.called).to.equals(true)
     })
   })

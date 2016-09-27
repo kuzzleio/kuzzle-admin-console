@@ -44,6 +44,9 @@ describe('doLogin action', () => {
       set: sinon.spy(),
       get: sinon.spy(),
       delete: sinon.spy()
+    },
+    '../../../services/environment': {
+      setUserToCurrentEnvironment: sinon.spy()
     }
   })
 
@@ -130,12 +133,42 @@ describe('loginFromCookie action', () => {
           this.state = 'connected'
           cb()
         },
-        removeListener: sinon.mock()
+        removeListener: sinon.mock(),
+        loginPromise () {
+          return new Promise((resolve, reject) => {
+            if (triggerError.login) {
+              reject(new Error('login error'))
+            } else {
+              resolve({_id: 'foo', jwt: 'jwt'})
+            }
+          })
+        },
+        whoAmIPromise () {
+          return new Promise((resolve, reject) => {
+            if (triggerError.whoAmI) {
+              reject(new Error('whoAmI error'))
+            } else {
+              resolve({content: {foo: 'bar'}})
+            }
+          })
+        },
+        getMyRightsPromise () {
+          return new Promise((resolve, reject) => {
+            if (triggerError.getMyRights) {
+              reject(new Error('getMyRights error'))
+            } else {
+              resolve([{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}])
+            }
+          })
+        }
       },
       '../../../services/userCookies': {
         get () {
           return userInCookie
         }
+      },
+      '../../../services/environment': {
+        setUserToCurrentEnvironment: sinon.spy()
       }
     })
   }
@@ -252,28 +285,15 @@ describe('logout action', () => {
     },
     '../../../services/router': {
       go: sinon.mock()
+    },
+    '../../../services/environment': {
+      setUserToCurrentEnvironment: sinon.spy()
     }
   })
 
   it('should logout user', (done) => {
     testAction(actions.doLogout, [], {}, [
       { name: SET_CURRENT_USER, payload: [SessionUser()] },
-      { name: SET_TOKEN_VALID, payload: [false] }
-    ], done)
-  })
-})
-
-describe('setTokenValid', () => {
-  const actions = actionsInjector({})
-
-  it('should dispatch event with true', (done) => {
-    testAction(actions.setTokenValid, [true], {}, [
-      { name: SET_TOKEN_VALID, payload: [true] }
-    ], done)
-  })
-
-  it('should dispatch event with false', (done) => {
-    testAction(actions.setTokenValid, [false], {}, [
       { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
   })

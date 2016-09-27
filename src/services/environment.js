@@ -15,10 +15,12 @@ import {
   loginFromSession
   , checkFirstAdmin
 } from '../vuex/modules/auth/actions'
+import SessionUser from '../models/SessionUser'
 
 const DEFAULT = 'default'
 const ENVIRONMENTS = 'environments'
 const LAST_CONNECTED = 'lastConnectedEnv'
+
 export const defaultEnvironment = {
   host: 'localhost',
   ioPort: 7512,
@@ -41,9 +43,9 @@ export const loadEnvironments = () => {
     }
   }
 
-  for (var id in loadedEnv) {
+  Object.keys(loadedEnv).forEach(id => {
     kuzzleActions.addEnvironment(store, id, loadedEnv[id])
-  }
+  })
 
   // eslint-disable-next-line no-undef
   let lastConnected = localStorage.getItem(LAST_CONNECTED)
@@ -145,17 +147,22 @@ export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
 }
 
 export const setUserToCurrentEnvironment = (user) => {
+  if (!user) {
+    user = new SessionUser()
+  }
+
   kuzzleActions.updateEnvironment(
     store,
-    connectedTo,
+    connectedTo(store.state),
     {
-      ...currentEnvironment,
+      ...currentEnvironment(store.state),
       user
     }
   )
+
   persistEnvironments()
 
-  return currentEnvironment
+  return currentEnvironment(store.state)
 }
 
 export const switchEnvironment = (id) => {
@@ -164,7 +171,6 @@ export const switchEnvironment = (id) => {
   }
 
   let environment = environments(store.state)[id]
-
   if (!environment) {
     throw new Error(`Id ${id} does not match any environment`)
   }

@@ -7,11 +7,11 @@ export const connectedTo = state => {
 }
 
 export const currentEnvironment = state => {
-  if (!environments[connectedTo]) {
+  if (!environments(state)[connectedTo(state)]) {
     return null
   }
 
-  return environments[connectedTo]
+  return environments(state)[connectedTo(state)]
 }
 
 export const kuzzleHost = state => {
