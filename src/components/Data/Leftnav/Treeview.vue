@@ -47,6 +47,7 @@
   import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
+  import {filterIndexesByKeyword} from '../../../services/data'
 
   export default {
     name: 'Treeview',
@@ -65,25 +66,7 @@
     },
     filters: {
       filterIndexes (indexes, filterInput) {
-        let lowerCaseFilter = filterInput.toLowerCase()
-        if (lowerCaseFilter === '') {
-          return indexes
-        }
-
-        return indexes.filter((element) => {
-          if (element.toLowerCase().indexOf(lowerCaseFilter) >= 0) {
-            return true
-          }
-
-          let collections = this.indexesAndCollections[element]
-          if (collections.stored.some(collection => collection.toLowerCase().indexOf(lowerCaseFilter) >= 0)) {
-            return true
-          }
-
-          if (collections.realtime.some(collection => collection.toLowerCase().indexOf(lowerCaseFilter) >= 0)) {
-            return true
-          }
-        })
+        return filterIndexesByKeyword(indexes, this.indexesAndCollections, filterInput)
       }
     },
     methods: {

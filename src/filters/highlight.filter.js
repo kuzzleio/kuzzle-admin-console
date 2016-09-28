@@ -1,5 +1,5 @@
 export function highlight (value, filter) {
-  if (value && value !== '') {
+  if (value && value !== '' && filter) {
     let index = value.toLowerCase().indexOf(filter.toLowerCase())
 
     if (index >= 0) {

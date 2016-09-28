@@ -23,3 +23,27 @@ export const generateHash = (s) => {
   }
   return hash
 }
+
+export const filterIndexesByKeyword = (indexes, indexTree, word) => {
+  if (!word || word === '') {
+    return indexes
+  }
+
+  let lowerCaseWord = word.toLowerCase()
+
+  return indexes.filter((element) => {
+    if (element.toLowerCase().indexOf(lowerCaseWord) >= 0) {
+      return true
+    }
+
+    let collections = indexTree[element]
+
+    if (collections.stored && collections.stored.some(collection => collection.toLowerCase().indexOf(lowerCaseWord) >= 0)) {
+      return true
+    }
+
+    if (collections.realtime && collections.realtime.some(collection => collection.toLowerCase().indexOf(lowerCaseWord) >= 0)) {
+      return true
+    }
+  })
+}
