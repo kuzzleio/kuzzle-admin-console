@@ -23,9 +23,10 @@ import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import ErrorLayout from './components/Error/Layout'
 import {
   switchEnvironment,
-  loadEnvironments
+  loadLastConnectedEnvId
 } from './services/environment'
-import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
+import { kuzzleIsConnected, environments } from './vuex/modules/common/kuzzle/getters'
+import { loadEnvironments } from './vuex/modules/common/kuzzle/actions'
 
 window.jQuery = window.$ = require('jquery')
 require('materialize-css/dist/js/materialize')
@@ -40,8 +41,17 @@ export default {
     ErrorLayout
   },
   ready () {
-    let lastConnected = loadEnvironments()
+    this.loadEnvironments()
+    let lastConnected = this.loadLastConnectedEnvId()
+
+    if (!this.environments[lastConnected]) {
+      lastConnected = Object.keys(this.environments)[0]
+    }
+
     this.switchEnvironment(lastConnected)
+      .then(() => {
+        this.$router.go('/')
+      })
       .catch((err) => {
         // TODO bubble this error to the UI
         console.error(`Something went wrong. Not been able to connect to the
@@ -51,11 +61,15 @@ export default {
   },
   methods: {
     switchEnvironment,
-    loadEnvironments
+    loadLastConnectedEnvId
   },
   vuex: {
     getters: {
-      kuzzleIsConnected
+      kuzzleIsConnected,
+      environments
+    },
+    actions: {
+      loadEnvironments
     }
   }
 }

@@ -7,54 +7,16 @@ import store from '../vuex/store'
 import { reset } from '../vuex/actions'
 import {
   environments
-  , connectedTo
+  , currentEnvironmentId
   , currentEnvironment
 } from '../vuex/modules/common/kuzzle/getters'
 import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
 import {
-  loginFromSession
+  loginByToken
   , checkFirstAdmin
 } from '../vuex/modules/auth/actions'
-import SessionUser from '../models/SessionUser'
 
-const DEFAULT = 'default'
-const ENVIRONMENTS = 'environments'
-const LAST_CONNECTED = 'lastConnectedEnv'
-
-export const defaultEnvironment = {
-  host: 'localhost',
-  ioPort: 7512,
-  wsPort: 7513
-}
-
-/**
- * Loads the environment definitions stored in localStorage, stores them in
- * the Vuex store, then returns the id of the last connected
- * environment if available, or the first environment id available otherwise.
- *
- * @return {String} the id of the last connected environment.
- */
-export const loadEnvironments = () => {
-  // eslint-disable-next-line no-undef
-  let loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
-  if (Object.keys(loadedEnv).length === 0) {
-    loadedEnv = {
-      [DEFAULT]: defaultEnvironment
-    }
-  }
-
-  Object.keys(loadedEnv).forEach(id => {
-    kuzzleActions.addEnvironment(store, id, loadedEnv[id])
-  })
-
-  // eslint-disable-next-line no-undef
-  let lastConnected = localStorage.getItem(LAST_CONNECTED)
-  if (!lastConnected || Object.keys(loadedEnv).indexOf(lastConnected) === -1) {
-    return Object.keys(loadedEnv)[0]
-  }
-
-  return lastConnected
-}
+export const LAST_CONNECTED = 'lastConnectedEnv'
 
 /**
  * Creates an environment objects, stores it in the Vuex store and returns it.
@@ -83,13 +45,12 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
   }
 
   kuzzleActions.addEnvironment(store, generateHash(name), newEnvironment)
-  persistEnvironments()
   return newEnvironment
 }
 
-export const persistEnvironments = () => {
+export const loadLastConnectedEnvId = () => {
   // eslint-disable-next-line no-undef
-  localStorage.setItem(ENVIRONMENTS, JSON.stringify(environments(store.state)))
+  return localStorage.getItem(LAST_CONNECTED)
 }
 
 export const validateEnvironment = (name, host, ioPort, wsPort) => {
@@ -123,11 +84,6 @@ export const validateEnvironment = (name, host, ioPort, wsPort) => {
   }
 }
 
-export const deleteEnvironment = (id) => {
-  kuzzleActions.deleteEnvironment(store, id)
-  persistEnvironments()
-}
-
 export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
   let envToUpdate = environments(store.state)[id]
   if (!envToUpdate) {
@@ -137,30 +93,22 @@ export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
   validateEnvironment(name, host, ioPort, wsPort)
 
   envToUpdate = {
-    ...envToUpdate,
-    name, color, host, ioPort, wsPort
+    ...envToUpdate, name, color, host, ioPort, wsPort
   }
 
   kuzzleActions.updateEnvironment(store, id, envToUpdate)
-  persistEnvironments()
   return envToUpdate
 }
 
-export const setUserToCurrentEnvironment = (user) => {
-  if (!user) {
-    user = new SessionUser()
-  }
-
+export const setTokenToCurrentEnvironment = (token) => {
   kuzzleActions.updateEnvironment(
     store,
-    connectedTo(store.state),
+    currentEnvironmentId(store.state),
     {
       ...currentEnvironment(store.state),
-      user
+      token
     }
-  )
-
-  persistEnvironments()
+    )
 
   return currentEnvironment(store.state)
 }
@@ -179,18 +127,16 @@ export const switchEnvironment = (id) => {
 
   connectToEnvironment(environment)
   return waitForConnected(2000)
-    .then(() => {
-      kuzzleActions.setConnection(store, id)
-      // eslint-disable-next-line no-undef
-      localStorage.setItem(LAST_CONNECTED, id)
-      return loginFromSession(store, environment.user)
-    })
-    .then(user => {
-      if (!user.id) {
-        return checkFirstAdmin(store)
-      }
-      return Promise.resolve()
-    })
+  .then(() => {
+    kuzzleActions.setConnection(store, id)
+    return loginByToken(store, environment.token)
+  })
+  .then(user => {
+    if (!user.id) {
+      return checkFirstAdmin(store)
+    }
+    return Promise.resolve()
+  })
 }
 
 window.switchEnvironment = switchEnvironment
