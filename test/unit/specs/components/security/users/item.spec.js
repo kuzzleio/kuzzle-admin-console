@@ -133,8 +133,8 @@ describe('UserItem component', () => {
   })
 
   it('should redirect on right route on update', () => {
-    vm.$refs.item.$router = {go: sandbox.stub()}
-    vm.$refs.item.update()
+    $vm.$router = {go: sandbox.stub()}
+    $vm.update()
 
     expect($dispatch.calledWithMatch('common-list::edit-document', 'SecurityUsersUpdate', 'kuzzle-bo-admin')).to.equal(true)
   })
