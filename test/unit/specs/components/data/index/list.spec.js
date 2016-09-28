@@ -9,7 +9,6 @@ let vm
 let $vm
 
 describe('List indexes tests', () => {
-  let listIndexesAndCollections = sandbox.stub()
   let indexes = sandbox.stub().returns([])
   let indexesAndCollections = sandbox.stub().returns({})
   let canSearchIndex = sandbox.stub().returns(true)
@@ -21,9 +20,6 @@ describe('List indexes tests', () => {
       './ModalCreate': mockedComponent,
       './Boxed': mockedComponent,
       '../../../directives/title.directive': mockedDirective('title'),
-      '../../../vuex/modules/data/actions': {
-        listIndexesAndCollections
-      },
       '../../../vuex/modules/data/getters': {
         indexes,
         indexesAndCollections
@@ -57,24 +53,6 @@ describe('List indexes tests', () => {
         $vm.filter = 'to'
         expect($vm.countIndexForFilter).to.be.equal(1)
       })
-    })
-  })
-
-  describe('ready', () => {
-    it('should do nothing if user can\'t search in index', () => {
-      canSearchIndex = sandbox.stub().returns(false)
-      listIndexesAndCollections = sandbox.stub()
-      mockInjector()
-
-      expect(listIndexesAndCollections.callCount).to.be.equal(0)
-    })
-
-    it('should call listIndexesAndCollections if user can search in index', () => {
-      canSearchIndex = sandbox.stub().returns(true)
-      listIndexesAndCollections = sandbox.stub()
-      mockInjector()
-
-      expect(listIndexesAndCollections.callCount).to.be.equal(1)
     })
   })
 })
