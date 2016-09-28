@@ -6,24 +6,28 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 describe('App.vue', () => {
-  let vm
   let sandbox = sinon.sandbox.create()
 
-  beforeEach(() => {
-    vm = new Vue({
+  const createVm = () => {
+    let vm = new Vue({
       template: '<app></app>',
       components: {App},
       replace: false,
       store: store
     })
-    vm.switchEnvironment = sinon.stub()
-    vm.$mount()
-  })
+    vm.switchEnvironment = sandbox.stub().returns(Promise.resolve())
+    vm.loadEnvironments = () => { return {} }
+    vm.addEnvironment = sandbox.stub()
+
+    return vm
+  }
 
   afterEach(() => sandbox.reset())
 
   describe('Ready', () => {
     it('should call switchEnvironment once', () => {
+      let vm = createVm()
+      vm.$mount()
       expect(vm.switchEnvironment.calledWith('valid'))
     })
   })

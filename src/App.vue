@@ -23,10 +23,16 @@ import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import ErrorLayout from './components/Error/Layout'
 import {
   switchEnvironment,
+  loadEnvironments,
   loadLastConnectedEnvId
 } from './services/environment'
-import { kuzzleIsConnected, environments } from './vuex/modules/common/kuzzle/getters'
-import { loadEnvironments } from './vuex/modules/common/kuzzle/actions'
+import {
+  kuzzleIsConnected,
+  environments
+} from './vuex/modules/common/kuzzle/getters'
+import {
+  addEnvironment
+} from './vuex/modules/common/kuzzle/actions'
 
 window.jQuery = window.$ = require('jquery')
 require('materialize-css/dist/js/materialize')
@@ -41,10 +47,14 @@ export default {
     ErrorLayout
   },
   ready () {
-    this.loadEnvironments()
+    let loadedEnv = this.loadEnvironments()
     let lastConnected = this.loadLastConnectedEnvId()
 
-    if (!this.environments[lastConnected]) {
+    Object.keys(loadedEnv).forEach(id => {
+      this.addEnvironment(id, loadedEnv[id])
+    })
+
+    if (!lastConnected || !this.environments[lastConnected]) {
       lastConnected = Object.keys(this.environments)[0]
     }
 
@@ -54,14 +64,15 @@ export default {
       })
       .catch((err) => {
         // TODO bubble this error to the UI
-        console.error(`Something went wrong. Not been able to connect to the
+        console.error(`Something went wrong while connecting to the
           ${lastConnected} environment`)
         console.error(err)
       })
   },
   methods: {
     switchEnvironment,
-    loadLastConnectedEnvId
+    loadLastConnectedEnvId,
+    loadEnvironments
   },
   vuex: {
     getters: {
@@ -69,7 +80,7 @@ export default {
       environments
     },
     actions: {
-      loadEnvironments
+      addEnvironment
     }
   }
 }

@@ -14,9 +14,35 @@ import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
 import {
   loginByToken
   , checkFirstAdmin
+  , ENVIRONMENTS
 } from '../vuex/modules/auth/actions'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
+export const DEFAULT = 'default'
+export const defaultEnvironment = {
+  host: 'localhost',
+  ioPort: 7512,
+  wsPort: 7513
+}
+
+/**
+ * Loads the environment definitions stored in localStorage, stores them in
+ * the Vuex store, then returns the id of the last connected
+ * environment if available, or the first environment id available otherwise.
+ *
+ * @return {String} the id of the last connected environment.
+ */
+export const loadEnvironments = () => {
+  // eslint-disable-next-line no-undef
+  let loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
+  if (Object.keys(loadedEnv).length === 0) {
+    loadedEnv = {
+      [DEFAULT]: defaultEnvironment
+    }
+  }
+
+  return loadedEnv
+}
 
 /**
  * Creates an environment objects, stores it in the Vuex store and returns it.
@@ -106,9 +132,9 @@ export const setTokenToCurrentEnvironment = (token) => {
     currentEnvironmentId(store.state),
     {
       ...currentEnvironment(store.state),
-      token
+      token: token
     }
-    )
+  )
 
   return currentEnvironment(store.state)
 }
@@ -138,5 +164,3 @@ export const switchEnvironment = (id) => {
     return Promise.resolve()
   })
 }
-
-window.switchEnvironment = switchEnvironment

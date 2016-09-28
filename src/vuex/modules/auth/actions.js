@@ -1,6 +1,5 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
-import userCookies from '../../../services/userCookies'
 import SessionUser from '../../../models/SessionUser'
 import { setTokenToCurrentEnvironment } from '../../../services/environment'
 import { SET_CURRENT_USER, SET_ADMIN_EXISTS, SET_TOKEN_VALID } from './mutation-types'
@@ -64,23 +63,19 @@ export const loginByToken = (store, token) => {
       kuzzle.setJwtToken(token)
       setTokenToCurrentEnvironment(token)
       return kuzzle.whoAmIPromise()
-    })
-    .then(KuzzleUser => {
-      user.id = KuzzleUser.id
-      user.params = KuzzleUser.content
-      return kuzzle.getMyRightsPromise()
-    })
-    .then(rights => {
-      user.rights = rights
-      store.dispatch(SET_CURRENT_USER, user)
-      store.dispatch(SET_TOKEN_VALID, true)
-      return Promise.resolve(user)
-    })
-}
+        .then(KuzzleUser => {
+          user.id = KuzzleUser.id
+          user.params = KuzzleUser.content
+          return kuzzle.getMyRightsPromise()
+        })
+        .then(rights => {
+          user.rights = rights
 
-export const loginFromCookie = (store) => {
-  let user = userCookies.get()
-  return loginByToken(store, user.token)
+          store.dispatch(SET_CURRENT_USER, user)
+          store.dispatch(SET_TOKEN_VALID, true)
+          return Promise.resolve(user)
+        })
+    })
 }
 
 export const checkFirstAdmin = (store) => {
