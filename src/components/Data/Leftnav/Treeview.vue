@@ -26,8 +26,7 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="indexName in indexes | orderBy '$key'"
-            v-if="filterTree(indexName, indexesAndCollections[indexName])">
+            v-for="indexName in indexes | orderBy '$key' | filterIndexes filter">
             <index-branch
               :force-open="indexes.length === 1"
               :index-name="indexName"
@@ -64,18 +63,31 @@
         filter: ''
       }
     },
-    methods: {
-      canSearchIndex,
-      filterTree (indexName, collections) {
-        if (this.filter === '' || indexName.indexOf(this.filter) >= 0) {
-          return true
+    filters: {
+      filterIndexes (indexes, filterInput) {
+        let lowerCaseFilter = filterInput.toLowerCase()
+        if (lowerCaseFilter === '') {
+          return indexes
         }
 
-        let stored = collections.stored.some(collection => collection.indexOf(this.filter) >= 0)
-        let realtime = collections.realtime.some(collection => collection.indexOf(this.filter) >= 0)
+        return indexes.filter((element) => {
+          if (element.toLowerCase().indexOf(lowerCaseFilter) >= 0) {
+            return true
+          }
 
-        return (stored || realtime)
+          let collections = this.indexesAndCollections[element]
+          if (collections.stored.some(collection => collection.toLowerCase().indexOf(lowerCaseFilter) >= 0)) {
+            return true
+          }
+
+          if (collections.realtime.some(collection => collection.toLowerCase().indexOf(lowerCaseFilter) >= 0)) {
+            return true
+          }
+        })
       }
+    },
+    methods: {
+      canSearchIndex
     },
     vuex: {
       getters: {
