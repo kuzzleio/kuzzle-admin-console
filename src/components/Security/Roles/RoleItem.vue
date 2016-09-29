@@ -75,7 +75,7 @@ export default {
     },
     update () {
       if (this.canEditRole()) {
-        this.$router.go({name: 'SecurityRolesUpdate', params: {id: this.document.id}})
+        this.$dispatch('common-list::edit-document', 'SecurityRolesUpdate', this.document.id)
       }
     },
     canEditRole,

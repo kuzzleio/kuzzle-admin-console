@@ -114,10 +114,18 @@
     },
     ready () {
       this.fetch()
-      room = kuzzle
+      kuzzle
         .dataCollectionFactory(this.collection, this.index)
         .subscribe({term: {_id: this.documentToEditId}}, () => {
           this.show = true
+        })
+        .onDone((error, kuzzleRoom) => {
+          if (error) {
+            /* TODO: manage subscription error */
+            return
+          }
+
+          room = kuzzleRoom
         })
     },
     destroyed () {

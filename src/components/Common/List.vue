@@ -26,7 +26,8 @@
                        :document="document"
                        :is-checked="isChecked(document.id)"
                        :index="index"
-                       :collection="collection">
+                       :collection="collection"
+                       @common-list::edit-document="editDocument">
             </component>
           </div>
         </div>
@@ -165,6 +166,9 @@
           .catch((e) => {
             this.$dispatch('toast', e.message, 'error')
           })
+      },
+      editDocument (route, id) {
+        this.$router.go({name: route, params: {id: encodeURIComponent(id)}})
       }
     },
     events: {
