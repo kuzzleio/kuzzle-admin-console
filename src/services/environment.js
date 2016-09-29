@@ -2,7 +2,6 @@ import {
   waitForConnected
   , connectToEnvironment
 } from './kuzzleWrapper'
-import { generateHash } from './data'
 import store from '../vuex/store'
 import { reset } from '../vuex/actions'
 import {
@@ -74,7 +73,7 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
     wsPort
   }
 
-  kuzzleActions.addEnvironment(store, generateHash(name), newEnvironment)
+  kuzzleActions.addEnvironment(store, name, newEnvironment)
   return newEnvironment
 }
 
