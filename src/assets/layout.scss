@@ -73,6 +73,7 @@ html{
 }
 
 .side-nav {
+  z-index: 900;
   top: $navbar-height - 10;
   height: 95%;
 }

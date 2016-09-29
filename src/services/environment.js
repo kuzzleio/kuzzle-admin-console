@@ -22,6 +22,7 @@ const ENVIRONMENTS = 'environments'
 const LAST_CONNECTED = 'lastConnectedEnv'
 
 export const defaultEnvironment = {
+  name: 'localhost',
   host: 'localhost',
   ioPort: 7512,
   wsPort: 7513

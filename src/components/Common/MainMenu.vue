@@ -3,28 +3,32 @@
     <div class="navbar-fixed">
       <nav>
         <ul>
-            <li class="logo">
-              <a href="#" class="">
-                <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
-              </a>
-            </li>
-            <li class="nav" v-link-active>
-              <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
-            </li>
-            <li class="nav" v-link-active v-if="hasSecurityRights()">
-              <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
-            </li>
-          </ul>
+          <li class="logo">
+            <a href="#" class="">
+              <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
+            </a>
+          </li>
+          <li class="nav" v-link-active>
+            <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
+          </li>
+          <li class="nav" v-link-active v-if="hasSecurityRights()">
+            <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
+          </li>
+        </ul>
 
-          <ul id="nav-mobile" class="right">
-            <li>
-              <strong>{{user.id}}</strong>
-            </li>
-            <li>
-              <a @click="doLogout">Logout</a>
-            </li>
-          </ul>
+        <ul class="right">
+          <li>
+            Welcome <strong>{{user.id}}</strong>
+          </li>
+          <li>
+            <a @click="doLogout">Logout</a>
+          </li>
+
+          <environments-switch @main-menu::create-env="$broadcast('modal-open', 'create-env')"></environments-switch>
+        </ul>
       </nav>
+
+      <modal-create></modal-create>
     </div>
   </header>
 </template>
@@ -33,8 +37,14 @@
   import {hasSecurityRights} from '../../services/userAuthorization'
   import {user} from '../../vuex/modules/auth/getters'
   import {doLogout} from '../../vuex/modules/auth/actions'
+  import EnvironmentsSwitch from './Environments/Switch'
+  import ModalCreate from './Environments/ModalCreate'
 
   export default {
+    components: {
+      EnvironmentsSwitch,
+      ModalCreate
+    },
     methods: {
       hasSecurityRights
     },
