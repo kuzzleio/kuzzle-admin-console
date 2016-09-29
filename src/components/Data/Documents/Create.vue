@@ -10,6 +10,8 @@
     <create-or-update
       @document-create::create="create"
       @document-create::cancel="cancel"
+      @document-create::reset-error="error = null"
+      :error="error"
       :index="index"
       :collection="collection">
     </create-or-update>
@@ -38,22 +40,29 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        error: ''
+      }
+    },
     methods: {
       create (viewState, json, mapping) {
+        this.error = ''
+
         if (viewState === 'code') {
           if (!json) {
-            this.$dispatch('toast', 'Invalid document', 'error')
+            this.error = 'The document is invalid, please review it'
             return
           }
           this.setNewDocument(json)
         }
 
-        kuzzle
+        return kuzzle
           .dataCollectionFactory(this.collection, this.index)
           .dataMappingFactory(mapping || {})
           .applyPromise()
           .then(() => {
-            kuzzle
+            return kuzzle
               .dataCollectionFactory(this.collection, this.index)
               .createDocumentPromise(this.newDocument)
               .then(() => {
@@ -61,11 +70,11 @@
                 this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch(err => {
-                this.$dispatch('toast', 'Bad mapping: ' + err.message, 'error')
+                this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
               })
           })
           .catch(err => {
-            this.$dispatch('toast', 'Bad document: ' + err.message, 'error')
+            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
           })
       },
       cancel () {

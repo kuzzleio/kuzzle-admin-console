@@ -7,6 +7,9 @@
     <create-or-update
       @document-create::create="create"
       @document-create::cancel="cancel"
+      @document-create::reset-error="error = ''"
+      :mandatory-id="true"
+      :error="error"
       index="%kuzzle"
       collection="users">
     </create-or-update>
@@ -31,14 +34,30 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        error: ''
+      }
+    },
     methods: {
       create (viewState, json) {
+        this.error = ''
+
         if (viewState === 'code') {
           if (!json) {
-            this.$dispatch('toast', 'Invalid document', 'error')
+            this.error = 'The document is invalid, please review it'
+            return
+          }
+          if (!json._id) {
+            this.error = 'The document must have a field "_id"'
             return
           }
           this.setNewDocument(json)
+        }
+
+        if (!this.newDocument._id) {
+          this.error = 'The document identifier is required'
+          return
         }
 
         kuzzle
@@ -48,7 +67,7 @@
             kuzzle.refreshIndex('%kuzzle')
             this.$router.go({name: 'SecurityUsersList'})
           }).catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+            this.error = 'An error occurred while creating user: <br />' + err.message
           })
       },
       cancel () {

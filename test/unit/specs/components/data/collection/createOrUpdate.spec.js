@@ -9,7 +9,7 @@ let vm
 let $vm
 let $dispatch
 
-describe('CreateOrUpdate test', () => {
+describe('CreateOrUpdate collections test', () => {
   let resetCollectionDetail = sandbox.stub().returns()
   let mapping = sandbox.stub().returns()
   let collectionName = sandbox.stub().returns()
@@ -108,6 +108,16 @@ describe('CreateOrUpdate test', () => {
         $vm.cancel()
 
         expect($vm.$router.go.calledWith({name: 'DataIndexSummary', params: {index: 'myindex'}})).to.be.equal(true)
+      })
+    })
+
+    describe('dismissError', () => {
+      it('should dispatch reset error event', () => {
+        mockInjector()
+
+        $vm.dismissError()
+
+        expect($dispatch.calledWith('collection-create::reset-error')).to.be.equal(true)
       })
     })
   })

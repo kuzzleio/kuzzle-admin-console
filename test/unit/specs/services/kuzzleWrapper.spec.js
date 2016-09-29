@@ -237,7 +237,7 @@ describe('Kuzzle wrapper service', () => {
       let store = {store: 'mystore'}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      expect(removeAllListeners.calledWith('jwtTokenExpired'))
+      expect(removeAllListeners.calledWith('queryError'))
       expect(setTokenValid.calledWithMatch(store, false))
     })
   })

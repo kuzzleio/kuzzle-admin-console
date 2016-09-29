@@ -2,6 +2,8 @@
   <create
   title="Create a profile"
   :content="content"
+  :error="error"
+  @security-create::reset-error="error = ''"
   @security-create::create="create"
   @security-create::cancel="cancel">
   </create>
@@ -17,12 +19,18 @@
     },
     data () {
       return {
+        error: '',
         content: {}
       }
     },
     methods: {
       create (id, content) {
-        if (!id || !content || Object.keys(content).length === 0) {
+        if (!id) {
+          this.error = 'The profile identifier is required'
+          return
+        }
+        if (!content || Object.keys(content).length === 0) {
+          this.error = 'The profile must have a content'
           return
         }
 
@@ -34,7 +42,7 @@
             this.$router.go({name: 'SecurityProfilesList'})
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.error = 'An error occurred while creating profile: <br />' + e.message
           })
       },
       cancel () {

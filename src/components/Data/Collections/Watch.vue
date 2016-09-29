@@ -290,8 +290,7 @@
       },
       toggleSubscription () {
         if (!this.subscribed) {
-          this.subscribed = true
-          this.room = this.subscribe(this.filters, this.index, this.collection)
+          this.subscribe(this.filters, this.index, this.collection)
         } else {
           this.subscribed = false
           this.unsubscribe(this.room)
@@ -405,6 +404,16 @@
         return kuzzle
           .dataCollectionFactory(this.collection, this.index)
           .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
+          .onDone((err, room) => {
+            if (err) {
+              this.room = null
+              this.subscribed = false
+              this.$dispatch('toast', err.message, 'error')
+            } else {
+              this.subscribed = true
+              this.room = room
+            }
+          })
       },
       unsubscribe (room) {
         this.warning.message = ''

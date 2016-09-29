@@ -12,6 +12,7 @@ export const doLogin = (store, username, password) => {
 
   return new Promise((resolve, reject) => {
     kuzzle
+      .unsetJwtToken()
       .loginPromise('local', {username, password}, '4h')
       .then(loginResult => {
         user.id = loginResult._id
@@ -47,6 +48,7 @@ export const loginFromSession = (store, user) => {
   if (!user) {
     user = SessionUser()
     store.dispatch(SET_CURRENT_USER, SessionUser())
+    kuzzle.unsetJwtToken()
     return Promise.resolve(SessionUser())
   }
 
@@ -62,6 +64,7 @@ export const loginFromSession = (store, user) => {
       store.dispatch(SET_CURRENT_USER, user)
       return Promise.resolve(user)
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const loginFromCookie = (store) => {
@@ -81,6 +84,7 @@ export const checkFirstAdmin = (store) => {
       store.dispatch(SET_ADMIN_EXISTS, true)
       return Promise.resolve()
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const setFirstAdmin = (store, exists) => {

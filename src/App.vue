@@ -25,7 +25,7 @@ import { switchEnvironment } from './services/environment'
 import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
 
 window.jQuery = window.$ = require('jquery')
-require('materialize-css/dist/js/materialize')
+require('imports?$=jquery!materialize-css/dist/js/materialize')
 
 import 'font-awesome/css/font-awesome.css'
 

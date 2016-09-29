@@ -30,6 +30,7 @@ export const createCollection = (store, existingCollections, index, collectionNa
     .then(() => {
       store.dispatch(ADD_STORED_COLLECTION, index, collectionName)
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const fetchCollectionDetail = (store, collections, index, collection) => {
@@ -40,6 +41,7 @@ export const fetchCollectionDetail = (store, collections, index, collection) => 
       .then(result => {
         store.dispatch(RECEIVE_COLLECTION_DETAIL, collection, result.mapping, false)
       })
+      .catch(error => Promise.reject(new Error(error.message)))
   }
 
   if (collections.realtime.indexOf(collection) !== -1) {

@@ -9,6 +9,9 @@ describe('doLogin action', () => {
 
   const actions = actionsInjector({
     '../../../services/kuzzle': {
+      unsetJwtToken () {
+        return this
+      },
       loginPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.login) {
