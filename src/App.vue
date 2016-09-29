@@ -41,6 +41,7 @@ import 'font-awesome/css/font-awesome.css'
 
 export default {
   replace: false,
+  name: 'KuzzleBackOffice',
   directives: [Toaster],
   components: {
     KuzzleDisconnectedPage,
