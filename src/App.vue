@@ -24,7 +24,8 @@ import ErrorLayout from './components/Error/Layout'
 import {
   switchEnvironment,
   loadEnvironments,
-  loadLastConnectedEnvId
+  loadLastConnectedEnvId,
+  persistEnvironments
 } from './services/environment'
 import {
   kuzzleIsConnected,
@@ -52,8 +53,10 @@ export default {
     let lastConnected = this.loadLastConnectedEnvId()
 
     Object.keys(loadedEnv).forEach(id => {
-      this.addEnvironment(id, loadedEnv[id])
+      this.addEnvironment(id, loadedEnv[id], false)
     })
+
+    this.persistEnvironments(this.environments)
 
     if (!lastConnected || !this.environments[lastConnected]) {
       lastConnected = Object.keys(this.environments)[0]
@@ -73,7 +76,8 @@ export default {
   methods: {
     switchEnvironment,
     loadLastConnectedEnvId,
-    loadEnvironments
+    loadEnvironments,
+    persistEnvironments
   },
   vuex: {
     getters: {

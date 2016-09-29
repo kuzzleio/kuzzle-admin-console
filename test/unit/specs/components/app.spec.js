@@ -28,7 +28,8 @@ describe('App.vue', () => {
       './services/environment': {
         switchEnvironment: switchEnvStub,
         loadEnvironments: loadEnvStub,
-        loadLastConnectedEnvId: loadLastConnectedStub
+        loadLastConnectedEnvId: loadLastConnectedStub,
+        persistEnvironments: () => { return null }
       },
       './vuex/modules/common/kuzzle/getters': {
         kuzzleIsConnected: () => { return false },

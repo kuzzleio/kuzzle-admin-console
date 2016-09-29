@@ -24,6 +24,11 @@ export const defaultEnvironment = {
   ioPort: 7512,
   wsPort: 7513
 }
+
+export const persistEnvironments = (environments) => {
+  // eslint-disable-next-line no-undef
+  localStorage.setItem(ENVIRONMENTS, JSON.stringify(environments))
+}
 /**
  * Loads the environment definitions stored in localStorage, stores them in
  * the Vuex store, then returns the id of the last connected
