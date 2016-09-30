@@ -21,6 +21,7 @@ describe('createOrUpdate document tests', () => {
   let triggerError = true
   let addAttributeFromPathSpy
   let getUpdatedSchemaSpy
+  let countAttributesStub
 
   let mockInjector = () => {
     Create = CreateInjector({
@@ -59,7 +60,8 @@ describe('createOrUpdate document tests', () => {
       },
       '../../../../services/objectHelper': {
         mergeDeep: mergeDeepSpy,
-        formatType: formatTypeSpy
+        formatType: formatTypeSpy,
+        countAttributes: countAttributesStub
       },
       'bluebird': cb => cb(sinon.stub(), sinon.stub()),
       '../../../../directives/focus.directive': mockedDirective('focus')
@@ -93,6 +95,7 @@ describe('createOrUpdate document tests', () => {
     formatTypeSpy = sandbox.stub()
     addAttributeFromPathSpy = sandbox.stub().returns({})
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
+    countAttributesStub = sandbox.stub()
 
     mockInjector()
   })
@@ -167,6 +170,18 @@ describe('createOrUpdate document tests', () => {
       mockInjector()
       setTimeout(() => {
         expect(formatTypeSpy.calledWith({foo: 'bar'})).to.be.ok
+        done()
+      }, 0)
+    })
+  })
+
+  describe('document too big', () => {
+    it('should set a flag to true if the document has over 100 attributes', (done) => {
+      triggerError = false
+      countAttributesStub = sandbox.stub().returns(101)
+      mockInjector()
+      setTimeout(() => {
+        expect(vm.$refs.create.big).to.equals(true)
         done()
       }, 0)
     })
