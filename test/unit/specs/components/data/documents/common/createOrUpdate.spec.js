@@ -155,6 +155,15 @@ describe('createOrUpdate document tests', () => {
         expect(dispatchSpy.calledWith('document-create::reset-error')).to.be.equal(true)
       })
     })
+
+    describe('show', () => {
+      it('should set some variables', () => {
+        vm.$refs.create.show()
+
+        expect(vm.$refs.create.showAnyway).to.equals.(true)
+        expect(vm.$refs.create.big).to.equals.(false)
+      })
+    })
   })
 
   describe('beforeDestroy test', () => {
