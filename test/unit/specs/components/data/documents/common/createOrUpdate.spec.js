@@ -161,7 +161,7 @@ describe('createOrUpdate document tests', () => {
         vm.$refs.create.show()
 
         expect(vm.$refs.create.showAnyway).to.equals(true)
-        expect(vm.$refs.create.big).to.equals.(false)
+        expect(vm.$refs.create.big).to.equals(false)
       })
     })
   })
