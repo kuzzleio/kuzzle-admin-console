@@ -132,7 +132,6 @@
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
-  import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
   import {indexesAndCollections, routeName, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   export default {
     name: 'CommonBreadcrumb',
@@ -153,15 +152,7 @@
         return this.routeName === routeName
       }
     },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
-      }
-    },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         routeName,
         selectedIndex,

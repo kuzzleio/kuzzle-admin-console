@@ -10,7 +10,6 @@ let $vm
 
 describe('Update collection component test', () => {
   let fetchCollectionDetail = sandbox.stub().returns(Promise.resolve())
-  let listIndexesAndCollections = sandbox.stub().returns(Promise.resolve())
   let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
   let collectionName = sandbox.stub().returns()
   let $dispatch
@@ -20,9 +19,6 @@ describe('Update collection component test', () => {
       './CreateOrUpdate': mockedComponent,
       '../../../vuex/modules/collection/actions': {
         fetchCollectionDetail
-      },
-      '../../../vuex/modules/data/actions': {
-        listIndexesAndCollections
       },
       '../../../vuex/modules/data/getters': {
         indexesAndCollections

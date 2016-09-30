@@ -151,7 +151,6 @@
   import IndexDropdown from './Dropdown'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import CollectionBoxed from '../Collections/Boxed'
-  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
@@ -176,9 +175,6 @@
       Title
     },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         indexesAndCollections
       }
@@ -224,18 +220,6 @@
         }
 
         return this.indexesAndCollections[this.index].realtime
-      }
-    },
-    watch: {
-      'index': function (index) {
-        if (this.canSearchIndex()) {
-          this.listIndexesAndCollections()
-        }
-      }
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
       }
     }
   }
