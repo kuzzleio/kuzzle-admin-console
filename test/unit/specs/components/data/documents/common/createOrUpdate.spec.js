@@ -160,7 +160,7 @@ describe('createOrUpdate document tests', () => {
       it('should set some variables', () => {
         vm.$refs.create.show()
 
-        expect(vm.$refs.create.showAnyway).to.equals.(true)
+        expect(vm.$refs.create.showAnyway).to.equals(true)
         expect(vm.$refs.create.big).to.equals.(false)
       })
     })
