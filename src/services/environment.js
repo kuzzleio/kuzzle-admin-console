@@ -69,8 +69,6 @@ export const loadEnvironments = () => {
  * @return {Object} The environment object.
  */
 export const createEnvironment = (name, color, host, ioPort, wsPort) => {
-  validateEnvironment(name, host, ioPort, wsPort)
-
   if (!color) {
     color = '#00757f'
   }
@@ -93,37 +91,6 @@ export const persistEnvironments = () => {
   localStorage.setItem(ENVIRONMENTS, JSON.stringify(environments(store.state)))
 }
 
-export const validateEnvironment = (name, host, ioPort, wsPort) => {
-  // TODO ensure that name contains at least a letter
-  if (!name || name === '') {
-    throw new Error('The provided name is invalid')
-  }
-
-  if (!host || host === '') {
-    throw new Error('The provided hostname is invalid')
-  }
-
-  if (ioPort != null && ioPort !== parseInt(ioPort, 10)) {
-    throw new Error('The provided ioPort is not a Number')
-  }
-
-  if (ioPort < 0) {
-    throw new Error('The provided ioPort is not a valid port number')
-  }
-
-  if (!wsPort) {
-    throw new Error('Missing wsPort')
-  }
-
-  if (wsPort !== parseInt(wsPort, 10)) {
-    throw new Error('The provided wsPort is not a Number')
-  }
-
-  if (wsPort < 0) {
-    throw new Error('The provided wsPort is not a valid port number')
-  }
-}
-
 export const deleteEnvironment = (id) => {
   kuzzleActions.deleteEnvironment(store, id)
   persistEnvironments()
@@ -135,7 +102,6 @@ export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
     throw new Error(`The provided id ${id} does not correspond to any existing
       environment`)
   }
-  validateEnvironment(name, host, ioPort, wsPort)
 
   envToUpdate = {
     ...envToUpdate,
