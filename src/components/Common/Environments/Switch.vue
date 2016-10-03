@@ -28,6 +28,7 @@
 
 <script>
   import { environments, currentEnvironment } from '../../../vuex/modules/common/kuzzle/getters'
+  import { switchEnvironment } from '../../../services/environment'
   import ModalCreate from './ModalCreate'
 
   export default {
@@ -42,10 +43,7 @@
       }
     },
     methods: {
-      switchEnvironment (id) {
-        switchEnvironment(id)
-          .catch((e) => this.$dispatch('toast', 'An error occurred while switching environment', 'error'))
-      }
+      switchEnvironment
     },
     ready () {
       /* eslint no-undef: 0 */
@@ -57,7 +55,7 @@
 <style lang="scss" rel="stylesheet/scss" scoped>
   .current-environment {
     transition: .25s ease;
-    margin-top: 5px;
+    margin-top: 7px;
     .truncate {
       display: inline-block;
     }

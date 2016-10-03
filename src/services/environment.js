@@ -20,6 +20,7 @@ import SessionUser from '../models/SessionUser'
 const DEFAULT = 'default'
 const ENVIRONMENTS = 'environments'
 const LAST_CONNECTED = 'lastConnectedEnv'
+export const DEFAULT_COLOR = '#00757F'
 
 export const defaultEnvironment = {
   name: 'localhost',
@@ -70,7 +71,7 @@ export const loadEnvironments = () => {
  */
 export const createEnvironment = (name, color, host, ioPort, wsPort) => {
   if (!color) {
-    color = '#00757f'
+    color = DEFAULT_COLOR
   }
 
   let newEnvironment = {

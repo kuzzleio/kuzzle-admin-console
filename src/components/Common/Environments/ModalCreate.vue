@@ -52,7 +52,7 @@
         </div>
         <div class="col s12">
           <div class="row">
-            <div class="col s3" v-for="color in colors">
+            <div class="col s6 m3" v-for="color in colors">
               <div class="color card valign-wrapper"
                    :style="{backgroundColor: color}"
                    @click="selectColor($index)">
@@ -127,7 +127,7 @@
 <script>
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
-  import { createEnvironment, updateEnvironment } from '../../../services/environment'
+  import { createEnvironment, updateEnvironment, DEFAULT_COLOR } from '../../../services/environment'
   import { environments } from '../../../vuex/modules/common/kuzzle/getters'
 
   export default {
@@ -156,9 +156,9 @@
           host: null,
           ioPort: 7512,
           wsPort: 7513,
-          color: '#00757F'
+          color: DEFAULT_COLOR
         },
-        colors: ['#00757F', '#dc2222', '#7f6500', '#ccaa2a', '#537f00', '#000f7f', '#6d007f', '#7f0045']
+        colors: [DEFAULT_COLOR, '#dc2222', '#7f6500', '#ccaa2a', '#537f00', '#000f7f', '#6d007f', '#7f0045']
       }
     },
     methods: {
