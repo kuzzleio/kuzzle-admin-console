@@ -1,7 +1,7 @@
 import kuzzle from './kuzzle'
 import { setUserToCurrentEnvironment } from './environment'
 import Promise from 'bluebird'
-import { setTokenValid } from '../vuex/modules/common/kuzzle/actions'
+import { setTokenValid } from '../vuex/modules/auth/actions'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {

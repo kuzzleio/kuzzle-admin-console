@@ -43,7 +43,16 @@
       }
     },
     methods: {
-      switchEnvironment
+      switchEnvironment (id) {
+        switchEnvironment(id)
+          .then(() => {
+            // this.$dispatch('toast', `Switched to ${environments[id].name} environment`, 'info')
+            this.$router.go('/')
+          })
+          .catch((e) => {
+            this.$dispatch('toast', 'An error occurred while switching environment', 'error')
+          })
+      }
     },
     ready () {
       /* eslint no-undef: 0 */

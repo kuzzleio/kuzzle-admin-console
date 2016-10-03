@@ -128,15 +128,17 @@ export const switchEnvironment = (id) => {
   reset(store)
 
   connectToEnvironment(environment)
-  return waitForConnected(2000)
+  return waitForConnected(10000)
     .then(() => {
       kuzzleActions.setConnection(store, id)
+
       return loginByToken(store, environment.token)
-    })
-    .then(user => {
-      if (!user.id) {
-        return checkFirstAdmin(store)
-      }
-      return Promise.resolve()
+        .then(user => {
+          if (!user.id) {
+            console.log(`Checking for first admin on ${environment.name} environment`)
+            return checkFirstAdmin(store)
+          }
+          return Promise.resolve()
+        })
     })
 }
