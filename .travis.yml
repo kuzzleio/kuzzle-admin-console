@@ -2,27 +2,23 @@ sudo: required
 dist: trusty
 services:
 - docker
-
 env:
   COMPOSE_VERSION: 1.2.0
-
-addons:
-
-before_install:
-
-install:
-
+  global:
+    secure: nVpQ59XdrZ5RBrxI82iauHm0sYnsPcKlaluxCc26RpfFI9gLWCqW0R5Jg4CMYqI8WVCpucMQUGMcFWTT0ZTbGSOpkaR0T0B4LYlRezgctRoUFxrKQgRD1zRaI0YmUQEEUqNUnGNZlZGI6+nhVyhwNw5gH9fc4y25aqiwly9q1X5u20JtFigjoUvEoSlhXSgkOhoPVAzD9TIpHU+OFfYjCh/ub9iyGuj+fcsGo6fmfyuGZvoKnx51s4vWlULyPWaJUtYcPF/RjE5f6vCgOFc56j1WpcRqasXzObKPbyrRCmwzNgi2KOi5AsNfzWIfj3+SsT/c+PHiVeDvf4Y6cjtxJG6yYT49f6GbR11/O+M6kcu9uuhxIF4S0/zn0iiUVqbfMU6Ts9V0KlmoHtBZ7jb2TGdvq0fC3iig8by26Y6ZGsy22TS1CeNeEd9jeKG/+QTTvACKfG6R/XgrR4mJij+NpA/HLVXtnJ3PPTMPBsDS42s0vhTRvXd/vlcG5W93m4bz/XOQIlbm8RXSA9dnlJQuOTHS5j2JvcCWA+ysMKg0PJrsTg0CiebJ9RiacoqgaIGPJ74wnwUISqbCEf/WXE7DHLG3u8wIVELbgwPFwA660skxJyOyYSIsnaDT460kvCcoZU2CWDzL9cNLRGDr8n0cj8XHyHwRlA2uB4KAAwcLeNA=
+addons: 
+before_install: 
+install: 
 before_script:
-  - "curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash"
-
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install |
+  bash
 script:
-  - docker-compose -f docker-compose/test.yml run backoffice
-  - npm run build
-
+- docker-compose -f docker-compose/test.yml run backoffice
+- npm run build
 deploy:
   provider: releases
-  api_key: "GITHUB OAUTH TOKEN"
-  file: "./"
+  api_key: "${GH_TOKEN}"
+  file: "./dist/*"
   skip_cleanup: true
   on:
     tags: true
