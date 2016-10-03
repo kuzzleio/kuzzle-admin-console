@@ -135,7 +135,6 @@ export const switchEnvironment = (id) => {
       return loginByToken(store, environment.token)
         .then(user => {
           if (!user.id) {
-            console.log(`Checking for first admin on ${environment.name} environment`)
             return checkFirstAdmin(store)
           }
           return Promise.resolve()
