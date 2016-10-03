@@ -36,7 +36,7 @@ import {
 } from './vuex/modules/common/kuzzle/actions'
 
 window.jQuery = window.$ = require('jquery')
-require('materialize-css/dist/js/materialize')
+require('imports?$=jquery!materialize-css/dist/js/materialize')
 
 import 'font-awesome/css/font-awesome.css'
 

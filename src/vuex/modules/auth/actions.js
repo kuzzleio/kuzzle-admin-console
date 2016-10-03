@@ -10,6 +10,7 @@ export const doLogin = (store, username, password) => {
 
   return new Promise((resolve, reject) => {
     kuzzle
+      .unsetJwtToken()
       .loginPromise('local', {username, password}, '4h')
       .then(loginResult => {
         user.id = loginResult._id
@@ -34,6 +35,10 @@ export const doLogin = (store, username, password) => {
         reject(new Error(error.message))
       })
   })
+}
+
+export const setTokenValid = (store, isValid) => {
+  store.dispatch(SET_TOKEN_VALID, isValid)
 }
 
 /**
@@ -76,6 +81,7 @@ export const loginByToken = (store, token) => {
           return Promise.resolve(user)
         })
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const checkFirstAdmin = (store) => {
@@ -90,6 +96,7 @@ export const checkFirstAdmin = (store) => {
       store.dispatch(SET_ADMIN_EXISTS, true)
       return Promise.resolve()
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const setFirstAdmin = (store, exists) => {

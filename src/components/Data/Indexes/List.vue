@@ -114,7 +114,6 @@
   import ModalCreate from './ModalCreate'
   import IndexBoxed from './Boxed'
   import Title from '../../../directives/title.directive'
-  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canCreateIndex} from '../../../services/userAuthorization'
 
@@ -133,9 +132,6 @@
       canCreateIndex
     },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         indexes,
         indexesAndCollections
@@ -149,11 +145,6 @@
     computed: {
       countIndexForFilter () {
         return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
-      }
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
       }
     }
   }

@@ -16,7 +16,8 @@
     <div class="right actions">
       <a
         v-if="canEdit"
-        v-link="{name: 'DataUpdateDocument', params: {id: document.id}}">
+        href=""
+        @click.prevent="$dispatch('common-list::edit-document', 'DataUpdateDocument', document.id)">
         <i class="fa fa-pencil"></i>
       </a>
       <a

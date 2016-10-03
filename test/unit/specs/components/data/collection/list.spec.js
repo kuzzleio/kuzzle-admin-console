@@ -11,7 +11,6 @@ let $vm
 Vue.use(VueRouter)
 
 describe('List collections tests', () => {
-  let listIndexesAndCollections = sandbox.stub()
   let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
   let canSearchCollection = sandbox.stub().returns(true)
   let canCreateCollection = sandbox.stub().returns(true)
@@ -23,9 +22,6 @@ describe('List collections tests', () => {
       '../../Materialize/Headline': mockedComponent,
       './Dropdown': mockedComponent,
       '../Collections/Boxed': mockedComponent,
-      '../../../vuex/modules/data/actions': {
-        listIndexesAndCollections
-      },
       '../../../vuex/modules/data/getters': {
         indexesAndCollections
       },
@@ -144,52 +140,6 @@ describe('List collections tests', () => {
 
         expect($vm.realtimeCollections).to.deep.equal(['tata'])
       })
-    })
-  })
-
-  describe('watch', () => {
-    describe('index', () => {
-      it('should do nothing if the user can\'t search in index', (done) => {
-        canSearchIndex = sandbox.stub().returns(false)
-        mockInjector()
-        listIndexesAndCollections.reset()
-
-        $vm.index = 'toto'
-        Vue.nextTick(() => {
-          expect(listIndexesAndCollections.callCount).to.be.equal(0)
-          done()
-        })
-      })
-
-      it('should call listIndexesAndCollections if the user can search in index', (done) => {
-        canSearchIndex = sandbox.stub().returns(true)
-        mockInjector()
-        listIndexesAndCollections.reset()
-
-        $vm.index = 'toto'
-        Vue.nextTick(() => {
-          expect(listIndexesAndCollections.callCount).to.be.equal(1)
-          done()
-        })
-      })
-    })
-  })
-
-  describe('ready', () => {
-    it('should do nothing if user can\'t search in index', () => {
-      canSearchIndex = sandbox.stub().returns(false)
-      listIndexesAndCollections = sandbox.stub()
-      mockInjector()
-
-      expect(listIndexesAndCollections.callCount).to.be.equal(0)
-    })
-
-    it('should call listIndexesAndCollections if user can search in index', () => {
-      canSearchIndex = sandbox.stub().returns(true)
-      listIndexesAndCollections = sandbox.stub()
-      mockInjector()
-
-      expect(listIndexesAndCollections.callCount).to.be.equal(1)
     })
   })
 })

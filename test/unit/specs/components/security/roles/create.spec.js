@@ -9,7 +9,6 @@ let sandbox = sinon.sandbox.create()
 
 describe('Security roles create', () => {
   let vm
-  let $dispatch
   let createRolePromise = sandbox.stub().returns(Promise.resolve())
   let refreshIndex = sandbox.stub()
 
@@ -31,7 +30,6 @@ describe('Security roles create', () => {
       store: store
     }).$mount()
 
-    $dispatch = sandbox.stub(vm.$refs.create, '$dispatch')
     vm.$refs.create.$router = {go: sandbox.stub()}
   }
 
@@ -50,7 +48,7 @@ describe('Security roles create', () => {
         expect(createRolePromise.callCount).to.be.equal(0)
       })
 
-      it('should call the toaster with the error', (done) => {
+      it('should set the error if kuzzle reject the promise', (done) => {
         createRolePromise = sandbox.stub().returns(Promise.reject(new Error('error from Kuzzle')))
         mockInjector()
 
@@ -58,7 +56,7 @@ describe('Security roles create', () => {
 
         setTimeout(() => {
           expect(refreshIndex.callCount).to.be.equal(0)
-          expect($dispatch.calledWith('toast', 'error from Kuzzle', 'error')).to.be.equal(true)
+          expect(vm.$refs.create.error).to.be.equal('An error occurred while creating role: <br />error from Kuzzle')
           done()
         }, 0)
       })

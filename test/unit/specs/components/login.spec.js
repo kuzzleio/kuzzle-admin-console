@@ -1,4 +1,3 @@
-
 import Vue from 'vue'
 import store from '../../../../src/vuex/store'
 import Promise from 'bluebird'
@@ -47,9 +46,23 @@ describe('LoginForm.vue', () => {
 
         setTimeout(() => {
           expect(vm.$refs.form.onLogin.called).to.be.ok
-          expect(vm.$refs.form.error).to.be.null
+          expect(vm.$refs.form.error).to.be.equal('')
           done()
         }, 0)
+      })
+    })
+
+    describe('dismissError', () => {
+      it('should reset error', () => {
+        let vm = injectMock(
+          sinon.stub().returns(Promise.resolve())
+        )
+
+        vm.$refs.form.error = 'error message'
+
+        vm.$refs.form.dismissError()
+
+        expect(vm.$refs.form.error).to.equals('')
       })
     })
   })

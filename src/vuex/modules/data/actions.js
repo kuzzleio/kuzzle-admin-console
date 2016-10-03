@@ -83,6 +83,7 @@ export const createIndex = (store, index) => {
     .then(() => {
       store.dispatch(ADD_INDEX, index)
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const deleteIndex = (store, index) => {
@@ -91,6 +92,7 @@ export const deleteIndex = (store, index) => {
     .then(() => {
       store.dispatch(DELETE_INDEX, index)
     })
+    .catch(error => Promise.reject(new Error(error.message)))
 }
 
 export const setPartial = (store, path, value) => {

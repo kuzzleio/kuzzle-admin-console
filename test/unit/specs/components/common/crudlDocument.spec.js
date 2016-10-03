@@ -123,13 +123,19 @@ describe('CrudlDocument component', () => {
     })
 
     describe('confirmSingleDelete', () => {
-      it('should dispatch event for closing the corresponding modal', () => {
-        // sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
+      it('should dispatch event for closing the corresponding modal', (done) => {
+        deleteDocuments = sandbox.stub().returns(Promise.resolve())
+        initInjector()
+
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmSingleDelete('id')
 
-        expect($broadcast.calledWith('modal-close', 'single-delete')).to.be.equal(true)
+        setTimeout(() => {
+          expect($broadcast.calledWith('modal-close', 'single-delete')).to.be.equal(true)
+          expect($dispatch.called).to.be.equal(false)
+          done()
+        }, 0)
       })
     })
 
