@@ -10,8 +10,7 @@ addons:
 before_install: 
 install: 
 before_script:
-- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install |
-  bash
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 script:
 - docker-compose -f docker-compose/test.yml run backoffice
 - npm run build
