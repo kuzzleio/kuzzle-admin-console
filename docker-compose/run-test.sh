@@ -6,6 +6,9 @@ echo "Installing dependencies..."
 npm install
 bower install --allow-root
 
+echo "Building dist file"
+npm run build
+
 echo "Starting Tests..."
 
 Xvfb :10 -ac &
