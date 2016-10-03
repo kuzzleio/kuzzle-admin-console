@@ -2,16 +2,16 @@ export const kuzzleIsConnected = state => {
   return state.kuzzle.connectedTo !== null
 }
 
-export const connectedTo = state => {
+export const currentEnvironmentId = state => {
   return state.kuzzle.connectedTo
 }
 
 export const currentEnvironment = state => {
-  if (!environments(state)[connectedTo(state)]) {
+  if (!environments(state)[currentEnvironmentId(state)]) {
     return null
   }
 
-  return environments(state)[connectedTo(state)]
+  return environments(state)[currentEnvironmentId(state)]
 }
 
 export const kuzzleHost = state => {

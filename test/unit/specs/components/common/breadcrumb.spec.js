@@ -12,7 +12,6 @@ describe('Breadcrumb tests', () => {
   let router
   let Breadcrumb
   let indexesAndCollections = sandbox.stub().returns([])
-  let listIndexesAndCollections = sandbox.stub()
   let routeName = sandbox.stub().returns()
   let selectedIndex = sandbox.stub().returns()
   let selectedCollection = sandbox.stub().returns()
@@ -22,9 +21,6 @@ describe('Breadcrumb tests', () => {
     Breadcrumb = BreadcrumbInjector({
       '../../services/userAuthorization': {
         canSearchIndex
-      },
-      '../../vuex/modules/data/actions': {
-        listIndexesAndCollections
       },
       '../../vuex/modules/data/getters': {
         indexesAndCollections,
@@ -98,24 +94,6 @@ describe('Breadcrumb tests', () => {
 
         expect(router.app.$refs.breadcrumb.isRouteActive(['bar', 'baz'])).to.be.equal(false)
       })
-    })
-  })
-
-  describe('Ready', () => {
-    it('should call listIndexesAndCollections if the user canSearchIndex', () => {
-      canSearchIndex = sandbox.stub().returns(true)
-      listIndexesAndCollections = sandbox.stub()
-      mockInjector()
-
-      expect(listIndexesAndCollections.callCount).be.equal(1)
-    })
-
-    it('should not call listIndexesAndCollections if user can\'t search', () => {
-      canSearchIndex = sandbox.stub().returns(false)
-      listIndexesAndCollections = sandbox.stub()
-      mockInjector()
-
-      expect(listIndexesAndCollections.callCount).be.equal(0)
     })
   })
 })

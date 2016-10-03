@@ -23,7 +23,7 @@ let dummyStore = {
 let waitForConnectedStub = sandbox.stub().returns(Promise.resolve())
 let connectToEnvironmentStub = sandbox.stub()
 let setConnectionStub = sandbox.stub()
-let loginFromSessionStub = sandbox.stub().returns(Promise.resolve({id: 'user'}))
+let loginByTokenStub = sandbox.stub().returns(Promise.resolve({id: 'user'}))
 let checkFirstAdminStub = sandbox.stub().returns(Promise.resolve())
 
 const createMock = () => {
@@ -43,7 +43,7 @@ const createMock = () => {
       setConnection: setConnectionStub
     },
     '../vuex/modules/auth/actions': {
-      loginFromSession: loginFromSessionStub,
+      loginByToken: loginByTokenStub,
       checkFirstAdmin: checkFirstAdminStub
     }
   })
@@ -58,6 +58,23 @@ describe('Environment service', () => {
     sandbox.restore()
   })
 
+  describe('loadEnvironments', () => {
+    it('should create default environment when none are available in localstorage', () => {
+      // eslint-disable-next-line no-undef
+      sandbox.stub(localStorage, 'getItem').returns(null)
+      let env = environment.loadEnvironments()
+      expect(env).to.have.property('default')
+    })
+
+    it('should return the stored environments when available', () => {
+      // eslint-disable-next-line no-undef
+      sandbox.stub(localStorage, 'getItem').returns(
+        JSON.stringify(dummyEnvironments))
+      let env = environment.loadEnvironments()
+      expect(env).to.deep.equals(dummyEnvironments)
+    })
+  })
+
   describe('switchEnvironment', () => {
     it('should throw when id is falsy', () => {
       expect(environment.switchEnvironment.bind(environment, null)).to.throw(Error)
@@ -69,17 +86,17 @@ describe('Environment service', () => {
       expect(environment.switchEnvironment.bind(environment, 'unexisting')).to.throw(Error)
     })
 
-    it('should call loginFromSession if the environment id corresponds to a working environment', (done) => {
+    it('should call loginByToken if the environment id corresponds to a working environment', (done) => {
       let envId = 'valid'
       environment.switchEnvironment(envId).then(() => {
-        expect(loginFromSessionStub.called).to.equals(true)
+        expect(loginByTokenStub.called).to.equals(true)
 
         done()
       })
     })
 
     it('should call checkFirstAdmin if the environment id corresponds to a working environment, and no user id is available', (done) => {
-      loginFromSessionStub = sandbox.stub().returns(Promise.resolve({}))
+      loginByTokenStub = sandbox.stub().returns(Promise.resolve({}))
       createMock()
 
       let envId = 'valid'
@@ -90,88 +107,18 @@ describe('Environment service', () => {
       })
     })
 
-    it('should not call loginFromSession if the environment is not working', (done) => {
-      loginFromSessionStub = sandbox.stub().returns(Promise.resolve({}))
+    it('should not call loginByToken if the environment is not working', (done) => {
+      loginByTokenStub = sandbox.stub().returns(Promise.resolve({}))
       waitForConnectedStub = sandbox.stub().returns(Promise.reject(new Error()))
       createMock()
 
       let envId = 'valid'
       environment.switchEnvironment(envId)
         .catch(() => {
-          expect(loginFromSessionStub.called).to.equals(false)
+          expect(loginByTokenStub.called).to.equals(false)
 
           done()
         })
-    })
-  })
-
-  describe('loadEnvironments', () => {
-    let envService
-    let addEnvironmentStub = sandbox.stub()
-
-    beforeEach(() => {
-      envService = environmentInjector({
-        '../vuex/store': dummyStore,
-        '../vuex/modules/common/kuzzle/actions': {
-          addEnvironment: addEnvironmentStub
-        }
-      })
-    })
-
-    afterEach(() => {
-      sandbox.restore()
-    })
-
-    it('should create default environment when none are available in localstorage', () => {
-      // eslint-disable-next-line no-undef
-      sandbox.stub(localStorage, 'getItem')
-
-      envService.loadEnvironments()
-      expect(addEnvironmentStub.calledWithMatch(dummyStore, 'default')).to.equals(true)
-    })
-
-    it('should return the first environment when lastConnected is invalid', () => {
-      const SAVED_ENV = 'savedEnvironment'
-
-      // eslint-disable-next-line no-undef
-      let getItem = sandbox.stub(localStorage, 'getItem')
-      getItem
-        .withArgs('environments')
-        .returns(JSON.stringify({
-          [SAVED_ENV]: {}
-        }))
-      getItem
-        .withArgs('lastConnectedEnv')
-        .returns(null)
-
-      let envToConnect = envService.loadEnvironments()
-      expect(envToConnect).to.equals(SAVED_ENV)
-
-      getItem
-        .withArgs('lastConnectedEnv')
-        .returns('tralala')
-
-      envToConnect = envService.loadEnvironments()
-      expect(envToConnect).to.equals(SAVED_ENV)
-    })
-
-    it('should return the lastConnected id when it is valid', () => {
-      const SAVED_ENV = 'savedEnvironment'
-
-      // eslint-disable-next-line no-undef
-      let getItem = sandbox.stub(localStorage, 'getItem')
-      getItem
-        .withArgs('environments')
-        .returns(JSON.stringify({
-          anotherEnv: {},
-          [SAVED_ENV]: {}
-        }))
-      getItem
-        .withArgs('lastConnectedEnv')
-        .returns(SAVED_ENV)
-
-      let envToConnect = envService.loadEnvironments()
-      expect(envToConnect).to.equals(SAVED_ENV)
     })
   })
 
@@ -277,40 +224,6 @@ describe('Environment service', () => {
     })
   })
 
-  describe('deleteEnvironment', () => {
-    let envService
-    let deleteEnvironmentStub = sandbox.stub()
-
-    beforeEach(() => {
-      envService = environmentInjector({
-        '../vuex/store': dummyStore,
-        '../vuex/modules/common/kuzzle/actions': {
-          deleteEnvironment: deleteEnvironmentStub
-        }
-      })
-    })
-
-    afterEach(() => {
-      sandbox.restore()
-    })
-
-    it('deletes an environment', () => {
-      sandbox.stub(envService, 'persistEnvironments')
-      envService.deleteEnvironment()
-      expect(envService.deleteEnvironment.bind(this, 'toto')).to.not.throw(Error)
-    })
-  })
-
-  describe('persistEnvironments', () => {
-    it('does not throw when environments are OK', () => {
-      expect(
-        environment
-          .persistEnvironments
-          .bind(this, dummyEnvironments)
-      ).to.not.throw(Error)
-    })
-  })
-
   describe('updateEnvironment', () => {
     let envService
     let updateEnvironmentStub = sandbox.stub()
@@ -322,7 +235,6 @@ describe('Environment service', () => {
           updateEnvironment: updateEnvironmentStub
         }
       })
-      sandbox.stub(envService, 'persistEnvironments')
     })
 
     afterEach(() => {
@@ -354,7 +266,7 @@ describe('Environment service', () => {
     })
   })
 
-  describe('setUserToCurrentEnviromnent', () => {
+  describe('setTokenToCurrentEnviromnent', () => {
     let envService
     let updateEnvironmentStub = sandbox.stub()
 
@@ -365,7 +277,6 @@ describe('Environment service', () => {
           updateEnvironment: updateEnvironmentStub
         }
       })
-      sandbox.stub(envService, 'persistEnvironments')
     })
 
     afterEach(() => {
@@ -373,11 +284,8 @@ describe('Environment service', () => {
     })
 
     it('should not throw', () => {
-      let user = {
-        token: 'token'
-      }
-      expect(envService.setUserToCurrentEnvironment.bind(this, user)).to.not.throw(Error)
-      expect(envService.setUserToCurrentEnvironment.bind(this, null)).to.not.throw(Error)
+      expect(envService.setTokenToCurrentEnvironment.bind(this, 'token')).to.not.throw(Error)
+      expect(envService.setTokenToCurrentEnvironment.bind(this, null)).to.not.throw(Error)
       expect(updateEnvironmentStub.called).to.equals(true)
     })
   })

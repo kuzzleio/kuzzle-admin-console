@@ -2,6 +2,8 @@
   <create
   title="Create a role"
   :content="content"
+  :error="error"
+  @security-create::reset-error="error = ''"
   @security-create::create="create"
   @security-create::cancel="cancel">
   </create>
@@ -17,12 +19,18 @@
     },
     data () {
       return {
+        error: '',
         content: {}
       }
     },
     methods: {
       create (id, content) {
-        if (!id || !content || Object.keys(content).length === 0) {
+        if (!id) {
+          this.error = 'The role identifier is required'
+          return
+        }
+        if (!content || Object.keys(content).length === 0) {
+          this.error = 'The role must have a content'
           return
         }
 
@@ -34,7 +42,7 @@
             this.$router.go({name: 'SecurityRolesList'})
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.error = 'An error occurred while creating role: <br />' + e.message
           })
       },
       cancel () {

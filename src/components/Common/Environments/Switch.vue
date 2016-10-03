@@ -28,6 +28,7 @@
 
 <script>
   import { environments, currentEnvironment } from '../../../vuex/modules/common/kuzzle/getters'
+  import { switchEnvironment } from '../../../services/environment'
   import ModalCreate from './ModalCreate'
 
   export default {
@@ -44,7 +45,13 @@
     methods: {
       switchEnvironment (id) {
         switchEnvironment(id)
-          .catch((e) => this.$dispatch('toast', 'An error occurred while switching environment', 'error'))
+          .then(() => {
+            // this.$dispatch('toast', `Switched to ${environments[id].name} environment`, 'info')
+            this.$router.go('/')
+          })
+          .catch((e) => {
+            this.$dispatch('toast', 'An error occurred while switching environment', 'error')
+          })
       }
     },
     ready () {

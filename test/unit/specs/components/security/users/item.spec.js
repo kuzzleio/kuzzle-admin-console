@@ -131,4 +131,11 @@ describe('UserItem component', () => {
 
     expect($dispatch.calledWith('delete-document', 'kuzzle-bo-admin')).to.equal(true)
   })
+
+  it('should redirect on right route on update', () => {
+    $vm.$router = {go: sandbox.stub()}
+    $vm.update()
+
+    expect($dispatch.calledWithMatch('common-list::edit-document', 'SecurityUsersUpdate', 'kuzzle-bo-admin')).to.equal(true)
+  })
 })

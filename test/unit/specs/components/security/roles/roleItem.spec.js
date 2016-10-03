@@ -7,6 +7,7 @@ let sandbox = sinon.sandbox.create()
 
 describe('Role item', () => {
   let vm
+  let $dispatch
 
   before(() => {
     RoleItem = RoleItemInjector({
@@ -31,7 +32,7 @@ describe('Role item', () => {
       }
     }).$mount()
 
-    sandbox.stub(vm.$refs.item, '$dispatch')
+    $dispatch = sandbox.stub(vm.$refs.item, '$dispatch')
   })
 
   describe('Methods', () => {
@@ -59,7 +60,7 @@ describe('Role item', () => {
       vm.$refs.item.$router = {go: sandbox.stub()}
       vm.$refs.item.update()
 
-      expect(vm.$refs.item.$router.go.calledWithMatch({name: 'SecurityRolesUpdate', params: {id: 'role-id'}})).to.equal(true)
+      expect($dispatch.calledWithMatch('common-list::edit-document', 'SecurityRolesUpdate', 'role-id')).to.equal(true)
     })
   })
 })

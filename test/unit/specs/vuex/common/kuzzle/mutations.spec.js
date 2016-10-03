@@ -43,6 +43,10 @@ describe('kuzzle environments mutations test', () => {
   })
 
   describe('ADD_ENVIRONMENT', () => {
+    it('should not add a falsy environment', () => {
+      expect(ADD_ENVIRONMENT.bind(this, state, 'valid', null)).to.throw(Error)
+    })
+
     it('should not overwrite an existing environment', () => {
       expect(ADD_ENVIRONMENT.bind(this, state, 'valid', {})).to.throw(Error)
     })

@@ -74,7 +74,7 @@ export default {
     },
     update () {
       if (this.canEditProfile()) {
-        this.$router.go({name: 'SecurityProfilesUpdate', params: {id: this.document.id}})
+        this.$dispatch('common-list::edit-document', 'SecurityProfilesUpdate', this.document.id)
       }
     },
     canEditProfile,

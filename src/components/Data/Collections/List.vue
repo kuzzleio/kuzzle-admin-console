@@ -95,23 +95,21 @@
             </div>
           </div>
 
-
-          <collection-boxed
+          <div v-if="canSearchCollection(index)">
+            <collection-boxed
               v-for="collection in storedCollections | filterBy filter | orderBy 1"
-              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="false">
-          </collection-boxed>
+            </collection-boxed>
 
-          <collection-boxed
-              v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
-              v-if="canSearchCollection(index)"
-              :index="index"
-              :collection="collection"
-              :is-realtime="true">
-          </collection-boxed>
-
+            <collection-boxed
+                v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
+                :index="index"
+                :collection="collection"
+                :is-realtime="true">
+            </collection-boxed>
+          </div>
         </div>
       </div>
     </div>
@@ -151,7 +149,6 @@
   import IndexDropdown from './Dropdown'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import CollectionBoxed from '../Collections/Boxed'
-  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
@@ -176,9 +173,6 @@
       Title
     },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         indexesAndCollections
       }
@@ -224,18 +218,6 @@
         }
 
         return this.indexesAndCollections[this.index].realtime
-      }
-    },
-    watch: {
-      'index': function (index) {
-        if (this.canSearchIndex()) {
-          this.listIndexesAndCollections()
-        }
-      }
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
       }
     }
   }

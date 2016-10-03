@@ -1,6 +1,7 @@
 import kuzzle from './kuzzle'
 import { setUserToCurrentEnvironment } from './environment'
 import Promise from 'bluebird'
+import { setTokenValid } from '../vuex/modules/auth/actions'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -37,6 +38,18 @@ export const initStoreWithKuzzle = (store) => {
   kuzzle.addListener('jwtTokenExpired', () => {
     setUserToCurrentEnvironment(null)
   })
+  kuzzle.removeAllListeners('queryError')
+  kuzzle.addListener('queryError', (error) => {
+    if (error && error.message) {
+      switch (error.message) {
+        case 'Token expired':
+        case 'Invalid token':
+        case 'Json Web Token Error':
+          setTokenValid(store, false)
+          break
+      }
+    }
+  })
 }
 
 // Helper for performSearch
@@ -60,7 +73,7 @@ export const performSearch = (collection, index, filters = {}, pagination = {}, 
       .dataCollectionFactory(collection, index)
       .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
         if (error) {
-          return reject(error)
+          return reject(new Error(error.message))
         }
 
         let additionalAttributeName = null
@@ -103,8 +116,7 @@ export const deleteDocuments = (index, collection, ids) => {
       .dataCollectionFactory(collection, index)
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
         if (error) {
-          reject(error)
-          return
+          return reject(new Error(error.message))
         }
 
         kuzzle.refreshIndex(index, () => {

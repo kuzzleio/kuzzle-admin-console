@@ -28,18 +28,15 @@
     </label>
 
     <div class="right actions">
-      <a v-if="canEditUser()"
-         v-link="{name: 'SecurityUsersUpdate', params: {id: document.id}}">
-         <i class="fa fa-pencil"></i>
-      </a>
-      <a v-if="!canEditUser()"
+      <a href="#" @click.prevent="update"
          v-title="{active: !canEditUser(), title: 'You are not allowed to edit this user'}">
-         <i class="fa fa-pencil disabled"></i>
+        <i class="fa fa-pencil" :class="{'disabled': !canEditUser()}"></i>
       </a>
       <dropdown :id="document.id" class="icon-black">
-        <li><a v-bind:class="{'disabled': !canDeleteUser()}"
-               v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}"
-               @click="deleteDocument(document.id)">Delete</a>
+        <li><a @click="deleteDocument(document.id)"
+               :class="{'disabled': !canDeleteUser()}"
+               v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}">
+          Delete</a>
         </li>
       </dropdown>
     </div>
@@ -116,6 +113,11 @@ export default {
     deleteDocument () {
       if (this.canDeleteUser()) {
         this.$dispatch('delete-document', this.document.id)
+      }
+    },
+    update () {
+      if (this.canEditUser()) {
+        this.$dispatch('common-list::edit-document', 'SecurityUsersUpdate', this.document.id)
       }
     },
     canEditUser,

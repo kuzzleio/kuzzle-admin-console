@@ -28,6 +28,10 @@
           </a>
         </div>
 
+        <div class="col s7">
+          <span class="helper-text">The index name should contains only lowercase characters and can not begin with an underscore (_)</span>
+        </div>
+
       </div>
 
       <span slot="footer">
@@ -53,6 +57,11 @@
     strong {
       display: block;
     }
+  }
+  .helper-text {
+    color: #aaa;
+    font-style: italic;
+    font-size: 0.9rem;
   }
   .input-field {
     label {

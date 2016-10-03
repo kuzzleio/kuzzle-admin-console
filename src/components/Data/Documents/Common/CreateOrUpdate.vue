@@ -57,7 +57,7 @@
         </div>
 
         <div class="row">
-          <div class="col s6">
+          <div class="col s5 m4 l3">
             <a @click.prevent="cancel" class="btn-flat waves-effect">
               Cancel
             </a>
@@ -66,6 +66,12 @@
               <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
             </button>
+          </div>
+          <div class="col s7 m8 l9" v-if="error">
+            <div class="card error red white-text">
+              <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+              {{{error}}}
+            </div>
           </div>
         </div>
 
@@ -112,6 +118,22 @@
   .pre_ace, .ace_editor {
     height: 350px;
   }
+  .error {
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .2);
+    }
+  }
 </style>
 
 <script>
@@ -143,11 +165,12 @@
       Modal
     },
     props: {
+      error: String,
       index: String,
       collection: String,
       hideId: Boolean,
       mandatoryId: {
-        default: false,
+        'default': false,
         type: Boolean
       }
     },
@@ -156,6 +179,9 @@
       Focus
     },
     methods: {
+      dismissError () {
+        this.$dispatch('document-create::reset-error')
+      },
       create () {
         let json
 

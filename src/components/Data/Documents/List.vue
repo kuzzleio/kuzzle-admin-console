@@ -68,7 +68,6 @@
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
   import CollectionDropdown from '../Collections/Dropdown'
-  import { listIndexesAndCollections } from '../../../vuex/modules/data/actions'
   import {
     canSearchIndex,
     canSearchDocument,
@@ -93,9 +92,6 @@
       CollectionDropdown
     },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         indexesAndCollections
       }
@@ -128,11 +124,6 @@
         setTimeout(() => {
           this.$broadcast('crudl-refresh-search')
         }, 0)
-      }
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
       }
     }
   }
