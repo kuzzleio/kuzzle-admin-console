@@ -64,7 +64,7 @@
 <style lang="scss" rel="stylesheet/scss" scoped>
   .current-environment {
     transition: .25s ease;
-    margin-top: 5px;
+    margin-top: 7px;
     .truncate {
       display: inline-block;
     }
