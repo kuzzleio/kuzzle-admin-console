@@ -35,7 +35,7 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
   let properties = {}
   let schema = {}
 
-  if (type === 'object' || type === 'nested') {
+  if ((type === 'object' && jsonDocument != null) || type === 'nested') {
     Object.keys(jsonDocument).forEach(o => {
       property = getUpdatedSchema(jsonDocument[o], collection)
       if (o !== '_id') {
