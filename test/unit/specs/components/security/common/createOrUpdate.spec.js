@@ -39,5 +39,11 @@ describe('Security common create', () => {
       vm.$refs.create.cancel()
       expect($dispatch.calledWithMatch('security-create::cancel')).to.be.equal(true)
     })
+
+    it('dismissError should dispatch reset error event', () => {
+      vm.$refs.create.dismissError()
+
+      expect($dispatch.calledWith('security-create::reset-error')).to.be.equal(true)
+    })
   })
 })

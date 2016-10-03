@@ -13,7 +13,6 @@ describe('Create collection component test', () => {
   let getCollectionsFromIndex = sandbox.stub().returns(Promise.resolve())
   let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})
   let collectionName = sandbox.stub().returns()
-  let $dispatch
 
   const mockInjector = () => {
     Create = CreateInjector({
@@ -42,7 +41,6 @@ describe('Create collection component test', () => {
 
     $vm = vm.$refs.create
     $vm.$router = {go: sandbox.stub(), _children: {$remove: sandbox.stub()}}
-    $dispatch = sandbox.stub($vm, '$dispatch')
   }
 
   before(() => mockInjector())
@@ -50,7 +48,7 @@ describe('Create collection component test', () => {
 
   describe('Methods', () => {
     describe('Create', () => {
-      it('should display the toaster with error if create collection reject', (done) => {
+      it('should set the error if create collection reject', (done) => {
         createCollection = sandbox.stub().returns(Promise.reject(new Error('kuzzle error')))
         mockInjector()
 
@@ -58,7 +56,7 @@ describe('Create collection component test', () => {
 
         setTimeout(() => {
           expect(createCollection.calledWith(store, {realtime: [], stored: []}, 'myindex', 'toto', {toto: 'tutu'}, false)).to.be.equal(true)
-          expect($dispatch.calledWith('toast', 'kuzzle error', 'error')).to.be.equal(true)
+          expect($vm.error).to.be.equal('kuzzle error')
           done()
         }, 0)
       })

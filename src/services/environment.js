@@ -2,26 +2,23 @@ import {
   waitForConnected
   , connectToEnvironment
 } from './kuzzleWrapper'
-import { generateHash } from './data'
 import store from '../vuex/store'
 import { reset } from '../vuex/actions'
 import {
   environments
-  , connectedTo
+  , currentEnvironmentId
   , currentEnvironment
 } from '../vuex/modules/common/kuzzle/getters'
 import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
 import {
-  loginFromSession
+  loginByToken
   , checkFirstAdmin
 } from '../vuex/modules/auth/actions'
-import SessionUser from '../models/SessionUser'
 
-const DEFAULT = 'default'
+export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
-const LAST_CONNECTED = 'lastConnectedEnv'
 export const DEFAULT_COLOR = '#00757F'
-
+export const DEFAULT = 'default'
 export const defaultEnvironment = {
   name: 'localhost',
   host: 'localhost',
@@ -29,6 +26,10 @@ export const defaultEnvironment = {
   wsPort: 7513
 }
 
+export const persistEnvironments = (environments) => {
+  // eslint-disable-next-line no-undef
+  localStorage.setItem(ENVIRONMENTS, JSON.stringify(environments))
+}
 /**
  * Loads the environment definitions stored in localStorage, stores them in
  * the Vuex store, then returns the id of the last connected
@@ -45,17 +46,7 @@ export const loadEnvironments = () => {
     }
   }
 
-  Object.keys(loadedEnv).forEach(id => {
-    kuzzleActions.addEnvironment(store, id, loadedEnv[id])
-  })
-
-  // eslint-disable-next-line no-undef
-  let lastConnected = localStorage.getItem(LAST_CONNECTED)
-  if (!lastConnected || Object.keys(loadedEnv).indexOf(lastConnected) === -1) {
-    return Object.keys(loadedEnv)[0]
-  }
-
-  return lastConnected
+  return loadedEnv
 }
 
 /**
@@ -82,14 +73,13 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
     wsPort
   }
 
-  kuzzleActions.addEnvironment(store, generateHash(name), newEnvironment)
-  persistEnvironments()
+  kuzzleActions.addEnvironment(store, name, newEnvironment)
   return newEnvironment
 }
 
-export const persistEnvironments = () => {
+export const loadLastConnectedEnvId = () => {
   // eslint-disable-next-line no-undef
-  localStorage.setItem(ENVIRONMENTS, JSON.stringify(environments(store.state)))
+  return localStorage.getItem(LAST_CONNECTED)
 }
 
 export const deleteEnvironment = (id) => {
@@ -105,30 +95,22 @@ export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
   }
 
   envToUpdate = {
-    ...envToUpdate,
-    name, color, host, ioPort, wsPort
+    ...envToUpdate, name, color, host, ioPort, wsPort
   }
 
   kuzzleActions.updateEnvironment(store, id, envToUpdate)
-  persistEnvironments()
   return envToUpdate
 }
 
-export const setUserToCurrentEnvironment = (user) => {
-  if (!user) {
-    user = new SessionUser()
-  }
-
+export const setTokenToCurrentEnvironment = (token) => {
   kuzzleActions.updateEnvironment(
     store,
-    connectedTo(store.state),
+    currentEnvironmentId(store.state),
     {
       ...currentEnvironment(store.state),
-      user
+      token: token
     }
   )
-
-  persistEnvironments()
 
   return currentEnvironment(store.state)
 }
@@ -149,9 +131,7 @@ export const switchEnvironment = (id) => {
   return waitForConnected(2000)
     .then(() => {
       kuzzleActions.setConnection(store, id)
-      // eslint-disable-next-line no-undef
-      localStorage.setItem(LAST_CONNECTED, id)
-      return loginFromSession(store, environment.user)
+      return loginByToken(store, environment.token)
     })
     .then(user => {
       if (!user.id) {
@@ -160,5 +140,3 @@ export const switchEnvironment = (id) => {
       return Promise.resolve()
     })
 }
-
-window.switchEnvironment = switchEnvironment

@@ -44,6 +44,13 @@
         selectedIndex,
         selectedCollection
       }
+    },
+    watch: {
+      'selectedIndex': function () {
+        if (this.canSearchIndex()) {
+          this.listIndexesAndCollections()
+        }
+      }
     }
   }
 </script>

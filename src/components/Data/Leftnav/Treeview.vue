@@ -26,8 +26,7 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="indexName in indexes | orderBy '$key'"
-            v-if="filterTree(indexName, indexesAndCollections[indexName])">
+            v-for="indexName in indexes | orderBy '$key' | filterIndexes filter">
             <index-branch
               :force-open="indexes.length === 1"
               :index-name="indexName"
@@ -48,6 +47,7 @@
   import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
+  import {filterIndexesByKeyword} from '../../../services/data'
 
   export default {
     name: 'Treeview',
@@ -64,18 +64,13 @@
         filter: ''
       }
     },
-    methods: {
-      canSearchIndex,
-      filterTree (indexName, collections) {
-        if (this.filter === '' || indexName.indexOf(this.filter) >= 0) {
-          return true
-        }
-
-        let stored = collections.stored.some(collection => collection.indexOf(this.filter) >= 0)
-        let realtime = collections.realtime.some(collection => collection.indexOf(this.filter) >= 0)
-
-        return (stored || realtime)
+    filters: {
+      filterIndexes (indexes, filterInput) {
+        return filterIndexesByKeyword(indexes, this.indexesAndCollections, filterInput)
       }
+    },
+    methods: {
+      canSearchIndex
     },
     vuex: {
       getters: {

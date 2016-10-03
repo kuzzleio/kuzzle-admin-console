@@ -5,37 +5,69 @@ import store from '../../../../../../src/vuex/store'
 import lolex from 'lolex'
 
 let WatchLayoutInjector = require('!!vue?inject!../../../../../../src/components/Data/Collections/Watch')
+let WatchLayout
+let sandbox = sinon.sandbox.create()
+let subscribeDoneError = false
 
 describe('WatchData tests', () => {
-  let WatchLayout = WatchLayoutInjector({
-    './Tabs': mockedComponent,
-    '../../Materialize/Headline': mockedComponent,
-    '../../../directives/scroll-glue.directive': mockedDirective('scroll-glue'),
-    '../../../directives/Materialize/collapsible.directive': mockedDirective('collapsible'),
-    '../Realtime/Notification': mockedComponent,
-    '../Realtime/SubscriptionControls': mockedComponent,
-    '../Collections/Dropdown': mockedComponent,
-    '../../Common/Filters/Filters': mockedComponent,
-    '../../../services/kuzzle': sinon.stub(),
-    '../../../vuex/modules/common/crudlDocument/actions': {
-      setBasicFilter: sinon.stub()
-    },
-    '../../../vuex/modules/common/crudlDocument/getters': {
-      rawFilter: sinon.stub(),
-      basicFilter: sinon.stub(),
-      basicFilterForm: sinon.stub()
-    },
-    '../../../services/filterFormatRealtime': {
-      availableFilters: sinon.stub(),
-      formatFromBasicSearch: sinon.stub().returns({bar: 'foo'})
-    },
-    '../../../services/userAuthorization': {
-      canSubscribe: sinon.stub()
-    }
+  const mockInjector = () => {
+    WatchLayout = WatchLayoutInjector({
+      './Tabs': mockedComponent,
+      '../../Materialize/Headline': mockedComponent,
+      '../../../directives/scroll-glue.directive': mockedDirective('scroll-glue'),
+      '../../../directives/Materialize/collapsible.directive': mockedDirective('collapsible'),
+      '../Realtime/Notification': mockedComponent,
+      '../Realtime/SubscriptionControls': mockedComponent,
+      '../Collections/Dropdown': mockedComponent,
+      '../../Common/Filters/Filters': mockedComponent,
+      '../../../services/kuzzle': {
+        dataCollectionFactory () {
+          return {
+            unsubscribe () {
+
+            },
+            subscribe () {
+              return {
+                onDone: function (cb) {
+                  if (subscribeDoneError) {
+                    cb(new Error('onDone error'))
+                  } else {
+                    cb(null, {id: 'KuzzleRoom', unsubscribe: sandbox.spy()})
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      '../../../vuex/modules/common/crudlDocument/actions': {
+        setBasicFilter: sandbox.stub()
+      },
+      '../../../vuex/modules/common/crudlDocument/getters': {
+        rawFilter: sandbox.stub(),
+        basicFilter: sandbox.stub(),
+        basicFilterForm: sandbox.stub()
+      },
+      '../../../services/filterFormatRealtime': {
+        availableFilters: sandbox.stub(),
+        formatFromBasicSearch: sandbox.stub().returns({bar: 'foo'})
+      },
+      '../../../services/userAuthorization': {
+        canSubscribe: sandbox.stub()
+      }
+    })
+  }
+
+  beforeEach(() => {
+    mockInjector()
+  })
+
+  afterEach(() => {
+    sandbox.reset()
   })
 
   describe('WatchLayout tests', () => {
-    let vm
+    let vm, $dispatch
 
     beforeEach(() => {
       vm = new Vue({
@@ -44,6 +76,8 @@ describe('WatchData tests', () => {
         replace: false,
         store: store
       }).$mount()
+
+      $dispatch = sandbox.stub(vm.$refs.watch, '$dispatch')
     })
 
     describe('handleMessage', () => {
@@ -60,7 +94,7 @@ describe('WatchData tests', () => {
       it('should append message to notification list if limit is not reach', () => {
         vm.$refs.watch.notifications = ['foo', 'bar']
         vm.$refs.watch.notificationsLengthLimit = 10
-        vm.$refs.watch.notificationToMessage = sinon.stub().returns('baz')
+        vm.$refs.watch.notificationToMessage = sandbox.stub().returns('baz')
 
         vm.$refs.watch.handleMessage(null, {})
 
@@ -70,7 +104,7 @@ describe('WatchData tests', () => {
       it('should remove 2 firsts notifications if messages reach length limit ', () => {
         vm.$refs.watch.notifications = ['foo', 'bar']
         vm.$refs.watch.notificationsLengthLimit = 1
-        vm.$refs.watch.notificationToMessage = sinon.stub().returns('baz')
+        vm.$refs.watch.notificationToMessage = sandbox.stub().returns('baz')
 
         vm.$refs.watch.handleMessage(null, {})
 
@@ -82,7 +116,7 @@ describe('WatchData tests', () => {
         vm.$refs.watch.notifications = ['foo', 'bar']
         vm.$refs.watch.notificationsLengthLimit = 1
         vm.$refs.watch.warning.message = ''
-        vm.$refs.watch.notificationToMessage = sinon.stub().returns('baz')
+        vm.$refs.watch.notificationToMessage = sandbox.stub().returns('baz')
 
         vm.$refs.watch.handleMessage(null, {})
 
@@ -93,7 +127,7 @@ describe('WatchData tests', () => {
         vm.$refs.watch.notifications = ['foo', 'bar']
         vm.$refs.watch.notificationsLengthLimit = 1
         vm.$refs.watch.warning.message = 'foo'
-        vm.$refs.watch.notificationToMessage = sinon.stub().returns('baz')
+        vm.$refs.watch.notificationToMessage = sandbox.stub().returns('baz')
 
         vm.$refs.watch.handleMessage(null, {})
 
@@ -106,7 +140,7 @@ describe('WatchData tests', () => {
         vm.$refs.watch.warning.message = ''
         vm.$refs.watch.warning.lastTime = Date.now()
         vm.$refs.watch.warning.count = 99
-        vm.$refs.watch.notificationToMessage = sinon.stub().returns('baz')
+        vm.$refs.watch.notificationToMessage = sandbox.stub().returns('baz')
 
         vm.$refs.watch.handleMessage(null, {})
 
@@ -116,17 +150,16 @@ describe('WatchData tests', () => {
 
     describe('toggleSubscription', () => {
       it('should call the subscribe method by default and set the KuzzleRoom', () => {
-        vm.$refs.watch.subscribe = sinon.stub().returns('KuzzleRoom')
+        vm.$refs.watch.subscribe = sandbox.stub().returns('KuzzleRoom')
 
         vm.$refs.watch.toggleSubscription()
 
         expect(vm.$refs.watch.subscribe.called).to.be.ok
-        expect(vm.$refs.watch.room).to.equal('KuzzleRoom')
       })
 
       it('should call the reset method if there is a subscription', () => {
         vm.$refs.watch.subscribed = true
-        vm.$refs.watch.unsubscribe = sinon.spy()
+        vm.$refs.watch.unsubscribe = sandbox.spy()
 
         vm.$refs.watch.toggleSubscription()
 
@@ -137,13 +170,13 @@ describe('WatchData tests', () => {
 
     describe('basicSearch', () => {
       it('should refresh page with empty basic filter if no filter is given', () => {
-        vm.$refs.watch.$router = {go: sinon.spy()}
+        vm.$refs.watch.$router = {go: sandbox.spy()}
         vm.$refs.watch.basicSearch()
         expect(vm.$refs.watch.$router.go.calledWith({query: {basicFilter: ''}})).to.equal(true)
       })
       it('should refresh page with stringified basic filter if set', () => {
         let filter = {foo: 'bar'}
-        vm.$refs.watch.$router = {go: sinon.spy()}
+        vm.$refs.watch.$router = {go: sandbox.spy()}
 
         vm.$refs.watch.basicSearch(filter)
 
@@ -153,13 +186,13 @@ describe('WatchData tests', () => {
 
     describe('rawSearch', () => {
       it('should refresh page with empty raw filter if no filter is given', () => {
-        vm.$refs.watch.$router = {go: sinon.spy()}
+        vm.$refs.watch.$router = {go: sandbox.spy()}
         vm.$refs.watch.rawSearch()
         expect(vm.$refs.watch.$router.go.calledWith({query: {rawFilter: ''}})).to.equal(true)
       })
       it('should refresh page with stringified raw filter if set', () => {
         let filter = {foo: 'bar'}
-        vm.$refs.watch.$router = {go: sinon.spy()}
+        vm.$refs.watch.$router = {go: sandbox.spy()}
 
         vm.$refs.watch.rawSearch(filter)
 
@@ -185,6 +218,30 @@ describe('WatchData tests', () => {
         expect(vm.$refs.watch.warning.message).to.equal('')
         expect(vm.$refs.watch.warning.count).to.equal(0)
         expect(unsubscribed).to.be.ok
+      })
+    })
+
+    describe('subscribe', () => {
+      it('should set the subscription and the room if success', () => {
+        vm.$refs.watch.subscribed = false
+
+        vm.$refs.watch.subscribe()
+
+        expect(vm.$refs.watch.subscribed).to.be.ok
+        expect(vm.$refs.watch.room.id).to.be.equal('KuzzleRoom')
+      })
+
+      it('should dispatch a toast with an error if the subscription fails', () => {
+        subscribeDoneError = true
+        mockInjector()
+
+        vm.$refs.watch.subscribed = false
+
+        vm.$refs.watch.subscribe()
+
+        expect($dispatch.calledWith('toast', 'onDone error', 'error')).to.be.equal(true)
+        expect(vm.$refs.watch.subscribed).to.be.not.ok
+        expect(vm.$refs.watch.room).to.be.null
       })
     })
 

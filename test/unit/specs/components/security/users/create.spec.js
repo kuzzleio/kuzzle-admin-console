@@ -15,6 +15,7 @@ describe('Create user component test', () => {
   let refreshIndexSpy = sandbox.stub()
   let setNewDocumentSpy = sandbox.stub()
   let setNewDocument = sandbox.stub()
+  let newDocumentStub = sandbox.stub().returns({_id: '42'})
 
   const mockInjector = () => {
     Create = CreateInjector({
@@ -34,7 +35,7 @@ describe('Create user component test', () => {
         refreshIndex: refreshIndexSpy
       },
       '../../../vuex/modules/data/getters': {
-        newDocument: sandbox.stub().returns({_id: '42'})
+        newDocument: newDocumentStub
       },
       '../../../vuex/modules/data/actions': {
         setNewDocument
@@ -56,28 +57,53 @@ describe('Create user component test', () => {
     $vm.$dispatch = $dispatch
   }
 
-  before(() => mockInjector())
+  beforeEach(() => mockInjector())
   afterEach(() => sandbox.restore())
 
   describe('methods test', () => {
     describe('create', () => {
-      it('should dispatch an error because the json document is invalid', () => {
+      it('should display an error because the json document is invalid', () => {
+        $vm.error = ''
+
         $vm.create('code')
-        expect($dispatch.calledWith('toast', 'Invalid document', 'error'))
+
+        expect($vm.error).to.be.equal('The document is invalid, please review it')
+      })
+
+      it('should display an error because there is no "_id" field in the json document', () => {
+        $vm.error = ''
+
+        $vm.create('code', {})
+
+        expect($vm.error).to.be.equal('The document must have a field "_id"')
       })
 
       it('should mutate a new json document', () => {
         mockInjector()
         $vm.setNewDocument = setNewDocumentSpy
-        $vm.create('code', {foo: 'bar'})
+        $vm.create('code', {_id: 'banana', foo: 'bar'})
+
         expect(setNewDocumentSpy.called).to.be.ok
+      })
+
+      it('should display an error because the field "Document identifier" is not set in the form', () => {
+        $vm.error = ''
+        newDocumentStub = sandbox.stub().returns({foo: '42'})
+        mockInjector()
+
+        $vm.create('form')
+
+        expect($vm.error).to.be.equal('The document identifier is required')
       })
 
       it('should create the document and redirect', (done) => {
         triggerError = false
         $vm.$router = {go: sandbox.stub()}
+        newDocumentStub = sandbox.stub().returns({_id: '42'})
         mockInjector()
-        $vm.create('form', {foo: 'bar'})
+
+        $vm.create('form')
+
         setTimeout(() => {
           expect(refreshIndexSpy.called).to.be.ok
           done()

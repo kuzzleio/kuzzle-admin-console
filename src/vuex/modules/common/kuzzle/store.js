@@ -14,6 +14,9 @@ const state = {
 
 export const mutations = {
   [ADD_ENVIRONMENT] (state, id, environment) {
+    if (!environment) {
+      throw new Error('Cannot store a falsy environment')
+    }
     if (Object.keys(state.environments).indexOf(id) !== -1) {
       throw new Error(`Unable to add new environment to already existing id "${id}"`)
     }

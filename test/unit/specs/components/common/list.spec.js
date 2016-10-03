@@ -154,6 +154,14 @@ describe('Browse common component tests', () => {
         }, 0)
       })
     })
+
+    describe('editDocument', () => {
+      it('should redirect to right route and encode the given id', () => {
+        let myWeirdId = 'test/id?;!'
+        vm.$refs.browse.editDocument('toto', myWeirdId)
+        expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'toto', params: {id: encodeURIComponent(myWeirdId)}})).to.be.equal(true)
+      })
+    })
   })
 
   describe('Events', () => {

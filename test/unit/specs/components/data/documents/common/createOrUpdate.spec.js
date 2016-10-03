@@ -144,6 +144,14 @@ describe('createOrUpdate document tests', () => {
         expect(broadcastSpy.calledWith('modal-close', 'add-attr')).to.be.ok
       })
     })
+
+    describe('dismissError', () => {
+      it('should dispatch reset error event', () => {
+        vm.$refs.create.dismissError()
+
+        expect(dispatchSpy.calledWith('document-create::reset-error')).to.be.equal(true)
+      })
+    })
   })
 
   describe('beforeDestroy test', () => {
