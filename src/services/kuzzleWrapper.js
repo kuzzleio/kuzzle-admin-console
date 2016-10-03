@@ -1,6 +1,7 @@
 import kuzzle from './kuzzle'
-import { setTokenValid } from '../vuex/modules/auth/actions'
+import { setUserToCurrentEnvironment } from './environment'
 import Promise from 'bluebird'
+import { setTokenValid } from '../vuex/modules/common/kuzzle/actions'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -24,7 +25,7 @@ export const waitForConnected = (timeout = 1000) => {
 
 export const connectToEnvironment = (environment) => {
   if (kuzzle.state === 'connected') {
-    kuzzle.disconnect()    
+    kuzzle.disconnect()
   }
   kuzzle.host = environment.host
   kuzzle.ioPort = environment.ioPort
@@ -33,6 +34,10 @@ export const connectToEnvironment = (environment) => {
 }
 
 export const initStoreWithKuzzle = (store) => {
+  kuzzle.removeAllListeners('jwtTokenExpired')
+  kuzzle.addListener('jwtTokenExpired', () => {
+    setUserToCurrentEnvironment(null)
+  })
   kuzzle.removeAllListeners('queryError')
   kuzzle.addListener('queryError', (error) => {
     if (error && error.message) {

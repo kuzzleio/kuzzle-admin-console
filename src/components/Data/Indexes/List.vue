@@ -74,12 +74,12 @@
           </div>
 
           <!-- Index listing -->
-          <index-boxed
-            :index="indexName"
-            v-if="canSearchIndex()"
-            v-for="indexName in indexes | filterBy filter | orderBy '$key'">
-          </index-boxed>
-
+          <div v-if="canSearchIndex()">
+            <index-boxed
+              :index="indexName"
+              v-for="indexName in indexes | filterBy filter | orderBy '$key'">
+            </index-boxed>
+          </div>
           <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
         </div>
 

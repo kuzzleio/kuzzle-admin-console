@@ -1,14 +1,12 @@
 import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
-import userCookies from '../../../services/userCookies'
 import SessionUser from '../../../models/SessionUser'
-import {SET_CURRENT_USER, SET_TOKEN_VALID, SET_ADMIN_EXISTS} from './mutation-types'
+import { setTokenToCurrentEnvironment } from '../../../services/environment'
+import { SET_CURRENT_USER, SET_ADMIN_EXISTS, SET_TOKEN_VALID } from './mutation-types'
 import Promise from 'bluebird'
 
 export const doLogin = (store, username, password) => {
   let user = SessionUser()
-
-  userCookies.delete()
 
   return new Promise((resolve, reject) => {
     kuzzle
@@ -17,6 +15,7 @@ export const doLogin = (store, username, password) => {
       .then(loginResult => {
         user.id = loginResult._id
         user.token = loginResult.jwt
+        setTokenToCurrentEnvironment(loginResult.jwt)
 
         return kuzzle.whoAmIPromise()
       })
@@ -27,8 +26,6 @@ export const doLogin = (store, username, password) => {
       })
       .then(rights => {
         user.rights = rights
-        userCookies.set(user)
-
         store.dispatch(SET_CURRENT_USER, user)
         store.dispatch(SET_TOKEN_VALID, true)
 
@@ -44,32 +41,47 @@ export const setTokenValid = (store, isValid) => {
   store.dispatch(SET_TOKEN_VALID, isValid)
 }
 
-export const loginFromSession = (store, user) => {
-  if (!user) {
-    user = SessionUser()
-    store.dispatch(SET_CURRENT_USER, SessionUser())
-    kuzzle.unsetJwtToken()
-    return Promise.resolve(SessionUser())
+/**
+ * Performs the login to the kuzzle server via the given JWT token.
+ *
+ * @param  {Object} store The Vuex store.
+ * @param  {String} token The JWT token used to login.
+ * @return {Promise}      A promise resolving to a SessionUser object. If the
+ * login succeeded, the UserObject contains
+ */
+export const loginByToken = (store, token) => {
+  let user = SessionUser()
+  if (!token) {
+    store.dispatch(SET_CURRENT_USER, user)
+    return Promise.resolve(user)
   }
 
-  return kuzzle.checkTokenPromise(user.token)
+  return kuzzle.checkTokenPromise(token)
     .then(res => {
       if (!res.valid) {
+        setTokenToCurrentEnvironment(null)
         store.dispatch(SET_CURRENT_USER, SessionUser())
         kuzzle.unsetJwtToken()
         return Promise.resolve(SessionUser())
       }
 
-      kuzzle.setJwtToken(user.token)
-      store.dispatch(SET_CURRENT_USER, user)
-      return Promise.resolve(user)
+      kuzzle.setJwtToken(token)
+      setTokenToCurrentEnvironment(token)
+      return kuzzle.whoAmIPromise()
+        .then(KuzzleUser => {
+          user.id = KuzzleUser.id
+          user.params = KuzzleUser.content
+          return kuzzle.getMyRightsPromise()
+        })
+        .then(rights => {
+          user.rights = rights
+
+          store.dispatch(SET_CURRENT_USER, user)
+          store.dispatch(SET_TOKEN_VALID, true)
+          return Promise.resolve(user)
+        })
     })
     .catch(error => Promise.reject(new Error(error.message)))
-}
-
-export const loginFromCookie = (store) => {
-  let user = userCookies.get()
-  return loginFromSession(store, user)
 }
 
 export const checkFirstAdmin = (store) => {
@@ -94,7 +106,7 @@ export const setFirstAdmin = (store, exists) => {
 export const doLogout = (store) => {
   kuzzle.logout()
   kuzzle.unsetJwtToken()
-  userCookies.delete()
+  setTokenToCurrentEnvironment(null)
   store.dispatch(SET_CURRENT_USER, SessionUser())
   store.dispatch(SET_TOKEN_VALID, false)
   router.go({name: 'Login'})

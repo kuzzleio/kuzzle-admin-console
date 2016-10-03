@@ -95,23 +95,21 @@
             </div>
           </div>
 
-
-          <collection-boxed
+          <div v-if="canSearchCollection(index)">
+            <collection-boxed
               v-for="collection in storedCollections | filterBy filter | orderBy 1"
-              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="false">
-          </collection-boxed>
+            </collection-boxed>
 
-          <collection-boxed
-              v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
-              v-if="canSearchCollection(index)"
-              :index="index"
-              :collection="collection"
-              :is-realtime="true">
-          </collection-boxed>
-
+            <collection-boxed
+                v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
+                :index="index"
+                :collection="collection"
+                :is-realtime="true">
+            </collection-boxed>
+          </div>
         </div>
       </div>
     </div>

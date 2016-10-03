@@ -229,12 +229,12 @@ describe('Kuzzle wrapper service', () => {
           },
           removeAllListeners
         },
-        '../vuex/modules/auth/actions': {
-          setTokenValid
+        './environment': {
+          setUserToCurrentEnvironment: sandbox.stub()
         }
       })
 
-      let store = {store: 'mystore'}
+      let store = { store: 'mystore' }
       kuzzleWrapper.initStoreWithKuzzle(store)
 
       expect(removeAllListeners.calledWith('queryError'))

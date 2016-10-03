@@ -21,8 +21,19 @@ import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import ErrorLayout from './components/Error/Layout'
-import { switchEnvironment } from './services/environment'
-import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
+import {
+  switchEnvironment,
+  loadEnvironments,
+  loadLastConnectedEnvId,
+  persistEnvironments
+} from './services/environment'
+import {
+  kuzzleIsConnected,
+  environments
+} from './vuex/modules/common/kuzzle/getters'
+import {
+  addEnvironment
+} from './vuex/modules/common/kuzzle/actions'
 
 window.jQuery = window.$ = require('jquery')
 require('imports?$=jquery!materialize-css/dist/js/materialize')
@@ -31,33 +42,50 @@ import 'font-awesome/css/font-awesome.css'
 
 export default {
   replace: false,
+  name: 'KuzzleBackOffice',
   directives: [Toaster],
   components: {
     KuzzleDisconnectedPage,
     ErrorLayout
   },
   ready () {
-    // TODO 
-    // App is in charge of initializing the environments.
-    //
-    // Load existing profiles from LocalStorage
-    // if no profiles -> connect to default
-    // else if lastConnected ->
-    //      if lastConnected !exists -> connect to first one
-    //      else connect to lastConnected
-    // let environments = loadEnvironments()
-    this.switchEnvironment('valid')
+    let loadedEnv = this.loadEnvironments()
+    let lastConnected = this.loadLastConnectedEnvId()
+
+    Object.keys(loadedEnv).forEach(id => {
+      this.addEnvironment(id, loadedEnv[id], false)
+    })
+
+    this.persistEnvironments(this.environments)
+
+    if (!lastConnected || !this.environments[lastConnected]) {
+      lastConnected = Object.keys(this.environments)[0]
+    }
+
+    this.switchEnvironment(lastConnected)
+      .then(() => {
+        this.$router.go('/')
+      })
       .catch((err) => {
-        console.error('Something went wrong. Not been able to connect to the selected environment')
+        // TODO bubble this error to the UI
+        console.error(`Something went wrong while connecting to the
+          ${lastConnected} environment`)
         console.error(err)
       })
   },
   methods: {
-    switchEnvironment
+    switchEnvironment,
+    loadLastConnectedEnvId,
+    loadEnvironments,
+    persistEnvironments
   },
   vuex: {
     getters: {
-      kuzzleIsConnected
+      kuzzleIsConnected,
+      environments
+    },
+    actions: {
+      addEnvironment
     }
   }
 }
