@@ -7,7 +7,7 @@ let ModalCreateInjector = require('!!vue?inject!../../../../../../src/components
 
 let sandbox = sinon.sandbox.create()
 
-describe.only('ModalCreate tests', () => {
+describe('ModalCreate tests', () => {
   let ModalCreate = ModalCreateInjector({
     '../../Materialize/Modal': mockedComponent
   })

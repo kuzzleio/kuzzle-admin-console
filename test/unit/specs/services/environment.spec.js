@@ -220,7 +220,7 @@ describe('Environment service', () => {
         7512,
         7513
       )
-      expect(resultEnv.color).to.equals('#00757f')
+      expect(resultEnv.color).to.equals(environment.DEFAULT_COLOR)
     })
   })
 

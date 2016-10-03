@@ -125,8 +125,10 @@ export const switchEnvironment = (id) => {
     throw new Error(`Id ${id} does not match any environment`)
   }
 
+  reset(store)
+
   connectToEnvironment(environment)
-  return waitForConnected(2000)
+  return waitForConnected(10000)
     .then(() => {
       kuzzleActions.setConnection(store, id)
 
@@ -138,9 +140,5 @@ export const switchEnvironment = (id) => {
           }
           return Promise.resolve()
         })
-    })
-    .catch((e) => {
-      reset(store)
-      return Promise.reject(e)
     })
 }
