@@ -37,10 +37,11 @@ if [ $return_value -gt 0 ]; then
 fi
 
 echo "Building dist file"
-npm run build && chmod -R 777 dist
+npm run build
 
 echo "Creating archive"
 tar -cvf dist.tar dist
+chmod 777 dist.tar
 
 echo "We're done here!"
 
