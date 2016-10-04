@@ -40,7 +40,7 @@ echo "Building dist file"
 npm run build
 
 echo "Creating archive"
-tar -cvf dist.tar dist
+tar -cvf kuzzle-backoffice.tar dist
 chmod 777 kuzzle-backoffice.tar
 
 echo "We're done here!"
