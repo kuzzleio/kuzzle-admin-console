@@ -39,6 +39,9 @@ fi
 echo "Building dist file"
 npm run build && chmod -R 777 dist
 
+echo "Creating archive"
+tar -cvf dist.tar dist
+
 echo "We're done here!"
 
 exit $return_value
