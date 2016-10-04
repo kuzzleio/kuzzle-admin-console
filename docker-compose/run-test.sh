@@ -7,7 +7,7 @@ npm install
 bower install --allow-root
 
 echo "Building dist file"
-npm run build
+npm run build && chmod +r 777 dist
 
 echo "Starting Tests..."
 

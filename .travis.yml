@@ -12,11 +12,10 @@ script:
 - docker-compose -f docker-compose/test.yml run backoffice
 deploy:
   provider: releases
-  api_key:
-    secure: N5/lVwS/+yMIZB/0hwo4mGyJyVstqMf89/hIX5dmeNaG5OMB/8YkSDOMf2K1BwkSd6auIqPo7Mq86dYOugZKBXUhU8bdoLAL2nCcmwtsxVgAi/p3cLMJKDpAvsMFZqFUkNlgc8z6CA5Ohr82gV4FhIg7gXPhqQ/7fAvxruSQHm3N3Q69Z8yGNUsL934GpCl1r31cDTVf3Qoh6ivcaY4p0QVqOxrUOBC607zpCbboCU6dXeCg+G222V0pXQAInWzRonhpUQLJ6Aw4z+sagC/PXf43WmPo3CFYe/eVj3VrqzuQ2Yw3xGPvsNYk0g/f5IJEditMIJvkvPEc6WSdcF1xeqOUJz6MQ/HPLwaQn6oqCIZebqGtAWTrMM4l6Mq8o8NSvFxLfquO6NEhCyz7dSb5dP4jidrzC+C+tuB95o+RkM6BTDAq+JrdWLSGrkfYRWmKGhSUe2tlAHFet2sdLV/poCPlhc8uvj8SQ3Gq8oJbvW5J1mCIFka9/Yg5JMV4FNX7fElEJMojM9EXLHb1VnARpfGBLh1sd2B6mSiOAYIaHujskJM3x0mrFKwntrTLZogOsv2zjta4/AXA8km4k6vu49WNHQodqgI2rFFKjkvZNluqVdidtd5sHNB7Xeml4CtzrAfErDGG/mjhMxwz0wkjBkV6s+EyXOqDfcp6lYxTXFo=
+  api_key: ${GH_TOKEN}
   file_glob: true
-  file: "dist/*"
+  file: dist/*
   skip_cleanup: true
   on:
-    repo: kuzzleio/kuzzle-backoffice
-    branch: 137-travis-deploy
+    tags: false
+    all_branches: true
