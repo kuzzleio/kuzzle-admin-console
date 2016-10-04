@@ -24,7 +24,7 @@
             <a @click="doLogout">Logout</a>
           </li>
 
-          <environments-switch @main-menu::create-env="editEnvironment" @main-menu::delete-env="deleteEnvironment"></environments-switch>
+          <environments-switch @create-env="editEnvironment" @delete-env="deleteEnvironment"></environments-switch>
         </ul>
       </nav>
 

@@ -19,11 +19,11 @@
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute">{{env.host}}</span>
         </div>
-        <i class="edit primary fa fa-pencil" @click.prevent="$dispatch('main-menu::create-env', id)"></i>
-        <i class="delete error fa fa-trash" @click.prevent="$dispatch('main-menu::delete-env', id)"></i>
+        <i class="edit primary fa fa-pencil" @click.prevent="$dispatch('create-env', id)"></i>
+        <i class="delete error fa fa-trash" @click.prevent="$dispatch('delete-env', id)"></i>
       </li>
       <li class="divider"></li>
-      <li><a href="" @click.prevent="$dispatch('main-menu::create-env')"><i class="fa fa-plus-circle"></i> Create new</a></li>
+      <li><a href="" @click.prevent="$dispatch('create-env')"><i class="fa fa-plus-circle"></i> Create new</a></li>
     </ul>
   </span>
 </template>
