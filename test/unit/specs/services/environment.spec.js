@@ -66,6 +66,12 @@ describe('Environment service', () => {
       expect(env).to.have.property('default')
     })
 
+    it('should create default environment when the localstorage is not valid', () => {
+      sandbox.stub(JSON, 'parse').throws()
+      let env = environment.loadEnvironments()
+      expect(env).to.have.property('default')
+    })
+
     it('should return the stored environments when available', () => {
       // eslint-disable-next-line no-undef
       sandbox.stub(localStorage, 'getItem').returns(

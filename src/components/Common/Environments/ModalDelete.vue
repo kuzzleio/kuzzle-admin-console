@@ -61,7 +61,7 @@
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import { deleteEnvironment } from '../../../services/environment'
-  import { environments } from '../../../vuex/modules/common/kuzzle/getters'
+  import { environments, currentEnvironmentId } from '../../../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'EnvironmentDeleteModal',
@@ -74,7 +74,8 @@
     },
     vuex: {
       getters: {
-        environments
+        environments,
+        currentEnvironmentId
       }
     },
     data () {
@@ -87,6 +88,7 @@
       confirmDeleteEnvironment () {
         if (this.environmentName === this.envConfirmation) {
           deleteEnvironment(this.environmentId)
+
           this.$broadcast('modal-close', 'delete-env')
         }
       }

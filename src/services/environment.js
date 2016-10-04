@@ -19,11 +19,13 @@ export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
 export const DEFAULT_COLOR = '#00757F'
 export const DEFAULT = 'default'
-export const defaultEnvironment = {
-  name: 'localhost',
-  host: 'localhost',
-  ioPort: 7512,
-  wsPort: 7513
+const defaultEnvironment = {
+  [DEFAULT]: {
+    name: 'localhost',
+    host: 'localhost',
+    ioPort: 7512,
+    wsPort: 7513
+  }
 }
 
 export const persistEnvironments = (environments) => {
@@ -35,15 +37,19 @@ export const persistEnvironments = (environments) => {
  * the Vuex store, then returns the id of the last connected
  * environment if available, or the first environment id available otherwise.
  *
- * @return {String} the id of the last connected environment.
+ * @return {Object} all environments.
  */
 export const loadEnvironments = () => {
-  // eslint-disable-next-line no-undef
-  let loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
-  if (Object.keys(loadedEnv).length === 0) {
-    loadedEnv = {
-      [DEFAULT]: defaultEnvironment
+  let loadedEnv = {}
+
+  try {
+    // eslint-disable-next-line no-undef
+    loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
+    if (Object.keys(loadedEnv).length === 0) {
+      return defaultEnvironment
     }
+  } catch (e) {
+    return defaultEnvironment
   }
 
   return loadedEnv

@@ -21,7 +21,8 @@ describe('Modal Delete component', () => {
         deleteEnvironment
       },
       '../../../vuex/modules/common/kuzzle/getters': {
-        environments
+        environments,
+        currentEnvironmentId: sandbox.stub().returns('currentId')
       }
     })
 
@@ -92,6 +93,18 @@ describe('Modal Delete component', () => {
         $vm.envConfirmation = 'same'
 
         $vm.confirmDeleteEnvironment()
+        expect(deleteEnvironment.calledWith('myId')).to.be.equal(true)
+        expect($vm.$broadcast.calledWith('modal-close', 'delete-env')).to.be.equal(true)
+      })
+
+      it('should switch on the first environment if the user try to delete the current one', () => {
+        $vm.environmentId = 'currentId'
+
+        $vm.environmentName = 'same'
+        $vm.envConfirmation = 'same'
+
+        $vm.confirmDeleteEnvironment()
+        expect(switchEnvironment.calledWith('myId')).to.be.equal(true)
         expect(deleteEnvironment.calledWith('myId')).to.be.equal(true)
         expect($vm.$broadcast.calledWith('modal-close', 'delete-env')).to.be.equal(true)
       })
