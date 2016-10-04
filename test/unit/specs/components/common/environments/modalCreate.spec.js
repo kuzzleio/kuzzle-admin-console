@@ -9,9 +9,18 @@ let vm
 let $vm
 
 describe('Modal Create Environment component test', () => {
+  let listEnvironments = {
+    myEnv: {
+      name: 'myEnv',
+      host: 'myHost',
+      ioPort: 8888,
+      wsPort: 9999,
+      color: 'myColor'
+    }
+  }
   let createEnvironment = sandbox.stub()
   let updateEnvironment = sandbox.stub()
-  let environments = sandbox.stub()
+  let environments = sandbox.stub().returns(listEnvironments)
   const DEFAULT_COLOR = 'default-color'
 
   const mockInjector = () => {
@@ -43,6 +52,29 @@ describe('Modal Create Environment component test', () => {
   afterEach(() => sandbox.restore())
 
   describe('Watch', () => {
+    describe('environmentId', () => {
+      it('should reset environment if environmentId is null or not in environments', (done) => {
+        $vm.environmentId = 'toto'
+
+        Vue.nextTick(() => {
+          expect($vm.environment.name).to.be.equal(null)
+          expect($vm.environment.host).to.be.equal(null)
+          expect($vm.environment.ioPort).to.be.equal(7512)
+          expect($vm.environment.wsPort).to.be.equal(7513)
+          expect($vm.environment.color).to.be.equal('#00757F')
+          done()
+        })
+      })
+
+      it('should set values from environment if environmentId is defined', (done) => {
+        $vm.environmentId = 'myEnv'
+
+        Vue.nextTick(() => {
+          expect($vm.environment).to.be.deep.equal(listEnvironments['myEnv'])
+          done()
+        })
+      })
+    })
   })
 
   describe('Methods', () => {
@@ -52,6 +84,10 @@ describe('Modal Create Environment component test', () => {
         $vm.environment.wsPort = 7513
         $vm.environment.ioPort = 7512
         $vm.environment.host = 'localhost'
+
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
 
         $vm.createEnvironments()
         expect($vm.errors.name).to.be.equal(true)
@@ -66,6 +102,10 @@ describe('Modal Create Environment component test', () => {
         $vm.environment.ioPort = 7512
         $vm.environment.host = 'http://toto'
 
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
+
         $vm.createEnvironments()
         expect($vm.errors.host).to.be.equal(true)
         expect(updateEnvironment.callCount).to.be.equal(0)
@@ -73,6 +113,10 @@ describe('Modal Create Environment component test', () => {
         expect($vm.$broadcast.callCount).to.be.equal(0)
 
         $vm.environment.host = 'ws://tutu'
+
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
 
         $vm.createEnvironments()
         expect($vm.errors.host).to.be.equal(true)
@@ -87,6 +131,10 @@ describe('Modal Create Environment component test', () => {
         $vm.environment.ioPort = 7512
         $vm.environment.host = 'localhost'
 
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
+
         $vm.createEnvironments()
         expect($vm.errors.wsPort).to.be.equal(true)
         expect(updateEnvironment.callCount).to.be.equal(0)
@@ -99,6 +147,10 @@ describe('Modal Create Environment component test', () => {
         $vm.environment.wsPort = 7513
         $vm.environment.ioPort = -7512
         $vm.environment.host = 'localhost'
+
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
 
         $vm.createEnvironments()
         expect($vm.errors.ioPort).to.be.equal(true)
@@ -115,6 +167,10 @@ describe('Modal Create Environment component test', () => {
 
         $vm.environmentId = 10
 
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
+
         $vm.createEnvironments()
         expect(updateEnvironment.callCount).to.be.equal(1)
         expect(createEnvironment.callCount).to.be.equal(0)
@@ -129,10 +185,23 @@ describe('Modal Create Environment component test', () => {
 
         $vm.environmentId = null
 
+        updateEnvironment.reset()
+        createEnvironment.reset()
+        $vm.$broadcast.reset()
+
         $vm.createEnvironments()
         expect(updateEnvironment.callCount).to.be.equal(0)
         expect(createEnvironment.callCount).to.be.equal(1)
         expect($vm.$broadcast.callCount).to.be.equal(1)
+      })
+    })
+
+    describe('selectColor', () => {
+      it('should affect the corresponding color to environment.color', () => {
+        $vm.colors = ['#dc2222', '#7f6500', '#ccaa2a']
+        $vm.selectColor(2)
+
+        expect($vm.environment.color).to.be.equal($vm.colors[2])
       })
     })
   })

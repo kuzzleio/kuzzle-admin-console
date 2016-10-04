@@ -73,9 +73,6 @@
       Modal
     },
     vuex: {
-      actions: {
-        deleteEnvironment
-      },
       getters: {
         environments
       }
