@@ -7,16 +7,16 @@ env:
   global:
   - secure: IVNUEIDEb4Uh/5T+SXIrPuQV8x33Kzhf9oE4hIdsSQFKDNqophryVpSo3Xg34SX1ZViVau9TU8ec2E3zTxPSDyeW5Emfo7Xhzf/6oUQaN3OW+xi1HSCUGg7Tq5jIdRDnVXgFnWLl2fRoGtOrz5lfvQ5e3q6+EpCPyVDUpEjlVNDTibWvibKj4d5BR349THpOeGOUbzr87uke1TOxBkbsceVt55G3xyYRNI6DfLg4MjqaYLzhf5WnduwZc5RyZLFC5EHEhvxRy0BOfbpF20NBva05qjO1GcuNaHPfJhuuQcsaSAGmzHXi67QvDAjmCLLd7lA5HwCC2+51CGccw/CqnM64cZIJVMZnh68wd9gRHszKU8VhMx8K2eNPcGa5WTER+ald5pK2XBycm/fUNPTy/3zf30Svk5l9pyuT22WepGHmWrPxU3HzxpyGE0zPcPmzVjl23J40PBIHAHt3p2yoX2fQOKsA7c7dci6lcgX/aO3g6UGY8nd8OtEmeP9FybgVgNqJGdQP6gtT7rk6zf0lStbkC0RWu52GvLxTLthDgaQkqOFjwc0tVDYydsNZ/n046uDXw1eytt8lJT7ayu0+mnT2jzsLBvCDia1uwVRr5zHZUAuYHk+P5FM7yMjv5BaMwMbnSxU1AgIe+n0ojeb/f5wuKMBbGXTReyszPrXq/AY=
 before_script:
-- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install |
-  bash
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 script:
 - docker-compose -f docker-compose/test.yml run backoffice
 deploy:
   provider: releases
-  api_key: ${GH_TOKEN}
+  api_key:
+    secure: N5/lVwS/+yMIZB/0hwo4mGyJyVstqMf89/hIX5dmeNaG5OMB/8YkSDOMf2K1BwkSd6auIqPo7Mq86dYOugZKBXUhU8bdoLAL2nCcmwtsxVgAi/p3cLMJKDpAvsMFZqFUkNlgc8z6CA5Ohr82gV4FhIg7gXPhqQ/7fAvxruSQHm3N3Q69Z8yGNUsL934GpCl1r31cDTVf3Qoh6ivcaY4p0QVqOxrUOBC607zpCbboCU6dXeCg+G222V0pXQAInWzRonhpUQLJ6Aw4z+sagC/PXf43WmPo3CFYe/eVj3VrqzuQ2Yw3xGPvsNYk0g/f5IJEditMIJvkvPEc6WSdcF1xeqOUJz6MQ/HPLwaQn6oqCIZebqGtAWTrMM4l6Mq8o8NSvFxLfquO6NEhCyz7dSb5dP4jidrzC+C+tuB95o+RkM6BTDAq+JrdWLSGrkfYRWmKGhSUe2tlAHFet2sdLV/poCPlhc8uvj8SQ3Gq8oJbvW5J1mCIFka9/Yg5JMV4FNX7fElEJMojM9EXLHb1VnARpfGBLh1sd2B6mSiOAYIaHujskJM3x0mrFKwntrTLZogOsv2zjta4/AXA8km4k6vu49WNHQodqgI2rFFKjkvZNluqVdidtd5sHNB7Xeml4CtzrAfErDGG/mjhMxwz0wkjBkV6s+EyXOqDfcp6lYxTXFo=
   file_glob: true
-  file: dist/*
+  file: "dist/*"
   skip_cleanup: true
   on:
-    tags: false
-    all_branches: true
+    repo: kuzzleio/kuzzle-backoffice
+    branch: 137-travis-deploy
