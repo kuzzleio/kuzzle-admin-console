@@ -15,7 +15,7 @@ export DISPLAY=:10
 npm run unit
 return_value=$?
 
-#npm run codecov
+npm run codecov
 
 #if [ $return_value -le 0 ]; then
   #while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
@@ -41,7 +41,7 @@ npm run build
 
 echo "Creating archive"
 tar -cvf dist.tar dist
-chmod 777 dist.tar
+chmod 777 kuzzle-backoffice.tar
 
 echo "We're done here!"
 

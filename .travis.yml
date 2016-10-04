@@ -16,5 +16,4 @@ deploy:
   file: "dist.tar"
   skip_cleanup: true
   on:
-    tags: false
-    all_branches: true
+    tags: true
