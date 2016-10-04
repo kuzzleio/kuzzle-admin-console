@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="navbar-fixed">
-      <nav :style="{backgroundColor: currentEnvironment.color}">
+      <nav :style="{backgroundColor: currentEnvironmentColor}">
         <ul>
           <li class="logo">
             <a href="#" class="">
@@ -40,6 +40,7 @@
   import {user} from '../../vuex/modules/auth/getters'
   import {doLogout} from '../../vuex/modules/auth/actions'
   import { currentEnvironment } from '../../vuex/modules/common/kuzzle/getters'
+  import {DEFAULT_COLOR} from '../../services/environment'
   import EnvironmentsSwitch from './Environments/Switch'
   import ModalCreate from './Environments/ModalCreate'
   import ModalDelete from './Environments/ModalDelete'
@@ -53,6 +54,15 @@
     data () {
       return {
         environmentId: null
+      }
+    },
+    computed: {
+      currentEnvironmentColor () {
+        if (!this.currentEnvironment) {
+          return DEFAULT_COLOR
+        }
+
+        return this.currentEnvironment.color
       }
     },
     methods: {

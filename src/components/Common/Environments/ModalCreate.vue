@@ -196,7 +196,7 @@
           this.environment.host = null
           this.environment.ioPort = 7512
           this.environment.wsPort = 7513
-          this.environment.color = '#00757F'
+          this.environment.color = DEFAULT_COLOR
         }
       }
     }

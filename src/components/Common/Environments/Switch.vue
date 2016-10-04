@@ -1,9 +1,9 @@
 <template>
   <span>
-    <a class="btn-flat dropdown-button current-environment grey-text secondary text-lighten-5 waves-effect waves-light"
+    <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
        data-activates='environment-dropdown'>
         <span v-if="currentEnvironment" class="current-environment-name truncate">
-          {{currentEnvironment.name}}
+          {{currentEnvironmentName}}
         </span>
         <span v-if="!currentEnvironment" class="current-environment-name truncate">
           Choose Environment
@@ -30,6 +30,7 @@
   import { environments, currentEnvironment } from '../../../vuex/modules/common/kuzzle/getters'
   import { switchEnvironment } from '../../../services/environment'
   import ModalCreate from './ModalCreate'
+  import { } from '../../../services/data'
 
   export default {
     name: 'EnvironmentsSwitch',
@@ -40,6 +41,15 @@
       getters: {
         environments,
         currentEnvironment
+      }
+    },
+    computed: {
+      currentEnvironmentName () {
+        if (!this.currentEnvironment) {
+          return null
+        }
+
+        return this.currentEnvironment.name
       }
     },
     methods: {
@@ -59,6 +69,7 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
   .current-environment {
+    background-color: rgba(255,255,255,0.35);
     transition: .25s ease;
     margin-top: 7px;
     .truncate {
