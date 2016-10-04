@@ -112,11 +112,7 @@
   }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  .modal-footer {
-    padding: 8px 26px;
-    height: 66px;
-  }
+<style lang="scss" rel="stylesheet/scss">
   .modal {
     overflow-y: visible;
     &.small-modal {
@@ -132,6 +128,18 @@
       z-index: 1003;
       display: block;
       top: 10%;
+    }
+
+    .modal-footer {
+      padding: 8px 26px;
+      height: 66px;
+
+      button {
+        &.btn, &.btn-large, &.btn-flat {
+          font-size: 1rem;
+          margin: 7px 5px;
+        }
+      }
     }
   }
   .modal-overlay-transition {

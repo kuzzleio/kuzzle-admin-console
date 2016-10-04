@@ -25,6 +25,7 @@ let connectToEnvironmentStub = sandbox.stub()
 let setConnectionStub = sandbox.stub()
 let loginByTokenStub = sandbox.stub().returns(Promise.resolve({id: 'user'}))
 let checkFirstAdminStub = sandbox.stub().returns(Promise.resolve())
+let deleteEnvironment = sandbox.stub()
 
 const createMock = () => {
   environment = environmentInjector({
@@ -40,7 +41,8 @@ const createMock = () => {
       environments: sandbox.stub().returns(dummyEnvironments)
     },
     '../vuex/modules/common/kuzzle/actions': {
-      setConnection: setConnectionStub
+      setConnection: setConnectionStub,
+      deleteEnvironment
     },
     '../vuex/modules/auth/actions': {
       loginByToken: loginByTokenStub,
@@ -62,6 +64,12 @@ describe('Environment service', () => {
     it('should create default environment when none are available in localstorage', () => {
       // eslint-disable-next-line no-undef
       sandbox.stub(localStorage, 'getItem').returns(null)
+      let env = environment.loadEnvironments()
+      expect(env).to.have.property('default')
+    })
+
+    it('should create default environment when the localstorage is not valid', () => {
+      sandbox.stub(JSON, 'parse').throws()
       let env = environment.loadEnvironments()
       expect(env).to.have.property('default')
     })
@@ -122,78 +130,6 @@ describe('Environment service', () => {
     })
   })
 
-  describe('validateEnvironment', () => {
-    it('should throw when the name is invalid', () => {
-      expect(environment.validateEnvironment.bind(this)).to.throw(Error)
-      expect(environment.validateEnvironment.bind(this, null)).to.throw(Error)
-      expect(environment.validateEnvironment.bind(this, '')).to.throw(Error)
-    })
-
-    it('should throw when the hostname is invalid', () => {
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name')
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', null)
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', '')
-      ).to.throw(Error)
-    })
-
-    it('should throw if an invalid ioPort is provided', () => {
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost')
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', 'invalid ioPort')
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', -1)
-      ).to.throw(Error)
-    })
-
-    it('should throw when the wsPort is invalid', () => {
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', null)
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', null, null)
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', null, 'invalid wsPort')
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', null, -1)
-      ).to.throw(Error)
-      expect(
-        environment
-          .validateEnvironment
-          .bind(this, 'valid name', 'localhost', null, 7513)
-      ).to.not.throw(Error)
-    })
-  })
-
   describe('createEnvironment', () => {
     let envService
     let addEnvironmentStub = sandbox.stub()
@@ -220,7 +156,7 @@ describe('Environment service', () => {
         7512,
         7513
       )
-      expect(resultEnv.color).to.equals('#00757f')
+      expect(resultEnv.color).to.equals(environment.DEFAULT_COLOR)
     })
   })
 
@@ -287,6 +223,14 @@ describe('Environment service', () => {
       expect(envService.setTokenToCurrentEnvironment.bind(this, 'token')).to.not.throw(Error)
       expect(envService.setTokenToCurrentEnvironment.bind(this, null)).to.not.throw(Error)
       expect(updateEnvironmentStub.called).to.equals(true)
+    })
+  })
+
+  describe('deleteEnvironment', () => {
+    it('should call deleteEnvironment', () => {
+      environment.deleteEnvironment('toto')
+
+      expect(deleteEnvironment.calledWith(dummyStore, 'toto')).to.be.equal(true)
     })
   })
 })

@@ -61,6 +61,7 @@ export const loginByToken = (store, token) => {
       if (!res.valid) {
         setTokenToCurrentEnvironment(null)
         store.dispatch(SET_CURRENT_USER, SessionUser())
+        store.dispatch(SET_TOKEN_VALID, false)
         kuzzle.unsetJwtToken()
         return Promise.resolve(SessionUser())
       }

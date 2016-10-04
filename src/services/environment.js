@@ -17,11 +17,15 @@ import {
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
+export const DEFAULT_COLOR = '#00757F'
 export const DEFAULT = 'default'
-export const defaultEnvironment = {
-  host: 'localhost',
-  ioPort: 7512,
-  wsPort: 7513
+const defaultEnvironment = {
+  [DEFAULT]: {
+    name: 'localhost',
+    host: 'localhost',
+    ioPort: 7512,
+    wsPort: 7513
+  }
 }
 
 export const persistEnvironments = (environments) => {
@@ -33,15 +37,19 @@ export const persistEnvironments = (environments) => {
  * the Vuex store, then returns the id of the last connected
  * environment if available, or the first environment id available otherwise.
  *
- * @return {String} the id of the last connected environment.
+ * @return {Object} all environments.
  */
 export const loadEnvironments = () => {
-  // eslint-disable-next-line no-undef
-  let loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
-  if (Object.keys(loadedEnv).length === 0) {
-    loadedEnv = {
-      [DEFAULT]: defaultEnvironment
+  let loadedEnv = {}
+
+  try {
+    // eslint-disable-next-line no-undef
+    loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
+    if (Object.keys(loadedEnv).length === 0) {
+      return defaultEnvironment
     }
+  } catch (e) {
+    return defaultEnvironment
   }
 
   return loadedEnv
@@ -59,10 +67,8 @@ export const loadEnvironments = () => {
  * @return {Object} The environment object.
  */
 export const createEnvironment = (name, color, host, ioPort, wsPort) => {
-  validateEnvironment(name, host, ioPort, wsPort)
-
   if (!color) {
-    color = '#00757f'
+    color = DEFAULT_COLOR
   }
 
   let newEnvironment = {
@@ -82,35 +88,9 @@ export const loadLastConnectedEnvId = () => {
   return localStorage.getItem(LAST_CONNECTED)
 }
 
-export const validateEnvironment = (name, host, ioPort, wsPort) => {
-  // TODO ensure that name contains at least a letter
-  if (!name || name === '') {
-    throw new Error('The provided name is invalid')
-  }
-
-  if (!host || host === '') {
-    throw new Error('The provided hostname is invalid')
-  }
-
-  if (ioPort != null && ioPort !== parseInt(ioPort, 10)) {
-    throw new Error('The provided ioPort is not a Number')
-  }
-
-  if (ioPort < 0) {
-    throw new Error('The provided ioPort is not a valid port number')
-  }
-
-  if (!wsPort) {
-    throw new Error('Missing wsPort')
-  }
-
-  if (wsPort !== parseInt(wsPort, 10)) {
-    throw new Error('The provided wsPort is not a Number')
-  }
-
-  if (wsPort < 0) {
-    throw new Error('The provided wsPort is not a valid port number')
-  }
+export const deleteEnvironment = (id) => {
+  kuzzleActions.deleteEnvironment(store, id)
+  persistEnvironments()
 }
 
 export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
@@ -119,7 +99,6 @@ export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
     throw new Error(`The provided id ${id} does not correspond to any existing
       environment`)
   }
-  validateEnvironment(name, host, ioPort, wsPort)
 
   envToUpdate = {
     ...envToUpdate, name, color, host, ioPort, wsPort
@@ -155,15 +134,16 @@ export const switchEnvironment = (id) => {
   reset(store)
 
   connectToEnvironment(environment)
-  return waitForConnected(2000)
+  return waitForConnected(10000)
     .then(() => {
       kuzzleActions.setConnection(store, id)
+
       return loginByToken(store, environment.token)
-    })
-    .then(user => {
-      if (!user.id) {
-        return checkFirstAdmin(store)
-      }
-      return Promise.resolve()
+        .then(user => {
+          if (!user.id) {
+            return checkFirstAdmin(store)
+          }
+          return Promise.resolve()
+        })
     })
 }
