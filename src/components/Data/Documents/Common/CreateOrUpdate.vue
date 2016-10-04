@@ -10,9 +10,19 @@
             Json
           </label>
         </div>
+
+          <div class="card horizontal tertiary col m12" v-if="big">
+            <div class="card-content">
+              <span class="card-title">Warning</span>
+              <p>The form has been hidden because the mapping of this collection contains over 100 attributes. This may slow down the generation and edition of the document.<br />
+                You may want to split your data in multiple collections.<br />
+                <a href="#"  @click.prevent="show">Show anyway</a>
+              </p>
+            </div>
+          </div>
       </div>
 
-      <form class="wrapper" @submit.prevent="create">
+      <form class="wrapper" @submit.prevent="create" v-if="!big || (big && showAnyway)">
 
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
@@ -145,7 +155,7 @@
   import Modal from '../../../Materialize/Modal'
   import MSelect from '../../../../directives/Materialize/m-select.directive'
   import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
-  import {mergeDeep, formatType} from '../../../../services/objectHelper'
+  import {mergeDeep, formatType, countAttributes} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
   import Promise from 'bluebird'
   import Vue from 'vue'
@@ -179,6 +189,10 @@
       Focus
     },
     methods: {
+      show () {
+        this.showAnyway = true
+        this.big = false
+      },
       dismissError () {
         this.$dispatch('document-create::reset-error')
       },
@@ -255,7 +269,9 @@
         viewState: 'form',
         newAttributeType: 'string',
         newAttributePath: null,
-        newAttributeName: null
+        newAttributeName: null,
+        big: false,
+        showAnyway: false
       }
     },
     ready () {
@@ -263,6 +279,9 @@
         .dataCollectionFactory(this.collection, this.index)
         .getMappingPromise()
         .then((res) => {
+          if (countAttributes(res.mapping) > 100) {
+            this.big = true
+          }
           this.mapping = res.mapping
           formatType(this.mapping, this.collection)
           promiseGetMappingResolve()
