@@ -5,19 +5,20 @@ services:
 env:
   COMPOSE_VERSION: 1.2.0
   global:
-    secure: nVpQ59XdrZ5RBrxI82iauHm0sYnsPcKlaluxCc26RpfFI9gLWCqW0R5Jg4CMYqI8WVCpucMQUGMcFWTT0ZTbGSOpkaR0T0B4LYlRezgctRoUFxrKQgRD1zRaI0YmUQEEUqNUnGNZlZGI6+nhVyhwNw5gH9fc4y25aqiwly9q1X5u20JtFigjoUvEoSlhXSgkOhoPVAzD9TIpHU+OFfYjCh/ub9iyGuj+fcsGo6fmfyuGZvoKnx51s4vWlULyPWaJUtYcPF/RjE5f6vCgOFc56j1WpcRqasXzObKPbyrRCmwzNgi2KOi5AsNfzWIfj3+SsT/c+PHiVeDvf4Y6cjtxJG6yYT49f6GbR11/O+M6kcu9uuhxIF4S0/zn0iiUVqbfMU6Ts9V0KlmoHtBZ7jb2TGdvq0fC3iig8by26Y6ZGsy22TS1CeNeEd9jeKG/+QTTvACKfG6R/XgrR4mJij+NpA/HLVXtnJ3PPTMPBsDS42s0vhTRvXd/vlcG5W93m4bz/XOQIlbm8RXSA9dnlJQuOTHS5j2JvcCWA+ysMKg0PJrsTg0CiebJ9RiacoqgaIGPJ74wnwUISqbCEf/WXE7DHLG3u8wIVELbgwPFwA660skxJyOyYSIsnaDT460kvCcoZU2CWDzL9cNLRGDr8n0cj8XHyHwRlA2uB4KAAwcLeNA=
+  - secure: Ot5Dc5vx2dWoZlsDgPYgk9XsnysjDsfAWX5hSZybKT9sSG19i33G6me6AbCrHP5bW1/NmA2rTgyZO6y6gk5uqTdrU/APnpSIlFacD7nJacpeNY6+L2cWx9TSCth4Ejm3xLKQzALvMNMnSiwzfO8zAY4q4upBY2L+9NtNlZCZTWyTz9Xq8KPcNlvG6xfnfBBhuOZDk7wfjlNb4m86AUQV1yg9fE9pvhfan2Z24OZnBwHU+VW/O6CPuVzav0ykJi8ZAHtyIHZwrHoYE3SgN3sU8Ubj5/MT/B2YPD4oLWWgpJCokG2wBU0FAdxNyFeA1fLP6fiGUfV/XU3b9WhFVTYoNPjzr4PAXn+AIiRwW1L/3OPhcDBaPgXAOSiPjMXOmEYpKptiP5vGwGcNB1c93fibZYL0SuxmakYBNosRPzhoERB8NjcbYasRw4V6VckSdUmOkQSXIzFRUjE1koxl8oTR2nm49Y18ZQ1VRp+XQD3Q8Zdd26FlIJdfTWQzGBoLaPwDBSLzE4g4w20Xux9z4PnEuysePILQquDpjRIbUeBbSU5KCA2rYu5FJ23VcMnbiVfCAxhPIoRqy7n42s4EC1ZL95COrlBzT1WD/K1SXM4rlXU3Cu2wICID2qNuf6Zn7CGDWnJiLWzhabWMWwnkC/kTY6LUkn6SZ2VWkE9gD/H5ItQ=
 addons: 
 before_install: 
 install: 
 before_script:
-- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install |
+  bash
 script:
 - docker-compose -f docker-compose/test.yml run backoffice
 deploy:
   provider: releases
-  api_key: "${GH_TOKEN}"
+  api_key: ${GH_TOKEN}
   file_glob: true
-  file: "dist/*"
+  file: dist/*
   skip_cleanup: true
   on:
     tags: false
