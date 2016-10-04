@@ -158,7 +158,7 @@
           wsPort: 7513,
           color: DEFAULT_COLOR
         },
-        colors: [DEFAULT_COLOR, '#dc2222', '#7f6500', '#ccaa2a', '#537f00', '#000f7f', '#6d007f', '#7f0045']
+        colors: [DEFAULT_COLOR, '#0277bd', '#8e24aa', '#689f38', '#f57c00', '#e53935', '#546e7a', '#d81b60']
       }
     },
     methods: {
