@@ -25,6 +25,7 @@ let connectToEnvironmentStub = sandbox.stub()
 let setConnectionStub = sandbox.stub()
 let loginByTokenStub = sandbox.stub().returns(Promise.resolve({id: 'user'}))
 let checkFirstAdminStub = sandbox.stub().returns(Promise.resolve())
+let deleteEnvironment = sandbox.stub()
 
 const createMock = () => {
   environment = environmentInjector({
@@ -40,7 +41,8 @@ const createMock = () => {
       environments: sandbox.stub().returns(dummyEnvironments)
     },
     '../vuex/modules/common/kuzzle/actions': {
-      setConnection: setConnectionStub
+      setConnection: setConnectionStub,
+      deleteEnvironment
     },
     '../vuex/modules/auth/actions': {
       loginByToken: loginByTokenStub,
@@ -221,6 +223,14 @@ describe('Environment service', () => {
       expect(envService.setTokenToCurrentEnvironment.bind(this, 'token')).to.not.throw(Error)
       expect(envService.setTokenToCurrentEnvironment.bind(this, null)).to.not.throw(Error)
       expect(updateEnvironmentStub.called).to.equals(true)
+    })
+  })
+
+  describe('deleteEnvironment', () => {
+    it('should call deleteEnvironment', () => {
+      environment.deleteEnvironment('toto')
+
+      expect(deleteEnvironment.calledWith(dummyStore, 'toto')).to.be.equal(true)
     })
   })
 })

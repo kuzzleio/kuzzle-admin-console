@@ -104,7 +104,6 @@ describe('Modal Delete component', () => {
         $vm.envConfirmation = 'same'
 
         $vm.confirmDeleteEnvironment()
-        expect(switchEnvironment.calledWith('myId')).to.be.equal(true)
         expect(deleteEnvironment.calledWith('myId')).to.be.equal(true)
         expect($vm.$broadcast.calledWith('modal-close', 'delete-env')).to.be.equal(true)
       })
