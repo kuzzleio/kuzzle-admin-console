@@ -21,10 +21,11 @@
             Welcome <strong>{{user.id}}</strong>
           </li>
           <li>
-            <a @click="doLogout">Logout</a>
+            <environments-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environments-switch>
           </li>
-
-          <environments-switch @create-env="editEnvironment" @delete-env="deleteEnvironment"></environments-switch>
+          <li>
+            <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
+          </li>
         </ul>
       </nav>
 
@@ -87,6 +88,10 @@ nav {
     font-family: "Roboto", Arial, sans-serif;
     font-weight: 500;
 
+    .logout {
+      font-size: 1.2em;
+      height: 18px;
+    }
     &.nav {
       font-size: 1.1rem;
       text-transform: uppercase;

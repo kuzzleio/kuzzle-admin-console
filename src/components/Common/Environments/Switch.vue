@@ -1,17 +1,15 @@
 <template>
   <span>
-    <li>
-      <a class="btn-flat dropdown-button current-environment right grey-text secondary text-lighten-5 waves-effect waves-light"
-         data-activates='environment-dropdown'>
-          <span v-if="currentEnvironment" class="current-environment-name truncate">
-            {{currentEnvironment.name}}
-          </span>
-          <span v-if="!currentEnvironment" class="current-environment-name truncate">
-            Choose Environment
-          </span>
-          <i class="fa fa-caret-down"></i>
-      </a>
-    </li>
+    <a class="btn-flat dropdown-button current-environment grey-text secondary text-lighten-5 waves-effect waves-light"
+       data-activates='environment-dropdown'>
+        <span v-if="currentEnvironment" class="current-environment-name truncate">
+          {{currentEnvironment.name}}
+        </span>
+        <span v-if="!currentEnvironment" class="current-environment-name truncate">
+          Choose Environment
+        </span>
+        <i class="fa fa-caret-down"></i>
+    </a>
 
     <ul id='environment-dropdown' class='dropdown-content'>
       <li v-for="(id, env) in environments" class="environment">
@@ -19,11 +17,11 @@
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute">{{env.host}}</span>
         </div>
-        <i class="edit primary fa fa-pencil" @click.prevent="$dispatch('create-env', id)"></i>
-        <i class="delete error fa fa-trash" @click.prevent="$dispatch('delete-env', id)"></i>
+        <i class="edit primary fa fa-pencil" @click.prevent="$dispatch('environment::create', id)"></i>
+        <i class="delete error fa fa-trash" @click.prevent="$dispatch('environment::delete', id)"></i>
       </li>
       <li class="divider"></li>
-      <li><a href="" @click.prevent="$dispatch('create-env')"><i class="fa fa-plus-circle"></i> Create new</a></li>
+      <li><a href="" @click.prevent="$dispatch('environment::create')"><i class="fa fa-plus-circle"></i> Create new</a></li>
     </ul>
   </span>
 </template>
@@ -47,10 +45,6 @@
     methods: {
       switchEnvironment (id) {
         switchEnvironment(id)
-          .then(() => {
-            // this.$dispatch('toast', `Switched to ${environments[id].name} environment`, 'info')
-            this.$router.go('/')
-          })
           .catch((e) => {
             this.$dispatch('toast', 'An error occurred while switching environment', 'error')
           })

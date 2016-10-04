@@ -1,7 +1,7 @@
 <template>
   <div class="row kuzzle-disconnected">
     <div class="col s12">
-      <p>I'm doing my best to connect to the Kuzzle Server at <span class="host primary">http://{{host}}:{{port}}/</span>...</p>
+      <p>I'm doing my best to connect to the Kuzzle Server at <span class="host primary">{{host}}:{{port}}</span>...</p>
     </div>
 
     <div class="col s1 offset-s5">

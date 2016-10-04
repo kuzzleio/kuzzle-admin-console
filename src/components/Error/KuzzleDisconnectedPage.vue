@@ -1,10 +1,8 @@
 <template>
   <div>
     <div class="row">
-      <div class="col s12">
-         <ul>
-          <env-switch></env-switch>
-        </ul>
+      <div class="col offset-s4 s2">
+        <env-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></env-switch>
       </div>
     </div>
     <div class="col s12">
@@ -13,11 +11,6 @@
     <div class="row">
       <div class="col s12">
         <connecting :host="host" :port="port"></connecting>
-      </div>
-    </div>
-    <div class="row kuzzle-disconnected" v-if="disconnected">
-      <div class="col s12">
-        <h4><i class="fa fa-question-circle-o"></i> Are you sure the Kuzzle Server is up? This doesn't look very good...</h4>
       </div>
     </div>
 
@@ -42,7 +35,17 @@
       return {
         host: null,
         port: null,
-        disconnected: false
+        environmentId: null
+      }
+    },
+    methods: {
+      editEnvironment (id) {
+        this.environmentId = id
+        this.$broadcast('modal-open', 'create-env')
+      },
+      deleteEnvironment (id) {
+        this.environmentId = id
+        this.$broadcast('modal-open', 'delete-env')
       }
     },
     components: {
@@ -62,10 +65,6 @@
       idConnect = kuzzle.addListener('connected', () => {
         this.$router.go({name: 'Home'})
       })
-
-      setTimeout(() => {
-        this.disconnected = true
-      }, 7000)
     },
     destroyed () {
       kuzzle.removeListener('reconnected', idReconnect)

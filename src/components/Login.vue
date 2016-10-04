@@ -11,11 +11,18 @@
             </div>
           </div>
           <div class="row">
+            <div class="col offset-s1 s2">
+              <env-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></env-switch>
+            </div>
+          </div>
+          <div class="row">
         	  <login-form :on-login="onLogin"></login-form>
           </div>
         </div>
       </div>
     </div>
+    <modal-create :environment-id="environmentId"></modal-create>
+    <modal-delete :environment-id="environmentId"></modal-delete>
   </div>
 </template>
 
@@ -37,11 +44,22 @@
 
 <script>
   import LoginForm from './Common/Login/Form'
+  import EnvSwitch from './Common/Environments/Switch'
+  import ModalCreate from './Common/Environments/ModalCreate'
+  import ModalDelete from './Common/Environments/ModalDelete'
 
   export default {
     name: 'Login',
     components: {
-      LoginForm
+      LoginForm,
+      EnvSwitch,
+      ModalCreate,
+      ModalDelete
+    },
+    data () {
+      return {
+        environmentId: null
+      }
     },
     methods: {
       onLogin () {
@@ -52,6 +70,14 @@
         } else {
           this.$router.go({name: 'Home'})
         }
+      },
+      editEnvironment (id) {
+        this.environmentId = id
+        this.$broadcast('modal-open', 'create-env')
+      },
+      deleteEnvironment (id) {
+        this.environmentId = id
+        this.$broadcast('modal-open', 'delete-env')
       }
     }
   }
