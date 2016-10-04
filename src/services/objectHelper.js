@@ -49,3 +49,19 @@ export const formatType = (document, collection) => {
     }
   })
 }
+
+/**
+ * Count the number of attributes
+ * @param mapping
+ * @returns number of attributes
+ */
+export const countAttributes = (mapping, nb = 0) => {
+  Object.keys(mapping).forEach(o => {
+    if (mapping[o].properties) {
+      nb = countAttributes(mapping[o].properties, ++nb)
+    } else {
+      nb++
+    }
+  })
+  return nb
+}
