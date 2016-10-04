@@ -14,7 +14,8 @@ spinner.start()
 var assetsPath = path.join(config.build.assetsRoot, config.build.assetsSubDirectory)
 rm('-rf', assetsPath)
 mkdir('-p', assetsPath)
-cp('-R', path.join('static', '*'), assetsPath)
+cp('-R', 'static', assetsPath)
+cp('manifest.json', path.join(assetsPath, '..'))
 
 cp('-R', path.join('bower_components', 'ace-builds', 'src-min-noconflict', 'worker-json.js'), path.join(assetsPath, '..'))
 
