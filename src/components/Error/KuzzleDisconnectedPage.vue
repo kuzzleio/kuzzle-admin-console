@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div class="row">
+      <div class="col s12">
+         <ul>
+          <env-switch></env-switch>
+        </ul>
+      </div>
+    </div>
     <div class="col s12">
       <h4><i class="fa fa-plug"></i> Connecting to Kuzzle...</h4>
     </div>
@@ -13,12 +20,18 @@
         <h4><i class="fa fa-question-circle-o"></i> Are you sure the Kuzzle Server is up? This doesn't look very good...</h4>
       </div>
     </div>
+
+    <modal-create :environment-id="environmentId"></modal-create>
+    <modal-delete :environment-id="environmentId"></modal-delete>
   </div>
 </template>
 
 <script>
   import kuzzle from '../../services/kuzzle'
   import Connecting from './Connecting'
+  import EnvSwitch from '../Common/Environments/Switch'
+  import ModalCreate from '../Common/Environments/ModalCreate'
+  import ModalDelete from '../Common/Environments/ModalDelete'
 
   let idConnect
   let idReconnect
@@ -33,7 +46,10 @@
       }
     },
     components: {
-      Connecting
+      Connecting,
+      EnvSwitch,
+      ModalCreate,
+      ModalDelete
     },
     ready () {
       this.host = kuzzle.host
