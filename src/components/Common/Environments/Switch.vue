@@ -4,7 +4,7 @@
       <a class="btn-flat dropdown-button current-environment right grey-text secondary text-lighten-5 waves-effect waves-light"
          data-activates='environment-dropdown'>
           <span class="current-environment-name truncate">
-            {{currentEnvironment.name}}
+            {{currentEnvironmentName}}
           </span>
 
           <i class="fa fa-caret-down"></i>
@@ -40,6 +40,15 @@
       getters: {
         environments,
         currentEnvironment
+      }
+    },
+    computed: {
+      currentEnvironmentName () {
+        if (!this.currentEnvironment) {
+          return null
+        }
+
+        return this.currentEnvironment.name
       }
     },
     methods: {

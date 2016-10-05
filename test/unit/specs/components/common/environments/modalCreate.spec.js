@@ -9,19 +9,19 @@ let vm
 let $vm
 
 describe('Modal Create Environment component test', () => {
+  const DEFAULT_COLOR = 'default-color'
   let listEnvironments = {
     myEnv: {
       name: 'myEnv',
       host: 'myHost',
       ioPort: 8888,
       wsPort: 9999,
-      color: 'myColor'
+      color: DEFAULT_COLOR
     }
   }
   let createEnvironment = sandbox.stub()
   let updateEnvironment = sandbox.stub()
   let environments = sandbox.stub().returns(listEnvironments)
-  const DEFAULT_COLOR = 'default-color'
 
   const mockInjector = () => {
     Modal = ModalInjector({
@@ -61,7 +61,7 @@ describe('Modal Create Environment component test', () => {
           expect($vm.environment.host).to.be.equal(null)
           expect($vm.environment.ioPort).to.be.equal(7512)
           expect($vm.environment.wsPort).to.be.equal(7513)
-          expect($vm.environment.color).to.be.equal('#00757F')
+          expect($vm.environment.color).to.be.equal(DEFAULT_COLOR)
           done()
         })
       })

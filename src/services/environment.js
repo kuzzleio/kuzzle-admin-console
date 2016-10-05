@@ -13,6 +13,7 @@ import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
 import {
   loginByToken
   , checkFirstAdmin
+  , doLogout
 } from '../vuex/modules/auth/actions'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
@@ -24,7 +25,8 @@ const defaultEnvironment = {
     name: 'localhost',
     host: 'localhost',
     ioPort: 7512,
-    wsPort: 7513
+    wsPort: 7513,
+    color: DEFAULT_COLOR
   }
 }
 
@@ -89,6 +91,10 @@ export const loadLastConnectedEnvId = () => {
 }
 
 export const deleteEnvironment = (id) => {
+  if (currentEnvironmentId(store.state) === id) {
+    doLogout(store)
+  }
+
   kuzzleActions.deleteEnvironment(store, id)
   persistEnvironments()
 }
