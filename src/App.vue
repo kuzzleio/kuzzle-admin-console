@@ -3,13 +3,22 @@
 
   <div v-if="!kuzzleIsConnected">
     <error-layout>
-      <kuzzle-disconnected-page></kuzzle-disconnected-page>
+      <kuzzle-disconnected-page
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </kuzzle-disconnected-page>
     </error-layout>
   </div>
 
   <div v-if="kuzzleIsConnected">
-    <router-view></router-view>
+    <router-view
+      @environment::create="editEnvironment"
+      @environment::delete="deleteEnvironment">
+    </router-view>
   </div>
+
+  <modal-create :environment-id="environmentId"></modal-create>
+  <modal-delete :environment-id="environmentId"></modal-delete>
 </template>
 
 <script>
@@ -34,6 +43,8 @@ import {
 import {
   addEnvironment
 } from './vuex/modules/common/kuzzle/actions'
+import ModalCreate from './components/Common/Environments/ModalCreate'
+import ModalDelete from './components/Common/Environments/ModalDelete'
 
 window.jQuery = window.$ = require('jquery')
 require('imports?$=jquery!materialize-css/dist/js/materialize')
@@ -46,7 +57,9 @@ export default {
   directives: [Toaster],
   components: {
     KuzzleDisconnectedPage,
-    ErrorLayout
+    ErrorLayout,
+    ModalCreate,
+    ModalDelete
   },
   ready () {
     let loadedEnv = this.loadEnvironments()
@@ -73,11 +86,24 @@ export default {
         console.error(err)
       })
   },
+  data () {
+    return {
+      environmentId: null
+    }
+  },
   methods: {
     switchEnvironment,
     loadLastConnectedEnvId,
     loadEnvironments,
-    persistEnvironments
+    persistEnvironments,
+    editEnvironment (id) {
+      this.environmentId = id
+      this.$broadcast('modal-open', 'create-env')
+    },
+    deleteEnvironment (id) {
+      this.environmentId = id
+      this.$broadcast('modal-open', 'delete-env')
+    }
   },
   vuex: {
     getters: {

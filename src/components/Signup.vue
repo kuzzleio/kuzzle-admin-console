@@ -12,10 +12,7 @@
           </div>
           <div class="row">
             <div class="col offset-s4 s2">
-              <env-switch
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment">
-              </env-switch>
+              <environment-switch></environment-switch>
             </div>
           </div>
           <div class="row message-warning">
@@ -84,8 +81,6 @@
         </div>
       </div>
     </div>
-    <modal-create :environment-id="environmentId"></modal-create>
-    <modal-delete :environment-id="environmentId"></modal-delete>
   </div>
 </template>
 
@@ -140,16 +135,12 @@
 <script>
   import kuzzle from '../services/kuzzle'
   import { setFirstAdmin } from '../vuex/modules/auth/actions'
-  import EnvSwitch from './Common/Environments/Switch'
-  import ModalCreate from './Common/Environments/ModalCreate'
-  import ModalDelete from './Common/Environments/ModalDelete'
+  import EnvironmentSwitch from './Common/Environments/Switch'
 
   export default {
     name: 'Signup',
     components: {
-      EnvSwitch,
-      ModalCreate,
-      ModalDelete
+      EnvironmentSwitch
     },
     data () {
       return {
@@ -158,8 +149,7 @@
         password2: '',
         reset: false,
         error: null,
-        waiting: false,
-        environmentId: null
+        waiting: false
       }
     },
     vuex: {
@@ -195,14 +185,6 @@
             console.error('An error occurred while creating the first admin', err)
             this.$router.go({name: 'Login'})
           })
-      },
-      editEnvironment (id) {
-        this.environmentId = id
-        this.$broadcast('modal-open', 'create-env')
-      },
-      deleteEnvironment (id) {
-        this.environmentId = id
-        this.$broadcast('modal-open', 'delete-env')
       }
     }
   }

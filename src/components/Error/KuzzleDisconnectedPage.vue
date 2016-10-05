@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <env-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></env-switch>
+        <environment-switch></environment-switch>
       </div>
     </div>
     <div class="col s12">
@@ -14,17 +14,13 @@
       </div>
     </div>
 
-    <modal-create :environment-id="environmentId"></modal-create>
-    <modal-delete :environment-id="environmentId"></modal-delete>
   </div>
 </template>
 
 <script>
   import kuzzle from '../../services/kuzzle'
   import Connecting from './Connecting'
-  import EnvSwitch from '../Common/Environments/Switch'
-  import ModalCreate from '../Common/Environments/ModalCreate'
-  import ModalDelete from '../Common/Environments/ModalDelete'
+  import EnvironmentSwitch from '../Common/Environments/Switch'
 
   let idConnect
   let idReconnect
@@ -34,25 +30,12 @@
     data () {
       return {
         host: null,
-        port: null,
-        environmentId: null
-      }
-    },
-    methods: {
-      editEnvironment (id) {
-        this.environmentId = id
-        this.$broadcast('modal-open', 'create-env')
-      },
-      deleteEnvironment (id) {
-        this.environmentId = id
-        this.$broadcast('modal-open', 'delete-env')
+        port: null
       }
     },
     components: {
       Connecting,
-      EnvSwitch,
-      ModalCreate,
-      ModalDelete
+      EnvironmentSwitch
     },
     ready () {
       this.host = kuzzle.host

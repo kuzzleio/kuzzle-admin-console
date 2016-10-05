@@ -69,7 +69,7 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
   .current-environment {
-    background-color: rgba(255,255,255,0.35);
+    background-color: #00757F;
     transition: .25s ease;
     margin-top: 7px;
     .truncate {
