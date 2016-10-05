@@ -5,6 +5,7 @@ import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
 import {hasSecurityRights} from '../services/userAuthorization'
 import SecuritySubRoutes from './subRoutes/security'
 import DataSubRoutes from './subRoutes/data'
+import { setRouteBeforeRedirect } from '../vuex/modules/common/routing/actions'
 
 export default function createRoutes (router) {
   router.map({
@@ -86,9 +87,8 @@ export default function createRoutes (router) {
     }
 
     if (transition.to.auth && !isAuthenticated(store.state)) {
+      setRouteBeforeRedirect(store, transition.to.name)
       transition.redirect('/login')
-      router.lastTransition = transition
-      console.log('[Router] Redirecting to login due to non authenticated state', router)
       return
     }
 

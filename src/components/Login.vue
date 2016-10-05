@@ -43,6 +43,8 @@
 <script>
   import LoginForm from './Common/Login/Form'
   import EnvironmentSwitch from './Common/Environments/Switch'
+  import { routeBeforeRedirect } from '../vuex/modules/common/routing/getters'
+  import { setRouteBeforeRedirect } from '../vuex/modules/common/routing/actions'
 
   export default {
     name: 'Login',
@@ -57,11 +59,21 @@
     },
     methods: {
       onLogin () {
-        if (this.$router.lastTransition.to) {
-          this.$router.go(this.$router.lastTransition.to)
+        if (this.routeBeforeRedirect) {
+          this.$router.go({name: this.routeBeforeRedirect})
         } else {
           this.$router.go({name: 'Home'})
         }
+
+        this.setRouteBeforeRedirect(null)
+      }
+    },
+    vuex: {
+      getters: {
+        routeBeforeRedirect
+      },
+      actions: {
+        setRouteBeforeRedirect
       }
     }
   }
