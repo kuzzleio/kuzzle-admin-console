@@ -36,12 +36,14 @@ if [ $return_value -gt 0 ]; then
   curl -XGET http://elasticsearch:9200/%25kuzzle/_search/?size=1000 -o /var/app/dump/kuzzle.json
 fi
 
-echo "Building dist file"
-npm run build
-
-echo "Creating archive"
-tar -cvf kuzzle-backoffice.tar dist
-chmod 777 kuzzle-backoffice.tar
+if [ "${TRAVIS_BRANCH}" = "master" ]
+then
+    echo "Building dist file"
+    npm run build
+    echo "Creating archive"
+    tar -cvf kuzzle-backoffice.tar dist
+    chmod 777 kuzzle-backoffice.tar
+fi
 
 echo "We're done here!"
 
