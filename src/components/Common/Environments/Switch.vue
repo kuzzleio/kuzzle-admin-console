@@ -1,6 +1,6 @@
 <template>
   <span>
-    <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
+    <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
        data-activates='environment-dropdown'>
         <span v-if="currentEnvironment" class="current-environment-name truncate">
           {{currentEnvironmentName}}
@@ -28,15 +28,16 @@
 
 <script>
   import { environments, currentEnvironment } from '../../../vuex/modules/common/kuzzle/getters'
-  import { switchEnvironment } from '../../../services/environment'
+  import { switchEnvironment, DEFAULT_COLOR } from '../../../services/environment'
   import ModalCreate from './ModalCreate'
-  import { } from '../../../services/data'
+  import tinycolor from 'tinycolor2/tinycolor'
 
   export default {
     name: 'EnvironmentsSwitch',
     components: {
       ModalCreate
     },
+    props: ['blendColor'],
     vuex: {
       getters: {
         environments,
@@ -50,6 +51,23 @@
         }
 
         return this.currentEnvironment.name
+      },
+      bgColor () {
+        if (!this.blendColor) {
+          return DEFAULT_COLOR
+        }
+
+        let color
+        if (!this.currentEnvironment) {
+          color = DEFAULT_COLOR
+        } else {
+          color = this.currentEnvironment.color
+        }
+        if (!color) {
+          color = DEFAULT_COLOR
+        }
+
+        return tinycolor(color).lighten(10).toString()
       }
     },
     methods: {

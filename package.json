@@ -26,7 +26,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "http-server": "^0.9.0",
-    "rc": "^1.1.6"
+    "rc": "^1.1.6",
+    "tinycolor2": "^1.4.1"
   },
   "devDependencies": {
     "babel-core": "^6.0.0",

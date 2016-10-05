@@ -21,7 +21,7 @@
             Welcome <strong>{{user.id}}</strong>
           </li>
           <li>
-            <environment-switch></environment-switch>
+            <environment-switch blend-color="true"></environment-switch>
           </li>
           <li>
             <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
