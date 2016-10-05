@@ -1,19 +1,19 @@
 #!/bin/sh
 set -e
-kuzzle=${KUZZLE_HOST:-kuzzle:7511}
+#kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
 echo "Installing dependencies..."
 npm install
-bower install --allow-root
+bower install --allow-root --no-interactive
 
 echo "Starting Tests..."
 
-Xvfb :10 -ac &
-export DISPLAY=:10
+#Xvfb :10 -ac &
+#export DISPLAY=:10
 
 # Launch unit tests as soon as possible
 npm run unit
-return_value=$?
+#return_value=$?
 
 npm run codecov
 
@@ -29,12 +29,12 @@ npm run codecov
  # return_value=$?
 #fi
 
-if [ $return_value -gt 0 ]; then
-  echo "Tests exited with errors. Dumping the state of the system..."
-  mkdir /var/app/dump
-  curl -XGET http://elasticsearch:9200/kuzzle-bo-testindex/_search/?size=1000 -o /var/app/dump/kuzzle-bo-testindex.json
-  curl -XGET http://elasticsearch:9200/%25kuzzle/_search/?size=1000 -o /var/app/dump/kuzzle.json
-fi
+#if [ $return_value -gt 0 ]; then
+#  echo "Tests exited with errors. Dumping the state of the system..."
+#  mkdir /var/app/dump
+#  curl -XGET http://elasticsearch:9200/kuzzle-bo-testindex/_search/?size=1000 -o /var/app/dump/kuzzle-bo-testindex.json
+#  curl -XGET http://elasticsearch:9200/%25kuzzle/_search/?size=1000 -o /var/app/dump/kuzzle.json
+#fi
 
 if [ "${TRAVIS_BRANCH}" = "master" ]
 then
@@ -47,4 +47,4 @@ fi
 
 echo "We're done here!"
 
-exit $return_value
+#exit $return_value
