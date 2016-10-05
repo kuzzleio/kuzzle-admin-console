@@ -10,12 +10,13 @@ let $vm
 
 describe('Switch environment component', () => {
   let switchEnvironment = sandbox.stub().returns(Promise.resolve())
+  let currentEnvironment = sandbox.stub().returns({})
 
   const mockInjector = () => {
     Switch = SwitchInjector({
       '../../../vuex/modules/common/kuzzle/getters': {
         environments: sandbox.stub(),
-        currentEnvironment: sandbox.stub()
+        currentEnvironment
       },
       '../../../services/environment': {
         switchEnvironment
@@ -60,6 +61,24 @@ describe('Switch environment component', () => {
           expect($vm.$dispatch.callCount).to.be.equal(1)
           done()
         }, 0)
+      })
+    })
+  })
+
+  describe('Computed', () => {
+    describe('currentEnvironmentName', () => {
+      it('should return null if the current environment is undefined', () => {
+        currentEnvironment = sandbox.stub().returns(null)
+        mockInjector()
+
+        expect($vm.currentEnvironmentName).to.be.equal(null)
+      })
+
+      it('should return the current environment color', () => {
+        currentEnvironment = sandbox.stub().returns({name: 'toto'})
+        mockInjector()
+
+        expect($vm.currentEnvironmentName).to.be.equal('toto')
       })
     })
   })
