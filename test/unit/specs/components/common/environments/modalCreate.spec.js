@@ -10,7 +10,6 @@ let vm
 let $vm
 
 describe('Modal Create Environment component test', () => {
-  const DEFAULT_COLOR = 'default-color'
   let listEnvironments = {
     myEnv: {
       name: 'myEnv',

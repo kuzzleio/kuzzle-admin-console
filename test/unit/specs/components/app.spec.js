@@ -118,4 +118,36 @@ describe('App.vue', () => {
       })
     })
   })
+
+  describe('Methods', () => {
+    let switchEnvStub = sandbox.stub().returns(Promise.resolve())
+    let loadEnvStub = () => { return environments }
+    let loadLastConnectedStub = () => { return 'toto' }
+
+    let RootComponent = createApp(switchEnvStub, loadEnvStub, loadLastConnectedStub)
+    let router = new VueRouter({ abstract: true })
+    router.start(RootComponent, 'body')
+    router.go('/')
+    // console.log(router.app)
+    let $vm = router.app.$refs.app
+    let $broadcast = sandbox.stub($vm, '$broadcast')
+
+    describe('editEnvironment', () => {
+      it('should affect the props and dispatch event', () => {
+        $vm.$broadcast.reset()
+        $vm.editEnvironment('toto')
+        expect($vm.environmentId).to.be.equal('toto')
+        expect($broadcast.calledWith('modal-open', 'create-env')).to.be.equal(true)
+      })
+    })
+
+    describe('deleteEnvironment', () => {
+      it('should affect the props and dispatch event', () => {
+        $vm.$broadcast.reset()
+        $vm.deleteEnvironment('tata')
+        expect($vm.environmentId).to.be.equal('tata')
+        expect($broadcast.calledWith('modal-open', 'delete-env')).to.be.equal(true)
+      })
+    })
+  })
 })
