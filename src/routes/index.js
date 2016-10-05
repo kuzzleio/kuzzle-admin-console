@@ -87,6 +87,8 @@ export default function createRoutes (router) {
 
     if (transition.to.auth && !isAuthenticated(store.state)) {
       transition.redirect('/login')
+      router.lastTransition = transition
+      console.log('[Router] Redirecting to login due to non authenticated state', router)
       return
     }
 

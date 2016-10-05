@@ -30,19 +30,8 @@ import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import ErrorLayout from './components/Error/Layout'
-import {
-  switchEnvironment,
-  loadEnvironments,
-  loadLastConnectedEnvId,
-  persistEnvironments
-} from './services/environment'
-import {
-  kuzzleIsConnected,
-  environments
-} from './vuex/modules/common/kuzzle/getters'
-import {
-  addEnvironment
-} from './vuex/modules/common/kuzzle/actions'
+import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
+
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 
@@ -62,29 +51,6 @@ export default {
     ModalDelete
   },
   ready () {
-    let loadedEnv = this.loadEnvironments()
-    let lastConnected = this.loadLastConnectedEnvId()
-
-    Object.keys(loadedEnv).forEach(id => {
-      this.addEnvironment(id, loadedEnv[id], false)
-    })
-
-    this.persistEnvironments(this.environments)
-
-    if (!lastConnected || !this.environments[lastConnected]) {
-      lastConnected = Object.keys(this.environments)[0]
-    }
-
-    this.switchEnvironment(lastConnected)
-      .then(() => {
-        this.$router.go('/')
-      })
-      .catch((err) => {
-        // TODO bubble this error to the UI
-        console.error(`Something went wrong while connecting to the
-          ${lastConnected} environment`)
-        console.error(err)
-      })
   },
   data () {
     return {
@@ -92,10 +58,6 @@ export default {
     }
   },
   methods: {
-    switchEnvironment,
-    loadLastConnectedEnvId,
-    loadEnvironments,
-    persistEnvironments,
     editEnvironment (id) {
       this.environmentId = id
       this.$broadcast('modal-open', 'create-env')
@@ -107,11 +69,7 @@ export default {
   },
   vuex: {
     getters: {
-      kuzzleIsConnected,
-      environments
-    },
-    actions: {
-      addEnvironment
+      kuzzleIsConnected
     }
   }
 }

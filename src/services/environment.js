@@ -10,16 +10,14 @@ import {
   , currentEnvironment
 } from '../vuex/modules/common/kuzzle/getters'
 import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
-import {
-  loginByToken
-  , checkFirstAdmin
-  , doLogout
-} from '../vuex/modules/auth/actions'
+import * as authActions from '../vuex/modules/auth/actions'
+import Promise from 'bluebird'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
 export const DEFAULT_COLOR = '#00757F'
 export const DEFAULT = 'default'
+
 const defaultEnvironment = {
   [DEFAULT]: {
     name: 'localhost',
@@ -92,7 +90,7 @@ export const loadLastConnectedEnvId = () => {
 
 export const deleteEnvironment = (id) => {
   if (currentEnvironmentId(store.state) === id) {
-    doLogout(store)
+    authActions.doLogout(store)
   }
 
   kuzzleActions.deleteEnvironment(store, id)
@@ -139,14 +137,15 @@ export const switchEnvironment = (id) => {
   reset(store)
 
   connectToEnvironment(environment)
+
   return waitForConnected(10000)
     .then(() => {
       kuzzleActions.setConnection(store, id)
 
-      return loginByToken(store, environment.token)
+      return authActions.loginByToken(store, environment.token)
         .then(user => {
           if (!user.id) {
-            return checkFirstAdmin(store)
+            return authActions.checkFirstAdmin(store)
           }
           return Promise.resolve()
         })

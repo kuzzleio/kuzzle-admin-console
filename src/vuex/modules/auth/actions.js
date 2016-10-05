@@ -26,8 +26,8 @@ export const doLogin = (store, username, password) => {
       })
       .then(rights => {
         user.rights = rights
-        store.dispatch(SET_CURRENT_USER, user)
-        store.dispatch(SET_TOKEN_VALID, true)
+        setCurrentUser(store, user)
+        setTokenValid(store, true)
 
         resolve()
       })
@@ -39,6 +39,10 @@ export const doLogin = (store, username, password) => {
 
 export const setTokenValid = (store, isValid) => {
   store.dispatch(SET_TOKEN_VALID, isValid)
+}
+
+export const setCurrentUser = (store, user) => {
+  store.dispatch(SET_CURRENT_USER, user)
 }
 
 /**
@@ -53,8 +57,8 @@ export const loginByToken = (store, token) => {
   let user = SessionUser()
   if (!token) {
     setTokenToCurrentEnvironment(null)
-    store.dispatch(SET_CURRENT_USER, SessionUser())
-    store.dispatch(SET_TOKEN_VALID, false)
+    setCurrentUser(store, SessionUser())
+    setTokenValid(store, false)
     kuzzle.unsetJwtToken()
     return Promise.resolve(user)
   }
@@ -63,8 +67,8 @@ export const loginByToken = (store, token) => {
     .then(res => {
       if (!res.valid) {
         setTokenToCurrentEnvironment(null)
-        store.dispatch(SET_CURRENT_USER, SessionUser())
-        store.dispatch(SET_TOKEN_VALID, false)
+        setCurrentUser(store, SessionUser())
+        setTokenValid(store, false)
         kuzzle.unsetJwtToken()
         return Promise.resolve(SessionUser())
       }
@@ -80,8 +84,9 @@ export const loginByToken = (store, token) => {
         .then(rights => {
           user.rights = rights
 
-          store.dispatch(SET_CURRENT_USER, user)
-          store.dispatch(SET_TOKEN_VALID, true)
+          setCurrentUser(store, user)
+          setTokenValid(store, true)
+
           return Promise.resolve(user)
         })
     })
@@ -111,7 +116,7 @@ export const doLogout = (store) => {
   kuzzle.logout()
   kuzzle.unsetJwtToken()
   setTokenToCurrentEnvironment(null)
-  store.dispatch(SET_CURRENT_USER, SessionUser())
-  store.dispatch(SET_TOKEN_VALID, false)
+  setCurrentUser(store, SessionUser())
+  setTokenValid(store, false)
   router.go({name: 'Login'})
 }
