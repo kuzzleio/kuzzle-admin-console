@@ -1,0 +1,9 @@
+{
+  "short_name": "Back-office",
+  "name": "Kuzzle back-office",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#29BDBB",
+  "background_color": "#29BDBB"
+}
