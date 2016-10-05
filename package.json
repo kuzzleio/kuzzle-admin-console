@@ -8,7 +8,7 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "prod": "npm run build && npm start",
-    "start": "./bin/start",
+    "start": "./node_modules/.bin/http-server -p ${BACKOFFICE_PORT:=3000} dist/",
     "unit": "karma start test/unit/karma.conf.js --single-run",
     "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "e2e": "node test/e2e/runner.js",
