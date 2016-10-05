@@ -26,6 +26,8 @@ let setConnectionStub = sandbox.stub()
 let loginByTokenStub = sandbox.stub().returns(Promise.resolve({id: 'user'}))
 let checkFirstAdminStub = sandbox.stub().returns(Promise.resolve())
 let deleteEnvironment = sandbox.stub()
+let currentEnvironmentId = sandbox.stub().returns('currentId')
+let doLogout = sandbox.stub()
 
 const createMock = () => {
   environment = environmentInjector({
@@ -39,7 +41,7 @@ const createMock = () => {
     '../vuex/store': dummyStore,
     '../vuex/modules/common/kuzzle/getters': {
       environments: sandbox.stub().returns(dummyEnvironments),
-      currentEnvironmentId: () => 'toto'
+      currentEnvironmentId
     },
     '../vuex/modules/common/kuzzle/actions': {
       setConnection: setConnectionStub,
@@ -48,7 +50,7 @@ const createMock = () => {
     '../vuex/modules/auth/actions': {
       loginByToken: loginByTokenStub,
       checkFirstAdmin: checkFirstAdminStub,
-      doLogout: sandbox.stub()
+      doLogout
     }
   })
 }
@@ -233,6 +235,12 @@ describe('Environment service', () => {
       environment.deleteEnvironment('toto')
 
       expect(deleteEnvironment.calledWith(dummyStore, 'toto')).to.be.equal(true)
+    })
+
+    it('should call doLogout if the id is the current environment id', () => {
+      environment.deleteEnvironment('currentId')
+
+      expect(doLogout.callCount).to.be.equal(1)
     })
   })
 })

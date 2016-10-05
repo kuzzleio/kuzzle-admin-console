@@ -10,13 +10,14 @@ let vm
 let $vm
 
 describe('Modal Create Environment component test', () => {
+  const DEFAULT_COLOR = 'default-color'
   let listEnvironments = {
     myEnv: {
       name: 'myEnv',
       host: 'myHost',
       ioPort: 8888,
       wsPort: 9999,
-      color: 'myColor'
+      color: DEFAULT_COLOR
     }
   }
   let createEnvironment = sandbox.stub()
