@@ -74,6 +74,7 @@ header {
 }
 nav {
   padding-right: 20px;
+
   li {
     font-family: "Roboto", Arial, sans-serif;
 
