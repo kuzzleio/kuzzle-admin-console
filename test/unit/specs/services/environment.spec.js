@@ -38,7 +38,8 @@ const createMock = () => {
     },
     '../vuex/store': dummyStore,
     '../vuex/modules/common/kuzzle/getters': {
-      environments: sandbox.stub().returns(dummyEnvironments)
+      environments: sandbox.stub().returns(dummyEnvironments),
+      currentEnvironmentId: () => 'toto'
     },
     '../vuex/modules/common/kuzzle/actions': {
       setConnection: setConnectionStub,
@@ -46,7 +47,8 @@ const createMock = () => {
     },
     '../vuex/modules/auth/actions': {
       loginByToken: loginByTokenStub,
-      checkFirstAdmin: checkFirstAdminStub
+      checkFirstAdmin: checkFirstAdminStub,
+      doLogout: sandbox.stub()
     }
   })
 }

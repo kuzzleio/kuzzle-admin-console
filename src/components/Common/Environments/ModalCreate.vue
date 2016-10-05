@@ -171,9 +171,20 @@
 
         if (!this.errors.name && !this.errors.wsPort && !this.errors.ioPort && !this.errors.host) {
           if (this.environmentId) {
-            updateEnvironment(this.environmentId, this.environment.name, this.environment.color, this.environment.host, this.environment.ioPort, this.environment.wsPort)
+            updateEnvironment(
+              this.environmentId,
+              this.environment.name,
+              this.environment.color,
+              this.environment.host,
+              this.environment.ioPort,
+              this.environment.wsPort)
           } else {
-            createEnvironment(this.environment.name, this.environment.color, this.environment.host, this.environment.ioPort, this.environment.wsPort)
+            createEnvironment(
+              this.environment.name,
+              this.environment.color,
+              this.environment.host,
+              this.environment.ioPort,
+              this.environment.wsPort)
           }
 
           this.$broadcast('modal-close', 'create-env')

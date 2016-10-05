@@ -96,7 +96,6 @@ export const deleteEnvironment = (id) => {
   }
 
   kuzzleActions.deleteEnvironment(store, id)
-  persistEnvironments()
 }
 
 export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {

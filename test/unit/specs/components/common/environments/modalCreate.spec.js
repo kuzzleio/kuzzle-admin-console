@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import store from '../../../../../../src/vuex/store'
 import { mockedComponent, mockedDirective } from '../../../helper'
+import { DEFAULT_COLOR } from '../../../../../../src/services/environment'
 
 let ModalInjector = require('!!vue?inject!../../../../../../src/components/Common/Environments/ModalCreate')
 let Modal
@@ -21,7 +22,6 @@ describe('Modal Create Environment component test', () => {
   let createEnvironment = sandbox.stub()
   let updateEnvironment = sandbox.stub()
   let environments = sandbox.stub().returns(listEnvironments)
-  const DEFAULT_COLOR = 'default-color'
 
   const mockInjector = () => {
     Modal = ModalInjector({
@@ -30,7 +30,7 @@ describe('Modal Create Environment component test', () => {
       '../../../services/environment': {
         createEnvironment,
         updateEnvironment,
-        DEFAULT_COLOR
+        DEFAULT_COLOR: DEFAULT_COLOR
       },
       '../../../vuex/modules/common/kuzzle/getters': {
         environments
@@ -54,14 +54,14 @@ describe('Modal Create Environment component test', () => {
   describe('Watch', () => {
     describe('environmentId', () => {
       it('should reset environment if environmentId is null or not in environments', (done) => {
-        $vm.environmentId = 'toto'
+        $vm.environmentId = null
 
         Vue.nextTick(() => {
           expect($vm.environment.name).to.be.equal(null)
           expect($vm.environment.host).to.be.equal(null)
           expect($vm.environment.ioPort).to.be.equal(7512)
           expect($vm.environment.wsPort).to.be.equal(7513)
-          expect($vm.environment.color).to.be.equal('#00757F')
+          expect($vm.environment.color).to.be.equal(DEFAULT_COLOR)
           done()
         })
       })
