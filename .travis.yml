@@ -20,10 +20,10 @@ env:
 before_install:
   - export CC="gcc-4.9" CXX="g++-4.9"
 before_script:
-- npm install -g bower
+  - npm install -g bower
 #- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 script:
-- ./docker-compose/run-test.sh
+  - ./docker-compose/run-test.sh
 #script:
 #- docker-compose -f docker-compose/test.yml run backoffice
 
