@@ -9,6 +9,8 @@ backoffice:
   image: kuzzleio/backoffice
   ports:
     - 3000:3000
+  environments:
+    - BACKOFFICE_PORT
 
 kuzzle:
   image: kuzzleio/kuzzle:1.0.0-RC6
