@@ -44,21 +44,22 @@ describe('Switch environment component', () => {
 
     $vm = vm.$refs.switch
     $vm.$dispatch = sandbox.stub()
+    $vm.$router = {go: sandbox.stub()}
   }
 
   before(() => mockInjector())
   afterEach(() => sandbox.restore())
 
-  describe('Methods', () => {
+  describe.only('Methods', () => {
     describe('switchEnvironment', () => {
       it('should call switchEnvironment with right id', (done) => {
         $vm.switchEnvironment('toto')
-
-        setTimeout(() => {
-          expect(switchEnvironment.calledWith('toto')).to.be.equal(true)
-          expect($vm.$dispatch.callCount).to.be.equal(0)
-          done()
-        }, 0)
+          .then(() => {
+            expect(switchEnvironment.calledWith('toto')).to.be.equal(true)
+            expect($vm.$dispatch.callCount).to.be.equal(0)
+            done()
+          })
+          .catch((e) => done(e))
       })
 
       it('should dispatch event for toaster on catch', (done) => {
@@ -66,12 +67,14 @@ describe('Switch environment component', () => {
         mockInjector()
 
         $vm.switchEnvironment('toto')
-
-        setTimeout(() => {
-          expect(switchEnvironment.calledWith('toto')).to.be.equal(true)
-          expect($vm.$dispatch.callCount).to.be.equal(1)
-          done()
-        }, 0)
+          .then(() => {
+            done(new Error('should not resolve'))
+          })
+          .catch(() => {
+            expect(switchEnvironment.calledWith('toto')).to.be.equal(true)
+            expect($vm.$dispatch.callCount).to.be.equal(1)
+            done()
+          })
       })
     })
   })

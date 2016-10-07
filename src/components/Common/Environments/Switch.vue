@@ -31,6 +31,7 @@
   import { switchEnvironment, DEFAULT_COLOR } from '../../../services/environment'
   import ModalCreate from './ModalCreate'
   import tinycolor from 'tinycolor2/tinycolor'
+  import Promise from 'bluebird'
 
   export default {
     name: 'EnvironmentsSwitch',
@@ -72,9 +73,18 @@
     },
     methods: {
       switchEnvironment (id) {
-        switchEnvironment(id)
+        return switchEnvironment(id)
+          .then(() => {
+            /* Ugly hack in order to force Vue to refresh and pass in router.beforeEach and let check if user is auth */
+            this.$router.go('/fake-route')
+            setTimeout(() => {
+              this.$router.go('/')
+              return Promise.resolve()
+            }, 0)
+          })
           .catch((e) => {
             this.$dispatch('toast', 'An error occurred while switching environment', 'error')
+            return Promise.reject(e)
           })
       }
     },
