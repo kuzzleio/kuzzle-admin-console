@@ -84,7 +84,7 @@
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
     "socket.io-client": "^1.4.8",
-    "tinycolor": "0.0.1",
+    "tinycolor2": "^1.4.1",
     "url-loader": "^0.5.7",
     "velocity-animate": "^1.2.3",
     "vue": "^1.0.21",
