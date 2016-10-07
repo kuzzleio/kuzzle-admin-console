@@ -32,9 +32,7 @@ describe('MainMenu component', () => {
       '../../services/environment': {
         DEFAULT_COLOR
       },
-      './Environments/Switch': mockedComponent,
-      './Environments/ModalCreate': mockedComponent,
-      './Environments/ModalDelete': mockedComponent
+      './Environments/Switch': mockedComponent
     })
 
     const App = Vue.extend({
