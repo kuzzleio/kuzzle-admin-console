@@ -12,7 +12,6 @@ describe('MainMenu component', () => {
   Vue.use(VueRouter)
 
   let router
-  let $broadcast
   const DEFAULT_COLOR = 'default-color'
   let currentEnvironment = sandbox.stub().returns({name: 'env', color: 'color'})
 
@@ -33,9 +32,7 @@ describe('MainMenu component', () => {
       '../../services/environment': {
         DEFAULT_COLOR
       },
-      './Environments/Switch': mockedComponent,
-      './Environments/ModalCreate': mockedComponent,
-      './Environments/ModalDelete': mockedComponent
+      './Environments/Switch': mockedComponent
     })
 
     const App = Vue.extend({
@@ -69,7 +66,6 @@ describe('MainMenu component', () => {
     router.go('/')
 
     $vm = router.app.$refs.routerview.$refs.menu
-    $broadcast = sandbox.stub($vm, '$broadcast')
   }
 
   before(() => mockInjector())
@@ -88,26 +84,6 @@ describe('MainMenu component', () => {
         mockInjector()
 
         expect($vm.currentEnvironmentColor).to.be.equal('env-color')
-      })
-    })
-  })
-
-  describe('Methods', () => {
-    describe('editEnvironment', () => {
-      it('should affect the props and dispatch event', () => {
-        $vm.$broadcast.reset()
-        $vm.editEnvironment('toto')
-        expect($vm.environmentId).to.be.equal('toto')
-        expect($broadcast.calledWith('modal-open', 'create-env')).to.be.equal(true)
-      })
-    })
-
-    describe('deleteEnvironment', () => {
-      it('should affect the props and dispatch event', () => {
-        $vm.$broadcast.reset()
-        $vm.deleteEnvironment('tata')
-        expect($vm.environmentId).to.be.equal('tata')
-        expect($broadcast.calledWith('modal-open', 'delete-env')).to.be.equal(true)
       })
     })
   })

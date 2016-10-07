@@ -228,9 +228,6 @@ describe('Kuzzle wrapper service', () => {
             cb()
           },
           removeAllListeners
-        },
-        './environment': {
-          setUserToCurrentEnvironment: sandbox.stub()
         }
       })
 
