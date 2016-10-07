@@ -5,7 +5,7 @@ $primary-color: #00757F;
 $secondary-color: #45b29d;
 $tertiary-color: #efc94c;
 $red-color: #d54f58;
-
+$disabled-color: #9f9f9f;
 
 $link-color: $primary-color;
 $tabs-text-color: $primary-color;
@@ -18,8 +18,7 @@ $button-padding: 0 1rem !default;
 /* 9. Fonts
    ========================================================================== */
 
-$roboto-font-path: '../../node_modules/materialize-css/fonts/roboto/' !default;
-$raleway-font-path: './fonts/raleway/';
+$roboto-font-path: '../../static/fonts/roboto/' !default;
 
 
 /* 11. Global

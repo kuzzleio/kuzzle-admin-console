@@ -10,9 +10,19 @@
             Json
           </label>
         </div>
+
+          <div class="card horizontal tertiary col m12" v-if="big">
+            <div class="card-content">
+              <span class="card-title">Warning</span>
+              <p>The form has been hidden because the mapping of this collection contains over 100 attributes. This may slow down the generation and edition of the document.<br />
+                You may want to split your data in multiple collections.<br />
+                <a href="#"  @click.prevent="show">Show anyway</a>
+              </p>
+            </div>
+          </div>
       </div>
 
-      <form class="wrapper" @submit.prevent="create">
+      <form class="wrapper" @submit.prevent="create" v-if="!big || (big && showAnyway)">
 
         <!-- Form view -->
         <div class="row" v-if="viewState === 'form'">
@@ -57,7 +67,7 @@
         </div>
 
         <div class="row">
-          <div class="col s6">
+          <div class="col s5 m4 l3">
             <a @click.prevent="cancel" class="btn-flat waves-effect">
               Cancel
             </a>
@@ -66,6 +76,12 @@
               <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
             </button>
+          </div>
+          <div class="col s7 m8 l9" v-if="error">
+            <div class="card error red white-text">
+              <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+              {{{error}}}
+            </div>
           </div>
         </div>
 
@@ -112,6 +128,22 @@
   .pre_ace, .ace_editor {
     height: 350px;
   }
+  .error {
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .2);
+    }
+  }
 </style>
 
 <script>
@@ -123,7 +155,7 @@
   import Modal from '../../../Materialize/Modal'
   import MSelect from '../../../../directives/Materialize/m-select.directive'
   import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
-  import {mergeDeep, formatType} from '../../../../services/objectHelper'
+  import {mergeDeep, formatType, countAttributes} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
   import Promise from 'bluebird'
   import Vue from 'vue'
@@ -143,11 +175,12 @@
       Modal
     },
     props: {
+      error: String,
       index: String,
       collection: String,
       hideId: Boolean,
       mandatoryId: {
-        default: false,
+        'default': false,
         type: Boolean
       }
     },
@@ -156,6 +189,13 @@
       Focus
     },
     methods: {
+      show () {
+        this.showAnyway = true
+        this.big = false
+      },
+      dismissError () {
+        this.$dispatch('document-create::reset-error')
+      },
       create () {
         let json
 
@@ -229,7 +269,9 @@
         viewState: 'form',
         newAttributeType: 'string',
         newAttributePath: null,
-        newAttributeName: null
+        newAttributeName: null,
+        big: false,
+        showAnyway: false
       }
     },
     ready () {
@@ -237,6 +279,9 @@
         .dataCollectionFactory(this.collection, this.index)
         .getMappingPromise()
         .then((res) => {
+          if (countAttributes(res.mapping) > 100) {
+            this.big = true
+          }
           this.mapping = res.mapping
           formatType(this.mapping, this.collection)
           promiseGetMappingResolve()

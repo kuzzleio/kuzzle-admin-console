@@ -14,9 +14,27 @@
     <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
     <div class="right actions">
-      <a v-link="{name: 'DataUpdateDocument', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
+      <a
+        v-if="canEdit"
+        href=""
+        @click.prevent="$dispatch('common-list::edit-document', 'DataUpdateDocument', document.id)">
+        <i class="fa fa-pencil"></i>
+      </a>
+      <a
+        v-if="!canEdit"
+        v-title="{active: !canEdit, title: 'You are not allowed to edit this document'}">
+        <i class="fa fa-pencil disabled"></i>
+      </a>
+
       <dropdown :id="document.id" class="icon-black">
-        <li><a @click="deleteDocument(document.id)">Delete</a></li>
+        <li>
+          <a
+            v-bind:class="{'disabled': !canDelete}"
+            @click="deleteDocument(document.id)"
+            v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
+            Delete
+          </a>
+        </li>
       </dropdown>
     </div>
 
@@ -89,15 +107,20 @@
 <script>
   import JsonFormatter from '../../../directives/json-formatter.directive'
   import Dropdown from '../../Materialize/Dropdown'
+  import { canEditDocument, canDeleteDocument } from '../../../services/userAuthorization'
+  import title from '../../../directives/title.directive'
 
   export default {
     name: 'DocumentItem',
     props: {
+      index: String,
+      collection: String,
       document: Object,
       isChecked: Boolean
     },
     directives: {
-      JsonFormatter
+      JsonFormatter,
+      title
     },
     components: {
       Dropdown
@@ -115,7 +138,23 @@
         this.$dispatch('checkbox-click', this.document.id)
       },
       deleteDocument () {
-        this.$dispatch('delete-document', this.document.id)
+        if (this.canDelete) {
+          this.$dispatch('delete-document', this.document.id)
+        }
+      }
+    },
+    computed: {
+      canEdit () {
+        if (!this.index || !this.collection) {
+          return false
+        }
+        return canEditDocument(this.index, this.collection)
+      },
+      canDelete () {
+        if (!this.index || !this.collection) {
+          return false
+        }
+        return canDeleteDocument(this.index, this.collection)
       }
     }
   }

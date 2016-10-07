@@ -15,10 +15,14 @@
       </div>
     </div>
     <div class="row">
-      <div class="col m6">
-        <p class="error col">{{error}}</p>
+      <div class="col m8">
+        <p class="error card red white-text" v-if="error">
+          <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+          Login failed: <br />{{error}}
+        </p>
+        <p v-if="!error">&nbsp;</p>
       </div>
-      <div class="col m12">
+      <div class="col m4">
         <p class="right-align">
           <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
         </p>
@@ -27,13 +31,28 @@
   </form>
 </template>
 
-<style type="text/css" media="screen" scoped>
+<style lang="scss" rel="stylesheet/scss" scoped>
   #loginForm {
     margin-top: 15px;
   }
   .error {
-    color: #d54f58;
-    font-size: 18px;
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .right-align {
+    margin-top: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .2);
+    }
   }
 </style>
 
@@ -54,12 +73,15 @@
       return {
         username: null,
         password: null,
-        error: null
+        error: ''
       }
     },
     methods: {
+      dismissError () {
+        this.error = ''
+      },
       login () {
-        this.error = null
+        this.error = ''
         this.doLogin(this.username, this.password)
           .then(() => {
             this.onLogin()

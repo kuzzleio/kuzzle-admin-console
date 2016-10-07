@@ -1,9 +1,8 @@
 import kuzzle from './kuzzle'
-import { setTokenValid } from '../vuex/modules/auth/actions'
-import { setConnection, setKuzzleHostPort } from '../vuex/modules/common/kuzzle/actions'
 import Promise from 'bluebird'
+import { setTokenValid } from '../vuex/modules/auth/actions'
 
-export const isConnected = (timeout = 1000) => {
+export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
     return new Promise((resolve, reject) => {
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
@@ -23,22 +22,29 @@ export const isConnected = (timeout = 1000) => {
   return Promise.resolve()
 }
 
+export const connectToEnvironment = (environment) => {
+  if (kuzzle.state === 'connected') {
+    kuzzle.disconnect()
+  }
+  kuzzle.host = environment.host
+  kuzzle.ioPort = environment.ioPort
+  kuzzle.wsPort = environment.wsPort
+  kuzzle.connect()
+}
+
 export const initStoreWithKuzzle = (store) => {
-  setKuzzleHostPort(store, kuzzle.host, kuzzle.wsPort)
-
   kuzzle.removeAllListeners('jwtTokenExpired')
-  kuzzle.addListener('jwtTokenExpired', () => {
-    setTokenValid(store, false)
-  })
-
-  kuzzle.removeAllListeners('disconnected')
-  kuzzle.addListener('disconnected', () => {
-    setConnection(store, false)
-  })
-
-  kuzzle.removeAllListeners('reconnected')
-  kuzzle.addListener('reconnected', () => {
-    setConnection(store, true)
+  kuzzle.removeAllListeners('queryError')
+  kuzzle.addListener('queryError', (error) => {
+    if (error && error.message) {
+      switch (error.message) {
+        case 'Token expired':
+        case 'Invalid token':
+        case 'Json Web Token Error':
+          setTokenValid(store, false)
+          break
+      }
+    }
   })
 }
 
@@ -63,7 +69,7 @@ export const performSearch = (collection, index, filters = {}, pagination = {}, 
       .dataCollectionFactory(collection, index)
       .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
         if (error) {
-          return reject(error)
+          return reject(new Error(error.message))
         }
 
         let additionalAttributeName = null
@@ -106,8 +112,7 @@ export const deleteDocuments = (index, collection, ids) => {
       .dataCollectionFactory(collection, index)
       .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
         if (error) {
-          reject(error)
-          return
+          return reject(new Error(error.message))
         }
 
         kuzzle.refreshIndex(index, () => {

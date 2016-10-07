@@ -56,21 +56,7 @@
 
         <div class="row list">
           <!-- Not allowed -->
-          <div class="card-panel" v-if="!canSearchCollection(index)">
-            <div class="row valign-bottom empty-set empty-set-condensed">
-              <div class="col s1 offset-s1">
-                <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
-              </div>
-              <div class="col s10">
-                <p>
-                  You are not allowed to list collections in index <strong>{{index}}</strong><br>
-                </p>
-                <p>
-                  <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
-                </p>
-              </div>
-            </div>
-          </div>
+          <list-not-allowed v-if="!canSearchCollection(index)"></list-not-allowed>
 
           <!-- No Collection -->
           <div class="card-panel" v-if="canSearchCollection(index) && !collectionCount">
@@ -109,23 +95,21 @@
             </div>
           </div>
 
-
-          <collection-boxed
+          <div v-if="canSearchCollection(index)">
+            <collection-boxed
               v-for="collection in storedCollections | filterBy filter | orderBy 1"
-              v-if="canSearchCollection(index)"
               :index="index"
               :collection="collection"
               :is-realtime="false">
-          </collection-boxed>
+            </collection-boxed>
 
-          <collection-boxed
-              v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
-              v-if="canSearchCollection(index)"
-              :index="index"
-              :collection="collection"
-              :is-realtime="true">
-          </collection-boxed>
-
+            <collection-boxed
+                v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
+                :index="index"
+                :collection="collection"
+                :is-realtime="true">
+            </collection-boxed>
+          </div>
         </div>
       </div>
     </div>
@@ -163,8 +147,8 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import IndexDropdown from './Dropdown'
+  import ListNotAllowed from '../../Common/ListNotAllowed'
   import CollectionBoxed from '../Collections/Boxed'
-  import {listIndexesAndCollections} from '../../../vuex/modules/data/actions'
   import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
@@ -176,6 +160,7 @@
     },
     components: {
       Headline,
+      ListNotAllowed,
       CollectionBoxed,
       IndexDropdown
     },
@@ -188,9 +173,6 @@
       Title
     },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         indexesAndCollections
       }
@@ -236,18 +218,6 @@
         }
 
         return this.indexesAndCollections[this.index].realtime
-      }
-    },
-    watch: {
-      'index': function (index) {
-        if (this.canSearchIndex()) {
-          this.listIndexesAndCollections()
-        }
-      }
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
       }
     }
   }

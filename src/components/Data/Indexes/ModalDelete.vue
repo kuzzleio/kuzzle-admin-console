@@ -33,7 +33,6 @@
         <button
           type="submit"
           :disabled="index !== indexConfirmation"
-          href="#!"
           v-title="{active: index === indexConfirmation, position: 'left', title: 'Be careful. This action can not be undone'}"
           :class="{unauthorized: index !== indexConfirmation}"
           class="waves-effect btn">
@@ -76,6 +75,7 @@
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import Title from '../../../directives/title.directive'
+  import { removeIndex } from '../../../services/localStore'
 
   export default {
     name: 'IndexDeleteModal',
@@ -108,6 +108,7 @@
           .then(() => {
             this.indexConfirmation = ''
             this.error = ''
+            removeIndex(index)
             this.$broadcast('modal-close', this.id)
           })
           .catch(err => {

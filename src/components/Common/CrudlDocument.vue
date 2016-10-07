@@ -43,11 +43,19 @@
             Toggle all
           </button>
 
-          <button class="btn btn-small waves-effect waves-light margin-right-5 primary" @click.prevent="create"><i class="fa fa-plus-circle left"></i>Create</button>
+          <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
+                  @click.prevent="create",
+                  :class="!displayCreate ? 'disabled' : ''"
+                  :disabled="!displayCreate"
+                  title="{{displayCreate ? '' : 'You are not allowed to create a document in this collection'}}">
+            <i class="fa fa-plus-circle left"></i>Create
+          </button>
+
           <button class="btn btn-small waves-effect waves-light"
                   :class="displayBulkDelete ? 'red' : 'disabled'"
                   :disabled="!displayBulkDelete"
-                  @click="$broadcast('modal-open', 'bulk-delete')">
+                  @click="$broadcast('modal-open', 'bulk-delete')"
+                  title="{{displayBulkDelete ? '' : 'You need to select at least one element'}}">
             <i class="fa fa-minus-circle left"></i>
             Delete
           </button>
@@ -90,7 +98,7 @@
     </modal>
 
     <modal id="single-delete">
-      <h4>Delete user</h4>
+      <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
@@ -133,6 +141,10 @@
       collection: String,
       documents: Array,
       displayBulkDelete: Boolean,
+      displayCreate: {
+        type: Boolean,
+        default: false
+      },
       allChecked: Boolean,
       totalDocuments: Number,
       lengthDocument: {
@@ -143,7 +155,7 @@
       paginationFrom: Number,
       paginationSize: Number,
       searchTerm: String,
-      rawFilter: String,
+      rawFilter: Object,
       basicFilter: Array,
       sorting: Object,
       availableFilters: Object
@@ -171,20 +183,20 @@
         this.$router.go({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
-        this.$broadcast('modal-close', 'bulk-delete')
         deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
+            this.$broadcast('modal-close', 'bulk-delete')
           })
           .catch((e) => {
             this.$dispatch('toast', e.message, 'error')
           })
       },
       confirmSingleDelete (id) {
-        this.$broadcast('modal-close', 'single-delete')
         deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
+            this.$broadcast('modal-close', 'single-delete')
           })
           .catch((e) => {
             this.$dispatch('toast', e.message, 'error')

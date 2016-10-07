@@ -44,15 +44,18 @@ describe('Kuzzle wrapper service', () => {
       })
     })
 
-    it('should do nothing as there is no collection nor index', () => {
+    it('should reject a promise as there is no collection nor index', (done) => {
       kuzzleWrapper.performSearch()
+        .then(() => {})
+        .catch(err => {
+          expect(err.message).to.equals('Missing collection or index')
+          done()
+        })
     })
 
     it('should reject a promise', (done) => {
       kuzzleWrapper.performSearch('collection', 'index')
-        .then(() => {
-
-        })
+        .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
           done()
@@ -66,6 +69,7 @@ describe('Kuzzle wrapper service', () => {
           expect(res).to.deep.equals(fakeResponse)
           done()
         })
+        .catch((e) => done(e))
     })
 
     it('should receive sorted documents with additional attributes for the sort array', (done) => {
@@ -74,13 +78,40 @@ describe('Kuzzle wrapper service', () => {
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
-        })
+        }).catch(() => {})
     })
-    //
-    // it('should receive sorted documents with additional attributes for the sort string', (done) => {
-    //   triggerError = false
-    //   testActionPromise(kuzzleWrapper.performSearch, ['fake', 'fake', {}, {}, ['name.first']], {}, [], done)
-    // })
+
+    it('should treat a String sort argument as the field to sort by', (done) => {
+      triggerError = false
+      kuzzleWrapper.performSearch('collection', 'index', {}, {}, ['name.first'])
+        .then(res => {
+          expect(res).to.deep.equals(responseWithAdditionalAttr)
+          done()
+        }).catch(() => {})
+    })
+  })
+
+  describe('connectToEnvironment', () => {
+    let kuzzleWrapper
+    let disconnectMock = sandbox.mock()
+    let connectMock = sandbox.mock()
+
+    beforeEach(() => {
+      kuzzleWrapper = kuzzleWrapperInjector({
+        './kuzzle': {
+          disconnect: disconnectMock,
+          connect: connectMock,
+          state: 'connected'
+        }
+      })
+    })
+
+    it('should disconnect and reconnect kuzzle after setting the environment params', () => {
+      kuzzleWrapper.connectToEnvironment({host: 'toto.toto', ioPort: 7512, wsPort: 7513})
+
+      expect(disconnectMock.called).to.equals(true)
+      expect(connectMock.called).to.equals(true)
+    })
   })
 
   describe('deleteDocuments tests', () => {
@@ -114,9 +145,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should reject a promise', (done) => {
       kuzzleWrapper.deleteDocuments('index', 'collection', [42])
-        .then(() => {
-
-        })
+        .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
           done()
@@ -132,7 +161,7 @@ describe('Kuzzle wrapper service', () => {
     })
   })
 
-  describe('isConnected', () => {
+  describe('waitForConnected', () => {
     let kuzzleWrapper
     let removeListener = sandbox.stub()
 
@@ -143,7 +172,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected()
+      kuzzleWrapper.waitForConnected()
         .then(() => done())
         .catch(e => done(e))
     })
@@ -159,7 +188,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected()
+      kuzzleWrapper.waitForConnected()
         .then(() => {
           expect(removeListener.called).to.be.equal(true)
           done()
@@ -176,7 +205,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.isConnected(10)
+      kuzzleWrapper.waitForConnected(10)
         .then(() => {
           done(new Error('Promise was resolved'))
         })
@@ -187,9 +216,7 @@ describe('Kuzzle wrapper service', () => {
   describe('initStoreWithKuzzle', () => {
     let kuzzleWrapper
     let removeAllListeners = sandbox.stub()
-    let setConnection = sandbox.stub()
     let setTokenValid = sandbox.stub()
-    let setKuzzleHostPort = sandbox.stub()
 
     it('should call removeListeners and addListeners with right params', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
@@ -201,28 +228,14 @@ describe('Kuzzle wrapper service', () => {
             cb()
           },
           removeAllListeners
-        },
-        '../vuex/modules/common/kuzzle/actions': {
-          setConnection,
-          setKuzzleHostPort
-        },
-        '../vuex/modules/auth/actions': {
-          setTokenValid
         }
       })
 
-      let store = {store: 'mystore'}
+      let store = { store: 'mystore' }
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      expect(setKuzzleHostPort.calledWith(store, 'toto', 8888)).to.be.equal(true)
-
-      expect(removeAllListeners.calledWith('jwtTokenExpired'))
-      expect(removeAllListeners.calledWith('disconnected'))
-      expect(removeAllListeners.calledWith('reconnected'))
-
+      expect(removeAllListeners.calledWith('queryError'))
       expect(setTokenValid.calledWithMatch(store, false))
-      expect(setConnection.calledWithMatch(store, true))
-      expect(setConnection.calledWithMatch(store, false))
     })
   })
 })

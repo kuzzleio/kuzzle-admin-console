@@ -28,9 +28,16 @@
     </label>
 
     <div class="right actions">
-      <a v-link="{name: 'SecurityUsersUpdate', params: {id: document.id}}"><i class="fa fa-pencil"></i></a>
+      <a href="#" @click.prevent="update"
+         v-title="{active: !canEditUser(), title: 'You are not allowed to edit this user'}">
+        <i class="fa fa-pencil" :class="{'disabled': !canEditUser()}"></i>
+      </a>
       <dropdown :id="document.id" class="icon-black">
-        <li><a @click="deleteDocument(document.id)">Delete</a></li>
+        <li><a @click="deleteDocument(document.id)"
+               :class="{'disabled': !canDeleteUser()}"
+               v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}">
+          Delete</a>
+        </li>
       </dropdown>
     </div>
 
@@ -56,6 +63,8 @@
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
+import { canEditUser, canDeleteUser } from '../../../services/userAuthorization'
+import title from '../../../directives/title.directive'
 
 const MAX_PROFILES = 5
 
@@ -69,7 +78,8 @@ export default {
     Dropdown
   },
   directives: {
-    jsonFormatter
+    jsonFormatter,
+    title
   },
   data () {
     return {
@@ -101,8 +111,17 @@ export default {
       this.$dispatch('checkbox-click', this.document.id)
     },
     deleteDocument () {
-      this.$dispatch('delete-document', this.document.id)
-    }
+      if (this.canDeleteUser()) {
+        this.$dispatch('delete-document', this.document.id)
+      }
+    },
+    update () {
+      if (this.canEditUser()) {
+        this.$dispatch('common-list::edit-document', 'SecurityUsersUpdate', this.document.id)
+      }
+    },
+    canEditUser,
+    canDeleteUser
   }
 }
 </script>

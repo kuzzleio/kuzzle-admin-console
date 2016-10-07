@@ -2,6 +2,7 @@ import Promise from 'bluebird'
 import { testAction, testActionPromise } from '../../helper'
 import { SET_CURRENT_USER, SET_TOKEN_VALID } from '../../../../../src/vuex/modules/auth/mutation-types'
 import SessionUser from '../../../../../src/models/SessionUser'
+
 const actionsInjector = require('inject!../../../../../src/vuex/modules/auth/actions')
 
 describe('doLogin action', () => {
@@ -9,6 +10,9 @@ describe('doLogin action', () => {
 
   const actions = actionsInjector({
     '../../../services/kuzzle': {
+      unsetJwtToken () {
+        return this
+      },
       loginPromise () {
         return new Promise((resolve, reject) => {
           if (triggerError.login) {
@@ -44,6 +48,9 @@ describe('doLogin action', () => {
       set: sinon.spy(),
       get: sinon.spy(),
       delete: sinon.spy()
+    },
+    '../../../services/environment': {
+      setTokenToCurrentEnvironment: sinon.spy()
     }
   })
 
@@ -98,24 +105,26 @@ describe('doLogin action', () => {
   })
 })
 
-describe('loginFromCookie action', () => {
-  let kuzzleState = 'connecting'
-  let actions
-
+describe('loginByToken action', () => {
   const loggedUser = {
     id: 'foo',
-    token: 'jwt',
+    token: undefined,
     params: {foo: 'bar'},
     rights: [{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}]
   }
-
-  const injectMock = (userInCookie, userIsValid = true, triggerError = false) => {
-    actions = actionsInjector({
+  const injectMock = (
+    userIsValid = true,
+    checkTokenError = false,
+    whoAmIError = false,
+    getMyRightsError = false,
+    kuzzleState = 'connecting'
+  ) => {
+    return actionsInjector({
       '../../../services/kuzzle': {
         state: kuzzleState,
         checkTokenPromise: () => {
-          if (triggerError) {
-            return Promise.reject(new Error('error from Kuzzle'))
+          if (checkTokenError) {
+            return Promise.reject(new Error('checkToken error'))
           } else {
             if (userIsValid) {
               return Promise.resolve({valid: true})
@@ -124,51 +133,72 @@ describe('loginFromCookie action', () => {
             return Promise.resolve({valid: false})
           }
         },
-        setJwtToken: sinon.mock(),
+        whoAmIPromise () {
+          if (whoAmIError) {
+            return Promise.reject(new Error('whoAmI error'))
+          } else {
+            return Promise.resolve({id: loggedUser.id, content: loggedUser.params})
+          }
+        },
+        getMyRightsPromise () {
+          if (getMyRightsError) {
+            return Promise.reject(new Error('getMyRights error'))
+          } else {
+            return Promise.resolve(loggedUser.rights)
+          }
+        },
+        setJwtToken: sinon.stub(),
+        unsetJwtToken: sinon.stub(),
         addListener (type, cb) {
           this.state = 'connected'
           cb()
         },
-        removeListener: sinon.mock()
+        removeListener: sinon.stub()
       },
-      '../../../services/userCookies': {
-        get () {
-          return userInCookie
-        }
+      '../../../services/environment': {
+        setTokenToCurrentEnvironment: sinon.stub()
       }
     })
   }
 
-  it('should login user from cookie', (done) => {
-    injectMock(loggedUser)
-    testActionPromise(actions.loginFromCookie, [], {}, [
-      { name: SET_CURRENT_USER, payload: [loggedUser] }
+  it('should login user from token', (done) => {
+    let actions = injectMock()
+    testActionPromise(actions.loginByToken, ['a-token'], {}, [
+      { name: SET_CURRENT_USER, payload: [loggedUser] },
+      { name: SET_TOKEN_VALID, payload: [true] }
+    ], done)
+  })
+
+  it('should not log the user if no token is provided', (done) => {
+    let actions = injectMock()
+    testActionPromise(actions.loginByToken, [], {}, [
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
   })
 
   it('should not login user from cookie because the jwt token is wrong', (done) => {
-    injectMock(loggedUser, true, true)
-    testActionPromise(actions.loginFromCookie, [], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] }
+    let actions = injectMock(true, true)
+    testActionPromise(actions.loginByToken, ['a-token'], {}, [
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ])
     .catch((e) => {
-      expect(e.message).to.be.equal('error from Kuzzle')
+      expect(e.message).to.be.equal('checkToken error')
       done()
     })
   })
 
-  it('should resolve null and do nothing if there is no user', (done) => {
-    injectMock(null)
-    testActionPromise(actions.loginFromCookie, [], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] }
+  it('should do nothing if the token identifies an invalid session', (done) => {
+    let actions = injectMock(false)
+    testActionPromise(actions.loginByToken, ['a-token'], {}, [
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
-  })
-
-  it('should resolve null and do nothing if there is user in cookie but with bad token', (done) => {
-    injectMock(loggedUser, false)
-    testActionPromise(actions.loginFromCookie, [], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] }
-    ], done)
+      .catch(e => {
+        console.log(e)
+        done(e)
+      })
   })
 })
 
@@ -191,14 +221,15 @@ describe('checkFirstAdmin action', () => {
 
             return Promise.resolve({result: {exists: false}})
           }
-        }
+        },
+        unsetJwtToken: sinon.spy()
       }
     })
   }
 
   it('should reject if error comes from Kuzzle', (done) => {
     triggerError = true
-    injectMock({_id: 'foo', jwt: 'jwt'})
+    injectMock()
     testActionPromise(actions.checkFirstAdmin, [], {}, [])
       .catch((e) => {
         expect(e.message).to.be.equal('error from Kuzzle')
@@ -242,35 +273,23 @@ describe('setFirstAdmin action', () => {
 describe('logout action', () => {
   const actions = actionsInjector({
     '../../../services/kuzzle': {
-      logout: sinon.mock()
+      logout: sinon.mock(),
+      unsetJwtToken: sinon.mock()
     },
     '../../../services/userCookies': {
       delete: sinon.mock()
     },
     '../../../services/router': {
       go: sinon.mock()
+    },
+    '../../../services/environment': {
+      setTokenToCurrentEnvironment: sinon.spy()
     }
   })
 
   it('should logout user', (done) => {
     testAction(actions.doLogout, [], {}, [
       { name: SET_CURRENT_USER, payload: [SessionUser()] },
-      { name: SET_TOKEN_VALID, payload: [false] }
-    ], done)
-  })
-})
-
-describe('setTokenValid', () => {
-  const actions = actionsInjector({})
-
-  it('should dispatch event with true', (done) => {
-    testAction(actions.setTokenValid, [true], {}, [
-      { name: SET_TOKEN_VALID, payload: [true] }
-    ], done)
-  })
-
-  it('should dispatch event with false', (done) => {
-    testAction(actions.setTokenValid, [false], {}, [
       { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
   })

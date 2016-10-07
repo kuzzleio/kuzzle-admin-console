@@ -10,6 +10,11 @@
               </h2>
             </div>
           </div>
+          <div class="row">
+            <div class="col offset-s4 s2">
+              <environment-switch></environment-switch>
+            </div>
+          </div>
           <div class="row message-warning">
             <h5>First admin creation</h5>
             <div class="divider"></div>
@@ -130,9 +135,13 @@
 <script>
   import kuzzle from '../services/kuzzle'
   import { setFirstAdmin } from '../vuex/modules/auth/actions'
+  import EnvironmentSwitch from './Common/Environments/Switch'
 
   export default {
     name: 'Signup',
+    components: {
+      EnvironmentSwitch
+    },
     data () {
       return {
         username: '',
@@ -171,7 +180,11 @@
             this.setFirstAdmin(true)
             this.$router.go({name: 'Login'})
           })
-          .catch(() => this.$router.go({name: 'Login'}))
+          .catch((err) => {
+            // TODO manage this on the UI
+            console.error('An error occurred while creating the first admin', err)
+            this.$router.go({name: 'Login'})
+          })
       }
     }
   }

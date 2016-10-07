@@ -21,6 +21,7 @@ describe('createOrUpdate document tests', () => {
   let triggerError = true
   let addAttributeFromPathSpy
   let getUpdatedSchemaSpy
+  let countAttributesStub
 
   let mockInjector = () => {
     Create = CreateInjector({
@@ -30,7 +31,7 @@ describe('createOrUpdate document tests', () => {
           return {
             getMappingPromise: () => {
               if (triggerError) {
-                return Promise.reject('error')
+                return Promise.reject(new Error('error'))
               }
               return Promise.resolve({mapping: {foo: 'bar'}})
             }
@@ -47,21 +48,23 @@ describe('createOrUpdate document tests', () => {
       '../../../../vuex/modules/data/getters': {
         newDocument: sandbox.stub().returns(42)
       },
-      '../../../../services/objectHelper': {
-        mergeDeep: mergeDeepSpy,
-        formatType: formatTypeSpy
-      },
-      '../../../../services/documentFormat': {
-        getRefMappingFromPath: addAttributeFromPathSpy,
-        getUpdatedSchema: getUpdatedSchemaSpy
-      },
-      '../../../../directives/focus.directive': mockedDirective,
       'vue': {
         set: sandbox.stub()
       },
       '../../../Common/JsonEditor': mockedComponent,
       '../../../Materialize/Modal': mockedComponent,
-      '../../../../directives/Materialize/m-select.directive': mockedDirective
+      '../../../../directives/Materialize/m-select.directive': mockedDirective('m-select'),
+      '../../../../services/documentFormat': {
+        getRefMappingFromPath: addAttributeFromPathSpy,
+        getUpdatedSchema: getUpdatedSchemaSpy
+      },
+      '../../../../services/objectHelper': {
+        mergeDeep: mergeDeepSpy,
+        formatType: formatTypeSpy,
+        countAttributes: countAttributesStub
+      },
+      'bluebird': cb => cb(sinon.stub(), sinon.stub()),
+      '../../../../directives/focus.directive': mockedDirective('focus')
     })
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
@@ -92,6 +95,7 @@ describe('createOrUpdate document tests', () => {
     formatTypeSpy = sandbox.stub()
     addAttributeFromPathSpy = sandbox.stub().returns({})
     getUpdatedSchemaSpy = sandbox.stub().returns({properties: {}})
+    countAttributesStub = sandbox.stub()
 
     mockInjector()
   })
@@ -143,6 +147,23 @@ describe('createOrUpdate document tests', () => {
         expect(broadcastSpy.calledWith('modal-close', 'add-attr')).to.be.ok
       })
     })
+
+    describe('dismissError', () => {
+      it('should dispatch reset error event', () => {
+        vm.$refs.create.dismissError()
+
+        expect(dispatchSpy.calledWith('document-create::reset-error')).to.be.equal(true)
+      })
+    })
+
+    describe('show', () => {
+      it('should set some variables', () => {
+        vm.$refs.create.show()
+
+        expect(vm.$refs.create.showAnyway).to.equals(true)
+        expect(vm.$refs.create.big).to.equals(false)
+      })
+    })
   })
 
   describe('beforeDestroy test', () => {
@@ -158,6 +179,18 @@ describe('createOrUpdate document tests', () => {
       mockInjector()
       setTimeout(() => {
         expect(formatTypeSpy.calledWith({foo: 'bar'})).to.be.ok
+        done()
+      }, 0)
+    })
+  })
+
+  describe('document too big', () => {
+    it('should set a flag to true if the document has over 100 attributes', (done) => {
+      triggerError = false
+      countAttributesStub = sandbox.stub().returns(101)
+      mockInjector()
+      setTimeout(() => {
+        expect(vm.$refs.create.big).to.equals(true)
         done()
       }, 0)
     })

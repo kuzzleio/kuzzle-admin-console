@@ -3,6 +3,8 @@
     <create-or-update
       :headline="headline"
       @collection-create::create="update"
+      @collection-create::reset-error="error = ''"
+      :error="error"
       :index="index">
     </create-or-update>
   </div>
@@ -11,7 +13,6 @@
 <script>
   import CreateOrUpdate from './CreateOrUpdate'
   import { fetchCollectionDetail } from '../../../vuex/modules/collection/actions'
-  import { listIndexesAndCollections } from '../../../vuex/modules/data/actions'
   import { indexesAndCollections } from '../../../vuex/modules/data/getters'
   import { collectionName } from '../../../vuex/modules/collection/getters'
   import kuzzle from '../../../services/kuzzle'
@@ -21,13 +22,17 @@
     props: {
       index: String
     },
+    data () {
+      return {
+        error: ''
+      }
+    },
     components: {
       CreateOrUpdate
     },
     vuex: {
       actions: {
-        fetchCollectionDetail,
-        listIndexesAndCollections
+        fetchCollectionDetail
       },
       getters: {
         indexesAndCollections,
@@ -41,6 +46,8 @@
     },
     methods: {
       update (name, mapping, isRealtime) {
+        this.error = ''
+
         if (isRealtime) {
           this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
           return
@@ -54,13 +61,12 @@
             this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
           })
           .catch(e => {
-            this.$dispatch('toast', e.message, 'error')
+            this.error = e.message
           })
       }
     },
     ready () {
-      this.listIndexesAndCollections()
-        .then(() => this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName))
+      this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName)
         .catch(e => {
           this.$dispatch('toast', e.message, 'error')
           this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})

@@ -5,13 +5,19 @@ let RoleItemInjector = require('!!vue?inject!../../../../../../src/components/Se
 let RoleItem
 let sandbox = sinon.sandbox.create()
 
-describe('User item', () => {
+describe('Role item', () => {
   let vm
+  let $dispatch
 
   before(() => {
     RoleItem = RoleItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/title.directive': mockedDirective('title'),
+      '../../../services/userAuthorization': {
+        canEditRole: sandbox.stub().returns(true),
+        canDeleteRole: sandbox.stub().returns(true)
+      }
     })
 
     vm = new Vue({
@@ -26,7 +32,7 @@ describe('User item', () => {
       }
     }).$mount()
 
-    sandbox.stub(vm.$refs.item, '$dispatch')
+    $dispatch = sandbox.stub(vm.$refs.item, '$dispatch')
   })
 
   describe('Methods', () => {
@@ -54,7 +60,7 @@ describe('User item', () => {
       vm.$refs.item.$router = {go: sandbox.stub()}
       vm.$refs.item.update()
 
-      expect(vm.$refs.item.$router.go.calledWithMatch({name: 'SecurityRolesUpdate', params: {id: 'role-id'}})).to.equal(true)
+      expect($dispatch.calledWithMatch('common-list::edit-document', 'SecurityRolesUpdate', 'role-id')).to.equal(true)
     })
   })
 })

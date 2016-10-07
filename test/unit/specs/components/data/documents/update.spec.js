@@ -24,6 +24,9 @@ describe('Update component test', () => {
       '../Collections/Dropdown': mockedComponent,
       '../../../services/kuzzle': {
         dataCollectionFactory: sandbox.stub().returns({
+          dataMappingFactory: sandbox.stub().returns({
+            applyPromise: sandbox.stub().returns(Promise.resolve())
+          }),
           updateDocumentPromise: () => {
             if (triggerError) {
               return Promise.reject('error')
@@ -39,7 +42,14 @@ describe('Update component test', () => {
           subscribe: (filter, cb) => {
             cb()
             return {
-              unsubscribe: unsubscribeStub
+              onDone: cbDone => {
+                if (triggerError) {
+                  cbDone(new Error('error'), null)
+                  return
+                }
+
+                cbDone(null, {unsubscribe: unsubscribeStub})
+              }
             }
           }
         }),
@@ -50,7 +60,7 @@ describe('Update component test', () => {
         documentToEditId: sandbox.stub()
       },
       '../../../vuex/modules/data/actions': {
-        setNewDocument: sandbox.stub()
+        setNewDocument: setNewDocumentSpy
       },
       '../Collections/Tabs': mockedComponent
     })

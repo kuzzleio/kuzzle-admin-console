@@ -1,29 +1,32 @@
 <template>
   <header>
     <div class="navbar-fixed">
-      <nav>
+      <nav :style="{backgroundColor: currentEnvironmentColor}">
         <ul>
-            <li class="logo">
-              <a href="#" class="">
-                <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
-              </a>
-            </li>
-            <li class="nav" v-link-active>
-              <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
-            </li>
-            <li class="nav" v-link-active v-if="hasSecurityRights()">
-              <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
-            </li>
-          </ul>
+          <li class="logo">
+            <a href="#" class="">
+              <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
+            </a>
+          </li>
+          <li class="nav" v-link-active>
+            <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
+          </li>
+          <li class="nav" v-link-active v-if="hasSecurityRights()">
+            <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
+          </li>
+        </ul>
 
-          <ul id="nav-mobile" class="right">
-            <li>
-              <strong>{{user.id}}</strong>
-            </li>
-            <li>
-              <a @click="doLogout">Logout</a>
-            </li>
-          </ul>
+        <ul class="right">
+          <li>
+            Welcome <strong>{{user.id}}</strong>
+          </li>
+          <li>
+            <environment-switch blend-color="true" style="display: inline-flex"></environment-switch>
+          </li>
+          <li>
+            <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
+          </li>
+        </ul>
       </nav>
     </div>
   </header>
@@ -33,14 +36,30 @@
   import {hasSecurityRights} from '../../services/userAuthorization'
   import {user} from '../../vuex/modules/auth/getters'
   import {doLogout} from '../../vuex/modules/auth/actions'
+  import { currentEnvironment } from '../../vuex/modules/common/kuzzle/getters'
+  import {DEFAULT_COLOR} from '../../services/environment'
+  import EnvironmentSwitch from './Environments/Switch'
 
   export default {
+    components: {
+      EnvironmentSwitch
+    },
+    computed: {
+      currentEnvironmentColor () {
+        if (!this.currentEnvironment) {
+          return DEFAULT_COLOR
+        }
+
+        return this.currentEnvironment.color
+      }
+    },
     methods: {
       hasSecurityRights
     },
     vuex: {
       getters: {
-        user
+        user,
+        currentEnvironment
       },
       actions: {
         doLogout
@@ -55,10 +74,14 @@ header {
 }
 nav {
   padding-right: 20px;
+
   li {
     font-family: "Roboto", Arial, sans-serif;
-    font-weight: 500;
 
+    .logout {
+      font-size: 1.2em;
+      height: 18px;
+    }
     &.nav {
       font-size: 1.1rem;
       text-transform: uppercase;

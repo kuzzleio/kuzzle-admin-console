@@ -19,7 +19,7 @@ describe('Browse common component tests', () => {
   let sorting = sandbox.stub().returns()
   let paginationFrom = sandbox.stub().returns()
   let paginationSize = sandbox.stub().returns()
-  let performSearch = sandbox.stub().returns(Promise.resolve())
+  let performSearch = sandbox.stub().returns(Promise.resolve({documents: [], total: 0}))
 
   const mockInjector = () => {
     Browse = BrowseInjector({
@@ -123,7 +123,7 @@ describe('Browse common component tests', () => {
         expect(formatFromBasicSearch.called).to.be.equal(true)
       })
 
-      it('should perform a search with rawFilter', () => {
+      it('should perform a search with rawFilter', (done) => {
         searchTerm = sandbox.stub().returns(null)
         basicFilter = sandbox.stub().returns(null)
         sorting = sandbox.stub().returns(true)
@@ -131,7 +131,11 @@ describe('Browse common component tests', () => {
         mockInjector()
 
         vm.$refs.browse.fetchData()
-        expect(formatSort.called).to.be.equal(true)
+
+        setTimeout(() => {
+          expect(formatSort.called).to.be.equal(true)
+          done()
+        }, 0)
       })
 
       it('should call perfomSearch and get result', (done) => {
@@ -148,6 +152,14 @@ describe('Browse common component tests', () => {
           expect(vm.$refs.browse.totalDocuments).to.deep.equal(1)
           done()
         }, 0)
+      })
+    })
+
+    describe('editDocument', () => {
+      it('should redirect to right route and encode the given id', () => {
+        let myWeirdId = 'test/id?;!'
+        vm.$refs.browse.editDocument('toto', myWeirdId)
+        expect(vm.$refs.browse.$router.go.calledWithMatch({name: 'toto', params: {id: encodeURIComponent(myWeirdId)}})).to.be.equal(true)
       })
     })
   })

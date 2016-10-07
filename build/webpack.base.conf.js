@@ -37,7 +37,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'eslint',
         include: projectRoot,
-        exclude: /node_modules/
+        exclude: /(node_modules|bower_components)/
       }
     ],
     loaders: [
@@ -49,7 +49,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel',
         include: projectRoot,
-        exclude: /node_modules/
+        exclude: /(node_modules|bower_components)/
       },
       {
         test: /\.json$/,
@@ -69,11 +69,7 @@ module.exports = {
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-        loader: 'url',
-        query: {
-          limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
-        }
+        loader: 'url'
       }
     ]
   },

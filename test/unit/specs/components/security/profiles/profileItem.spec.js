@@ -7,11 +7,17 @@ let sandbox = sinon.sandbox.create()
 
 describe('Profile item', () => {
   let vm
+  let $dispatch
 
   before(() => {
     ProfileItem = ProfileItemInjector({
       '../../Materialize/Dropdown': mockedComponent,
-      '../../../directives/json-formatter.directive': mockedDirective
+      '../../../directives/json-formatter.directive': mockedDirective('jsonFormatter'),
+      '../../../directives/title.directive': mockedDirective('title'),
+      '../../../services/userAuthorization': {
+        canEditProfile: sandbox.stub().returns(true),
+        canDeleteProfile: sandbox.stub().returns(true)
+      }
     })
 
     vm = new Vue({
@@ -26,7 +32,7 @@ describe('Profile item', () => {
       }
     }).$mount()
 
-    sandbox.stub(vm.$refs.item, '$dispatch')
+    $dispatch = sandbox.stub(vm.$refs.item, '$dispatch')
   })
 
   describe('Methods', () => {
@@ -54,7 +60,7 @@ describe('Profile item', () => {
       vm.$refs.item.$router = {go: sandbox.stub()}
       vm.$refs.item.update()
 
-      expect(vm.$refs.item.$router.go.calledWithMatch({name: 'SecurityProfilesUpdate', params: {id: 'profile-id'}})).to.equal(true)
+      expect($dispatch.calledWithMatch('common-list::edit-document', 'SecurityProfilesUpdate', 'profile-id')).to.equal(true)
     })
   })
 })

@@ -3,6 +3,8 @@
     <create-or-update
       headline="Create collection"
       @collection-create::create="create"
+      @collection-create::reset-error="error = ''"
+      :error="error"
       :index="index">
     </create-or-update>
   </div>
@@ -19,6 +21,11 @@
     props: {
       index: String
     },
+    data () {
+      return {
+        error: ''
+      }
+    },
     components: {
       CreateOrUpdate
     },
@@ -33,12 +40,14 @@
     },
     methods: {
       create (name, mapping, isRealtime) {
+        this.error = ''
+
         this.createCollection(this.indexesAndCollections[this.index], this.index, name, mapping, isRealtime)
           .then(() => {
             this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.error = e.message
           })
       }
     }

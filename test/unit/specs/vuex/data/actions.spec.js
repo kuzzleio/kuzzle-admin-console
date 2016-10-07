@@ -72,14 +72,14 @@ describe('listIndexesAndCollections action', () => {
     '../../../services/kuzzle': {
       listIndexes (cb) {
         if (triggerError[0]) {
-          cb({message: 'error'})
+          cb(new Error('error'))
         } else {
           cb(null, ['index1', 'index2', '%kuzzle'])
         }
       },
       listCollections (index, cb) {
         if (triggerError[1]) {
-          cb({message: 'error'})
+          cb(new Error('error'))
         } else {
           cb(null, {stored: ['collection1', 'collection2'], realtime: []})
         }
@@ -93,26 +93,29 @@ describe('listIndexesAndCollections action', () => {
 
   it('should do nothing because an error is catched', (done) => {
     triggerError = [false, true]
-    testAction(actions.listIndexesAndCollections, [], {}, [], done)
+    testActionPromise(actions.listIndexesAndCollections, [], {}, [], done)
+      .catch(() => done())
   })
 
   it('should get the collections list per indexes but not %kuzzle without any realtime collection', (done) => {
     triggerError = [false, false]
     // eslint-disable-next-line no-undef
     localStorage.getItem = sandbox.stub(localStorage, 'getItem').returns(undefined)
-    testAction(actions.listIndexesAndCollections, [], {}, [
-      {name: 'RECEIVE_INDEXES_COLLECTIONS', payload: [
-        {
-          index1: {
-            stored: ['collection1', 'collection2'],
-            realtime: []
-          },
-          index2: {
-            stored: ['collection1', 'collection2'],
-            realtime: []
+    testActionPromise(actions.listIndexesAndCollections, [], {}, [
+      {name: 'RECEIVE_INDEXES_COLLECTIONS',
+        payload: [
+          {
+            index1: {
+              stored: ['collection1', 'collection2'],
+              realtime: []
+            },
+            index2: {
+              stored: ['collection1', 'collection2'],
+              realtime: []
+            }
           }
-        }
-      ]}
+        ]
+      }
     ], done)
   })
 })
@@ -126,7 +129,7 @@ describe('getMapping test action', () => {
         return {
           getMapping: (cb) => {
             if (triggerError) {
-              cb({message: 'error'})
+              cb(new Error('error'))
             } else {
               cb(null, {mapping: 'mapping'})
             }

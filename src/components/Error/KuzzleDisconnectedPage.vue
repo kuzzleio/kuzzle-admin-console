@@ -1,24 +1,26 @@
 <template>
   <div>
+    <div class="row">
+      <div class="col offset-s4 s2">
+        <environment-switch></environment-switch>
+      </div>
+    </div>
     <div class="col s12">
-      <h4><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h4>
+      <h4><i class="fa fa-plug"></i> Connecting to Kuzzle...</h4>
     </div>
     <div class="row">
       <div class="col s12">
-        <kuzzle-disconnected :host="host" :port="port"></kuzzle-disconnected>
+        <connecting :host="host" :port="port"></connecting>
       </div>
     </div>
+
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-
-</style>
-
 <script>
   import kuzzle from '../../services/kuzzle'
-  import KuzzleDisconnected from './KuzzleDisconnected'
-  import { setConnection } from '../../vuex/modules/common/kuzzle/actions'
+  import Connecting from './Connecting'
+  import EnvironmentSwitch from '../Common/Environments/Switch'
 
   let idConnect
   let idReconnect
@@ -32,24 +34,18 @@
       }
     },
     components: {
-      KuzzleDisconnected
-    },
-    vuex: {
-      actions: {
-        setConnection
-      }
+      Connecting,
+      EnvironmentSwitch
     },
     ready () {
       this.host = kuzzle.host
       this.port = kuzzle.wsPort
 
       idReconnect = kuzzle.addListener('reconnected', () => {
-        this.setConnection(true)
         this.$router.go({name: 'Home'})
       })
 
       idConnect = kuzzle.addListener('connected', () => {
-        this.setConnection(true)
         this.$router.go({name: 'Home'})
       })
     },
@@ -59,3 +55,24 @@
     }
   }
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+  .kuzzle-disconnected {
+    margin-top: 30px;
+
+    .card {
+      padding-bottom: 20px;
+    }
+
+    p {
+      font-family: "Roboto", "Arial", sans-serif;
+      font-size: 1.3em;
+      font-weight: 300;
+
+      .host {
+        font-weight: bold;
+      }
+      margin-bottom: 0;
+    }
+  }
+</style>

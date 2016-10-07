@@ -18,9 +18,15 @@
     </label>
 
     <div class="right actions">
-      <a href="#" @click.prevent="update"><i class="fa fa-pencil"></i></a>
+      <a href="#" @click.prevent="update"
+         v-title="{active: !canEditProfile(), title: 'You are not allowed to edit this profile'}">
+        <i class="fa fa-pencil" :class="{'disabled': !canEditProfile()}"></i>
+      </a>
       <dropdown :id="document.id" class="icon-black">
-        <li><a @click="deleteDocument(document.id)">Delete</a></li>
+        <li><a @click="deleteDocument(document.id)"
+               :class="{'disabled': !canDeleteProfile()}"
+               v-title="{active: !canDeleteProfile(), title: 'You are not allowed to delete this profile'}">Delete</a>
+        </li>
       </dropdown>
     </div>
 
@@ -33,6 +39,8 @@
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
+import { canEditProfile, canDeleteProfile } from '../../../services/userAuthorization'
+import title from '../../../directives/title.directive'
 
 export default {
   name: 'ProfileItem',
@@ -44,7 +52,8 @@ export default {
     Dropdown
   },
   directives: {
-    jsonFormatter
+    jsonFormatter,
+    title
   },
   data () {
     return {
@@ -59,11 +68,17 @@ export default {
       this.$dispatch('checkbox-click', this.document.id)
     },
     deleteDocument () {
-      this.$dispatch('delete-document', this.document.id)
+      if (this.canDeleteProfile()) {
+        this.$dispatch('delete-document', this.document.id)
+      }
     },
     update () {
-      this.$router.go({name: 'SecurityProfilesUpdate', params: {id: this.document.id}})
-    }
+      if (this.canEditProfile()) {
+        this.$dispatch('common-list::edit-document', 'SecurityProfilesUpdate', this.document.id)
+      }
+    },
+    canEditProfile,
+    canDeleteProfile
   }
 }
 </script>

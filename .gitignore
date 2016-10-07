@@ -8,5 +8,6 @@ test/e2e/reports
 .idea
 dump/
 docker-compose-custom.yml
-static/bower_components
+bower_components
 phantomjsdriver.log
+*.sublime-*

@@ -8,61 +8,57 @@ import Promise from 'bluebird'
 let CrudlDocument
 let vm
 let sandbox = sinon.sandbox.create()
-let documents = sandbox.stub().returns([])
-let totalDocuments = sandbox.stub()
-let paginationFrom = sandbox.stub()
-let paginationSize = sandbox.stub()
-let searchTerm = sandbox.stub()
-let rawFilter = sandbox.stub()
-let basicFilter = sandbox.stub()
-let sorting = sandbox.stub()
 let basicFilterForm = sandbox.stub()
 let go = sandbox.stub()
 let $broadcast
-let formatFromQuickSearch = sandbox.spy()
+let $dispatch
 let formatFromBasicSearch = sandbox.spy()
 let formatSort = sandbox.spy()
-let deleteUsers = sandbox.stub().returns(Promise.resolve())
+let deleteDocuments = sandbox.stub().returns(Promise.resolve())
 
 let initInjector = () => {
   CrudlDocument = CrudlDocumentInjector({
+    '../../Materialize/Pagination': mockedComponent,
+    '../Materialize/Modal': mockedComponent,
+    '../../Common/Filters/Filters': mockedComponent,
+    '../../vuex/modules/common/crudlDocument/actions': {
+      setBasicFilter: sandbox.stub()
+    },
     '../../vuex/modules/common/crudlDocument/getters': {
-      documents,
-      totalDocuments,
-      paginationFrom,
-      paginationSize,
-      searchTerm,
-      rawFilter,
-      basicFilter,
-      sorting,
       basicFilterForm
     },
     '../../services/filterFormat': {
-      formatFromQuickSearch,
       formatFromBasicSearch,
       formatSort
     },
-    '../../Common/Filters/Filters': mockedComponent,
-    '../../Materialize/Modal': mockedComponent,
-    '../../Materialize/Dropdown': mockedComponent,
-    '../../Materialize/Pagination': mockedComponent,
-    '../../Materialize/Headline': mockedComponent,
-    './UserItem': mockedComponent,
     '../../services/kuzzleWrapper': {
-      deleteDocuments: deleteUsers
+      deleteDocuments
     }
   })
 
   vm = new Vue({
-    template: '<div><crudl-document index="index" collection="collection" v-ref:list></crudl-document></div>',
+    template: `<div><crudl-document 
+        index="index" 
+        collection="collection"
+        :documents="documents"
+        :available-filters="availableFilters"
+        v-ref:list>
+      </crudl-document></div>`,
     components: {
       CrudlDocument
+    },
+    data () {
+      return {
+        documents: [],
+        availableFilters: {}
+      }
     },
     store: store
   }).$mount()
 
   vm.$refs.list.$router = {go}
   $broadcast = sandbox.stub(vm.$refs.list, '$broadcast')
+  $dispatch = sandbox.stub(vm.$refs.list, '$dispatch')
 }
 
 describe('CrudlDocument component', () => {
@@ -87,12 +83,16 @@ describe('CrudlDocument component', () => {
     })
 
     describe('confirmBulkDelete', () => {
-      it('should dispatch event for closing the corresponding modal', () => {
+      it('should dispatch event for closing the corresponding modal', (done) => {
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmBulkDelete()
 
-        expect($broadcast.calledWith('modal-close', 'bulk-delete')).to.be.equal(true)
+        setTimeout(() => {
+          expect($broadcast.calledWith('modal-close', 'bulk-delete')).to.be.equal(true)
+          expect($dispatch.called).to.be.equal(false)
+          done()
+        }, 0)
       })
 
       it('should call delete users with the right list and refresh the users list', (done) => {
@@ -102,14 +102,14 @@ describe('CrudlDocument component', () => {
         vm.$refs.list.confirmBulkDelete()
 
         setTimeout(() => {
-          expect(deleteUsers.calledWith('index', 'collection', ['doc1', 'doc2'])).to.be.equal(true)
+          expect(deleteDocuments.calledWith('index', 'collection', ['doc1', 'doc2'])).to.be.equal(true)
           expect(refreshSearch.called).to.be.equal(true)
           done()
         }, 0)
       })
 
       it('should do nothing if delete was not a success', (done) => {
-        deleteUsers = sandbox.stub().returns(Promise.reject(new Error()))
+        deleteDocuments = sandbox.stub().returns(Promise.reject(new Error()))
         initInjector()
         let refreshSearch = sandbox.stub(vm.$refs.list, 'refreshSearch')
 
@@ -123,13 +123,19 @@ describe('CrudlDocument component', () => {
     })
 
     describe('confirmSingleDelete', () => {
-      it('should dispatch event for closing the corresponding modal', () => {
-        // sandbox.stub(vm.$refs.list, 'deleteDocuments').returns(Promise.resolve())
+      it('should dispatch event for closing the corresponding modal', (done) => {
+        deleteDocuments = sandbox.stub().returns(Promise.resolve())
+        initInjector()
+
         sandbox.stub(vm.$refs.list, 'refreshSearch')
 
         vm.$refs.list.confirmSingleDelete('id')
 
-        expect($broadcast.calledWith('modal-close', 'single-delete')).to.be.equal(true)
+        setTimeout(() => {
+          expect($broadcast.calledWith('modal-close', 'single-delete')).to.be.equal(true)
+          expect($dispatch.called).to.be.equal(false)
+          done()
+        }, 0)
       })
     })
 

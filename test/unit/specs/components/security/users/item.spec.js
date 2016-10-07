@@ -1,8 +1,9 @@
 import Vue from 'vue'
-import UserItem from '../../../../../../src/components/Security/Users/UserItem'
 import VueRouter from 'vue-router'
-import { mockedComponent } from '../../../helper'
+import { mockedComponent, mockedDirective } from '../../../helper'
 
+let UserItemInjector = require('!!vue?inject!../../../../../../src/components/Security/Users/UserItem')
+let UserItem
 let router
 
 describe('UserItem component', () => {
@@ -11,6 +12,17 @@ describe('UserItem component', () => {
   let $dispatch
 
   beforeEach(() => {
+    UserItem = UserItemInjector({
+      '../../Materialize/Dropdown': mockedComponent,
+      '../../../directives/json-formatter.directive': mockedDirective,
+      '../../../directives/focus.directive': mockedDirective,
+      '../../../directives/title.directive': mockedDirective,
+      '../../../services/userAuthorization': {
+        canEditUser: sandbox.stub().returns(true),
+        canDeleteUser: sandbox.stub().returns(true)
+      }
+    })
+
     Vue.use(VueRouter)
 
     const App = Vue.extend({
@@ -118,5 +130,12 @@ describe('UserItem component', () => {
     $vm.deleteDocument()
 
     expect($dispatch.calledWith('delete-document', 'kuzzle-bo-admin')).to.equal(true)
+  })
+
+  it('should redirect on right route on update', () => {
+    $vm.$router = {go: sandbox.stub()}
+    $vm.update()
+
+    expect($dispatch.calledWithMatch('common-list::edit-document', 'SecurityUsersUpdate', 'kuzzle-bo-admin')).to.equal(true)
   })
 })

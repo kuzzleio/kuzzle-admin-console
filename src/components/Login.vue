@@ -11,6 +11,11 @@
             </div>
           </div>
           <div class="row">
+            <div class="col offset-s1 s2">
+              <environment-switch></environment-switch>
+            </div>
+          </div>
+          <div class="row">
         	  <login-form :on-login="onLogin"></login-form>
           </div>
         </div>
@@ -37,19 +42,38 @@
 
 <script>
   import LoginForm from './Common/Login/Form'
+  import EnvironmentSwitch from './Common/Environments/Switch'
+  import { routeBeforeRedirect } from '../vuex/modules/common/routing/getters'
+  import { setRouteBeforeRedirect } from '../vuex/modules/common/routing/actions'
 
   export default {
     name: 'Login',
     components: {
-      LoginForm
+      LoginForm,
+      EnvironmentSwitch
+    },
+    data () {
+      return {
+        environmentId: null
+      }
     },
     methods: {
       onLogin () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to && this.$router._prevTransition.to.name !== 'Signup') {
-          this.$router.go(this.$router._prevTransition.to)
+        if (this.routeBeforeRedirect) {
+          this.$router.go({name: this.routeBeforeRedirect})
         } else {
           this.$router.go({name: 'Home'})
         }
+
+        this.setRouteBeforeRedirect(null)
+      }
+    },
+    vuex: {
+      getters: {
+        routeBeforeRedirect
+      },
+      actions: {
+        setRouteBeforeRedirect
       }
     }
   }

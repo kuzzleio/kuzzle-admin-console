@@ -8,6 +8,7 @@
 # Releases mapping
 | Back-office  | Kuzzle |
 |---|---|
+| 1.1.0 | 1.0.0-RC7 |
 | 1.0.0 | 1.0.0-RC6 |
 
 
@@ -39,9 +40,9 @@ If you already have a Kuzzle stack running somewhere, be sure your Kuzzle Proxy 
 
 ```
 $ docker pull kuzzleio/backoffice
-$ docker run -p 3000:3000 -e "BACKEND_HOST=<BACKEND_HOST>" kuzzleio/backoffice
+$ docker run -p 3000:3000 -e "BACKOFFICE_PORT=3000" kuzzleio/backoffice
 ```
->Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy sockets ports and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
+>`BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
 
 ## Without Docker
 Be sure to have node v4.4 and bower installed.
@@ -56,17 +57,16 @@ At this point you can choose whether to run with the embed server or without:
 
 ### With the embed server
 ```
-$ BACKEND_HOST=<BACKEND_HOST> npm run prod
+$ npm run build && BACKOFFICE_PORT=3000 npm start
 ```
->Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy sockets ports and `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
+>`BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
 
 You can now access `http://<back-office-ip>:<BACKOFFICE_PORT>`
 
 ### Without the server
 You can choose to only build the `dist/` folder and access it with your own server:
 ```
-$ BACKEND_HOST=<BACKEND_HOST> npm run build
+$ npm run build
 ```
->Where `BACKEND_HOST` _(default: localhost)_ is the Kuzzle Proxy IP. You can also override `BACKEND_IOPORT` _(default: 7512)_ and `BACKEND_WSPORT` _(default: 7513)_ corresponding to Proxy sockets port.
 
-The `dist` folder is now generated. In order to let this folder be accessible from your browser without CSRF error, you have to create a server web (like with nginx).
+The `dist` folder is now generated. You can either open the `index.html` file or in order to prevent CSRF error, you can create a web server (like with nginx).
