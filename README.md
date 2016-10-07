@@ -8,6 +8,7 @@
 # Releases mapping
 | Back-office  | Kuzzle |
 |---|---|
+| 1.1.0 | 1.0.0-RC7 |
 | 1.0.0 | 1.0.0-RC6 |
 
 
