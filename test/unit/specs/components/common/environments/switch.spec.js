@@ -50,7 +50,7 @@ describe('Switch environment component', () => {
   before(() => mockInjector())
   afterEach(() => sandbox.restore())
 
-  describe.only('Methods', () => {
+  describe('Methods', () => {
     describe('switchEnvironment', () => {
       it('should call switchEnvironment with right id', (done) => {
         $vm.switchEnvironment('toto')
