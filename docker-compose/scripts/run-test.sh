@@ -2,11 +2,11 @@
 set -e
 #kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
-echo "Installing dependencies..."
+echo "[$(date --rfc-3339 seconds)] - Installing backoffice dependencies..."
 npm install
 bower install --allow-root --no-interactive
 
-echo "Starting Tests..."
+echo "[$(date --rfc-3339 seconds)] - Starting backoffice tests..."
 
 #Xvfb :10 -ac &
 #export DISPLAY=:10
@@ -38,13 +38,13 @@ npm run codecov
 
 if [ "${TRAVIS_BRANCH}" = "master" ]
 then
-    echo "Building dist file"
+    echo "[$(date --rfc-3339 seconds)] - Building dist file"
     npm run build
-    echo "Creating archive"
+    echo "[$(date --rfc-3339 seconds)] - Creating archive"
     tar -cvf kuzzle-backoffice.tar dist
     chmod 777 kuzzle-backoffice.tar
 fi
 
-echo "We're done here!"
+echo "[$(date --rfc-3339 seconds)] - We're done here!"
 
 #exit $return_value
