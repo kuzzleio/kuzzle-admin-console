@@ -20,15 +20,14 @@
           <li>
             Welcome <strong>{{user.id}}</strong>
           </li>
-          <environments-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environments-switch>
+          <li>
+            <environment-switch blend-color="true" style="display: inline-flex"></environment-switch>
+          </li>
           <li>
             <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
           </li>
         </ul>
       </nav>
-
-      <modal-create :environment-id="environmentId"></modal-create>
-      <modal-delete :environment-id="environmentId"></modal-delete>
     </div>
   </header>
 </template>
@@ -39,20 +38,11 @@
   import {doLogout} from '../../vuex/modules/auth/actions'
   import { currentEnvironment } from '../../vuex/modules/common/kuzzle/getters'
   import {DEFAULT_COLOR} from '../../services/environment'
-  import EnvironmentsSwitch from './Environments/Switch'
-  import ModalCreate from './Environments/ModalCreate'
-  import ModalDelete from './Environments/ModalDelete'
+  import EnvironmentSwitch from './Environments/Switch'
 
   export default {
     components: {
-      EnvironmentsSwitch,
-      ModalCreate,
-      ModalDelete
-    },
-    data () {
-      return {
-        environmentId: null
-      }
+      EnvironmentSwitch
     },
     computed: {
       currentEnvironmentColor () {
@@ -64,15 +54,7 @@
       }
     },
     methods: {
-      hasSecurityRights,
-      editEnvironment (id) {
-        this.environmentId = id
-        this.$broadcast('modal-open', 'create-env')
-      },
-      deleteEnvironment (id) {
-        this.environmentId = id
-        this.$broadcast('modal-open', 'delete-env')
-      }
+      hasSecurityRights
     },
     vuex: {
       getters: {
@@ -92,9 +74,9 @@ header {
 }
 nav {
   padding-right: 20px;
+
   li {
     font-family: "Roboto", Arial, sans-serif;
-    font-weight: 500;
 
     .logout {
       font-size: 1.2em;

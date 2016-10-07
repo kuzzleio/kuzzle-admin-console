@@ -172,14 +172,16 @@ describe('loginByToken action', () => {
   it('should not log the user if no token is provided', (done) => {
     let actions = injectMock()
     testActionPromise(actions.loginByToken, [], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] }
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
   })
 
   it('should not login user from cookie because the jwt token is wrong', (done) => {
     let actions = injectMock(true, true)
     testActionPromise(actions.loginByToken, ['a-token'], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] }
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ])
     .catch((e) => {
       expect(e.message).to.be.equal('checkToken error')
@@ -190,9 +192,11 @@ describe('loginByToken action', () => {
   it('should do nothing if the token identifies an invalid session', (done) => {
     let actions = injectMock(false)
     testActionPromise(actions.loginByToken, ['a-token'], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] }
+      { name: SET_CURRENT_USER, payload: [SessionUser()] },
+      { name: SET_TOKEN_VALID, payload: [false] }
     ], done)
       .catch(e => {
+        console.log(e)
         done(e)
       })
   })

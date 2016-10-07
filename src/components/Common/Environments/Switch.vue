@@ -1,15 +1,15 @@
 <template>
   <span>
-    <li>
-      <a class="btn-flat dropdown-button current-environment right grey-text secondary text-lighten-5 waves-effect waves-light"
-         data-activates='environment-dropdown'>
-          <span class="current-environment-name truncate">
-            {{currentEnvironmentName}}
-          </span>
-
-          <i class="fa fa-caret-down"></i>
-      </a>
-    </li>
+    <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
+       data-activates='environment-dropdown'>
+        <span v-if="currentEnvironment" class="current-environment-name truncate">
+          {{currentEnvironmentName}}
+        </span>
+        <span v-if="!currentEnvironment" class="current-environment-name truncate">
+          Choose Environment
+        </span>
+        <i class="fa fa-caret-down"></i>
+    </a>
 
     <ul id='environment-dropdown' class='dropdown-content'>
       <li v-for="(id, env) in environments" class="environment">
@@ -28,14 +28,17 @@
 
 <script>
   import { environments, currentEnvironment } from '../../../vuex/modules/common/kuzzle/getters'
-  import { switchEnvironment } from '../../../services/environment'
+  import { switchEnvironment, DEFAULT_COLOR } from '../../../services/environment'
   import ModalCreate from './ModalCreate'
+  import tinycolor from 'tinycolor2/tinycolor'
+  import Promise from 'bluebird'
 
   export default {
     name: 'EnvironmentsSwitch',
     components: {
       ModalCreate
     },
+    props: ['blendColor'],
     vuex: {
       getters: {
         environments,
@@ -49,13 +52,39 @@
         }
 
         return this.currentEnvironment.name
+      },
+      bgColor () {
+        if (!this.blendColor) {
+          return DEFAULT_COLOR
+        }
+
+        let color
+        if (!this.currentEnvironment) {
+          color = DEFAULT_COLOR
+        } else {
+          color = this.currentEnvironment.color
+        }
+        if (!color) {
+          color = DEFAULT_COLOR
+        }
+
+        return tinycolor(color).lighten(10).toString()
       }
     },
     methods: {
       switchEnvironment (id) {
-        switchEnvironment(id)
+        return switchEnvironment(id)
+          .then(() => {
+            /* Ugly hack in order to force Vue to refresh and pass in router.beforeEach and let check if user is auth */
+            this.$router.go('/fake-route')
+            setTimeout(() => {
+              this.$router.go('/')
+              return Promise.resolve()
+            }, 0)
+          })
           .catch((e) => {
             this.$dispatch('toast', 'An error occurred while switching environment', 'error')
+            return Promise.reject(e)
           })
       }
     },
@@ -68,6 +97,7 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
   .current-environment {
+    background-color: #00757F;
     transition: .25s ease;
     margin-top: 7px;
     .truncate {

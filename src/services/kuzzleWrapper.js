@@ -1,5 +1,4 @@
 import kuzzle from './kuzzle'
-import { setUserToCurrentEnvironment } from './environment'
 import Promise from 'bluebird'
 import { setTokenValid } from '../vuex/modules/auth/actions'
 
@@ -35,9 +34,6 @@ export const connectToEnvironment = (environment) => {
 
 export const initStoreWithKuzzle = (store) => {
   kuzzle.removeAllListeners('jwtTokenExpired')
-  kuzzle.addListener('jwtTokenExpired', () => {
-    setUserToCurrentEnvironment(null)
-  })
   kuzzle.removeAllListeners('queryError')
   kuzzle.addListener('queryError', (error) => {
     if (error && error.message) {

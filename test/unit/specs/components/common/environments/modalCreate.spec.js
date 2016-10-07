@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import store from '../../../../../../src/vuex/store'
 import { mockedComponent, mockedDirective } from '../../../helper'
+import { DEFAULT_COLOR } from '../../../../../../src/services/environment'
 
 let ModalInjector = require('!!vue?inject!../../../../../../src/components/Common/Environments/ModalCreate')
 let Modal
@@ -9,7 +10,6 @@ let vm
 let $vm
 
 describe('Modal Create Environment component test', () => {
-  const DEFAULT_COLOR = 'default-color'
   let listEnvironments = {
     myEnv: {
       name: 'myEnv',
@@ -30,7 +30,7 @@ describe('Modal Create Environment component test', () => {
       '../../../services/environment': {
         createEnvironment,
         updateEnvironment,
-        DEFAULT_COLOR
+        DEFAULT_COLOR: DEFAULT_COLOR
       },
       '../../../vuex/modules/common/kuzzle/getters': {
         environments
@@ -54,7 +54,7 @@ describe('Modal Create Environment component test', () => {
   describe('Watch', () => {
     describe('environmentId', () => {
       it('should reset environment if environmentId is null or not in environments', (done) => {
-        $vm.environmentId = 'toto'
+        $vm.environmentId = null
 
         Vue.nextTick(() => {
           expect($vm.environment.name).to.be.equal(null)

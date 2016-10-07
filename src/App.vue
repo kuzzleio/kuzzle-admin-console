@@ -3,13 +3,22 @@
 
   <div v-if="!kuzzleIsConnected">
     <error-layout>
-      <kuzzle-disconnected-page></kuzzle-disconnected-page>
+      <kuzzle-disconnected-page
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </kuzzle-disconnected-page>
     </error-layout>
   </div>
 
   <div v-if="kuzzleIsConnected">
-    <router-view></router-view>
+    <router-view
+      @environment::create="editEnvironment"
+      @environment::delete="deleteEnvironment">
+    </router-view>
   </div>
+
+  <modal-create :environment-id="environmentId"></modal-create>
+  <modal-delete :environment-id="environmentId"></modal-delete>
 </template>
 
 <script>
@@ -21,19 +30,10 @@ import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import ErrorLayout from './components/Error/Layout'
-import {
-  switchEnvironment,
-  loadEnvironments,
-  loadLastConnectedEnvId,
-  persistEnvironments
-} from './services/environment'
-import {
-  kuzzleIsConnected,
-  environments
-} from './vuex/modules/common/kuzzle/getters'
-import {
-  addEnvironment
-} from './vuex/modules/common/kuzzle/actions'
+import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
+
+import ModalCreate from './components/Common/Environments/ModalCreate'
+import ModalDelete from './components/Common/Environments/ModalDelete'
 
 window.jQuery = window.$ = require('jquery')
 require('imports?$=jquery!materialize-css/dist/js/materialize')
@@ -46,46 +46,30 @@ export default {
   directives: [Toaster],
   components: {
     KuzzleDisconnectedPage,
-    ErrorLayout
+    ErrorLayout,
+    ModalCreate,
+    ModalDelete
   },
   ready () {
-    let loadedEnv = this.loadEnvironments()
-    let lastConnected = this.loadLastConnectedEnvId()
-
-    Object.keys(loadedEnv).forEach(id => {
-      this.addEnvironment(id, loadedEnv[id], false)
-    })
-
-    this.persistEnvironments(this.environments)
-
-    if (!lastConnected || !this.environments[lastConnected]) {
-      lastConnected = Object.keys(this.environments)[0]
+  },
+  data () {
+    return {
+      environmentId: null
     }
-
-    this.switchEnvironment(lastConnected)
-      .then(() => {
-        this.$router.go('/')
-      })
-      .catch((err) => {
-        // TODO bubble this error to the UI
-        console.error(`Something went wrong while connecting to the
-          ${lastConnected} environment`)
-        console.error(err)
-      })
   },
   methods: {
-    switchEnvironment,
-    loadLastConnectedEnvId,
-    loadEnvironments,
-    persistEnvironments
+    editEnvironment (id) {
+      this.environmentId = id
+      this.$broadcast('modal-open', 'create-env')
+    },
+    deleteEnvironment (id) {
+      this.environmentId = id
+      this.$broadcast('modal-open', 'delete-env')
+    }
   },
   vuex: {
     getters: {
-      kuzzleIsConnected,
-      environments
-    },
-    actions: {
-      addEnvironment
+      kuzzleIsConnected
     }
   }
 }

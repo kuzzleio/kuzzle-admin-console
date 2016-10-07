@@ -86,18 +86,18 @@ describe('Login.vue', () => {
 
     describe('onLogin', () => {
       it('should redirect on previous page if any', (done) => {
+        const lastRouteName = 'Foo'
+        store.dispatch('SET_ROUTE_BEFORE_REDIRECT', lastRouteName)
         vm.$refs.login.$router = {
-          _prevTransition: {
-            to: {path: '/foo'}
-          },
           go: params => {
-            expect(params).be.deep.equal({path: '/foo'})
+            expect(params).be.deep.equal({name: lastRouteName})
             done()
           }
         }
         vm.$refs.login.onLogin()
       })
       it('should redirect on home page if there is no previous page', (done) => {
+        store.dispatch('SET_ROUTE_BEFORE_REDIRECT', null)
         vm.$refs.login.$router = {
           go (params) {
             expect(params).be.deep.equal({name: 'Home'})
