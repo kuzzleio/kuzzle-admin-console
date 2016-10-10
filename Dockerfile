@@ -4,6 +4,8 @@ MAINTAINER Kuzzle <support@kuzzle.io>
 COPY ./ /var/app
 COPY ./docker-compose/scripts/run.sh /run.sh
 
+WORKDIR /var/app
+
 RUN apt-get update && apt-get install -y \
       build-essential \
       git \
@@ -28,5 +30,5 @@ RUN apt-get update && apt-get install -y \
       python \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
-    
+
 CMD ["/var/app/run.sh"]
