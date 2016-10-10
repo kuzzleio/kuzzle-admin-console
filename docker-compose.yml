@@ -6,8 +6,7 @@ proxy:
 backoffice:
   image: kuzzleio/backoffice
   environment:
-    - BACKEND_HOST
-    - BACKEND_PORT
+    - BACKOFFICE_PORT=3000
   ports:
     - 3000:3000
 
