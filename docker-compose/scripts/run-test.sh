@@ -1,50 +1,25 @@
 #!/bin/sh
+
 set -e
-#kuzzle=${KUZZLE_HOST:-kuzzle:7511}
 
 echo "[$(date --rfc-3339 seconds)] - Installing backoffice dependencies..."
 npm install
 bower install --allow-root --no-interactive
 
-echo "[$(date --rfc-3339 seconds)] - Starting backoffice tests..."
-
-#Xvfb :10 -ac &
-#export DISPLAY=:10
-
-# Launch unit tests as soon as possible
+echo "[$(date --rfc-3339 seconds)] - Starting backoffice unit tests..."
 npm run unit
-#return_value=$?
 
+echo "[$(date --rfc-3339 seconds)] - Starting backoffice codecov report..."
 npm run codecov
-
-#if [ $return_value -le 0 ]; then
-  #while ! curl -m 2 -silent -output /dev/null http://$kuzzle/api/1.0 > /dev/null
-  #do
-  # echo "$(date) - still trying connecting to http://$kuzzle"
-   #sleep 1
-  #done
-  #echo "$(date) - successfully connected to Kuzzle"
-
-  #npm run e2e -- --env firefox
- # return_value=$?
-#fi
-
-#if [ $return_value -gt 0 ]; then
-#  echo "Tests exited with errors. Dumping the state of the system..."
-#  mkdir /var/app/dump
-#  curl -XGET http://elasticsearch:9200/kuzzle-bo-testindex/_search/?size=1000 -o /var/app/dump/kuzzle-bo-testindex.json
-#  curl -XGET http://elasticsearch:9200/%25kuzzle/_search/?size=1000 -o /var/app/dump/kuzzle.json
-#fi
 
 if [ "${TRAVIS_BRANCH}" = "master" ]
 then
+    echo "[$(date --rfc-3339 seconds)] - Detected to be on master branch"
     echo "[$(date --rfc-3339 seconds)] - Building dist file"
     npm run build
-    echo "[$(date --rfc-3339 seconds)] - Creating archive"
+    echo "[$(date --rfc-3339 seconds)] - Creating archive for release"
     tar -cvf kuzzle-backoffice.tar dist
     chmod 777 kuzzle-backoffice.tar
 fi
 
-echo "[$(date --rfc-3339 seconds)] - We're done here!"
-
-#exit $return_value
+echo "[$(date --rfc-3339 seconds)] - Backoffice tests complete"

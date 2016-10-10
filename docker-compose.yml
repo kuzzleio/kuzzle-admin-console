@@ -10,8 +10,6 @@ backoffice:
     - BACKEND_PORT
   ports:
     - 3000:3000
-  environment:
-    - BACKOFFICE_PORT
 
 kuzzle:
   image: kuzzleio/kuzzle

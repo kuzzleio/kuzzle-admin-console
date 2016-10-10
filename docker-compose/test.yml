@@ -1,21 +1,19 @@
 proxy:
-  image: kuzzleio/proxy:develop
+  image: kuzzleio/proxy
   ports:
-    - "7511:7511"
-    - "7512:7512"
-    - "7513:7513"
+    - "7511-7513:7511-7513"
 
 backoffice:
-  image: kuzzleio/bo-test:alpine
-  command: /run-test.sh
+  image: kuzzleio/dev
+  command: sh -c 'chmod 755 /run.sh && /run.sh'
   volumes:
     - "..:/var/app"
-    - "./run-test.sh:/run-test.sh"
+    - "./scripts/run-test.sh:/run.sh"
   ports:
     - "3000:3000"
   links:
-    - proxy:kuzzle
-    - kuzzle:main
+    - proxy
+    - kuzzle
     # add link to elasticsearch in order to perform a dump
     - elasticsearch
   environment:
@@ -30,18 +28,24 @@ backoffice:
     - TRAVIS_REPO_SLUG
 
 kuzzle:
-  image: kuzzleio/kuzzle:develop
+  image: kuzzleio/kuzzle
   volumes:
     - "../kuzzle/fixtures.json:/fixtures.json"
+    - "../kuzzle/mappings.json:/mappings.json"
   links:
     - elasticsearch
     - redis
-    - proxy:api
+    - proxy
   environment:
-    - FIXTURES=/fixtures.json
+    - kuzzle_services__db__host=elasticsearch
+    - kuzzle_services__internalCache__node__host=redis
+    - kuzzle_services__memoryStorage__node__host=redis
+    - kuzzle_services__proxyBroker__host=proxy
+    - kuzzle_fixtures=/fixtures.json
+    - kuzzle_mappings=/mappings.json
 
 redis:
-  image: redis:3.0-alpine
+  image: redis:3.2-alpine
 
 elasticsearch:
   image: kuzzleio/elasticsearch:2.3.4
