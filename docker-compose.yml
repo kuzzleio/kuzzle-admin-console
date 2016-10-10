@@ -1,29 +1,28 @@
-proxy:
-  image: kuzzleio/proxy
-  ports:
-    - "7511-7513:7511-7513"
+version: '2'
 
-backoffice:
-  image: kuzzleio/backoffice
-  environment:
-    - BACKOFFICE_PORT=3000
-  ports:
-    - 3000:3000
+services:
+  proxy:
+    image: kuzzleio/proxy
+    ports:
+      - "7511-7513:7511-7513"
 
-kuzzle:
-  image: kuzzleio/kuzzle
-  links:
-    - elasticsearch
-    - redis
-    - proxy
-  environment:
-    - kuzzle_services__db__host=elasticsearch
-    - kuzzle_services__internalCache__node__host=redis
-    - kuzzle_services__memoryStorage__node__host=redis
-    - kuzzle_services__proxyBroker__host=proxy
+  backoffice:
+    image: kuzzleio/backoffice
+    environment:
+      - BACKOFFICE_PORT=3000
+    ports:
+      - 3000:3000
 
-redis:
-  image: redis:3.2-alpine
+  kuzzle:
+    image: kuzzleio/kuzzle
+    environment:
+      - kuzzle_services__db__host=elasticsearch
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_services__proxyBroker__host=proxy
 
-elasticsearch:
-  image: kuzzleio/elasticsearch:2.3.4
+  redis:
+    image: redis:3.2-alpine
+
+  elasticsearch:
+    image: kuzzleio/elasticsearch:2.3.4
