@@ -18,9 +18,13 @@ For UI and connected objects developers, Kuzzle is an open-source solution that 
 
 Kuzzle features are accessible through a secured API. It can be used through a large choice of protocols such as REST, Websocket or Message Queuing protocols.
 
-# Installation
+# How to use it
 
-This Back-office is a front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7511) must be accessible from everywhere if you want to use this Back-office.**
+This Back-office is a static front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7511) must be accessible from everywhere if you want to use this Back-office.**
+
+You can check the last version of Back-office here: [kuzzle-backoffice](http://kuzzle-backoffice.netlify.com) (or if you're using Kuzzle through SSL, you can use the version [https](https://kuzzle-backoffice.netlify.com/))
+
+For installing the Back-office on your own host, follow next steps.
 
 ## With Docker
 ### I want to use the all-in-one recipe
