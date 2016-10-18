@@ -23,7 +23,7 @@ before_script:
   - npm install -g bower
 #- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
 script:
-  - ./docker-compose/run-test.sh
+  - ./docker-compose/scripts/run-test.sh
 #script:
 #- docker-compose -f docker-compose/test.yml run backoffice
 
