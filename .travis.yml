@@ -2,7 +2,7 @@ sudo: false
 #dist: trusty
 language: node_js
 node_js:
-  - 4.5.0
+  - 4.6.0
 addons:
   apt:
     sources:
@@ -10,8 +10,6 @@ addons:
     packages:
       - gcc-4.9
       - g++-4.9
-#services:
-#- docker
 env:
   COMPOSE_VERSION: 1.6.0
   global:
@@ -21,16 +19,21 @@ before_install:
   - export CC="gcc-4.9" CXX="g++-4.9"
 before_script:
   - npm install -g bower
-#- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+  - npm install
+  - bower install --allow-root --no-interactive
 script:
-  - ./docker-compose/scripts/run-test.sh
-#script:
-#- docker-compose -f docker-compose/test.yml run backoffice
+  - npm run unit
+  - npm run codecov
 
 deploy:
   provider: releases
   api_key: ${GH_TOKEN}
   file: "kuzzle-backoffice.tar"
   skip_cleanup: true
+  before_deploy:
+    - npm run build
+    - tar -cvf kuzzle-backoffice.tar dist
+    - chmod 777 kuzzle-backoffice.tar
   on:
+    tags: true
     branch: master
