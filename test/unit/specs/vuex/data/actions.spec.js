@@ -81,7 +81,7 @@ describe('listIndexesAndCollections action', () => {
         if (triggerError[1]) {
           cb(new Error('error'))
         } else {
-          cb(null, {stored: ['collection1', 'collection2'], realtime: []})
+          cb(null, [{name: 'collection1', type: 'stored'}, {name: 'collection2', type: 'stored'}])
         }
       }
     }

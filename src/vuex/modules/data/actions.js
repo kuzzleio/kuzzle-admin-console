@@ -1,5 +1,5 @@
 import kuzzle from '../../../services/kuzzle'
-import { dedupeRealtimeCollections } from '../../../services/data'
+import { dedupeRealtimeCollections, splitRealtimeStoredCollections } from '../../../services/data'
 import Promise from 'bluebird'
 import {
   RECEIVE_MAPPING,
@@ -46,6 +46,7 @@ export const listIndexesAndCollections = (store) => {
               return
             }
             if (index !== '%kuzzle') {
+              result = splitRealtimeStoredCollections(result)
               addLocalRealtimeCollections(result, index)
               result = dedupeRealtimeCollections(result)
 
