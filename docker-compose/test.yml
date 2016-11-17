@@ -26,7 +26,7 @@ services:
       - TRAVIS_REPO_SLUG
 
   kuzzle:
-    image: kuzzleio/kuzzle
+    image: kuzzleio/kuzzle:develop
     volumes:
       - "../kuzzle/fixtures.json:/fixtures.json"
       - "../kuzzle/mappings.json:/mappings.json"

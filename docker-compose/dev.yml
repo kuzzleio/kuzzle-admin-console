@@ -18,8 +18,9 @@ services:
       - DEBUG_PHANTOM
 
   kuzzle:
-    image: kuzzleio/kuzzle
+    image: kuzzleio/kuzzle:develop
     volumes:
+        - "../../kuzzle/:/var/app"
         - "../kuzzle/fixtures.json:/fixtures.json"
         - "../kuzzle/mappings.json:/mappings.json"
     environment:

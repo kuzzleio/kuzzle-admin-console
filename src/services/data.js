@@ -13,6 +13,17 @@ export const dedupeRealtimeCollections = (collections) => {
   }
 }
 
+export const splitRealtimeStoredCollections = (collections) => {
+  if (collections.length === 0) {
+    return collections
+  }
+
+  return {
+    realtime: collections.filter((collection) => collection.type === 'realtime').map((collection) => collection.name),
+    stored: collections.filter((collection) => collection.type === 'stored').map((collection) => collection.name)
+  }
+}
+
 export const generateHash = (s) => {
   var hash = 0
   if (!s || s.length === 0) return hash
