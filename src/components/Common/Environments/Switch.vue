@@ -97,7 +97,7 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
   .current-environment {
-    background-color: #00757F;
+    background-color: #002835;
     transition: .25s ease;
     margin-top: 7px;
     .truncate {
@@ -124,7 +124,7 @@
         display: block;
         width: 80%;
         &.name {
-          color: #00757F;
+          color: #002835;
           padding: 14px 14px 0 14px;
           font-size: 1.2em;
         }

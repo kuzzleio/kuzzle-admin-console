@@ -5,7 +5,7 @@
         <ul>
           <li class="logo">
             <a href="#" class="">
-              <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
+              <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
             </a>
           </li>
           <li class="nav" v-link-active>
@@ -69,14 +69,11 @@
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-header {
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-}
 nav {
   padding-right: 20px;
 
   li {
-    font-family: "Roboto", Arial, sans-serif;
+    font-family: "Gobold", Arial, sans-serif;
 
     .logout {
       font-size: 1.2em;
@@ -87,14 +84,19 @@ nav {
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 400;
+
+      &.active, &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
     }
   }
 }
-.logo {
+.logo, .logo a {
+  height: 50px;
 }
 
 .logo img {
   height: 50px;
-  padding: 10px 63px 10px 0;
+  padding: 4px 50px 6px 39px;
 }
 </style>

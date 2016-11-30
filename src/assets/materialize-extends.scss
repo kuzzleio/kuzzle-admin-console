@@ -8,7 +8,8 @@ nav {
 }
 
 .btn {
-  font-family: "Roboto", sans-serif;
+  font-family: "Gobold", sans-serif;
+  color: $primary-color;
 
   + .btn {
     margin-left: 10px;
@@ -86,7 +87,7 @@ strong {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Roboto", sans-serif;
+  font-family: "Gobold", sans-serif;
   font-weight: 300;
   color: #555;
 }
@@ -119,6 +120,7 @@ i, span {
 }
 
 .primary {
+  color: #FFF;
   background-color: $primary-color;
   &:hover, &:focus {
     background-color: lighten($primary-color, 5%);
@@ -126,6 +128,7 @@ i, span {
 }
 
 .secondary {
+  color: $primary-color;
   background-color: $secondary-color;
   &:hover, &:focus {
     background-color: lighten($secondary-color, 5%);
@@ -133,6 +136,7 @@ i, span {
 }
 
 .tertiary {
+  color: #FFF;
   background-color: $tertiary-color;
   &:hover, &:focus {
     background-color: lighten($tertiary-color, 5%);
@@ -140,6 +144,7 @@ i, span {
 }
 
 .red-color {
+  color: #FFF;
   background-color: $red-color;
   &:hover, &:focus {
     background-color: lighten($red-color, 5%);
@@ -205,4 +210,9 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
 .disabled,
 .dropdown-content li > a.disabled {
   color: $disabled-color;
+}
+
+.json-formatter-row, .json-formatter-row a, .json-formatter-row a:hover {
+  font-weight: bold;
+  font-family: "AnonymousPro";
 }
