@@ -4,7 +4,7 @@
       <div class="input-field col s12">
         <input id="username" v-model="username" type="text" name="username" required tabindex="1"
                class="validate" v-focus />
-        <label for="username" :class="{'active': username}">Email</label>
+        <label for="username" :class="{'active': username}">Login</label>
       </div>
     </div>
     <div class="row">

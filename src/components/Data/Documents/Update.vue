@@ -75,22 +75,13 @@
 
         return kuzzle
           .dataCollectionFactory(this.collection, this.index)
-          .dataMappingFactory(mapping || {})
-          .applyPromise()
+          .updateDocumentPromise(this.documentToEditId, this.newDocument)
           .then(() => {
-            return kuzzle
-              .dataCollectionFactory(this.collection, this.index)
-              .updateDocumentPromise(this.documentToEditId, this.newDocument)
-              .then(() => {
-                kuzzle.refreshIndex(this.index)
-                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-              })
-              .catch((err) => {
-                this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
-              })
+            kuzzle.refreshIndex(this.index)
+            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
           })
-          .catch(err => {
-            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
+          .catch((err) => {
+            this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
           })
       },
       cancel () {

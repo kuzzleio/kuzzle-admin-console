@@ -29,6 +29,10 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
     }
   } else {
     type = typeof jsonDocument
+
+    if (type === 'number') {
+      type = Number.isInteger(jsonDocument) ? 'long' : 'double'
+    }
   }
 
   let property
