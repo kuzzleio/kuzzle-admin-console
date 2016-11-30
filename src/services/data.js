@@ -15,12 +15,15 @@ export const dedupeRealtimeCollections = (collections) => {
 
 export const splitRealtimeStoredCollections = (collections) => {
   if (collections.length === 0) {
-    return collections
+    return {
+      realtime: [],
+      stored: []
+    }
   }
 
   return {
-    realtime: collections.filter((collection) => collection.type === 'realtime').map((collection) => collection.name),
-    stored: collections.filter((collection) => collection.type === 'stored').map((collection) => collection.name)
+    realtime: collections.filter((collection) => collection.type === 'realtime').map((collection) => collection.name) || [],
+    stored: collections.filter((collection) => collection.type === 'stored').map((collection) => collection.name) || []
   }
 }
 
