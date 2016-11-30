@@ -110,7 +110,7 @@ export const deleteDocuments = (index, collection, ids) => {
   return new Promise((resolve, reject) => {
     kuzzle
       .dataCollectionFactory(collection, index)
-      .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
+      .deleteDocument({query: {ids: {values: ids}}}, (error) => {
         if (error) {
           return reject(new Error(error.message))
         }
