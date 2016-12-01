@@ -64,7 +64,9 @@
     -moz-user-select: none;
     -khtml-user-select: none;
     -ms-user-select: none;
+    font-family: "AnonymousPro";
   }
+
 
   .item-title a {
     color: #272727;
