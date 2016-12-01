@@ -15,7 +15,7 @@ import Promise from 'bluebird'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
-export const DEFAULT_COLOR = '#00757F'
+export const DEFAULT_COLOR = '#002835'
 export const DEFAULT = 'default'
 
 const defaultEnvironment = {

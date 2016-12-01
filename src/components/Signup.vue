@@ -6,7 +6,7 @@
           <div class="row">
             <div class="col s12">
               <h2 class="center-align logo">
-                <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" style="width: 60%" />
+                <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Backoffice" style="width: 60%" />
               </h2>
             </div>
           </div>
@@ -109,7 +109,7 @@
     }
 
     .message {
-      font-family: "Roboto", sans-serif;
+      font-family: "Gobold", sans-serif;
       font-weight: 300;
     }
   }

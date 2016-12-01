@@ -6,7 +6,7 @@
           <div class="row">
             <div class="col s12">
               <h2 class="center-align logo">
-                <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" style="width: 70%" />
+                <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Backoffice" style="width: 70%" />
               </h2>
             </div>
           </div>

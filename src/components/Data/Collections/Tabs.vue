@@ -46,7 +46,7 @@
     }
     &.active {
       a {
-        border-bottom: solid 2px #00757F;
+        border-bottom: solid 2px #002835;
       }
     }
   }
