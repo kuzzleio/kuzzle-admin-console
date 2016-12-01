@@ -138,17 +138,28 @@ export const deleteDocuments = (index, collection, ids) => {
     return
   }
 
-  return new Promise((resolve, reject) => {
-    kuzzle
-      .dataCollectionFactory(collection, index)
-      .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
-        if (error) {
-          return reject(new Error(error.message))
-        }
+  if (index === '%kuzzle' && collection === 'users') {
+    let promises = []
 
-        kuzzle.refreshIndex(index, () => {
-          resolve()
+    ids.forEach(id => {
+      promises.push(kuzzle.security.deleteUserPromise(id))
+    })
+
+    return Promise.all(promises)
+      .then(() => kuzzle.queryPromise({controller: 'admin', action: 'refreshInternalIndex'}, {}))
+  } else {
+    return new Promise((resolve, reject) => {
+      kuzzle
+        .dataCollectionFactory(collection, index)
+        .deleteDocument({filter: {ids: {values: ids}}}, (error) => {
+          if (error) {
+            return reject(new Error(error.message))
+          }
+
+          kuzzle.refreshIndex(index, () => {
+            resolve()
+          })
         })
-      })
-  })
+    })
+  }
 }
