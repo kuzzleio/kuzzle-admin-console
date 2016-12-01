@@ -37,6 +37,37 @@ describe('Data services', () => {
         stored: ['foobar']
       })
     })
+
+    it('should correctly split an empty collections result', () => {
+      let collectionsToSplit = []
+
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: [],
+        stored: []
+      })
+    })
+
+    it('should correctly split an empty stored collections result', () => {
+      let  collectionsToSplit = [
+        {name: 'bar', type: 'realtime'}
+      ]
+
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: ['bar'],
+        stored: []
+      })
+    })
+
+    it('should correctly split an empty realtime collections result', () => {
+      let  collectionsToSplit = [
+        {name: 'foobar', type: 'stored'}
+      ]
+
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: [],
+        stored: ['foobar']
+      })
+    })
   })
 
   describe('generateHash', () => {
