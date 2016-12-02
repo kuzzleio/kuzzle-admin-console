@@ -276,8 +276,13 @@
     },
     ready () {
       // TODO: refactor how get mapping is done
-      if (this.index === '%kuzzle' && this.collection === 'users') {
-        kuzzle
+      if (this.index === '%kuzzle') {
+        if (this.collection !== 'users') {
+          promiseGetMappingReject(new Error(`unable to request mapping for collection "${this.collection}" on index "${this.index}"`))
+          return
+        }
+
+        return kuzzle
           .queryPromise({controller: 'admin', action: 'getUserMapping'}, {})
           .then(res => {
             if (countAttributes(res.result.mapping) > 100) {
@@ -291,7 +296,7 @@
             promiseGetMappingReject(error)
           })
       } else {
-        kuzzle
+        return kuzzle
           .dataCollectionFactory(this.collection, this.index)
           .getMappingPromise()
           .then((res) => {
