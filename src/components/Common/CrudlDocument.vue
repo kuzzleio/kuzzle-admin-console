@@ -52,7 +52,7 @@
           </button>
 
           <button class="btn btn-small waves-effect waves-light"
-                  :class="displayBulkDelete ? 'red' : 'disabled'"
+                  :class="displayBulkDelete ? 'red-color' : 'disabled'"
                   :disabled="!displayBulkDelete"
                   @click="$broadcast('modal-open', 'bulk-delete')"
                   title="{{displayBulkDelete ? '' : 'You need to select at least one element'}}">
@@ -87,7 +87,7 @@
       <span slot="footer">
             <button
               href="#"
-              class="waves-effect waves-green btn red"
+              class="waves-effect waves-green btn red-color"
               @click="confirmBulkDelete()">
                 I'm sure!
             </button>
@@ -104,7 +104,7 @@
       <span slot="footer">
             <button
               href="#"
-              class="waves-effect waves-green btn red"
+              class="waves-effect waves-green btn red-color"
               @click="confirmSingleDelete(documentIdToDelete)">
                 I'm sure!
             </button>

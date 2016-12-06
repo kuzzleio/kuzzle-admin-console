@@ -144,7 +144,9 @@
     .delete {
       position: absolute;
       top: 25px;
-      right: 5px;
+      right: 10px;
+      padding: 0;
+      margin: 0;
       font-size: 1.2em;
     }
   }

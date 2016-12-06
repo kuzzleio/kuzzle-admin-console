@@ -7,7 +7,7 @@
       <i class="fa fa-plus"></i>
     </a>
     <a
-      class="btn-floating waves-effect waves-light btn-tiny red"
+      class="btn-floating waves-effect waves-light btn-tiny red-color"
       @click="removeElementInArray"
       v-show="display"
       >

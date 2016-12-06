@@ -78,7 +78,7 @@
             </button>
           </div>
           <div class="col s7 m8 l9" v-if="error">
-            <div class="card error red white-text">
+            <div class="card error red-color">
               <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
               {{{error}}}
             </div>

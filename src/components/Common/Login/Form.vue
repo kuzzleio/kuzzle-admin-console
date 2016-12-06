@@ -16,7 +16,7 @@
     </div>
     <div class="row">
       <div class="col m8">
-        <p class="error card red white-text" v-if="error">
+        <p class="error card red-color white-text" v-if="error">
           <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
           Login failed: <br />{{error}}
         </p>
