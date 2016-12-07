@@ -1,3 +1,7 @@
+html {
+  font-family: $body-font-family;
+}
+
 nav {
   height: 50px;
   line-height: 50px;
@@ -8,7 +12,7 @@ nav {
 }
 
 .btn {
-  font-family: "Gobold", sans-serif;
+  font-family: $button-font-family;
   color: $primary-color;
 
   + .btn {
@@ -87,7 +91,7 @@ strong {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Gobold", sans-serif;
+  font-family: $header-font-family;
   font-weight: 300;
   color: #555;
 }
