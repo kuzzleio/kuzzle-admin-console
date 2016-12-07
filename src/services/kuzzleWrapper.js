@@ -59,47 +59,78 @@ let getValueAdditionalAttribute = (content, attributePath) => {
   return content[attribute]
 }
 
+// TODO: refactor how search is done
 export const performSearch = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return new Promise((resolve, reject) => {
     if (!collection || !index) {
       return reject(new Error('Missing collection or index'))
     }
 
-    kuzzle
-      .dataCollectionFactory(collection, index)
-      .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
-        if (error) {
-          return reject(new Error(error.message))
-        }
-
-        let additionalAttributeName = null
-
-        if (sort.length > 0) {
-          if (typeof sort[0] === 'string') {
-            additionalAttributeName = sort[0]
-          } else {
-            additionalAttributeName = Object.keys(sort[0])[0]
-          }
-        }
-
-        let documents = result.documents.map((document) => {
-          let object = {
-            content: document.content,
-            id: document.id
-          }
-
-          if (additionalAttributeName) {
-            object.additionalAttribute = {
-              name: additionalAttributeName,
-              value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-            }
-          }
-
-          return object
+    if (index === '%kuzzle') {
+      switch (collection) {
+        case 'roles':
+          kuzzle
+            .security
+            .searchRoles({...filters, ...pagination, sort}, (error, result) => {
+              handleSearchResult('roles', sort, error, result, resolve, reject)
+            })
+          break
+        case 'profiles':
+          kuzzle
+            .security
+            .searchProfiles({...filters, ...pagination, sort}, (error, result) => {
+              handleSearchResult('profiles', sort, error, result, resolve, reject)
+            })
+          break
+        case 'users':
+          kuzzle
+            .security
+            .searchUsers({...filters, ...pagination, sort}, (error, result) => {
+              handleSearchResult('users', sort, error, result, resolve, reject)
+            })
+          break
+      }
+    } else {
+      kuzzle
+        .dataCollectionFactory(collection, index)
+        .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
+          handleSearchResult('documents', sort, error, result, resolve, reject)
         })
-        resolve({documents: documents, total: result.total})
-      })
+    }
   })
+}
+
+function handleSearchResult (type, sort, error, result, resolve, reject) {
+  if (error) {
+    return reject(new Error(error.message))
+  }
+
+  let additionalAttributeName = null
+
+  if (sort.length > 0) {
+    if (typeof sort[0] === 'string') {
+      additionalAttributeName = sort[0]
+    } else {
+      additionalAttributeName = Object.keys(sort[0])[0]
+    }
+  }
+
+  let documents = result[type].map((document) => {
+    let object = {
+      content: document.content,
+      id: document.id
+    }
+
+    if (additionalAttributeName) {
+      object.additionalAttribute = {
+        name: additionalAttributeName,
+        value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+      }
+    }
+
+    return object
+  })
+  resolve({documents: documents, total: result.total})
 }
 
 export const deleteDocuments = (index, collection, ids) => {
@@ -107,17 +138,28 @@ export const deleteDocuments = (index, collection, ids) => {
     return
   }
 
-  return new Promise((resolve, reject) => {
-    kuzzle
-      .dataCollectionFactory(collection, index)
-      .deleteDocument({query: {ids: {values: ids}}}, (error) => {
-        if (error) {
-          return reject(new Error(error.message))
-        }
+  if (index === '%kuzzle' && collection === 'users') {
+    let promises = []
 
-        kuzzle.refreshIndex(index, () => {
-          resolve()
+    ids.forEach(id => {
+      promises.push(kuzzle.security.deleteUserPromise(id))
+    })
+
+    return Promise.all(promises)
+      .then(() => kuzzle.queryPromise({controller: 'admin', action: 'refreshInternalIndex'}, {}))
+  } else {
+    return new Promise((resolve, reject) => {
+      kuzzle
+        .dataCollectionFactory(collection, index)
+        .deleteDocument({query: {ids: {values: ids}}}, (error) => {
+          if (error) {
+            return reject(new Error(error.message))
+          }
+
+          kuzzle.refreshIndex(index, () => {
+            resolve()
+          })
         })
-      })
-  })
+    })
+  }
 }

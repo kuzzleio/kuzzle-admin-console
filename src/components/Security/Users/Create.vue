@@ -60,11 +60,11 @@
           return
         }
 
-        kuzzle
+        return kuzzle
           .security
           .createUserPromise(this.newDocument._id, this.newDocument)
+          .then(() => kuzzle.queryPromise({controller: 'admin', action: 'refreshInternalIndex'}, {}))
           .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
             this.$router.go({name: 'SecurityUsersList'})
           }).catch(err => {
             this.error = 'An error occurred while creating user: <br />' + err.message

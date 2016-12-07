@@ -13,6 +13,7 @@ describe('Create user component test', () => {
   let triggerError = true
 
   let refreshIndexSpy = sandbox.stub()
+  let querySpy = sandbox.stub().returns(Promise.resolve())
   let setNewDocumentSpy = sandbox.stub()
   let setNewDocument = sandbox.stub()
   let newDocumentStub = sandbox.stub().returns({_id: '42'})
@@ -24,6 +25,7 @@ describe('Create user component test', () => {
       '../Collections/Dropdown': mockedComponent,
       '../Collections/Tabs': mockedComponent,
       '../../../services/kuzzle': {
+        queryPromise: querySpy,
         security: {
           createUserPromise: () => {
             if (triggerError) {
@@ -103,11 +105,13 @@ describe('Create user component test', () => {
         mockInjector()
 
         $vm.create('form')
-
-        setTimeout(() => {
-          expect(refreshIndexSpy.called).to.be.ok
-          done()
-        }, 0)
+          .then(() => {
+            expect(querySpy.calledWith({controller: 'admin', action: 'refreshInternalIndex'}, {})).to.be.ok
+            done()
+          })
+          .catch(error => {
+            done(error)
+          })
       })
     })
 
