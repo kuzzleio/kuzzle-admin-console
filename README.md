@@ -33,7 +33,7 @@ The easiest way to deploy the Kuzzle stack is by using the `docker-compose.yml` 
 ```
 $ wget https://raw.githubusercontent.com/kuzzleio/kuzzle-build/master/docker-compose/backoffice-docker-compose.yml
 $ docker pull kuzzleio/backoffice
-$ BACKOFFICE_PORT=3000 docker-compose up
+$ BACKOFFICE_PORT=3000 docker-compose -f kuzzle-docker-compose.yml up
 ```
 
 >Where `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
@@ -44,7 +44,6 @@ After a while, you can access to `http://<your-ip>:3000`.
 If you already have a Kuzzle stack running somewhere, be sure your Kuzzle Proxy IP and Websocket port (default 7511) is open and accessible from everywhere.
 
 ```
-$ wget https://raw.githubusercontent.com/kuzzleio/kuzzle-build/master/docker-compose/backoffice-docker-compose.yml
 $ docker pull kuzzleio/backoffice
 $ docker run -p 3000:3000 -e "BACKOFFICE_PORT=3000" kuzzleio/backoffice
 ```
