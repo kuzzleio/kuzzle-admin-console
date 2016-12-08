@@ -34,7 +34,7 @@
           </div>
 
           <!-- Helper message about mapping -->
-          <div class="row deep-orange-text" v-show="!settingsOpen && !collectionName">
+          <div class="row text-warning" v-show="!settingsOpen && !collectionName">
             <p class="col s12">
               <i class="fa fa-exclamation-triangle " aria-hidden="true"></i>
               Settings allow you to define mappings which enable cool functionalities such as geo spacial researches.
@@ -89,8 +89,6 @@
             <div class="col s5 m4 l4">
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
                 <button type="submit" class="btn primary waves-effect waves-light">
-                  <i v-if="!collectionName" class="fa fa-plus-circle left"></i>
-                  <i v-else class="fa fa-pencil left"></i>
                   {{collectionName ? 'Update' : 'Create'}}
                 </button>
             </div>

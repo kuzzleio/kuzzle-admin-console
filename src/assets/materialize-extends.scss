@@ -220,3 +220,15 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
   font-weight: bold;
   font-family: "AnonymousPro";
 }
+
+.text-error {
+  color: $red-color;
+}
+
+.text-warning {
+  color: $skin-color;
+}
+
+.text-active {
+  color: $blue-color;
+}
