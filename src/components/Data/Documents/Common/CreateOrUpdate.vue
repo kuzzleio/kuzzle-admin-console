@@ -72,8 +72,6 @@
               Cancel
             </a>
             <button type="submit" class="btn primary waves-effect waves-light">
-              <i v-if="!hideId" class="fa fa-plus-circle left"></i>
-              <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
             </button>
           </div>
