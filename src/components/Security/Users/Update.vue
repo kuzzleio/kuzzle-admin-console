@@ -41,7 +41,7 @@
       update (viewState, json) {
         if (viewState === 'code') {
           if (!json) {
-            this.$dispatch('toast', 'Invalid document', 'error')
+            this.$emit('toast', 'Invalid document', 'error')
             return
           }
           this.setNewDocument(json)
@@ -52,11 +52,11 @@
           .updateUserPromise(this.documentToEditId, this.newDocument)
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityUsersList'})
+            this.$router.push({name: 'SecurityUsersList'})
           })
           .catch((err) => {
             if (err) {
-              this.$dispatch('toast', err.message, 'error')
+              this.$emit('toast', err.message, 'error')
             }
           })
       },
@@ -64,7 +64,7 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityUsersList'})
+          this.$router.push({name: 'SecurityUsersList'})
         }
       }
     },
@@ -77,17 +77,17 @@
         documentToEditId
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
         .getUserPromise(this.documentToEditId)
         .then((res) => {
           this.setNewDocument(res.content)
-          this.$broadcast('document-create::fill', res.content)
+          this.$emit('document-create::fill', res.content)
           return null
         })
         .catch(err => {
-          this.$dispatch('toast', err.message, 'error')
+          this.$emit('toast', err.message, 'error')
         })
     }
   }

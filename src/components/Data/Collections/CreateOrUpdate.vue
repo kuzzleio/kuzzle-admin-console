@@ -62,8 +62,8 @@
                 <p>Mapping:</p>
                 <json-editor
                   tabindex="4"
-                  v-ref:jsoneditor
-                  class="pre_ace"
+                  ref="jsoneditor"
+                  myclass="pre_ace"
                   :content="mapping">
                 </json-editor>
               </div>
@@ -182,16 +182,16 @@
     },
     methods: {
       create () {
-        this.$dispatch('collection-create::create', this.name || this.collectionName, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
+        this.$emit('collection-create::create', this.name || this.collectionName, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
       },
       dismissError () {
-        this.$dispatch('collection-create::reset-error')
+        this.$emit('collection-create::reset-error')
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
+          this.$router.push(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+          this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
         }
       }
     },

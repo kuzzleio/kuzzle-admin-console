@@ -1,13 +1,13 @@
 export const indexesAndCollections = state => {
-  return state.data.indexesAndCollections
+  return state.indexesAndCollections
 }
 
 export const indexes = state => {
-  return state.data.indexes
+  return state.indexes
 }
 
 export const mapping = state => {
-  return state.data.mapping
+  return state.mapping
 }
 
 export const selectedIndex = state => {
@@ -23,7 +23,7 @@ export const selectedCollection = state => {
 }
 
 export const newDocument = state => {
-  return state.data.newDocument
+  return state.newDocument
 }
 
 export const documentToEditId = state => {

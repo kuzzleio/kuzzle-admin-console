@@ -49,7 +49,7 @@
         this.error = ''
 
         if (isRealtime) {
-          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+          this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           return
         }
 
@@ -58,18 +58,18 @@
           .dataMappingFactory(mapping || {})
           .applyPromise()
           .then(() => {
-            this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+            this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })
           .catch(e => {
             this.error = e.message
           })
       }
     },
-    ready () {
+    mounted () {
       this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName)
         .catch(e => {
-          this.$dispatch('toast', e.message, 'error')
-          this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+          this.$emit('toast', e.message, 'error')
+          this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
         })
     }
   }

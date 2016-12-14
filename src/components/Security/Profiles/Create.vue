@@ -39,14 +39,14 @@
           .createProfilePromise(id, content, {replaceIfExist: true})
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityProfilesList'})
+            this.$router.push({name: 'SecurityProfilesList'})
           })
           .catch((e) => {
             this.error = 'An error occurred while creating profile: <br />' + e.message
           })
       },
       cancel () {
-        this.$router.go({name: 'SecurityProfilesList'})
+        this.$router.push({name: 'SecurityProfilesList'})
       }
     }
   }

@@ -22,6 +22,7 @@
 <script>
   import { setPartial } from '../../../../vuex/modules/data/actions'
   import JsonFormItemArrayInput from './JsonFormItemArrayInput'
+  import Vue from 'vue'
 
   export default {
     name: 'JsonFormItemArray',
@@ -69,7 +70,7 @@
         this.valueItems = [...this.content]
       }
     },
-    ready () {
+    mounted () {
       this.valueItems = [...this.content]
     },
     events: {
@@ -77,7 +78,7 @@
         this.valueItems.splice(index, 1)
       },
       'json-form-item-array::add-element' () {
-        this.valueItems.$set(this.valueItems.length, null)
+        Vue.set(this.valueItems, this.valueItems.length, null)
       }
     }
   }

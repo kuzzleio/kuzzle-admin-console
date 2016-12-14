@@ -1,34 +1,34 @@
 <template>
+  <div>
+    <aside>
+      <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
+        <li v-if="canManageUsers()" class="bold">
+          <router-link tag="li" to="{name: 'SecurityUsersList', activeClass: 'active'}" class="waves-effect">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <span>Users</span>
+          </router-link>
+        </li>
+        <li v-if="canManageProfiles()" class="bold">
+          <router-link tag="li" to="{name: 'SecurityProfilesList', activeClass: 'active'}" class="waves-effect">
+            <i class="fa fa-users" aria-hidden="true"></i>
+            <span>Profiles</span>
+          </router-link>
+        </li>
+        <li v-if="canManageRoles()" class="bold">
+          <router-link tag="li" to="{name: 'SecurityRolesList', activeClass: 'active'}" class="waves-effect">
+            <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+            <span>Roles</span>
+          </router-link>
+        </li>
+      </ul>
+    </aside>
 
-  <aside>
-    <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
-      <li v-if="canManageUsers()" v-link-active class="bold">
-        <a v-link="{name: 'SecurityUsersList', activeClass: 'active'}" class="waves-effect">
-          <i class="fa fa-user" aria-hidden="true"></i>
-          <span>Users</span>
-        </a>
-      </li>
-      <li v-if="canManageProfiles()" v-link-active class="bold">
-        <a v-link="{name: 'SecurityProfilesList', activeClass: 'active'}" class="waves-effect">
-          <i class="fa fa-users" aria-hidden="true"></i>
-          <span>Profiles</span>
-        </a>
-      </li>
-      <li v-if="canManageRoles()" v-link-active class="bold">
-        <a v-link="{name: 'SecurityRolesList', activeClass: 'active'}" class="waves-effect">
-          <i class="fa fa-unlock-alt" aria-hidden="true"></i>
-          <span>Roles</span>
-        </a>
-      </li>
-    </ul>
-  </aside>
-
-  <section class="view">
-    <div class="wrapper">
-      <router-view></router-view>
-    </div>
-  </section>
-
+    <section class="view">
+      <div class="wrapper">
+        <router-view></router-view>
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

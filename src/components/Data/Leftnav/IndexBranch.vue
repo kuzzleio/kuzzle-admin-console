@@ -1,27 +1,27 @@
 <template>
   <div :class="{ 'open': open || filter }">
     <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch"></i>
-    <a v-link="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
+    <router-link to="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexName) }">
       <i class="fa fa-database" aria-hidden="true"></i>
-      {{{indexName | highlight filter}}} ({{collectionCount}})
-    </a>
+      <p :v-html="highlightedIndexName"></p>({{collectionCount}})
+    </router-link>
     <ul class="collections">
-      <li v-for="collectionName in collections.stored | orderBy 1 | filterBy filter">
-        <a class="tree-item truncate"
-           v-link="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
+      <li v-for="collectionName in orderedFilteredStoredCollections">
+        <router-link class="tree-item truncate"
+           to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
-           {{{collectionName | highlight filter}}}
-         </a>
+          <p v-html="collectionName"></p>
+         </router-link>
       </li>
-      <li v-for="collectionName in collections.realtime | orderBy 1 | filterBy filter">
-        <a class="tree-item truncate"
-           v-link="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
+      <li v-for="collectionName in orderedFilteredRealtimeCollections">
+        <router-link class="tree-item truncate"
+           to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
-          {{{collectionName | highlight filter}}}
-        </a>
+          <p :v-html="collectionName"></p>
+        </router-link>
       </li>
     </ul>
   </div>
@@ -29,6 +29,7 @@
 
 <script>
 import { highlight } from '../../../filters/highlight.filter'
+import _ from 'lodash/orderBy'
 
 export default {
   props: {
@@ -58,6 +59,27 @@ export default {
       }
 
       return this.collections.realtime.length + this.collections.stored.length
+    },
+    filteredStoredCollections () {
+      return this.collection.stored.filter(col => col.indexOf(this.filter) !== -1)
+    },
+    filteredRealtimeCollections () {
+      return this.collection.realtime.filter(col => col.indexOf(this.filter) !== -1)
+    },
+    orderedFilteredStoredCollections () {
+      this.filteredStoredCollections.map(obj => {
+        return this.highlight(obj, this.filter)
+      })
+      return _.orderBy(this.filteredStoredCollections, 1)
+    },
+    orderedFilteredRealtimeCollections () {
+      this.filteredRealtimeCollections.map(obj => {
+        return this.highlight(obj, this.filter)
+      })
+      return _.orderBy(this.filteredRealtimeCollections, 1)
+    },
+    highlightedIndexName () {
+      return this.highlight(this.indexName, this.filter)
     }
   },
   methods: {
@@ -95,7 +117,7 @@ export default {
       this.testOpen()
     }
   },
-  ready () {
+  mounted () {
     this.testOpen()
   }
 }

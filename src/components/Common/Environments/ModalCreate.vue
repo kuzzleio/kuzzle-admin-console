@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="createEnvironments">
-    <modal id="create-env" class="modal-fixed-footer">
+    <modal id="create-env" class="modal-fixed-footer" :is-open="isOpen">
       <div class="row">
         <div class="col s12">
           <h4>{{environmentId ? 'Update' : 'Create'}} environment</h4>
@@ -52,10 +52,10 @@
         </div>
         <div class="col s12">
           <div class="row">
-            <div class="col s6 m3" v-for="color in colors">
+            <div class="col s6 m3" v-for="(color, index) in colors">
               <div class="color card valign-wrapper"
                    :style="{backgroundColor: color}"
-                   @click="selectColor($index)">
+                   @click="selectColor(index)">
                 <span class="selected valign center-align" v-if="environment.color === color">Selected</span>
               </div>
             </div>
@@ -67,7 +67,7 @@
         <button type="submit" class="waves-effect btn">
             {{environmentId ? 'Update' : 'Create'}}
         </button>
-        <button class="btn-flat waves-effect waves-grey" @click.prevent="$broadcast('modal-close', 'create-env')">
+        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
             Cancel
         </button>
       </span>
@@ -132,7 +132,7 @@
 
   export default {
     name: 'EnvironmentsCreateModal',
-    props: ['environmentId'],
+    props: ['environmentId', 'isOpen', 'close'],
     components: {
       Modal
     },
@@ -187,7 +187,7 @@
               this.environment.wsPort)
           }
 
-          this.$broadcast('modal-close', 'create-env')
+          this.$emit('modal-close', 'create-env')
         }
       },
       selectColor (index) {

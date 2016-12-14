@@ -9,9 +9,10 @@ import {
   , currentEnvironmentId
   , currentEnvironment
 } from '../vuex/modules/common/kuzzle/getters'
-import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
-import * as authActions from '../vuex/modules/auth/actions'
+import * as authTypes from '../vuex/modules/auth/mutation-types'
+import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import Promise from 'bluebird'
+import router from './router'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
@@ -79,7 +80,7 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
     wsPort
   }
 
-  kuzzleActions.addEnvironment(store, name, newEnvironment)
+  store.dispatch(kuzzleTypes.ADD_ENVIRONMENT, {id: name, environment: newEnvironment})
   return newEnvironment
 }
 
@@ -88,12 +89,13 @@ export const loadLastConnectedEnvId = () => {
   return localStorage.getItem(LAST_CONNECTED)
 }
 
-export const deleteEnvironment = (id) => {
+export const deleteEnvironment = (store, id) => {
   if (currentEnvironmentId(store.state) === id) {
-    authActions.doLogout(store)
+    store.dispatch(authTypes.DO_LOGOUT)
+    router.push({name: 'Login'})
   }
 
-  kuzzleActions.deleteEnvironment(store, id)
+  store.dispatch(kuzzleTypes.DELETE_ENVIRONMENT, id)
 }
 
 export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
@@ -107,24 +109,22 @@ export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
     ...envToUpdate, name, color, host, ioPort, wsPort
   }
 
-  kuzzleActions.updateEnvironment(store, id, envToUpdate)
+  store.dispatch(kuzzleTypes.UPDATE_ENVIRONMENT, {id, environment: envToUpdate})
   return envToUpdate
 }
 
 export const setTokenToCurrentEnvironment = (token) => {
-  kuzzleActions.updateEnvironment(
-    store,
-    currentEnvironmentId(store.state),
-    {
+  store.dispatch(kuzzleTypes.UPDATE_ENVIRONMENT, {
+    id: currentEnvironmentId(store.state),
+    environment: {
       ...currentEnvironment(store.state),
       token: token
     }
-  )
-
+  })
   return currentEnvironment(store.state)
 }
 
-export const switchEnvironment = (id) => {
+export const switchEnvironment = (store, id) => {
   if (!id) {
     throw new Error(`cannot switch to ${id} environment`)
   }
@@ -140,12 +140,12 @@ export const switchEnvironment = (id) => {
 
   return waitForConnected(10000)
     .then(() => {
-      kuzzleActions.setConnection(store, id)
+      store.dispatch(kuzzleTypes.SET_CONNECTION, id)
 
-      return authActions.loginByToken(store, environment.token)
+      return store.dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token})
         .then(user => {
           if (!user.id) {
-            return authActions.checkFirstAdmin(store)
+            return store.dispatch(authTypes.CHECK_FIRST_ADMIN)
           }
           return Promise.resolve()
         })

@@ -20,7 +20,7 @@
       :length-document="selectedDocuments.length">
 
         <div class="collection">
-          <div class="collection-item" transition="collection" v-for="document in documents">
+          <transition name="collection" v-for="document in documents">
             <component :is="itemName"
                        @checkbox-click="toggleSelectDocuments"
                        :document="document"
@@ -29,7 +29,7 @@
                        :collection="collection"
                        @common-list::edit-document="editDocument">
             </component>
-          </div>
+          </transition>
         </div>
 
     </crudl-document>
@@ -164,11 +164,11 @@
             this.totalDocuments = res.total
           })
           .catch((e) => {
-            this.$dispatch('toast', 'An error occurred while performing search: <br />' + e.message, 'error')
+            this.$emit('toast', 'An error occurred while performing search: <br />' + e.message, 'error')
           })
       },
       editDocument (route, id) {
-        this.$router.go({name: route, params: {id: encodeURIComponent(id)}})
+        this.$router.push({name: route, params: {id: encodeURIComponent(id)}})
       }
     },
     events: {

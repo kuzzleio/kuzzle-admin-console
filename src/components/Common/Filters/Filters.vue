@@ -75,6 +75,7 @@
   import QuickFilter from './QuickFilter'
   import BasicFilter from './BasicFilter'
   import RawFilter from './RawFilter'
+  import Vue from 'vue'
 
   export default {
     name: 'Filters',
@@ -121,10 +122,10 @@
     },
     watch: {
       'displayBlockFilter' () {
-        this.$broadcast('json-editor-refresh')
+        this.$emit('json-editor-refresh')
       },
       'tabActive' () {
-        this.$broadcast('json-editor-refresh')
+        this.$emit('json-editor-refresh')
       }
     },
     events: {
@@ -147,14 +148,16 @@
         this.tabActive = name
       },
       resetComplexSearch () {
-        this.$dispatch('filters-raw-search', {})
+        this.$emit('filters-raw-search', {})
       },
       refreshSearch () {
-        this.$dispatch('filters-refresh-search')
+        this.$emit('filters-refresh-search')
       }
     },
-    ready () {
-      window.document.addEventListener('keydown', this.handleEsc)
+    mounted () {
+      Vue.nextTick(() => {
+        window.document.addEventListener('keydown', this.handleEsc)
+      })
     },
     destroyed () {
       window.document.removeEventListener('keydown', this.handleEsc)

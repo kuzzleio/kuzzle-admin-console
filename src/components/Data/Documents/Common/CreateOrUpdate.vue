@@ -63,7 +63,7 @@
 
         <!-- Json view -->
         <div class="row" v-if="viewState === 'code'">
-          <json-editor class="pre_ace" :content="newDocument" v-ref:jsoneditor></json-editor>
+          <json-editor class="pre_ace" :content="newDocument" ref="jsoneditor"></json-editor>
         </div>
 
         <div class="row">
@@ -80,7 +80,7 @@
           <div class="col s7 m8 l9" v-if="error">
             <div class="card error red-color">
               <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              {{{error}}}
+              <p v-html="error">
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@
             class="waves-effect waves-green btn">
               Add
           </button>
-          <a class="btn-flat" @click.prevent="$broadcast('modal-close', 'add-attr')">
+          <a class="btn-flat" @click.prevent="$emit('modal-close', 'add-attr')">
               Cancel
           </a>
         </div>
@@ -194,7 +194,7 @@
         this.big = false
       },
       dismissError () {
-        this.$dispatch('document-create::reset-error')
+        this.$emit('document-create::reset-error')
       },
       create () {
         let json
@@ -203,7 +203,7 @@
           json = this.$refs.jsoneditor.getJson()
         }
 
-        this.$dispatch('document-create::create', this.viewState, json, this.mapping)
+        this.$emit('document-create::create', this.viewState, json, this.mapping)
       },
       switchEditMode () {
         if (this.viewState === 'code') {
@@ -222,7 +222,7 @@
       },
       addRootAttr () {
         this.newAttributePath = ''
-        this.$broadcast('modal-open', 'add-attr')
+        this.$emit('modal-open', 'add-attr')
       },
       doAddAttr () {
         let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
@@ -237,13 +237,13 @@
         this.newAttributeType = 'string'
         this.newAttributeName = null
         this.newAttributePath = null
-        this.$broadcast('modal-close', 'add-attr')
+        this.$emit('modal-close', 'add-attr')
       },
       updateId (e) {
         this.setPartial('_id', e.target.value)
       },
       cancel () {
-        this.$dispatch('document-create::cancel')
+        this.$emit('document-create::cancel')
       },
       changeTypeAttribute (attributePath, name, type, val) {
         getRefMappingFromPath(this.mapping, attributePath)
@@ -274,7 +274,7 @@
         showAnyway: false
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .dataCollectionFactory(this.collection, this.index)
         .getMappingPromise()
@@ -294,7 +294,7 @@
     events: {
       'document-create::add-attribute' (path) {
         this.newAttributePath = path
-        this.$broadcast('modal-open', 'add-attr')
+        this.$emit('modal-open', 'add-attr')
       },
       'document-create::fill' (document) {
         promiseGetMapping

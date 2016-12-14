@@ -1,6 +1,5 @@
 export default {
   id: 'm-select',
-  twoWay: true,
   update (value) {
     let $el = $(this.el)
     let $options = $('option[value=' + value + ']', $el)

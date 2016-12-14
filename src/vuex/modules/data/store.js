@@ -12,6 +12,8 @@ import {
   UNSET_NEW_DOCUMENT,
   SET_NEW_DOCUMENT
 } from './mutation-types'
+import * as actions from './actions'
+import * as getters from './getters'
 
 const state = {
   indexes: [],
@@ -23,7 +25,7 @@ const state = {
   newDocument: {}
 }
 
-export const mutations = {
+const mutations = {
   [RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
     Vue.set(state, 'indexes', Object.keys(indexesAndCollections))
     Vue.set(state, 'indexesAndCollections', indexesAndCollections)
@@ -39,14 +41,16 @@ export const mutations = {
   },
   [ADD_STORED_COLLECTION] (state, index, collection) {
     if (!state.indexesAndCollections[index]) {
-      mutations[ADD_INDEX](state, index)
+      state.indexes.push(index)
+      state.indexesAndCollections[index] = {realtime: [], stored: []}
     }
 
     state.indexesAndCollections[index].stored.push(collection)
   },
   [ADD_REALTIME_COLLECTION] (state, index, collection) {
     if (!state.indexesAndCollections[index]) {
-      mutations[ADD_INDEX](state, index)
+      state.indexes.push(index)
+      state.indexesAndCollections[index] = {realtime: [], stored: []}
     }
 
     state.indexesAndCollections[index].realtime.push(collection)
@@ -59,13 +63,13 @@ export const mutations = {
     state.indexes.splice(state.indexes.indexOf(index), 1)
     state.indexesAndCollections[index] = undefined
   },
-  [SET_PARTIAL_TO_DOCUMENT] (state, path, value) {
-    let splitted = path.split('.')
+  [SET_PARTIAL_TO_DOCUMENT] (state, payload) {
+    let splitted = payload.path.split('.')
 
     // Build an object from a path (path: ['a.b.c.d'] value: 'foo' => {a: {b: {c: {d: 'foo'}}}})
     splitted.reduce((prev, curr, index) => {
       if (!splitted[index + 1]) {
-        prev[curr] = value
+        prev[curr] = payload.value
       } else {
         if (!prev[curr]) {
           prev[curr] = {}
@@ -85,5 +89,7 @@ export const mutations = {
 
 export default {
   state,
-  mutations
+  mutations,
+  actions,
+  getters
 }

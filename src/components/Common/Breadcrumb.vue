@@ -2,100 +2,60 @@
   <div class="nav-breadcrumb">
     <ul v-if="$route.path.indexOf('/security') === 0">
       <li>
-        <a href="#!"
-           v-link="{name: 'Security'}">
+        <router-link
+           to="{name: 'Security'}">
           security
-        </a>
+        </router-link>
       </li>
 
       <li v-if="isRouteActive('SecurityUsersList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'SecurityUsersList'}">
+        <router-link to="{name: 'SecurityUsersList'}">
           users
-        </a>
+        </router-link>
       </li>
 
       <li v-if="isRouteActive('SecurityProfilesList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'SecurityProfilesList'}">
+        <router-link to="{name: 'SecurityProfilesList'}">
           profiles
-        </a>
+        </router-link>
       </li>
 
       <li v-if="isRouteActive('SecurityRolesList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'SecurityRolesList'}">
+        <router-link to="{name: 'SecurityRolesList'}">
           roles
-        </a>
+        </router-link>
       </li>
     </ul>
     <ul v-if="$route.path.indexOf('/data') === 0">
       <li>
-        <a href="#!"
-           v-link="{name: 'Data'}">
+        <router-link
+           to="{name: 'Data'}">
           data
-        </a>
+        </router-link>
       </li>
 
       <li v-if="selectedIndex">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
+        <router-link to="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
           {{selectedIndex}}
-        </a>
+        </router-link>
       </li>
-
-      <!--<li v-if="isRouteActive('DataCreateCollection')">
-        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
-        <a href="#!"
-           v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
-          create a collection
-        </a>
-      </li>-->
 
       <li v-if="selectedCollection">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!"
-           v-link="isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
+        <router-link
+           to="{name: isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}}">
           {{selectedCollection}}
-        </a>
+        </router-link>
       </li>
-
-      <!--<li v-if="isRouteActive('DataCreateDocument')">
-        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
-        <a href="#!"
-           v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
-          create a document
-        </a>
-      </li>-->
-
-      <!--<li class="link"
-          :class="{'link-active': isRouteActive('DataDocumentsList')}"
-          v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
-        <a href="#!"
-           v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
-          Browse
-        </a>
-      </li>
-      <li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionWatch')}"
-          v-if="collection && !isRouteActive('DataCreateDocument')">
-        <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
-          Watch
-        </a>
-      </li>
-      <li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionSummary')}"
-          v-if="collection && !isRouteActive('DataCreateDocument')">
-        <a href="#!"
-           v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
-          Summary
-        </a>
-      </li>-->
     </ul>
   </div>
 

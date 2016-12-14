@@ -6,6 +6,8 @@ import {
   CONNECT_TO_ENVIRONMENT
 } from './mutation-types'
 import { RESET } from '../../../mutation-types'
+import * as getters from './getters'
+import actions from './actions'
 
 const state = {
   environments: {},
@@ -13,21 +15,21 @@ const state = {
 }
 
 export const mutations = {
-  [ADD_ENVIRONMENT] (state, id, environment) {
-    if (!environment) {
+  [ADD_ENVIRONMENT] (state, payload) {
+    if (!payload.environment) {
       throw new Error('Cannot store a falsy environment')
     }
-    if (Object.keys(state.environments).indexOf(id) !== -1) {
-      throw new Error(`Unable to add new environment to already existing id "${id}"`)
+    if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
+      throw new Error(`Unable to add new environment to already existing id "${payload.id}"`)
     }
-    Vue.set(state.environments, id, environment)
+    Vue.set(state.environments, payload.id, payload.environment)
   },
-  [UPDATE_ENVIRONMENT] (state, id, environment) {
-    if (Object.keys(state.environments).indexOf(id) === -1) {
-      throw new Error(`The given id ${id} does not correspond to any existing
+  [UPDATE_ENVIRONMENT] (state, payload) {
+    if (Object.keys(state.environments).indexOf(payload.id) === -1) {
+      throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`)
     }
-    state.environments[id] = environment
+    state.environments[payload.id] = payload.environment
   },
   [DELETE_ENVIRONMENT] (state, id) {
     if (Object.keys(state.environments).indexOf(id) === -1) {
@@ -52,5 +54,7 @@ export const mutations = {
 
 export default {
   state,
-  mutations
+  mutations,
+  getters,
+  actions
 }

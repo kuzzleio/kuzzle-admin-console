@@ -23,14 +23,14 @@
               Here you'll see the kuzzle's profiles<br/>
               <em>Currently there is no profile.</em>
             </p>
-            <button :disabled="!canCreateProfile()"
+            <router-link :disabled="!canCreateProfile()"
                     :class="!canCreateProfile() ? 'disabled' : ''"
-                    title="{{!canCreateProfile() ? 'You are not allowed to create new profiles' : ''}}"
-                    v-link="{name: 'SecurityProfilesCreate'}"
+                    :title="!canCreateProfile() ? 'You are not allowed to create new profiles' : ''"
+                    to="{name: 'SecurityProfilesCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a profile
-            </button>
+            </router-link>
           </div>
         </div>
       </div>
@@ -53,14 +53,14 @@
     },
     methods: {
       createProfile () {
-        this.$router.go({name: 'SecurityProfilesCreate'})
+        this.$router.push({name: 'SecurityProfilesCreate'})
       },
       canSearchProfile,
       canCreateProfile
     },
     route: {
       data () {
-        this.$broadcast('crudl-refresh-search')
+        this.$emit('crudl-refresh-search')
       }
     }
   }

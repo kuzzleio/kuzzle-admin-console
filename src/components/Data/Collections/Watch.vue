@@ -237,7 +237,7 @@
         this.reset()
       }
     },
-    ready () {
+    mounted () {
       this.notifications = []
     },
     destroyed () {
@@ -408,7 +408,7 @@
             if (err) {
               this.room = null
               this.subscribed = false
-              this.$dispatch('toast', err.message, 'error')
+              this.$emit('toast', err.message, 'error')
             } else {
               this.subscribed = true
               this.room = room

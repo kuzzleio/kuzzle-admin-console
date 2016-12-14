@@ -1,24 +1,26 @@
 <template>
-  <div class="toast-error" v-toaster></div>
+  <div>
+    <div class="toast-error" toaster></div>
 
-  <div v-if="!kuzzleIsConnected">
-    <error-layout>
-      <kuzzle-disconnected-page
+    <div v-if="!$store.getters.kuzzleIsConnected">
+      <error-layout>
+        <kuzzle-disconnected-page
+          @environment::create="editEnvironment"
+          @environment::delete="deleteEnvironment">
+        </kuzzle-disconnected-page>
+      </error-layout>
+    </div>
+
+    <div v-if="$store.getters.kuzzleIsConnected">
+      <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
-      </kuzzle-disconnected-page>
-    </error-layout>
-  </div>
+      </router-view>
+    </div>
 
-  <div v-if="kuzzleIsConnected">
-    <router-view
-      @environment::create="editEnvironment"
-      @environment::delete="deleteEnvironment">
-    </router-view>
+    <modal-create :is-open="isOpen" :close="close"></modal-create>
+    <modal-delete :environment-id="environmentId"></modal-delete>
   </div>
-
-  <modal-create :environment-id="environmentId"></modal-create>
-  <modal-delete :environment-id="environmentId"></modal-delete>
 </template>
 
 <script>
@@ -30,7 +32,6 @@ import {} from './assets/global.scss'
 import Toaster from './directives/Materialize/toaster.directive'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import ErrorLayout from './components/Error/Layout'
-import { kuzzleIsConnected } from './vuex/modules/common/kuzzle/getters'
 
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
@@ -41,35 +42,31 @@ require('imports?$=jquery!materialize-css/dist/js/materialize')
 import 'font-awesome/css/font-awesome.css'
 
 export default {
-  replace: false,
   name: 'KuzzleBackOffice',
-  directives: [Toaster],
+  directives: {Toaster},
   components: {
     KuzzleDisconnectedPage,
     ErrorLayout,
     ModalCreate,
     ModalDelete
   },
-  ready () {
-  },
   data () {
     return {
-      environmentId: null
+      environmentId: null,
+      isOpen: false
     }
   },
   methods: {
     editEnvironment (id) {
       this.environmentId = id
-      this.$broadcast('modal-open', 'create-env')
+      this.isOpen = true
     },
     deleteEnvironment (id) {
       this.environmentId = id
-      this.$broadcast('modal-open', 'delete-env')
-    }
-  },
-  vuex: {
-    getters: {
-      kuzzleIsConnected
+      this.$emit('modal-open', 'delete-env')
+    },
+    close () {
+      this.isOpen = false
     }
   }
 }

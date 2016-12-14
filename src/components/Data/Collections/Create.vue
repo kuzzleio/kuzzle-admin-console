@@ -44,7 +44,7 @@
 
         this.createCollection(this.indexesAndCollections[this.index], this.index, name, mapping, isRealtime)
           .then(() => {
-            this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+            this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })
           .catch((e) => {
             this.error = e.message

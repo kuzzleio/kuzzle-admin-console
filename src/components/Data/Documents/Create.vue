@@ -67,7 +67,7 @@
               .createDocumentPromise(this.newDocument)
               .then(() => {
                 kuzzle.refreshIndex(this.index)
-                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch(err => {
                 this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
@@ -81,7 +81,7 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
       }
     },

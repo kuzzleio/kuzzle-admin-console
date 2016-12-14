@@ -29,17 +29,17 @@
     },
     methods: {
       addElementInArray () {
-        this.$dispatch('json-form-item-array::add-element')
+        this.$emit('json-form-item-array::add-element')
       },
       removeElementInArray () {
         if (this.valueItems.length === 1) {
           let splittedPath = this.fullName.split('.')
           splittedPath.pop()
-          this.$dispatch('document-create::change-type-attribute', splittedPath.join('.'), this.name, this.type, this.valueItems[0])
+          this.$emit('document-create::change-type-attribute', splittedPath.join('.'), this.name, this.type, this.valueItems[0])
           return
         }
 
-        this.$dispatch('json-form-item-array::remove-element', this.index)
+        this.$emit('json-form-item-array::remove-element', this.index)
       }
     }
   }

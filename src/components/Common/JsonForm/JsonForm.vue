@@ -142,7 +142,7 @@
         return !!content.properties
       },
       addAttribute () {
-        this.$dispatch('document-create::add-attribute', this.path)
+        this.$emit('document-create::add-attribute', this.path)
       }
     }
   }

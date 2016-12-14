@@ -65,7 +65,7 @@
           .createUserPromise(this.newDocument._id, this.newDocument)
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityUsersList'})
+            this.$router.push({name: 'SecurityUsersList'})
           }).catch(err => {
             this.error = 'An error occurred while creating user: <br />' + err.message
           })
@@ -74,7 +74,7 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityUsersList'})
+          this.$router.push({name: 'SecurityUsersList'})
         }
       }
     },

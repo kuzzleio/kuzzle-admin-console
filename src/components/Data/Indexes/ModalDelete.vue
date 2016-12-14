@@ -41,7 +41,7 @@
         <button
           href="#!"
           class="btn-flat waves-effect waves-grey"
-          @click.prevent="$broadcast('modal-close', id)">
+          @click.prevent="$emit('modal-close', id)">
             Cancel
         </button>
       </span>
@@ -109,7 +109,7 @@
             this.indexConfirmation = ''
             this.error = ''
             removeIndex(index)
-            this.$broadcast('modal-close', this.id)
+            this.$emit('modal-close', this.id)
           })
           .catch(err => {
             this.error = err.message

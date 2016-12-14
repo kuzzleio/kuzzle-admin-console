@@ -31,7 +31,7 @@
     methods: {
       setAsSelected () {
         if (!this.disabled) {
-          this.$dispatch('tabs-on-select', this)
+          this.$emit('tabs-on-select', this)
         }
       },
       select (name) {

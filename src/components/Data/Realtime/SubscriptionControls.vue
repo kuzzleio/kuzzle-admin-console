@@ -53,18 +53,18 @@
     methods: {
       canSubscribe,
       toggleSubscription () {
-        this.$dispatch('realtime-toggle-subscription')
+        this.$emit('realtime-toggle-subscription')
       },
       clear () {
-        this.$dispatch('realtime-clear-messages')
+        this.$emit('realtime-clear-messages')
       }
     },
-    ready () {
-      this.$dispatch('realtime-scroll-glue', this.scrollGlueActive)
+    mounted () {
+      this.$emit('realtime-scroll-glue', this.scrollGlueActive)
     },
     watch: {
       scrollGlueActive: function (value) {
-        this.$dispatch('realtime-scroll-glue', value)
+        this.$emit('realtime-scroll-glue', value)
       }
     }
   }

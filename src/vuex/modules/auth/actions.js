@@ -1,122 +1,110 @@
-import router from '../../../services/router'
 import kuzzle from '../../../services/kuzzle'
 import SessionUser from '../../../models/SessionUser'
 import { setTokenToCurrentEnvironment } from '../../../services/environment'
-import { SET_CURRENT_USER, SET_ADMIN_EXISTS, SET_TOKEN_VALID } from './mutation-types'
+import * as types from './mutation-types'
 import Promise from 'bluebird'
 
-export const doLogin = (store, username, password) => {
-  let user = SessionUser()
+export default {
+  [types.DO_LOGIN] ({commit}, data) {
+    let user = SessionUser()
 
-  return new Promise((resolve, reject) => {
-    kuzzle
-      .unsetJwtToken()
-      .loginPromise('local', {username, password}, '4h')
-      .then(loginResult => {
-        user.id = loginResult._id
-        user.token = loginResult.jwt
-        setTokenToCurrentEnvironment(loginResult.jwt)
+    return new Promise((resolve, reject) => {
+      kuzzle
+        .unsetJwtToken()
+        .loginPromise('local', {username: data.username, password: data.password}, '4h')
+        .then(loginResult => {
+          user.id = loginResult._id
+          user.token = loginResult.jwt
+          setTokenToCurrentEnvironment(loginResult.jwt)
 
-        return kuzzle.whoAmIPromise()
-      })
-      .then(KuzzleUser => {
-        user.params = KuzzleUser.content
-
-        return kuzzle.getMyRightsPromise()
-      })
-      .then(rights => {
-        user.rights = rights
-        setCurrentUser(store, user)
-        setTokenValid(store, true)
-
-        resolve()
-      })
-      .catch(error => {
-        reject(new Error(error.message))
-      })
-  })
-}
-
-export const setTokenValid = (store, isValid) => {
-  store.dispatch(SET_TOKEN_VALID, isValid)
-}
-
-export const setCurrentUser = (store, user) => {
-  store.dispatch(SET_CURRENT_USER, user)
-}
-
-/**
- * Performs the login to the kuzzle server via the given JWT token.
- *
- * @param  {Object} store The Vuex store.
- * @param  {String} token The JWT token used to login.
- * @return {Promise}      A promise resolving to a SessionUser object. If the
- * login succeeded, the UserObject contains
- */
-export const loginByToken = (store, token) => {
-  let user = SessionUser()
-  if (!token) {
-    setTokenToCurrentEnvironment(null)
-    setCurrentUser(store, SessionUser())
-    setTokenValid(store, false)
-    kuzzle.unsetJwtToken()
-    return Promise.resolve(user)
-  }
-
-  return kuzzle.checkTokenPromise(token)
-    .then(res => {
-      if (!res.valid) {
-        setTokenToCurrentEnvironment(null)
-        setCurrentUser(store, SessionUser())
-        setTokenValid(store, false)
-        kuzzle.unsetJwtToken()
-        return Promise.resolve(SessionUser())
-      }
-
-      kuzzle.setJwtToken(token)
-      setTokenToCurrentEnvironment(token)
-      return kuzzle.whoAmIPromise()
+          return kuzzle.whoAmIPromise()
+        })
         .then(KuzzleUser => {
-          user.id = KuzzleUser.id
           user.params = KuzzleUser.content
+
           return kuzzle.getMyRightsPromise()
         })
         .then(rights => {
           user.rights = rights
+          commit(types.SET_CURRENT_USER, user)
+          commit(types.SET_TOKEN_VALID, true)
 
-          setCurrentUser(store, user)
-          setTokenValid(store, true)
-
-          return Promise.resolve(user)
+          resolve()
+        })
+        .catch(error => {
+          reject(new Error(error.message))
         })
     })
-    .catch(error => Promise.reject(new Error(error.message)))
-}
+  },
+  [types.LOGIN_BY_TOKEN] ({commit}, data) {
+    let user = SessionUser()
+    if (!data.token) {
+      setTokenToCurrentEnvironment(null)
+      commit(types.SET_CURRENT_USER, SessionUser())
+      commit(types.SET_TOKEN_VALID, false)
+      kuzzle.unsetJwtToken()
+      return Promise.resolve(user)
+    }
 
-export const checkFirstAdmin = (store) => {
-  return kuzzle
-    .queryPromise({controller: 'admin', action: 'adminExists'}, {})
-    .then(res => {
-      if (!res.result.exists) {
-        store.dispatch(SET_ADMIN_EXISTS, false)
+    return kuzzle.checkTokenPromise(data.token)
+      .then(res => {
+        if (!res.valid) {
+          commit(types.SET_CURRENT_USER, SessionUser())
+          commit(types.SET_TOKEN_VALID, false)
+          setTokenToCurrentEnvironment(null)
+          kuzzle.unsetJwtToken()
+          return Promise.resolve(SessionUser())
+        }
+
+        kuzzle.setJwtToken(data.token)
+        setTokenToCurrentEnvironment(data.token)
+        return kuzzle.whoAmIPromise()
+          .then(KuzzleUser => {
+            user.id = KuzzleUser.id
+            user.params = KuzzleUser.content
+            return kuzzle.getMyRightsPromise()
+          })
+          .then(rights => {
+            user.rights = rights
+
+            commit(types.SET_CURRENT_USER, user)
+            commit(types.SET_TOKEN_VALID, true)
+
+            return Promise.resolve(user)
+          })
+      })
+      .catch(error => Promise.reject(new Error(error.message)))
+  },
+  [types.CHECK_FIRST_ADMIN] ({commit}) {
+    return kuzzle
+      .queryPromise({controller: 'admin', action: 'adminExists'}, {})
+      .then(res => {
+        if (!res.result.exists) {
+          commit(types.SET_ADMIN_EXISTS, false)
+          return Promise.resolve()
+        }
+
+        commit(types.SET_ADMIN_EXISTS, true)
         return Promise.resolve()
-      }
-
-      store.dispatch(SET_ADMIN_EXISTS, true)
-      return Promise.resolve()
-    })
-    .catch(error => Promise.reject(new Error(error.message)))
+      })
+      .catch(error => Promise.reject(new Error(error.message)))
+  },
+  [types.DO_LOGOUT] ({commit}) {
+    kuzzle.logout()
+    kuzzle.unsetJwtToken()
+    setTokenToCurrentEnvironment(null)
+    commit(types.SET_CURRENT_USER, SessionUser())
+    commit(types.SET_TOKEN_VALID, false)
+  }
 }
-
-export const setFirstAdmin = (store, exists) => {
-  store.dispatch(SET_ADMIN_EXISTS, exists)
-}
-
-export const doLogout = (store) => {
-  kuzzle.logout()
-  kuzzle.unsetJwtToken()
-  setTokenToCurrentEnvironment(null)
-  setCurrentUser(store, SessionUser())
-  setTokenValid(store, false)
-  router.go({name: 'Login'})
-}
+// export const setTokenValid = (store, isValid) => {
+//   store.commit(SET_TOKEN_VALID, isValid)
+// }
+//
+// export const setCurrentUser = (store, user) => {
+//   store.commit(SET_CURRENT_USER, user)
+// }
+//
+// export const setFirstAdmin = (store, exists) => {
+//   store.commit(SET_ADMIN_EXISTS, exists)
+// }

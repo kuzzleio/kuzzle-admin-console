@@ -2,20 +2,20 @@
   <div class="nav">
     <ul>
       <li :class="{active: isRouteActive('DataDocumentsList')}">
-        <a href="#!" v-link="{name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
+        <router-link to="{name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
           Browse
-        </a>
+        </router-link>
       </li>
       <li :class="{active: isRouteActive('DataCollectionWatch')}">
-        <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}}">
+        <a href="#!" to="{name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}}">
           Watch
         </a>
       </li>
       <li :class="{active: isRouteActive('DataCreateDocument')}">
-        <a v-if="canCreateDocument(selectedIndex, selectedCollection)"
-          href="#!" v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
+        <router-link v-if="canCreateDocument(selectedIndex, selectedCollection)"
+          href="#!" to="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
           Create a document
-        </a>
+        </router-link>
         <a v-if="!canCreateDocument(selectedIndex, selectedCollection)"
            class="disabled"
            title="You are not allowed to create a document in this collection">

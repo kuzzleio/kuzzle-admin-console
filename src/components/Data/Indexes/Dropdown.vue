@@ -1,15 +1,9 @@
 <template>
   <span>
-    <dropdown :id="index" :class="class">
-      <li><a v-link="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</a></li>
-      <!--<li><a href="#!">View profiles</a></li>-->
+    <dropdown :id="index" :myclass="myclass">
+      <li><router-link to="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</router-link></li>
       <li class="divider"></li>
-      <!--<li><a href="#!">Edit</a></li>-->
-      <!--<li><a href="#!">Clone</a></li>-->
-      <!--<li><a href="#!">Duplicate</a></li>-->
-      <!--<li><a href="#!">Rename</a></li>-->
-      <!--<li><a href="#!" class="red-text">Truncate</a></li>-->
-      <li><a href="#!" @click.prevent="$broadcast('modal-open', 'index-delete-' + index)" class="red-text">Delete</a></li>
+      <li><a href="#!" @click.prevent="$emit('modal-open', 'index-delete-' + index)" class="red-text">Delete</a></li>
     </dropdown>
 
     <modal-delete :id="'index-delete-' + index" :index="index"></modal-delete>
@@ -25,7 +19,7 @@
     name: 'IndexDropdown',
     props: {
       index: String,
-      'class': String
+      myclass: String
     },
     components: {
       Dropdown,

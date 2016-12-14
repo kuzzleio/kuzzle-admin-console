@@ -32,21 +32,21 @@
           .security
           .updateRolePromise(this.$route.params.id, content, {replaceIfExist: true})
           .then(() => {
-            this.$router.go({name: 'SecurityRolesList'})
+            this.$router.push({name: 'SecurityRolesList'})
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$emit('toast', e.message, 'error')
           })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
+          this.$router.push(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityRolesList'})
+          this.$router.push({name: 'SecurityRolesList'})
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
         .getRolePromise(this.$route.params.id)
@@ -55,8 +55,8 @@
           this.content = role.content
         })
         .catch((e) => {
-          this.$dispatch('toast', e.message, 'error')
-          this.$router.go({name: 'SecurityRolesCreate'})
+          this.$emit('toast', e.message, 'error')
+          this.$router.push({name: 'SecurityRolesCreate'})
         })
     }
   }

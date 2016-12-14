@@ -8,14 +8,16 @@ import {
   canEditProfile
 } from '../../services/userAuthorization'
 
-export default {
-  '/users': {
+export default [
+  {
+    path: '/users',
     name: 'SecurityUsersList',
     component (resolve) {
       require(['../../components/Security/Users/List'], resolve)
     }
   },
-  '/users/create': {
+  {
+    path: '/users/create',
     name: 'SecurityUsersCreate',
     component (resolve) {
       if (!canCreateUser()) {
@@ -25,7 +27,8 @@ export default {
       }
     }
   },
-  '/users/:id': {
+  {
+    path: '/users/:id',
     name: 'SecurityUsersUpdate',
     component (resolve) {
       if (!canEditUser()) {
@@ -35,13 +38,15 @@ export default {
       }
     }
   },
-  '/profiles': {
+  {
+    path: '/profiles',
     name: 'SecurityProfilesList',
     component (resolve) {
       require(['../../components/Security/Profiles/List'], resolve)
     }
   },
-  '/profiles/create': {
+  {
+    path: '/profiles/create',
     name: 'SecurityProfilesCreate',
     component (resolve) {
       if (!canCreateProfile()) {
@@ -51,7 +56,8 @@ export default {
       }
     }
   },
-  '/profiles/:id': {
+  {
+    path: '/profiles/:id',
     name: 'SecurityProfilesUpdate',
     component (resolve) {
       if (!canEditProfile()) {
@@ -61,13 +67,15 @@ export default {
       }
     }
   },
-  '/roles': {
+  {
+    path: '/roles',
     name: 'SecurityRolesList',
     component (resolve) {
       require(['../../components/Security/Roles/List'], resolve)
     }
   },
-  '/roles/create': {
+  {
+    path: '/roles/create',
     name: 'SecurityRolesCreate',
     component (resolve) {
       if (!canCreateRole()) {
@@ -77,7 +85,8 @@ export default {
       }
     }
   },
-  '/roles/:id': {
+  {
+    path: '/roles/:id',
     name: 'SecurityRolesUpdate',
     component (resolve) {
       if (!canEditRole()) {
@@ -87,4 +96,4 @@ export default {
       }
     }
   }
-}
+]

@@ -32,21 +32,21 @@
           .security
           .updateProfilePromise(this.$route.params.id, content, {replaceIfExist: true})
           .then(() => {
-            this.$router.go({name: 'SecurityProfilesList'})
+            this.$router.push({name: 'SecurityProfilesList'})
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$emit('toast', e.message, 'error')
           })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityProfilesList'})
+          this.$router.push({name: 'SecurityProfilesList'})
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
         .getProfilePromise(this.$route.params.id)
@@ -55,8 +55,8 @@
           this.content = profile.content
         })
         .catch((e) => {
-          this.$dispatch('toast', e.message, 'error')
-          this.$router.go({name: 'SecurityProfilesCreate'})
+          this.$emit('toast', e.message, 'error')
+          this.$router.push({name: 'SecurityProfilesCreate'})
         })
     }
   }

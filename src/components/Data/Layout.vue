@@ -19,7 +19,7 @@
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
-  import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
+  import * as types from '../../vuex/modules/data/mutation-types'
   import {selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Leftnav/Treeview'
 
@@ -28,18 +28,12 @@
     components: {
       Treeview
     },
-    methods: {
-      canSearchIndex
-    },
-    ready () {
+    mounted () {
       if (this.canSearchIndex()) {
         this.listIndexesAndCollections()
       }
     },
     vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
       getters: {
         selectedIndex,
         selectedCollection
@@ -47,8 +41,8 @@
     },
     watch: {
       'selectedIndex': function () {
-        if (this.canSearchIndex()) {
-          this.listIndexesAndCollections()
+        if (canSearchIndex()) {
+          this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
         }
       }
     }

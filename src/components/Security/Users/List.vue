@@ -23,14 +23,14 @@
               Here you'll see the kuzzle's users<br/>
               <em>Currently there is no user.</em>
             </p>
-            <button :disabled="!canCreateUser()"
+            <router-link :disabled="!canCreateUser()"
                     :class="!canCreateUser() ? 'disabled' : ''"
-                    title="{{!canCreateUser() ? 'You are not allowed to create new users' : ''}}"
-                    v-link="{name: 'SecurityUsersCreate'}"
+                    :title="!canCreateUser() ? 'You are not allowed to create new users' : ''"
+                    to="{name: 'SecurityUsersCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a user
-            </button>
+            </router-link>
           </div>
         </div>
       </div>
@@ -53,14 +53,14 @@
     },
     methods: {
       createUser () {
-        this.$router.go({name: 'SecurityUsersCreate'})
+        this.$router.push({name: 'SecurityUsersCreate'})
       },
       canSearchUser,
       canCreateUser
     },
     route: {
       data () {
-        this.$broadcast('crudl-refresh-search')
+        this.$emit('crudl-refresh-search')
       }
     }
   }

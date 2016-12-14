@@ -101,18 +101,18 @@
     },
     methods: {
       setCurrentPage (currentPage) {
-        this.$dispatch('change-page', (currentPage * this.size) - this.size)
+        this.$emit('change-page', (currentPage * this.size) - this.size)
       },
       previousPage () {
         if (this.currentPage > 1) {
           this.currentPage--
-          this.$dispatch('change-page', ((this.currentPage - 1) * this.size) - this.size)
+          this.$emit('change-page', ((this.currentPage - 1) * this.size) - this.size)
         }
       },
       nextPage () {
         if (this.currentPage < this.pages) {
           this.currentPage++
-          this.$dispatch('change-page', ((this.currentPage + 1) * this.size) - this.size)
+          this.$emit('change-page', ((this.currentPage + 1) * this.size) - this.size)
         }
       }
     }

@@ -2,7 +2,7 @@
   <div class="md-tabs">
     <ul class="tabs">
       <slot></slot>
-      <div v-el:indicator class="indicator"></div>
+      <div ref="indicator" class="indicator"></div>
     </ul>
 
     <slot name="contents"></slot>
@@ -11,6 +11,7 @@
 
 <script>
   import Velocity from 'velocity-animate'
+  import Vue from 'vue'
 
   // translated from http://appcomponents.org/material-components/#!/tabs/sources
   export default {
@@ -21,7 +22,7 @@
       },
       isDisplayed () {
         if (this.isDisplayed) {
-          this.$broadcast('tab-select', this.active)
+          this.$emit('tab-select', this.active)
         }
       }
     },
@@ -61,7 +62,7 @@
           return
         }
 
-        let indicator = this.$els.indicator
+        let indicator = this.$refs.indicator
 
         let index = this.activeTab.index
         let tabs = this.activeTab.$el.parentElement
@@ -74,16 +75,18 @@
         }
       },
       moveIndicator (newLeft, newRight) {
-        let indicator = this.$els.indicator
+        let indicator = this.$refs.indicator
         Velocity(indicator, {left: newLeft, right: newRight}, {duration: 300, queue: false, easing: 'easeOutQuad'})
       }
     },
-    ready () {
-      if (this.active) {
-        this.$broadcast('tab-select', this.active)
-      }
+    mounted () {
+      Vue.nextTick(() => {
+        if (this.active) {
+          this.$emit('tab-select', this.active)
+        }
 
-      window.addEventListener('resize', this.resizeIndicator)
+        window.addEventListener('resize', this.resizeIndicator)
+      })
     },
     destroyed () {
       window.removeEventListener('resize', this.resizeIndicator)

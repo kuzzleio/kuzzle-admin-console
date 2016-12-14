@@ -83,7 +83,7 @@
               .updateDocumentPromise(this.documentToEditId, this.newDocument)
               .then(() => {
                 kuzzle.refreshIndex(this.index)
-                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch((err) => {
                 this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
@@ -95,9 +95,9 @@
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
+          this.$router.push(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
       },
       fetch () {
@@ -107,11 +107,11 @@
           .fetchDocumentPromise(this.documentToEditId)
           .then(res => {
             this.setNewDocument(res.content)
-            this.$broadcast('document-create::fill', res.content)
+            this.$emit('document-create::fill', res.content)
             return null
           })
           .catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+            this.$emit('toast', err.message, 'error')
           })
       }
     },
@@ -124,7 +124,7 @@
         documentToEditId
       }
     },
-    ready () {
+    mounted () {
       this.fetch()
       kuzzle
         .dataCollectionFactory(this.collection, this.index)

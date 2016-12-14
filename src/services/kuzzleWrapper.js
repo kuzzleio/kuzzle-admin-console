@@ -1,6 +1,6 @@
 import kuzzle from './kuzzle'
 import Promise from 'bluebird'
-import { setTokenValid } from '../vuex/modules/auth/actions'
+import * as types from '../vuex/modules/auth/mutation-types'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -26,6 +26,7 @@ export const connectToEnvironment = (environment) => {
   if (kuzzle.state === 'connected') {
     kuzzle.disconnect()
   }
+
   kuzzle.host = environment.host
   kuzzle.ioPort = environment.ioPort
   kuzzle.wsPort = environment.wsPort
@@ -41,7 +42,7 @@ export const initStoreWithKuzzle = (store) => {
         case 'Token expired':
         case 'Invalid token':
         case 'Json Web Token Error':
-          setTokenValid(store, false)
+          store.commit(types.SET_TOKEN_VALID, false)
           break
       }
     }

@@ -1,20 +1,22 @@
 <template>
-  <main-menu></main-menu>
+  <div>
+    <main-menu></main-menu>
 
-  <main class="loader">
-    <router-view></router-view>
-  </main>
+    <main class="loader">
+      <router-view></router-view>
+    </main>
 
-  <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false">
-    <h5>Your session has expired</h5>
-    <h6>Please, relogin</h6>
-    <login-form :on-login="onLogin"></login-form>
-  </modal>
+    <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false">
+      <h5>Your session has expired</h5>
+      <h6>Please, relogin</h6>
+      <login-form :on-login="onLogin"></login-form>
+    </modal>
 
-  <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false">
-    <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
-    <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
-  </modal>
+    <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false">
+      <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
+      <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
+    </modal>
+  </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -72,21 +74,21 @@
     },
     methods: {
       onLogin () {
-        this.$broadcast('modal-close', 'tokenExpired')
+        this.$emit('modal-close', 'tokenExpired')
       }
     },
     watch: {
       tokenValid (valid) {
         if (!valid) {
-          this.$broadcast('modal-open', 'tokenExpired')
+          this.$emit('modal-open', 'tokenExpired')
         }
       },
       kuzzleIsConnected (isConnected) {
         if (!isConnected) {
-          this.$broadcast('modal-open', 'kuzzleDisconnected')
+          this.$emit('modal-open', 'kuzzleDisconnected')
           return
         }
-        this.$broadcast('modal-close', 'kuzzleDisconnected')
+        this.$emit('modal-close', 'kuzzleDisconnected')
       }
     }
   }

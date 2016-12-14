@@ -5,52 +5,26 @@
 
         <div class="col s11 truncate">
           <!-- index browse link -->
-          <a
+          <router-link
             class="fluid-hover"
-            v-link="{name: 'DataIndexSummary', params: {index: index}}"
+            to="{name: 'DataIndexSummary', params: {index: index}}"
             href="#!">
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
             <span class="name">{{index}}</span>
-          </a>
+          </router-link>
         </div>
 
         <div class="col s1 right-align">
           <!-- actions related to the index -->
           <index-dropdown :index="index" class="icon-small icon-black"></index-dropdown>
         </div>
-
-
       </div>
 
-      <!-- index summary, can be removed in first time -->
-      <!--<div class="card-content">-->
-        <!--&lt;!&ndash;<div class="row">-->
-          <!--<div class="col s6 truncate">Total documents</div>-->
-          <!--<div class="col s6 right-align">1 567</div>-->
-        <!--</div>-->
-        <!--<div class="row">-->
-          <!--<div class="col s6 truncate">Index Size</div>-->
-          <!--<div class="col s6 right-align">64 mb</div>-->
-        <!--</div>&ndash;&gt;-->
-        <!--<div class="row">-->
-          <!--<div class="col s5 truncate">Auto refresh</div>-->
-          <!--<div class="col s7 right-align">-->
-            <!--<div class="switch">-->
-              <!--<label>-->
-                <!--<input type="checkbox">-->
-                <!--<span class="lever"></span>-->
-              <!--</label>-->
-            <!--</div>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-
       <div class="card-action right-align">
-        <a class="btn btn-tiny"
-           href="#"
+        <router-link class="btn btn-tiny"
            v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
            :class="{unauthorized: !canCreateCollection(index)}"
-           v-link="canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}">Create a collection</a>
+           to="{canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}}">Create a collection</router-link>
       </div>
     </div>
   </div>

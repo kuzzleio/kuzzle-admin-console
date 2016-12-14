@@ -27,14 +27,14 @@
               There is no persistent document in here because the collection <strong>{{collection}}</strong> is currently realtime-only.<br />
               <em>You can edit the collection and persist it.</em>
             </p>
-            <button :disabled="!canEditCollection(index, collection)"
-                    title="{{!canEditCollection(index, collection) ? 'You are not allowed to edit this collection' : ''}}"
+            <router-link :disabled="!canEditCollection(index, collection)"
+                    :title="!canEditCollection(index, collection) ? 'You are not allowed to edit this collection' : ''"
                     :class="!canEditCollection(index, collection) ? 'disabled' : ''"
-                    v-link="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
+                    to="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-pencil left"></i>
               Edit the collection
-            </button>
+            </router-link>
           </div>
         </div>
 
@@ -47,14 +47,14 @@
               Here you'll see the documents in <strong>{{collection}}</strong> <br/>
               <em>Currently there is no document in this collection.</em>
             </p>
-            <button :disabled="!canCreateDocument(index, collection)"
-                    v-link="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
+            <router-link :disabled="!canCreateDocument(index, collection)"
+                    to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light"
                     :class="!canCreateDocument(index, collection) ? 'disabled' : ''"
-                    title="{{!canCreateDocument(index, collection) ? 'You are not allowed to create documents in this collection' : ''}}">
+                    :title="!canCreateDocument(index, collection) ? 'You are not allowed to create documents in this collection' : ''">
               <i class="fa fa-plus-circle left"></i>
               Create a document
-            </button>
+            </router-link>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
     },
     methods: {
       createDocument () {
-        this.$router.go({name: 'DataCreateDocument'})
+        this.$router.push({name: 'DataCreateDocument'})
       },
       canSearchIndex,
       canSearchDocument,
@@ -122,7 +122,7 @@
       data () {
         // let Vue change props before broadcast the event
         setTimeout(() => {
-          this.$broadcast('crudl-refresh-search')
+          this.$emit('crudl-refresh-search')
         }, 0)
       }
     }

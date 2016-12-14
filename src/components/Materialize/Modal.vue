@@ -22,6 +22,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
   const ESC_KEY = 27
 
@@ -43,18 +44,13 @@
         'default': true,
         required: false
       },
-      bottom: Boolean
+      bottom: Boolean,
+      isOpen: Boolean
     },
     events: {
       'modal-open': function (id) {
         if (this.id === id) {
           this.open()
-        }
-      },
-      'modal-close': function (id) {
-        if (this.id === id) {
-          this.close()
-          return true
         }
       }
     },
@@ -65,6 +61,13 @@
         } else {
           window.document.body.style.overflow = 'visible'
         }
+      },
+      isOpen (open) {
+        if (open) {
+          this.open()
+        } else {
+          this.close()
+        }
       }
     },
     data () {
@@ -72,8 +75,10 @@
         active: false
       }
     },
-    ready () {
-      window.document.addEventListener('keydown', this.handleEsc)
+    mounted () {
+      Vue.nextTick(() => {
+        window.document.addEventListener('keydown', this.handleEsc)
+      })
     },
     destroyed () {
       window.document.removeEventListener('keydown', this.handleEsc)
@@ -107,6 +112,13 @@
       },
       close () {
         this.active = false
+      },
+      closeModal (id) {
+        console.log('##', this.id, id)
+        if (this.id === id) {
+          this.close()
+          return true
+        }
       }
     }
   }

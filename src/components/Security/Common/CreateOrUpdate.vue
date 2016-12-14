@@ -18,7 +18,7 @@
         </div>
 
         <json-editor
-          v-ref:jsoneditor
+          ref="jsoneditor"
           class="pre_ace"
           :content="content">
         </json-editor>
@@ -35,7 +35,7 @@
           <div class="col s7 m8 l9" v-if="error">
             <p class="error card red-color" v-if="error">
               <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              {{{error}}}
+              <p v-html="error"></p>
             </p>
           </div>
         </div>
@@ -89,13 +89,13 @@
     },
     methods: {
       dismissError () {
-        this.$dispatch('security-create::reset-error')
+        this.$emit('security-create::reset-error')
       },
       create () {
-        this.$dispatch('security-create::create', this.id, this.$refs.jsoneditor.getJson())
+        this.$emit('security-create::create', this.id, this.$refs.jsoneditor.getJson())
       },
       cancel () {
-        this.$dispatch('security-create::cancel')
+        this.$emit('security-create::cancel')
       }
     }
   }

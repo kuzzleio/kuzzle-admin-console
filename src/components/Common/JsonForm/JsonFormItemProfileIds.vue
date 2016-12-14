@@ -46,7 +46,7 @@
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
         .searchProfilesPromise({})

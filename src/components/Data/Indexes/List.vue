@@ -6,7 +6,7 @@
       <div class="col s12 m10 l8">
 
         <!-- No index view -->
-        <div class="card-panel" v-if="canSearchIndex() && !indexes.length">
+        <div class="card-panel" v-if="canSearchIndex() && !$state.indexes">
           <div class="row valign-bottom empty-set">
             <div class="col s1 offset-s1">
               <i class="fa fa-6x fa-database grey-text text-lighten-1" aria-hidden="true"></i>
@@ -16,7 +16,7 @@
                 Here you'll see the kuzzle's indexes<br/>
                 <em>Currently there is no index.</em>
               </p>
-              <button @click.prevent="$broadcast('modal-open', 'index-create')"
+              <button @click.prevent="$emit('modal-open', 'index-create')"
                       v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
                       :class="{unauthorized: !canCreateIndex()}"
                       class="btn primary waves-effect waves-light">
@@ -27,12 +27,12 @@
           </div>
         </div>
 
-        <div class="row actions" v-if="indexes.length">
+        <div class="row actions" v-if="$state.indexes.length">
           <div class="col s9">
             <a class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
                :class="{unauthorized: !canCreateIndex()}"
-               @click.prevent="canCreateIndex() && $broadcast('modal-open', 'index-create')">
+               @click.prevent="canCreateIndex() && $emit('modal-open', 'index-create')">
               <i class="fa fa-plus-circle left"></i>
               <span>Create an index</span>
             </a>
@@ -40,7 +40,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="indexes.length > 1">
+            <div class="input-field left-align" v-if="$state.indexes.length > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
@@ -77,7 +77,7 @@
           <div v-if="canSearchIndex()">
             <index-boxed
               :index="indexName"
-              v-for="indexName in indexes | filterBy filter | orderBy '$key'">
+              v-for="(indexName, key) in orderedFilteredIndices('key')">
             </index-boxed>
           </div>
           <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
@@ -116,6 +116,7 @@
   import Title from '../../../directives/title.directive'
   import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canCreateIndex} from '../../../services/userAuthorization'
+  import _ from 'lodash'
 
   export default {
     name: 'IndexesList',
@@ -144,7 +145,18 @@
     },
     computed: {
       countIndexForFilter () {
-        return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
+        console.log('##', this.indexesAndCollections)
+        return this.indexesAndCollections.filter(o => {
+          console.log('##', o)
+          return o.indexOf(this.filter)
+        }).length
+        // return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
+      },
+      filteredIndices () {
+        return this.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
+      },
+      orderedFilteredIndices (order) {
+        _.orderBy(this.filteredIndices, order)
       }
     }
   }

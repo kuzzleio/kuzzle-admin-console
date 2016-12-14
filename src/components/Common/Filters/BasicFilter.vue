@@ -12,8 +12,9 @@
                 <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute" @blur="updateFilter">
               </div>
               <div class="col s2">
+                <!-- TODO make a component -->
                 <select v-m-select="filter.operator" @blur="updateFilter">
-                  <option v-for="(identifier, label) in availableFilters" value="{{identifier}}">{{label}}</option>
+                  <option v-for="(identifier, label) in availableFilters" :value="identifier">{{label}}</option>
                 </select>
               </div>
               <div class="col s3">
@@ -123,9 +124,9 @@
             sorting = null
           }
 
-          this.$dispatch('filters-basic-search', filters, sorting)
+          this.$emit('filters-basic-search', filters, sorting)
         } else {
-          this.$dispatch('filters-basic-search', filters)
+          this.$emit('filters-basic-search', filters)
         }
       },
       resetBasicSearch () {
@@ -166,7 +167,7 @@
         this.updateFilter()
       }
     },
-    ready () {
+    mounted () {
       this.filters.basic = this.basicFilter || [[{...emptyBasicFilter}]]
       this.filters.sorting = this.sorting || {...emptySorting}
 

@@ -47,15 +47,15 @@
                   @click.prevent="create",
                   :class="!displayCreate ? 'disabled' : ''"
                   :disabled="!displayCreate"
-                  title="{{displayCreate ? '' : 'You are not allowed to create a document in this collection'}}">
+                  :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'">
             <i class="fa fa-plus-circle left"></i>Create
           </button>
 
           <button class="btn btn-small waves-effect waves-light"
                   :class="displayBulkDelete ? 'red-color' : 'disabled'"
                   :disabled="!displayBulkDelete"
-                  @click="$broadcast('modal-open', 'bulk-delete')"
-                  title="{{displayBulkDelete ? '' : 'You need to select at least one element'}}">
+                  @click="$emit('modal-open', 'bulk-delete')"
+                  :title="displayBulkDelete ? '' : 'You need to select at least one element'">
             <i class="fa fa-minus-circle left"></i>
             Delete
           </button>
@@ -82,7 +82,7 @@
 
     <modal id="bulk-delete">
       <h4>Document deletion</h4>
-      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'document'}}?</p>
+      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralizeDocument}}?</p>
 
       <span slot="footer">
             <button
@@ -91,7 +91,7 @@
               @click="confirmBulkDelete()">
                 I'm sure!
             </button>
-            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
+            <button href="#" class="btn-flat" @click.prevent="$emit('modal-close', 'bulk-delete')">
                 Cancel
             </button>
           </span>
@@ -108,7 +108,7 @@
               @click="confirmSingleDelete(documentIdToDelete)">
                 I'm sure!
             </button>
-            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
+            <button href="#" class="btn-flat" @click.prevent="$emit('modal-close', 'single-delete')">
                 Cancel
             </button>
           </span>
@@ -175,72 +175,80 @@
         documentIdToDelete: ''
       }
     },
+    filters: {
+      pluralizeDocument (count) {
+        if (count > 1) {
+          return 'documents'
+        }
+        return 'document'
+      }
+    },
     methods: {
       create () {
-        this.$dispatch('create-clicked')
+        this.$emit('create-clicked')
       },
       changePage (from) {
-        this.$router.go({query: {...this.$route.query, from}})
+        this.$router.push({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
         deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
-            this.$broadcast('modal-close', 'bulk-delete')
+            this.$emit('modal-close', 'bulk-delete')
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$emit('toast', e.message, 'error')
           })
       },
       confirmSingleDelete (id) {
         deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
-            this.$broadcast('modal-close', 'single-delete')
+            this.$emit('modal-close', 'single-delete')
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$emit('toast', e.message, 'error')
           })
       },
       quickSearch (searchTerm) {
-        this.$router.go({query: {searchTerm, from: 0}})
+        this.$router.push({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
         if (!filters && !sorting) {
-          this.$router.go({query: {basicFilter: null, sorting: null, from: 0}})
+          this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
           return
         }
 
         let basicFilter = JSON.stringify(filters)
-        this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
+        this.$router.push({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
       },
       rawSearch (filters) {
         if (!filters || Object.keys(filters).length === 0) {
-          this.$router.go({query: {rawFilter: null, from: 0}})
+          this.$router.push({query: {rawFilter: null, from: 0}})
           return
         }
 
         let rawFilter = JSON.stringify(filters)
-        this.$router.go({query: {rawFilter, from: 0}})
+        this.$router.push({query: {rawFilter, from: 0}})
       },
       refreshSearch () {
-        // If we are already on the page, the $router.go function doesn't trigger the route.data() function of top level components...
+        // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
         // https://github.com/vuejs/vue-router/issues/296
         if (this.$route.query.from === '0') {
-          this.$dispatch('crudl-refresh-search')
+          this.$emit('crudl-refresh-search')
           return
         }
 
-        this.$router.go({query: {...this.$route.query, from: 0}})
+        this.$router.push({query: {...this.$route.query, from: 0}})
       },
       dispatchToggle () {
-        this.$dispatch('toggle-all')
+        this.$emit('toggle-all')
       }
     },
     events: {
       'delete-document' (id) {
         this.documentIdToDelete = id
-        this.$broadcast('modal-open', 'single-delete')
+        this.$emit('modal-open', 'single-delete')
       }
     }
   }

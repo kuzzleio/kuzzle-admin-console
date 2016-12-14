@@ -36,13 +36,12 @@
 
         <div class="row actions" v-if="collectionCount">
           <div class="col s9">
-            <a class="btn waves-effect waves-light primary"
-               href="#!"
+            <router-link class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                :class="{unauthorized: !canCreateCollection(index)}"
-               v-link="canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}">
+               to="{name: canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}}">
               <i class="fa fa-plus-circle left"></i>Create a collection
-            </a>
+            </router-link>
           </div>
 
           <!-- filter must be hidden when there is no indexes -->
@@ -69,13 +68,13 @@
                   Here, you'll see the collections in <strong>{{index}}</strong>. <br/>
                   <em>There are currently no collection here.</em>
                 </p>
-                <button v-link="{name: 'DataCreateCollection', params: {index: index}}"
+                <router-link to="{name: 'DataCreateCollection', params: {index: index}}"
                         v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                         :class="{unauthorized: !canCreateCollection(index)}"
                         class="btn primary waves-effect waves-light">
                   <i class="fa fa-plus-circle left"></i>
                   Create a collection
-                </button>
+                </router-link>
               </div>
             </div>
           </div>
@@ -97,14 +96,14 @@
 
           <div v-if="canSearchCollection(index)">
             <collection-boxed
-              v-for="collection in storedCollections | filterBy filter | orderBy 1"
+              v-for="collection in orderedFilteredStoredCollections(1)"
               :index="index"
               :collection="collection"
               :is-realtime="false">
             </collection-boxed>
 
             <collection-boxed
-                v-for="collection in realtimeCollections | filterBy filter | orderBy 1"
+                v-for="collection in orderedFilteredRealtimeCollections(1)"
                 :index="index"
                 :collection="collection"
                 :is-realtime="true">
@@ -149,9 +148,9 @@
   import IndexDropdown from './Dropdown'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import CollectionBoxed from '../Collections/Boxed'
-  import {indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
+  import _ from 'lodash'
 
   export default {
     name: 'CollectionsList',
@@ -172,52 +171,62 @@
     directives: {
       Title
     },
-    vuex: {
-      getters: {
-        indexesAndCollections
-      }
-    },
     data () {
       return {
         filter: ''
       }
     },
+    created () {
+      console.log('##', this.$store.getters)
+    },
     computed: {
       collectionCount () {
-        if (!this.indexesAndCollections[this.index]) {
+        if (!this.$store.getters.indexesAndCollections[this.index]) {
           return 0
         }
 
-        return this.indexesAndCollections[this.index].stored.length +
-          this.indexesAndCollections[this.index].realtime.length
+        return this.$store.getters.indexesAndCollections[this.index].stored.length +
+          this.$store.getters.indexesAndCollections[this.index].realtime.length
       },
       isCollectionForFilter () {
-        if (!this.indexesAndCollections[this.index]) {
+        if (!this.$store.getters.indexesAndCollections[this.index]) {
           return
         }
 
         return this.$options.filters.filterBy(
-            this.indexesAndCollections[this.index].stored,
+            this.$store.getters.indexesAndCollections[this.index].stored,
             this.filter
           ).length > 0 ||
           this.$options.filters.filterBy(
-            this.indexesAndCollections[this.index].realtime,
+            this.$store.getters.indexesAndCollections[this.index].realtime,
             this.filter
           ).length > 0
       },
       storedCollections () {
-        if (!this.indexesAndCollections[this.index]) {
+        if (!this.$store.getters.indexesAndCollections[this.index]) {
           return []
         }
 
-        return this.indexesAndCollections[this.index].stored
+        return this.$store.getters.indexesAndCollections[this.index].stored
       },
       realtimeCollections () {
-        if (!this.indexesAndCollections[this.index]) {
+        if (!this.$store.getters.indexesAndCollections[this.index]) {
           return []
         }
 
-        return this.indexesAndCollections[this.index].realtime
+        return this.$store.getters.indexesAndCollections[this.index].realtime
+      },
+      filteredStoredCollections () {
+        return this.storedCollections.filter(col => col.indexOf(this.filter) !== -1)
+      },
+      filteredRealtimeCollections () {
+        return this.realtimeCollections.filter(col => col.indexOf(this.filter) !== -1)
+      },
+      orderedFilteredStoredCollections (order) {
+        return _.orderBy(this.filteredStoredCollections, order)
+      },
+      orderedFilteredRealtimeCollections (order) {
+        return _.orderBy(this.filteredRealtimeCollections, order)
       }
     }
   }

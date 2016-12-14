@@ -39,14 +39,14 @@
           .createRolePromise(id, content, {replaceIfExist: true})
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityRolesList'})
+            this.$router.push({name: 'SecurityRolesList'})
           })
           .catch((e) => {
             this.error = 'An error occurred while creating role: <br />' + e.message
           })
       },
       cancel () {
-        this.$router.go({name: 'SecurityRolesList'})
+        this.$router.push({name: 'SecurityRolesList'})
       }
     }
   }

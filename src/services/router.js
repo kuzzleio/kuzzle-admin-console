@@ -4,4 +4,4 @@ import createRoutes from '../routes/index'
 
 Vue.use(VueRouter)
 
-export default createRoutes(new VueRouter())
+export default createRoutes(VueRouter)

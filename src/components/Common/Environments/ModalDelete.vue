@@ -28,7 +28,7 @@
         <button
           href="#!"
           class="btn-flat waves-effect waves-grey"
-          @click.prevent="$broadcast('modal-close', 'delete-env')">
+          @click.prevent="$emit('modal-close', 'delete-env')">
             Cancel
         </button>
       </span>
@@ -89,7 +89,7 @@
         if (this.environmentName === this.envConfirmation) {
           deleteEnvironment(this.environmentId)
 
-          this.$broadcast('modal-close', 'delete-env')
+          this.$commit('modal-close', 'delete-env')
         }
       }
     },
