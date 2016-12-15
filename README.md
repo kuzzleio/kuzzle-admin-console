@@ -31,8 +31,9 @@ For installing the Back-office on your own host, follow next steps.
 The easiest way to deploy the Kuzzle stack is by using the `docker-compose.yml` file at the root directory of this project. But you can also create your own `docker-compose` in order to change ports or something else.
 
 ```
+$ wget https://raw.githubusercontent.com/kuzzleio/kuzzle-build/master/docker-compose/backoffice-docker-compose.yml
 $ docker pull kuzzleio/backoffice
-$ BACKOFFICE_PORT=3000 docker-compose up
+$ BACKOFFICE_PORT=3000 docker-compose -f backoffice-docker-compose.yml up
 ```
 
 >Where `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
