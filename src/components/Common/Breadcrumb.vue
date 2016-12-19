@@ -3,7 +3,7 @@
     <ul v-if="$route.path.indexOf('/security') === 0">
       <li>
         <router-link
-           to="{name: 'Security'}">
+           :to="{name: 'Security'}">
           security
         </router-link>
       </li>
@@ -11,7 +11,7 @@
       <li v-if="isRouteActive('SecurityUsersList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link to="{name: 'SecurityUsersList'}">
+        <router-link :to="{name: 'SecurityUsersList'}">
           users
         </router-link>
       </li>
@@ -19,7 +19,7 @@
       <li v-if="isRouteActive('SecurityProfilesList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link to="{name: 'SecurityProfilesList'}">
+        <router-link :to="{name: 'SecurityProfilesList'}">
           profiles
         </router-link>
       </li>
@@ -27,7 +27,7 @@
       <li v-if="isRouteActive('SecurityRolesList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link to="{name: 'SecurityRolesList'}">
+        <router-link :to="{name: 'SecurityRolesList'}">
           roles
         </router-link>
       </li>
@@ -35,7 +35,7 @@
     <ul v-if="$route.path.indexOf('/data') === 0">
       <li>
         <router-link
-           to="{name: 'Data'}">
+           :to="{name: 'Data'}">
           data
         </router-link>
       </li>
@@ -43,7 +43,7 @@
       <li v-if="selectedIndex">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link to="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
+        <router-link :to="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
           {{selectedIndex}}
         </router-link>
       </li>
@@ -52,7 +52,7 @@
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <router-link
-           to="{name: isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}}">
+           :to="{name: isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}}">
           {{selectedCollection}}
         </router-link>
       </li>

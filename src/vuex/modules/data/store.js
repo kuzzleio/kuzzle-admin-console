@@ -1,18 +1,6 @@
 import Vue from 'vue'
-import {
-  RECEIVE_INDEXES_COLLECTIONS,
-  RECEIVE_MAPPING,
-  ADD_NOTIFICATION,
-  EMPTY_NOTIFICATION,
-  ADD_STORED_COLLECTION,
-  ADD_REALTIME_COLLECTION,
-  ADD_INDEX,
-  DELETE_INDEX,
-  SET_PARTIAL_TO_DOCUMENT,
-  UNSET_NEW_DOCUMENT,
-  SET_NEW_DOCUMENT
-} from './mutation-types'
-import * as actions from './actions'
+import * as types from './mutation-types'
+import actions from './actions'
 import * as getters from './getters'
 
 const state = {
@@ -26,20 +14,20 @@ const state = {
 }
 
 const mutations = {
-  [RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
+  [types.RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
     Vue.set(state, 'indexes', Object.keys(indexesAndCollections))
     Vue.set(state, 'indexesAndCollections', indexesAndCollections)
   },
-  [RECEIVE_MAPPING] (state, mapping) {
+  [types.RECEIVE_MAPPING] (state, mapping) {
     state.mapping = mapping
   },
-  [ADD_NOTIFICATION] (state, notification) {
+  [types.ADD_NOTIFICATION] (state, notification) {
     state.notifications.push(notification)
   },
-  [EMPTY_NOTIFICATION] (state) {
+  [types.EMPTY_NOTIFICATION] (state) {
     state.notifications = []
   },
-  [ADD_STORED_COLLECTION] (state, index, collection) {
+  [types.ADD_STORED_COLLECTION] (state, index, collection) {
     if (!state.indexesAndCollections[index]) {
       state.indexes.push(index)
       state.indexesAndCollections[index] = {realtime: [], stored: []}
@@ -47,7 +35,7 @@ const mutations = {
 
     state.indexesAndCollections[index].stored.push(collection)
   },
-  [ADD_REALTIME_COLLECTION] (state, index, collection) {
+  [types.ADD_REALTIME_COLLECTION] (state, index, collection) {
     if (!state.indexesAndCollections[index]) {
       state.indexes.push(index)
       state.indexesAndCollections[index] = {realtime: [], stored: []}
@@ -55,15 +43,15 @@ const mutations = {
 
     state.indexesAndCollections[index].realtime.push(collection)
   },
-  [ADD_INDEX] (state, index) {
+  [types.ADD_INDEX] (state, index) {
     state.indexes.push(index)
     state.indexesAndCollections[index] = {realtime: [], stored: []}
   },
-  [DELETE_INDEX] (state, index) {
+  [types.DELETE_INDEX] (state, index) {
     state.indexes.splice(state.indexes.indexOf(index), 1)
     state.indexesAndCollections[index] = undefined
   },
-  [SET_PARTIAL_TO_DOCUMENT] (state, payload) {
+  [types.SET_PARTIAL_TO_DOCUMENT] (state, payload) {
     let splitted = payload.path.split('.')
 
     // Build an object from a path (path: ['a.b.c.d'] value: 'foo' => {a: {b: {c: {d: 'foo'}}}})
@@ -79,10 +67,10 @@ const mutations = {
       return prev[curr]
     }, state.newDocument)
   },
-  [SET_NEW_DOCUMENT] (state, document) {
+  [types.SET_NEW_DOCUMENT] (state, document) {
     state.newDocument = document
   },
-  [UNSET_NEW_DOCUMENT] (state) {
+  [types.UNSET_NEW_DOCUMENT] (state) {
     state.newDocument = {}
   }
 }
@@ -90,6 +78,6 @@ const mutations = {
 export default {
   state,
   mutations,
-  actions,
-  getters
+  getters,
+  actions
 }

@@ -6,7 +6,7 @@
       <div class="col s12 m10 l8">
 
         <!-- No index view -->
-        <div class="card-panel" v-if="canSearchIndex() && !$state.indexes">
+        <div class="card-panel" v-if="canSearchIndex() && !$store.state.data.indexes.length">
           <div class="row valign-bottom empty-set">
             <div class="col s1 offset-s1">
               <i class="fa fa-6x fa-database grey-text text-lighten-1" aria-hidden="true"></i>
@@ -16,7 +16,7 @@
                 Here you'll see the kuzzle's indexes<br/>
                 <em>Currently there is no index.</em>
               </p>
-              <button @click.prevent="$emit('modal-open', 'index-create')"
+              <button @click.prevent="openModal"
                       v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
                       :class="{unauthorized: !canCreateIndex()}"
                       class="btn primary waves-effect waves-light">
@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <div class="row actions" v-if="$state.indexes.length">
+        <div class="row actions" v-if="$store.state.data.indexes.length">
           <div class="col s9">
             <a class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
@@ -40,7 +40,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="$state.indexes.length > 1">
+            <div class="input-field left-align" v-if="$store.state.data.indexes.length > 1">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
@@ -49,7 +49,7 @@
 
         <div class="row list">
           <!-- Not allowed -->
-          <div class="col s12" v-if="!canSearchIndex()">
+          <div class="col s12" v-if="!canSearchIndex">
             <div class="card-panel unauthorized">
               <div class="card-content">
                 <i class="fa fa-lock left " aria-hidden="true"></i>
@@ -80,7 +80,7 @@
               v-for="(indexName, key) in orderedFilteredIndices('key')">
             </index-boxed>
           </div>
-          <modal-create v-if="canCreateIndex" id="index-create"></modal-create>
+          <modal-create v-if="canCreateIndex" id="index-create" :is-open="isOpen" :close="close"></modal-create>
         </div>
 
       </div>
@@ -115,7 +115,7 @@
   import IndexBoxed from './Boxed'
   import Title from '../../../directives/title.directive'
   import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
-  import {canSearchIndex, canCreateIndex} from '../../../services/userAuthorization'
+  import {canCreateIndex, canSearchIndex} from '../../../services/userAuthorization'
   import _ from 'lodash'
 
   export default {
@@ -130,7 +130,16 @@
     },
     methods: {
       canSearchIndex,
-      canCreateIndex
+      canCreateIndex,
+      orderedFilteredIndices (order) {
+        _.orderBy(this.filteredIndices, order)
+      },
+      openModal () {
+        this.isOpen = true
+      },
+      close () {
+        this.isOpen = false
+      }
     },
     vuex: {
       getters: {
@@ -140,23 +149,28 @@
     },
     data () {
       return {
-        filter: ''
+        filter: '',
+        isOpen: false
       }
     },
     computed: {
       countIndexForFilter () {
-        console.log('##', this.indexesAndCollections)
-        return this.indexesAndCollections.filter(o => {
-          console.log('##', o)
-          return o.indexOf(this.filter)
-        }).length
-        // return this.$options.filters.filterBy(this.indexesAndCollections, this.filter).length
+        if (Object.keys(this.$store.state.data.indexesAndCollections).length) {
+          var res = Object.keys(this.$store.state.data.indexesAndCollections).forEach(key => {
+            return Object.keys(this.$store.state.data.indexesAndCollections[key]).filter(k => {
+              console.log(key, k, this.$store.state.data.indexesAndCollections[key][k])
+              return this.$store.state.data.indexesAndCollections[key][k].indexOf(this.filter) !== -1
+            })
+          })
+          if (res) {
+            return res.length
+          }
+          return 0
+        }
+        return 0
       },
       filteredIndices () {
-        return this.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
-      },
-      orderedFilteredIndices (order) {
-        _.orderBy(this.filteredIndices, order)
+        return Object.keys(this.indexes || []).filter(key => key.indexOf(this.filter) !== -1)
       }
     }
   }

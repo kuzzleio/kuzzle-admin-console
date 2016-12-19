@@ -29,8 +29,8 @@
       Treeview
     },
     mounted () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
+      if (canSearchIndex()) {
+        this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
       }
     },
     vuex: {

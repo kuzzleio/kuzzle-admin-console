@@ -4,7 +4,7 @@ import Promise from 'bluebird'
 import * as types from './mutation-types'
 
 export default {
-  [types.ADD_LOCAL_REALTIME_COLLECTION] (payload) {
+  [types.ADD_LOCAL_REALTIME_COLLECTION] (scope, payload) {
     // eslint-disable-next-line no-undef
     let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
 
@@ -41,6 +41,7 @@ export default {
                 result = splitRealtimeStoredCollections(result)
 
                 dispatch(types.ADD_LOCAL_REALTIME_COLLECTION, {result, index})
+
                 result = dedupeRealtimeCollections(result)
 
                 indexesAndCollections[index] = result

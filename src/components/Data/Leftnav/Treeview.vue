@@ -28,10 +28,10 @@
           <li
             v-for="indexName in orderedFilteredIndices(filter)">
             <index-branch
-              :force-open="indexes.length === 1"
+              :force-open="indexesAndCollection.length === 1"
               :index-name="indexName"
               :route-name="routeName"
-              :collections="indexesAndCollections[indexName]"
+              :collections="indexesAndCollection"
               :current-index="index"
               :filter="filter"
               :current-collection="collection">
@@ -44,7 +44,6 @@
 </template>
 
 <script>
-  import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
   import {filterIndexesByKeyword} from '../../../services/data'
@@ -76,18 +75,16 @@
         if (order) {
           return orderBy(this.filteredIndices, order)
         }
-        return []
+        return this.filteredIndices
       }
     },
     computed: {
       filteredIndices () {
         return this.$store.getters.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
-      }
-    },
-    vuex: {
-      getters: {
-        indexes,
-        indexesAndCollections
+      },
+      indexesAndCollection () {
+        console.log('##', this.$store.state.data.indexesAndCollections)
+        return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : []
       }
     }
   }

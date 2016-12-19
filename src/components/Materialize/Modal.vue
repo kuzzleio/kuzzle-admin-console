@@ -63,6 +63,7 @@
         }
       },
       isOpen (open) {
+        console.log('opening')
         if (open) {
           this.open()
         } else {
