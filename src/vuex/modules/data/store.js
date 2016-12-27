@@ -13,7 +13,7 @@ const state = {
   newDocument: {}
 }
 
-const mutations = {
+export const mutations = {
   [types.RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
     Vue.set(state, 'indexes', Object.keys(indexesAndCollections))
     Vue.set(state, 'indexesAndCollections', indexesAndCollections)

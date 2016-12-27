@@ -6,7 +6,7 @@ const state = {
   routeBeforeRedirect: null
 }
 
-const mutations = {
+export const mutations = {
   [SET_ROUTE_BEFORE_REDIRECT] (state, value) {
     state.routeBeforeRedirect = value
   }
