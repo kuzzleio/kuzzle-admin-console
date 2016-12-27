@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import store from '../../../../../src/vuex/store'
+import store from '../../../../src/vuex/store'
 import Promise from 'bluebird'
 
-let SignupInjector = require('!!vue?inject!../../../../../src/components/Signup')
+let SignupInjector = require('!!vue?inject!../../../../src/components/Signup')
 
 describe('Signup component', () => {
   let Signup

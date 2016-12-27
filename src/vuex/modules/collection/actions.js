@@ -4,7 +4,7 @@ import * as dataTypes from '../data/mutation-types'
 import Promise from 'bluebird'
 
 export default {
-  [types.CREATE_COLLECTION] ({dispatch, commit}, payload) {
+  [types.CREATE_COLLECTION] ({commit}, payload) {
     if (!payload.collectionName) {
       return Promise.reject(new Error('Invalid collection name'))
     }
@@ -20,7 +20,7 @@ export default {
       collections.push({index: payload.index, collection: payload.collectionName})
       // eslint-disable-next-line no-undef
       localStorage.setItem('realtimeCollections', JSON.stringify(payload.collections))
-      dispatch(dataTypes.ADD_REALTIME_COLLECTION, payload.index, payload.collectionName)
+      commit(dataTypes.ADD_REALTIME_COLLECTION, {index: payload.index, name: payload.collectionName})
       return Promise.resolve()
     }
 
