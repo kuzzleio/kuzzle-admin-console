@@ -1,57 +1,54 @@
 import kuzzle from '../../../services/kuzzle'
-import {ADD_STORED_COLLECTION, ADD_REALTIME_COLLECTION} from '../data/mutation-types'
-import { RECEIVE_COLLECTION_DETAIL, RESET_COLLECTION_DETAIL } from './mutation-types'
+import * as types from './mutation-types'
+import * as dataTypes from '../data/mutation-types'
 import Promise from 'bluebird'
 
-export const createCollection = (store, existingCollections, index, collectionName, mapping, isRealTime) => {
-  if (!collectionName) {
-    return Promise.reject(new Error('Invalid collection name'))
-  }
+export default {
+  [types.CREATE_COLLECTION] ({dispatch, commit}, payload) {
+    if (!payload.collectionName) {
+      return Promise.reject(new Error('Invalid collection name'))
+    }
 
-  if (existingCollections.stored.indexOf(collectionName) !== -1 ||
-    existingCollections.realtime.indexOf(collectionName) !== -1) {
-    return Promise.reject(new Error(`Collection "${collectionName}" already exist`))
-  }
+    if (payload.existingCollections.stored.indexOf(payload.collectionName) !== -1 ||
+      payload.existingCollections.realtime.indexOf(payload.collectionName) !== -1) {
+      return Promise.reject(new Error(`Collection "${payload.collectionName}" already exist`))
+    }
 
-  if (isRealTime) {
-    // eslint-disable-next-line no-undef
-    let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-    collections.push({index, collection: collectionName})
-    // eslint-disable-next-line no-undef
-    localStorage.setItem('realtimeCollections', JSON.stringify(collections))
-    store.dispatch(ADD_REALTIME_COLLECTION, index, collectionName)
-    return Promise.resolve()
-  }
+    if (payload.isRealTime) {
+      // eslint-disable-next-line no-undef
+      let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+      collections.push({index: payload.index, collection: payload.collectionName})
+      // eslint-disable-next-line no-undef
+      localStorage.setItem('realtimeCollections', JSON.stringify(payload.collections))
+      dispatch(dataTypes.ADD_REALTIME_COLLECTION, payload.index, payload.collectionName)
+      return Promise.resolve()
+    }
 
-  return kuzzle
-    .dataCollectionFactory(collectionName, index)
-    .dataMappingFactory(mapping || {})
-    .applyPromise()
-    .then(() => {
-      store.dispatch(ADD_STORED_COLLECTION, index, collectionName)
-    })
-    .catch(error => Promise.reject(new Error(error.message)))
-}
-
-export const fetchCollectionDetail = (store, collections, index, collection) => {
-  if (collections.stored.indexOf(collection) !== -1) {
     return kuzzle
-      .dataCollectionFactory(collection, index)
-      .getMappingPromise()
-      .then(result => {
-        store.dispatch(RECEIVE_COLLECTION_DETAIL, collection, result.mapping, false)
+      .dataCollectionFactory(payload.collectionName, payload.index)
+      .dataMappingFactory(payload.mapping || {})
+      .applyPromise()
+      .then(() => {
+        commit(dataTypes.ADD_STORED_COLLECTION, {index: payload.index, name: payload.collectionName})
       })
       .catch(error => Promise.reject(new Error(error.message)))
+  },
+  [types.FETCH_COLLECTION_DETAIL] ({commit}, payload) {
+    if (payload.collections.stored.indexOf(payload.collection) !== -1) {
+      return kuzzle
+        .dataCollectionFactory(payload.collection, payload.index)
+        .getMappingPromise()
+        .then(result => {
+          commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: result.mapping, isRealtimeOnly: false})
+        })
+        .catch(error => Promise.reject(new Error(error.message)))
+    }
+
+    if (payload.collections.realtime.indexOf(payload.collection) !== -1) {
+      commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: {}, isRealtimeOnly: true})
+      return Promise.resolve()
+    }
+
+    return Promise.reject(new Error(`Unknown collection ${payload.collection}`))
   }
-
-  if (collections.realtime.indexOf(collection) !== -1) {
-    store.dispatch(RECEIVE_COLLECTION_DETAIL, collection, {}, true)
-    return Promise.resolve()
-  }
-
-  return Promise.reject(new Error(`Unknown collection ${collection}`))
-}
-
-export const resetCollectionDetail = (store) => {
-  store.dispatch(RESET_COLLECTION_DETAIL)
 }

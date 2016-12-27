@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import {setPartial} from '../../../vuex/modules/data/actions'
+  import {SET_PARTIAL} from '../../../vuex/modules/data/mutation-types'
 
   export default {
     name: 'JsonFormItemNumber',
@@ -56,12 +56,10 @@
     },
     watch: {
       value (v) {
-        this.setPartial(this.fullName, v)
-      }
-    },
-    vuex: {
-      actions: {
-        setPartial
+        this.$store.dispatch(SET_PARTIAL, {path: this.fullName, value: v})
+      },
+      content (v) {
+        this.value = v
       }
     }
   }

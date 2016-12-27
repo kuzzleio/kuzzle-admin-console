@@ -1,18 +1,16 @@
 export default {
   id: 'm-select',
-  update (value) {
-    let $el = $(this.el)
-    let $options = $('option[value=' + value + ']', $el)
+  update (el) {
+    let $options = $('option[value=' + el.value + ']', $(el))
     $options.attr('selected', 'selected')
   },
-  bind () {
+  bind (el) {
     /* eslint no-undef: 0 */
+    let $el = $(el)
     setTimeout(() => {
-      let $el = $(this.el)
-
       $el.material_select()
       $el.on('change', () => {
-        this.set(this.el.value)
+        this.set(el.value)
       })
     }, 0)
   }

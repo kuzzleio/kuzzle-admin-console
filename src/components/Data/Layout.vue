@@ -2,15 +2,15 @@
   <div>
     <treeview
       :route-name="$route.name"
-      :index="selectedIndex"
-      :collection="selectedCollection"
+      :index="$store.state.route.params.index"
+      :collection="$store.state.route.params.collection"
       :tree="indexesAndCollections">
     </treeview>
     <section>
       <section class="view">
         <router-view
-          :index="selectedIndex"
-          :collection="selectedCollection">
+          :index="$store.state.route.params.index"
+          :collection="$store.state.route.params.collection">
         </router-view>
       </section>
     </section>
@@ -20,7 +20,6 @@
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
   import * as types from '../../vuex/modules/data/mutation-types'
-  import {selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   import Treeview from './Leftnav/Treeview'
 
   export default {
@@ -33,14 +32,8 @@
         this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
       }
     },
-    vuex: {
-      getters: {
-        selectedIndex,
-        selectedCollection
-      }
-    },
     watch: {
-      'selectedIndex': function () {
+      '$store.state.route.params.index': function () {
         if (canSearchIndex()) {
           this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
         }

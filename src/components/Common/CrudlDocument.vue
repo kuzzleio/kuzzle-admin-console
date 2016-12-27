@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <div class="row actions" v-show="documents.length">
+      <div class="row actions" v-if="documents.length">
         <div class="col s8">
           <button
             class="btn btn-small waves-effect waves-light tertiary"
@@ -44,17 +44,18 @@
           </button>
 
           <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
-                  @click.prevent="create",
+                  @click.prevent="create"
                   :class="!displayCreate ? 'disabled' : ''"
                   :disabled="!displayCreate"
                   :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'">
-            <i class="fa fa-plus-circle left"></i>Create
+            <i class="fa fa-plus-circle left"></i>
+            Create
           </button>
 
           <button class="btn btn-small waves-effect waves-light"
                   :class="displayBulkDelete ? 'red-color' : 'disabled'"
                   :disabled="!displayBulkDelete"
-                  @click="$emit('modal-open', 'bulk-delete')"
+                  @click="deleteBulk"
                   :title="displayBulkDelete ? '' : 'You need to select at least one element'">
             <i class="fa fa-minus-circle left"></i>
             Delete
@@ -64,7 +65,7 @@
 
       <div class="row" v-show="documents.length">
         <div class="col s12">
-          <slot v-if="documents.length"></slot>
+          <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
         </div>
       </div>
 
@@ -80,38 +81,37 @@
     </div>
     </div>
 
-    <modal id="bulk-delete">
+    <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close">
       <h4>Document deletion</h4>
       <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralizeDocument}}?</p>
 
       <span slot="footer">
-            <button
-              href="#"
-              class="waves-effect waves-green btn red-color"
-              @click="confirmBulkDelete()">
-                I'm sure!
-            </button>
-            <button href="#" class="btn-flat" @click.prevent="$emit('modal-close', 'bulk-delete')">
-                Cancel
-            </button>
-          </span>
+        <button
+          href="#"
+          class="waves-effect waves-green btn red-color"
+          @click="confirmBulkDelete()">
+            I'm sure!
+        </button>
+        <button href="#" class="btn-flat" @click.prevent="close">
+            Cancel
+        </button>
+      </span>
     </modal>
 
-    <modal id="single-delete">
+    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close">
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
-            <button
-              href="#"
-              class="waves-effect waves-green btn red-color"
-              @click="confirmSingleDelete(documentIdToDelete)">
-                I'm sure!
-            </button>
-            <button href="#" class="btn-flat" @click.prevent="$emit('modal-close', 'single-delete')">
-                Cancel
-            </button>
-          </span>
+        <button
+          class="waves-effect waves-green btn red-color"
+          @click="confirmSingleDelete(documentIdToDelete)">
+            I'm sure!
+        </button>
+        <button class="btn-flat" @click.prevent="close">
+            Cancel
+        </button>
+      </span>
     </modal>
   </div>
 </template>
@@ -120,9 +120,7 @@
   import Pagination from '../Materialize/Pagination'
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
-  import {
-    setBasicFilter
-  } from '../../vuex/modules/common/crudlDocument/actions'
+  import {SET_BASIC_FILTER} from '../../vuex/modules/common/crudlDocument/mutation-types'
   import {
     basicFilterForm
   } from '../../vuex/modules/common/crudlDocument/getters'
@@ -158,12 +156,10 @@
       rawFilter: Object,
       basicFilter: Array,
       sorting: Object,
-      availableFilters: Object
+      availableFilters: Object,
+      documentToDelete: String
     },
     vuex: {
-      actions: {
-        setBasicFilter
-      },
       getters: {
         basicFilterForm
       }
@@ -172,7 +168,9 @@
       return {
         formatFromBasicSearch,
         formatSort,
-        documentIdToDelete: ''
+        documentIdToDelete: '',
+        singleDeleteIsOpen: false,
+        bulkDeleteIsOpen: false
       }
     },
     filters: {
@@ -185,7 +183,7 @@
     },
     methods: {
       create () {
-        this.$emit('create-clicked')
+        this.$emit('create-clicked', 'DataCreateDocument')
       },
       changePage (from) {
         this.$router.push({query: {...this.$route.query, from}})
@@ -204,7 +202,7 @@
         deleteDocuments(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
-            this.$emit('modal-close', 'single-delete')
+            this.close()
           })
           .catch((e) => {
             this.$emit('toast', e.message, 'error')
@@ -234,6 +232,7 @@
       refreshSearch () {
         // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
         // https://github.com/vuejs/vue-router/issues/296
+        this.$emit('crudl-refresh-search')
         if (this.$route.query.from === '0') {
           this.$emit('crudl-refresh-search')
           return
@@ -243,11 +242,29 @@
       },
       dispatchToggle () {
         this.$emit('toggle-all')
+      },
+      setBasicFilter (value) {
+        this.$store.commit(SET_BASIC_FILTER, value)
+      },
+      deleteBulk () {
+        this.bulkDeleteIsOpen = true
+      },
+      close () {
+        this.singleDeleteIsOpen = false
+        this.bulkDeleteIsOpen = false
+        this.documentIdToDelete = []
+      }
+    },
+    watch: {
+      documentToDelete (val) {
+        this.documentIdToDelete = val
+        this.singleDeleteIsOpen = true
       }
     },
     events: {
       'delete-document' (id) {
         this.documentIdToDelete = id
+        this.singleDeleteIsOpen = true
         this.$emit('modal-open', 'single-delete')
       }
     }

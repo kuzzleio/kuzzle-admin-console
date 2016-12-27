@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="tryDeleteIndex(index)">
-    <modal :id="id" class="left-align" >
+    <modal :id="id" class="left-align" :is-open="isOpen">
       <div class="row">
         <div class="col s12">
           <h4>Index <strong>{{index}}</strong> deletion</h4>
@@ -21,7 +21,7 @@
           <span :class="{'truncate': errorTruncated}">
             {{error}}
           </span>
-          <a href="#!" @click.prevent="toggleTruncatedError()">
+          <a @click.prevent="toggleTruncatedError()">
             <span v-if="errorTruncated">view more</span>
             <span v-if="!errorTruncated">view less</span>
           </a>
@@ -41,7 +41,7 @@
         <button
           href="#!"
           class="btn-flat waves-effect waves-grey"
-          @click.prevent="$emit('modal-close', id)">
+          @click.prevent="close">
             Cancel
         </button>
       </span>
@@ -71,7 +71,7 @@
 
 
 <script>
-  import {deleteIndex} from '../../../vuex/modules/data/actions'
+  import {DELETE_INDEX} from '../../../vuex/modules/data/mutation-types'
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import Title from '../../../directives/title.directive'
@@ -81,7 +81,9 @@
     name: 'IndexDeleteModal',
     props: {
       id: String,
-      index: String
+      index: String,
+      isOpen: Boolean,
+      close: Function
     },
     directives: {
       Focus,
@@ -89,11 +91,6 @@
     },
     components: {
       Modal
-    },
-    vuex: {
-      actions: {
-        deleteIndex
-      }
     },
     methods: {
       toggleTruncatedError () {
@@ -104,12 +101,12 @@
           return
         }
 
-        this.deleteIndex(index)
+        this.$store.dispatch(DELETE_INDEX, index)
           .then(() => {
             this.indexConfirmation = ''
             this.error = ''
             removeIndex(index)
-            this.$emit('modal-close', this.id)
+            this.close()
           })
           .catch(err => {
             this.error = err.message

@@ -4,42 +4,15 @@
       {{index}}
     </headline>
 
-
-    <!--<div class="row">
-      <div class="col s6 m4 l3">
-
-        <div class="row">
-          <div class="col s6 truncate">Total documents</div>
-          <div class="col s6 right-align">1 567</div>
-        </div>
-        <div class="row">
-          <div class="col s6 truncate">Index Size</div>
-          <div class="col s6 right-align">64 mb</div>
-        </div>
-        <div class="row">
-          <div class="col s5 truncate">Auto refresh</div>
-          <div class="col s7 right-align">
-            <div class="switch">
-              <label>
-                <input type="checkbox">
-                <span class="lever"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>-->
-
     <div class="row">
       <div class="col s12 m10 l8">
 
         <div class="row actions" v-if="collectionCount">
           <div class="col s9">
-            <router-link class="btn waves-effect waves-light primary"
+            <router-link class="btn waves-effect waves-light primary" v-if="canCreateCollection(index)"
                v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                :class="{unauthorized: !canCreateCollection(index)}"
-               to="{name: canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}}">
+               :to="{name: 'DataCreateCollection', params: {index: index}}">
               <i class="fa fa-plus-circle left"></i>Create a collection
             </router-link>
           </div>
@@ -68,7 +41,7 @@
                   Here, you'll see the collections in <strong>{{index}}</strong>. <br/>
                   <em>There are currently no collection here.</em>
                 </p>
-                <router-link to="{name: 'DataCreateCollection', params: {index: index}}"
+                <router-link :to="{name: 'DataCreateCollection', params: {index: index}}"
                         v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                         :class="{unauthorized: !canCreateCollection(index)}"
                         class="btn primary waves-effect waves-light">
@@ -166,7 +139,13 @@
     methods: {
       canSearchIndex,
       canSearchCollection,
-      canCreateCollection
+      canCreateCollection,
+      orderedFilteredStoredCollections (order) {
+        return _.orderBy(this.filteredStoredCollections, order)
+      },
+      orderedFilteredRealtimeCollections (order) {
+        return _.orderBy(this.filteredRealtimeCollections, order)
+      }
     },
     directives: {
       Title
@@ -176,57 +155,42 @@
         filter: ''
       }
     },
-    created () {
-      console.log('##', this.$store.getters)
-    },
     computed: {
       collectionCount () {
-        if (!this.$store.getters.indexesAndCollections[this.index]) {
+        if (!this.$store.state.data.indexesAndCollections[this.index]) {
           return 0
         }
 
-        return this.$store.getters.indexesAndCollections[this.index].stored.length +
-          this.$store.getters.indexesAndCollections[this.index].realtime.length
+        return this.$store.state.data.indexesAndCollections[this.index].stored.length +
+          this.$store.state.data.indexesAndCollections[this.index].realtime.length
       },
       isCollectionForFilter () {
-        if (!this.$store.getters.indexesAndCollections[this.index]) {
+        if (!this.$store.state.data.indexesAndCollections[this.index]) {
           return
         }
 
-        return this.$options.filters.filterBy(
-            this.$store.getters.indexesAndCollections[this.index].stored,
-            this.filter
-          ).length > 0 ||
-          this.$options.filters.filterBy(
-            this.$store.getters.indexesAndCollections[this.index].realtime,
-            this.filter
-          ).length > 0
+        return this.$store.state.data.indexesAndCollections[this.index].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
+          this.$store.state.data.indexesAndCollections[this.index].realtime.filter(col => col.indexOf(this.filter !== -1)).length > 0
       },
       storedCollections () {
-        if (!this.$store.getters.indexesAndCollections[this.index]) {
+        if (!this.$store.state.data.indexesAndCollections[this.index]) {
           return []
         }
 
-        return this.$store.getters.indexesAndCollections[this.index].stored
+        return this.$store.state.data.indexesAndCollections[this.index].stored
       },
       realtimeCollections () {
-        if (!this.$store.getters.indexesAndCollections[this.index]) {
+        if (!this.$store.state.data.indexesAndCollections[this.index]) {
           return []
         }
 
-        return this.$store.getters.indexesAndCollections[this.index].realtime
+        return this.$store.state.data.indexesAndCollections[this.index].realtime
       },
       filteredStoredCollections () {
         return this.storedCollections.filter(col => col.indexOf(this.filter) !== -1)
       },
       filteredRealtimeCollections () {
         return this.realtimeCollections.filter(col => col.indexOf(this.filter) !== -1)
-      },
-      orderedFilteredStoredCollections (order) {
-        return _.orderBy(this.filteredStoredCollections, order)
-      },
-      orderedFilteredRealtimeCollections (order) {
-        return _.orderBy(this.filteredRealtimeCollections, order)
       }
     }
   }

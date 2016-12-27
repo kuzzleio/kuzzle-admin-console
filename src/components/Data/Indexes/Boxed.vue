@@ -7,8 +7,7 @@
           <!-- index browse link -->
           <router-link
             class="fluid-hover"
-            to="{name: 'DataIndexSummary', params: {index: index}}"
-            href="#!">
+            :to="{name: 'DataIndexSummary', params: {index: index}}" >
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
             <span class="name">{{index}}</span>
           </router-link>
@@ -21,17 +20,17 @@
       </div>
 
       <div class="card-action right-align">
-        <router-link class="btn btn-tiny"
+        <router-link class="btn btn-tiny" v-if="canCreateCollection(index)"
            v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
            :class="{unauthorized: !canCreateCollection(index)}"
-           to="{canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : {}}">Create a collection</router-link>
+           :to="{name: 'DataCreateCollection', params: {index: index}}">Create a collection</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import IndexDropdown from './Dropdown.vue'
+  import IndexDropdown from './Dropdown'
   import {canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
 

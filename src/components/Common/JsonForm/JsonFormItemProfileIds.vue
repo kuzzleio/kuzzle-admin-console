@@ -23,7 +23,7 @@
 </style>
 
 <script>
-  import {setPartial} from '../../../vuex/modules/data/actions'
+  import {SET_PARTIAL} from '../../../vuex/modules/data/mutation-types'
   import kuzzle from '../../../services/kuzzle'
   import Multiselect from 'vue-multiselect'
 
@@ -42,6 +42,7 @@
       content () {
         if (this.content) {
           this.selected = this.content
+          this.$store.dispatch(SET_PARTIAL, {path: 'profileIds', value: this.content})
           this.setPartial('profileIds', this.content)
         }
       }
@@ -57,6 +58,7 @@
 
           if (this.content) {
             this.selected = this.content
+            this.$store.dispatch(SET_PARTIAL, this.content)
             this.setPartial('profileIds', this.content)
           }
         })
@@ -75,11 +77,6 @@
       return {
         profiles: [],
         selected: []
-      }
-    },
-    vuex: {
-      actions: {
-        setPartial
       }
     }
   }

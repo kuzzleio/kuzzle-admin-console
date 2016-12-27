@@ -20,7 +20,7 @@
 </style>
 
 <script>
-  import { setPartial } from '../../../../vuex/modules/data/actions'
+  import {SET_PARTIAL} from '../../../../vuex/modules/data/mutation-types'
   import JsonFormItemArrayInput from './JsonFormItemArrayInput'
   import Vue from 'vue'
 
@@ -33,11 +33,6 @@
     },
     components: {
       JsonFormItemArrayInput
-    },
-    vuex: {
-      actions: {
-        setPartial
-      }
     },
     data () {
       return {
@@ -64,7 +59,7 @@
     },
     watch: {
       valueItems (v) {
-        this.setPartial(this.fullName, [...v])
+        this.$store.dispatch(SET_PARTIAL, {path: this.fullName, value: {...v}})
       },
       content () {
         this.valueItems = [...this.content]

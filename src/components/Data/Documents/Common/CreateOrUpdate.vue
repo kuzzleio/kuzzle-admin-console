@@ -29,7 +29,7 @@
           <div class="row" v-if="!hideId">
             <div class="col s6">
               <div class="input-field">
-                <input id="id" type="text" name="collection" @input="updateId" :value="newDocument._id" v-focus :required="mandatoryId" />
+                <input id="id" type="text" name="collection" @input="updateId" :value="$store.state.data.newDocument._id" v-focus :required="mandatoryId" />
                 <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
               </div>
             </div>
@@ -49,11 +49,12 @@
               </div>
 
               <div class="list-fields">
-                <div v-for="(name, content) in mapping">
+                <div v-for="(content, name) in mapping">
                   <json-form
                     :name="name"
                     :content="content"
-                    @document-create::change-type-attribute="changeTypeAttribute">
+                    @document-create::change-type-attribute="changeTypeAttribute"
+                    @document-create::add-attribute="addAttribute(path)">
                   </json-form>
                 </div>
               </div>
@@ -63,7 +64,7 @@
 
         <!-- Json view -->
         <div class="row" v-if="viewState === 'code'">
-          <json-editor class="pre_ace" :content="newDocument" ref="jsoneditor"></json-editor>
+          <json-editor class="pre_ace" :content="$store.state.data.newDocument" ref="jsoneditor"></json-editor>
         </div>
 
         <div class="row">
@@ -88,7 +89,7 @@
       </form>
     </div>
 
-    <modal id="add-attr" :has-footer="false">
+    <modal id="add-attr" :has-footer="false" :is-open="isOpen" :close="close">
       <h4>Add a new attribute</h4>
       <form method="post" @submit.prevent="doAddAttr">
         <p>
@@ -97,14 +98,14 @@
             <label for="name">Field name</label>
           </div>
           <div class="input-field">
-            <select v-m-select="newAttributeType">
+            <m-select @input="changeAttrType">
               <option value="string" selected>String</option>
               <option value="integer">Integer</option>
               <option value="float">Float</option>
               <option value="nested">Nested</option>
               <option value="object">Object</option>
               <option value="geo_point">Geo point</option>
-            </select>
+            </m-select>
             <label>Attribute type</label>
           </div>
         </p>
@@ -115,7 +116,7 @@
             class="waves-effect waves-green btn">
               Add
           </button>
-          <a class="btn-flat" @click.prevent="$emit('modal-close', 'add-attr')">
+          <a class="btn-flat" @click.prevent="close">
               Cancel
           </a>
         </div>
@@ -149,14 +150,13 @@
 <script>
   import kuzzle from '../../../../services/kuzzle'
   import JsonForm from '../../../Common/JsonForm/JsonForm'
-  import {setNewDocument, unsetNewDocument, setPartial} from '../../../../vuex/modules/data/actions'
-  import {newDocument} from '../../../../vuex/modules/data/getters'
+  import {UNSET_NEW_DOCUMENT, SET_PARTIAL} from '../../../../vuex/modules/data/mutation-types'
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
-  import MSelect from '../../../../directives/Materialize/m-select.directive'
   import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
   import {mergeDeep, formatType, countAttributes} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
+  import MSelect from '../../../Common/MSelect'
   import Promise from 'bluebird'
   import Vue from 'vue'
 
@@ -172,7 +172,8 @@
     components: {
       JsonForm,
       JsonEditor,
-      Modal
+      Modal,
+      MSelect
     },
     props: {
       error: String,
@@ -182,13 +183,17 @@
       mandatoryId: {
         'default': false,
         type: Boolean
-      }
+      },
+      document: Object
     },
     directives: {
       MSelect,
       Focus
     },
     methods: {
+      changeAttrType (value) {
+        this.newAttributeType = value
+      },
       show () {
         this.showAnyway = true
         this.big = false
@@ -212,7 +217,7 @@
             mergeDeep(this.mapping, getUpdatedSchema(json, this.collection).properties)
             // update document id
             if (json._id) {
-              this.setPartial('_id', json._id)
+              this.$store.dispatch(SET_PARTIAL, {path: '_id', value: json._id})
             }
           }
           this.viewState = 'form'
@@ -222,7 +227,7 @@
       },
       addRootAttr () {
         this.newAttributePath = ''
-        this.$emit('modal-open', 'add-attr')
+        this.isOpen = true
       },
       doAddAttr () {
         let refMapping = getRefMappingFromPath(this.mapping, this.newAttributePath)
@@ -237,10 +242,10 @@
         this.newAttributeType = 'string'
         this.newAttributeName = null
         this.newAttributePath = null
-        this.$emit('modal-close', 'add-attr')
+        this.isOpen = false
       },
       updateId (e) {
-        this.setPartial('_id', e.target.value)
+        this.$store.dispatch(SET_PARTIAL, {path: '_id', value: e.target.value})
       },
       cancel () {
         this.$emit('document-create::cancel')
@@ -248,20 +253,17 @@
       changeTypeAttribute (attributePath, name, type, val) {
         getRefMappingFromPath(this.mapping, attributePath)
         Vue.set(this.mapping, name, {type, val})
-      }
-    },
-    vuex: {
-      actions: {
-        setNewDocument,
-        unsetNewDocument,
-        setPartial
       },
-      getters: {
-        newDocument
+      close () {
+        this.isOpen = false
+      },
+      addAttribute (path) {
+        this.newAttributePath = path
+        this.isOpen = true
       }
     },
     beforeDestroy () {
-      this.unsetNewDocument()
+      this.$store.dispatch(UNSET_NEW_DOCUMENT)
     },
     data () {
       return {
@@ -271,7 +273,8 @@
         newAttributePath: null,
         newAttributeName: null,
         big: false,
-        showAnyway: false
+        showAnyway: false,
+        isOpen: false
       }
     },
     mounted () {
@@ -291,16 +294,18 @@
           promiseGetMappingReject()
         })
     },
-    events: {
-      'document-create::add-attribute' (path) {
-        this.newAttributePath = path
-        this.$emit('modal-open', 'add-attr')
-      },
-      'document-create::fill' (document) {
+    watch: {
+      document (document) {
         promiseGetMapping
           .then(() => {
             this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document, this.collection).properties)
           })
+      }
+    },
+    events: {
+      'document-create::add-attribute' (path) {
+        this.newAttributePath = path
+        this.$emit('modal-open', 'add-attr')
       }
     }
   }

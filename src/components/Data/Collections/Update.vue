@@ -12,9 +12,7 @@
 
 <script>
   import CreateOrUpdate from './CreateOrUpdate'
-  import { fetchCollectionDetail } from '../../../vuex/modules/collection/actions'
-  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
-  import { collectionName } from '../../../vuex/modules/collection/getters'
+  import { FETCH_COLLECTION_DETAIL } from '../../../vuex/modules/collection/mutation-types'
   import kuzzle from '../../../services/kuzzle'
 
   export default {
@@ -30,18 +28,9 @@
     components: {
       CreateOrUpdate
     },
-    vuex: {
-      actions: {
-        fetchCollectionDetail
-      },
-      getters: {
-        indexesAndCollections,
-        collectionName
-      }
-    },
     computed: {
       headline () {
-        return 'Update ' + this.collectionName
+        return 'Update ' + this.$store.state.route.params.collection
       }
     },
     methods: {
@@ -66,8 +55,9 @@
       }
     },
     mounted () {
-      this.fetchCollectionDetail(this.indexesAndCollections[this.index], this.index, this.collectionName)
+      this.$store.dispatch(FETCH_COLLECTION_DETAIL, {collections: this.$store.state.data.indexesAndCollections[this.index], index: this.index, collection: this.$store.state.route.params.collection})
         .catch(e => {
+          debugger
           this.$emit('toast', e.message, 'error')
           this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
         })

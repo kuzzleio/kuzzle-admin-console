@@ -11,7 +11,7 @@
       </headline>
 
       <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" class="closed" v-scroll-glue="{spy: notifications, height: 290, active: scrollGlueActive}">
+      <div id="notification-controls-fixed" class="closed">
         <div class="row">
           <subscription-controls
             @realtime-toggle-subscription="toggleSubscription"
@@ -67,6 +67,7 @@
           <div class="row realtime margin-bottom-0">
             <!-- subscription controls in page flow -->
             <subscription-controls
+              v-scroll-fix
               @realtime-toggle-subscription="toggleSubscription"
               @realtime-scroll-glue="setScrollGlue"
               @realtime-clear-messages="clear"
@@ -114,15 +115,17 @@
           </div>
         </div>
 
-        <div id="notification-container" v-if="notifications.length">
-          <ul class="collapsible" v-collapsible data-collapsible="expandable">
-            <li v-for="notification in notifications">
-              <notification
-                :notification="notification">
-              </notification>
-            </li>
-          </ul>
-        </div>
+        <auto-scrollable class="closed" :nbElement="notifications.length" :active="scrollGlueActive">
+          <div id="notification-container" v-if="notifications.length">
+            <ul class="collapsible" v-collapsible data-collapsible="expandable">
+              <li v-for="notification in notifications">
+                <notification
+                  :notification="notification">
+                </notification>
+              </li>
+            </ul>
+          </div>
+        </auto-scrollable>
       </div>
     </div>
   </div>
@@ -186,14 +189,18 @@
 <script>
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
+
+  import AutoScrollable from '../../Common/AutoScrollable'
+  import ScrollFix from '../../../directives/scroll-fix.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
-  import jQueryCollapsible from '../../../directives/Materialize/collapsible.directive'
+
+  import collapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
   import Filters from '../../Common/Filters/Filters'
   import kuzzle from '../../../services/kuzzle'
-  import { setBasicFilter } from '../../../vuex/modules/common/crudlDocument/actions'
+  import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'
@@ -205,9 +212,6 @@
       collection: String
     },
     vuex: {
-      actions: {
-        setBasicFilter
-      },
       getters: {
         rawFilter,
         basicFilter,
@@ -250,17 +254,19 @@
         this.room.unsubscribe()
       }
     },
-    directives: [
-      jQueryCollapsible,
-      ScrollGlue
-    ],
+    directives: {
+      collapsible,
+      ScrollGlue,
+      ScrollFix
+    },
     components: {
       CollectionTabs,
       Notification,
       CollectionDropdown,
       SubscriptionControls,
       Filters,
-      Headline
+      Headline,
+      AutoScrollable
     },
     methods: {
       canSubscribe,
@@ -435,6 +441,12 @@
       clear () {
         this.warning.message = ''
         this.notifications = []
+      },
+      setBasicFilter (value) {
+        this.$store.commit(SET_BASIC_FILTER, value)
+      },
+      onScroll () {
+        console.log(this.$refs)
       }
     },
     route: {

@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit document - <span class="bold">{{documentToEditId}}</span>
+      Edit document - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
@@ -21,7 +21,8 @@
       :error="error"
       :index="index"
       :collection="collection"
-      :hide-id="true">
+      :hide-id="true"
+      :document="document">
     </create-or-update>
   </div>
 </template>
@@ -37,9 +38,8 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
   import CollectionTabs from '../Collections/Tabs'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
 
   let room
 
@@ -58,7 +58,8 @@
     data () {
       return {
         error: '',
-        show: false
+        show: false,
+        document: {}
       }
     },
     methods: {
@@ -70,7 +71,7 @@
             this.error = 'The document is invalid, please review it'
             return
           }
-          this.setNewDocument(json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
         return kuzzle
@@ -80,7 +81,7 @@
           .then(() => {
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .updateDocumentPromise(this.documentToEditId, this.newDocument)
+              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument)
               .then(() => {
                 kuzzle.refreshIndex(this.index)
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
@@ -104,9 +105,10 @@
         this.show = false
         kuzzle
           .dataCollectionFactory(this.collection, this.index)
-          .fetchDocumentPromise(this.documentToEditId)
+          .fetchDocumentPromise(decodeURIComponent(this.$store.state.route.params.id))
           .then(res => {
-            this.setNewDocument(res.content)
+            this.$store.commit(SET_NEW_DOCUMENT, res.content)
+            this.document = res.content
             this.$emit('document-create::fill', res.content)
             return null
           })
@@ -115,20 +117,11 @@
           })
       }
     },
-    vuex: {
-      actions: {
-        setNewDocument
-      },
-      getters: {
-        newDocument,
-        documentToEditId
-      }
-    },
     mounted () {
       this.fetch()
       kuzzle
         .dataCollectionFactory(this.collection, this.index)
-        .subscribe({term: {_id: this.documentToEditId}}, () => {
+        .subscribe({term: {_id: decodeURIComponent(this.$store.state.route.params.id)}}, () => {
           this.show = true
         })
         .onDone((error, kuzzleRoom) => {

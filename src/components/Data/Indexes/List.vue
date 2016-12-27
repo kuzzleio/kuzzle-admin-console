@@ -21,7 +21,7 @@
                       :class="{unauthorized: !canCreateIndex()}"
                       class="btn primary waves-effect waves-light">
                 <i class="fa fa-plus-circle left"></i>
-                Create a index
+                Create an index
               </button>
             </div>
           </div>
@@ -29,13 +29,13 @@
 
         <div class="row actions" v-if="$store.state.data.indexes.length">
           <div class="col s9">
-            <a class="btn waves-effect waves-light primary"
+            <button class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
                :class="{unauthorized: !canCreateIndex()}"
-               @click.prevent="canCreateIndex() && $emit('modal-open', 'index-create')">
+               @click.prevent="openModal">
               <i class="fa fa-plus-circle left"></i>
               <span>Create an index</span>
-            </a>
+            </button>
           </div>
 
           <!-- filter must be hidden when there is no indexes -->
@@ -77,7 +77,7 @@
           <div v-if="canSearchIndex()">
             <index-boxed
               :index="indexName"
-              v-for="(indexName, key) in orderedFilteredIndices('key')">
+              v-for="(indexName, key) in orderedFilteredIndices(key)">
             </index-boxed>
           </div>
           <modal-create v-if="canCreateIndex" id="index-create" :is-open="isOpen" :close="close"></modal-create>
@@ -114,7 +114,6 @@
   import ModalCreate from './ModalCreate'
   import IndexBoxed from './Boxed'
   import Title from '../../../directives/title.directive'
-  import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canCreateIndex, canSearchIndex} from '../../../services/userAuthorization'
   import _ from 'lodash'
 
@@ -132,19 +131,13 @@
       canSearchIndex,
       canCreateIndex,
       orderedFilteredIndices (order) {
-        _.orderBy(this.filteredIndices, order)
+        return _.orderBy(this.filteredIndices, order)
       },
       openModal () {
         this.isOpen = true
       },
       close () {
         this.isOpen = false
-      }
-    },
-    vuex: {
-      getters: {
-        indexes,
-        indexesAndCollections
       }
     },
     data () {
@@ -158,7 +151,6 @@
         if (Object.keys(this.$store.state.data.indexesAndCollections).length) {
           var res = Object.keys(this.$store.state.data.indexesAndCollections).forEach(key => {
             return Object.keys(this.$store.state.data.indexesAndCollections[key]).filter(k => {
-              console.log(key, k, this.$store.state.data.indexesAndCollections[key][k])
               return this.$store.state.data.indexesAndCollections[key][k].indexOf(this.filter) !== -1
             })
           })
@@ -170,7 +162,7 @@
         return 0
       },
       filteredIndices () {
-        return Object.keys(this.indexes || []).filter(key => key.indexOf(this.filter) !== -1)
+        return this.$store.state.data.indexes.filter(key => key.indexOf(this.filter) !== -1)
       }
     }
   }

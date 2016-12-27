@@ -38,8 +38,8 @@
       }
     },
     watch: {
-      content: function () {
-        if (this.content) {
+      content () {
+        if (this.content && this.editor.getSession) {
           this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
         }
       }
@@ -54,8 +54,8 @@
         this.editor.getSession().setTabSize(2)
         this.editor.setReadOnly(this.readonly)
         this.editor.$blockScrolling = Infinity
-
         this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
+        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
       })
     }
   }

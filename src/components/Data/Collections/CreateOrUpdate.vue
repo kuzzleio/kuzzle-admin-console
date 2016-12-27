@@ -8,14 +8,14 @@
       <div class="col s12 m10 l8 card">
         <form class="wrapper" @submit.prevent="create">
           <!-- Required fields -->
-          <div v-if="!collectionName">
+          <div v-if="!$store.state.route.params.collection">
             <div class="row valign-center">
               <!-- Collection name -->
               <div class="col s6">
                 <div class="input-field">
-                  <input id="collectionName" type="text" name="collection" required
-                         class="validate" tabindex="1" v-model="name" :value="collectionName" v-focus />
-                  <label for="collectionName">Collection name</label>
+                  <input id="$store.state.route.params.collection" type="text" name="collection" required
+                         class="validate" tabindex="1" v-model="name" :value="$store.state.route.params.collection" v-focus />
+                  <label for="$store.state.route.params.collection">Collection name</label>
                 </div>
               </div>
               <!-- Toggle settings open -->
@@ -34,23 +34,23 @@
           </div>
 
           <!-- Helper message about mapping -->
-          <div class="row deep-orange-text" v-show="!settingsOpen && !collectionName">
+          <div class="row deep-orange-text" v-show="!settingsOpen && !$store.state.route.params.collection">
             <p class="col s12">
               <i class="fa fa-exclamation-triangle " aria-hidden="true"></i>
               Settings allow you to define mappings which enable cool functionalities such as geo spacial researches.
-              <a href="#!" @click.prevent="settingsOpen = true">click here to show settings</a>
+              <a @click.prevent="settingsOpen = true">click here to show settings</a>
             </p>
           </div>
 
           <!-- Settings (mappings, realtime only ...) -->
-          <div class="row" v-show="settingsOpen || collectionName">
+          <div class="row" v-show="settingsOpen || $store.state.route.params.collection">
             <div class="col s12">
               <div class="row">
                 <p>
-                  <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealtimeOnly" :checked="collectionIsRealtimeOnly" :disabled="collectionName && !collectionIsRealtimeOnly"/>
+                  <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealtimeOnly" :checked="collectionIsRealtimeOnly" :disabled="$store.state.route.params.collection && !collectionIsRealtimeOnly"/>
                   <label for="realtime-collection">
                     Realtime only
-                    <span v-if="collectionName && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
+                    <span v-if="$store.state.route.params.collection && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
                   </label>
                 </p>
               </div>
@@ -89,15 +89,15 @@
             <div class="col s5 m4 l4">
                 <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
                 <button type="submit" class="btn primary waves-effect waves-light">
-                  <i v-if="!collectionName" class="fa fa-plus-circle left"></i>
+                  <i v-if="!$store.state.route.params.collection" class="fa fa-plus-circle left"></i>
                   <i v-else class="fa fa-pencil left"></i>
-                  {{collectionName ? 'Update' : 'Create'}}
+                  {{$store.state.route.params.collection ? 'Update' : 'Create'}}
                 </button>
             </div>
             <div class="col s7 m8 l8" v-if="error">
               <div class="card error red-color white-text">
                 <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-                An error occurred while {{collectionName ? 'updating' : 'creating'}} collection: <br>{{error}}
+                An error occurred while {{$store.state.route.params.collection ? 'updating' : 'creating'}} collection: <br>{{error}}
               </div>
             </div>
           </div>
@@ -140,9 +140,9 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import JsonEditor from '../../Common/JsonEditor'
-  import { resetCollectionDetail } from '../../../vuex/modules/collection/actions'
-  import { mapping, collectionName, collectionIsRealtimeOnly } from '../../../vuex/modules/collection/getters'
+  import { mapping, collectionName } from '../../../vuex/modules/collection/getters'
   import Focus from '../../../directives/focus.directive'
+  import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreateOrUpdate',
@@ -161,11 +161,7 @@
     vuex: {
       getters: {
         mapping,
-        collectionName,
-        collectionIsRealtimeOnly
-      },
-      actions: {
-        resetCollectionDetail
+        collectionName
       }
     },
     data () {
@@ -176,13 +172,13 @@
       }
     },
     watch: {
-      'collectionIsRealtimeOnly' (value) {
+      '$store.state.collection.isRealtimeOnly' (value) {
         this.isRealtimeOnly = value
       }
     },
     methods: {
       create () {
-        this.$emit('collection-create::create', this.name || this.collectionName, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
+        this.$emit('collection-create::create', this.name || this.$store.state.route.params.collection, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
       },
       dismissError () {
         this.$emit('collection-create::reset-error')
@@ -196,7 +192,7 @@
       }
     },
     beforeDestroy () {
-      this.resetCollectionDetail()
+      this.$store.commit(RESET_COLLECTION_DETAIL)
     }
   }
 </script>

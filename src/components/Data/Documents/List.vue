@@ -30,7 +30,7 @@
             <router-link :disabled="!canEditCollection(index, collection)"
                     :title="!canEditCollection(index, collection) ? 'You are not allowed to edit this collection' : ''"
                     :class="!canEditCollection(index, collection) ? 'disabled' : ''"
-                    to="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
+                    :to="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-pencil left"></i>
               Edit the collection
@@ -48,7 +48,7 @@
               <em>Currently there is no document in this collection.</em>
             </p>
             <router-link :disabled="!canCreateDocument(index, collection)"
-                    to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
+                    :to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
                     class="btn primary waves-effect waves-light"
                     :class="!canCreateDocument(index, collection) ? 'disabled' : ''"
                     :title="!canCreateDocument(index, collection) ? 'You are not allowed to create documents in this collection' : ''">
@@ -76,7 +76,6 @@
     canEditDocument,
     canEditCollection
   } from '../../../services/userAuthorization'
-  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
 
   export default {
     name: 'DocumentsList',
@@ -91,20 +90,17 @@
       Headline,
       CollectionDropdown
     },
-    vuex: {
-      getters: {
-        indexesAndCollections
-      }
-    },
     computed: {
       isRealtimeCollection () {
-        if (!this.indexesAndCollections[this.index]) {
-          return false
+        if (this.$store.state.data.indexesAndCollections) {
+          if (!this.$store.state.data.indexesAndCollections[this.index]) {
+            return false
+          }
+          if (!this.$store.state.data.indexesAndCollections[this.index].realtime) {
+            return false
+          }
+          return this.$store.state.data.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
         }
-        if (!this.indexesAndCollections[this.index].realtime) {
-          return false
-        }
-        return this.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
       }
     },
     methods: {

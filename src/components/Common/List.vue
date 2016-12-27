@@ -17,7 +17,11 @@
       :display-create="displayCreate"
       :all-checked="allChecked"
       :selected-documents="selectedDocuments"
-      :length-document="selectedDocuments.length">
+      :length-document="selectedDocuments.length"
+      :document-to-delete="documentToDelete"
+      @crudl-refresh-search="refreshSearch"
+      @create-clicked="create"
+      @toggle-all="toggleAll">
 
         <div class="collection">
           <transition name="collection" v-for="document in documents">
@@ -27,7 +31,8 @@
                        :is-checked="isChecked(document.id)"
                        :index="index"
                        :collection="collection"
-                       @common-list::edit-document="editDocument">
+                       @common-list::edit-document="editDocument"
+                       @delete-document="deleteDocument">
             </component>
           </transition>
         </div>
@@ -82,7 +87,8 @@
         availableFilters,
         selectedDocuments: [],
         documents: [],
-        totalDocuments: 0
+        totalDocuments: 0,
+        documentToDelete: null
       }
     },
     vuex: {
@@ -169,15 +175,19 @@
       },
       editDocument (route, id) {
         this.$router.push({name: route, params: {id: encodeURIComponent(id)}})
+      },
+      deleteDocument (id) {
+        this.documentToDelete = id
+      },
+      refreshSearch () {
+        this.fetchData()
+      },
+      create (route) {
+        this.$router.push({name: route})
       }
     },
-    events: {
-      'toggle-all' () {
-        this.toggleAll()
-      },
-      'crudl-refresh-search' () {
-        this.fetchData()
-      }
+    mounted () {
+      this.fetchData()
     }
   }
 </script>

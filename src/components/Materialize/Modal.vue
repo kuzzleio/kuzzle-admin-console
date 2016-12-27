@@ -63,7 +63,6 @@
         }
       },
       isOpen (open) {
-        console.log('opening')
         if (open) {
           this.open()
         } else {
@@ -115,7 +114,6 @@
         this.active = false
       },
       closeModal (id) {
-        console.log('##', this.id, id)
         if (this.id === id) {
           this.close()
           return true

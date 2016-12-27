@@ -2,9 +2,11 @@ import JSONFormatter from 'json-formatter-js'
 
 export default {
   id: 'jsonFormatter',
-  update (newValue) {
-    let html = new JSONFormatter(newValue, Infinity).render()
+  update (el, binding) {
+    if (!el.innerHTML) {
+      let html = new JSONFormatter(binding.value, Infinity).render()
 
-    this.el.appendChild(html)
+      el.appendChild(html)
+    }
   }
 }

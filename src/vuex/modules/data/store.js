@@ -49,7 +49,7 @@ const mutations = {
   },
   [types.DELETE_INDEX] (state, index) {
     state.indexes.splice(state.indexes.indexOf(index), 1)
-    state.indexesAndCollections[index] = undefined
+    delete state.indexesAndCollections[index]
   },
   [types.SET_PARTIAL_TO_DOCUMENT] (state, payload) {
     let splitted = payload.path.split('.')

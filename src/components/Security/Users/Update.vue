@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit user - <span class="bold">{{documentToEditId}}</span>
+      Edit user - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
     </headline>
 
     <create-or-update
@@ -24,7 +24,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
+  import {newDocument} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
 
   export default {
@@ -49,7 +49,7 @@
 
         kuzzle
           .security
-          .updateUserPromise(this.documentToEditId, this.newDocument)
+          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), this.newDocument)
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
             this.$router.push({name: 'SecurityUsersList'})
@@ -73,14 +73,13 @@
         setNewDocument
       },
       getters: {
-        newDocument,
-        documentToEditId
+        newDocument
       }
     },
     mounted () {
       kuzzle
         .security
-        .getUserPromise(this.documentToEditId)
+        .getUserPromise(decodeURIComponent(this.$store.state.route.params.id))
         .then((res) => {
           this.setNewDocument(res.content)
           this.$emit('document-create::fill', res.content)

@@ -40,20 +40,25 @@
         </router-link>
       </li>
 
-      <li v-if="selectedIndex">
+      <li v-if="$store.state.route.params.index">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link :to="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
-          {{selectedIndex}}
+        <router-link :to="{name: 'DataIndexSummary', params: {index: $store.state.route.params.index}}">
+          {{$store.state.route.params.index}}
         </router-link>
       </li>
 
-      <li v-if="selectedCollection">
+      <li v-if="$store.state.route.params.collection">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link
-           :to="{name: isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}}">
-          {{selectedCollection}}
+        <router-link v-if="isCollectionRealtime()"
+           :to="{name: 'DataCollectionWatch', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
+          {{$store.state.route.params.collection}}
+        </router-link>
+
+        <router-link v-else
+          :to="{name: 'DataDocumentsList', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
+          {{$store.state.route.params.collection}}
         </router-link>
       </li>
     </ul>
@@ -92,32 +97,23 @@
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
-  import {indexesAndCollections, routeName, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   export default {
     name: 'CommonBreadcrumb',
     methods: {
       canSearchIndex,
       isCollectionRealtime () {
-        if (!this.indexesAndCollections[this.selectedIndex]) {
+        if (!this.$store.state.data.indexesAndCollections[this.$store.state.route.params.index]) {
           return false
         }
 
-        return this.indexesAndCollections[this.selectedIndex].realtime.indexOf(this.selectedCollection) !== -1
+        return this.$store.state.data.indexesAndCollections[this.$store.state.route.params.index].realtime.indexOf(this.$store.state.route.params.collection) !== -1
       },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
-          return routeName.indexOf(this.routeName) >= 0
+          return routeName.indexOf(this.$store.state.route.name) >= 0
         }
 
-        return this.routeName === routeName
-      }
-    },
-    vuex: {
-      getters: {
-        routeName,
-        selectedIndex,
-        selectedCollection,
-        indexesAndCollections
+        return this.$store.state.route.name === routeName
       }
     }
   }

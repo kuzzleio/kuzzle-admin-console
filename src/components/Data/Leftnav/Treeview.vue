@@ -31,7 +31,7 @@
               :force-open="indexesAndCollection.length === 1"
               :index-name="indexName"
               :route-name="routeName"
-              :collections="indexesAndCollection"
+              :collections="indexesAndCollection[indexName]"
               :current-index="index"
               :filter="filter"
               :current-collection="collection">
@@ -83,7 +83,6 @@
         return this.$store.getters.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
       },
       indexesAndCollection () {
-        console.log('##', this.$store.state.data.indexesAndCollections)
         return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : []
       }
     }

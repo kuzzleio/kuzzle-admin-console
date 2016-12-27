@@ -15,6 +15,7 @@
   import { createCollection } from '../../../vuex/modules/collection/actions'
   import { collectionName } from '../../../vuex/modules/collection/getters'
   import { indexesAndCollections } from '../../../vuex/modules/data/getters'
+  import {CREATE_COLLECTION} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreate',
@@ -42,7 +43,7 @@
       create (name, mapping, isRealtime) {
         this.error = ''
 
-        this.createCollection(this.indexesAndCollections[this.index], this.index, name, mapping, isRealtime)
+        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.data.indexesAndCollections[this.index], index: this.index, collectionName: name, mapping, isRealtime})
           .then(() => {
             this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })

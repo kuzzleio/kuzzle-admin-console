@@ -24,8 +24,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import CollectionTabs from '../Collections/Tabs'
 
   export default {
@@ -54,7 +53,7 @@
             this.error = 'The document is invalid, please review it'
             return
           }
-          this.setNewDocument(json)
+          this.$store.dispatch(SET_NEW_DOCUMENT, json)
         }
 
         return kuzzle
@@ -64,7 +63,7 @@
           .then(() => {
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .createDocumentPromise(this.newDocument)
+              .createDocumentPromise(this.$store.state.data.newDocument)
               .then(() => {
                 kuzzle.refreshIndex(this.index)
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
@@ -83,14 +82,6 @@
         } else {
           this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
-      }
-    },
-    vuex: {
-      getters: {
-        newDocument
-      },
-      actions: {
-        setNewDocument
       }
     }
   }

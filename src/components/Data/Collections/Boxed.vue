@@ -5,16 +5,16 @@
 
         <div class="col s11 truncate">
           <!-- collection browse link -->
-          <router-link href="#!"
+          <router-link
              class="fluid-hover"
-             to="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
+             :to="{name: 'DataDocumentsList', params: {index, collection}}">
             <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
             <span class="name">{{collection}}</span>
           </router-link>
         </div>
 
         <div class="col s1 right-align">
-          <!-- actions related to the index -->
+          <!-- actions related to the collection -->
           <collection-dropdown
             class="icon-small icon-black"
             :collection="collection"
@@ -25,18 +25,18 @@
       </div>
 
       <div class="card-action right-align">
-        <router-link class="btn btn-tiny" href="#"
+        <router-link class="btn btn-tiny"
            v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canCreateDocument(index, collection)}"
-		       to="{canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}} : {}}"
-           v-if="!isRealtime">
+		       :to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
+           v-if="!isRealtime && canCreateDocument(index, collection)">
           Create a document
         </router-link>
-        <router-link class="btn btn-tiny" href="#"
-           v-if="isRealtime"
+        <router-link class="btn btn-tiny"
+           v-if="isRealtime && canManageRealtime(index, collection)"
            v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canManageRealtime(index, collection)}"
-           to="{canManageRealtime(index, collection) ? {name: 'DataCollectionWatch', params: {index: index, collection: collection}} : {}}">
+           :to="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
           Watch messages
         </router-link>
       </div>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-  import CollectionDropdown from './Dropdown.vue'
+  import CollectionDropdown from './Dropdown'
   import {canCreateDocument, canManageRealtime} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
 
