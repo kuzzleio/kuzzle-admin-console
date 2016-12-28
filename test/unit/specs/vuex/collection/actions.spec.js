@@ -5,7 +5,7 @@ import {
 import actionsInjector from 'inject!../../../../../src/vuex/modules/collection/actions'
 import {testActionPromise} from '../../helper'
 
-describe.only('Collections module', () => {
+describe('Collections module', () => {
   describe('Create collection', () => {
     let state = {
       data: {

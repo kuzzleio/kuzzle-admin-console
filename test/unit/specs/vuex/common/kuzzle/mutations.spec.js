@@ -56,16 +56,16 @@ describe('kuzzle environments mutations test', () => {
         host: 'localhost',
         wsPort: 7513
       }
-      ADD_ENVIRONMENT(state, 'new', newEnvironment)
+      ADD_ENVIRONMENT(state, {id: 'new', environment: newEnvironment})
       expect(state.environments.new).to.deep.equals(newEnvironment)
     })
   })
 
   describe('UPDATE_ENVIRONMENT', () => {
     it('should throw if the environment does not exist', () => {
-      expect(UPDATE_ENVIRONMENT.bind(this, state, 'unexisting', {})).to.throw(Error)
-      expect(UPDATE_ENVIRONMENT.bind(this, state, null, {})).to.throw(Error)
-      expect(UPDATE_ENVIRONMENT.bind(this, state, undefined, {})).to.throw(Error)
+      expect(UPDATE_ENVIRONMENT.bind(this, state, {id: 'unexisting', environment: {}})).to.throw(Error)
+      expect(UPDATE_ENVIRONMENT.bind(this, state, {id: null, environment: {}})).to.throw(Error)
+      expect(UPDATE_ENVIRONMENT.bind(this, state, {id: undefined, environment: {}})).to.throw(Error)
     })
 
     it('should update an existing environment', () => {
@@ -73,7 +73,7 @@ describe('kuzzle environments mutations test', () => {
         host: 'localhost',
         wsPort: 7513
       }
-      UPDATE_ENVIRONMENT(state, 'valid', newEnvironment)
+      UPDATE_ENVIRONMENT(state, {id: 'valid', environment: newEnvironment})
       expect(state.environments.valid).to.deep.equals(newEnvironment)
     })
   })

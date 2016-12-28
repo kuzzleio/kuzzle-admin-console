@@ -93,7 +93,7 @@ export default function createRoutes (VueRouter) {
 
     if (to.matched.some(record => record.meta.auth) && !isAuthenticated(store.state)) {
       store.commit(SET_ROUTE_BEFORE_REDIRECT, to.name)
-      next({path: '/login'})
+      next('/login')
       return
     }
 

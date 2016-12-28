@@ -42,7 +42,7 @@
       content () {
         if (this.content) {
           this.selected = this.content
-          this.$store.dispatch(SET_PARTIAL, {path: 'profileIds', value: this.content})
+          this.$store.commit(SET_PARTIAL, {path: 'profileIds', value: this.content})
           this.setPartial('profileIds', this.content)
         }
       }
@@ -58,7 +58,7 @@
 
           if (this.content) {
             this.selected = this.content
-            this.$store.dispatch(SET_PARTIAL, this.content)
+            this.$store.commit(SET_PARTIAL, {path: 'profileIds', value: this.content})
             this.setPartial('profileIds', this.content)
           }
         })

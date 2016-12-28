@@ -33,7 +33,7 @@
     },
     watch: {
       value (v) {
-        this.$store.dispatch(SET_PARTIAL, {path: this.fullName, value: v})
+        this.$store.commit(SET_PARTIAL, {path: this.fullName, value: v})
       },
       content (v) {
         this.value = v
