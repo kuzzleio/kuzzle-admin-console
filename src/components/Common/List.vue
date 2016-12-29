@@ -25,15 +25,17 @@
 
         <div class="collection">
           <transition name="collection" v-for="document in documents">
-            <component :is="itemName"
-                       @checkbox-click="toggleSelectDocuments"
-                       :document="document"
-                       :is-checked="isChecked(document.id)"
-                       :index="index"
-                       :collection="collection"
-                       @common-list::edit-document="editDocument"
-                       @delete-document="deleteDocument">
-            </component>
+            <div class="collection-item collection-transition">
+              <component :is="itemName"
+                         @checkbox-click="toggleSelectDocuments"
+                         :document="document"
+                         :is-checked="isChecked(document.id)"
+                         :index="index"
+                         :collection="collection"
+                         @common-list::edit-document="editDocument"
+                         @delete-document="deleteDocument">
+              </component>
+            </div>
           </transition>
         </div>
 
