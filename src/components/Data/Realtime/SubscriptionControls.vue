@@ -44,8 +44,12 @@
       index: String,
       collection: String,
       warning: Object,
-      subscribed: Boolean,
-      scrollGlueActive: Boolean
+      subscribed: Boolean
+    },
+    data () {
+      return {
+        scrollGlueActive: true
+      }
     },
     directives: {
       Title
@@ -63,7 +67,7 @@
       this.$emit('realtime-scroll-glue', this.scrollGlueActive)
     },
     watch: {
-      scrollGlueActive: function (value) {
+      scrollGlueActive (value) {
         this.$emit('realtime-scroll-glue', value)
       }
     }

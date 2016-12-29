@@ -5,7 +5,8 @@
         <quick-filter
           :search-term="searchTerm"
           :display-block-filter="displayBlockFilter"
-          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter">
+          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter"
+          @filters-quick-search="broadcastFilterQuickSearch">
         </quick-filter>
       </div>
     </div>
@@ -144,6 +145,9 @@
       }
     },
     methods: {
+      broadcastFilterQuickSearch (term) {
+        this.$emit('filters-quick-search', term)
+      },
       switchFilter (name) {
         this.tabActive = name
       },

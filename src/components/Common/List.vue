@@ -1,13 +1,13 @@
 .<template>
   <div>
-    <slot name="emptySet" v-if="!(basicFilter || rawFilter || sorting || searchTerm) && totalDocuments === 0"></slot>
+    <slot name="emptySet" v-if="!(basicFilter || rawFilter || sorting || $store.state.route.query.searchTerm) && totalDocuments === 0"></slot>
     <crudl-document v-else
       :available-filters="availableFilters"
       :pagination-from="paginationFrom"
       :sorting="sorting"
       :basic-filter="basicFilter"
       :raw-filter="rawFilter"
-      :search-term="searchTerm"
+      :search-term="$store.state.route.query.searchTerm"
       :pagination-size="paginationSize"
       :index="index"
       :collection="collection"
@@ -19,7 +19,6 @@
       :selected-documents="selectedDocuments"
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
-      @crudl-refresh-search="refreshSearch"
       @create-clicked="create"
       @toggle-all="toggleAll">
 
@@ -53,14 +52,6 @@
   import RoleItem from '../Security/Roles/RoleItem'
   import ProfileItem from '../Security/Profiles/ProfileItem'
   import DocumentItem from '../Data/Documents/DocumentItem'
-  import {
-    searchTerm,
-    rawFilter,
-    basicFilter,
-    sorting,
-    paginationFrom,
-    paginationSize
-  } from '../../vuex/modules/common/crudlDocument/getters'
   import { formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters } from '../../services/filterFormat'
   import { performSearch } from '../../services/kuzzleWrapper'
 
@@ -91,16 +82,6 @@
         documentToDelete: null
       }
     },
-    vuex: {
-      getters: {
-        searchTerm,
-        rawFilter,
-        basicFilter,
-        sorting,
-        paginationFrom,
-        paginationSize
-      }
-    },
     computed: {
       displayBulkDelete () {
         return this.selectedDocuments.length > 0
@@ -111,6 +92,37 @@
         }
 
         return this.selectedDocuments.length === this.documents.length
+      },
+      basicFilter () {
+        try {
+          return JSON.parse(this.$store.state.route.query.basicFilter)
+        } catch (e) {
+          return null
+        }
+      },
+      rawFilter () {
+        try {
+          return JSON.parse(this.$store.state.route.query.rawFilter)
+        } catch (e) {
+          return null
+        }
+      },
+      sorting () {
+        if (!this.$store.state.route.query.sorting) {
+          return null
+        }
+
+        try {
+          return JSON.parse(this.$store.state.route.query.sorting)
+        } catch (e) {
+          return []
+        }
+      },
+      paginationFrom () {
+        return parseInt(this.$store.state.route.query.from) || 0
+      },
+      paginationSize () {
+        return parseInt(this.$store.state.route.query.size) || 10
       }
     },
     methods: {
@@ -136,7 +148,7 @@
         this.selectedDocuments.splice(index, 1)
       },
       hasSearchFilters () {
-        return this.searchTerm !== '' || this.basicFilter.length > 0 || this.rawFilter.length > 0
+        return this.$store.state.route.query.searchTerm !== '' || this.basicFilter.length > 0 || this.rawFilter.length > 0
       },
       fetchData () {
         this.selectedDocuments = []
@@ -148,8 +160,8 @@
           size: this.paginationSize
         }
         // Manage query quickSearch/basicSearch/rawSearch
-        if (this.searchTerm) {
-          filters = formatFromQuickSearch(this.searchTerm)
+        if (this.$store.state.route.query.searchTerm) {
+          filters = formatFromQuickSearch(this.$store.state.route.query.searchTerm)
         } else if (this.basicFilter) {
           filters = formatFromBasicSearch(this.basicFilter)
         } else if (this.rawFilter) {
@@ -188,6 +200,11 @@
     },
     mounted () {
       this.fetchData()
+    },
+    watch: {
+      '$route' () {
+        this.refreshSearch()
+      }
     }
   }
 </script>

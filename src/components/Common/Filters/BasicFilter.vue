@@ -6,16 +6,15 @@
         <div class="row block-and">
           <p><i class="fa fa-search"></i>Query</p>
 
-          <div v-for="(groupIndex, group) in filters.basic" class="row block-content">
-            <div v-for="(filterIndex, filter) in group" class="row dots group">
+          <div v-for="(group, groupIndex) in filters.basic" class="row block-content">
+            <div v-for="(filter, filterIndex) in group" class="row dots group">
               <div class="col s4">
                 <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute" @blur="updateFilter">
               </div>
               <div class="col s2">
-                <!-- TODO make a component -->
-                <select v-m-select="filter.operator" @blur="updateFilter">
-                  <option v-for="(identifier, label) in availableFilters" :value="identifier">{{label}}</option>
-                </select>
+                <m-select model="filter.operator" @on-blur="updateFilter">
+                  <option v-for="(label, identifiers) in availableFilters" :value="label">{{identifiers}}</option>
+                </m-select>
               </div>
               <div class="col s3">
                 <input placeholder="Value" type="text" class="validate" v-model="filter.value" @blur="updateFilter">
@@ -24,7 +23,7 @@
                 <i class="fa fa-times remove-filter"
                    @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
                 <a
-                  v-if="$index === group.length - 1"
+                  v-if="groupIndex === group.length - 1"
                   class="inline btn btn-small waves-effect waves-light"
                   @click="addAndBasicFilter(groupIndex)">
                   <i class="fa fa-plus left"></i>And
@@ -33,7 +32,6 @@
             </div>
             <p v-if="groupIndex < filters.basic.length - 1">Or</p>
           </div>
-
         </div>
 
         <div class="row button-or">
@@ -49,10 +47,10 @@
               <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute" @blur="updateFilter">
             </div>
             <div class="col s2">
-              <select v-m-select="filters.sorting.order" @blur="updateFilter">
+              <m-select model="filters.sorting.order" @on-blur="updateFilter">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
-              </select>
+              </m-select>
             </div>
           </div>
         </div>
@@ -70,7 +68,7 @@
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
   const emptySorting = {attribute: null, order: 'asc'}
 
-  import MSelect from '../../../directives/Materialize/m-select.directive'
+  import MSelect from '../../Common/MSelect'
 
   export default {
     props: {
@@ -92,7 +90,7 @@
         'default': true
       }
     },
-    directives: {
+    components: {
       MSelect
     },
     data () {

@@ -11,7 +11,7 @@
       </headline>
 
       <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" class="closed">
+      <div id="notification-controls-fixed" v-scroll-fix="scrollGlueActive">
         <div class="row">
           <subscription-controls
             @realtime-toggle-subscription="toggleSubscription"
@@ -20,7 +20,6 @@
             :index="index"
             :collection="collection"
             :subscribed="subscribed"
-            :scroll-glue-active="scrollGlueActive"
             :warning="warning">
           </subscription-controls>
         </div>
@@ -67,14 +66,13 @@
           <div class="row realtime margin-bottom-0">
             <!-- subscription controls in page flow -->
             <subscription-controls
-              v-scroll-fix
+              v-scroll-glue="scrollGlueActive"
               @realtime-toggle-subscription="toggleSubscription"
               @realtime-scroll-glue="setScrollGlue"
               @realtime-clear-messages="clear"
               :index="index"
               :collection="collection"
               :subscribed="subscribed"
-              :scroll-glue-active="scrollGlueActive"
               :warning="warning">
             </subscription-controls>
             <!-- /subscription controls in page flow  -->
@@ -115,17 +113,15 @@
           </div>
         </div>
 
-        <auto-scrollable class="closed" :nbElement="notifications.length" :active="scrollGlueActive">
-          <div id="notification-container" v-if="notifications.length">
-            <ul class="collapsible" v-collapsible data-collapsible="expandable">
-              <li v-for="notification in notifications">
-                <notification
-                  :notification="notification">
-                </notification>
-              </li>
-            </ul>
-          </div>
-        </auto-scrollable>
+        <div id="notification-container" v-if="notifications.length">
+          <ul class="collapsible" v-collapsible data-collapsible="expandable">
+            <li v-for="notification in notifications">
+              <notification
+                :notification="notification">
+              </notification>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -137,6 +133,10 @@
       float: left;
       font-size: 2rem;
       margin-top: 0;
+    }
+
+    .fixed {
+      position: fixed;
     }
 
     .wrapper {
@@ -190,7 +190,6 @@
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
 
-  import AutoScrollable from '../../Common/AutoScrollable'
   import ScrollFix from '../../../directives/scroll-fix.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
 
@@ -239,6 +238,18 @@
       },
       collection () {
         this.reset()
+      },
+      '$route' () {
+        console.log('$route changed')
+        let filters = {}
+
+        if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+        }
+
+        this.filters = filters
       }
     },
     mounted () {
@@ -265,8 +276,7 @@
       CollectionDropdown,
       SubscriptionControls,
       Filters,
-      Headline,
-      AutoScrollable
+      Headline
     },
     methods: {
       canSubscribe,
@@ -444,9 +454,6 @@
       },
       setBasicFilter (value) {
         this.$store.commit(SET_BASIC_FILTER, value)
-      },
-      onScroll () {
-        console.log(this.$refs)
       }
     },
     route: {

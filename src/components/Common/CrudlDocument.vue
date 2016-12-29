@@ -260,13 +260,6 @@
         this.documentIdToDelete = val
         this.singleDeleteIsOpen = true
       }
-    },
-    events: {
-      'delete-document' (id) {
-        this.documentIdToDelete = id
-        this.singleDeleteIsOpen = true
-        this.$emit('modal-open', 'single-delete')
-      }
     }
   }
 </script>

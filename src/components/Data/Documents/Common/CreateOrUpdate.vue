@@ -301,12 +301,6 @@
             this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document, this.collection).properties)
           })
       }
-    },
-    events: {
-      'document-create::add-attribute' (path) {
-        this.newAttributePath = path
-        this.$emit('modal-open', 'add-attr')
-      }
     }
   }
 </script>

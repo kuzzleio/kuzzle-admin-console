@@ -1,5 +1,5 @@
 <template>
-  <select ref="mselect" v-model="value">
+  <select ref="mselect" v-model="value" @blur="triggerBlur">
     <slot></slot>
   </select>
 </template>
@@ -10,11 +10,19 @@
   export default {
     name: 'MSelect',
     props: {
-      model: String
+      model: String,
+      onBlur: Function
     },
     data () {
       return {
         value: 'string'
+      }
+    },
+    methods: {
+      triggerBlur () {
+        if (this.onBlur) {
+          this.onBlur()
+        }
       }
     },
     mounted () {

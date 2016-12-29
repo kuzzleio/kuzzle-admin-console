@@ -113,14 +113,6 @@
       canDeleteDocument,
       canEditDocument,
       canEditCollection
-    },
-    route: {
-      data () {
-        // let Vue change props before broadcast the event
-        setTimeout(() => {
-          this.$emit('crudl-refresh-search')
-        }, 0)
-      }
     }
   }
 </script>
