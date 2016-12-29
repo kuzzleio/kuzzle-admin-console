@@ -8,12 +8,12 @@
               <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
             </a>
           </li>
-          <li class="nav">
-            <router-link tag="li" :to="{name: 'Data', activeClass: 'active'}">Data</router-link>
-          </li>
-          <li class="nav" v-if="hasSecurityRights()">
-            <router-link tag="li" :to="{name: 'Security', activeClass: 'active'}">Security</router-link>
-          </li>
+          <router-link tag="li" class="nav" :to="{name: 'Data'}" active-class="active">
+            <a>Data</a>
+          </router-link>
+          <router-link v-if="hasSecurityRights()" tag="li" class="nav" :to="{name: 'Security'}" active-class="active">
+            <a>Security</a>
+          </router-link>
         </ul>
 
         <ul class="right">

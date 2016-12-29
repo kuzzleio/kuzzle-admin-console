@@ -28,10 +28,10 @@
           <li
             v-for="indexName in orderedFilteredIndices(filter)">
             <index-branch
-              :force-open="indexesAndCollection.length === 1"
+              :force-open="indexCount === 1"
               :index-name="indexName"
               :route-name="routeName"
-              :collections="indexesAndCollection[indexName]"
+              :collections="indexesAndCollections[indexName]"
               :current-index="index"
               :filter="filter"
               :current-collection="collection">
@@ -77,8 +77,11 @@
       filteredIndices () {
         return filterIndexesByKeyword(this.$store.getters.indexes, this.$store.state.data.indexesAndCollections, this.filter)
       },
-      indexesAndCollection () {
-        return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : []
+      indexesAndCollections () {
+        return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : {}
+      },
+      indexCount () {
+        return Object.keys(this.indexesAndCollections).length
       }
     }
   }

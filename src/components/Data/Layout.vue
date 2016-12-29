@@ -33,7 +33,7 @@
       }
     },
     watch: {
-      '$store.state.route.params.index': function () {
+      '$route' () {
         if (canSearchIndex()) {
           this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
         }

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'open': open || filter }">
+  <div :class="{ 'open': open || filter || forceOpen }">
     <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch"></i>
     <router-link :to="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexName) }">
