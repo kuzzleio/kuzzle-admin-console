@@ -36,7 +36,7 @@ export default function createRoutes (VueRouter) {
           },
           {
             path: '/data',
-            name: 'Data',
+            name: 'DataLayout',
             meta: {
               auth: true
             },

@@ -9,7 +9,7 @@ export default [
   // Indexes routes
   {
     path: '/data',
-    name: 'DataIndexes',
+    name: 'Data',
     component (resolve) {
       require(['../../components/Data/Indexes/List'], resolve)
     }
