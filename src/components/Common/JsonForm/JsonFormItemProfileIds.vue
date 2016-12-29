@@ -23,7 +23,7 @@
 </style>
 
 <script>
-  import {SET_PARTIAL} from '../../../vuex/modules/data/mutation-types'
+  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import kuzzle from '../../../services/kuzzle'
   import Multiselect from 'vue-multiselect'
 
@@ -42,7 +42,7 @@
       content () {
         if (this.content) {
           this.selected = this.content
-          this.$store.commit(SET_PARTIAL, {path: 'profileIds', value: this.content})
+          this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
           this.setPartial('profileIds', this.content)
         }
       }
@@ -58,7 +58,7 @@
 
           if (this.content) {
             this.selected = this.content
-            this.$store.commit(SET_PARTIAL, {path: 'profileIds', value: this.content})
+            this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
             this.setPartial('profileIds', this.content)
           }
         })

@@ -192,7 +192,7 @@
         deleteDocuments(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
-            this.$emit('modal-close', 'bulk-delete')
+            this.close()
           })
           .catch((e) => {
             this.$emit('toast', e.message, 'error')

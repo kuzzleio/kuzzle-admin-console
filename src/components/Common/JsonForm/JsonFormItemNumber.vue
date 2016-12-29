@@ -15,7 +15,7 @@
 </template>
 
 <script>
-  import {SET_PARTIAL} from '../../../vuex/modules/data/mutation-types'
+  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
 
   export default {
     name: 'JsonFormItemNumber',
@@ -56,7 +56,7 @@
     },
     watch: {
       value (v) {
-        this.$store.commit(SET_PARTIAL, {path: this.fullName, value: v})
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: v})
       },
       content (v) {
         this.value = v

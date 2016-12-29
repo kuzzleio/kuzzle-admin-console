@@ -61,9 +61,17 @@
           .dataMappingFactory(mapping || {})
           .applyPromise()
           .then(() => {
+            let document = this.$store.state.data.newDocument
+            let id
+
+            if (document._id) {
+              id = document._id
+              delete document._id
+            }
+
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .createDocumentPromise(this.$store.state.data.newDocument)
+              .createDocumentPromise(id, document)
               .then(() => {
                 kuzzle.refreshIndex(this.index)
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})

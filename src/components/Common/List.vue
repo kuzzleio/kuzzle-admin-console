@@ -20,7 +20,8 @@
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
       @create-clicked="create"
-      @toggle-all="toggleAll">
+      @toggle-all="toggleAll"
+      @crudl-refresh-search="fetchData">
 
         <div class="collection">
           <transition name="collection" v-for="document in documents">
