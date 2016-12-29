@@ -48,7 +48,7 @@
                   :label-search-button="labelSearchButton"
                   :sorting="sorting"
                   :set-basic-filter="setBasicFilter"
-                  @filters-basic-search="complexSearch = true">
+                  @filters-basic-search="broadcastFilterBasicSearch">
                 </basic-filter>
               </div>
 
@@ -156,6 +156,9 @@
       },
       refreshSearch () {
         this.$emit('filters-refresh-search')
+      },
+      broadcastFilterBasicSearch (filters, sorting) {
+        this.$emit('filters-basic-search', filters, sorting)
       }
     },
     mounted () {

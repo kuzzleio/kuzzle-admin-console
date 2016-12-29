@@ -212,6 +212,7 @@
         this.$router.push({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
+        console.log('## kk', filters, sorting)
         if (!filters && !sorting) {
           this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
           return

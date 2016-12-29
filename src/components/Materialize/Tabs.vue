@@ -46,6 +46,7 @@
     },
     methods: {
       select (tab) {
+        console.log('select tab')
         this.activeTab = tab
         this.active = tab.name
 
