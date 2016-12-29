@@ -217,7 +217,7 @@
             mergeDeep(this.mapping, getUpdatedSchema(json, this.collection).properties)
             // update document id
             if (json._id) {
-              this.$store.dispatch(SET_PARTIAL, {path: '_id', value: json._id})
+              this.$store.commit(SET_PARTIAL, {path: '_id', value: json._id})
             }
           }
           this.viewState = 'form'
@@ -245,7 +245,7 @@
         this.isOpen = false
       },
       updateId (e) {
-        this.$store.dispatch(SET_PARTIAL, {path: '_id', value: e.target.value})
+        this.$store.commit(SET_PARTIAL, {path: '_id', value: e.target.value})
       },
       cancel () {
         this.$emit('document-create::cancel')
@@ -263,7 +263,7 @@
       }
     },
     beforeDestroy () {
-      this.$store.dispatch(UNSET_NEW_DOCUMENT)
+      this.$store.commit(UNSET_NEW_DOCUMENT)
     },
     data () {
       return {

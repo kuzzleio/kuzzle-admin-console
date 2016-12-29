@@ -13,7 +13,7 @@ const state = {
   newDocument: {}
 }
 
-const mutations = {
+export const mutations = {
   [types.RECEIVE_INDEXES_COLLECTIONS] (state, indexesAndCollections) {
     Vue.set(state, 'indexes', Object.keys(indexesAndCollections))
     Vue.set(state, 'indexesAndCollections', indexesAndCollections)
@@ -27,21 +27,21 @@ const mutations = {
   [types.EMPTY_NOTIFICATION] (state) {
     state.notifications = []
   },
-  [types.ADD_STORED_COLLECTION] (state, index, collection) {
-    if (!state.indexesAndCollections[index]) {
-      state.indexes.push(index)
-      state.indexesAndCollections[index] = {realtime: [], stored: []}
+  [types.ADD_STORED_COLLECTION] (state, payload) {
+    if (!state.indexesAndCollections[payload.index]) {
+      state.indexes.push(payload.index)
+      state.indexesAndCollections[payload.index] = {realtime: [], stored: []}
     }
 
-    state.indexesAndCollections[index].stored.push(collection)
+    state.indexesAndCollections[payload.index].stored.push(payload.name)
   },
-  [types.ADD_REALTIME_COLLECTION] (state, index, collection) {
-    if (!state.indexesAndCollections[index]) {
-      state.indexes.push(index)
-      state.indexesAndCollections[index] = {realtime: [], stored: []}
+  [types.ADD_REALTIME_COLLECTION] (state, payload) {
+    if (!state.indexesAndCollections[payload.index]) {
+      state.indexes.push(payload.index)
+      state.indexesAndCollections[payload.index] = {realtime: [], stored: []}
     }
 
-    state.indexesAndCollections[index].realtime.push(collection)
+    state.indexesAndCollections[payload.index].realtime.push(payload.name)
   },
   [types.ADD_INDEX] (state, index) {
     state.indexes.push(index)

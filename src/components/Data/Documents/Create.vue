@@ -53,7 +53,7 @@
             this.error = 'The document is invalid, please review it'
             return
           }
-          this.$store.dispatch(SET_NEW_DOCUMENT, json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
         return kuzzle

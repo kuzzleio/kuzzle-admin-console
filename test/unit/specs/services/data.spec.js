@@ -48,7 +48,7 @@ describe('Data services', () => {
     })
 
     it('should correctly split an empty stored collections result', () => {
-      let  collectionsToSplit = [
+      let collectionsToSplit = [
         {name: 'bar', type: 'realtime'}
       ]
 
@@ -59,7 +59,7 @@ describe('Data services', () => {
     })
 
     it('should correctly split an empty realtime collections result', () => {
-      let  collectionsToSplit = [
+      let collectionsToSplit = [
         {name: 'foobar', type: 'stored'}
       ]
 

@@ -1,23 +1,9 @@
 import kuzzle from '../../../services/kuzzle'
-import { dedupeRealtimeCollections, splitRealtimeStoredCollections } from '../../../services/data'
+import { dedupeRealtimeCollections, splitRealtimeStoredCollections, getRealtimeCollectionFromStorage } from '../../../services/data'
 import Promise from 'bluebird'
 import * as types from './mutation-types'
 
 export default {
-  [types.ADD_LOCAL_REALTIME_COLLECTION] (scope, payload) {
-    // eslint-disable-next-line no-undef
-    let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-
-    realtimeCollections = realtimeCollections
-      .filter(o => o.index === payload.index)
-      .map(o => o.collection)
-
-    if (!payload.result.realtime) {
-      payload.result.realtime = []
-    }
-
-    payload.result.realtime.push(...realtimeCollections)
-  },
   [types.LIST_INDEXES_AND_COLLECTION] ({commit, dispatch}) {
     let promises = []
 
@@ -40,8 +26,11 @@ export default {
               if (index !== '%kuzzle') {
                 result = splitRealtimeStoredCollections(result)
 
-                dispatch(types.ADD_LOCAL_REALTIME_COLLECTION, {result, index})
+                if (!result.realtime) {
+                  result.realtime = []
+                }
 
+                result.realtime.concat(getRealtimeCollectionFromStorage())
                 result = dedupeRealtimeCollections(result)
 
                 indexesAndCollections[index] = result
@@ -62,7 +51,7 @@ export default {
       })
     })
   },
-  [types.GET_MAPPING] ({commit, payload}) {
+  [types.GET_MAPPING] ({commit}, payload) {
     kuzzle.dataCollectionFactory(payload.collection, payload.index).getMapping((err, res) => {
       if (err) {
         return
@@ -85,14 +74,5 @@ export default {
         commit(types.DELETE_INDEX, index)
       })
       .catch(error => Promise.reject(new Error(error.message)))
-  },
-  [types.SET_PARTIAL] ({commit}, payload) {
-    commit(types.SET_PARTIAL_TO_DOCUMENT, {path: payload.path, value: payload.value})
-  },
-  [types.SET_NEW_DOCUMENT] ({commit}, document) {
-    commit(types.SET_NEW_DOCUMENT, document)
-  },
-  [types.UNSET_NEW_DOCUMENT] ({commit}) {
-    commit(types.UNSET_NEW_DOCUMENT)
   }
 }

@@ -27,6 +27,14 @@ export const splitRealtimeStoredCollections = (collections) => {
   }
 }
 
+export const getRealtimeCollectionFromStorage = (index) => {
+  let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+    .filter(o => o.index === index)
+    .map(o => o.collection)
+
+  return realtimeCollections
+}
+
 export const generateHash = (s) => {
   var hash = 0
   if (!s || s.length === 0) return hash

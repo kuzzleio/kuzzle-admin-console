@@ -12,7 +12,7 @@ const state = {
   adminAlreadyExists: true
 }
 
-const mutations = {
+export const mutations = {
   [SET_CURRENT_USER] (state, user) {
     state.user = user
   },
