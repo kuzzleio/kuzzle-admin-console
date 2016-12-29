@@ -77,7 +77,7 @@ export default {
   },
   [types.CHECK_FIRST_ADMIN] ({commit}) {
     return kuzzle
-      .queryPromise({controller: 'admin', action: 'adminExists'}, {})
+      .queryPromise({controller: 'server', action: 'adminExists'}, {})
       .then(res => {
         if (!res.result.exists) {
           commit(types.SET_ADMIN_EXISTS, false)
