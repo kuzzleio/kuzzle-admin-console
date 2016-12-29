@@ -40,7 +40,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="$store.state.data.indexes.length > 1">
+            <div class="input-field left-align" v-if="$store.state.data.indexes.length">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
@@ -59,7 +59,7 @@
           </div>
 
           <!-- No index for filter -->
-          <div class="card-panel card-body" v-if="!countIndexForFilter && filter">
+          <div class="card-panel card-body" v-if="!filteredIndices.length && filter">
             <div class="row valign-center empty-set">
               <div class="col s2 offset-s1">
                 <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
@@ -147,22 +147,8 @@
       }
     },
     computed: {
-      countIndexForFilter () {
-        if (Object.keys(this.$store.state.data.indexesAndCollections).length) {
-          var res = Object.keys(this.$store.state.data.indexesAndCollections).forEach(key => {
-            return Object.keys(this.$store.state.data.indexesAndCollections[key]).filter(k => {
-              return this.$store.state.data.indexesAndCollections[key][k].indexOf(this.filter) !== -1
-            })
-          })
-          if (res) {
-            return res.length
-          }
-          return 0
-        }
-        return 0
-      },
       filteredIndices () {
-        return this.$store.state.data.indexes.filter(key => key.indexOf(this.filter) !== -1)
+        return this.$store.state.data.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
       }
     }
   }
