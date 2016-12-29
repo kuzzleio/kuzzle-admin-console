@@ -5,9 +5,6 @@ import store from './vuex/store'
 import { sync } from 'vuex-router-sync'
 import { initStoreWithKuzzle } from './services/kuzzleWrapper'
 import * as environment from './services/environment'
-import {
-  environments
-} from './vuex/modules/common/kuzzle/getters'
 import * as types from './vuex/modules/common/kuzzle/mutation-types'
 
 Vue.config.debug = process.env.NODE_ENV !== 'production'
@@ -21,13 +18,13 @@ Object.keys(loadedEnv).forEach(id => {
   store.dispatch(types.ADD_ENVIRONMENT, {id, environment: loadedEnv[id], persist: false})
 })
 
-environment.persistEnvironments(environments(store.state))
+environment.persistEnvironments(store.state.kuzzle.environments)
 
-if (!lastConnected || !environments(store.state)[lastConnected]) {
-  lastConnected = Object.keys(environments(store.state))[0]
+if (!lastConnected || !store.state.kuzzle.environments[lastConnected]) {
+  lastConnected = Object.keys(store.state.kuzzle.environments)[0]
 }
 
-environment.switchEnvironment(store, lastConnected)
+store.dispatch(types.SWITH_ENVIRONMENT, lastConnected)
   .finally(() => {
     let router = require('./services/router').default
     sync(store, router)

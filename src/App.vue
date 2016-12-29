@@ -18,7 +18,7 @@
       </router-view>
     </div>
 
-    <modal-create :is-open="isOpen" :close="close"></modal-create>
+    <modal-create :is-open="isOpen" :close="close" :environment-id="environmentId"></modal-create>
     <modal-delete :environment-id="environmentId"></modal-delete>
   </div>
 </template>

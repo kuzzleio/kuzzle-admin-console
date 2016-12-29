@@ -1,17 +1,6 @@
-import {
-  waitForConnected
-  , connectToEnvironment
-} from './kuzzleWrapper'
 import store from '../vuex/store'
-import { reset } from '../vuex/actions'
-import {
-  environments
-  , currentEnvironmentId
-  , currentEnvironment
-} from '../vuex/modules/common/kuzzle/getters'
 import * as authTypes from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
-import Promise from 'bluebird'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
@@ -79,7 +68,7 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
     wsPort
   }
 
-  store.dispatch(kuzzleTypes.ADD_ENVIRONMENT, {id: name, environment: newEnvironment})
+  store.dispatch(kuzzleTypes.ADD_ENVIRONMENT, {id: name, environment: newEnvironment, persist: true})
   return newEnvironment
 }
 
@@ -89,63 +78,20 @@ export const loadLastConnectedEnvId = () => {
 }
 
 export const deleteEnvironment = (store, id) => {
-  if (currentEnvironmentId(store.state) === id) {
+  if (store.getters.currentEnvironmentId === id) {
     store.dispatch(authTypes.DO_LOGOUT)
   }
 
   store.dispatch(kuzzleTypes.DELETE_ENVIRONMENT, id)
 }
 
-export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
-  let envToUpdate = environments(store.state)[id]
-  if (!envToUpdate) {
-    throw new Error(`The provided id ${id} does not correspond to any existing
-      environment`)
-  }
-
-  envToUpdate = {
-    ...envToUpdate, name, color, host, ioPort, wsPort
-  }
-
-  store.dispatch(kuzzleTypes.UPDATE_ENVIRONMENT, {id, environment: envToUpdate})
-  return envToUpdate
-}
-
 export const setTokenToCurrentEnvironment = (token) => {
   store.dispatch(kuzzleTypes.UPDATE_ENVIRONMENT, {
-    id: currentEnvironmentId(store.state),
+    id: store.getters.currentEnvironmentId,
     environment: {
-      ...currentEnvironment(store.state),
+      ...store.getters.currentEnvironment,
       token: token
     }
   })
-  return currentEnvironment(store.state)
-}
-
-export const switchEnvironment = (store, id) => {
-  if (!id) {
-    throw new Error(`cannot switch to ${id} environment`)
-  }
-
-  let environment = environments(store.state)[id]
-  if (!environment) {
-    throw new Error(`Id ${id} does not match any environment`)
-  }
-
-  reset(store)
-
-  connectToEnvironment(environment)
-
-  return waitForConnected(10000)
-    .then(() => {
-      store.dispatch(kuzzleTypes.SET_CONNECTION, id)
-
-      return store.dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token})
-        .then(user => {
-          if (!user.id) {
-            return store.dispatch(authTypes.CHECK_FIRST_ADMIN)
-          }
-          return Promise.resolve()
-        })
-    })
+  return store.getters.currentEnvironment
 }

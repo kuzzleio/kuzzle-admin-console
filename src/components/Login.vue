@@ -12,7 +12,7 @@
           </div>
           <div class="row">
             <div class="col offset-s1 s2">
-              <environments-switch></environments-switch>
+              <environment-switch @environment::create="editEnvironment"></environment-switch>
             </div>
           </div>
           <div class="row">
@@ -42,14 +42,14 @@
 
 <script>
   import LoginForm from './Common/Login/Form'
-  import EnvironmentsSwitch from './Common/Environments/Switch'
+  import EnvironmentSwitch from './Common/Environments/Switch'
   import * as types from '../vuex/modules/common/routing/mutation-types'
 
   export default {
     name: 'Login',
     components: {
       LoginForm,
-      EnvironmentsSwitch
+      EnvironmentSwitch
     },
     data () {
       return {
@@ -65,6 +65,9 @@
         }
 
         this.$store.commit(types.SET_ROUTE_BEFORE_REDIRECT, null)
+      },
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
       }
     }
   }

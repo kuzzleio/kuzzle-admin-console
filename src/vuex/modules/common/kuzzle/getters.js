@@ -3,24 +3,20 @@ export const kuzzleIsConnected = state => {
 }
 
 export const currentEnvironmentId = state => {
-  return (state.kuzzle ? state.kuzzle.connectedTo : state.connectedTo)
+  return state.connectedTo
 }
 
-export const currentEnvironment = state => {
-  if (!environments(state)[currentEnvironmentId(state)]) {
+export const currentEnvironment = (state, getters) => {
+  if (!state.environments[getters.currentEnvironmentId]) {
     return null
   }
-  return environments(state)[currentEnvironmentId(state)]
+  return state.environments[getters.currentEnvironmentId]
 }
 
 export const kuzzleHost = state => {
-  return (state.kuzzle ? state.kuzzle.host : state.host)
+  return state.host
 }
 
 export const kuzzlePort = state => {
-  return (state.kuzzle ? state.kuzzle.port : state.port)
-}
-
-export const environments = state => {
-  return (state.kuzzle ? state.kuzzle.environments : state.environments)
+  return state.port
 }

@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="createEnvironments">
-    <modal id="create-env" class="modal-fixed-footer" :is-open="isOpen">
+    <modal id="create-env" class="modal-fixed-footer" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>{{environmentId ? 'Update' : 'Create'}} environment</h4>
@@ -127,8 +127,8 @@
 <script>
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
-  import { createEnvironment, updateEnvironment, DEFAULT_COLOR } from '../../../services/environment'
-  import { environments } from '../../../vuex/modules/common/kuzzle/getters'
+  import { createEnvironment, DEFAULT_COLOR } from '../../../services/environment'
+  import { UPDATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 
   export default {
     name: 'EnvironmentsCreateModal',
@@ -139,9 +139,9 @@
     directives: {
       Focus
     },
-    vuex: {
-      getters: {
-        environments
+    computed: {
+      environments () {
+        return this.$store.state.kuzzle.environments
       }
     },
     data () {
@@ -171,13 +171,16 @@
 
         if (!this.errors.name && !this.errors.wsPort && !this.errors.ioPort && !this.errors.host) {
           if (this.environmentId) {
-            updateEnvironment(
-              this.environmentId,
-              this.environment.name,
-              this.environment.color,
-              this.environment.host,
-              this.environment.ioPort,
-              this.environment.wsPort)
+            this.$store.dispatch(UPDATE_ENVIRONMENT, {
+              id: this.environmentId,
+              environment: {
+                name: this.environment.name,
+                color: this.environment.color,
+                host: this.environment.host,
+                ioPort: this.environment.ioPort,
+                wsPort: this.environment.wsPort
+              }
+            })
           } else {
             createEnvironment(
               this.environment.name,
@@ -187,7 +190,7 @@
               this.environment.wsPort)
           }
 
-          this.$emit('modal-close', 'create-env')
+          this.close()
         }
       },
       selectColor (index) {

@@ -61,7 +61,6 @@
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import { deleteEnvironment } from '../../../services/environment'
-  import { environments, currentEnvironmentId } from '../../../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'EnvironmentDeleteModal',
@@ -72,10 +71,9 @@
     components: {
       Modal
     },
-    vuex: {
-      getters: {
-        environments,
-        currentEnvironmentId
+    computed: {
+      environments () {
+        return this.$store.state.kuzzle.environments
       }
     },
     data () {

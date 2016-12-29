@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="active" :transition="transition" :id="id" class="modal" :class="computedClasses">
+    <div v-if="isOpen" :transition="transition" :id="id" class="modal" :class="computedClasses">
       <slot name="content">
         <div class="modal-content">
           <slot></slot>
@@ -12,7 +12,7 @@
     </div>
 
     <div
-      v-if="active"
+      v-if="isOpen"
       transition="modal-overlay"
       @click="canClose && close()"
       class="lean-overlay"
@@ -44,6 +44,9 @@
         'default': true,
         required: false
       },
+      close: {
+        type: Function
+      },
       bottom: Boolean,
       isOpen: Boolean
     },
@@ -55,24 +58,12 @@
       }
     },
     watch: {
-      active: function (active) {
+      isOpen: function (active) {
         if (active) {
           window.document.body.style.overflow = 'hidden'
         } else {
           window.document.body.style.overflow = 'visible'
         }
-      },
-      isOpen (open) {
-        if (open) {
-          this.open()
-        } else {
-          this.close()
-        }
-      }
-    },
-    data () {
-      return {
-        active: false
       }
     },
     mounted () {
@@ -85,7 +76,7 @@
     },
     computed: {
       computedClasses () {
-        if (!this.active) {
+        if (!this.isOpen) {
           return null
         }
 
@@ -106,12 +97,6 @@
         if (this.canClose && evt.keyCode === ESC_KEY) {
           this.close()
         }
-      },
-      open () {
-        this.active = true
-      },
-      close () {
-        this.active = false
       },
       closeModal (id) {
         if (this.id === id) {

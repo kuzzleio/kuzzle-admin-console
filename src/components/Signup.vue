@@ -12,7 +12,7 @@
           </div>
           <div class="row">
             <div class="col offset-s4 s2">
-              <environment-switch></environment-switch>
+              <environment-switch @environment::create="editEnvironment"></environment-switch>
             </div>
           </div>
           <div class="row message-warning">
@@ -180,6 +180,9 @@
             console.error('An error occurred while creating the first admin', err)
             this.$router.push({name: 'Login'})
           })
+      },
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
       }
     }
   }

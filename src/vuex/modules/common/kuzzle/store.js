@@ -3,9 +3,9 @@ import {
   ADD_ENVIRONMENT,
   UPDATE_ENVIRONMENT,
   DELETE_ENVIRONMENT,
-  CONNECT_TO_ENVIRONMENT
+  CONNECT_TO_ENVIRONMENT,
+  RESET
 } from './mutation-types'
-import { RESET } from '../../../mutation-types'
 import * as getters from './getters'
 import actions from './actions'
 

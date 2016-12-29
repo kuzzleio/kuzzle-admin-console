@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <environment-switch @environment::create="$emit('environment::create')"></environment-switch>
+        <environment-switch @environment::create="editEnvironment"></environment-switch>
       </div>
     </div>
     <div class="col s12">
@@ -56,6 +56,11 @@
     destroyed () {
       kuzzle.removeListener('reconnected', idReconnect)
       kuzzle.removeListener('connected', idConnect)
+    },
+    methods: {
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
+      }
     }
   }
 </script>

@@ -13,7 +13,7 @@
 
     <ul id='environment-dropdown' class='dropdown-content'>
       <li v-for="(env, index) in $store.state.kuzzle.environments" class="environment">
-        <div @click="clickSwitch($store, index)">
+        <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute">{{env.host}}</span>
         </div>
@@ -27,7 +27,8 @@
 </template>
 
 <script>
-  import { switchEnvironment, DEFAULT_COLOR } from '../../../services/environment'
+  import { DEFAULT_COLOR } from '../../../services/environment'
+  import { SWITH_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
   import tinycolor from 'tinycolor2/tinycolor'
   import Promise from 'bluebird'
 
@@ -64,7 +65,7 @@
     },
     methods: {
       clickSwitch (id) {
-        return switchEnvironment(this.$store, id)
+        return this.$store.dispatch(SWITH_ENVIRONMENT, id)
           .then(() => {
             /* Ugly hack in order to force Vue to refresh and pass in router.beforeEach and let check if user is auth */
             this.$router.push({path: '/fake-route'})
