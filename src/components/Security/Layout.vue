@@ -2,24 +2,24 @@
   <div>
     <aside>
       <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
-        <li v-if="canManageUsers()" class="bold">
-          <router-link tag="li" to="{name: 'SecurityUsersList', activeClass: 'active'}" class="waves-effect">
+        <router-link v-if="canManageUsers()" class="bold" tag="li" :to="{name: 'SecurityUsersList'}" active-class="active">
+          <a class="waves-effect">
             <i class="fa fa-user" aria-hidden="true"></i>
             <span>Users</span>
-          </router-link>
-        </li>
-        <li v-if="canManageProfiles()" class="bold">
-          <router-link tag="li" to="{name: 'SecurityProfilesList', activeClass: 'active'}" class="waves-effect">
+          </a>
+        </router-link>
+        <router-link v-if="canManageProfiles()" class="bold" tag="li" :to="{name: 'SecurityProfilesList'}" active-class="active">
+          <a class="waves-effect">
             <i class="fa fa-users" aria-hidden="true"></i>
             <span>Profiles</span>
-          </router-link>
-        </li>
-        <li v-if="canManageRoles()" class="bold">
-          <router-link tag="li" to="{name: 'SecurityRolesList', activeClass: 'active'}" class="waves-effect">
+          </a>
+        </router-link>
+        <router-link v-if="canManageRoles()" class="bold" tag="li" :to="{name: 'SecurityRolesList'}" active-class="active">
+          <a class="waves-effect">
             <i class="fa fa-unlock-alt" aria-hidden="true"></i>
             <span>Roles</span>
-          </router-link>
-        </li>
+          </a>
+        </router-link>
       </ul>
     </aside>
 
