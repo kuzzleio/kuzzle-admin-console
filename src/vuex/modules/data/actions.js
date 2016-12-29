@@ -4,7 +4,7 @@ import Promise from 'bluebird'
 import * as types from './mutation-types'
 
 export default {
-  [types.LIST_INDEXES_AND_COLLECTION] ({commit, dispatch}) {
+  [types.LIST_INDEXES_AND_COLLECTION] ({commit}) {
     let promises = []
 
     return new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ export default {
   },
   [types.CREATE_INDEX] ({commit}, index) {
     return kuzzle
-      .queryPromise({index: index, controller: 'admin', action: 'createIndex'}, {})
+      .queryPromise({index: index, controller: 'index', action: 'create'}, {})
       .then(() => {
         commit(types.ADD_INDEX, index)
       })
@@ -69,7 +69,7 @@ export default {
   },
   [types.DELETE_INDEX] ({commit}, index) {
     return kuzzle
-      .queryPromise({index: index, controller: 'admin', action: 'deleteIndex'}, {})
+      .queryPromise({index: index, controller: 'index', action: 'delete'}, {})
       .then(() => {
         commit(types.DELETE_INDEX, index)
       })

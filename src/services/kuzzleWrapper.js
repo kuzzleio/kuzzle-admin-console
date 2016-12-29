@@ -68,7 +68,7 @@ export const performSearch = (collection, index, filters = {}, pagination = {}, 
 
     kuzzle
       .dataCollectionFactory(collection, index)
-      .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
+      .search({...filters, ...pagination, sort}, (error, result) => {
         if (error) {
           return reject(new Error(error.message))
         }

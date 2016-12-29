@@ -150,7 +150,7 @@
 <script>
   import kuzzle from '../../../../services/kuzzle'
   import JsonForm from '../../../Common/JsonForm/JsonForm'
-  import {UNSET_NEW_DOCUMENT, SET_PARTIAL} from '../../../../vuex/modules/data/mutation-types'
+  import {UNSET_NEW_DOCUMENT, SET_PARTIAL_TO_DOCUMENT} from '../../../../vuex/modules/data/mutation-types'
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
   import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
@@ -217,7 +217,7 @@
             mergeDeep(this.mapping, getUpdatedSchema(json, this.collection).properties)
             // update document id
             if (json._id) {
-              this.$store.commit(SET_PARTIAL, {path: '_id', value: json._id})
+              this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: '_id', value: json._id})
             }
           }
           this.viewState = 'form'
@@ -245,7 +245,7 @@
         this.isOpen = false
       },
       updateId (e) {
-        this.$store.commit(SET_PARTIAL, {path: '_id', value: e.target.value})
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: '_id', value: e.target.value})
       },
       cancel () {
         this.$emit('document-create::cancel')
