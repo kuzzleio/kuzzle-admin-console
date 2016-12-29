@@ -4,7 +4,7 @@
     <router-link :to="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexName) }">
       <i class="fa fa-database" aria-hidden="true"></i>
-      <p :v-html="highlightedIndexName"></p>({{collectionCount}})
+      <span v-html="highlight(indexName, filter)"></span> ({{collectionCount}})
     </router-link>
     <ul class="collections">
       <li v-for="collectionName in orderedFilteredStoredCollections">
@@ -12,7 +12,7 @@
            :to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
-          <p v-html="collectionName"></p>
+          <span v-html="highlight(collectionName, filter)"></span>
          </router-link>
       </li>
       <li v-for="collectionName in orderedFilteredRealtimeCollections">
@@ -20,7 +20,7 @@
            :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
-          <p :v-html="collectionName"></p>
+          <span v-html="highlight(collectionName, filter)"></span>
         </router-link>
       </li>
     </ul>
@@ -79,9 +79,6 @@ export default {
         return this.highlight(obj, this.filter)
       })
       return orderBy(this.filteredRealtimeCollections, 1)
-    },
-    highlightedIndexName () {
-      return this.highlight(this.indexName, this.filter)
     }
   },
   methods: {
@@ -111,7 +108,7 @@ export default {
       return this.currentIndex === indexName && this.currentCollection === collectionName
     },
     highlight (value, filter) {
-      if (value && value !== '' && filter) {
+      if (value && value !== '' && filter && filter !== '') {
         let index = value.toLowerCase().indexOf(filter.toLowerCase())
 
         if (index >= 0) {

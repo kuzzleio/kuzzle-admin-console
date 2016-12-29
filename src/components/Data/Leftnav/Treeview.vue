@@ -64,11 +64,6 @@
         filter: ''
       }
     },
-    filters: {
-      filterIndexes (indexes, filterInput) {
-        return filterIndexesByKeyword(indexes, this.indexesAndCollections, filterInput)
-      }
-    },
     methods: {
       canSearchIndex,
       orderedFilteredIndices (order) {
@@ -80,7 +75,7 @@
     },
     computed: {
       filteredIndices () {
-        return this.$store.getters.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
+        return filterIndexesByKeyword(this.$store.getters.indexes, this.$store.state.data.indexesAndCollections, this.filter)
       },
       indexesAndCollection () {
         return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : []

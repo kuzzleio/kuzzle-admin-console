@@ -19,7 +19,7 @@
     </div>
 
     <modal-create :is-open="isOpen" :close="close" :environment-id="environmentId"></modal-create>
-    <modal-delete :environment-id="environmentId"></modal-delete>
+    <modal-delete :environment-id="environmentId" :close="close"></modal-delete>
   </div>
 </template>
 
