@@ -12,7 +12,6 @@ import {
 import * as authTypes from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import Promise from 'bluebird'
-import router from './router'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
@@ -92,7 +91,6 @@ export const loadLastConnectedEnvId = () => {
 export const deleteEnvironment = (store, id) => {
   if (currentEnvironmentId(store.state) === id) {
     store.dispatch(authTypes.DO_LOGOUT)
-    router.push({name: 'Login'})
   }
 
   store.dispatch(kuzzleTypes.DELETE_ENVIRONMENT, id)

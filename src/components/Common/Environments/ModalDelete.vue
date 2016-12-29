@@ -89,6 +89,7 @@
         if (this.environmentName === this.envConfirmation) {
           deleteEnvironment(this.environmentId)
 
+          // TODO: router.push({name: 'Login'})
           this.$commit('modal-close', 'delete-env')
         }
       }

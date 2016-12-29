@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span ref="dropdown">
     <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
        data-activates='environment-dropdown'>
         <span v-if="$store.getters.currentEnvironment" class="current-environment-name truncate">
@@ -13,7 +13,7 @@
 
     <ul id='environment-dropdown' class='dropdown-content'>
       <li v-for="(env, index) in $store.state.kuzzle.environments" class="environment">
-        <div @click="switchEnvironment($store, index)">
+        <div @click="clickSwitch($store, index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute">{{env.host}}</span>
         </div>
@@ -63,7 +63,7 @@
       }
     },
     methods: {
-      switchEnvironment (id) {
+      clickSwitch (id) {
         return switchEnvironment(this.$store, id)
           .then(() => {
             /* Ugly hack in order to force Vue to refresh and pass in router.beforeEach and let check if user is auth */
@@ -79,9 +79,8 @@
           })
       }
     },
-    created () {
-      /* eslint no-undef: 0 */
-      $(this.$el).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})
+    mounted () {
+      $(this.$refs.dropdown).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})
     }
   }
 </script>

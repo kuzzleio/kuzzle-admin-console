@@ -12,7 +12,7 @@
           </div>
           <div class="row">
             <div class="col offset-s1 s2">
-              <environment-switch></environment-switch>
+              <environments-switch></environments-switch>
             </div>
           </div>
           <div class="row">
@@ -42,14 +42,14 @@
 
 <script>
   import LoginForm from './Common/Login/Form'
-  import EnvironmentSwitch from './Common/Environments/Switch'
+  import EnvironmentsSwitch from './Common/Environments/Switch'
   import * as types from '../vuex/modules/common/routing/mutation-types'
 
   export default {
     name: 'Login',
     components: {
       LoginForm,
-      EnvironmentSwitch
+      EnvironmentsSwitch
     },
     data () {
       return {

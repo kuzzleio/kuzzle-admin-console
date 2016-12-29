@@ -19,6 +19,7 @@ module.exports = {
   },
   globals: {
     'window': false,
-    'localStorage': false
+    'localStorage': false,
+    '$': false
   }
 }
