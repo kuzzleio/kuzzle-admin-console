@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main-menu></main-menu>
+    <main-menu @environment::create="editEnvironment"></main-menu>
 
     <main class="loader">
       <router-view></router-view>
@@ -75,6 +75,9 @@
     methods: {
       onLogin () {
         this.$emit('modal-close', 'tokenExpired')
+      },
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
       }
     },
     watch: {

@@ -21,7 +21,7 @@
             Welcome <strong>{{$store.getters.user}}</strong>
           </li>
           <li>
-            <environment-switch blend-color="true" style="display: inline-flex"></environment-switch>
+            <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment"></environment-switch>
           </li>
           <li>
             <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
@@ -56,7 +56,10 @@
         this.$store.dispatch(DO_LOGOUT)
         this.$router.push({name: 'Login'})
       },
-      hasSecurityRights
+      hasSecurityRights,
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
+      }
     }
   }
 </script>
