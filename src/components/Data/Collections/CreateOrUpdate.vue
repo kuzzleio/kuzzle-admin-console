@@ -64,7 +64,7 @@
                   tabindex="4"
                   ref="jsoneditor"
                   myclass="pre_ace"
-                  :content="mapping">
+                  :content="$store.state.collection.mapping">
                 </json-editor>
               </div>
             </div>
@@ -140,7 +140,6 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import JsonEditor from '../../Common/JsonEditor'
-  import { mapping, collectionName } from '../../../vuex/modules/collection/getters'
   import Focus from '../../../directives/focus.directive'
   import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
 
@@ -157,12 +156,6 @@
       error: String,
       index: String,
       headline: String
-    },
-    vuex: {
-      getters: {
-        mapping,
-        collectionName
-      }
     },
     data () {
       return {

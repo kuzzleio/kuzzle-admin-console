@@ -65,7 +65,8 @@
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
             this.$router.push({name: 'SecurityUsersList'})
-          }).catch(err => {
+          })
+          .catch(err => {
             this.error = 'An error occurred while creating user: <br />' + err.message
           })
       },

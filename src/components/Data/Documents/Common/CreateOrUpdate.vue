@@ -289,9 +289,9 @@
           formatType(this.mapping, this.collection)
           promiseGetMappingResolve()
         })
-        .catch(() => {
+        .catch((e) => {
           // todo errors
-          promiseGetMappingReject()
+          promiseGetMappingReject(e)
         })
     },
     watch: {
