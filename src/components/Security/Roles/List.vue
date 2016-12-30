@@ -10,7 +10,8 @@
       collection="roles"
       index="%kuzzle"
       @create-clicked="createRole"
-      :display-create="canCreateRole()">
+      :display-create="canCreateRole()"
+      :perform-search="performSearchRoles">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
@@ -42,6 +43,7 @@
   import CommonList from '../../Common/List'
   import { canSearchRole, canCreateRole } from '../../../services/userAuthorization'
   import Headline from '../../Materialize/Headline'
+  import { performSearchRoles } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'RolesList',
@@ -55,7 +57,8 @@
         this.$router.push({name: 'SecurityRolesCreate'})
       },
       canSearchRole,
-      canCreateRole
+      canCreateRole,
+      performSearchRoles
     },
     route: {
       data () {

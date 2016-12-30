@@ -61,46 +61,147 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 }
 
 export const performSearch = (collection, index, filters = {}, pagination = {}, sort = []) => {
-  return new Promise((resolve, reject) => {
-    if (!collection || !index) {
-      return reject(new Error('Missing collection or index'))
-    }
+  if (!collection || !index) {
+    return Promise.reject(new Error('Missing collection or index'))
+  }
 
-    kuzzle
-      .dataCollectionFactory(collection, index)
-      .search({...filters, ...pagination, sort}, (error, result) => {
-        if (error) {
-          return reject(new Error(error.message))
+  return kuzzle
+    .dataCollectionFactory(collection, index)
+    .searchPromise({...filters, ...pagination, sort})
+    .then(result => {
+      let additionalAttributeName = null
+
+      if (sort.length > 0) {
+        if (typeof sort[0] === 'string') {
+          additionalAttributeName = sort[0]
+        } else {
+          additionalAttributeName = Object.keys(sort[0])[0]
+        }
+      }
+
+      let documents = result.documents.map((document) => {
+        let object = {
+          content: document.content,
+          id: document.id
         }
 
-        let additionalAttributeName = null
-
-        if (sort.length > 0) {
-          if (typeof sort[0] === 'string') {
-            additionalAttributeName = sort[0]
-          } else {
-            additionalAttributeName = Object.keys(sort[0])[0]
+        if (additionalAttributeName) {
+          object.additionalAttribute = {
+            name: additionalAttributeName,
+            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
           }
         }
 
-        let documents = result.documents.map((document) => {
-          let object = {
-            content: document.content,
-            id: document.id
-          }
-
-          if (additionalAttributeName) {
-            object.additionalAttribute = {
-              name: additionalAttributeName,
-              value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-            }
-          }
-
-          return object
-        })
-        resolve({documents: documents, total: result.total})
+        return object
       })
-  })
+
+      return {documents: documents, total: result.total}
+    })
+}
+
+export const performSearchUsers = (collection, index, filters = {}, pagination = {}, sort = []) => {
+  return kuzzle
+    .security
+    .searchUsersPromise({...filters, ...pagination, sort})
+    .then(result => {
+      let additionalAttributeName = null
+
+      if (sort.length > 0) {
+        if (typeof sort[0] === 'string') {
+          additionalAttributeName = sort[0]
+        } else {
+          additionalAttributeName = Object.keys(sort[0])[0]
+        }
+      }
+
+      let users = result.users.map((document) => {
+        let object = {
+          content: document.content,
+          id: document.id
+        }
+
+        if (additionalAttributeName) {
+          object.additionalAttribute = {
+            name: additionalAttributeName,
+            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+          }
+        }
+
+        return object
+      })
+
+      return {documents: users, total: result.total}
+    })
+}
+
+export const performSearchProfiles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+  return kuzzle
+    .security
+    .searchProfilesPromise({...filters, ...pagination, sort})
+    .then(result => {
+      let additionalAttributeName = null
+
+      if (sort.length > 0) {
+        if (typeof sort[0] === 'string') {
+          additionalAttributeName = sort[0]
+        } else {
+          additionalAttributeName = Object.keys(sort[0])[0]
+        }
+      }
+
+      let profiles = result.profiles.map((document) => {
+        let object = {
+          content: document.content,
+          id: document.id
+        }
+
+        if (additionalAttributeName) {
+          object.additionalAttribute = {
+            name: additionalAttributeName,
+            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+          }
+        }
+
+        return object
+      })
+
+      return {documents: profiles, total: result.total}
+    })
+}
+
+export const performSearchRoles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+  return kuzzle
+    .security
+    .searchRolesPromise({...filters, ...pagination, sort})
+    .then(result => {
+      let additionalAttributeName = null
+
+      if (sort.length > 0) {
+        if (typeof sort[0] === 'string') {
+          additionalAttributeName = sort[0]
+        } else {
+          additionalAttributeName = Object.keys(sort[0])[0]
+        }
+      }
+
+      let roles = result.roles.map((document) => {
+        let object = {
+          content: document.content,
+          id: document.id
+        }
+
+        if (additionalAttributeName) {
+          object.additionalAttribute = {
+            name: additionalAttributeName,
+            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+          }
+        }
+
+        return object
+      })
+
+      return {documents: roles, total: result.total}
+    })
 }
 
 export const deleteDocuments = (index, collection, ids) => {

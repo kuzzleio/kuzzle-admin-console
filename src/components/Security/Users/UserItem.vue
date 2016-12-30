@@ -15,10 +15,10 @@
       <a @click="toggleCollapse">{{document.id}}</a>
       <div class="profile-list">
         <div class="profile-chip chip" v-for="profile in profileList">
-          <router-link to="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</router-link>
+          <router-link :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</router-link>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <router-link to="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</router-link>
+          <router-link :to="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</router-link>
         </div>
       </div>
     </label>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="itemContent"></pre>
+      <pre v-json-formatter="document.content"></pre>
     </div>
   </div>
 </template>
@@ -87,13 +87,6 @@ export default {
     }
   },
   computed: {
-    itemContent () {
-      let contentDisplay = {...this.document.content}
-      delete contentDisplay.clearPassword
-      delete contentDisplay.profileIds
-
-      return contentDisplay
-    },
     profileList () {
       return this.document.content.profileIds.filter((item, idx) => {
         return idx < MAX_PROFILES
@@ -103,7 +96,7 @@ export default {
       return this.document.content.profileIds > MAX_PROFILES
     },
     checkboxId () {
-      return `checkbox-${this.checkboxId()}`
+      return `checkbox-${this.document.id}`
     }
   },
   methods: {

@@ -11,7 +11,8 @@
       collection="users"
       index="%kuzzle"
       @create-clicked="createUser"
-      :display-create="canCreateUser()">
+      :display-create="canCreateUser()"
+      :perform-search="performSearchUsers">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
@@ -43,6 +44,7 @@
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
   import { canSearchUser, canCreateUser } from '../../../services/userAuthorization'
+  import { performSearchUsers } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UsersList',
@@ -56,7 +58,8 @@
         this.$router.push({name: 'SecurityUsersCreate'})
       },
       canSearchUser,
-      canCreateUser
+      canCreateUser,
+      performSearchUsers
     },
     route: {
       data () {

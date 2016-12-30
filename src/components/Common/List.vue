@@ -56,7 +56,6 @@
   import ProfileItem from '../Security/Profiles/ProfileItem'
   import DocumentItem from '../Data/Documents/DocumentItem'
   import { formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters } from '../../services/filterFormat'
-  import { performSearch } from '../../services/kuzzleWrapper'
 
   export default {
     name: 'CommonList',
@@ -67,7 +66,8 @@
       displayCreate: {
         type: Boolean,
         default: false
-      }
+      },
+      performSearch: Function
     },
     components: {
       CrudlDocument,
@@ -179,7 +179,7 @@
         }
 
         // Execute search with corresponding filters
-        return performSearch(this.collection, this.index, filters, pagination, sorting)
+        return this.performSearch(this.collection, this.index, filters, pagination, sorting)
           .then(res => {
             this.documents = res.documents
             this.totalDocuments = res.total
