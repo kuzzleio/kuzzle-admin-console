@@ -12,7 +12,8 @@
       index="%kuzzle"
       @create-clicked="createUser"
       :display-create="canCreateUser()"
-      :perform-search="performSearchUsers">
+      :perform-search="performSearchUsers"
+      route-create="SecurityUsersCreate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">

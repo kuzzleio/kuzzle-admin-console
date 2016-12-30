@@ -60,7 +60,7 @@ let getValueAdditionalAttribute = (content, attributePath) => {
   return content[attribute]
 }
 
-export const performSearch = (collection, index, filters = {}, pagination = {}, sort = []) => {
+export const performSearchDocuments = (collection, index, filters = {}, pagination = {}, sort = []) => {
   if (!collection || !index) {
     return Promise.reject(new Error('Missing collection or index'))
   }

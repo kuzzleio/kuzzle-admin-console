@@ -67,7 +67,8 @@
         type: Boolean,
         default: false
       },
-      performSearch: Function
+      performSearch: Function,
+      routeCreate: String
     },
     components: {
       CrudlDocument,
@@ -189,7 +190,7 @@
           })
       },
       editDocument (route, id) {
-        this.$router.push({name: route, params: {id: encodeURIComponent(id)}})
+        this.$router.push({name: this.routeCreate, params: {id: encodeURIComponent(id)}})
       },
       deleteDocument (id) {
         this.documentToDelete = id
@@ -198,7 +199,7 @@
         this.fetchData()
       },
       create (route) {
-        this.$router.push({name: route})
+        this.$router.push({name: this.routeCreate})
       }
     },
     mounted () {

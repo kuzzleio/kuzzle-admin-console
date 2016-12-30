@@ -15,7 +15,9 @@
       :collection="collection"
       :index="index"
       @create-clicked="createDocument"
-      :display-create="canCreateDocument(index, collection)">
+      :display-create="canCreateDocument(index, collection)"
+      :perform-search="performSearchDocuments"
+      route-create="DataCreateDocument">
 
       <div slot="emptySet" class="card-panel">
         <div v-if="isRealtimeCollection" class="row valign-bottom empty-set">
@@ -76,6 +78,7 @@
     canEditDocument,
     canEditCollection
   } from '../../../services/userAuthorization'
+  import { performSearchDocuments } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'DocumentsList',
@@ -112,7 +115,8 @@
       canCreateDocument,
       canDeleteDocument,
       canEditDocument,
-      canEditCollection
+      canEditCollection,
+      performSearchDocuments
     }
   }
 </script>

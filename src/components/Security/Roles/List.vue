@@ -11,7 +11,8 @@
       index="%kuzzle"
       @create-clicked="createRole"
       :display-create="canCreateRole()"
-      :perform-search="performSearchRoles">
+      :perform-search="performSearchRoles"
+      route-create="SecurityRolesCreate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">

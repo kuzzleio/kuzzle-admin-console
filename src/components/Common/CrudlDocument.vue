@@ -183,7 +183,7 @@
     },
     methods: {
       create () {
-        this.$emit('create-clicked', 'DataCreateDocument')
+        this.$emit('create-clicked')
       },
       changePage (from) {
         this.$router.push({query: {...this.$route.query, from}})

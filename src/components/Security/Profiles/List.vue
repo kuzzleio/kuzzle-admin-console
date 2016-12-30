@@ -12,7 +12,8 @@
       index="%kuzzle"
       @create-clicked="createProfile"
       :display-create="canCreateProfile()"
-      :perform-search="performSearchProfiles">
+      :perform-search="performSearchProfiles"
+      route-create="SecurityProfilesCreate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
