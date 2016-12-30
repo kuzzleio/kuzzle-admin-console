@@ -115,11 +115,10 @@
 
         <div id="notification-container" v-if="notifications.length">
           <ul class="collapsible" v-collapsible data-collapsible="expandable">
-            <li v-for="notification in notifications">
-              <notification
-                :notification="notification">
-              </notification>
-            </li>
+            <notification
+              v-for="notification in notifications"
+              :notification="notification">
+            </notification>
           </ul>
         </div>
       </div>
