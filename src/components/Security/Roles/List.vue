@@ -25,7 +25,7 @@
             <router-link :disabled="!canCreateRole()"
                     :class="!canCreateRole() ? 'disabled' : ''"
                     :title="!canCreateRole() ? 'You are not allowed to create new roles' : ''"
-                    to="{name: 'SecurityRolesCreate'}"
+                    :to="{name: 'SecurityRolesCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a role

@@ -9,10 +9,14 @@
   export default {
     props: {
       disabled: Boolean,
-      name: String
+      name: String,
+      tabSelect: {
+        type: String,
+        default: null
+      }
     },
-    events: {
-      'tab-select' (name) {
+    watch: {
+      tabSelect (name) {
         if (!name) {
           return
         }
@@ -38,6 +42,11 @@
         if (this.name === name) {
           this.setAsSelected()
         }
+      }
+    },
+    mounted () {
+      if (this.tabSelect) {
+        this.select(this.tabSelect)
       }
     }
   }

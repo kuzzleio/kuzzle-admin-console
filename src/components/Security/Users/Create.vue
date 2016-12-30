@@ -21,8 +21,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
 
   export default {
     name: 'UserCreate',
@@ -52,17 +51,17 @@
             this.error = 'The document must have a field "_id"'
             return
           }
-          this.setNewDocument(json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
-        if (!this.newDocument._id) {
+        if (!this.$store.state.data.newDocument._id) {
           this.error = 'The document identifier is required'
           return
         }
 
         kuzzle
           .security
-          .createUserPromise(this.newDocument._id, this.newDocument)
+          .createUserPromise(this.$store.state.data.newDocument._id, this.$store.state.data.newDocument)
           .then(() => {
             kuzzle.refreshIndex('%kuzzle')
             this.$router.push({name: 'SecurityUsersList'})
@@ -76,14 +75,6 @@
         } else {
           this.$router.push({name: 'SecurityUsersList'})
         }
-      }
-    },
-    vuex: {
-      getters: {
-        newDocument
-      },
-      actions: {
-        setNewDocument
       }
     }
   }

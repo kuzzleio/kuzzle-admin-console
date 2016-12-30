@@ -34,9 +34,9 @@
     <div class="row card-panel open-search" v-show="displayBlockFilter">
       <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
       <div class="col s12">
-        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
-          <tab name="basic"><a href="">Basic Mode</a></tab>
-          <tab name="raw"><a href="">Raw JSON Mode</a></tab>
+        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter" :object-tab-active="objectTabActive">
+          <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
+          <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
           <div slot="contents" class="card">
             <div class="col s12">
@@ -141,7 +141,8 @@
       return {
         displayBlockFilter: false,
         tabActive: 'basic',
-        jsonInvalid: false
+        jsonInvalid: false,
+        objectTabActive: null
       }
     },
     methods: {
@@ -158,7 +159,11 @@
         this.$emit('filters-refresh-search')
       },
       broadcastFilterBasicSearch (filters, sorting) {
+        this.displayBlockFilter = false
         this.$emit('filters-basic-search', filters, sorting)
+      },
+      setObjectTabActive (tab) {
+        this.objectTabActive = tab
       }
     },
     mounted () {

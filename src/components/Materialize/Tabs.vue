@@ -15,19 +15,14 @@
 
   // translated from http://appcomponents.org/material-components/#!/tabs/sources
   export default {
-    props: ['active', 'isDisplayed'],
+    props: ['active', 'isDisplayed', 'objectTabActive'],
     watch: {
-      active (value) {
-        this.$emit('tab-changed', value)
-      },
       isDisplayed () {
         if (this.isDisplayed) {
           this.$emit('tab-select', this.active)
         }
-      }
-    },
-    events: {
-      'tabs-on-select' (tab) {
+      },
+      objectTabActive (tab) {
         this.select(tab)
       }
     },
@@ -46,9 +41,7 @@
     },
     methods: {
       select (tab) {
-        console.log('select tab')
         this.activeTab = tab
-        this.active = tab.name
 
         let target = tab.$el
         let parent = target.parentElement
@@ -57,6 +50,7 @@
           target.offsetLeft,
           parent.offsetWidth - target.offsetLeft - target.offsetWidth
         )
+        this.$emit('tab-changed', tab.name)
       },
       resizeIndicator () {
         if (!this.activeTab) {
@@ -82,10 +76,6 @@
     },
     mounted () {
       Vue.nextTick(() => {
-        if (this.active) {
-          this.$emit('tab-select', this.active)
-        }
-
         window.addEventListener('resize', this.resizeIndicator)
       })
     },

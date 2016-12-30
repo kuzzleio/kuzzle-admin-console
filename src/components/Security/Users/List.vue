@@ -26,7 +26,7 @@
             <router-link :disabled="!canCreateUser()"
                     :class="!canCreateUser() ? 'disabled' : ''"
                     :title="!canCreateUser() ? 'You are not allowed to create new users' : ''"
-                    to="{name: 'SecurityUsersCreate'}"
+                    :to="{name: 'SecurityUsersCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a user
