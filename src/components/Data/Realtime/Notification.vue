@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <li>
     <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
       <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
       <i class="fa" :class="notificationIcon"></i> {{notification.text}} - {{ago}}
@@ -7,7 +7,7 @@
     <div class="collapsible-body" v-if="notification.source">
       <p v-json-formatter="notification.source"></p>
     </div>
-  </div>
+  </li>
 </template>
 
 <style type="text/css" media="screen" scoped>
