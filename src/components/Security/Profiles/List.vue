@@ -27,7 +27,7 @@
             <router-link :disabled="!canCreateProfile()"
                     :class="!canCreateProfile() ? 'disabled' : ''"
                     :title="!canCreateProfile() ? 'You are not allowed to create new profiles' : ''"
-                    to="{name: 'SecurityProfilesCreate'}"
+                    :to="{name: 'SecurityProfilesCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a profile
