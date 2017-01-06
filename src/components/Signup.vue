@@ -169,7 +169,7 @@
 
         kuzzle
           .queryPromise(
-            {controller: 'admin', action: 'createFirstAdmin'},
+            {controller: 'security', action: 'createFirstAdmin'},
             {_id: this.username, body: {username: this.username, password: this.password1, reset: this.reset}})
           .then(() => {
             this.setFirstAdmin(true)

@@ -63,7 +63,7 @@
         return kuzzle
           .security
           .createUserPromise(this.newDocument._id, this.newDocument)
-          .then(() => kuzzle.queryPromise({controller: 'admin', action: 'refreshInternalIndex'}, {}))
+          .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
           .then(() => {
             this.$router.go({name: 'SecurityUsersList'})
           }).catch(err => {
