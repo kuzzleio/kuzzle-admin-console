@@ -31,7 +31,7 @@ describe('Kuzzle wrapper service', () => {
         './kuzzle': {
           dataCollectionFactory () {
             return {
-              advancedSearch (filters, cb) {
+              search (filters, cb) {
                 if (triggerError) {
                   cb(new Error('error'))
                 } else {

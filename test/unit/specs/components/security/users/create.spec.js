@@ -106,7 +106,7 @@ describe('Create user component test', () => {
 
         $vm.create('form')
           .then(() => {
-            expect(querySpy.calledWith({controller: 'admin', action: 'refreshInternalIndex'}, {})).to.be.ok
+            expect(querySpy.calledWith({controller: 'index', action: 'refreshInternal'}, {})).to.be.ok
             done()
           })
           .catch(error => {

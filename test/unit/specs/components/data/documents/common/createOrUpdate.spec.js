@@ -182,7 +182,7 @@ describe('createOrUpdate document tests', () => {
       triggerError = false
       mockInjector()
       setTimeout(() => {
-        expect(querySpy.calledWith({controller: 'admin', action: 'getUserMapping'}, {}), 'should admin:getUserMapping action be called').to.be.ok
+        expect(querySpy.calledWith({controller: 'collection', action: 'getUserMapping'}, {}), 'should admin:getUserMapping action be called').to.be.ok
         expect(formatTypeSpy.calledWith({foo: 'bar'}), 'should formatType be called').to.be.ok
         done()
       }, 100)
