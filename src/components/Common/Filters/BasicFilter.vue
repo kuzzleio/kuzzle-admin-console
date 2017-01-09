@@ -150,7 +150,7 @@
         }
 
         if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
-          this.filters.basic[0].$set(0, {...emptyBasicFilter})
+          this.$set(this.filters.basic[0], 0, {...emptyBasicFilter})
           this.updateFilter()
           return
         }
