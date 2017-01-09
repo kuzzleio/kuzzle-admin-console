@@ -17,6 +17,7 @@
       @create-clicked="createDocument"
       :display-create="canCreateDocument(index, collection)"
       :perform-search="performSearchDocuments"
+      :perform-delete="performDeleteDocuments"
       route-create="DataCreateDocument">
 
       <div slot="emptySet" class="card-panel">
@@ -78,7 +79,7 @@
     canEditDocument,
     canEditCollection
   } from '../../../services/userAuthorization'
-  import { performSearchDocuments } from '../../../services/kuzzleWrapper'
+  import { performSearchDocuments, performDeleteDocuments } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'DocumentsList',
@@ -116,7 +117,8 @@
       canDeleteDocument,
       canEditDocument,
       canEditCollection,
-      performSearchDocuments
+      performSearchDocuments,
+      performDeleteDocuments
     }
   }
 </script>

@@ -19,6 +19,7 @@
       :selected-documents="selectedDocuments"
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
+      :perform-delete="performDelete"
       @create-clicked="create"
       @toggle-all="toggleAll"
       @crudl-refresh-search="fetchData">
@@ -68,6 +69,7 @@
         default: false
       },
       performSearch: Function,
+      performDelete: Function,
       routeCreate: String
     },
     components: {
@@ -184,6 +186,7 @@
           .then(res => {
             this.documents = res.documents
             this.totalDocuments = res.total
+            return {documents: this.documents, totalDocuments: this.totalDocuments}
           })
           .catch((e) => {
             this.$emit('toast', 'An error occurred while performing search: <br />' + e.message, 'error')

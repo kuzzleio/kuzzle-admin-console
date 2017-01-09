@@ -125,7 +125,6 @@
     basicFilterForm
   } from '../../vuex/modules/common/crudlDocument/getters'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
-  import {deleteDocuments} from '../../services/kuzzleWrapper'
 
   export default {
     name: 'CrudlDocument',
@@ -157,7 +156,8 @@
       basicFilter: Array,
       sorting: Object,
       availableFilters: Object,
-      documentToDelete: String
+      documentToDelete: String,
+      performDelete: Function
     },
     vuex: {
       getters: {
@@ -189,7 +189,7 @@
         this.$router.push({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
-        deleteDocuments(this.index, this.collection, this.selectedDocuments)
+        this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.refreshSearch()
             this.close()
@@ -199,7 +199,7 @@
           })
       },
       confirmSingleDelete (id) {
-        deleteDocuments(this.index, this.collection, [id])
+        this.performDelete(this.index, this.collection, [id])
           .then(() => {
             this.refreshSearch()
             this.close()
@@ -212,7 +212,6 @@
         this.$router.push({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
-        console.log('## kk', filters, sorting)
         if (!filters && !sorting) {
           this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
           return

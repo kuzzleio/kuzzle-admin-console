@@ -204,22 +204,54 @@ export const performSearchRoles = (collection, index, filters = {}, pagination =
     })
 }
 
-export const deleteDocuments = (index, collection, ids) => {
+export const performDeleteDocuments = (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0 || !index || !collection) {
     return
   }
 
-  return new Promise((resolve, reject) => {
-    kuzzle
+  return kuzzle
       .dataCollectionFactory(collection, index)
-      .deleteDocument({query: {ids: {values: ids}}}, (error) => {
-        if (error) {
-          return reject(new Error(error.message))
-        }
-
-        kuzzle.refreshIndex(index, () => {
-          resolve()
-        })
+      .deleteDocumentPromise({query: {ids: {values: ids}}})
+      .then(() => {
+        return kuzzle.refreshIndex(index)
       })
-  })
+}
+
+export const performDeleteUsers = (index, collection, ids) => {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return
+  }
+
+  return kuzzle
+    .security()
+    .deleteUserPromise({query: {ids: {values: ids}}})
+    .then(() => {
+      return kuzzle.refreshIndex(index)
+    })
+}
+
+export const performDeleteRoles = (index, collection, ids) => {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return
+  }
+
+  return kuzzle
+    .security()
+    .deleteRolesPromise({query: {ids: {values: ids}}})
+    .then(() => {
+      return kuzzle.refreshIndex(index)
+    })
+}
+
+export const performDeleteProfiles = (index, collection, ids) => {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return
+  }
+
+  return kuzzle
+    .security()
+    .deleteProfilesPromise({query: {ids: {values: ids}}})
+    .then(() => {
+      return kuzzle.refreshIndex(index)
+    })
 }

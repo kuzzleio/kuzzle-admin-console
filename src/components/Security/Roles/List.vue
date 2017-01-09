@@ -12,6 +12,7 @@
       @create-clicked="createRole"
       :display-create="canCreateRole()"
       :perform-search="performSearchRoles"
+      :perform-delete="performDeleteRoles"
       route-create="SecurityRolesCreate">
 
       <div slot="emptySet" class="card-panel">
@@ -44,7 +45,7 @@
   import CommonList from '../../Common/List'
   import { canSearchRole, canCreateRole } from '../../../services/userAuthorization'
   import Headline from '../../Materialize/Headline'
-  import { performSearchRoles } from '../../../services/kuzzleWrapper'
+  import { performSearchRoles, performDeleteRoles } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'RolesList',
@@ -59,7 +60,8 @@
       },
       canSearchRole,
       canCreateRole,
-      performSearchRoles
+      performSearchRoles,
+      performDeleteRoles
     },
     route: {
       data () {
