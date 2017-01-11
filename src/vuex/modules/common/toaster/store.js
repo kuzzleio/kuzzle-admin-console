@@ -8,7 +8,7 @@ export const mutations = {
   [SET_TOAST] (state, payload) {
     state.toast = {
       text: null,
-      duration: 999999990,
+      duration: 5000,
       cssClass: 'error',
       cb: null,
       ...payload
