@@ -14,6 +14,7 @@
   import CreateOrUpdate from './CreateOrUpdate'
   import { FETCH_COLLECTION_DETAIL } from '../../../vuex/modules/collection/mutation-types'
   import kuzzle from '../../../services/kuzzle'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'CollectionUpdate',
@@ -57,7 +58,7 @@
     mounted () {
       this.$store.dispatch(FETCH_COLLECTION_DETAIL, {collections: this.$store.state.data.indexesAndCollections[this.index], index: this.index, collection: this.$store.state.route.params.collection})
         .catch(e => {
-          this.$emit('toast', e.message, 'error')
+          this.$store.commit(SET_TOAST, {text: e.message})
           this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
         })
     }

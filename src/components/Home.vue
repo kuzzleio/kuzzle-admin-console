@@ -6,7 +6,7 @@
       <router-view></router-view>
     </main>
 
-    <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false">
+    <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="bulkDeleteIsOpen">
       <h5>Your session has expired</h5>
       <h6>Please, relogin</h6>
       <login-form :on-login="onLogin"></login-form>
@@ -69,7 +69,8 @@
     data () {
       return {
         host: null,
-        port: null
+        port: null,
+        isOpen: false
       }
     },
     methods: {
@@ -83,7 +84,7 @@
     watch: {
       tokenValid (valid) {
         if (!valid) {
-          this.$emit('modal-open', 'tokenExpired')
+          this.isOpen = true
         }
       },
       kuzzleIsConnected (isConnected) {

@@ -26,6 +26,7 @@
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import {newDocument} from '../../../vuex/modules/data/getters'
   import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -41,7 +42,7 @@
       update (viewState, json) {
         if (viewState === 'code') {
           if (!json) {
-            this.$emit('toast', 'Invalid document', 'error')
+            this.$store.commit(SET_TOAST, {text: 'Invalid document'})
             return
           }
           this.setNewDocument(json)
@@ -56,7 +57,7 @@
           })
           .catch((err) => {
             if (err) {
-              this.$emit('toast', err.message, 'error')
+              this.$store.commit(SET_TOAST, {text: err.message})
             }
           })
       },
@@ -86,7 +87,7 @@
           return null
         })
         .catch(err => {
-          this.$emit('toast', err.message, 'error')
+          this.$store.commit(SET_TOAST, {text: err.message})
         })
     }
   }

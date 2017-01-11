@@ -202,6 +202,7 @@
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'CollectionWatch',
@@ -423,7 +424,7 @@
             if (err) {
               this.room = null
               this.subscribed = false
-              this.$emit('toast', err.message, 'error')
+              this.$store.commit(SET_TOAST, {text: err.message})
             } else {
               this.subscribed = true
               this.room = room

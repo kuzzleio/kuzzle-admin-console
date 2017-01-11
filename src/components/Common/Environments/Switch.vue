@@ -31,6 +31,7 @@
   import { SWITH_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
   import tinycolor from 'tinycolor2/tinycolor'
   import Promise from 'bluebird'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'EnvironmentsSwitch',
@@ -75,7 +76,7 @@
             }, 0)
           })
           .catch((e) => {
-            this.$emit('toast', 'An error occurred while switching environment', 'error')
+            this.$store.commit(SET_TOAST, 'An error occurred while switching environment')
             return Promise.reject(e)
           })
       }

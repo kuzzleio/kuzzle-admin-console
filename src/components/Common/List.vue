@@ -57,6 +57,7 @@
   import ProfileItem from '../Security/Profiles/ProfileItem'
   import DocumentItem from '../Data/Documents/DocumentItem'
   import { formatFromQuickSearch, formatFromBasicSearch, formatSort, availableFilters } from '../../services/filterFormat'
+  import {SET_TOAST} from '../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'CommonList',
@@ -189,7 +190,7 @@
             return {documents: this.documents, totalDocuments: this.totalDocuments}
           })
           .catch((e) => {
-            this.$emit('toast', 'An error occurred while performing search: <br />' + e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: 'An error occurred while performing search: <br />' + e.message})
           })
       },
       editDocument (route, id) {

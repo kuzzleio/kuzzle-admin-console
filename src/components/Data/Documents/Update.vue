@@ -40,6 +40,7 @@
   import CreateOrUpdate from './Common/CreateOrUpdate'
   import CollectionTabs from '../Collections/Tabs'
   import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   let room
 
@@ -113,7 +114,7 @@
             return null
           })
           .catch(err => {
-            this.$emit('toast', err.message, 'error')
+            this.$store.commit(SET_TOAST, {text: err.message})
           })
       }
     },

@@ -11,6 +11,7 @@
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     components: {
@@ -35,7 +36,7 @@
             this.$router.push({name: 'SecurityRolesList'})
           })
           .catch((e) => {
-            this.$emit('toast', e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
       cancel () {
@@ -55,7 +56,7 @@
           this.content = role.content
         })
         .catch((e) => {
-          this.$emit('toast', e.message, 'error')
+          this.$store.commit(SET_TOAST, {text: e.message})
           this.$router.push({name: 'SecurityRolesCreate'})
         })
     }
