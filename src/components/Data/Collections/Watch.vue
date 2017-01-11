@@ -38,7 +38,7 @@
               You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
             </p>
             <p>
-              <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
+              <em>Learn more about security & permissions on <a href="http://docs.kuzzle.io/guide/#security" target="_blank">Kuzzle guide</a></em>
             </p>
           </div>
         </div>
@@ -87,7 +87,7 @@
             <div class="col s8 m9 l10">
               <p>
                 You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
               </p>
               <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
                 <i class="fa left fa-play"></i>
@@ -107,7 +107,7 @@
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
               </p>
             </div>
           </div>

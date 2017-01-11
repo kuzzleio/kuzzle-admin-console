@@ -1,5 +1,6 @@
 import Vue from 'vue'
 // import router from './services/router'
+import VueRouter from 'vue-router'
 import App from './App'
 import store from './vuex/store'
 import { sync } from 'vuex-router-sync'
@@ -23,6 +24,8 @@ environment.persistEnvironments(store.state.kuzzle.environments)
 if (!lastConnected || !store.state.kuzzle.environments[lastConnected]) {
   lastConnected = Object.keys(store.state.kuzzle.environments)[0]
 }
+
+Vue.use(VueRouter)
 
 store.dispatch(types.SWITH_ENVIRONMENT, lastConnected)
   .finally(() => {

@@ -1,11 +1,10 @@
 import store from '../../../../../../../src/vuex/store'
 import Vue from 'vue'
 
-let JsonFormInjector = require('!!vue?inject!../../../../../../../src/components/Common/JsonForm/JsonFormItemArray/InlineActions')
+let InlineActions = require('../../../../../../../src/components/Common/JsonForm/JsonFormItemArray/InlineActions')
 
 describe('InlineActions tests', () => {
   let sandbox
-  let InlineActions
   let vm
   let valueItems = []
   let $dispatch
@@ -29,7 +28,6 @@ describe('InlineActions tests', () => {
 
   beforeEach(() => {
     sandbox = sinon.sandbox.create()
-    InlineActions = JsonFormInjector({})
   })
 
   afterEach(() => {

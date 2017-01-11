@@ -1,9 +1,5 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
 import { mockedComponent } from '../helper'
 const homeInjector = require('!!vue?inject!../../../../src/components/Home')
-
-Vue.use(VueRouter)
 
 describe('Home.vue tests', () => {
   let Home
