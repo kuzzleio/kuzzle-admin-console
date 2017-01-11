@@ -77,7 +77,7 @@
       title: String,
       updateId: String
     },
-
+    name: 'SecurityCreateOrUpdate',
     components: {
       JsonEditor,
       Headline
