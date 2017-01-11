@@ -74,7 +74,7 @@
                 <p class="help">
                   Mapping is the process of defining how a document,
                   and the fields it contains, are stored and indexed.
-                  <a href="http://kuzzle.io/api-reference/#updatemapping" target="_blank">Read more about mapping</a>
+                  <a href="http://docs.kuzzle.io/api-reference/#updatemapping" target="_blank">Read more about mapping</a>
                 </p>
               </div>
             </div>
