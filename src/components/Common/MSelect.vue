@@ -32,7 +32,9 @@
         /* eslint no-undef: 0 */
         $el.material_select()
         $el.on('change', (e) => {
-          this.$emit('input', $el[0].value)
+          if ($el[0].value) {
+            this.$emit('input', $el[0].value)
+          }
         })
       })
     }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <main-menu @environment::create="editEnvironment"></main-menu>
+    <main-menu @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></main-menu>
 
     <main class="loader">
       <router-view></router-view>
@@ -71,6 +71,9 @@
       },
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       },
       noop () {}
     },

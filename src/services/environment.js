@@ -77,7 +77,7 @@ export const loadLastConnectedEnvId = () => {
   return localStorage.getItem(LAST_CONNECTED)
 }
 
-export const deleteEnvironment = (store, id) => {
+export const deleteEnvironment = (id) => {
   if (store.getters.currentEnvironmentId === id) {
     store.dispatch(authTypes.DO_LOGOUT)
   }

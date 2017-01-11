@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="confirmDeleteEnvironment">
-    <modal id="delete-env" class="left-align" :close="close">
+    <modal id="delete-env" class="left-align" :close="close" :is-open="isOpen">
       <div class="row">
         <div class="col s12">
           <h4>Environment <strong>{{environmentName}}</strong> deletion</h4>
@@ -28,7 +28,7 @@
         <button
           href="#!"
           class="btn-flat waves-effect waves-grey"
-          @click.prevent="$emit('modal-close', 'delete-env')">
+          @click.prevent="close">
             Cancel
         </button>
       </span>
@@ -64,7 +64,7 @@
 
   export default {
     name: 'EnvironmentDeleteModal',
-    props: ['environmentId'],
+    props: ['environmentId', 'isOpen', 'close'],
     directives: {
       Focus
     },
@@ -87,11 +87,10 @@
         if (this.environmentName === this.envConfirmation) {
           deleteEnvironment(this.environmentId)
 
-          // TODO: router.push({name: 'Login'})
-          this.$commit('modal-close', 'delete-env')
+          this.close()
+          this.$router.push({name: 'Login'})
         }
-      },
-      close () {}
+      }
     },
     watch: {
       environmentId () {
