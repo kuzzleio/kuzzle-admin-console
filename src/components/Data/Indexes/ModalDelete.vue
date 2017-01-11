@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="tryDeleteIndex(index)">
-    <modal :id="id" class="left-align" :is-open="isOpen">
+    <modal :id="id" class="left-align" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>Index <strong>{{index}}</strong> deletion</h4>
