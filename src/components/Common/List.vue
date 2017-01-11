@@ -183,7 +183,6 @@
         // Execute search with corresponding filters
         return this.performSearch(this.collection, this.index, filters, pagination, sorting)
           .then(res => {
-            console.log(res.documents)
             this.documents = res.documents
             this.totalDocuments = res.total
             return {documents: this.documents, totalDocuments: this.totalDocuments}
