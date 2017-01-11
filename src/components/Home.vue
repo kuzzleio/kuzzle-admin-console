@@ -12,9 +12,9 @@
       <login-form :on-login="onLogin" ></login-form>
     </modal>
 
-    <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false" :close="noop">
+    <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false" :close="noop" :is-open="kuzzleDisconnectedIsOpen">
       <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
-      <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
+      <kuzzle-disconnected :host="$store.state.kuzzle.host" :port="$store.state.kuzzle.port"></kuzzle-disconnected>
     </modal>
   </div>
 </template>
@@ -47,8 +47,6 @@
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
   import KuzzleDisconnected from './Error/KuzzleDisconnected'
-  import { tokenValid } from '../vuex/modules/auth/getters'
-  import { kuzzleIsConnected, kuzzleHost, kuzzlePort } from '../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'Home',
@@ -58,19 +56,12 @@
       Modal,
       KuzzleDisconnected
     },
-    vuex: {
-      getters: {
-        tokenValid,
-        kuzzleIsConnected,
-        kuzzleHost,
-        kuzzlePort
-      }
-    },
     data () {
       return {
         host: null,
         port: null,
-        tokenExpiredIsOpen: false
+        tokenExpiredIsOpen: false,
+        kuzzleDisconnectedIsOpen: false
       }
     },
     methods: {
@@ -89,12 +80,12 @@
           this.tokenExpiredIsOpen = true
         }
       },
-      kuzzleIsConnected (isConnected) {
+      '$store.state.kuzzle.connectedTo' (isConnected) {
         if (!isConnected) {
-          this.$emit('modal-open', 'kuzzleDisconnected')
+          this.kuzzleDisconnectedIsOpen = true
           return
         }
-        this.$emit('modal-close', 'kuzzleDisconnected')
+        this.kuzzleDisconnectedIsOpen = false
       }
     }
   }
