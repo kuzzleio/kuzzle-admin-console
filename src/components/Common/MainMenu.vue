@@ -21,7 +21,7 @@
             Welcome <strong>{{$store.getters.user}}</strong>
           </li>
           <li>
-            <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment"></environment-switch>
+            <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>
             <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
@@ -59,6 +59,9 @@
       hasSecurityRights,
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }

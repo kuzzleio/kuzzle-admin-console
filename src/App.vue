@@ -17,7 +17,7 @@
     </div>
 
     <modal-create :is-open="isOpen" :close="close" :environment-id="environmentId"></modal-create>
-    <modal-delete :environment-id="environmentId" :close="close"></modal-delete>
+    <modal-delete :environment-id="environmentId" :close="close" :is-open="deleteIsOpen"></modal-delete>
 
     <toaster></toaster>
   </div>
@@ -54,7 +54,8 @@ export default {
   data () {
     return {
       environmentId: null,
-      isOpen: false
+      isOpen: false,
+      deleteIsOpen: false
     }
   },
   methods: {
@@ -64,10 +65,11 @@ export default {
     },
     deleteEnvironment (id) {
       this.environmentId = id
-      this.$emit('modal-open', 'delete-env')
+      this.deleteIsOpen = true
     },
     close () {
       this.isOpen = false
+      this.deleteIsOpen = false
     }
   }
 }
