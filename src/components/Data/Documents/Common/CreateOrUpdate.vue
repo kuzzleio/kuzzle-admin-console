@@ -99,8 +99,11 @@
           </div>
           <div class="input-field">
             <m-select @input="changeAttrType">
-              <option value="string" selected>String</option>
+              <option value="string" selected v-if="$store.getters.oldMappingSupport">String</option>
+              <option value="string" selected v-if="!$store.getters.oldMappingSupport">Text</option>
+              <option value="string" selected v-if="!$store.getters.oldMappingSupport">Keyword</option>
               <option value="integer">Integer</option>
+              <option value="boolean">Boolean</option>
               <option value="float">Float</option>
               <option value="nested">Nested</option>
               <option value="object">Object</option>
@@ -153,7 +156,7 @@
   import {UNSET_NEW_DOCUMENT, SET_PARTIAL_TO_DOCUMENT} from '../../../../vuex/modules/data/mutation-types'
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
-  import {getRefMappingFromPath, getUpdatedSchema} from '../../../../services/documentFormat'
+  import {getRefMappingFromPath, getUpdatedSchema, cleanMapping} from '../../../../services/documentFormat'
   import {mergeDeep, formatType, countAttributes} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
   import MSelect from '../../../Common/MSelect'
@@ -208,7 +211,7 @@
           json = this.$refs.jsoneditor.getJson()
         }
 
-        this.$emit('document-create::create', this.viewState, json, this.mapping)
+        this.$emit('document-create::create', this.viewState, json, cleanMapping(this.mapping))
       },
       switchEditMode () {
         if (this.viewState === 'code') {
@@ -285,6 +288,7 @@
           if (countAttributes(res.mapping) > 100) {
             this.big = true
           }
+
           this.mapping = res.mapping
           formatType(this.mapping, this.collection)
           promiseGetMappingResolve()

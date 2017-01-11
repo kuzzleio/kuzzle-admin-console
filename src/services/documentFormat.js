@@ -44,14 +44,27 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
       }
     })
     schema = {
-      properties: properties,
-      type: type
+      properties: properties
     }
   } else {
     schema = {
-      type: type,
       val: jsonDocument
     }
   }
+
   return schema
+}
+
+export const cleanMapping = (mapping) => {
+  let _mapping = {...mapping}
+
+  Object.keys(_mapping).forEach(o => {
+    if (_mapping[o].properties) {
+      _mapping[o].properties = cleanMapping(_mapping[o].properties)
+    } else {
+      delete _mapping[o].val
+    }
+  })
+
+  return _mapping
 }

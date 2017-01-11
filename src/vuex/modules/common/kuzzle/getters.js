@@ -20,3 +20,11 @@ export const kuzzleHost = state => {
 export const kuzzlePort = state => {
   return state.port
 }
+
+export const oldMappingSupport = (state, getters) => {
+  if (!state.environments[getters.currentEnvironmentId]) {
+    return null
+  }
+
+  return /^2/.test(state.environments[getters.currentEnvironmentId].storageEngineVersion)
+}
