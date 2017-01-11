@@ -25,19 +25,17 @@
       @crudl-refresh-search="fetchData">
 
         <div class="collection">
-          <transition name="collection" v-for="document in documents">
-            <div class="collection-item collection-transition">
-              <component :is="itemName"
-                         @checkbox-click="toggleSelectDocuments"
-                         :document="document"
-                         :is-checked="isChecked(document.id)"
-                         :index="index"
-                         :collection="collection"
-                         @common-list::edit-document="editDocument"
-                         @delete-document="deleteDocument">
-              </component>
-            </div>
-          </transition>
+          <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+            <component :is="itemName"
+                       @checkbox-click="toggleSelectDocuments"
+                       :document="document"
+                       :is-checked="isChecked(document.id)"
+                       :index="index"
+                       :collection="collection"
+                       @common-list::edit-document="editDocument"
+                       @delete-document="deleteDocument">
+            </component>
+          </div>
         </div>
 
     </crudl-document>
@@ -185,6 +183,7 @@
         // Execute search with corresponding filters
         return this.performSearch(this.collection, this.index, filters, pagination, sorting)
           .then(res => {
+            console.log(res.documents)
             this.documents = res.documents
             this.totalDocuments = res.total
             return {documents: this.documents, totalDocuments: this.totalDocuments}
