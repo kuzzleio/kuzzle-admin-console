@@ -39,6 +39,9 @@
         this.value = v
       }
     },
+    mounted () {
+      this.value = this.content
+    },
     methods: {
       hideAttribute () {
         setTimeout(() => {

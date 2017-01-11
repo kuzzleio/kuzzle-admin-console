@@ -21,6 +21,9 @@
         value: false
       }
     },
+    mounted () {
+      this.value = this.content
+    },
     watch: {
       value (v) {
         this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: v})
