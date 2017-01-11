@@ -69,7 +69,8 @@
       },
       performSearch: Function,
       performDelete: Function,
-      routeCreate: String
+      routeCreate: String,
+      routeUpdate: String
     },
     components: {
       CrudlDocument,
@@ -183,7 +184,6 @@
         // Execute search with corresponding filters
         return this.performSearch(this.collection, this.index, filters, pagination, sorting)
           .then(res => {
-            console.log(res.documents)
             this.documents = res.documents
             this.totalDocuments = res.total
             return {documents: this.documents, totalDocuments: this.totalDocuments}
@@ -193,7 +193,7 @@
           })
       },
       editDocument (route, id) {
-        this.$router.push({name: this.routeCreate, params: {id: encodeURIComponent(id)}})
+        this.$router.push({name: this.routeUpdate, params: {id: encodeURIComponent(id)}})
       },
       deleteDocument (id) {
         this.documentToDelete = id

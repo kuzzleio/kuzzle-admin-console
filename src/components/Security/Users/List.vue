@@ -14,7 +14,8 @@
       :display-create="canCreateUser()"
       :perform-search="performSearchUsers"
       :perform-delete="performDeleteUsers"
-      route-create="SecurityUsersCreate">
+      route-create="SecurityUsersCreate"
+      route-update="SecurityUsersUpdate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
