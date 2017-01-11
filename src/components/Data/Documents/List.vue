@@ -18,7 +18,8 @@
       :display-create="canCreateDocument(index, collection)"
       :perform-search="performSearchDocuments"
       :perform-delete="performDeleteDocuments"
-      route-create="DataCreateDocument">
+      route-create="DataCreateDocument"
+      route-update="DataUpdateDocument">
 
       <div slot="emptySet" class="card-panel">
         <div v-if="isRealtimeCollection" class="row valign-bottom empty-set">

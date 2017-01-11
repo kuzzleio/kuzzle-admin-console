@@ -13,7 +13,8 @@
       :display-create="canCreateRole()"
       :perform-search="performSearchRoles"
       :perform-delete="performDeleteRoles"
-      route-create="SecurityRolesCreate">
+      route-create="SecurityRolesCreate"
+      route-update="SecurityRolesUpdate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">

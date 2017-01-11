@@ -14,7 +14,8 @@
       :display-create="canCreateProfile()"
       :perform-search="performSearchProfiles"
       :perform-delete="performDeleteProfiles"
-      route-create="SecurityProfilesCreate">
+      route-create="SecurityProfilesCreate"
+      route-update="SecurityProfilesUpdate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
