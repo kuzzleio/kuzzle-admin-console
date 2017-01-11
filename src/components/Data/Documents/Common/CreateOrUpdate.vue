@@ -99,12 +99,15 @@
           </div>
           <div class="input-field">
             <m-select @input="changeAttrType">
-              <option value="string" selected>String</option>
+              <option value="string" selected v-if="$store.getters.oldMappingSupport">String</option>
+              <option value="string" selected v-if="!$store.getters.oldMappingSupport">Text</option>
+              <option value="string" selected v-if="!$store.getters.oldMappingSupport">Keyword</option>
               <option value="integer">Integer</option>
               <option value="float">Float</option>
               <option value="nested">Nested</option>
               <option value="object">Object</option>
               <option value="geo_point">Geo point</option>
+              <option value="boolean">Boolean</option>
             </m-select>
             <label>Attribute type</label>
           </div>

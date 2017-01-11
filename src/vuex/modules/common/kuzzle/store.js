@@ -1,11 +1,5 @@
 import Vue from 'vue'
-import {
-  ADD_ENVIRONMENT,
-  UPDATE_ENVIRONMENT,
-  DELETE_ENVIRONMENT,
-  CONNECT_TO_ENVIRONMENT,
-  RESET
-} from './mutation-types'
+import * as types from './mutation-types'
 import * as getters from './getters'
 import actions from './actions'
 
@@ -15,7 +9,7 @@ const state = {
 }
 
 export const mutations = {
-  [ADD_ENVIRONMENT] (state, payload) {
+  [types.ADD_ENVIRONMENT] (state, payload) {
     if (!payload.environment) {
       throw new Error('Cannot store a falsy environment')
     }
@@ -24,20 +18,20 @@ export const mutations = {
     }
     Vue.set(state.environments, payload.id, payload.environment)
   },
-  [UPDATE_ENVIRONMENT] (state, payload) {
+  [types.UPDATE_ENVIRONMENT] (state, payload) {
     if (Object.keys(state.environments).indexOf(payload.id) === -1) {
       throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`)
     }
     state.environments[payload.id] = payload.environment
   },
-  [DELETE_ENVIRONMENT] (state, id) {
+  [types.DELETE_ENVIRONMENT] (state, id) {
     if (Object.keys(state.environments).indexOf(id) === -1) {
       return
     }
     Vue.delete(state.environments, id)
   },
-  [CONNECT_TO_ENVIRONMENT] (state, id) {
+  [types.CONNECT_TO_ENVIRONMENT] (state, id) {
     if (id === null) {
       throw new Error('Cannot connect to a null environment. To reset connection, use the RESET mutation.')
     }
@@ -47,7 +41,14 @@ export const mutations = {
     }
     state.connectedTo = id
   },
-  [RESET] (state) {
+  [types.SET_STORAGE_ENGINE_VERSION] (state, version) {
+    if (!state.connectedTo || !state.environments[state.connectedTo]) {
+      return
+    }
+
+    state.environments[state.connectedTo].storageEngineVersion = version
+  },
+  [types.RESET] (state) {
     state.connectedTo = null
   }
 }
