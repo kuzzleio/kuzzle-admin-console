@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import store from '../../../../src/vuex/store'
 import Promise from 'bluebird'
 
 let SignupInjector = require('!!vue?inject!../../../../src/components/Signup')
+import {mockedComponent} from '../helper'
 
 describe('Signup component', () => {
   let Signup
@@ -19,97 +19,88 @@ describe('Signup component', () => {
 
     Signup = SignupInjector({
       '../services/kuzzle': {queryPromise},
-      '../vuex/modules/auth/actions': {
-        setFirstAdmin: sandbox.stub()
-      }
+      './Common/Environments/Switch': mockedComponent
     })
 
-    vm = new Vue({
-      template: '<div><signup v-ref:signup></signup></div>',
-      components: {
-        Signup
-      },
-      store: store
-    }).$mount()
+    vm = new Vue(Signup).$mount()
 
-    vm.$refs.signup.$router = {go: sandbox.stub()}
-    vm.$refs.signup.setFirstAdmin = sandbox.stub()
+    vm.$store = {commit: sandbox.stub()}
+    vm.$router = {push: sandbox.stub()}
   }
 
   afterEach(() => sandbox.reset())
 
-  describe('Methods', () => {
+  describe.only('Methods', () => {
     describe('signup', () => {
       it('should set error if one of required fields is empty', () => {
         mockInjector(false)
-        vm.$refs.signup.username = ''
-        vm.$refs.signup.password1 = 'toto'
-        vm.$refs.signup.password2 = 'toto'
+        vm.username = ''
+        vm.password1 = 'toto'
+        vm.password2 = 'toto'
 
-        vm.$refs.signup.signup()
-        expect(vm.$refs.signup.error).be.equal('All fields are mandatory')
+        vm.signup()
+        expect(vm.error).be.equal('All fields are mandatory')
 
-        vm.$refs.signup.username = 'toto'
-        vm.$refs.signup.password1 = ''
-        vm.$refs.signup.password2 = 'toto'
+        vm.username = 'toto'
+        vm.password1 = ''
+        vm.password2 = 'toto'
 
-        vm.$refs.signup.signup()
-        expect(vm.$refs.signup.error).be.equal('All fields are mandatory')
+        vm.signup()
+        expect(vm.error).be.equal('All fields are mandatory')
 
-        vm.$refs.signup.username = 'toto'
-        vm.$refs.signup.password1 = 'toto'
-        vm.$refs.signup.password2 = ''
+        vm.username = 'toto'
+        vm.password1 = 'toto'
+        vm.password2 = ''
 
-        vm.$refs.signup.signup()
-        expect(vm.$refs.signup.error).be.equal('All fields are mandatory')
+        vm.signup()
+        expect(vm.error).be.equal('All fields are mandatory')
       })
 
       it('should set error if password does not match', () => {
         mockInjector(false)
-        vm.$refs.signup.username = 'toto'
-        vm.$refs.signup.password1 = 'pass1'
-        vm.$refs.signup.password2 = 'pass2'
+        vm.username = 'toto'
+        vm.password1 = 'pass1'
+        vm.password2 = 'pass2'
 
-        vm.$refs.signup.signup()
-        expect(vm.$refs.signup.error).be.equal('Password does not match')
+        vm.signup()
+        expect(vm.error).be.equal('Password does not match')
       })
 
       it('should set waiting if everything is fine', () => {
         mockInjector(false)
-        vm.$refs.signup.username = 'toto'
-        vm.$refs.signup.password1 = 'toto'
-        vm.$refs.signup.password2 = 'toto'
+        vm.username = 'toto'
+        vm.password1 = 'toto'
+        vm.password2 = 'toto'
 
-        vm.$refs.signup.signup()
-        expect(vm.$refs.signup.waiting).be.equal(true)
+        vm.signup()
+        expect(vm.waiting).be.equal(true)
       })
 
       it('should redirect on Login if there is an error', (done) => {
         mockInjector(true)
-        vm.$refs.signup.username = 'toto'
-        vm.$refs.signup.password1 = 'toto'
-        vm.$refs.signup.password2 = 'toto'
+        vm.username = 'toto'
+        vm.password1 = 'toto'
+        vm.password2 = 'toto'
 
-        vm.$refs.signup.signup()
+        vm.signup()
 
         setTimeout(() => {
-          expect(vm.$refs.signup.setFirstAdmin.callCount).be.equal(0)
-          expect(vm.$refs.signup.$router.go.calledWithMatch({name: 'Login'})).be.equal(true)
+          expect(vm.$store.commit.callCount).be.equal(0)
+          expect(vm.$router.push.calledWithMatch({name: 'Login'})).be.equal(true)
           done()
         }, 0)
       })
 
       it('should call setFirstAdmin and redirect to Login if everything is ok', (done) => {
         mockInjector(false)
-        vm.$refs.signup.username = 'toto'
-        vm.$refs.signup.password1 = 'toto'
-        vm.$refs.signup.password2 = 'toto'
+        vm.username = 'toto'
+        vm.password1 = 'toto'
+        vm.password2 = 'toto'
 
-        vm.$refs.signup.signup()
+        vm.signup()
 
         setTimeout(() => {
-          expect(vm.$refs.signup.setFirstAdmin.calledWith(true)).be.equal(true)
-          expect(vm.$refs.signup.$router.go.calledWithMatch({name: 'Login'})).be.equal(true)
+          expect(vm.$router.push.calledWithMatch({name: 'Login'})).be.equal(true)
           done()
         }, 0)
       })
@@ -117,12 +108,12 @@ describe('Signup component', () => {
       it('should call queryPromise with right username/password and reset false', (done) => {
         mockInjector(false)
 
-        vm.$refs.signup.username = 'username'
-        vm.$refs.signup.password1 = 'pass'
-        vm.$refs.signup.password2 = 'pass'
-        vm.$refs.signup.reset = false
+        vm.username = 'username'
+        vm.password1 = 'pass'
+        vm.password2 = 'pass'
+        vm.reset = false
 
-        vm.$refs.signup.signup()
+        vm.signup()
 
         setTimeout(() => {
           expect(
@@ -138,12 +129,12 @@ describe('Signup component', () => {
       it('should call queryPromise with right username/password and reset true', (done) => {
         mockInjector(false)
 
-        vm.$refs.signup.username = 'username2'
-        vm.$refs.signup.password1 = 'pass2'
-        vm.$refs.signup.password2 = 'pass2'
-        vm.$refs.signup.reset = true
+        vm.username = 'username2'
+        vm.password1 = 'pass2'
+        vm.password2 = 'pass2'
+        vm.reset = true
 
-        vm.$refs.signup.signup()
+        vm.signup()
 
         setTimeout(() => {
           expect(

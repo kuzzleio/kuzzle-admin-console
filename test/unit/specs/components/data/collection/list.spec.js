@@ -8,7 +8,7 @@ let List
 let sandbox = sinon.sandbox.create()
 let $vm
 
-Vue.use(VueRouter)
+// Vue.use(VueRouter)
 
 describe('List collections tests', () => {
   let indexesAndCollections = sandbox.stub().returns({myindex: {realtime: [], stored: []}})

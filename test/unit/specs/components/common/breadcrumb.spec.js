@@ -6,7 +6,7 @@ import store from '../../../../../src/vuex/store'
 let BreadcrumbInjector = require('!!vue?inject!../../../../../src/components/Common/Breadcrumb')
 let sandbox = sinon.sandbox.create()
 
-Vue.use(VueRouter)
+// Vue.use(VueRouter)
 
 describe('Breadcrumb tests', () => {
   let router

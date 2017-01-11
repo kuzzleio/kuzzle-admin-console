@@ -48,9 +48,6 @@ describe('doLogin action', () => {
         })
       }
     },
-    '../../../services/router': {
-      go: sinon.mock()
-    },
     '../../../services/userCookies': {
       set: sinon.spy(),
       get: sinon.spy(),
@@ -269,9 +266,6 @@ describe('logout action', () => {
     },
     '../../../services/userCookies': {
       delete: sinon.mock()
-    },
-    '../../../services/router': {
-      go: sinon.mock()
     },
     '../../../services/environment': {
       setTokenToCurrentEnvironment: sinon.spy()

@@ -13,7 +13,7 @@ describe('Browse roles', () => {
   let vm
 
   beforeEach(() => {
-    Vue.use(VueRouter)
+    // Vue.use(VueRouter)
 
     Browse = BrowseInjector({
       '../../Materialize/Headline': mockedComponent,
