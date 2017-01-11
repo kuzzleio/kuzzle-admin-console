@@ -9,7 +9,7 @@
     <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="tokenExpiredIsOpen" :close="noop">
       <h5>Your session has expired</h5>
       <h6>Please, relogin</h6>
-      <login-form :on-login="onLogin"></login-form>
+      <login-form :on-login="onLogin" ></login-form>
     </modal>
 
     <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false" :close="noop">
@@ -75,6 +75,7 @@
     },
     methods: {
       onLogin () {
+        this.tokenExpiredIsOpen = false
         this.$emit('modal-close', 'tokenExpired')
       },
       editEnvironment (id) {
