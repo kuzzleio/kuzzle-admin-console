@@ -11,7 +11,7 @@ export default {
     return new Promise((resolve, reject) => {
       kuzzle
         .unsetJwtToken()
-        .loginPromise('local', {username: data.username, password: data.password}, '4h')
+        .loginPromise('local', {username: data.username, password: data.password}, '2s')
         .then(loginResult => {
           user.id = loginResult._id
           user.token = loginResult.jwt

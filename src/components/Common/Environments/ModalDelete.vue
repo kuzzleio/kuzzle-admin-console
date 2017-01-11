@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="confirmDeleteEnvironment">
-    <modal id="delete-env" class="left-align" >
+    <modal id="delete-env" class="left-align" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>Environment <strong>{{environmentName}}</strong> deletion</h4>
@@ -90,7 +90,8 @@
           // TODO: router.push({name: 'Login'})
           this.$commit('modal-close', 'delete-env')
         }
-      }
+      },
+      close () {}
     },
     watch: {
       environmentId () {

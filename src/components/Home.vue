@@ -6,13 +6,13 @@
       <router-view></router-view>
     </main>
 
-    <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="bulkDeleteIsOpen">
+    <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="tokenExpiredIsOpen" :close="noop">
       <h5>Your session has expired</h5>
       <h6>Please, relogin</h6>
       <login-form :on-login="onLogin"></login-form>
     </modal>
 
-    <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false">
+    <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false" :close="noop">
       <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
       <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
     </modal>
@@ -70,7 +70,7 @@
       return {
         host: null,
         port: null,
-        isOpen: false
+        tokenExpiredIsOpen: false
       }
     },
     methods: {
@@ -79,12 +79,13 @@
       },
       editEnvironment (id) {
         this.$emit('environment::create', id)
-      }
+      },
+      noop () {}
     },
     watch: {
-      tokenValid (valid) {
+      '$store.state.auth.tokenValid' (valid) {
         if (!valid) {
-          this.isOpen = true
+          this.tokenExpiredIsOpen = true
         }
       },
       kuzzleIsConnected (isConnected) {
