@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="tryCreateIndex(index)">
-    <modal :id="id" :is-open="isOpen">
+    <modal :id="id" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>Index creation</h4>
