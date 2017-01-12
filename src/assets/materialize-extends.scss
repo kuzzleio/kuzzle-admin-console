@@ -217,3 +217,7 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
   font-family: "AnonymousPro";
   font-size: 1rem;
 }
+
+.switch label input[type=checkbox]:checked + .lever {
+  background-color: #e4e1e1;
+}

@@ -3,6 +3,7 @@
   title="Update role"
   :content="content"
   :update-id="id"
+  :error="error"
   @security-create::create="update"
   @security-create::cancel="cancel">
   </create>
@@ -20,12 +21,14 @@
     data () {
       return {
         content: {},
+        error: '',
         id: null
       }
     },
     methods: {
-      update (content) {
+      update (id, content) {
         if (!content || Object.keys(content).length === 0) {
+          this.error = 'The profile must have a content'
           return
         }
 
