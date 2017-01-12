@@ -82,9 +82,8 @@
           .then(() => {
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument)
+              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument, {refresh: 'wait_for'})
               .then(() => {
-                kuzzle.refreshIndex(this.index)
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch((err) => {

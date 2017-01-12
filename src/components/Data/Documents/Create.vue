@@ -71,9 +71,8 @@
 
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .createDocumentPromise(id, document)
+              .createDocumentPromise(id, document, {refresh: 'wait_for'})
               .then(() => {
-                kuzzle.refreshIndex(this.index)
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch(err => {
