@@ -160,7 +160,7 @@
         this.selectedDocuments = []
 
         let filters = {}
-        let sorting = []
+        let sorting = ['_uid'] // by default, sort on uid: prevent random order
         let pagination = {
           from: this.paginationFrom,
           size: this.paginationSize

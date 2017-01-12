@@ -72,7 +72,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
       let additionalAttributeName = null
 
       if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
+        if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
           additionalAttributeName = sort[0]
         } else {
           additionalAttributeName = Object.keys(sort[0])[0]
@@ -223,7 +223,7 @@ export const performDeleteUsers = (index, collection, ids) => {
   }
 
   return kuzzle
-    .security()
+    .security
     .deleteUserPromise({query: {ids: {values: ids}}})
     .then(() => {
       return kuzzle.refreshIndex(index)
@@ -236,7 +236,7 @@ export const performDeleteRoles = (index, collection, ids) => {
   }
 
   return kuzzle
-    .security()
+    .security
     .deleteRolesPromise({query: {ids: {values: ids}}})
     .then(() => {
       return kuzzle.refreshIndex(index)
@@ -249,7 +249,7 @@ export const performDeleteProfiles = (index, collection, ids) => {
   }
 
   return kuzzle
-    .security()
+    .security
     .deleteProfilesPromise({query: {ids: {values: ids}}})
     .then(() => {
       return kuzzle.refreshIndex(index)
