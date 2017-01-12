@@ -61,8 +61,8 @@
           .dataMappingFactory(mapping || {})
           .applyPromise()
           .then(() => {
-            let document = this.$store.state.data.newDocument
-            let id
+            let document = {...this.$store.state.data.newDocument}
+            let id = null
 
             if (document._id) {
               id = document._id
