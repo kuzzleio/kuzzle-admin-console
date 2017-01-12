@@ -54,7 +54,7 @@
                     :name="name"
                     :content="content"
                     @document-create::change-type-attribute="changeTypeAttribute"
-                    @document-create::add-attribute="addAttribute(path)">
+                    @document-create::add-attribute="addAttribute">
                   </json-form>
                 </div>
               </div>
