@@ -19,7 +19,7 @@ export const getRefMappingFromPath = (mapping, path) => {
   return refMapping
 }
 
-export const getUpdatedSchema = (jsonDocument, collection) => {
+export const getUpdatedSchema = (jsonDocument, collection, forceType) => {
   let type
   if (Array.isArray(jsonDocument)) {
     if (collection === 'users') {
@@ -28,6 +28,10 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
       type = 'array'
     }
   } else {
+    if (typeof jsonDocument === 'string') {
+      type = 'text'
+    }
+
     type = typeof jsonDocument
   }
 
@@ -45,13 +49,28 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
     })
     schema = {
       properties: properties,
-      type: type
+      type
     }
   } else {
     schema = {
-      type: type,
-      val: jsonDocument
+      val: jsonDocument,
+      type
     }
   }
+
   return schema
+}
+
+export const cleanMapping = (mapping) => {
+  let _mapping = {...mapping}
+
+  Object.keys(_mapping).forEach(o => {
+    if (_mapping[o].properties) {
+      _mapping[o].properties = cleanMapping(_mapping[o].properties)
+    } else {
+      delete _mapping[o].val
+    }
+  })
+
+  return _mapping
 }

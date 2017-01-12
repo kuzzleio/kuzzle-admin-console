@@ -14,6 +14,7 @@
   import kuzzle from '../../../services/kuzzle'
 
   export default {
+    name: 'SecurityCreate',
     components: {
       Create
     },
