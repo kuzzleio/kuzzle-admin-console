@@ -240,7 +240,6 @@
         this.reset()
       },
       '$route' () {
-        console.log('$route changed')
         let filters = {}
 
         if (this.basicFilter) {

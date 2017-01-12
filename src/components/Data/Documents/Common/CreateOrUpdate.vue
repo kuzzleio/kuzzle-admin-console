@@ -217,7 +217,7 @@
         if (this.viewState === 'code') {
           let json = this.$refs.jsoneditor.getJson()
           if (json) {
-            mergeDeep(this.mapping, getUpdatedSchema(json, this.collection).properties)
+            mergeDeep(getUpdatedSchema(json, this.collection, true).properties, this.mapping)
             // update document id
             if (json._id) {
               this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: '_id', value: json._id})
