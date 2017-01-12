@@ -51,8 +51,9 @@
           .security
           .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), this.newDocument)
           .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
-            this.$router.push({name: 'SecurityUsersList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityUsersList'})
+            }, 1000)
           })
           .catch((err) => {
             if (err) {

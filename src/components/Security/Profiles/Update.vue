@@ -37,7 +37,9 @@
           .security
           .updateProfilePromise(this.$route.params.id, content, {replaceIfExist: true})
           .then(() => {
-            this.$router.push({name: 'SecurityProfilesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityProfilesList'})
+            }, 1000)
           })
           .catch((e) => {
             this.$emit('toast', e.message, 'error')

@@ -36,7 +36,9 @@
           .security
           .updateRolePromise(this.$route.params.id, content, {replaceIfExist: true})
           .then(() => {
-            this.$router.push({name: 'SecurityRolesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityRolesList'})
+            }, 1000)
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})

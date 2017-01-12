@@ -38,8 +38,9 @@
           .security
           .createRolePromise(id, content, {replaceIfExist: true})
           .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
-            this.$router.push({name: 'SecurityRolesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityRolesList'})
+            }, 1000)
           })
           .catch((e) => {
             this.error = 'An error occurred while creating role: <br />' + e.message
