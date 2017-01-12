@@ -19,7 +19,7 @@ export const getRefMappingFromPath = (mapping, path) => {
   return refMapping
 }
 
-export const getUpdatedSchema = (jsonDocument, collection, forceType) => {
+export const getUpdatedSchema = (jsonDocument, collection) => {
   let type
   if (Array.isArray(jsonDocument)) {
     if (collection === 'users') {
