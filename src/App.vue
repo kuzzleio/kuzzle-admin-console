@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!$store.state.kuzzle.connectedTo">
+    <div v-if="!$store.state.kuzzle.connectedTo && !$store.state.kuzzle.errorFromKuzzle">
       <error-layout>
         <kuzzle-disconnected-page
           @environment::create="editEnvironment"
@@ -9,7 +9,16 @@
       </error-layout>
     </div>
 
-    <div v-if="$store.state.kuzzle.connectedTo">
+    <div v-if="$store.state.kuzzle.errorFromKuzzle">
+      <error-layout>
+        <kuzzle-error-page
+          @environment::create="editEnvironment"
+          @environment::delete="deleteEnvironment">
+        </kuzzle-error-page>
+      </error-layout>
+    </div>
+
+    <div v-if="$store.state.kuzzle.connectedTo && !$store.state.kuzzle.errorFromKuzzle">
       <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
@@ -30,6 +39,7 @@ import {} from '../bower_components/ace-builds/src-min-noconflict/mode-json.js'
 
 import {} from './assets/global.scss'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
+import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
 import ErrorLayout from './components/Error/Layout'
 
 import ModalCreate from './components/Common/Environments/ModalCreate'
@@ -49,7 +59,8 @@ export default {
     ErrorLayout,
     ModalCreate,
     ModalDelete,
-    Toaster
+    Toaster,
+    KuzzleErrorPage
   },
   data () {
     return {

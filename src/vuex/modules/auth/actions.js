@@ -87,7 +87,9 @@ export default {
         commit(types.SET_ADMIN_EXISTS, true)
         return Promise.resolve()
       })
-      .catch(error => Promise.reject(new Error(error.message)))
+      .catch(error => {
+        return Promise.reject(error)
+      })
   },
   [types.DO_LOGOUT] ({commit}) {
     kuzzle.logout()

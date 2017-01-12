@@ -50,7 +50,7 @@ export default {
 
     connectToEnvironment(environment)
 
-    return waitForConnected(10000)
+    return waitForConnected(5000)
       .then(() => {
         dispatch(types.SET_CONNECTION, id)
 

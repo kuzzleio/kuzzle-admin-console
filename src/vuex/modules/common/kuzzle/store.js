@@ -5,7 +5,8 @@ import actions from './actions'
 
 const state = {
   environments: {},
-  connectedTo: null
+  connectedTo: null,
+  errorFromKuzzle: false
 }
 
 export const mutations = {
@@ -36,8 +37,7 @@ export const mutations = {
       throw new Error('Cannot connect to a null environment. To reset connection, use the RESET mutation.')
     }
     if (Object.keys(state.environments).indexOf(id) === -1) {
-      throw new Error(`The given id ${id} does not correspond to any existing
-        environment.`)
+      throw new Error(`The given id ${id} does not correspond to any existing environment.`)
     }
     state.connectedTo = id
   },
@@ -47,6 +47,9 @@ export const mutations = {
     }
 
     state.environments[state.connectedTo].storageEngineVersion = version
+  },
+  [types.SET_ERROR_FROM_KUZZLE] (state, isOnError) {
+    state.errorFromKuzzle = isOnError
   },
   [types.RESET] (state) {
     state.connectedTo = null

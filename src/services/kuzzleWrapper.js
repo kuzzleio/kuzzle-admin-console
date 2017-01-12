@@ -1,6 +1,7 @@
 import kuzzle from './kuzzle'
 import Promise from 'bluebird'
 import * as types from '../vuex/modules/auth/mutation-types'
+import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -46,6 +47,15 @@ export const initStoreWithKuzzle = (store) => {
           break
       }
     }
+  })
+  kuzzle.removeAllListeners('error')
+  kuzzle.addListener('error', () => {
+    if (!store.state.kuzzle.errorFromKuzzle) {
+      store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, true)
+    }
+  })
+  kuzzle.addListener('connected', () => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, false)
   })
 }
 
