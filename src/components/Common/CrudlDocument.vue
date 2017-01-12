@@ -81,9 +81,25 @@
     </div>
     </div>
 
-    <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close">
+    <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Document deletion</h4>
       <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralizeDocument}}?</p>
+
+      <div v-if="isLoading">
+        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
+          <div class="spinner-layer">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <span slot="footer">
         <button
@@ -98,9 +114,25 @@
       </span>
     </modal>
 
-    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close">
+    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
+
+      <div v-if="isLoading">
+        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
+          <div class="spinner-layer">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <span slot="footer">
         <button
@@ -171,7 +203,8 @@
         formatSort,
         documentIdToDelete: '',
         singleDeleteIsOpen: false,
-        bulkDeleteIsOpen: false
+        bulkDeleteIsOpen: false,
+        isLoading: false
       }
     },
     filters: {
@@ -192,8 +225,11 @@
       confirmBulkDelete () {
         this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
-            this.refreshSearch()
-            this.close()
+            this.isLoading = true
+            setTimeout(() => {
+              this.refreshSearch()
+              this.close()
+            }, 1000)
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
@@ -202,8 +238,11 @@
       confirmSingleDelete (id) {
         this.performDelete(this.index, this.collection, [id])
           .then(() => {
-            this.refreshSearch()
-            this.close()
+            this.isLoading = true
+            setTimeout(() => {
+              this.refreshSearch()
+              this.close()
+            }, 1000)
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})

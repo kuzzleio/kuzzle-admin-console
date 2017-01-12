@@ -223,7 +223,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
       .dataCollectionFactory(collection, index)
       .deleteDocumentPromise({query: {ids: {values: ids}}})
       .then(() => {
-        return kuzzle.refreshIndex(index)
+        kuzzle.refreshIndex(index)
       })
 }
 
