@@ -24,8 +24,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
@@ -45,7 +44,7 @@
             this.$store.commit(SET_TOAST, {text: 'Invalid document'})
             return
           }
-          this.setNewDocument(json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
         kuzzle
@@ -69,20 +68,12 @@
         }
       }
     },
-    vuex: {
-      actions: {
-        setNewDocument
-      },
-      getters: {
-        newDocument
-      }
-    },
     mounted () {
       kuzzle
         .security
         .getUserPromise(decodeURIComponent(this.$store.state.route.params.id))
         .then((res) => {
-          this.setNewDocument(res.content)
+          this.$store.commit(SET_NEW_DOCUMENT, res.content)
           this.$emit('document-create::fill', res.content)
           return null
         })
