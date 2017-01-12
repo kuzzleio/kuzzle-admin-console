@@ -223,7 +223,7 @@ export const performDeleteUsers = (index, collection, ids) => {
   }
 
   return kuzzle
-    .security()
+    .security
     .deleteUserPromise({query: {ids: {values: ids}}})
     .then(() => {
       return kuzzle.refreshIndex(index)
@@ -236,7 +236,7 @@ export const performDeleteRoles = (index, collection, ids) => {
   }
 
   return kuzzle
-    .security()
+    .security
     .deleteRolesPromise({query: {ids: {values: ids}}})
     .then(() => {
       return kuzzle.refreshIndex(index)
@@ -249,7 +249,7 @@ export const performDeleteProfiles = (index, collection, ids) => {
   }
 
   return kuzzle
-    .security()
+    .security
     .deleteProfilesPromise({query: {ids: {values: ids}}})
     .then(() => {
       return kuzzle.refreshIndex(index)
