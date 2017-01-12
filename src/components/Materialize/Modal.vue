@@ -5,7 +5,7 @@
         <div class="modal-content">
           <slot></slot>
         </div>
-        <div class="modal-footer" v-if="hasFooter">
+        <div class="modal-footer" :class="{grey: loading}" v-if="hasFooter">
           <slot name="footer"></slot>
         </div>
       </slot>
@@ -48,7 +48,8 @@
         type: Function
       },
       bottom: Boolean,
-      isOpen: Boolean
+      isOpen: Boolean,
+      loading: Boolean
     },
     events: {
       'modal-open': function (id) {
@@ -81,10 +82,10 @@
         }
 
         if (this.bottom) {
-          return 'bottom-modal bottom-sheet ' + this.class
+          return 'bottom-modal bottom-sheet ' + this.class + (this.loading ? ' grey' : '')
         }
 
-        return 'normal-modal ' + this.class
+        return 'normal-modal ' + this.class + (this.loading ? ' grey' : '')
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'
@@ -205,5 +206,9 @@
 
     -webkit-animation-name: slideOutDown;
     animation-name: slideOutDown;
+  }
+
+  .grey {
+    background-color: rgba(0, 0, 0, .3);
   }
 </style>
