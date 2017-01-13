@@ -2,6 +2,7 @@
   <div class="wrapper">
     <headline>
       {{index}}
+      <index-dropdown :index="index" class="icon-medium icon-black"></index-dropdown>
     </headline>
 
     <div class="row">
@@ -118,7 +119,7 @@
 
 <script>
   import Headline from '../../Materialize/Headline'
-  import IndexDropdown from './Dropdown'
+  import IndexDropdown from '../Indexes/Dropdown'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import CollectionBoxed from '../Collections/Boxed'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'

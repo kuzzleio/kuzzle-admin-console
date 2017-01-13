@@ -1,7 +1,7 @@
 <template>
   <span>
     <dropdown :id="index" :myclass="myclass">
-      <li><router-link :to="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</router-link></li>
+      <li v-if="!isList"><router-link :to="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</router-link></li>
       <li class="divider"></li>
       <li><a @click.prevent="openModal" class="red-text">Delete</a></li>
     </dropdown>
@@ -36,6 +36,11 @@
       },
       close () {
         this.isOpen = false
+      }
+    },
+    computed: {
+      isList () {
+        return this.$route.name === 'DataIndexSummary'
       }
     }
   }

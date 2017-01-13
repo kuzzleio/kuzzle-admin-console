@@ -29,7 +29,7 @@
 
   .icon-medium {
     .fa-ellipsis-v {
-      font-size: 1.4rem;
+      font-size: 1.8rem;
       vertical-align: 4px;
     }
   }
