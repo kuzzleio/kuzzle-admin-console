@@ -166,7 +166,7 @@ a.tree-item
 a.tree-item.active
 {
   font-weight: bold;
-  color: #d54f58;
+  color: #3498db;
 }
 
 i.fa

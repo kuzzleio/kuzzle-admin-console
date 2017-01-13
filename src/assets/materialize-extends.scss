@@ -1,3 +1,7 @@
+html {
+  font-family: $body-font-family;
+}
+
 nav {
   height: 50px;
   line-height: 50px;
@@ -8,7 +12,7 @@ nav {
 }
 
 .btn {
-  font-family: "Gobold", sans-serif;
+  font-family: $button-font-family;
   color: $primary-color;
 
   + .btn {
@@ -87,7 +91,7 @@ strong {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Gobold", sans-serif;
+  font-family: $header-font-family;
   font-weight: 300;
   color: #555;
 }
@@ -220,4 +224,16 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
 
 .switch label input[type=checkbox]:checked + .lever {
   background-color: #e4e1e1;
+}
+
+.text-error {
+  color: $red-color;
+}
+
+.text-warning {
+  color: $skin-color;
+}
+
+.text-active {
+  color: $blue-color;
 }

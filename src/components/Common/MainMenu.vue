@@ -39,6 +39,7 @@
   import EnvironmentSwitch from './Environments/Switch'
 
   export default {
+    name: 'MainMenu',
     components: {
       EnvironmentSwitch
     },
@@ -71,13 +72,16 @@
 nav {
   padding-right: 20px;
 
-  li {
+  li.nav {
     font-family: "Gobold", Arial, sans-serif;
+  }
 
+  li {
     .logout {
       font-size: 1.2em;
       height: 18px;
     }
+
     &.nav {
       font-size: 1.1rem;
       text-transform: uppercase;

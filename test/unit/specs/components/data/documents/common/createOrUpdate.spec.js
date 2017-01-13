@@ -7,8 +7,11 @@ let CreateInjector = require('!!vue?inject!../../../../../../../src/components/D
 let Create
 
 describe('createOrUpdate document tests', () => {
+  let collection = 'coll'
+  let index = 'index'
   let sandbox
   let vm
+  let querySpy
   let dispatchSpy
   let broadcastSpy
   let refreshIndexSpy
@@ -22,19 +25,16 @@ describe('createOrUpdate document tests', () => {
   let addAttributeFromPathSpy
   let getUpdatedSchemaSpy
   let countAttributesStub
+  let getMappingPromiseStub
 
   let mockInjector = () => {
     Create = CreateInjector({
       '../../Collections/Tabs': mockedComponent,
       '../../../../services/kuzzle': {
+        queryPromise: querySpy,
         dataCollectionFactory: () => {
           return {
-            getMappingPromise: () => {
-              if (triggerError) {
-                return Promise.reject(new Error('error'))
-              }
-              return Promise.resolve({mapping: {foo: 'bar'}})
-            }
+            getMappingPromise: getMappingPromiseStub
           }
         },
         refreshIndex: refreshIndexSpy
@@ -69,7 +69,7 @@ describe('createOrUpdate document tests', () => {
 
     document.body.insertAdjacentHTML('afterbegin', '<body></body>')
     vm = new Vue({
-      template: '<div><create v-ref:create index="index" collection="collection"></create></div>',
+      template: '<div><create v-ref:create index="' + index + '" collection="' + collection + '"></create></div>',
       components: {Create},
       replace: false,
       store: store
@@ -77,13 +77,15 @@ describe('createOrUpdate document tests', () => {
 
     vm.$refs.create.$dispatch = dispatchSpy
     vm.$refs.create.$broadcast = broadcastSpy
-    vm.$refs.create.$route = {params: {collection: 'coll', index: 'index'}}
+    vm.$refs.create.$route = {params: {collection, index}}
     vm.$refs.create.$router = routerSpy
     vm.$refs.create.$refs.jsoneditor = {getJson: sandbox.stub().returns({foo: 'bar'})}
   }
 
   beforeEach(() => {
     sandbox = sinon.sandbox.create()
+    querySpy = sandbox.stub().returns(Promise.resolve({result: {mapping: {foo: 'bar'}}}))
+    getMappingPromiseStub = sandbox.stub().returns(triggerError ? Promise.reject(new Error('error')) : Promise.resolve({mapping: {foo: 'bar'}}))
     dispatchSpy = sandbox.stub()
     broadcastSpy = sandbox.stub()
     refreshIndexSpy = sandbox.stub()
@@ -174,13 +176,28 @@ describe('createOrUpdate document tests', () => {
   })
 
   describe('ready', () => {
-    it('should get the mapping of the current collection', (done) => {
+    it('should get the mapping of the users collection', (done) => {
+      collection = 'users'
+      index = '%kuzzle'
       triggerError = false
       mockInjector()
       setTimeout(() => {
+        expect(querySpy.calledWith({controller: 'collection', action: 'getUserMapping'}, {}), 'should admin:getUserMapping action be called').to.be.ok
+        expect(formatTypeSpy.calledWith({foo: 'bar'}), 'should formatType be called').to.be.ok
+        done()
+      }, 100)
+    })
+
+    it('should get the mapping of the current collection', (done) => {
+      collection = 'coll'
+      index = 'index'
+      triggerError = false
+      mockInjector()
+      setTimeout(() => {
+        expect(getMappingPromiseStub.called).to.be.ok
         expect(formatTypeSpy.calledWith({foo: 'bar'})).to.be.ok
         done()
-      }, 0)
+      }, 100)
     })
   })
 

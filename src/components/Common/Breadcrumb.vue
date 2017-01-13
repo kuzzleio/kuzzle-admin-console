@@ -70,7 +70,6 @@
   .nav-breadcrumb {
     margin-bottom: 1.68rem;
     padding-left: 2px;
-    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
     i {
       height: auto;
       margin-right: 3px;

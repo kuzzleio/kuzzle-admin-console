@@ -38,7 +38,6 @@
       float: left;
     }
     p {
-      font-family: "Roboto", "Arial", sans-serif;
       font-size: 1.3em;
       font-weight: 300;
 

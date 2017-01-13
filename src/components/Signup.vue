@@ -107,11 +107,6 @@
       background-color: #CCC;
       margin-bottom: 10px;
     }
-
-    .message {
-      font-family: "Gobold", sans-serif;
-      font-weight: 300;
-    }
   }
 
   [type="checkbox"] + label {

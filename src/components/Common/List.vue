@@ -181,6 +181,7 @@
           sorting = formatSort(this.sorting)
         }
 
+        // TODO: refactor how search is done
         // Execute search with corresponding filters
         return this.performSearch(this.collection, this.index, filters, pagination, sorting)
           .then(res => {

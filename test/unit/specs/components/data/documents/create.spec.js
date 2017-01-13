@@ -14,6 +14,7 @@ describe('Create component test', () => {
   let triggerError = true
 
   let refreshIndexSpy = sandbox.stub()
+  let querySpy = sandbox.stub().returns(Promise.resolve())
   let setNewDocumentSpy = sandbox.stub()
   let setNewDocument = sandbox.stub()
 
@@ -24,6 +25,7 @@ describe('Create component test', () => {
       '../Collections/Dropdown': mockedComponent,
       '../Collections/Tabs': mockedComponent,
       '../../../services/kuzzle': {
+        queryPromise: querySpy,
         dataCollectionFactory: sandbox.stub().returns({
           dataMappingFactory () {
             return {
@@ -90,10 +92,13 @@ describe('Create component test', () => {
         $vm.$router = {go: sandbox.stub()}
         mockInjector()
         $vm.create('form', {foo: 'bar'})
-        setTimeout(() => {
-          expect(refreshIndexSpy.called).to.be.ok
-          done()
-        }, 0)
+          .then(() => {
+            expect(refreshIndexSpy.called).to.be.ok
+            done()
+          })
+          .catch(error => {
+            done(error)
+          })
       })
     })
 

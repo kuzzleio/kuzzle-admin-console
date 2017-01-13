@@ -99,14 +99,3 @@ export default {
     commit(types.SET_TOKEN_VALID, false)
   }
 }
-// export const setTokenValid = (store, isValid) => {
-//   store.commit(SET_TOKEN_VALID, isValid)
-// }
-//
-// export const setCurrentUser = (store, user) => {
-//   store.commit(SET_CURRENT_USER, user)
-// }
-//
-// export const setFirstAdmin = (store, exists) => {
-//   store.commit(SET_ADMIN_EXISTS, exists)
-// }

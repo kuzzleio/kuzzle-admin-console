@@ -112,7 +112,6 @@
       }
       .selected {
         margin-top: 15px;
-        font-family: "Roboto", sans-serif;
         letter-spacing: 1.5px;
         text-transform: uppercase;
         font-size: 1.2em;

@@ -62,11 +62,8 @@
         kuzzle
           .security
           .createUserPromise(this.$store.state.data.newDocument._id, this.$store.state.data.newDocument)
-          .then(() => {
-            setTimeout(() => { // we can't perform refresh index on %kuzzle
-              this.$router.push({name: 'SecurityUsersList'})
-            }, 1000)
-          })
+          .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
+          .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {
             this.error = 'An error occurred while creating user: <br />' + err.message
           })
