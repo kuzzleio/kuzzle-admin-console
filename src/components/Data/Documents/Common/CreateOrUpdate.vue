@@ -157,7 +157,7 @@
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
   import {getRefMappingFromPath, getUpdatedSchema, cleanMapping} from '../../../../services/documentFormat'
-  import {mergeDeep, formatType, countAttributes} from '../../../../services/objectHelper'
+  import {formatType, countAttributes} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
   import MSelect from '../../../Common/MSelect'
   import Promise from 'bluebird'
@@ -242,7 +242,7 @@
               : {type: this.newAttributeType}
           ))
 
-        this.newAttributeType = 'string'
+        this.newAttributeType = 'text'
         this.newAttributeName = null
         this.newAttributePath = null
         this.isOpen = false
@@ -302,7 +302,7 @@
       document (document) {
         promiseGetMapping
           .then(() => {
-            this.mapping = mergeDeep(this.mapping, getUpdatedSchema(document, this.collection).properties)
+            this.mapping = {...this.mapping, ...getUpdatedSchema(document, this.collection).properties}
           })
       }
     }

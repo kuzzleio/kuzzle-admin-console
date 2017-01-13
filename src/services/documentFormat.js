@@ -65,10 +65,10 @@ export const cleanMapping = (mapping) => {
   let _mapping = {...mapping}
 
   Object.keys(_mapping).forEach(o => {
+    delete _mapping[o].val
+
     if (_mapping[o].properties) {
       _mapping[o].properties = cleanMapping(_mapping[o].properties)
-    } else {
-      delete _mapping[o].val
     }
   })
 

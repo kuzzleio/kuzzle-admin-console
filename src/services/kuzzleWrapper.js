@@ -222,9 +222,6 @@ export const performDeleteDocuments = (index, collection, ids) => {
   return kuzzle
       .dataCollectionFactory(collection, index)
       .deleteDocumentPromise({query: {ids: {values: ids}}}, {refresh: 'wait_for'})
-      .then(() => {
-        kuzzle.refreshIndex(index)
-      })
 }
 
 export const performDeleteUsers = (index, collection, ids) => {
