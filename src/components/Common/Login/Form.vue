@@ -58,8 +58,8 @@
 
 
 <script>
-  import {doLogin} from '../../../vuex/modules/auth/actions'
   import Focus from '../../../directives/focus.directive'
+  import {DO_LOGIN} from '../../../vuex/modules/auth/mutation-types'
 
   export default {
     name: 'LoginForm',
@@ -82,17 +82,12 @@
       },
       login () {
         this.error = ''
-        this.doLogin(this.username, this.password)
+        this.$store.dispatch(DO_LOGIN, {username: this.username, password: this.password})
           .then(() => {
             this.onLogin()
           }).catch((err) => {
             this.error = err.message
           })
-      }
-    },
-    vuex: {
-      actions: {
-        doLogin
       }
     }
   }

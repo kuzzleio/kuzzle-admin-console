@@ -21,8 +21,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
 
   export default {
     name: 'UserCreate',
@@ -52,21 +51,20 @@
             this.error = 'The document must have a field "_id"'
             return
           }
-          this.setNewDocument(json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
-        if (!this.newDocument._id) {
+        if (!this.$store.state.data.newDocument._id) {
           this.error = 'The document identifier is required'
           return
         }
 
-        return kuzzle
+        kuzzle
           .security
-          .createUserPromise(this.newDocument._id, this.newDocument)
+          .createUserPromise(this.$store.state.data.newDocument._id, this.$store.state.data.newDocument)
           .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
-          .then(() => {
-            this.$router.go({name: 'SecurityUsersList'})
-          }).catch(err => {
+          .then(() => this.$router.push({name: 'SecurityUsersList'}))
+          .catch(err => {
             this.error = 'An error occurred while creating user: <br />' + err.message
           })
       },
@@ -74,16 +72,8 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityUsersList'})
+          this.$router.push({name: 'SecurityUsersList'})
         }
-      }
-    },
-    vuex: {
-      getters: {
-        newDocument
-      },
-      actions: {
-        setNewDocument
       }
     }
   }

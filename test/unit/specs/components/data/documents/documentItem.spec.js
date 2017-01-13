@@ -22,7 +22,7 @@ describe('Document item', () => {
       }
     })
 
-    Vue.use(VueRouter)
+    // Vue.use(VueRouter)
     const App = Vue.extend({
       template: '<div><router-view v-ref:routerview></router-view></div>',
       replace: false

@@ -1,27 +1,30 @@
 export const kuzzleIsConnected = state => {
-  return state.kuzzle.connectedTo !== null
+  return state.connectedTo !== null
 }
 
 export const currentEnvironmentId = state => {
-  return state.kuzzle.connectedTo
+  return state.connectedTo
 }
 
-export const currentEnvironment = state => {
-  if (!environments(state)[currentEnvironmentId(state)]) {
+export const currentEnvironment = (state, getters) => {
+  if (!state.environments[getters.currentEnvironmentId]) {
     return null
   }
-
-  return environments(state)[currentEnvironmentId(state)]
+  return state.environments[getters.currentEnvironmentId]
 }
 
 export const kuzzleHost = state => {
-  return state.kuzzle.host
+  return state.host
 }
 
 export const kuzzlePort = state => {
-  return state.kuzzle.port
+  return state.port
 }
 
-export const environments = state => {
-  return state.kuzzle.environments
+export const oldMappingSupport = (state, getters) => {
+  if (!state.environments[getters.currentEnvironmentId]) {
+    return null
+  }
+
+  return /^2/.test(state.environments[getters.currentEnvironmentId].storageEngineVersion)
 }

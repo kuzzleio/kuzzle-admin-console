@@ -5,21 +5,27 @@ import {
   canEditDocument
 } from '../../services/userAuthorization'
 
-export default {
+export default [
   // Indexes routes
-  '/': {
-    name: 'DataIndexes',
+  {
+    path: '/data',
+    name: 'Data',
     component (resolve) {
       require(['../../components/Data/Indexes/List'], resolve)
     }
   },
-  '/:index': {
+  {
+    path: '/data/:index',
     name: 'DataIndexSummary',
+    meta: {
+      auth: true
+    },
     component (resolve) {
       require(['../../components/Data/Collections/List'], resolve)
     }
   },
-  '/:index/create': {
+  {
+    path: '/data/:index/create',
     name: 'DataCreateCollection',
     component (resolve) {
       if (!canCreateCollection()) {
@@ -29,13 +35,15 @@ export default {
       }
     }
   },
-  '/:index/:collection/watch': {
+  {
+    path: '/data/:index/:collection/watch',
     name: 'DataCollectionWatch',
     component (resolve) {
       require(['../../components/Data/Collections/Watch'], resolve)
     }
   },
-  '/:index/:collection/edit': {
+  {
+    path: '/data/:index/:collection/edit',
     name: 'DataCollectionEdit',
     component (resolve) {
       if (!canEditCollection()) {
@@ -45,13 +53,15 @@ export default {
       }
     }
   },
-  '/:index/:collection': {
+  {
+    path: '/data/:index/:collection',
     name: 'DataDocumentsList',
     component (resolve) {
       require(['../../components/Data/Documents/List'], resolve)
     }
   },
-  '/:index/:collection/create': {
+  {
+    path: '/data/:index/:collection/create',
     name: 'DataCreateDocument',
     component (resolve) {
       if (!canCreateDocument()) {
@@ -61,7 +71,8 @@ export default {
       }
     }
   },
-  '/:index/:collection/update/:id': {
+  {
+    path: '/data/:index/:collection/update/:id',
     name: 'DataUpdateDocument',
     component (resolve) {
       if (!canEditDocument()) {
@@ -71,4 +82,4 @@ export default {
       }
     }
   }
-}
+]

@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="createEnvironments">
-    <modal id="create-env" class="modal-fixed-footer">
+    <modal id="create-env" class="modal-fixed-footer" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>{{environmentId ? 'Update' : 'Create'}} environment</h4>
@@ -52,10 +52,10 @@
         </div>
         <div class="col s12">
           <div class="row">
-            <div class="col s6 m3" v-for="color in colors">
+            <div class="col s6 m3" v-for="(color, index) in colors">
               <div class="color card valign-wrapper"
                    :style="{backgroundColor: color}"
-                   @click="selectColor($index)">
+                   @click="selectColor(index)">
                 <span class="selected valign center-align" v-if="environment.color === color">Selected</span>
               </div>
             </div>
@@ -67,7 +67,7 @@
         <button type="submit" class="waves-effect btn">
             {{environmentId ? 'Update' : 'Create'}}
         </button>
-        <button class="btn-flat waves-effect waves-grey" @click.prevent="$broadcast('modal-close', 'create-env')">
+        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
             Cancel
         </button>
       </span>
@@ -126,21 +126,21 @@
 <script>
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
-  import { createEnvironment, updateEnvironment, DEFAULT_COLOR } from '../../../services/environment'
-  import { environments } from '../../../vuex/modules/common/kuzzle/getters'
+  import { createEnvironment, DEFAULT_COLOR } from '../../../services/environment'
+  import { UPDATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 
   export default {
     name: 'EnvironmentsCreateModal',
-    props: ['environmentId'],
+    props: ['environmentId', 'isOpen', 'close'],
     components: {
       Modal
     },
     directives: {
       Focus
     },
-    vuex: {
-      getters: {
-        environments
+    computed: {
+      environments () {
+        return this.$store.state.kuzzle.environments
       }
     },
     data () {
@@ -170,13 +170,16 @@
 
         if (!this.errors.name && !this.errors.wsPort && !this.errors.ioPort && !this.errors.host) {
           if (this.environmentId) {
-            updateEnvironment(
-              this.environmentId,
-              this.environment.name,
-              this.environment.color,
-              this.environment.host,
-              this.environment.ioPort,
-              this.environment.wsPort)
+            this.$store.dispatch(UPDATE_ENVIRONMENT, {
+              id: this.environmentId,
+              environment: {
+                name: this.environment.name,
+                color: this.environment.color,
+                host: this.environment.host,
+                ioPort: this.environment.ioPort,
+                wsPort: this.environment.wsPort
+              }
+            })
           } else {
             createEnvironment(
               this.environment.name,
@@ -186,7 +189,7 @@
               this.environment.wsPort)
           }
 
-          this.$broadcast('modal-close', 'create-env')
+          this.close()
         }
       },
       selectColor (index) {

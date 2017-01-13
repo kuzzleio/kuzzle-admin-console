@@ -14,6 +14,7 @@
   import kuzzle from '../../../services/kuzzle'
 
   export default {
+    name: 'SecurityCreate',
     components: {
       Create
     },
@@ -38,15 +39,16 @@
           .security
           .createProfilePromise(id, content, {replaceIfExist: true})
           .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityProfilesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityProfilesList'})
+            }, 1000)
           })
           .catch((e) => {
             this.error = 'An error occurred while creating profile: <br />' + e.message
           })
       },
       cancel () {
-        this.$router.go({name: 'SecurityProfilesList'})
+        this.$router.push({name: 'SecurityProfilesList'})
       }
     }
   }

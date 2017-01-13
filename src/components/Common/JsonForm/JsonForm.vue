@@ -6,7 +6,7 @@
         {{name}}
         <i @click="addAttribute" class="fa fa-plus-circle primary"></i>
       </legend>
-      <div v-for="(nestedName, nestedContent) in content.properties">
+      <div v-for="(nestedContent, nestedName) in content.properties">
         <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
       </div>
     </fieldset>
@@ -142,7 +142,7 @@
         return !!content.properties
       },
       addAttribute () {
-        this.$dispatch('document-create::add-attribute', this.path)
+        this.$emit('document-create::add-attribute', this.path)
       }
     }
   }

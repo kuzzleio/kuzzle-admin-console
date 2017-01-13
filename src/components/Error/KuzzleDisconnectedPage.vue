@@ -2,7 +2,7 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <environment-switch></environment-switch>
+        <environment-switch @environment::create="editEnvironment"></environment-switch>
       </div>
     </div>
     <div class="col s12">
@@ -37,21 +37,30 @@
       Connecting,
       EnvironmentSwitch
     },
-    ready () {
+    mounted () {
       this.host = kuzzle.host
       this.port = kuzzle.wsPort
 
       idReconnect = kuzzle.addListener('reconnected', () => {
-        this.$router.go({name: 'Home'})
+        this.$router.push({name: 'Home'})
       })
 
       idConnect = kuzzle.addListener('connected', () => {
-        this.$router.go({name: 'Home'})
+        this.$router.push({name: 'Home'})
       })
+
+      if (kuzzle.state === 'connected' || kuzzle.state === 'reconnected') {
+        this.$router.push({name: 'Login'})
+      }
     },
     destroyed () {
       kuzzle.removeListener('reconnected', idReconnect)
       kuzzle.removeListener('connected', idConnect)
+    },
+    methods: {
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
+      }
     }
   }
 </script>

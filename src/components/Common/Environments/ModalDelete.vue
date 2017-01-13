@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="confirmDeleteEnvironment">
-    <modal id="delete-env" class="left-align" >
+    <modal id="delete-env" class="left-align" :close="close" :is-open="isOpen">
       <div class="row">
         <div class="col s12">
           <h4>Environment <strong>{{environmentName}}</strong> deletion</h4>
@@ -28,7 +28,7 @@
         <button
           href="#!"
           class="btn-flat waves-effect waves-grey"
-          @click.prevent="$broadcast('modal-close', 'delete-env')">
+          @click.prevent="close">
             Cancel
         </button>
       </span>
@@ -61,21 +61,19 @@
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import { deleteEnvironment } from '../../../services/environment'
-  import { environments, currentEnvironmentId } from '../../../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'EnvironmentDeleteModal',
-    props: ['environmentId'],
+    props: ['environmentId', 'isOpen', 'close'],
     directives: {
       Focus
     },
     components: {
       Modal
     },
-    vuex: {
-      getters: {
-        environments,
-        currentEnvironmentId
+    computed: {
+      environments () {
+        return this.$store.state.kuzzle.environments
       }
     },
     data () {
@@ -89,7 +87,8 @@
         if (this.environmentName === this.envConfirmation) {
           deleteEnvironment(this.environmentId)
 
-          this.$broadcast('modal-close', 'delete-env')
+          this.close()
+          this.$router.push({name: 'Login'})
         }
       }
     },

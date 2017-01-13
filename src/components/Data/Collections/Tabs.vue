@@ -2,21 +2,21 @@
   <div class="nav">
     <ul>
       <li :class="{active: isRouteActive('DataDocumentsList')}">
-        <a href="#!" v-link="{name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
+        <router-link :to="{name: 'DataDocumentsList', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
           Browse
-        </a>
+        </router-link>
       </li>
       <li :class="{active: isRouteActive('DataCollectionWatch')}">
-        <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}}">
+        <router-link href="#!" :to="{name: 'DataCollectionWatch', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
           Watch
-        </a>
+        </router-link>
       </li>
       <li :class="{active: isRouteActive('DataCreateDocument')}">
-        <a v-if="canCreateDocument(selectedIndex, selectedCollection)"
-          href="#!" v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
+        <router-link v-if="canCreateDocument($store.state.route.params.index, $store.state.route.params.collection)"
+          :to="{name: 'DataCreateDocument', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
           Create a document
-        </a>
-        <a v-if="!canCreateDocument(selectedIndex, selectedCollection)"
+        </router-link>
+        <a v-if="!canCreateDocument($store.state.route.params.index, $store.state.route.params.collection)"
            class="disabled"
            title="You are not allowed to create a document in this collection">
           Create a document
@@ -53,7 +53,6 @@
 </style>
 
 <script>
-  import { routeName, selectedIndex, selectedCollection } from '../../../vuex/modules/data/getters'
   import { canCreateDocument } from '../../../services/userAuthorization'
 
   export default {
@@ -61,19 +60,12 @@
     methods: {
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
-          return routeName.indexOf(this.routeName) >= 0
+          return routeName.indexOf(this.$store.state.route.name) >= 0
         }
 
-        return this.routeName === routeName
+        return this.$store.state.route.name === routeName
       },
       canCreateDocument
-    },
-    vuex: {
-      getters: {
-        routeName,
-        selectedIndex,
-        selectedCollection
-      }
     }
   }
 </script>

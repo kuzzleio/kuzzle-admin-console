@@ -1,6 +1,6 @@
 <template>
-  <span :class="class">
-    <a class="action dropdown-button fa fa-ellipsis-v" data-activates="{{parsedId}}"></a>
+  <span :cmylass="myclass">
+    <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
 
     <ul :id="id" class='dropdown-content'>
       <slot></slot>
@@ -29,7 +29,7 @@
 
   .icon-medium {
     .fa-ellipsis-v {
-      font-size: 1.4rem;
+      font-size: 1.8rem;
       vertical-align: 4px;
     }
   }
@@ -42,8 +42,10 @@
 </style>
 
 <script>
+  import Vue from 'vue'
+
   export default {
-    props: ['id', 'class'],
+    props: ['id', 'myclass'],
     computed: {
       parsedId () {
         if (!this.id) {
@@ -55,9 +57,11 @@
         return parsed.replace(/[!"#$%&'()*_+,./:;<=>?@[\]^`{|}~]/g, '\\$&')
       }
     },
-    ready () {
-      /* eslint no-undef: 0 */
-      $(this.$el).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})
+    mounted () {
+      Vue.nextTick(() => {
+        /* eslint no-undef: 0 */
+        $(this.$el).find('.dropdown-button').dropdown({constrain_width: false, belowOrigin: true})
+      })
     }
   }
 </script>

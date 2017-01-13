@@ -24,8 +24,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import CollectionTabs from '../Collections/Tabs'
 
   export default {
@@ -54,7 +53,7 @@
             this.error = 'The document is invalid, please review it'
             return
           }
-          this.setNewDocument(json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
         return kuzzle
@@ -62,12 +61,19 @@
           .dataMappingFactory(mapping || {})
           .applyPromise()
           .then(() => {
+            let document = {...this.$store.state.data.newDocument}
+            let id = null
+
+            if (document._id) {
+              id = document._id
+              delete document._id
+            }
+
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .createDocumentPromise(this.newDocument)
+              .createDocumentPromise(id, document, {refresh: 'wait_for'})
               .then(() => {
-                kuzzle.refreshIndex(this.index)
-                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch(err => {
                 this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
@@ -81,16 +87,8 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
-      }
-    },
-    vuex: {
-      getters: {
-        newDocument
-      },
-      actions: {
-        setNewDocument
       }
     }
   }

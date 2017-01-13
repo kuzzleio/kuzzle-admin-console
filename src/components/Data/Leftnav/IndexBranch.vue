@@ -1,34 +1,34 @@
 <template>
-  <div :class="{ 'open': open || filter }">
+  <div :class="{ 'open': open || filter || forceOpen }">
     <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch"></i>
-    <a v-link="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
+    <router-link :to="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexName) }">
       <i class="fa fa-database" aria-hidden="true"></i>
-      {{{indexName | highlight filter}}} ({{collectionCount}})
-    </a>
+      <span v-html="highlight(indexName, filter)"></span> ({{collectionCount}})
+    </router-link>
     <ul class="collections">
-      <li v-for="collectionName in collections.stored | orderBy 1 | filterBy filter">
-        <a class="tree-item truncate"
-           v-link="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
+      <li v-for="collectionName in orderedFilteredStoredCollections">
+        <router-link class="tree-item truncate"
+           :to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
            <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
-           {{{collectionName | highlight filter}}}
-         </a>
+          <span v-html="highlight(collectionName, filter)"></span>
+         </router-link>
       </li>
-      <li v-for="collectionName in collections.realtime | orderBy 1 | filterBy filter">
-        <a class="tree-item truncate"
-           v-link="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
+      <li v-for="collectionName in orderedFilteredRealtimeCollections">
+        <router-link class="tree-item truncate"
+           :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
-          {{{collectionName | highlight filter}}}
-        </a>
+          <span v-html="highlight(collectionName, filter)"></span>
+        </router-link>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { highlight } from '../../../filters/highlight.filter'
+import orderBy from 'lodash/orderBy'
 
 export default {
   props: {
@@ -48,9 +48,6 @@ export default {
       open: false
     }
   },
-  filters: {
-    highlight
-  },
   computed: {
     collectionCount () {
       if (!this.collections) {
@@ -58,6 +55,30 @@ export default {
       }
 
       return this.collections.realtime.length + this.collections.stored.length
+    },
+    filteredStoredCollections () {
+      if (this.collections) {
+        return this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
+      }
+      return []
+    },
+    filteredRealtimeCollections () {
+      if (this.collections) {
+        return this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
+      }
+      return []
+    },
+    orderedFilteredStoredCollections () {
+      this.filteredStoredCollections.map(obj => {
+        return this.highlight(obj, this.filter)
+      })
+      return orderBy(this.filteredStoredCollections, 1)
+    },
+    orderedFilteredRealtimeCollections () {
+      this.filteredRealtimeCollections.map(obj => {
+        return this.highlight(obj, this.filter)
+      })
+      return orderBy(this.filteredRealtimeCollections, 1)
     }
   },
   methods: {
@@ -85,6 +106,21 @@ export default {
     },
     isCollectionActive (indexName, collectionName) {
       return this.currentIndex === indexName && this.currentCollection === collectionName
+    },
+    highlight (value, filter) {
+      if (value && value !== '' && filter && filter !== '') {
+        let index = value.toLowerCase().indexOf(filter.toLowerCase())
+
+        if (index >= 0) {
+          value = value.substring(0, index) +
+            '<strong class="highlight">' +
+            value.substring(index, index + filter.length) +
+            '</strong>' +
+            value.substring(index + filter.length)
+        }
+      }
+
+      return value
     }
   },
   watch: {
@@ -95,7 +131,7 @@ export default {
       this.testOpen()
     }
   },
-  ready () {
+  mounted () {
     this.testOpen()
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit document - <span class="bold">{{documentToEditId}}</span>
+      Edit document - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
@@ -21,7 +21,8 @@
       :error="error"
       :index="index"
       :collection="collection"
-      :hide-id="true">
+      :hide-id="true"
+      :document="document">
     </create-or-update>
   </div>
 </template>
@@ -37,9 +38,9 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
   import CollectionTabs from '../Collections/Tabs'
+  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   let room
 
@@ -58,7 +59,8 @@
     data () {
       return {
         error: '',
-        show: false
+        show: false,
+        document: {}
       }
     },
     methods: {
@@ -70,7 +72,7 @@
             this.error = 'The document is invalid, please review it'
             return
           }
-          this.setNewDocument(json)
+          this.$store.commit(SET_NEW_DOCUMENT, json)
         }
 
         return kuzzle
@@ -80,10 +82,9 @@
           .then(() => {
             return kuzzle
               .dataCollectionFactory(this.collection, this.index)
-              .updateDocumentPromise(this.documentToEditId, this.newDocument)
+              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument, {refresh: 'wait_for'})
               .then(() => {
-                kuzzle.refreshIndex(this.index)
-                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch((err) => {
                 this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
@@ -95,40 +96,32 @@
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
+          this.$router.push(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
       },
       fetch () {
         this.show = false
         kuzzle
           .dataCollectionFactory(this.collection, this.index)
-          .fetchDocumentPromise(this.documentToEditId)
+          .fetchDocumentPromise(decodeURIComponent(this.$store.state.route.params.id))
           .then(res => {
-            this.setNewDocument(res.content)
-            this.$broadcast('document-create::fill', res.content)
+            this.$store.commit(SET_NEW_DOCUMENT, res.content)
+            this.document = res.content
+            this.$emit('document-create::fill', res.content)
             return null
           })
           .catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+            this.$store.commit(SET_TOAST, {text: err.message})
           })
       }
     },
-    vuex: {
-      actions: {
-        setNewDocument
-      },
-      getters: {
-        newDocument,
-        documentToEditId
-      }
-    },
-    ready () {
+    mounted () {
       this.fetch()
       kuzzle
         .dataCollectionFactory(this.collection, this.index)
-        .subscribe({term: {_id: this.documentToEditId}}, () => {
+        .subscribe({term: {_id: decodeURIComponent(this.$store.state.route.params.id)}}, () => {
           this.show = true
         })
         .onDone((error, kuzzleRoom) => {

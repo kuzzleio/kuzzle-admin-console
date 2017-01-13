@@ -28,7 +28,11 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
       type = 'array'
     }
   } else {
-    type = typeof jsonDocument
+    if (typeof jsonDocument === 'string') {
+      type = 'text'
+    } else {
+      type = typeof jsonDocument
+    }
   }
 
   let property
@@ -45,13 +49,28 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
     })
     schema = {
       properties: properties,
-      type: type
+      type
     }
   } else {
     schema = {
-      type: type,
-      val: jsonDocument
+      val: jsonDocument,
+      type
     }
   }
+
   return schema
+}
+
+export const cleanMapping = (mapping) => {
+  let _mapping = {...mapping}
+
+  Object.keys(_mapping).forEach(o => {
+    delete _mapping[o].val
+
+    if (_mapping[o].properties) {
+      _mapping[o].properties = cleanMapping(_mapping[o].properties)
+    }
+  })
+
+  return _mapping
 }

@@ -1,56 +1,64 @@
 import Vue from 'vue'
-import {
-  ADD_ENVIRONMENT,
-  UPDATE_ENVIRONMENT,
-  DELETE_ENVIRONMENT,
-  CONNECT_TO_ENVIRONMENT
-} from './mutation-types'
-import { RESET } from '../../../mutation-types'
+import * as types from './mutation-types'
+import * as getters from './getters'
+import actions from './actions'
 
 const state = {
   environments: {},
-  connectedTo: null
+  connectedTo: null,
+  errorFromKuzzle: false
 }
 
 export const mutations = {
-  [ADD_ENVIRONMENT] (state, id, environment) {
-    if (!environment) {
+  [types.ADD_ENVIRONMENT] (state, payload) {
+    if (!payload.environment) {
       throw new Error('Cannot store a falsy environment')
     }
-    if (Object.keys(state.environments).indexOf(id) !== -1) {
-      throw new Error(`Unable to add new environment to already existing id "${id}"`)
+    if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
+      throw new Error(`Unable to add new environment to already existing id "${payload.id}"`)
     }
-    Vue.set(state.environments, id, environment)
+    Vue.set(state.environments, payload.id, payload.environment)
   },
-  [UPDATE_ENVIRONMENT] (state, id, environment) {
-    if (Object.keys(state.environments).indexOf(id) === -1) {
-      throw new Error(`The given id ${id} does not correspond to any existing
+  [types.UPDATE_ENVIRONMENT] (state, payload) {
+    if (Object.keys(state.environments).indexOf(payload.id) === -1) {
+      throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`)
     }
-    state.environments[id] = environment
+    state.environments[payload.id] = payload.environment
   },
-  [DELETE_ENVIRONMENT] (state, id) {
+  [types.DELETE_ENVIRONMENT] (state, id) {
     if (Object.keys(state.environments).indexOf(id) === -1) {
       return
     }
     Vue.delete(state.environments, id)
   },
-  [CONNECT_TO_ENVIRONMENT] (state, id) {
+  [types.CONNECT_TO_ENVIRONMENT] (state, id) {
     if (id === null) {
       throw new Error('Cannot connect to a null environment. To reset connection, use the RESET mutation.')
     }
     if (Object.keys(state.environments).indexOf(id) === -1) {
-      throw new Error(`The given id ${id} does not correspond to any existing
-        environment.`)
+      throw new Error(`The given id ${id} does not correspond to any existing environment.`)
     }
     state.connectedTo = id
   },
-  [RESET] (state) {
+  [types.SET_STORAGE_ENGINE_VERSION] (state, version) {
+    if (!state.connectedTo || !state.environments[state.connectedTo]) {
+      return
+    }
+
+    state.environments[state.connectedTo].storageEngineVersion = version
+  },
+  [types.SET_ERROR_FROM_KUZZLE] (state, isOnError) {
+    state.errorFromKuzzle = isOnError
+  },
+  [types.RESET] (state) {
     state.connectedTo = null
   }
 }
 
 export default {
   state,
-  mutations
+  mutations,
+  getters,
+  actions
 }

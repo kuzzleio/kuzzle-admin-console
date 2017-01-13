@@ -11,7 +11,7 @@
       </headline>
 
       <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" class="closed" v-scroll-glue="{spy: notifications, height: 290, active: scrollGlueActive}">
+      <div id="notification-controls-fixed" v-scroll-fix="scrollGlueActive">
         <div class="row">
           <subscription-controls
             @realtime-toggle-subscription="toggleSubscription"
@@ -20,7 +20,6 @@
             :index="index"
             :collection="collection"
             :subscribed="subscribed"
-            :scroll-glue-active="scrollGlueActive"
             :warning="warning">
           </subscription-controls>
         </div>
@@ -39,7 +38,7 @@
               You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
             </p>
             <p>
-              <em>Learn more about security & permissions on <a href="http://kuzzle.io/guide/#permissions" target="_blank">http://kuzzle.io/guide</a></em>
+              <em>Learn more about security & permissions on <a href="http://docs.kuzzle.io/guide/#security" target="_blank">Kuzzle guide</a></em>
             </p>
           </div>
         </div>
@@ -67,13 +66,13 @@
           <div class="row realtime margin-bottom-0">
             <!-- subscription controls in page flow -->
             <subscription-controls
+              v-scroll-glue="scrollGlueActive"
               @realtime-toggle-subscription="toggleSubscription"
               @realtime-scroll-glue="setScrollGlue"
               @realtime-clear-messages="clear"
               :index="index"
               :collection="collection"
               :subscribed="subscribed"
-              :scroll-glue-active="scrollGlueActive"
               :warning="warning">
             </subscription-controls>
             <!-- /subscription controls in page flow  -->
@@ -88,7 +87,7 @@
             <div class="col s8 m9 l10">
               <p>
                 You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
               </p>
               <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
                 <i class="fa left fa-play"></i>
@@ -108,7 +107,7 @@
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about filtering syntax & real-time on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
               </p>
             </div>
           </div>
@@ -116,11 +115,10 @@
 
         <div id="notification-container" v-if="notifications.length">
           <ul class="collapsible" v-collapsible data-collapsible="expandable">
-            <li v-for="notification in notifications">
-              <notification
-                :notification="notification">
-              </notification>
-            </li>
+            <notification
+              v-for="notification in notifications"
+              :notification="notification">
+            </notification>
           </ul>
         </div>
       </div>
@@ -134,6 +132,10 @@
       float: left;
       font-size: 2rem;
       margin-top: 0;
+    }
+
+    .fixed {
+      position: fixed;
     }
 
     .wrapper {
@@ -186,17 +188,21 @@
 <script>
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
+
+  import ScrollFix from '../../../directives/scroll-fix.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
-  import jQueryCollapsible from '../../../directives/Materialize/collapsible.directive'
+
+  import collapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
   import Filters from '../../Common/Filters/Filters'
   import kuzzle from '../../../services/kuzzle'
-  import { setBasicFilter } from '../../../vuex/modules/common/crudlDocument/actions'
+  import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
   import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'CollectionWatch',
@@ -205,9 +211,6 @@
       collection: String
     },
     vuex: {
-      actions: {
-        setBasicFilter
-      },
       getters: {
         rawFilter,
         basicFilter,
@@ -235,9 +238,20 @@
       },
       collection () {
         this.reset()
+      },
+      '$route' () {
+        let filters = {}
+
+        if (this.basicFilter) {
+          filters = formatFromBasicSearch(this.basicFilter)
+        } else if (this.rawFilter) {
+          filters = this.rawFilter
+        }
+
+        this.filters = filters
       }
     },
-    ready () {
+    mounted () {
       this.notifications = []
     },
     destroyed () {
@@ -250,10 +264,11 @@
         this.room.unsubscribe()
       }
     },
-    directives: [
-      jQueryCollapsible,
-      ScrollGlue
-    ],
+    directives: {
+      collapsible,
+      ScrollGlue,
+      ScrollFix
+    },
     components: {
       CollectionTabs,
       Notification,
@@ -408,7 +423,7 @@
             if (err) {
               this.room = null
               this.subscribed = false
-              this.$dispatch('toast', err.message, 'error')
+              this.$store.commit(SET_TOAST, {text: err.message})
             } else {
               this.subscribed = true
               this.room = room
@@ -435,6 +450,9 @@
       clear () {
         this.warning.message = ''
         this.notifications = []
+      },
+      setBasicFilter (value) {
+        this.$store.commit(SET_BASIC_FILTER, value)
       }
     },
     route: {

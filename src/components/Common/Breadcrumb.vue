@@ -2,100 +2,65 @@
   <div class="nav-breadcrumb">
     <ul v-if="$route.path.indexOf('/security') === 0">
       <li>
-        <a href="#!"
-           v-link="{name: 'Security'}">
+        <router-link
+           :to="{name: 'Security'}">
           security
-        </a>
+        </router-link>
       </li>
 
       <li v-if="isRouteActive('SecurityUsersList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'SecurityUsersList'}">
+        <router-link :to="{name: 'SecurityUsersList'}">
           users
-        </a>
+        </router-link>
       </li>
 
       <li v-if="isRouteActive('SecurityProfilesList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'SecurityProfilesList'}">
+        <router-link :to="{name: 'SecurityProfilesList'}">
           profiles
-        </a>
+        </router-link>
       </li>
 
       <li v-if="isRouteActive('SecurityRolesList')">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'SecurityRolesList'}">
+        <router-link :to="{name: 'SecurityRolesList'}">
           roles
-        </a>
+        </router-link>
       </li>
     </ul>
     <ul v-if="$route.path.indexOf('/data') === 0">
       <li>
-        <a href="#!"
-           v-link="{name: 'Data'}">
+        <router-link
+           :to="{name: 'Data'}">
           data
-        </a>
+        </router-link>
       </li>
 
-      <li v-if="selectedIndex">
+      <li v-if="$store.state.route.params.index">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!" v-link="{name: 'DataIndexSummary', params: {index: selectedIndex}}">
-          {{selectedIndex}}
-        </a>
+        <router-link :to="{name: 'DataIndexSummary', params: {index: $store.state.route.params.index}}">
+          {{$store.state.route.params.index}}
+        </router-link>
       </li>
 
-      <!--<li v-if="isRouteActive('DataCreateCollection')">
-        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
-        <a href="#!"
-           v-link="{name: 'DataCreateCollection', params: {index: selectedIndex}}">
-          create a collection
-        </a>
-      </li>-->
-
-      <li v-if="selectedCollection">
+      <li v-if="$store.state.route.params.collection">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <a href="#!"
-           v-link="isCollectionRealtime() ? {name: 'DataCollectionWatch', params: {index: selectedIndex, collection: selectedCollection}} : {name: 'DataDocumentsList', params: {index: selectedIndex, collection: selectedCollection}}">
-          {{selectedCollection}}
-        </a>
-      </li>
+        <router-link v-if="isCollectionRealtime()"
+           :to="{name: 'DataCollectionWatch', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
+          {{$store.state.route.params.collection}}
+        </router-link>
 
-      <!--<li v-if="isRouteActive('DataCreateDocument')">
-        <i class="fa fa-angle-right separator" aria-hidden="true"></i>
-        <a href="#!"
-           v-link="{name: 'DataCreateDocument', params: {index: selectedIndex, collection: selectedCollection}}">
-          create a document
-        </a>
-      </li>-->
-
-      <!--<li class="link"
-          :class="{'link-active': isRouteActive('DataDocumentsList')}"
-          v-if="collection && !isCollectionRealtime() && !isRouteActive('DataCreateDocument')">
-        <a href="#!"
-           v-link="{name: 'DataDocumentsList', params: {index: index, collection: collection}}">
-          Browse
-        </a>
+        <router-link v-else
+          :to="{name: 'DataDocumentsList', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
+          {{$store.state.route.params.collection}}
+        </router-link>
       </li>
-      <li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionWatch')}"
-          v-if="collection && !isRouteActive('DataCreateDocument')">
-        <a href="#!" v-link="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
-          Watch
-        </a>
-      </li>
-      <li class="link"
-          :class="{'link-active': isRouteActive('DataCollectionSummary')}"
-          v-if="collection && !isRouteActive('DataCreateDocument')">
-        <a href="#!"
-           v-link="{name: 'DataCollectionSummary', params: {index: index, collection: collection}}">
-          Summary
-        </a>
-      </li>-->
     </ul>
   </div>
 
@@ -131,32 +96,23 @@
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
-  import {indexesAndCollections, routeName, selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
   export default {
     name: 'CommonBreadcrumb',
     methods: {
       canSearchIndex,
       isCollectionRealtime () {
-        if (!this.indexesAndCollections[this.selectedIndex]) {
+        if (!this.$store.state.data.indexesAndCollections[this.$store.state.route.params.index]) {
           return false
         }
 
-        return this.indexesAndCollections[this.selectedIndex].realtime.indexOf(this.selectedCollection) !== -1
+        return this.$store.state.data.indexesAndCollections[this.$store.state.route.params.index].realtime.indexOf(this.$store.state.route.params.collection) !== -1
       },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {
-          return routeName.indexOf(this.routeName) >= 0
+          return routeName.indexOf(this.$store.state.route.name) >= 0
         }
 
-        return this.routeName === routeName
-      }
-    },
-    vuex: {
-      getters: {
-        routeName,
-        selectedIndex,
-        selectedCollection,
-        indexesAndCollections
+        return this.$store.state.route.name === routeName
       }
     }
   }

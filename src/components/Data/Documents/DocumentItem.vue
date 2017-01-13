@@ -5,11 +5,11 @@
     <input
       type="checkbox"
       class="filled-in"
-      id="checkbox-{{document.id}}"
-      value="{{document.id}}"
+      :id="checkboxId"
+      :value="document.id"
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label for="checkbox-{{document.id}}"></label>
+    <label :for="checkboxId"></label>
 
     <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
@@ -17,7 +17,7 @@
       <a
         v-if="canEdit"
         href=""
-        @click.prevent="$dispatch('common-list::edit-document', 'DataUpdateDocument', document.id)">
+        @click.prevent="$emit('common-list::edit-document', 'DataUpdateDocument', document.id)">
         <i class="fa fa-pencil"></i>
       </a>
       <a
@@ -26,7 +26,7 @@
         <i class="fa fa-pencil disabled"></i>
       </a>
 
-      <dropdown :id="document.id" class="icon-black">
+      <dropdown :id="document.id" myclass="icon-black">
         <li>
           <a
             v-bind:class="{'disabled': !canDelete}"
@@ -137,11 +137,11 @@
         this.collapsed = !this.collapsed
       },
       notifyCheckboxClick () {
-        this.$dispatch('checkbox-click', this.document.id)
+        this.$emit('checkbox-click', this.document.id)
       },
       deleteDocument () {
         if (this.canDelete) {
-          this.$dispatch('delete-document', this.document.id)
+          this.$emit('delete-document', this.document.id)
         }
       }
     },
@@ -157,6 +157,9 @@
           return false
         }
         return canDeleteDocument(this.index, this.collection)
+      },
+      checkboxId () {
+        return `checkbox-${this.document.id}`
       }
     }
   }

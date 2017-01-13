@@ -1,11 +1,13 @@
 <template>
-  <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
-    <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
-    <i class="fa fa-{{notification.icon}}"></i> {{notification.text}} - {{ago}}
-  </div>
-  <div class="collapsible-body" v-if="notification.source">
-    <p v-json-formatter="notification.source"></p>
-  </div>
+  <li>
+    <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
+      <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
+      <i class="fa" :class="notificationIcon"></i> {{notification.text}} - {{ago}}
+    </div>
+    <div class="collapsible-body" v-if="notification.source">
+      <p v-json-formatter="notification.source"></p>
+    </div>
+  </li>
 </template>
 
 <style type="text/css" media="screen" scoped>
@@ -63,7 +65,12 @@
         this.collapsed = !this.collapsed
       }
     },
-    ready () {
+    computed: {
+      notificationIcon () {
+        return `fa-${this.notification.icon}`
+      }
+    },
+    mounted () {
       setInterval(() => {
         this.ago = moment(this.notification.timestamp).fromNow()
       }, 60000)

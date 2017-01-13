@@ -2,15 +2,15 @@
   <div>
     <treeview
       :route-name="$route.name"
-      :index="selectedIndex"
-      :collection="selectedCollection"
+      :index="$store.state.route.params.index"
+      :collection="$store.state.route.params.collection"
       :tree="indexesAndCollections">
     </treeview>
     <section>
       <section class="view">
         <router-view
-          :index="selectedIndex"
-          :collection="selectedCollection">
+          :index="$store.state.route.params.index"
+          :collection="$store.state.route.params.collection">
         </router-view>
       </section>
     </section>
@@ -19,36 +19,26 @@
 
 <script>
   import {canSearchIndex} from '../../services/userAuthorization'
-  import {listIndexesAndCollections} from '../../vuex/modules/data/actions'
-  import {selectedIndex, selectedCollection} from '../../vuex/modules/data/getters'
+  import * as types from '../../vuex/modules/data/mutation-types'
   import Treeview from './Leftnav/Treeview'
+  import {SET_TOAST} from '../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'DataLayout',
     components: {
       Treeview
     },
-    methods: {
-      canSearchIndex
-    },
-    ready () {
-      if (this.canSearchIndex()) {
-        this.listIndexesAndCollections()
-      }
-    },
-    vuex: {
-      actions: {
-        listIndexesAndCollections
-      },
-      getters: {
-        selectedIndex,
-        selectedCollection
+    mounted () {
+      if (canSearchIndex()) {
+        this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
+          .catch(err => this.$store.commit(SET_TOAST, {text: err.message}))
       }
     },
     watch: {
-      'selectedIndex': function () {
-        if (this.canSearchIndex()) {
-          this.listIndexesAndCollections()
+      '$route' () {
+        if (canSearchIndex()) {
+          this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
+            .catch(err => this.$store.commit(SET_TOAST, {text: err.message}))
         }
       }
     }

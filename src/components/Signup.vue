@@ -12,7 +12,7 @@
           </div>
           <div class="row">
             <div class="col offset-s4 s2">
-              <environment-switch></environment-switch>
+              <environment-switch @environment::create="editEnvironment"></environment-switch>
             </div>
           </div>
           <div class="row message-warning">
@@ -129,7 +129,7 @@
 
 <script>
   import kuzzle from '../services/kuzzle'
-  import { setFirstAdmin } from '../vuex/modules/auth/actions'
+  import * as types from '../vuex/modules/auth/mutation-types'
   import EnvironmentSwitch from './Common/Environments/Switch'
 
   export default {
@@ -145,11 +145,6 @@
         reset: false,
         error: null,
         waiting: false
-      }
-    },
-    vuex: {
-      actions: {
-        setFirstAdmin
       }
     },
     methods: {
@@ -172,14 +167,17 @@
             {controller: 'security', action: 'createFirstAdmin'},
             {_id: this.username, body: {username: this.username, password: this.password1, reset: this.reset}})
           .then(() => {
-            this.setFirstAdmin(true)
-            this.$router.go({name: 'Login'})
+            this.$store.commit(types.SET_ADMIN_EXISTS, true)
+            this.$router.push({name: 'Login'})
           })
           .catch((err) => {
             // TODO manage this on the UI
             console.error('An error occurred while creating the first admin', err)
-            this.$router.go({name: 'Login'})
+            this.$router.push({name: 'Login'})
           })
+      },
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
       }
     }
   }

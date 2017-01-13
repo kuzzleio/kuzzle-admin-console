@@ -4,6 +4,7 @@ import {
   SET_ADMIN_EXISTS
 } from './mutation-types'
 import SessionUser from '../../../models/SessionUser'
+import actions from './actions'
 
 const state = {
   user: SessionUser(),
@@ -25,5 +26,6 @@ export const mutations = {
 
 export default {
   state,
-  mutations
+  mutations,
+  actions
 }

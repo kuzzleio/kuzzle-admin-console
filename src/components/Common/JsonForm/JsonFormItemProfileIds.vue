@@ -23,7 +23,7 @@
 </style>
 
 <script>
-  import {setPartial} from '../../../vuex/modules/data/actions'
+  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import kuzzle from '../../../services/kuzzle'
   import Multiselect from 'vue-multiselect'
 
@@ -42,11 +42,12 @@
       content () {
         if (this.content) {
           this.selected = this.content
+          this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
           this.setPartial('profileIds', this.content)
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
         .searchProfilesPromise({})
@@ -57,6 +58,7 @@
 
           if (this.content) {
             this.selected = this.content
+            this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
             this.setPartial('profileIds', this.content)
           }
         })
@@ -75,11 +77,6 @@
       return {
         profiles: [],
         selected: []
-      }
-    },
-    vuex: {
-      actions: {
-        setPartial
       }
     }
   }

@@ -20,8 +20,9 @@
 </style>
 
 <script>
-  import { setPartial } from '../../../../vuex/modules/data/actions'
+  import {SET_PARTIAL_TO_DOCUMENT} from '../../../../vuex/modules/data/mutation-types'
   import JsonFormItemArrayInput from './JsonFormItemArrayInput'
+  import Vue from 'vue'
 
   export default {
     name: 'JsonFormItemArray',
@@ -32,11 +33,6 @@
     },
     components: {
       JsonFormItemArrayInput
-    },
-    vuex: {
-      actions: {
-        setPartial
-      }
     },
     data () {
       return {
@@ -63,13 +59,13 @@
     },
     watch: {
       valueItems (v) {
-        this.setPartial(this.fullName, [...v])
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: {...v}})
       },
       content () {
         this.valueItems = [...this.content]
       }
     },
-    ready () {
+    mounted () {
       this.valueItems = [...this.content]
     },
     events: {
@@ -77,7 +73,7 @@
         this.valueItems.splice(index, 1)
       },
       'json-form-item-array::add-element' () {
-        this.valueItems.$set(this.valueItems.length, null)
+        Vue.set(this.valueItems, this.valueItems.length, null)
       }
     }
   }

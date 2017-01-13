@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div v-if="active" :transition="transition" :id="id" class="modal" :class="computedClasses">
+    <div v-if="isOpen" :transition="transition" :id="id" class="modal" :class="computedClasses">
       <slot name="content">
         <div class="modal-content">
           <slot></slot>
         </div>
-        <div class="modal-footer" v-if="hasFooter">
+        <div class="modal-footer" :class="{grey: loading}" v-if="hasFooter">
           <slot name="footer"></slot>
         </div>
       </slot>
     </div>
 
     <div
-      v-if="active"
+      v-if="isOpen"
       transition="modal-overlay"
       @click="canClose && close()"
       class="lean-overlay"
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
   const ESC_KEY = 27
 
@@ -43,23 +44,22 @@
         'default': true,
         required: false
       },
-      bottom: Boolean
+      close: {
+        type: Function
+      },
+      bottom: Boolean,
+      isOpen: Boolean,
+      loading: Boolean
     },
     events: {
       'modal-open': function (id) {
         if (this.id === id) {
           this.open()
         }
-      },
-      'modal-close': function (id) {
-        if (this.id === id) {
-          this.close()
-          return true
-        }
       }
     },
     watch: {
-      active: function (active) {
+      isOpen: function (active) {
         if (active) {
           window.document.body.style.overflow = 'hidden'
         } else {
@@ -67,28 +67,25 @@
         }
       }
     },
-    data () {
-      return {
-        active: false
-      }
-    },
-    ready () {
-      window.document.addEventListener('keydown', this.handleEsc)
+    mounted () {
+      Vue.nextTick(() => {
+        window.document.addEventListener('keydown', this.handleEsc)
+      })
     },
     destroyed () {
       window.document.removeEventListener('keydown', this.handleEsc)
     },
     computed: {
       computedClasses () {
-        if (!this.active) {
+        if (!this.isOpen) {
           return null
         }
 
         if (this.bottom) {
-          return 'bottom-modal bottom-sheet ' + this.class
+          return 'bottom-modal bottom-sheet ' + this.class + (this.loading ? ' grey' : '')
         }
 
-        return 'normal-modal ' + this.class
+        return 'normal-modal ' + this.class + (this.loading ? ' grey' : '')
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'
@@ -102,11 +99,11 @@
           this.close()
         }
       },
-      open () {
-        this.active = true
-      },
-      close () {
-        this.active = false
+      closeModal (id) {
+        if (this.id === id) {
+          this.close()
+          return true
+        }
       }
     }
   }
@@ -209,5 +206,9 @@
 
     -webkit-animation-name: slideOutDown;
     animation-name: slideOutDown;
+  }
+
+  .grey {
+    background-color: rgba(0, 0, 0, .3);
   }
 </style>

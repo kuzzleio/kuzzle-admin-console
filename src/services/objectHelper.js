@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 const isObject = item => {
   return (item && typeof item === 'object' && !Array.isArray(item) && item !== null)
 }
@@ -12,17 +10,23 @@ const isObject = item => {
  */
 export const mergeDeep = (target, source) => {
   if (isObject(target) && isObject(source)) {
-    for (const key in source) {
-      if (isObject(source[key])) {
-        if (!target[key]) {
-          Vue.set(target, key, {})
+    let _target = {...target}
+    let _source = {...source}
+
+    Object.keys(_source)
+      .forEach(key => {
+        if (isObject(_source[key])) {
+          if (!_target[key]) {
+            _target[key] = {}
+          }
+
+          _target[key] = mergeDeep(_target[key], _source[key])
+        } else {
+          target[key] = _source[key]
         }
-        mergeDeep(target[key], source[key])
-      } else {
-        Vue.set(target, key, source[key])
-      }
-    }
+      })
   }
+
   return target
 }
 

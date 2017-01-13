@@ -1,18 +1,12 @@
 <template>
   <span>
-    <dropdown :id="index" :class="class">
-      <li><a v-link="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</a></li>
-      <!--<li><a href="#!">View profiles</a></li>-->
+    <dropdown :id="index" :myclass="myclass">
+      <li v-if="!isList"><router-link :to="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</router-link></li>
       <li class="divider"></li>
-      <!--<li><a href="#!">Edit</a></li>-->
-      <!--<li><a href="#!">Clone</a></li>-->
-      <!--<li><a href="#!">Duplicate</a></li>-->
-      <!--<li><a href="#!">Rename</a></li>-->
-      <!--<li><a href="#!" class="red-text">Truncate</a></li>-->
-      <li><a href="#!" @click.prevent="$broadcast('modal-open', 'index-delete-' + index)" class="red-text">Delete</a></li>
+      <li><a @click.prevent="openModal" class="red-text">Delete</a></li>
     </dropdown>
 
-    <modal-delete :id="'index-delete-' + index" :index="index"></modal-delete>
+    <modal-delete :id="'index-delete-' + index" :index="index" :is-open="isOpen" :close="close"></modal-delete>
   </span>
 </template>
 
@@ -25,11 +19,29 @@
     name: 'IndexDropdown',
     props: {
       index: String,
-      'class': String
+      myclass: String
+    },
+    data () {
+      return {
+        isOpen: false
+      }
     },
     components: {
       Dropdown,
       ModalDelete
+    },
+    methods: {
+      openModal () {
+        this.isOpen = true
+      },
+      close () {
+        this.isOpen = false
+      }
+    },
+    computed: {
+      isList () {
+        return this.$route.name === 'DataIndexSummary'
+      }
     }
   }
 </script>

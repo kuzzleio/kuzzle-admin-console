@@ -5,20 +5,20 @@
     <input
       type="checkbox"
       class="filled-in"
-      id="checkbox-{{document.id}}"
-      value="{{document.id}}"
+      :id="checkboxId"
+      :value="document.id"
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label for="checkbox-{{document.id}}"></label>
+    <label :for="checkboxId"></label>
     <!-- The following anchor will go to the user details page -->
     <label class="item-title">
       <a @click="toggleCollapse">{{document.id}}</a>
       <div class="profile-list">
         <div class="profile-chip chip" v-for="profile in profileList">
-          <a v-link="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</a>
+          <router-link :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</router-link>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <a v-link="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</a>
+          <router-link :to="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</router-link>
         </div>
       </div>
     </label>
@@ -32,7 +32,7 @@
          v-title="{active: !canEditUser(), title: 'You are not allowed to edit this user'}">
         <i class="fa fa-pencil" :class="{'disabled': !canEditUser()}"></i>
       </a>
-      <dropdown :id="document.id" class="icon-black">
+      <dropdown :id="document.id" myclass="icon-black">
         <li><a @click="deleteDocument(document.id)"
                :class="{'disabled': !canDeleteUser()}"
                v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}">
@@ -42,7 +42,7 @@
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="itemContent"></pre>
+      <pre v-json-formatter="document.content"></pre>
     </div>
   </div>
 </template>
@@ -87,13 +87,6 @@ export default {
     }
   },
   computed: {
-    itemContent () {
-      let contentDisplay = {...this.document.content}
-      delete contentDisplay.clearPassword
-      delete contentDisplay.profileIds
-
-      return contentDisplay
-    },
     profileList () {
       return this.document.content.profileIds.filter((item, idx) => {
         return idx < MAX_PROFILES
@@ -101,6 +94,9 @@ export default {
     },
     showAllProfiles () {
       return this.document.content.profileIds > MAX_PROFILES
+    },
+    checkboxId () {
+      return `checkbox-${this.document.id}`
     }
   },
   methods: {
@@ -108,16 +104,16 @@ export default {
       this.collapsed = !this.collapsed
     },
     notifyCheckboxClick () {
-      this.$dispatch('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.document.id)
     },
     deleteDocument () {
       if (this.canDeleteUser()) {
-        this.$dispatch('delete-document', this.document.id)
+        this.$emit('delete-document', this.document.id)
       }
     },
     update () {
       if (this.canEditUser()) {
-        this.$dispatch('common-list::edit-document', 'SecurityUsersUpdate', this.document.id)
+        this.$emit('common-list::edit-document', 'SecurityUsersUpdate', this.document.id)
       }
     },
     canEditUser,

@@ -219,6 +219,11 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
 .json-formatter-row, .json-formatter-row a, .json-formatter-row a:hover {
   font-weight: bold;
   font-family: "AnonymousPro";
+  font-size: 1rem;
+}
+
+.switch label input[type=checkbox]:checked + .lever {
+  background-color: #e4e1e1;
 }
 
 .text-error {

@@ -9,7 +9,7 @@ let sandbox = sinon.sandbox.create()
 let $vm
 
 describe('MainMenu component', () => {
-  Vue.use(VueRouter)
+  // Vue.use(VueRouter)
 
   let router
   const DEFAULT_COLOR = 'default-color'
