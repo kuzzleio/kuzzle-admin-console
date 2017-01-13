@@ -281,7 +281,7 @@
         }
 
         return kuzzle
-          .queryPromise({controller: 'admin', action: 'getUserMapping'}, {})
+          .queryPromise({controller: 'collection', action: 'getUserMapping'}, {})
           .then(res => {
             if (countAttributes(res.result.mapping) > 100) {
               this.big = true

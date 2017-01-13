@@ -93,7 +93,7 @@ export const performSearch = (collection, index, filters = {}, pagination = {}, 
     } else {
       kuzzle
         .dataCollectionFactory(collection, index)
-        .advancedSearch({...filters, ...pagination, sort}, (error, result) => {
+        .search({...filters, ...pagination, sort}, (error, result) => {
           handleSearchResult('documents', sort, error, result, resolve, reject)
         })
     }
@@ -146,7 +146,7 @@ export const deleteDocuments = (index, collection, ids) => {
     })
 
     return Promise.all(promises)
-      .then(() => kuzzle.queryPromise({controller: 'admin', action: 'refreshInternalIndex'}, {}))
+      .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
   } else {
     return new Promise((resolve, reject) => {
       kuzzle

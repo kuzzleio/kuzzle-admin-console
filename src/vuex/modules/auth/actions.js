@@ -95,7 +95,7 @@ export const loginByToken = (store, token) => {
 
 export const checkFirstAdmin = (store) => {
   return kuzzle
-    .queryPromise({controller: 'admin', action: 'adminExists'}, {})
+    .queryPromise({controller: 'server', action: 'adminExists'}, {})
     .then(res => {
       if (!res.result.exists) {
         store.dispatch(SET_ADMIN_EXISTS, false)

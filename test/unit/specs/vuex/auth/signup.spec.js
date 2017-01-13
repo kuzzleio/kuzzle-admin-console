@@ -127,7 +127,7 @@ describe('Signup component', () => {
         setTimeout(() => {
           expect(
             queryPromise.calledWithMatch(
-              {controller: 'admin', action: 'createFirstAdmin'},
+              {controller: 'security', action: 'createFirstAdmin'},
               {_id: 'username', body: {username: 'username', password: 'pass', reset: false}}
             )
           ).be.equal(true)
@@ -148,7 +148,7 @@ describe('Signup component', () => {
         setTimeout(() => {
           expect(
             queryPromise.calledWithMatch(
-              {controller: 'admin', action: 'createFirstAdmin'},
+              {controller: 'security', action: 'createFirstAdmin'},
               {_id: 'username2', body: {username: 'username2', password: 'pass2', reset: true}}
             )
           ).be.equal(true)

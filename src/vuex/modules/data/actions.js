@@ -80,7 +80,7 @@ export const getMapping = (store, index, collection) => {
 
 export const createIndex = (store, index) => {
   return kuzzle
-    .queryPromise({index: index, controller: 'admin', action: 'createIndex'}, {})
+    .queryPromise({index: index, controller: 'index', action: 'create'}, {})
     .then(() => {
       store.dispatch(ADD_INDEX, index)
     })
@@ -89,7 +89,7 @@ export const createIndex = (store, index) => {
 
 export const deleteIndex = (store, index) => {
   return kuzzle
-    .queryPromise({index: index, controller: 'admin', action: 'deleteIndex'}, {})
+    .queryPromise({index: index, controller: 'index', action: 'delete'}, {})
     .then(() => {
       store.dispatch(DELETE_INDEX, index)
     })
