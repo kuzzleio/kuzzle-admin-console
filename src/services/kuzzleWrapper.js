@@ -221,7 +221,8 @@ export const performDeleteDocuments = (index, collection, ids) => {
 
   return kuzzle
       .dataCollectionFactory(collection, index)
-      .deleteDocumentPromise({query: {ids: {values: ids}}}, {refresh: 'wait_for'})
+      .deleteDocumentPromise({query: {ids: {values: ids}}})
+      .then(() => kuzzle.refreshIndex(index))
 }
 
 export const performDeleteUsers = (index, collection, ids) => {
@@ -232,9 +233,7 @@ export const performDeleteUsers = (index, collection, ids) => {
   return kuzzle
     .security
     .deleteUserPromise({query: {ids: {values: ids}}})
-    .then(() => {
-      return kuzzle.refreshIndex(index)
-    })
+    .then(() => kuzzle.refreshIndex(index))
 }
 
 export const performDeleteRoles = (index, collection, ids) => {
@@ -245,9 +244,7 @@ export const performDeleteRoles = (index, collection, ids) => {
   return kuzzle
     .security
     .deleteRolesPromise({query: {ids: {values: ids}}})
-    .then(() => {
-      return kuzzle.refreshIndex(index)
-    })
+    .then(() => kuzzle.refreshIndex(index))
 }
 
 export const performDeleteProfiles = (index, collection, ids) => {
@@ -258,7 +255,5 @@ export const performDeleteProfiles = (index, collection, ids) => {
   return kuzzle
     .security
     .deleteProfilesPromise({query: {ids: {values: ids}}})
-    .then(() => {
-      return kuzzle.refreshIndex(index)
-    })
+    .then(() => kuzzle.refreshIndex(index))
 }

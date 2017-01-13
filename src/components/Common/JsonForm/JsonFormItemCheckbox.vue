@@ -11,7 +11,7 @@
   export default{
     name: 'JsonFormItemCheckbox',
     props: {
-      content: Boolean,
+      content: {type: Boolean, default: false},
       name: String,
       type: String,
       fullName: String
@@ -22,7 +22,11 @@
       }
     },
     mounted () {
-      this.value = this.content
+      if (!this.content) {
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: false})
+      } else {
+        this.value = this.content
+      }
     },
     watch: {
       value (v) {
