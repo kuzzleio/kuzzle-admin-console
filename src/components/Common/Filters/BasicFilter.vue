@@ -23,7 +23,7 @@
                 <i class="fa fa-times remove-filter"
                    @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
                 <a
-                  v-if="groupIndex === group.length - 1"
+                  v-if="filterIndex === group.length - 1"
                   class="inline btn btn-small waves-effect waves-light"
                   @click="addAndBasicFilter(groupIndex)">
                   <i class="fa fa-plus left"></i>And

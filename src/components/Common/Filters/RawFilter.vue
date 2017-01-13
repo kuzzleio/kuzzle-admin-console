@@ -1,6 +1,5 @@
 <template>
   <form>
-    <button class="btn btn-small waves-effect waves-light" @click="fillRawWithBasic">Fill from basic form</button>
     <json-editor
       ref="jsoneditor"
       myclass="pre_ace"
@@ -70,6 +69,7 @@
         this.$emit('filters-raw-search', this.filters.raw)
       },
       fillRawWithBasic () {
+        console.log(this.sortingEnabled, this.basicFilterForm)
         if (this.basicFilterForm.basic) {
           this.filters.raw = this.formatFromBasicSearch(this.basicFilterForm.basic)
         }
