@@ -103,8 +103,8 @@
               <option value="string" selected v-if="!$store.getters.oldMappingSupport">Text</option>
               <option value="string" selected v-if="!$store.getters.oldMappingSupport">Keyword</option>
               <option value="integer">Integer</option>
-              <option value="boolean">Boolean</option>
               <option value="float">Float</option>
+              <option value="boolean">Boolean</option>
               <option value="nested">Nested</option>
               <option value="object">Object</option>
               <option value="geo_point">Geo point</option>
@@ -157,7 +157,7 @@
   import JsonEditor from '../../../Common/JsonEditor'
   import Modal from '../../../Materialize/Modal'
   import {getRefMappingFromPath, getUpdatedSchema, cleanMapping} from '../../../../services/documentFormat'
-  import {formatType, countAttributes} from '../../../../services/objectHelper'
+  import {formatType, countAttributes, mergeDeep} from '../../../../services/objectHelper'
   import Focus from '../../../../directives/focus.directive'
   import MSelect from '../../../Common/MSelect'
   import Promise from 'bluebird'
@@ -217,7 +217,7 @@
         if (this.viewState === 'code') {
           let json = this.$refs.jsoneditor.getJson()
           if (json) {
-            this.mapping = {...this.mapping, ...getUpdatedSchema(json, this.collection).properties}
+            this.mapping = mergeDeep(getUpdatedSchema(json, this.collection).properties, this.mapping)
             // update document id
             if (json._id) {
               this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: '_id', value: json._id})
@@ -302,7 +302,7 @@
       document (document) {
         promiseGetMapping
           .then(() => {
-            this.mapping = {...this.mapping, ...getUpdatedSchema(document, this.collection).properties}
+            this.mapping = mergeDeep(getUpdatedSchema(document, this.collection).properties, this.mapping)
           })
       }
     }

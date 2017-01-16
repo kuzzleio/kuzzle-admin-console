@@ -30,6 +30,8 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
   } else {
     if (typeof jsonDocument === 'string') {
       type = 'text'
+    } else if (typeof jsonDocument === 'number') {
+      type = 'integer'
     } else {
       type = typeof jsonDocument
     }

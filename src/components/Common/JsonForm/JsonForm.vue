@@ -122,6 +122,7 @@
           case 'double':
           case 'float':
           case 'number':
+          case 'numeric':
             return 'JsonFormItemNumber'
           case 'array':
             return 'JsonFormItemArray'
