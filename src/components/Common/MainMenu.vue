@@ -45,11 +45,11 @@
     },
     computed: {
       currentEnvironmentColor () {
-        if (!this.currentEnvironment) {
+        if (!this.$store.getters.currentEnvironment) {
           return DEFAULT_COLOR
         }
 
-        return this.currentEnvironment.color
+        return this.$store.getters.currentEnvironment.color
       }
     },
     methods: {
