@@ -11,7 +11,8 @@
       :mandatory-id="true"
       :error="error"
       index="%kuzzle"
-      collection="users">
+      collection="users"
+      :get-mapping="getMappingUsers">
     </create-or-update>
   </div>
 </template>
@@ -22,6 +23,7 @@
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
+  import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UserCreate',
@@ -39,6 +41,7 @@
       }
     },
     methods: {
+      getMappingUsers,
       create (viewState, json) {
         this.error = ''
 

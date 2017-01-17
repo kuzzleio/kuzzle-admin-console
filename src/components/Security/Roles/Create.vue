@@ -5,13 +5,15 @@
   :error="error"
   @security-create::reset-error="error = ''"
   @security-create::create="create"
-  @security-create::cancel="cancel">
+  @security-create::cancel="cancel"
+  :get-mapping="getMappingRoles">
   </create>
 </template>
 
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingRoles } from '../../../services/kuzzleWrapper'
 
   export default {
     components: {
@@ -24,6 +26,7 @@
       }
     },
     methods: {
+      getMappingRoles,
       create (id, content) {
         if (!id) {
           this.error = 'The role identifier is required'

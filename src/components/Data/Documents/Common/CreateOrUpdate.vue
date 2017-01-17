@@ -151,7 +151,6 @@
 </style>
 
 <script>
-  import kuzzle from '../../../../services/kuzzle'
   import JsonForm from '../../../Common/JsonForm/JsonForm'
   import {UNSET_NEW_DOCUMENT, SET_PARTIAL_TO_DOCUMENT} from '../../../../vuex/modules/data/mutation-types'
   import JsonEditor from '../../../Common/JsonEditor'
@@ -187,7 +186,8 @@
         'default': false,
         type: Boolean
       },
-      document: Object
+      document: Object,
+      getMapping: {type: Function, required: true}
     },
     directives: {
       MSelect,
@@ -281,9 +281,7 @@
       }
     },
     mounted () {
-      kuzzle
-        .dataCollectionFactory(this.collection, this.index)
-        .getMappingPromise()
+      this.getMapping(this.collection, this.index)
         .then((res) => {
           if (countAttributes(res.mapping) > 100) {
             this.big = true

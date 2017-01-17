@@ -5,13 +5,15 @@
   :update-id="id"
   :error="error"
   @security-create::create="update"
-  @security-create::cancel="cancel">
+  @security-create::cancel="cancel"
+  :get-mapping="getMappingRoles">
   </create>
 </template>
 
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingRoles } from '../../../services/kuzzleWrapper'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
@@ -26,6 +28,7 @@
       }
     },
     methods: {
+      getMappingRoles,
       update (id, content) {
         if (!content || Object.keys(content).length === 0) {
           this.error = 'The profile must have a content'

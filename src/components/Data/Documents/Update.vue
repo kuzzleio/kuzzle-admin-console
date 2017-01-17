@@ -22,7 +22,8 @@
       :index="index"
       :collection="collection"
       :hide-id="true"
-      :document="document">
+      :document="document"
+      :get-mapping="getMappingDocument">
     </create-or-update>
   </div>
 </template>
@@ -37,6 +38,7 @@
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
   import CollectionTabs from '../Collections/Tabs'
   import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
@@ -64,6 +66,7 @@
       }
     },
     methods: {
+      getMappingDocument,
       update (viewState, json, mapping) {
         this.error = ''
 

@@ -5,13 +5,15 @@
   :error="error"
   @security-create::reset-error="error = ''"
   @security-create::create="create"
-  @security-create::cancel="cancel">
+  @security-create::cancel="cancel"
+  :get-mapping="getMappingProfiles">
   </create>
 </template>
 
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingProfiles } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'SecurityCreate',
@@ -25,6 +27,7 @@
       }
     },
     methods: {
+      getMappingProfiles,
       create (id, content) {
         if (!id) {
           this.error = 'The profile identifier is required'

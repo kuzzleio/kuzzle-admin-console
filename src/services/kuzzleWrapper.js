@@ -109,6 +109,12 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
     })
 }
 
+export const getMappingDocument = (collection, index) => {
+  return kuzzle
+    .dataCollectionFactory(collection, index)
+    .getMappingPromise()
+}
+
 export const performSearchUsers = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security
@@ -142,6 +148,12 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
 
       return {documents: users, total: result.total}
     })
+}
+
+export const getMappingUsers = () => {
+  return kuzzle
+    .queryPromise({controller: 'security', action: 'getUserMapping'}, {})
+    .then((res) => res.result)
 }
 
 export const performSearchProfiles = (collection, index, filters = {}, pagination = {}, sort = []) => {
@@ -179,6 +191,12 @@ export const performSearchProfiles = (collection, index, filters = {}, paginatio
     })
 }
 
+export const getMappingProfiles = () => {
+  return kuzzle
+    .queryPromise({controller: 'security', action: 'getProfileMapping'}, {})
+    .then((res) => res.result)
+}
+
 export const performSearchRoles = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security
@@ -212,6 +230,12 @@ export const performSearchRoles = (collection, index, filters = {}, pagination =
 
       return {documents: roles, total: result.total}
     })
+}
+
+export const getMappingRoles = () => {
+  return kuzzle
+    .queryPromise({controller: 'security', action: 'getRoleMapping'}, {})
+    .then((res) => res.result)
 }
 
 export const performDeleteDocuments = (index, collection, ids) => {

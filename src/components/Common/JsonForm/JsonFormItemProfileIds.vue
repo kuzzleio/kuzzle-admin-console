@@ -1,8 +1,7 @@
 <template>
   <div class="row input-field">
-    <multiselect :selected="selected" :options="profiles" placeholder=""
-                 @update="setProfileIds" :multiple="true"></multiselect>
-    <label :class="{'active': selected.length !== 0}">profileIds</label>
+    <multiselect :value="selected" :options="profiles" placeholder="Profiles"
+                 @input="setProfileIds" :multiple="true"></multiselect>
   </div>
 </template>
 
@@ -43,7 +42,6 @@
         if (this.content) {
           this.selected = this.content
           this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
-          this.setPartial('profileIds', this.content)
         }
       }
     },
@@ -59,7 +57,6 @@
           if (this.content) {
             this.selected = this.content
             this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
-            this.setPartial('profileIds', this.content)
           }
         })
         .catch(err => {
@@ -70,7 +67,7 @@
     methods: {
       setProfileIds (selected) {
         this.selected = selected
-        this.setPartial('profileIds', this.selected)
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.selected})
       }
     },
     data () {

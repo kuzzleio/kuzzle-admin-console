@@ -9,7 +9,9 @@
       @document-create::cancel="cancel"
       index="%kuzzle"
       collection="users"
-      :hide-id="true">
+      :hide-id="true"
+      :document="document"
+      :get-mapping="getMappingUsers">
     </create-or-update>
   </div>
 </template>
@@ -26,6 +28,7 @@
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
+  import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -37,7 +40,13 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        document: null
+      }
+    },
     methods: {
+      getMappingUsers,
       update (viewState, json) {
         if (viewState === 'code') {
           if (!json) {
@@ -49,7 +58,7 @@
 
         kuzzle
           .security
-          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), this.newDocument)
+          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument)
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityUsersList'})
@@ -75,6 +84,7 @@
         .getUserPromise(decodeURIComponent(this.$store.state.route.params.id))
         .then((res) => {
           this.$store.commit(SET_NEW_DOCUMENT, res.content)
+          this.document = res.content
           this.$emit('document-create::fill', res.content)
           return null
         })
