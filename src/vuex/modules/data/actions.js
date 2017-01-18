@@ -16,14 +16,14 @@ export default {
         }
 
         result.forEach((index) => {
-          /* eslint-disable */
-          let promise = new Promise((resolveOne, rejectOne) => {
-            kuzzle.listCollections(index, (error, result) => {
-              if (error && index !== '%kuzzle') {
-                rejectOne(new Error(error.message))
-                return
-              }
-              if (index !== '%kuzzle') {
+          if (index !== '%kuzzle') {
+            /* eslint-disable */
+            let promise = new Promise((resolveOne, rejectOne) => {
+              kuzzle.listCollections(index, (error, result) => {
+                if (error) {
+                  rejectOne(new Error(error.message))
+                  return
+                }
                 result = splitRealtimeStoredCollections(result)
 
                 if (!result.realtime) {
@@ -34,12 +34,12 @@ export default {
                 result = dedupeRealtimeCollections(result)
 
                 indexesAndCollections[index] = result
-              }
-              resolveOne(indexesAndCollections)
+                resolveOne(indexesAndCollections)
+              })
             })
-          })
-          promises.push(promise)
-          /* eslint-enable */
+            promises.push(promise)
+            /* eslint-enable */
+          }
         })
 
         Promise.all(promises)
