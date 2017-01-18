@@ -1,6 +1,6 @@
 <template>
   <ul class="pagination">
-    <li @click.prevent="currentPage = 1" :class="{disabled: currentPage == 1}" class="chevron">
+    <li @click.prevent="firstPage" :class="{disabled: currentPage == 1}" class="chevron">
       <a href="#">
         <i class="fa fa-angle-double-left fast-pagination waves-effect"></i>
       </a>
@@ -23,7 +23,7 @@
       </a>
     </li>
     <li
-      @click.prevent="currentPage = pages" :class="{disabled: currentPage == pages}" class="chevron">
+      @click.prevent="lastPage" :class="{disabled: currentPage == pages}" class="chevron">
       <a href="#">
         <i class="fa fa-angle-double-right fast-pagination waves-effect"></i>
       </a>
@@ -64,11 +64,13 @@
         'default': 9
       },
       from: Number,
-      size: Number
+      size: Number,
+      maxPage: Number
     },
     computed: {
       pages () {
-        return Math.max(Math.ceil(this.total / this.size), 1)
+        let totalPage = Math.max(Math.ceil(this.total / this.size), 1)
+        return totalPage <= this.maxPage ? totalPage : this.maxPage
       },
       pager () {
         let displayedPages = []
@@ -105,15 +107,19 @@
       },
       previousPage () {
         if (this.currentPage > 1) {
-          this.currentPage--
           this.$emit('change-page', ((this.currentPage - 1) * this.size) - this.size)
         }
       },
       nextPage () {
         if (this.currentPage < this.pages) {
-          this.currentPage++
           this.$emit('change-page', ((this.currentPage + 1) * this.size) - this.size)
         }
+      },
+      firstPage () {
+        this.setCurrentPage(1)
+      },
+      lastPage () {
+        this.setCurrentPage(this.pages)
       }
     }
   }

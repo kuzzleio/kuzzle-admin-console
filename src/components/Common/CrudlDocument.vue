@@ -76,6 +76,7 @@
                 :total="totalDocuments"
                 :from="paginationFrom"
                 :size="paginationSize"
+                :max-page="1000"
         ></pagination>
       </div>
     </div>
