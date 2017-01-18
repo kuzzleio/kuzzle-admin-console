@@ -59,7 +59,8 @@
                   :sorting-enabled="sortingEnabled"
                   :label-search-button="labelSearchButton"
                   :format-sort="formatSort"
-                  :basic-filter-form="basicFilterForm">
+                  :basic-filter-form="basicFilterForm"
+                  @filters-raw-search="broadcastRawSearch">
                 </raw-filter>
               </div>
             </div>
@@ -164,6 +165,9 @@
       },
       setObjectTabActive (tab) {
         this.objectTabActive = tab
+      },
+      broadcastRawSearch (filter) {
+        this.$emit('filters-raw-search', filter)
       }
     },
     mounted () {
