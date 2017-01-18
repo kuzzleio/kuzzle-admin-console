@@ -240,7 +240,7 @@ export const getMappingRoles = () => {
 
 export const performDeleteDocuments = (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0 || !index || !collection) {
-    return
+    return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
   return kuzzle
@@ -251,33 +251,30 @@ export const performDeleteDocuments = (index, collection, ids) => {
 
 export const performDeleteUsers = (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return
+    return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
   return kuzzle
-    .security
-    .deleteUserPromise({query: {ids: {values: ids}}})
-    .then(() => kuzzle.refreshIndex(index))
+    .queryPromise({controller: 'security', action: 'mDeleteUser'}, {body: ids})
+    .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
 export const performDeleteRoles = (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return
+    return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
   return kuzzle
-    .security
-    .deleteRolesPromise({query: {ids: {values: ids}}})
-    .then(() => kuzzle.refreshIndex(index))
+    .queryPromise({controller: 'security', action: 'mDeleteRole'}, {body: ids})
+    .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
 export const performDeleteProfiles = (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return
+    return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
   return kuzzle
-    .security
-    .deleteProfilesPromise({query: {ids: {values: ids}}})
-    .then(() => kuzzle.refreshIndex(index))
+    .queryPromise({controller: 'security', action: 'mDeleteProfile'}, {body: ids})
+    .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
