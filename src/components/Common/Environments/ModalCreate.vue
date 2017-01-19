@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="createEnvironments">
-    <modal id="create-env" class="modal-fixed-footer" :is-open="isOpen" :close="close">
+    <modal id="create-env" :footer-fixed="true" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>{{environmentId ? 'Update' : 'Create'}} environment</h4>

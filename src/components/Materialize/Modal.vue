@@ -44,6 +44,10 @@
         'default': true,
         required: false
       },
+      footerFixed: {
+        type: Boolean,
+        'default': false
+      },
       close: {
         type: Function
       },
@@ -77,15 +81,21 @@
     },
     computed: {
       computedClasses () {
+        let cssClass = ''
+
         if (!this.isOpen) {
           return null
         }
 
-        if (this.bottom) {
-          return 'bottom-modal bottom-sheet ' + this.class + (this.loading ? ' grey' : '')
+        if (this.footerFixed) {
+          cssClass = 'modal-fixed-footer '
         }
 
-        return 'normal-modal ' + this.class + (this.loading ? ' grey' : '')
+        if (this.bottom) {
+          return cssClass + 'bottom-modal bottom-sheet ' + this.class + (this.loading ? ' grey' : '')
+        }
+
+        return cssClass + 'normal-modal ' + this.class + (this.loading ? ' grey' : '')
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'
