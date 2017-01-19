@@ -244,8 +244,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
   }
 
   return kuzzle
-      .dataCollectionFactory(collection, index)
-      .deleteDocumentPromise({query: {ids: {values: ids}}})
+      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}})
       .then(() => kuzzle.refreshIndex(index))
 }
 
@@ -255,7 +254,7 @@ export const performDeleteUsers = (index, collection, ids) => {
   }
 
   return kuzzle
-    .queryPromise({controller: 'security', action: 'mDeleteUser'}, {body: ids})
+    .queryPromise({controller: 'security', action: 'mDeleteUsers'}, {body: {ids}})
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
@@ -265,7 +264,7 @@ export const performDeleteRoles = (index, collection, ids) => {
   }
 
   return kuzzle
-    .queryPromise({controller: 'security', action: 'mDeleteRole'}, {body: ids})
+    .queryPromise({controller: 'security', action: 'mDeleteRoles'}, {body: {ids}})
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
@@ -275,6 +274,6 @@ export const performDeleteProfiles = (index, collection, ids) => {
   }
 
   return kuzzle
-    .queryPromise({controller: 'security', action: 'mDeleteProfile'}, {body: ids})
+    .queryPromise({controller: 'security', action: 'mDeleteProfiles'}, {body: {ids}})
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
