@@ -40,7 +40,7 @@
           </div>
 
           <div class="row">
-            <div class="col s7">
+            <div class="col s12">
               <div class="row">
                 <a class="btn btn-small" @click="addRootAttr">
                   <i class="fa fa-plus-circle left"></i>

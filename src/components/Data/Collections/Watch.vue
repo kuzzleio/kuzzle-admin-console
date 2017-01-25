@@ -417,7 +417,7 @@
       },
       subscribe () {
         return kuzzle
-          .dataCollectionFactory(this.collection, this.index)
+          .collection(this.collection, this.index)
           .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
           .onDone((err, room) => {
             if (err) {

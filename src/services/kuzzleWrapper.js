@@ -76,7 +76,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
   }
 
   return kuzzle
-    .dataCollectionFactory(collection, index)
+    .collection(collection, index)
     .searchPromise({...filters, ...pagination, sort})
     .then(result => {
       let additionalAttributeName = null
@@ -111,7 +111,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
 
 export const getMappingDocument = (collection, index) => {
   return kuzzle
-    .dataCollectionFactory(collection, index)
+    .collection(collection, index)
     .getMappingPromise()
 }
 

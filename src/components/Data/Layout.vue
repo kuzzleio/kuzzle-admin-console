@@ -31,7 +31,7 @@
     mounted () {
       if (canSearchIndex()) {
         this.$store.dispatch(types.LIST_INDEXES_AND_COLLECTION)
-          .catch(err => this.$store.commit(SET_TOAST, {text: err.message}))
+          .catch(err => console.error(err))
       }
     },
     watch: {

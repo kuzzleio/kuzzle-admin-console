@@ -79,12 +79,12 @@
         }
 
         return kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .dataMappingFactory(mapping || {})
+          .collection(this.collection, this.index)
+          .collectionMapping(mapping || {})
           .applyPromise()
           .then(() => {
             return kuzzle
-              .dataCollectionFactory(this.collection, this.index)
+              .collection(this.collection, this.index)
               .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument, {refresh: 'wait_for'})
               .then(() => {
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
@@ -107,7 +107,7 @@
       fetch () {
         this.show = false
         kuzzle
-          .dataCollectionFactory(this.collection, this.index)
+          .collection(this.collection, this.index)
           .fetchDocumentPromise(decodeURIComponent(this.$store.state.route.params.id))
           .then(res => {
             this.$store.commit(SET_NEW_DOCUMENT, res.content)
@@ -123,7 +123,7 @@
     mounted () {
       this.fetch()
       kuzzle
-        .dataCollectionFactory(this.collection, this.index)
+        .collection(this.collection, this.index)
         .subscribe({term: {_id: decodeURIComponent(this.$store.state.route.params.id)}}, () => {
           this.show = true
         })

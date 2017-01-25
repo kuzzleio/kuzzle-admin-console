@@ -81,7 +81,7 @@
     mounted () {
       kuzzle
         .security
-        .getUserPromise(decodeURIComponent(this.$store.state.route.params.id))
+        .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
         .then((res) => {
           this.$store.commit(SET_NEW_DOCUMENT, res.content)
           this.document = res.content

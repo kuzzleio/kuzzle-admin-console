@@ -44,8 +44,8 @@
         }
 
         kuzzle
-          .dataCollectionFactory(name, this.index)
-          .dataMappingFactory(mapping || {})
+          .collection(name, this.index)
+          .collectionMapping(mapping || {})
           .applyPromise()
           .then(() => {
             this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})

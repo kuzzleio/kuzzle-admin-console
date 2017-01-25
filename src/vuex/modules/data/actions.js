@@ -15,8 +15,9 @@ export default {
           return reject(new Error(error.message))
         }
 
-        result.forEach((index) => {
-          if (index !== '%kuzzle') {
+        result
+          .filter(index => index !== '%kuzzle')
+          .forEach((index) => {
             /* eslint-disable */
             let promise = new Promise((resolveOne, rejectOne) => {
               kuzzle.listCollections(index, (error, result) => {
@@ -39,12 +40,11 @@ export default {
             })
             promises.push(promise)
             /* eslint-enable */
-          }
-        })
+          })
 
         Promise.all(promises)
           .then(res => {
-            commit(types.RECEIVE_INDEXES_COLLECTIONS, res[0])
+            commit(types.RECEIVE_INDEXES_COLLECTIONS, res[0] || [])
             resolve()
           })
           .catch((error) => reject(error))
@@ -52,7 +52,7 @@ export default {
     })
   },
   [types.GET_MAPPING] ({commit}, payload) {
-    kuzzle.dataCollectionFactory(payload.collection, payload.index).getMapping((err, res) => {
+    kuzzle.collection(payload.collection, payload.index).getMapping((err, res) => {
       if (err) {
         return
       }

@@ -60,8 +60,8 @@
         }
 
         return kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .dataMappingFactory(mapping || {})
+          .collection(this.collection, this.index)
+          .collectionMapping(mapping || {})
           .applyPromise()
           .then(() => {
             let document = {...this.$store.state.data.newDocument}
@@ -73,7 +73,7 @@
             }
 
             return kuzzle
-              .dataCollectionFactory(this.collection, this.index)
+              .collection(this.collection, this.index)
               .createDocumentPromise(id, document, {refresh: 'wait_for'})
               .then(() => {
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})

@@ -59,7 +59,7 @@
     mounted () {
       kuzzle
         .security
-        .getProfilePromise(this.$route.params.id)
+        .fetchProfilePromise(this.$route.params.id)
         .then((profile) => {
           this.id = profile.id
           this.content = profile.content

@@ -25,8 +25,8 @@ export default {
     }
 
     return kuzzle
-      .dataCollectionFactory(payload.collectionName, payload.index)
-      .dataMappingFactory(payload.mapping || {})
+      .collection(payload.collectionName, payload.index)
+      .collectionMapping(payload.mapping || {})
       .applyPromise()
       .then(() => {
         commit(dataTypes.ADD_STORED_COLLECTION, {index: payload.index, name: payload.collectionName})
@@ -36,7 +36,7 @@ export default {
   [types.FETCH_COLLECTION_DETAIL] ({commit}, payload) {
     if (payload.collections.stored.indexOf(payload.collection) !== -1) {
       return kuzzle
-        .dataCollectionFactory(payload.collection, payload.index)
+        .collection(payload.collection, payload.index)
         .getMappingPromise()
         .then(result => {
           commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: result.mapping, isRealtimeOnly: false})

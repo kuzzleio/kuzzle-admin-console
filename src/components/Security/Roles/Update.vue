@@ -58,7 +58,7 @@
     mounted () {
       kuzzle
         .security
-        .getRolePromise(this.$route.params.id)
+        .fetchRolePromise(this.$route.params.id)
         .then((role) => {
           this.id = role.id
           this.content = role.content
