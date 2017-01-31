@@ -70,7 +70,6 @@
         this.$emit('filters-raw-search', this.filters.raw)
       },
       fillRawWithBasic () {
-        console.log(this.sortingEnabled, this.basicFilterForm)
         if (this.basicFilterForm.basic) {
           this.filters.raw = this.formatFromBasicSearch(this.basicFilterForm.basic)
         }
