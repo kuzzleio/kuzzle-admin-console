@@ -1,6 +1,7 @@
 <template>
   <form>
     <json-editor
+      id="rawsearch"
       ref="jsoneditor"
       myclass="pre_ace"
       :content="filters.raw"

@@ -14,6 +14,7 @@
       :error="error"
       :index="index"
       :collection="collection"
+      :document="document"
       :get-mapping="getMappingDocument">
     </create-or-update>
   </div>
@@ -26,7 +27,6 @@
   import kuzzle from '../../../services/kuzzle'
   import { getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import CollectionTabs from '../Collections/Tabs'
 
   export default {
@@ -43,20 +43,18 @@
     },
     data () {
       return {
-        error: ''
+        error: '',
+        document: {}
       }
     },
     methods: {
       getMappingDocument,
-      create (viewState, json, mapping) {
+      create (json, mapping) {
         this.error = ''
 
-        if (viewState === 'code') {
-          if (!json) {
-            this.error = 'The document is invalid, please review it'
-            return
-          }
-          this.$store.commit(SET_NEW_DOCUMENT, json)
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
+          return
         }
 
         return kuzzle
@@ -64,7 +62,7 @@
           .collectionMapping(mapping || {})
           .applyPromise()
           .then(() => {
-            let document = {...this.$store.state.data.newDocument}
+            let document = {...json}
             let id = null
 
             if (document._id) {

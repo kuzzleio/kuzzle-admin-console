@@ -64,13 +64,13 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
 }
 
 export const cleanMapping = (mapping) => {
-  let _mapping = {...mapping}
+  let _mapping = {}
 
-  Object.keys(_mapping).forEach(o => {
-    delete _mapping[o].val
-
-    if (_mapping[o].properties) {
-      _mapping[o].properties = cleanMapping(_mapping[o].properties)
+  Object.keys(mapping).forEach(attr => {
+    if (mapping[attr].properties) {
+      _mapping[attr] = cleanMapping(mapping[attr].properties)
+    } else {
+      _mapping[attr] = mapping[attr].type
     }
   })
 

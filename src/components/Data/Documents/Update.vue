@@ -41,13 +41,12 @@
   import { getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
   import CollectionTabs from '../Collections/Tabs'
-  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   let room
 
   export default {
-    name: 'DocumentCreateOrUpdate',
+    name: 'DocumentUpdate',
     components: {
       Headline,
       CollectionDropdown,
@@ -67,15 +66,12 @@
     },
     methods: {
       getMappingDocument,
-      update (viewState, json, mapping) {
+      update (json, mapping) {
         this.error = ''
 
-        if (viewState === 'code') {
-          if (!json) {
-            this.error = 'The document is invalid, please review it'
-            return
-          }
-          this.$store.commit(SET_NEW_DOCUMENT, json)
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
+          return
         }
 
         return kuzzle
@@ -85,7 +81,7 @@
           .then(() => {
             return kuzzle
               .collection(this.collection, this.index)
-              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument, {refresh: 'wait_for'})
+              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), json, {refresh: 'wait_for'})
               .then(() => {
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
@@ -110,7 +106,6 @@
           .collection(this.collection, this.index)
           .fetchDocumentPromise(decodeURIComponent(this.$store.state.route.params.id))
           .then(res => {
-            this.$store.commit(SET_NEW_DOCUMENT, res.content)
             this.document = res.content
             this.$emit('document-create::fill', res.content)
             return null

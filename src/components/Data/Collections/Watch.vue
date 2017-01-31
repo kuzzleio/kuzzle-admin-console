@@ -313,14 +313,14 @@
       },
       notificationToMessage (notification) {
         var messageItem = {
-          id: notification.result._id,
+          id: notification.document.id,
           text: '',
           icon: 'file',
           index: notification.index || '',
           collection: notification.collection || '',
           'class': '',
           source: {
-            source: notification.result._source,
+            source: notification.document.content,
             metadata: notification.metadata
           },
           expanded: false,

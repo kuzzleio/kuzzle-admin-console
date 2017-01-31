@@ -154,9 +154,6 @@
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
   import {SET_BASIC_FILTER} from '../../vuex/modules/common/crudlDocument/mutation-types'
-  import {
-    basicFilterForm
-  } from '../../vuex/modules/common/crudlDocument/getters'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
   import {SET_TOAST} from '../../vuex/modules/common/toaster/mutation-types'
 
@@ -192,11 +189,6 @@
       availableFilters: Object,
       documentToDelete: String,
       performDelete: Function
-    },
-    vuex: {
-      getters: {
-        basicFilterForm
-      }
     },
     data () {
       return {

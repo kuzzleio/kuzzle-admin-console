@@ -12,6 +12,7 @@
       :error="error"
       index="%kuzzle"
       collection="users"
+      :document="document"
       :get-mapping="getMappingUsers">
     </create-or-update>
   </div>
@@ -22,7 +23,6 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
@@ -37,34 +37,35 @@
     },
     data () {
       return {
-        error: ''
+        error: '',
+        document: {}
       }
     },
     methods: {
       getMappingUsers,
-      create (viewState, json) {
+      create (json) {
         this.error = ''
 
-        if (viewState === 'code') {
-          if (!json) {
-            this.error = 'The document is invalid, please review it'
-            return
-          }
-          if (!json._id) {
-            this.error = 'The document must have a field "_id"'
-            return
-          }
-          this.$store.commit(SET_NEW_DOCUMENT, json)
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
+          return
+        }
+        if (!json._id) {
+          this.error = 'The document must have an id'
+          return
         }
 
-        if (!this.$store.state.data.newDocument._id) {
-          this.error = 'The document identifier is required'
-          return
+        let document = {...json}
+        let id = null
+
+        if (document._id) {
+          id = document._id
+          delete document._id
         }
 
         kuzzle
           .security
-          .createUserPromise(this.$store.state.data.newDocument._id, this.$store.state.data.newDocument)
+          .createUserPromise(id, document)
           .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
           .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {

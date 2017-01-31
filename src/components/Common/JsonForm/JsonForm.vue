@@ -94,6 +94,7 @@
   import JsonFormItemText from './JsonFormItemText'
   import JsonFormItemArray from './JsonFormItemArray/JsonFormItemArray'
   import JsonFormItemProfileIds from './JsonFormItemProfileIds'
+  import JsonFormItemGeoPoint from './JsonFormItemGeoPoint'
 
   export default {
     name: 'JsonForm',
@@ -102,7 +103,8 @@
       JsonFormItemNumber,
       JsonFormItemText,
       JsonFormItemArray,
-      JsonFormItemProfileIds
+      JsonFormItemProfileIds,
+      JsonFormItemGeoPoint
     },
     computed: {
       path () {
@@ -128,6 +130,8 @@
             return 'JsonFormItemArray'
           case 'profileIds':
             return 'JsonFormItemProfileIds'
+          case 'geo_point':
+            return 'JsonFormItemGeoPoint'
           default:
             return 'JsonFormItemText'
         }

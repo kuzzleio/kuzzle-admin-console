@@ -26,7 +26,6 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {SET_NEW_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
@@ -47,18 +46,15 @@
     },
     methods: {
       getMappingUsers,
-      update (viewState, json) {
-        if (viewState === 'code') {
-          if (!json) {
-            this.$store.commit(SET_TOAST, {text: 'Invalid document'})
-            return
-          }
-          this.$store.commit(SET_NEW_DOCUMENT, json)
+      update (json) {
+        if (!json) {
+          this.$store.commit(SET_TOAST, {text: 'Invalid document'})
+          return
         }
 
         kuzzle
           .security
-          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), this.$store.state.data.newDocument)
+          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), json)
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityUsersList'})
@@ -83,7 +79,6 @@
         .security
         .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
         .then((res) => {
-          this.$store.commit(SET_NEW_DOCUMENT, res.content)
           this.document = res.content
           this.$emit('document-create::fill', res.content)
           return null

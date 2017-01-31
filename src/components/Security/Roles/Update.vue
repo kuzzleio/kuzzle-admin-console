@@ -6,6 +6,7 @@
   :error="error"
   @security-create::create="update"
   @security-create::cancel="cancel"
+  :document="document"
   :get-mapping="getMappingRoles">
   </create>
 </template>
@@ -17,27 +18,30 @@
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
+    name: 'RolesUpdate',
     components: {
       Create
     },
     data () {
       return {
-        content: {},
         error: '',
-        id: null
+        id: null,
+        document: {}
       }
     },
     methods: {
       getMappingRoles,
-      update (id, content) {
-        if (!content || Object.keys(content).length === 0) {
-          this.error = 'The profile must have a content'
+      update (id, json) {
+        this.error = ''
+
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
           return
         }
 
         kuzzle
           .security
-          .updateRolePromise(this.$route.params.id, content, {replaceIfExist: true})
+          .updateRolePromise(this.id, json, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityRolesList'})
@@ -61,7 +65,7 @@
         .fetchRolePromise(this.$route.params.id)
         .then((role) => {
           this.id = role.id
-          this.content = role.content
+          this.document = role.content
         })
         .catch((e) => {
           this.$store.commit(SET_TOAST, {text: e.message})

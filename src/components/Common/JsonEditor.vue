@@ -1,10 +1,19 @@
 <template>
-  <pre id="jsoneditor" :class="myclass"></pre>
+  <pre :id="id" :class="{'readonly': readonly}"></pre>
 </template>
 
-<style type="text/css" media="screen">
+<style lang="scss" rel="stylesheet/scss">
   .ace_text-input {
     position: relative;
+  }
+  .ace-tomorrow.ace_editor.readonly {
+    background-color: #d6d6d6;
+    .ace_gutter, .ace_active-line {
+      background-color: #d6d6d6;
+    }
+    .ace_selection {
+      background: #a7c4de;
+    }
   }
 </style>
 
@@ -16,16 +25,12 @@
     props: [
       'content',
       'myclass',
-      'readonly'
+      'readonly',
+      'id'
     ],
     data () {
       return {
         editor: {}
-      }
-    },
-    events: {
-      'json-editor-refresh' () {
-        this.editor.renderer.updateFull(true)
       }
     },
     methods: {
@@ -47,7 +52,11 @@
     mounted () {
       Vue.nextTick(() => {
         /* eslint no-undef: 0 */
-        this.editor = ace.edit('jsoneditor')
+        if (!this.id) {
+          return
+        }
+
+        this.editor = ace.edit(this.id)
         this.editor.setTheme('ace/theme/tomorrow')
         this.editor.getSession().setMode('ace/mode/json')
         this.editor.setFontSize(13)

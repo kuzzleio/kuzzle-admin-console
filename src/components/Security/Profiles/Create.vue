@@ -6,6 +6,7 @@
   @security-create::reset-error="error = ''"
   @security-create::create="create"
   @security-create::cancel="cancel"
+  :document="document"
   :get-mapping="getMappingProfiles">
   </create>
 </template>
@@ -23,24 +24,26 @@
     data () {
       return {
         error: '',
-        content: {}
+        document: {}
       }
     },
     methods: {
       getMappingProfiles,
-      create (id, content) {
-        if (!id) {
-          this.error = 'The profile identifier is required'
+      create (id, json) {
+        this.error = ''
+
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
           return
         }
-        if (!content || Object.keys(content).length === 0) {
-          this.error = 'The profile must have a content'
+        if (!id) {
+          this.error = 'The document must have an id'
           return
         }
 
         kuzzle
           .security
-          .createProfilePromise(id, content, {replaceIfExist: true})
+          .createProfilePromise(id, json, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityProfilesList'})

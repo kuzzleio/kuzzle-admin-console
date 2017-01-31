@@ -38,34 +38,4 @@ export const formatType = (document, collection) => {
   if (collection === 'users' && document.profileIds !== undefined) {
     document.profileIds.type = 'profileIds'
   }
-  Object.keys(document).forEach(o => {
-    if (document[o].type === 'geo_point') {
-      document[o] = {
-        properties: {
-          lat: {
-            type: 'double'
-          },
-          lon: {
-            type: 'double'
-          }
-        }
-      }
-    }
-  })
-}
-
-/**
- * Count the number of attributes
- * @param mapping
- * @returns number of attributes
- */
-export const countAttributes = (mapping, nb = 0) => {
-  Object.keys(mapping).forEach(o => {
-    if (mapping[o].properties) {
-      nb = countAttributes(mapping[o].properties, ++nb)
-    } else {
-      nb++
-    }
-  })
-  return nb
 }

@@ -61,6 +61,7 @@
               <div class="row">
                 <p>Mapping:</p>
                 <json-editor
+                  id="collection"
                   tabindex="4"
                   ref="jsoneditor"
                   myclass="pre_ace"

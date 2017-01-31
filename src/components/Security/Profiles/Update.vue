@@ -6,6 +6,7 @@
   :error="error"
   @security-create::create="update"
   @security-create::cancel="cancel"
+  :document="document"
   :get-mapping="getMappingProfiles">
   </create>
 </template>
@@ -23,29 +24,31 @@
     },
     data () {
       return {
-        content: {},
+        document: {},
         error: '',
         id: null
       }
     },
     methods: {
       getMappingProfiles,
-      update (id, content) {
-        if (!content || Object.keys(content).length === 0) {
-          this.error = 'The profile must have a content'
+      update (id, json) {
+        this.error = ''
+
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
           return
         }
 
         kuzzle
           .security
-          .updateProfilePromise(this.$route.params.id, content, {replaceIfExist: true})
+          .updateProfilePromise(this.id, json, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityProfilesList'})
             }, 1000)
           })
           .catch((e) => {
-            this.$emit('toast', e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
       cancel () {
@@ -62,7 +65,7 @@
         .fetchProfilePromise(this.$route.params.id)
         .then((profile) => {
           this.id = profile.id
-          this.content = profile.content
+          this.document = profile.content
         })
         .catch((e) => {
           this.$store.commit(SET_TOAST, {text: e.message})
