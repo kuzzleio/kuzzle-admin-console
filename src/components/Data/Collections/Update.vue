@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="hasRights">
     <create-or-update
       :headline="headline"
       @collection-create::create="update"
@@ -8,9 +8,15 @@
       :index="index">
     </create-or-update>
   </div>
+  <div v-else>
+    <page-not-allowed></page-not-allowed>
+  </div>
 </template>
 
 <script>
+  import { canEditCollection } from '../../../services/userAuthorization'
+  import PageNotAllowed from '../../Common/PageNotAllowed'
+
   import CreateOrUpdate from './CreateOrUpdate'
   import { FETCH_COLLECTION_DETAIL } from '../../../vuex/modules/collection/mutation-types'
   import kuzzle from '../../../services/kuzzle'
@@ -28,11 +34,15 @@
       }
     },
     components: {
-      CreateOrUpdate
+      CreateOrUpdate,
+      PageNotAllowed
     },
     computed: {
       headline () {
         return 'Update ' + this.$store.state.route.params.collection
+      },
+      hasRights () {
+        return canEditCollection(this.index, this.collection)
       }
     },
     methods: {

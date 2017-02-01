@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="hasRights">
     <headline>
       {{collection}}
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
@@ -18,10 +18,16 @@
       :get-mapping="getMappingDocument">
     </create-or-update>
   </div>
+  <div v-else>
+    <page-not-allowed></page-not-allowed>
+  </div>
 </template>
 
 
 <script>
+  import { canCreateDocument } from '../../../services/userAuthorization'
+  import PageNotAllowed from '../../Common/PageNotAllowed'
+
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
@@ -35,7 +41,8 @@
       Headline,
       CollectionDropdown,
       CreateOrUpdate,
-      CollectionTabs
+      CollectionTabs,
+      PageNotAllowed
     },
     props: {
       index: String,
@@ -45,6 +52,11 @@
       return {
         error: '',
         document: {}
+      }
+    },
+    computed: {
+      hasRights () {
+        return canCreateDocument(this.index, this.collection)
       }
     },
     methods: {

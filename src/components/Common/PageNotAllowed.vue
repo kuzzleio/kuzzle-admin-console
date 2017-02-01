@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="wrapper">
-    <headline title="Sorry, dude..."></headline>
+    <headline title="Sorry"></headline>
     <div class="card-panel">
       <div class="row valign-bottom empty-set empty-set-condensed">
         <div class="col s1 offset-s1">

@@ -1,10 +1,3 @@
-import {
-  canCreateCollection,
-  canEditCollection,
-  canCreateDocument,
-  canEditDocument
-} from '../../services/userAuthorization'
-
 export default [
   // Indexes routes
   {
@@ -28,11 +21,7 @@ export default [
     path: '/data/:index/create',
     name: 'DataCreateCollection',
     component (resolve) {
-      if (!canCreateCollection()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Data/Collections/Create'], resolve)
-      }
+      require(['../../components/Data/Collections/Create'], resolve)
     }
   },
   {
@@ -46,11 +35,7 @@ export default [
     path: '/data/:index/:collection/edit',
     name: 'DataCollectionEdit',
     component (resolve) {
-      if (!canEditCollection()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Data/Collections/Update'], resolve)
-      }
+      require(['../../components/Data/Collections/Update'], resolve)
     }
   },
   {
@@ -64,22 +49,14 @@ export default [
     path: '/data/:index/:collection/create',
     name: 'DataCreateDocument',
     component (resolve) {
-      if (!canCreateDocument()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Data/Documents/Create'], resolve)
-      }
+      require(['../../components/Data/Documents/Create'], resolve)
     }
   },
   {
     path: '/data/:index/:collection/update/:id',
     name: 'DataUpdateDocument',
     component (resolve) {
-      if (!canEditDocument()) {
-        require(['../../components/Common/PageNotAllowed'], resolve)
-      } else {
-        require(['../../components/Data/Documents/Update'], resolve)
-      }
+      require(['../../components/Data/Documents/Update'], resolve)
     }
   }
 ]

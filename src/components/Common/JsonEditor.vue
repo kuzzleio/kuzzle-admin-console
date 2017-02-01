@@ -1,5 +1,5 @@
 <template>
-  <pre :id="id" :class="{'readonly': readonly}"></pre>
+  <pre :id="id" :class="classes"></pre>
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
@@ -28,6 +28,11 @@
       'readonly',
       'id'
     ],
+    computed: {
+      classes () {
+        return ((this.readonly ? 'readonly' : '') + this.myclass)
+      }
+    },
     data () {
       return {
         editor: {}

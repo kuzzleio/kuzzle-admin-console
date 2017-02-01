@@ -43,6 +43,7 @@ export const canSearchDocument = (index, collection) => {
   return isActionAllowed(store.state.user, 'document', 'search', index, collection)
 }
 export const canCreateDocument = (index, collection) => {
+  console.log(index, collection)
   return isActionAllowed(store.state.user, 'document', 'create', index, collection)
 }
 export const canEditDocument = (index, collection) => {

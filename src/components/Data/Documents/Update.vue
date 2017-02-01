@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="hasRights">
     <headline>
       Edit document - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
@@ -26,6 +26,9 @@
       :get-mapping="getMappingDocument">
     </create-or-update>
   </div>
+  <div v-else>
+    <page-not-allowed></page-not-allowed>
+  </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -35,6 +38,9 @@
 </style>
 
 <script>
+  import { canEditDocument } from '../../../services/userAuthorization'
+  import PageNotAllowed from '../../Common/PageNotAllowed'
+
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
@@ -51,11 +57,17 @@
       Headline,
       CollectionDropdown,
       CreateOrUpdate,
-      CollectionTabs
+      CollectionTabs,
+      PageNotAllowed
     },
     props: {
       index: String,
       collection: String
+    },
+    computed: {
+      hasRights () {
+        return canEditDocument(this.index, this.collection)
+      }
     },
     data () {
       return {
