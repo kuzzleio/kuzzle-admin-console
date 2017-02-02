@@ -131,7 +131,7 @@
       this.fetch()
       kuzzle
         .collection(this.collection, this.index)
-        .subscribe({term: {_id: decodeURIComponent(this.$store.state.route.params.id)}}, () => {
+        .subscribe({ids: {values: [decodeURIComponent(this.$store.state.route.params.id)]}}, () => {
           this.show = true
         })
         .onDone((error, kuzzleRoom) => {
