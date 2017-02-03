@@ -4,8 +4,9 @@
       {{index}} - {{headline}}
     </headline>
 
+    <stepper :current-step="1"></stepper>
     <div class="row">
-      <div class="col s12 m10 l8 card">
+      <div class="col s12 card">
         <form class="wrapper" @submit.prevent="create">
           <!-- Required fields -->
           <div v-if="!$store.state.route.params.collection">
@@ -114,7 +115,7 @@
     font-size: 0.9rem;
   }
   .pre_ace {
-    min-height: 300px;
+    min-height: 500px;
   }
   .actions {
     margin-left: 0 !important;
@@ -143,12 +144,14 @@
   import JsonEditor from '../../Common/JsonEditor'
   import Focus from '../../../directives/focus.directive'
   import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
+  import Stepper from './Stepper'
 
   export default {
     name: 'CollectionCreateOrUpdate',
     components: {
       Headline,
-      JsonEditor
+      JsonEditor,
+      Stepper
     },
     directives: {
       Focus
