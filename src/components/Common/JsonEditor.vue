@@ -30,7 +30,7 @@
     ],
     computed: {
       classes () {
-        return ((this.readonly ? 'readonly' : '') + this.myclass)
+        return ((this.readonly ? 'readonly ' : '') + this.myclass)
       }
     },
     data () {
