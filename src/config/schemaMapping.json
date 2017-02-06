@@ -125,7 +125,7 @@
   },
   "float": {
     "elements": [
-      {
+       {
         "tag": "input",
         "type": "text"
       }

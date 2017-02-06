@@ -1,25 +1,27 @@
-import {
-  RECEIVE_COLLECTION_DETAIL,
-  RESET_COLLECTION_DETAIL
-} from './mutation-types'
+import * as types from './mutation-types'
 import actions from './actions'
 
 const state = {
   name: null,
   mapping: {},
-  isRealtimeOnly: false
+  isRealtimeOnly: false,
+  editionStep: 1
 }
 
 export const mutations = {
-  [RECEIVE_COLLECTION_DETAIL] (state, payload) {
+  [types.RECEIVE_COLLECTION_DETAIL] (state, payload) {
     state.name = payload.name
     state.mapping = payload.mapping
     state.isRealtimeOnly = payload.isRealtimeOnly
   },
-  [RESET_COLLECTION_DETAIL] (state) {
+  [types.RESET_COLLECTION_DETAIL] (state) {
     state.name = null
     state.mapping = {}
     state.isRealtimeOnly = false
+    state.editionStep = 1
+  },
+  [types.SET_EDITION_STEP] (state, payload) {
+    state.editionStep = payload
   }
 }
 

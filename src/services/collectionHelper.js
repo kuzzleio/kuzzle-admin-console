@@ -39,3 +39,7 @@ export const formatType = (document, collection) => {
     document.profileIds.type = 'profileIds'
   }
 }
+
+export const flattenMapping = (mapping) => {
+
+}
