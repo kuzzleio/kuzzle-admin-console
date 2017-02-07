@@ -72,10 +72,10 @@ export const getSchemaForType = (type) => {
         id: element.id
       }
     })
-    .push({
+    .concat([{
       name: elementJson.name,
       id: elementJson.id
-    })
+    }])
 }
 
 export const getDefaultSchemaForType = (type) => {

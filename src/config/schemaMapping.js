@@ -10,10 +10,23 @@ export const elements = {
     name: 'textarea',
     tag: 'textarea'
   },
-  'select': {
-    id: 'select',
+  'select:text': {
+    id: 'select:text',
     name: 'select',
-    tag: 'select'
+    tag: 'select',
+    type: 'text'
+  },
+  'select:integer': {
+    id: 'select:integer',
+    name: 'select',
+    tag: 'select',
+    type: 'integer'
+  },
+  'select:float': {
+    id: 'select:float',
+    name: 'select',
+    tag: 'select',
+    type: 'float'
   },
   'mselect': {
     id: 'mselect',
@@ -84,7 +97,7 @@ export const config = {
     elements: [
       elements['input:text'],
       elements['textarea'],
-      elements['select'],
+      elements['select:text'],
       elements['mselect']
     ],
     default: elements['input:text']
@@ -93,7 +106,7 @@ export const config = {
     elements: [
       elements['input:text'],
       elements['textarea'],
-      elements['select'],
+      elements['select:text'],
       elements['mselect']
     ],
     default: elements['input:text']
@@ -107,49 +120,57 @@ export const config = {
   },
   long: {
     elements: [
-      elements['input:number:integer']
+      elements['input:number:integer'],
+      elements['select:float']
     ],
     default: elements['input:number:integer']
   },
   integer: {
     elements: [
-      elements['input:number:integer']
+      elements['input:number:integer'],
+      elements['select:integer']
     ],
     default: elements['input:number:integer']
   },
   short: {
     elements: [
-      elements['input:number:short']
+      elements['input:number:short'],
+      elements['select:float']
     ],
     default: elements['input:number:short']
   },
   byte: {
     elements: [
-      elements['input:number:integer']
+      elements['input:number:integer'],
+      elements['select:integer']
     ],
     default: elements['input:number:integer']
   },
   double: {
     elements: [
-      elements['input:number:double']
+      elements['input:number:double'],
+      elements['select:integer']
     ],
     default: elements['input:number:double']
   },
   float: {
     elements: [
-      elements['input:number:float']
+      elements['input:number:float'],
+      elements['select:float']
     ],
     default: elements['input:number:float']
   },
   half_float: {
     elements: [
-      elements['input:number:halfFloat']
+      elements['input:number:halfFloat'],
+      elements['select:float']
     ],
     default: elements['input:number:halfFloat']
   },
   scaled_float: {
     elements: [
-      elements['input:number:float']
+      elements['input:number:float'],
+      elements['select:float']
     ],
     default: elements['input:number:float']
   },
@@ -167,7 +188,8 @@ export const config = {
   },
   ip: {
     elements: [
-      elements['input:text']
+      elements['input:text'],
+      elements['select:text']
     ],
     default: elements['input:text']
   },
