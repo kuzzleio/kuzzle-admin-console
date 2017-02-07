@@ -1,22 +1,78 @@
 <template>
-  <div class="json-form">
-    <!-- For nested objects -->
-    <fieldset v-if="isNested(content)">
-      <legend>
-        {{name}}
-        <i @click="addAttribute" class="fa fa-plus-circle primary"></i>
-      </legend>
-      <div v-for="(nestedContent, nestedName) in content.properties">
-        <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
-      </div>
-    </fieldset>
+  <div>
+    <div class="json-form" v-for="(content, name) in schema">
+      <!-- For nested objects -->
+      <fieldset v-if="isNested(content)">
+        <legend>
+          {{name}}
+        </legend>
+        <div v-for="(nestedContent, nestedName) in content.elements">
+          <json-form :schema="content.elements" :parent="name" :document="document"></json-form>
+        </div>
+      </fieldset>
 
-    <!-- Root attributes -->
-    <div v-if="!isNested(content)" class="input-field">
-      <component :is="componentItem" :name="name" :full-name="path" :content="content.val" :type="content.type"></component>
+      <!-- Root attributes -->
+      <div class="input-field" v-else>
+        <component :is="componentItem(content)" :name="name" :content="content.val" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
+      </div>
     </div>
   </div>
 </template>
+
+<script>
+  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
+  import JsonFormItemNumber from './JsonFormItemNumber'
+  import JsonFormItemText from './JsonFormItemText'
+  import JsonFormItemArray from './JsonFormItemArray/JsonFormItemArray'
+  import JsonFormItemProfileIds from './JsonFormItemProfileIds'
+  import JsonFormItemGeoPoint from './JsonFormItemGeoPoint'
+  import JsonFormItemInput from './JsonFormItemInput'
+
+  import Vue from 'vue'
+
+  export default {
+    name: 'JsonForm',
+    components: {
+      JsonFormItemCheckbox,
+      JsonFormItemNumber,
+      JsonFormItemText,
+      JsonFormItemArray,
+      JsonFormItemProfileIds,
+      JsonFormItemGeoPoint,
+      JsonFormItemInput
+    },
+    props: {
+      schema: [Object, Array],
+      document: Object,
+      parent: String
+    },
+    methods: {
+      isNested (content) {
+        return content.elements && Object.keys(content.elements).length
+      },
+      componentItem (content) {
+        switch (content.tag) {
+          case 'input':
+            return 'JsonFormItemInput'
+          case 'checkbox':
+          case 'boolean':
+            return 'JsonFormItemCheckbox'
+          default:
+            return 'JsonFormItemInput'
+        }
+      },
+      update (content) {
+        if (this.parent) {
+          Vue.set(this.document, this.parent, {[content.name]: content.value})
+        } else {
+          Vue.set(this.document, content.name, content.value)
+          this.$emit('update-value', {name: content.name, value: content.value})
+        }
+      }
+    }
+  }
+</script>
+
 
 <style lang="scss" rel="stylesheet/scss">
   .json-form {
@@ -87,68 +143,3 @@
     }
   }
 </style>
-
-<script>
-  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
-  import JsonFormItemNumber from './JsonFormItemNumber'
-  import JsonFormItemText from './JsonFormItemText'
-  import JsonFormItemArray from './JsonFormItemArray/JsonFormItemArray'
-  import JsonFormItemProfileIds from './JsonFormItemProfileIds'
-  import JsonFormItemGeoPoint from './JsonFormItemGeoPoint'
-
-  export default {
-    name: 'JsonForm',
-    components: {
-      JsonFormItemCheckbox,
-      JsonFormItemNumber,
-      JsonFormItemText,
-      JsonFormItemArray,
-      JsonFormItemProfileIds,
-      JsonFormItemGeoPoint
-    },
-    computed: {
-      path () {
-        if (this.fullNameInput) {
-          return this.fullNameInput + '.' + this.name
-        }
-        return this.name
-      },
-      componentItem () {
-        switch (this.content.type) {
-          case 'boolean':
-            return 'JsonFormItemCheckbox'
-          case 'integer':
-          case 'long':
-          case 'short':
-          case 'byte':
-          case 'double':
-          case 'float':
-          case 'number':
-          case 'numeric':
-            return 'JsonFormItemNumber'
-          case 'array':
-            return 'JsonFormItemArray'
-          case 'profileIds':
-            return 'JsonFormItemProfileIds'
-          case 'geo_point':
-            return 'JsonFormItemGeoPoint'
-          default:
-            return 'JsonFormItemText'
-        }
-      }
-    },
-    props: {
-      name: String,
-      content: Object,
-      fullNameInput: String
-    },
-    methods: {
-      isNested (content) {
-        return !!content.properties
-      },
-      addAttribute () {
-        this.$emit('document-create::add-attribute', this.path)
-      }
-    }
-  }
-</script>

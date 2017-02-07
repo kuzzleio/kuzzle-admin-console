@@ -2,20 +2,11 @@
   <div class="row input-field">
     <input :id="fullName" type="text" :value="content" v-model="value" @focus="display = true" @blur="hideAttribute"/>
     <label :for="fullName" :class="{'active': value}">{{name}}</label>
-
-    <div class="inline-actions">
-      <a
-        class="btn-floating waves-effect waves-light btn-tiny secondary right"
-        v-show="display"
-        @click="transformToArray">
-        <i class="fa fa-plus"></i>
-      </a>
-    </div>
   </div>
 </template>
 
 <script>
-  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
+//  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
 
   export default {
     name: 'JsonFormItemText',
@@ -31,14 +22,14 @@
         display: false
       }
     },
-    watch: {
-      value (v) {
-        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: v})
-      },
-      content (v) {
-        this.value = v
-      }
-    },
+//    watch: {
+//      value (v) {
+//        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: v})
+//      },
+//      content (v) {
+//        this.value = v
+//      }
+//    },
     mounted () {
       this.value = this.content
     },

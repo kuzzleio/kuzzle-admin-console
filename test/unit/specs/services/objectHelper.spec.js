@@ -1,4 +1,4 @@
-import {mergeDeep, countAttributes} from '../../../../src/services/objectHelper'
+import {mergeDeep, countAttributes} from '../../../../src/services/collectionHelper'
 
 describe('objectHelper', () => {
   describe('mergeDeep', () => {
