@@ -12,7 +12,7 @@
                 <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute" @blur="updateFilter">
               </div>
               <div class="col s2">
-                <m-select model="filter.operator" @on-blur="updateFilter">
+                <m-select :value="filter.operator" @on-blur="updateFilter">
                   <option v-for="(label, identifiers) in availableFilters" :value="label">{{identifiers}}</option>
                 </m-select>
               </div>
@@ -47,7 +47,7 @@
               <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute" @blur="updateFilter">
             </div>
             <div class="col s2">
-              <m-select model="filters.sorting.order" @on-blur="updateFilter">
+              <m-select :value="filters.sorting.order" @on-blur="updateFilter">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
               </m-select>

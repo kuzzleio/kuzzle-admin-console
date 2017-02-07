@@ -1,33 +1,75 @@
-.stepper .step:hover {
-  background: #F6F6F6;
-}
-
-.stepper .step {
-  .circle {
-    background: #9e9e9e;
-    width: 45px;
-    height: 45px;
-    line-height: 44px;
-    border-radius: 23px;
+.collection-edit {
+  .help {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  .pre_ace {
+    min-height: 500px;
+  }
+  .actions {
+    margin-left: 0 !important;
+    margin-right: auto;
+  }
+  .error {
     position: relative;
-    color: white;
-    text-align: center;
-    font-size: 1.2em;
+    padding: 8px 12px;
+    margin: 0;
   }
-  p {
-    margin-top: 0;
-    text-align: center;
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .2);
+    }
   }
-}
 
-/** Horizontal **/
+  .collection-form {
+    .info {
+      margin-top: 20px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+  }
 
-.stepper.horizontal .line {
-  border-top: 1px solid gainsboro;
-  margin-top: 25px;
-  margin-left: 2px;
-}
+  .stepper {
+    padding: 20px 0 0 0;
 
-.stepper .active .circle {
-  background-color: #4285f4;
+    &.horizontal .line {
+      border-top: 1px solid gainsboro;
+      margin-top: 25px;
+      margin-left: 60px;
+    }
+
+    .step-list {
+      margin-bottom: 0;
+      .step {
+        &.active .step-content .circle {
+          background-color: $blue-color;
+        }
+        .step-content {
+          cursor: pointer;
+          .circle {
+            background: #9e9e9e;
+            width: 45px;
+            height: 45px;
+            line-height: 44px;
+            border-radius: 23px;
+            position: relative;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+          }
+          p {
+            margin-top: 0;
+            text-align: center;
+          }
+        }
+      }
+
+    }
+  }
 }
