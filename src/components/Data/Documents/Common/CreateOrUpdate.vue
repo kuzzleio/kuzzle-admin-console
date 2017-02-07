@@ -151,12 +151,20 @@
       }
     },
     mounted () {
-      getSchema(this.index, this.collection)
-        .then(schema => {
-          this.schema = schema
+      this.getMapping(this.collection, this.index)
+        .then((res) => {
+          this.mapping = res.mapping
 
-          this.schema = mergeDeep(this.schema, this.mapping)
-          console.dir(this.schema)
+          getSchema(this.index, this.collection)
+            .then(schema => {
+              this.schema = schema
+
+              console.log(schema)
+              this.schema = mergeDeep(this.schema, this.mapping, schema)
+            })
+        })
+        .catch((e) => {
+          // todo errors
         })
     }
   }

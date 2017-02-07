@@ -11,38 +11,17 @@ const isObject = item => {
  * @returns {*}
  */
 
-import schem from '../config/schemaMapping.json'
-
-export const mergeDeep = (target, source) => {
+export const mergeDeep = (target, source, schem) => {
   if (isObject(target) && isObject(source)) {
     Object.keys(source)
       .forEach(key => {
         if (!target[key]) {
-          console.log(source[key], schem)
-          target[key] = schem[source[key]].default
+          console.log(schem, source[key].type)
+          target[key] = schem[source[key].type].default
         }
       })
   }
   return target
-  // if (isObject(target) && isObject(source)) {
-  //   let _target = {...target}
-  //   let _source = {...source}
-  //
-  //   Object.keys(_source)
-  //     .forEach(key => {
-  //       if (isObject(_source[key])) {
-  //         if (!_target[key]) {
-  //           _target[key] = {}
-  //         }
-  //
-  //         _target[key] = mergeDeep(_target[key], _source[key])
-  //       } else {
-  //         target[key] = _source[key]
-  //       }
-  //     })
-  // }
-  //
-  // return target
 }
 
 /**
