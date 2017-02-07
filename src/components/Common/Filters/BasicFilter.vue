@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form @submit.prevent="basicSearch">
     <div class="row filter-content">
       <div class="col s12">
 
