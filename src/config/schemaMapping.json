@@ -115,12 +115,14 @@
     "elements": [
       {
         "tag": "input",
-        "type": "text"
+        "type": "number",
+        "step": 1e-9
       }
     ],
     "default": {
       "tag": "input",
-      "type": "text"
+      "type": "text",
+      "step": 1e-17
     }
   },
   "float": {

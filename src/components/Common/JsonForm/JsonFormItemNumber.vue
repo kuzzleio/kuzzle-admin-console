@@ -31,29 +31,6 @@
         display: false
       }
     },
-    computed: {
-      step () {
-        return this.type === 'float' ? '0.1' : '1'
-      }
-    },
-    methods: {
-      hideAttribute () {
-        setTimeout(() => {
-          this.display = false
-        }, 100)
-      },
-      transformToArray () {
-        let splittedPath = this.fullName.split('.')
-        splittedPath.pop()
-        let value = [null]
-
-        if (this.value) {
-          value = [this.value, null]
-        }
-
-        this.$emit('document-create::change-type-attribute', splittedPath.join('.'), this.name, 'array', value)
-      }
-    },
     mounted () {
       this.value = this.content
     },

@@ -61,39 +61,29 @@
     },
     methods: {
       getMappingDocument,
-      create (json, mapping) {
+      create (document) {
         this.error = ''
 
-        if (!json) {
+        if (!document) {
           this.error = 'The document is invalid, please review it'
           return
         }
 
+        let id = null
+
+        if (document._id) {
+          id = document._id
+          delete document._id
+        }
+
         return kuzzle
           .collection(this.collection, this.index)
-          .collectionMapping(mapping || {})
-          .applyPromise()
+          .createDocumentPromise(id, document, {refresh: 'wait_for'})
           .then(() => {
-            let document = {...json}
-            let id = null
-
-            if (document._id) {
-              id = document._id
-              delete document._id
-            }
-
-            return kuzzle
-              .collection(this.collection, this.index)
-              .createDocumentPromise(id, document, {refresh: 'wait_for'})
-              .then(() => {
-                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-              })
-              .catch(err => {
-                this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
-              })
+            this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
           })
           .catch(err => {
-            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
+            this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
           })
       },
       cancel () {
