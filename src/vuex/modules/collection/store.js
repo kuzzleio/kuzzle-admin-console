@@ -5,7 +5,7 @@ const state = {
   name: null,
   mapping: {},
   isRealtimeOnly: false,
-  editionStep: 1
+  editionStep: 2
 }
 
 export const mutations = {
@@ -22,6 +22,9 @@ export const mutations = {
   },
   [types.SET_EDITION_STEP] (state, payload) {
     state.editionStep = payload
+  },
+  [types.SET_MAPPING] (state, payload) {
+    state.mapping = payload
   }
 }
 

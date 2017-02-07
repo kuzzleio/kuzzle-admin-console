@@ -80,11 +80,11 @@
 
     <!-- Actions -->
     <div class="row">
-      <div class="col s5 m4 l4">
-        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-        <button type="submit" class="btn primary waves-effect waves-light">
+      <div class="col s12">
+        <button type="submit" class="btn primary waves-effect waves-light right">
           Next
         </button>
+        <a tabindex="6" class="btn-flat waves-effect right" @click.prevent="cancel">Cancel</a>
       </div>
     </div>
   </form>
@@ -92,12 +92,15 @@
 
 <script>
   import JsonEditor from '../../../Common/JsonEditor'
-  import {SET_EDITION_STEP} from '../../../../vuex/modules/collection/mutation-types'
+  import {SET_EDITION_STEP, SET_MAPPING} from '../../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'Mapping',
     components: {
       JsonEditor
+    },
+    props: {
+      step: Number
     },
     data () {
       return {
@@ -112,6 +115,14 @@
       },
       cancel () {
         this.$emit('cancel')
+      }
+    },
+    watch: {
+      step () {
+        let mapping = this.$refs.jsoneditor.getJson()
+        if (mapping) {
+          this.$store.commit(SET_MAPPING, mapping)
+        }
       }
     }
   }

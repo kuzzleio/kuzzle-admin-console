@@ -9,11 +9,12 @@
     <div class="row card-panel card-body">
       <div class="col s12">
         <mapping
-          v-if="$store.state.collection.editionStep === 1"
+          v-show="$store.state.collection.editionStep === 1"
+          :step="$store.state.collection.editionStep"
           @cancel="cancel">
         </mapping>
         <collection-form
-          v-if="$store.state.collection.editionStep === 2"
+          v-show="$store.state.collection.editionStep === 2"
           :mapping="$store.state.collection.mapping"
           @cancel="cancel">
         </collection-form>

@@ -1,5 +1,5 @@
 <template>
-  <select ref="mselect" v-model="value" @blur="triggerBlur">
+  <select ref="mselect" v-model="content" @blur="triggerBlur">
     <slot></slot>
   </select>
 </template>
@@ -10,12 +10,12 @@
   export default {
     name: 'MSelect',
     props: {
-      model: String,
+      value: String,
       onBlur: Function
     },
     data () {
       return {
-        value: 'string'
+        content: this.value
       }
     },
     methods: {
@@ -28,7 +28,7 @@
     mounted () {
       Vue.nextTick(() => {
         let $el = $(this.$refs.mselect)
-        this.value = this.model
+        this.content = this.value
         /* eslint no-undef: 0 */
         $el.material_select()
         $el.on('change', (e) => {
