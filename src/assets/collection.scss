@@ -33,6 +33,50 @@
       margin-left: 5px;
       cursor: pointer;
     }
+    .select-wrapper {
+      margin-top: 5px;
+      span.caret {
+        top: 10px;
+      }
+      input.select-dropdown {
+        height: 2rem;
+      }
+    }
+    .multiselect {
+      margin-top: 5px;
+      margin-left: 10px;
+      input {
+        height: 0;
+      }
+      .multiselect__select {
+        display: none;
+      }
+      .multiselect__input, .multiselect__input:focus {
+        border-bottom: 0;
+      }
+    }
+
+    .collection-form-line {
+      &.odd {
+        background-color: #f4f4f4;
+      }
+      .multiselect {
+        .multiselect__input {
+          margin-bottom: 0;
+        }
+        .multiselect__tags {
+          span {
+            background-color: $blue-color;
+          }
+        }
+      }
+    }
+
+    .collection-form-name {
+      .list-names {
+        margin-top: 15px;
+      }
+    }
   }
 
   .stepper {

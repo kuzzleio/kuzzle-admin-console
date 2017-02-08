@@ -1,91 +1,95 @@
 export const elements = {
   'input:text': {
     id: 'input:text',
-    name: 'input text',
+    name: 'Input text',
     tag: 'input',
     type: 'text'
   },
   'textarea': {
     id: 'textarea',
-    name: 'textarea',
+    name: 'Textarea',
     tag: 'textarea'
   },
   'select:text': {
     id: 'select:text',
-    name: 'select',
+    name: 'Select box with text',
     tag: 'select',
-    type: 'text'
+    type: 'text',
+    chooseValues: true
   },
   'select:integer': {
     id: 'select:integer',
-    name: 'select',
+    name: 'Select box with integer',
     tag: 'select',
-    type: 'integer'
+    type: 'integer',
+    chooseValues: true
   },
   'select:float': {
     id: 'select:float',
-    name: 'select',
+    name: 'Select box with float',
     tag: 'select',
-    type: 'float'
+    type: 'float',
+    chooseValues: true
   },
   'mselect': {
     id: 'mselect',
-    name: 'multi select',
-    tag: 'mselect'
+    name: 'Multi select',
+    tag: 'mselect',
+    chooseValues: true
   },
   'checkbox': {
     id: 'checkbox',
-    name: 'checkbox',
+    name: 'Checkbox',
     tag: 'checkbox'
   },
   'input:number:integer': {
     id: 'input:number:integer',
-    name: 'input number',
+    name: 'Input number',
     tag: 'input',
     type: 'number',
     step: 1
   },
   'input:number:short': {
     id: 'input:number:short',
-    name: 'input number',
+    name: 'Input number',
     tag: 'input',
     type: 'number',
     step: 0.001
   },
   'input:number:float': {
     id: 'input:number:float',
-    name: 'input number',
+    name: 'Input number',
     tag: 'input',
     type: 'number',
     step: 1e-9
   },
   'input:number:double': {
     id: 'input:number:double',
-    name: 'input number',
+    name: 'Input number',
     tag: 'input',
     type: 'number',
     step: 1e-17
   },
   'input:number:halfFloat': {
     id: 'input:number:halfFloat',
-    name: 'input number',
+    name: 'Input number',
     tag: 'input',
     type: 'number',
     step: 1e-4
   },
   'input:fieldset': {
     id: 'input:fieldset',
-    name: 'fieldset',
+    name: 'Fieldset',
     tag: 'fieldset'
   },
   'geopoint': {
     id: 'geopoint',
-    name: 'geo point',
+    name: 'Geo point',
     tag: 'geo-point'
   },
   'json': {
     id: 'json',
-    name: 'json',
+    name: 'Json',
     tag: 'json'
   }
 }

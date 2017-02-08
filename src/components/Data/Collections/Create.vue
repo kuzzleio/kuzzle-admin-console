@@ -48,10 +48,10 @@
       }
     },
     methods: {
-      create (name, mapping, isRealtime) {
+      create () {
         this.error = ''
 
-        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.data.indexesAndCollections[this.index], index: this.index, collectionName: name, mapping, isRealtime})
+        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.data.indexesAndCollections[this.index], index: this.index})
           .then(() => {
             this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })

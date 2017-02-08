@@ -18,21 +18,20 @@
           <!--<div class="line"></div>-->
         </div>
 
-        <!--<div class="step col s3 step-content" :class="{active: currentStep === 2}">-->
-          <!--<div class="left">-->
+        <!--<div class="step col s3 step-content" :class="{active: currentStep === 3}">-->
+          <!--<div class="left step-content" @click="changeStep(2)">-->
             <!--<div class="circle">2</div>-->
             <!--<p>Validation</p>-->
           <!--</div>-->
           <!--<div class="line"></div>-->
         <!--</div>-->
 
-        <!--<div class="step col s3 step-content" :class="{active: currentStep === 2}">-->
-          <!--<div class="left">-->
+        <!--<div class="step col s3 step-content" :class="{active: currentStep === 4}">-->
+          <!--<div class="left step-content" @click="changeStep(2)">-->
             <!--<div class="circle">2</div>-->
             <!--<p>Preview</p>-->
           <!--</div>-->
         <!--</div>-->
-
       </div>
     </div>
   </div>
