@@ -15,7 +15,7 @@ describe('KuzzleDisconnectedPage component', () => {
     KuzzleDisconnectedPage = KuzzleDisconnectedPageInjector({
       '../../services/kuzzle': {
         host: 'toto',
-        wsPort: 8888,
+        port: 8888,
         addListener: (event, cb) => {
           if (testedEvent === event) {
             cb()

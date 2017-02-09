@@ -14,8 +14,7 @@
 //     myEnv: {
 //       name: 'myEnv',
 //       host: 'myHost',
-//       ioPort: 8888,
-//       wsPort: 9999,
+//       port: 8888,
 //       color: DEFAULT_COLOR
 //     }
 //   }
@@ -59,8 +58,7 @@
 //         Vue.nextTick(() => {
 //           expect($vm.environment.name).to.be.equal(null)
 //           expect($vm.environment.host).to.be.equal(null)
-//           expect($vm.environment.ioPort).to.be.equal(7512)
-//           expect($vm.environment.wsPort).to.be.equal(7513)
+//           expect($vm.environment.port).to.be.equal(7512)
 //           expect($vm.environment.color).to.be.equal(DEFAULT_COLOR)
 //           done()
 //         })
@@ -81,8 +79,7 @@
 //     describe('createEnvironments', () => {
 //       it('should set error and do nothing on name error', () => {
 //         $vm.environment.name = null
-//         $vm.environment.wsPort = 7513
-//         $vm.environment.ioPort = 7512
+//         $vm.environment.port = 7512
 //         $vm.environment.host = 'localhost'
 //
 //         updateEnvironment.reset()
@@ -98,8 +95,7 @@
 //
 //       it('should set error and do nothing on host error', () => {
 //         $vm.environment.name = 'localhost'
-//         $vm.environment.wsPort = 7513
-//         $vm.environment.ioPort = 7512
+//         $vm.environment.port = 7512
 //         $vm.environment.host = 'http://toto'
 //
 //         updateEnvironment.reset()
@@ -125,10 +121,10 @@
 //         expect($vm.$broadcast.callCount).to.be.equal(0)
 //       })
 //
-//       it('should set error and do nothing on wsPort error', () => {
+//
+//       it('should set error and do nothing on port error', () => {
 //         $vm.environment.name = 'localhost'
-//         $vm.environment.wsPort = -7513
-//         $vm.environment.ioPort = 7512
+//         $vm.environment.port = -7512
 //         $vm.environment.host = 'localhost'
 //
 //         updateEnvironment.reset()
@@ -136,24 +132,7 @@
 //         $vm.$broadcast.reset()
 //
 //         $vm.createEnvironments()
-//         expect($vm.errors.wsPort).to.be.equal(true)
-//         expect(updateEnvironment.callCount).to.be.equal(0)
-//         expect(createEnvironment.callCount).to.be.equal(0)
-//         expect($vm.$broadcast.callCount).to.be.equal(0)
-//       })
-//
-//       it('should set error and do nothing on ioPort error', () => {
-//         $vm.environment.name = 'localhost'
-//         $vm.environment.wsPort = 7513
-//         $vm.environment.ioPort = -7512
-//         $vm.environment.host = 'localhost'
-//
-//         updateEnvironment.reset()
-//         createEnvironment.reset()
-//         $vm.$broadcast.reset()
-//
-//         $vm.createEnvironments()
-//         expect($vm.errors.ioPort).to.be.equal(true)
+//         expect($vm.errors.port).to.be.equal(true)
 //         expect(updateEnvironment.callCount).to.be.equal(0)
 //         expect(createEnvironment.callCount).to.be.equal(0)
 //         expect($vm.$broadcast.callCount).to.be.equal(0)
@@ -161,8 +140,7 @@
 //
 //       it('should update environment and close modal', () => {
 //         $vm.environment.name = 'localhost'
-//         $vm.environment.wsPort = 7513
-//         $vm.environment.ioPort = 7512
+//         $vm.environment.port = 7512
 //         $vm.environment.host = 'localhost'
 //
 //         $vm.environmentId = 10
@@ -179,8 +157,7 @@
 //
 //       it('should create environment and close modal', () => {
 //         $vm.environment.name = 'localhost'
-//         $vm.environment.wsPort = 7513
-//         $vm.environment.ioPort = 7512
+//         $vm.environment.port = 7512
 //         $vm.environment.host = 'localhost'
 //
 //         $vm.environmentId = null

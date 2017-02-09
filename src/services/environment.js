@@ -11,8 +11,7 @@ const defaultEnvironment = {
   [DEFAULT]: {
     name: 'localhost',
     host: 'localhost',
-    ioPort: 7512,
-    wsPort: 7513,
+    port: 7512,
     color: DEFAULT_COLOR
   }
 }
@@ -50,12 +49,11 @@ export const loadEnvironments = () => {
  * @param  {String} The name of the environment (displayed in the list).
  * @param  {String} The HEX color code of the main header bar when connected.
  * @param  {String} The hostname.
- * @param  {int} The port number for the Socket.IO protocol.
- * @param  {int} The port number for the Websocket protocol.
+ * @param  {int} The port number.
  *
  * @return {Object} The environment object.
  */
-export const createEnvironment = (name, color, host, ioPort, wsPort) => {
+export const createEnvironment = (name, color, host, port) => {
   if (!color) {
     color = DEFAULT_COLOR
   }
@@ -64,8 +62,7 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
     name,
     color,
     host,
-    ioPort,
-    wsPort
+    port
   }
 
   store.dispatch(kuzzleTypes.ADD_ENVIRONMENT, {id: name, environment: newEnvironment, persist: true})
