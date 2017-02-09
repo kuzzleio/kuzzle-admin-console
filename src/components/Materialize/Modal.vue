@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="isOpen" :transition="transition" :id="id" class="modal" :class="computedClasses">
+    <div v-if="isOpen" :id="id" class="modal" :class="computedClasses">
       <slot name="content">
         <div class="modal-content">
           <slot></slot>
@@ -13,7 +13,6 @@
 
     <div
       v-if="isOpen"
-      transition="modal-overlay"
       @click="canClose && close()"
       class="lean-overlay"
       style="z-index: 1002; display: block; opacity: 0.5;">
@@ -54,13 +53,6 @@
       bottom: Boolean,
       isOpen: Boolean,
       loading: Boolean
-    },
-    events: {
-      'modal-open': function (id) {
-        if (this.id === id) {
-          this.open()
-        }
-      }
     },
     watch: {
       isOpen: function (active) {
@@ -148,74 +140,6 @@
         }
       }
     }
-  }
-  .modal-overlay-transition {
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-
-    -webkit-animation-duration: 0.3s;
-    animation-duration: 0.3s;
-
-    -webkit-animation-name: fadeIn-0-5;
-    animation-name: fadeIn-0-5;
-  }
-
-  .modal-overlay-enter, .modal-overlay-leave {
-    opacity: 0;
-  }
-
-  .modal-overlay-leave {
-    -webkit-animation-duration: 0.2s;
-    animation-duration: 0.2s;
-
-    -webkit-animation-name: fadeOut-0-5;
-    animation-name: fadeOut-0-5;
-  }
-
-  .modal-transition {
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-
-    -webkit-animation-duration: 0.3s;
-    animation-duration: 0.3s;
-
-    -webkit-animation-name: zoomIn;
-    animation-name: zoomIn;
-  }
-
-  .modal-leave {
-    opacity: 0;
-  }
-
-  .modal-leave {
-    -webkit-animation-duration: 0.2s;
-    animation-duration: 0.2s;
-
-    -webkit-animation-name: fadeOut;
-    animation-name: fadeOut;
-  }
-
-  .modal-bottom-transition {
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-
-    -webkit-animation-duration: 0.3s;
-    animation-duration: 0.3s;
-
-    -webkit-animation-name: slideInUp;
-    animation-name: slideInUp;
-  }
-
-  .modal-bottom-leave {
-    opacity: 0;
-  }
-
-  .modal-bottom-leave {
-    -webkit-animation-duration: 0.2s;
-    animation-duration: 0.2s;
-
-    -webkit-animation-name: slideOutDown;
-    animation-name: slideOutDown;
   }
 
   .grey {

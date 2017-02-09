@@ -54,12 +54,12 @@
             :available-filters="availableFilters"
             :quick-filter-enabled="false"
             :sorting-enabled="false"
-            :raw-filter="rawFilter"
-            :basic-filter="basicFilter"
+            :raw-filter="$store.getters.rawFilter"
+            :basic-filter="$store.getters.basicFilter"
             :format-from-basic-search="formatFromBasicSearch"
             :format-sort="formatSort"
             :set-basic-filter="setBasicFilter"
-            :basic-filter-form="basicFilterForm">
+            :basic-filter-form="$store.getters.basicFilterForm">
           </filters>
 
         <div class="card-panel card-body" v-show="subscribed || notifications.length">
@@ -199,7 +199,6 @@
   import Filters from '../../Common/Filters/Filters'
   import kuzzle from '../../../services/kuzzle'
   import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
-  import { rawFilter, basicFilter, basicFilterForm } from '../../../vuex/modules/common/crudlDocument/getters'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -209,13 +208,6 @@
     props: {
       index: String,
       collection: String
-    },
-    vuex: {
-      getters: {
-        rawFilter,
-        basicFilter,
-        basicFilterForm
-      }
     },
     data () {
       return {
@@ -230,25 +222,6 @@
         warning: {message: '', count: 0, lastTime: null, info: false},
         scrollGlueActive: true,
         scrollListener: null
-      }
-    },
-    watch: {
-      index () {
-        this.reset()
-      },
-      collection () {
-        this.reset()
-      },
-      '$route' () {
-        let filters = {}
-
-        if (this.basicFilter) {
-          filters = formatFromBasicSearch(this.basicFilter)
-        } else if (this.rawFilter) {
-          filters = this.rawFilter
-        }
-
-        this.filters = filters
       }
     },
     mounted () {
@@ -281,24 +254,24 @@
       canSubscribe,
       basicSearch (filters) {
         if (!filters) {
-          this.$router.go({query: {basicFilter: ''}})
+          this.$router.push({query: {basicFilter: ''}})
           return
         }
 
         let basicFilter = JSON.stringify(filters)
-        this.$router.go({query: {basicFilter}})
+        this.$router.push({query: {basicFilter}})
       },
       rawSearch (filters) {
         if (!filters) {
-          this.$router.go({query: {rawFilter: ''}})
+          this.$router.push({query: {rawFilter: ''}})
           return
         }
 
         let rawFilter = JSON.stringify(filters)
-        this.$router.go({query: {rawFilter}})
+        this.$router.push({query: {rawFilter}})
       },
       refreshSearch () {
-        this.$router.go({query: {...this.$route.query}})
+        this.$router.push({query: {...this.$route.query}})
       },
       setScrollGlue (value) {
         this.scrollGlueActive = value
@@ -455,14 +428,20 @@
         this.$store.commit(SET_BASIC_FILTER, value)
       }
     },
-    route: {
-      data () {
+    watch: {
+      index () {
+        this.reset()
+      },
+      collection () {
+        this.reset()
+      },
+      '$route' () {
         let filters = {}
 
-        if (this.basicFilter) {
-          filters = formatFromBasicSearch(this.basicFilter)
-        } else if (this.rawFilter) {
-          filters = this.rawFilter
+        if (this.$store.getters.basicFilter) {
+          filters = formatFromBasicSearch(this.$store.getters.basicFilter)
+        } else if (this.$store.getters.rawFilter) {
+          filters = this.$store.getters.rawFilter
         }
 
         this.filters = filters

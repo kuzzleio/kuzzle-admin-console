@@ -8,8 +8,6 @@ import { initStoreWithKuzzle } from './services/kuzzleWrapper'
 import * as environment from './services/environment'
 import * as types from './vuex/modules/common/kuzzle/mutation-types'
 
-Vue.config.debug = process.env.NODE_ENV !== 'production'
-
 initStoreWithKuzzle(store)
 
 let loadedEnv = environment.loadEnvironments()
