@@ -8,6 +8,7 @@
 # Releases mapping
 | Back-office  | Kuzzle |
 |---|---|
+| 2.0.0 | 1.0.0-RC9 |
 | 1.1.0 | 1.0.0-RC7 |
 | 1.0.0 | 1.0.0-RC6 |
 
@@ -20,7 +21,7 @@ Kuzzle features are accessible through a secured API. It can be used through a l
 
 # How to use it
 
-This Back-office is a static front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7511) must be accessible from everywhere if you want to use this Back-office.**
+This Back-office is a static front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7512) must be accessible from everywhere if you want to use this Back-office.**
 
 You can check the last version of Back-office here: [kuzzle-backoffice](http://kuzzle-backoffice.netlify.com) (or if you're using Kuzzle through SSL, you can use the version [https](https://kuzzle-backoffice.netlify.com/))
 
