@@ -20,14 +20,7 @@
     },
     data () {
       return {
-        value: false
-      }
-    },
-    mounted () {
-      if (!this.content) {
-        this.value = {}
-      } else {
-        this.value = this.content
+        value: {}
       }
     },
     methods: {
@@ -36,6 +29,16 @@
       },
       jsonChanged (v) {
         this.$emit('update-value', {name: this.name, value: v})
+      }
+    },
+    watch: {
+      content (v) {
+        if (!v) {
+          this.value = {}
+        } else {
+          console.log('#', this.value)
+          this.value = v
+        }
       }
     }
   }

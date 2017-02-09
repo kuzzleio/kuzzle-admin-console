@@ -151,6 +151,7 @@
       }
     },
     mounted () {
+      // @todo use store.collection.schema
       this.getMapping(this.collection, this.index)
         .then((res) => {
           this.mapping = res.mapping
@@ -160,7 +161,6 @@
               this.schema = schema
 
               this.schema = mergeDeep(this.schema, this.mapping)
-              console.log('schema', this.schema)
             })
         })
         .catch((e) => {

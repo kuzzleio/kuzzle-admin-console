@@ -20,12 +20,14 @@
         display: false
       }
     },
-    mounted () {
-      this.value = this.content
-    },
     methods: {
       update (e) {
         this.$emit('update-value', {name: this.name, value: e.target.value})
+      }
+    },
+    watch: {
+      content (v) {
+        this.value = v
       }
     }
   }

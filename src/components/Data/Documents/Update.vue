@@ -119,6 +119,7 @@
           .fetchDocumentPromise(decodeURIComponent(this.$store.state.route.params.id))
           .then(res => {
             this.document = res.content
+            console.log(this.document)
             this.$emit('document-create::fill', res.content)
             return null
           })

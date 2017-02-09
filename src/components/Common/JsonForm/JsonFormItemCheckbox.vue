@@ -1,6 +1,6 @@
 <template>
   <div class="row input-field">
-    <input :id="name" type="checkbox" name="name" v-model="value" />
+    <input :id="name" type="checkbox" name="name" v-model="value" :checked="content" />
     <label :for="name">{{name}}</label>
   </div>
 </template>
@@ -18,10 +18,10 @@
         value: false
       }
     },
-    mounted () {
-      this.value = this.content
-    },
     watch: {
+      content (v) {
+        this.value = v
+      },
       value (v) {
         this.$emit('update-value', {name: this.name, value: v})
       }
