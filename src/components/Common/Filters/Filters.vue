@@ -130,14 +130,6 @@
         this.$emit('json-editor-refresh')
       }
     },
-    events: {
-      'filters-basic-search' () {
-        this.displayBlockFilter = false
-      },
-      'filters-raw-search' () {
-        this.displayBlockFilter = false
-      }
-    },
     data () {
       return {
         displayBlockFilter: false,
