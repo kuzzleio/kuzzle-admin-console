@@ -54,7 +54,7 @@ describe('kuzzle environments mutations test', () => {
     it('should create a new environment', () => {
       let newEnvironment = {
         host: 'localhost',
-        wsPort: 7513
+        port: 7512
       }
       ADD_ENVIRONMENT(state, {id: 'new', environment: newEnvironment})
       expect(state.environments.new).to.deep.equals(newEnvironment)
@@ -71,7 +71,7 @@ describe('kuzzle environments mutations test', () => {
     it('should update an existing environment', () => {
       let newEnvironment = {
         host: 'localhost',
-        wsPort: 7513
+        port: 7512
       }
       UPDATE_ENVIRONMENT(state, {id: 'valid', environment: newEnvironment})
       expect(state.environments.valid).to.deep.equals(newEnvironment)
