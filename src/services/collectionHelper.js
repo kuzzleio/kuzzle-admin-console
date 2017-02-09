@@ -1,4 +1,5 @@
-import {config, elementJson} from '../config/schemaMapping'
+import _ from 'lodash'
+import {config, elementJson, elements} from '../config/schemaMapping'
 
 const isObject = item => {
   return (item && typeof item === 'object' && !Array.isArray(item) && item !== null)
@@ -74,35 +75,57 @@ export const flattenMapping = (mapping, path = '', level = 1) => {
 
 export const getSchemaForType = (type) => {
   if (!config[type] || !config[type].elements) {
-    return [{
-      name: elementJson.name,
-      id: elementJson.id
-    }]
+    return [{...elementJson}]
   }
 
   return config[type].elements
     .map(element => {
-      return {
-        name: element.name,
-        id: element.id
-      }
+      return {...element}
     })
-    .concat([{
-      name: elementJson.name,
-      id: elementJson.id
-    }])
+    .concat([{...elementJson}])
 }
 
 export const getDefaultSchemaForType = (type) => {
   if (!config[type] || !config[type].default) {
-    return [{
-      name: elementJson.name,
-      id: elementJson.id
-    }]
+    return [{...elementJson}]
   }
 
-  return {
-    name: config[type].default.name,
-    id: config[type].default.id
+  return {...config[type].default}
+}
+
+export const getElementDefinition = (id) => {
+  return elements[id]
+}
+
+export const castByElementId = (id, value) => {
+  let element = elements[id]
+  if (!element) {
+    return value
   }
+
+  switch (element.type) {
+    case 'integer':
+      return parseInt(value) || null
+    case 'float':
+      return parseFloat(value) || null
+    default:
+      return value
+  }
+}
+
+export const mergeMappingAndSchema = (mapping, schema) => {
+  let _meta = {}
+  Object.keys(schema).map(attributeName => {
+    let fullPath = attributeName
+
+    if (attributeName.indexOf('.') !== -1) {
+      let path = attributeName.split('.')
+      _.set(_meta, path[0], {tag: 'fieldset', properties: {}})
+      fullPath = [path[0], 'properties', ...path.slice(1)].join('.')
+    }
+
+    _.set(_meta, fullPath, schema[attributeName])
+  })
+
+  return {properties: {...mapping}, _meta}
 }

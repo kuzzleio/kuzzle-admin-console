@@ -5,7 +5,8 @@ const state = {
   name: null,
   mapping: {},
   isRealtimeOnly: false,
-  editionStep: 2
+  editionStep: 1,
+  schema: {}
 }
 
 export const mutations = {
@@ -13,6 +14,7 @@ export const mutations = {
     state.name = payload.name
     state.mapping = payload.mapping
     state.isRealtimeOnly = payload.isRealtimeOnly
+    state.schema = payload.schema
   },
   [types.RESET_COLLECTION_DETAIL] (state) {
     state.name = null
@@ -25,6 +27,9 @@ export const mutations = {
   },
   [types.SET_MAPPING] (state, payload) {
     state.mapping = payload
+  },
+  [types.SET_SCHEMA] (state, payload) {
+    state.schema = payload
   }
 }
 

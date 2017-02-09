@@ -16,6 +16,8 @@
         <collection-form
           v-show="$store.state.collection.editionStep === 2"
           :mapping="$store.state.collection.mapping"
+          :step="$store.state.collection.editionStep"
+          @collection-create::create="create"
           @cancel="cancel">
         </collection-form>
 
@@ -61,7 +63,7 @@
     },
     methods: {
       create () {
-        this.$emit('collection-create::create', this.name || this.$store.state.route.params.collection, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
+        this.$emit('collection-create::create')
       },
       dismissError () {
         this.$emit('collection-create::reset-error')

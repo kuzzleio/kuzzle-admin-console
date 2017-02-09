@@ -11,7 +11,8 @@
     name: 'MSelect',
     props: {
       value: String,
-      onBlur: Function
+      onBlur: Function,
+      options: [Array, Object]
     },
     data () {
       return {
@@ -23,6 +24,15 @@
         if (this.onBlur) {
           this.onBlur()
         }
+      }
+    },
+    watch: {
+      options () {
+        setTimeout(() => {
+          let $el = $(this.$refs.mselect)
+          $el.material_select('destroy')
+          $el.material_select()
+        }, 100)
       }
     },
     mounted () {

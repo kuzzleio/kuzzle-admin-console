@@ -18,8 +18,7 @@
   import PageNotAllowed from '../../Common/PageNotAllowed'
 
   import CreateOrUpdate from './CreateOrUpdate'
-  import { FETCH_COLLECTION_DETAIL } from '../../../vuex/modules/collection/mutation-types'
-  import kuzzle from '../../../services/kuzzle'
+  import { FETCH_COLLECTION_DETAIL, UPDATE_COLLECTION } from '../../../vuex/modules/collection/mutation-types'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
   import {LIST_INDEXES_AND_COLLECTION} from '../../../vuex/modules/data/mutation-types'
 
@@ -46,18 +45,10 @@
       }
     },
     methods: {
-      update (name, mapping, isRealtime) {
+      update () {
         this.error = ''
 
-        if (isRealtime) {
-          this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
-          return
-        }
-
-        kuzzle
-          .collection(name, this.index)
-          .collectionMapping(mapping || {})
-          .applyPromise()
+        return this.$store.dispatch(UPDATE_COLLECTION, {index: this.index})
           .then(() => {
             this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })
