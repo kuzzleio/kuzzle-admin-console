@@ -24,7 +24,6 @@
     watch: {
       value (v) {
         this.$emit('update-value', {name: this.name, value: v})
-        console.log(v)
       }
     }
   }

@@ -6,40 +6,36 @@
         <legend>
           {{name}}
         </legend>
-        <div v-for="(nestedContent, nestedName) in content.elements">
-          <json-form :schema="content.elements" :parent="name" :document="document"></json-form>
-        </div>
+        <json-form :schema="content.elements" :parent="name" :document="document"></json-form>
       </fieldset>
 
       <!-- Root attributes -->
       <div class="input-field" v-else>
-        <component :is="componentItem(content)" :name="name" :content="content.val" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
+        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="content.val" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
-  import JsonFormItemNumber from './JsonFormItemNumber'
-  import JsonFormItemText from './JsonFormItemText'
-  import JsonFormItemArray from './JsonFormItemArray/JsonFormItemArray'
   import JsonFormItemProfileIds from './JsonFormItemProfileIds'
-  import JsonFormItemGeoPoint from './JsonFormItemGeoPoint'
   import JsonFormItemInput from './JsonFormItemInput'
+  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
+  import JsonFormItemJson from './JsonFormItemJson'
+  import JsonFormItemGeopoint from './JsonFormItemGeopoint'
+  import JsonFormItemTextarea from './JsonFormItemTextarea'
 
   import Vue from 'vue'
 
   export default {
     name: 'JsonForm',
     components: {
-      JsonFormItemCheckbox,
-      JsonFormItemNumber,
-      JsonFormItemText,
-      JsonFormItemArray,
       JsonFormItemProfileIds,
-      JsonFormItemGeoPoint,
-      JsonFormItemInput
+      JsonFormItemInput,
+      JsonFormItemCheckbox,
+      JsonFormItemJson,
+      JsonFormItemGeopoint,
+      JsonFormItemTextarea
     },
     props: {
       schema: [Object, Array],
@@ -48,7 +44,7 @@
     },
     methods: {
       isNested (content) {
-        return content.elements && Object.keys(content.elements).length
+        return (content.elements && Object.keys(content.elements).length)
       },
       componentItem (content) {
         switch (content.tag) {
@@ -57,8 +53,12 @@
           case 'checkbox':
           case 'boolean':
             return 'JsonFormItemCheckbox'
+          case 'geo-point':
+            return 'JsonFormItemGeopoint'
+          case 'textarea':
+            return 'JsonFormItemTextarea'
           default:
-            return 'JsonFormItemInput'
+            return 'JsonFormItemJson'
         }
       },
       update (content) {
@@ -75,6 +75,9 @@
 
 
 <style lang="scss" rel="stylesheet/scss">
+  .pre_ace, .ace_editor {
+    height: 100px;
+  }
   .json-form {
     legend {
       border: 0;

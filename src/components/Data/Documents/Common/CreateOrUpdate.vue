@@ -159,8 +159,8 @@
             .then(schema => {
               this.schema = schema
 
-              console.log(schema)
-              this.schema = mergeDeep(this.schema, this.mapping, schema)
+              this.schema = mergeDeep(this.schema, this.mapping)
+              console.log('schema', this.schema)
             })
         })
         .catch((e) => {

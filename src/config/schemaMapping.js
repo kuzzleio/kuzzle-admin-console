@@ -73,8 +73,8 @@ export const elements = {
     type: 'number',
     step: 1e-4
   },
-  'input:fieldset': {
-    id: 'input:fieldset',
+  'fieldset': {
+    id: 'fieldset',
     name: 'fieldset',
     tag: 'fieldset'
   },
@@ -176,15 +176,15 @@ export const config = {
   },
   object: {
     elements: [
-      elements['input:fieldset']
+      elements['fieldset']
     ],
-    default: elements['input:fieldset']
+    default: elements['fieldset']
   },
   nested: {
     elements: [
-      elements['input:fieldset']
+      elements['fieldset']
     ],
-    default: elements['input:fieldset']
+    default: elements['fieldset']
   },
   ip: {
     elements: [

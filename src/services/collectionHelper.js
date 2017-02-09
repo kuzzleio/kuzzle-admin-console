@@ -11,13 +11,28 @@ const isObject = item => {
  * @returns {*}
  */
 
-export const mergeDeep = (target, source, schem) => {
+export const mergeDeep = (target, source, propertiesCounter = 0) => {
   if (isObject(target) && isObject(source)) {
     Object.keys(source)
       .forEach(key => {
         if (!target[key]) {
-          console.log(schem, source[key].type)
-          target[key] = schem[source[key].type].default
+          if (config[source[key].type]) {
+            target[key] = config[source[key].type].default
+          } else if (source[key].properties) {
+            if (propertiesCounter >= 2) {
+              target[key] = {
+                tag: 'json'
+              }
+              return
+            }
+            propertiesCounter += 1
+
+            target[key] = {
+              tag: 'fieldset',
+              elements: mergeDeep({}, source[key].properties, propertiesCounter)
+            }
+            propertiesCounter = 0
+          }
         }
       })
   }
