@@ -84,7 +84,7 @@
 
     <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Document deletion</h4>
-      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralizeDocument}}?</p>
+      <p>Do you really want to delete {{lengthDocument}} documents?</p>
 
       <div v-if="isLoading">
         <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
@@ -198,14 +198,6 @@
         singleDeleteIsOpen: false,
         bulkDeleteIsOpen: false,
         isLoading: false
-      }
-    },
-    filters: {
-      pluralizeDocument (count) {
-        if (count > 1) {
-          return 'documents'
-        }
-        return 'document'
       }
     },
     methods: {

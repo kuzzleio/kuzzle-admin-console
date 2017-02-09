@@ -4,8 +4,8 @@ import store from '../vuex/store'
 import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
 import {SET_ROUTE_BEFORE_REDIRECT} from '../vuex/modules/common/routing/mutation-types'
 import {hasSecurityRights} from '../services/userAuthorization'
-import SecuritySubRoutes from './subRoutes/security'
-import DataSubRoutes from './subRoutes/data'
+import SecuritySubRoutes from './children/security'
+import DataSubRoutes from './children/data'
 
 export default function createRoutes (VueRouter) {
   let router = new VueRouter({

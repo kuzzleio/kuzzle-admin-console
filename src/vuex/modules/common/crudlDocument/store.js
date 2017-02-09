@@ -1,18 +1,18 @@
-import {
-  SET_BASIC_FILTER
-} from './mutation-types'
+import * as types from './mutation-types'
+import * as getters from './getters'
 
 const state = {
   basicFilter: null
 }
 
 export const mutations = {
-  [SET_BASIC_FILTER] (state, value) {
+  [types.SET_BASIC_FILTER] (state, value) {
     state.basicFilter = value
   }
 }
 
 export default {
   state,
-  mutations
+  mutations,
+  getters
 }
