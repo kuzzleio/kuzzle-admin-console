@@ -50,7 +50,7 @@ export const formatType = (document, collection) => {
   }
 }
 
-export const flattenMapping = (mapping, path = '', level = 1) => {
+export const flattenObjectMapping = (mapping, path = '', level = 1) => {
   let flattenObj = {}
 
   if (path !== '') {
@@ -63,10 +63,33 @@ export const flattenMapping = (mapping, path = '', level = 1) => {
         if (level > 1) {
           flattenObj[path + attribute] = 'force-json'
         } else {
-          flattenObj = {...flattenObj, ...flattenMapping(mapping[attribute].properties, path + attribute, level + 1)}
+          flattenObj = {...flattenObj, ...flattenObjectMapping(mapping[attribute].properties, path + attribute, level + 1)}
         }
       } else {
         flattenObj[path + attribute] = mapping[attribute].type
+      }
+    })
+
+  return flattenObj
+}
+
+export const flattenObjectSchema = (schema, path = '', level = 1) => {
+  let flattenObj = {}
+
+  if (path !== '') {
+    path += '.'
+  }
+
+  Object.keys(schema)
+    .forEach(attribute => {
+      if (schema[attribute].properties) {
+        if (level > 1) {
+          flattenObj[path + attribute] = {...elementJson}
+        } else {
+          flattenObj = {...flattenObj, ...flattenObjectSchema(schema[attribute].properties, path + attribute, level + 1)}
+        }
+      } else {
+        flattenObj[path + attribute] = schema[attribute]
       }
     })
 
@@ -113,19 +136,23 @@ export const castByElementId = (id, value) => {
   }
 }
 
-export const mergeMappingAndSchema = (mapping, schema) => {
-  let _meta = {}
+export const formatSchema = (schema) => {
+  let formattedSchema = {}
   Object.keys(schema).map(attributeName => {
     let fullPath = attributeName
 
     if (attributeName.indexOf('.') !== -1) {
       let path = attributeName.split('.')
-      _.set(_meta, path[0], {tag: 'fieldset', properties: {}})
+      _.set(formattedSchema, path[0], {tag: 'fieldset', properties: {}})
       fullPath = [path[0], 'properties', ...path.slice(1)].join('.')
     }
 
-    _.set(_meta, fullPath, schema[attributeName])
+    _.set(formattedSchema, fullPath, schema[attributeName])
   })
 
-  return {properties: {...mapping}, _meta}
+  return formattedSchema
+}
+
+export const mergeMetaAttributes = ({mapping, schema, allowForm}) => {
+  return {properties: {...mapping}, _meta: {schema, allowForm}}
 }

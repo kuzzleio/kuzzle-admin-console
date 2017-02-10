@@ -2,7 +2,7 @@ import kuzzle from '../../../services/kuzzle'
 import * as types from './mutation-types'
 import * as dataTypes from '../data/mutation-types'
 import Promise from 'bluebird'
-import {mergeMappingAndSchema} from '../../../services/collectionHelper'
+import {mergeMetaAttributes} from '../../../services/collectionHelper'
 
 export default {
   [types.CREATE_COLLECTION] ({commit, state}, {index, existingCollections}) {
@@ -30,7 +30,7 @@ export default {
       }, {
         collection: state.name,
         index,
-        body: mergeMappingAndSchema(state.mapping, state.schema)
+        body: mergeMetaAttributes({mapping: state.mapping, schema: state.schema, allowForm: state.allowForm})
       })
       .then(() => {
         commit(dataTypes.ADD_STORED_COLLECTION, {index: index, name: state.name})
@@ -49,7 +49,7 @@ export default {
       }, {
         collection: state.name,
         index,
-        body: mergeMappingAndSchema(state.mapping, state.schema)
+        body: mergeMetaAttributes({mapping: state.mapping, schema: state.schema, allowForm: state.allowForm})
       })
   },
   [types.FETCH_COLLECTION_DETAIL] ({commit}, payload) {
@@ -64,10 +64,19 @@ export default {
         })
         .then(response => {
           let result = response.result[payload.index].mappings[payload.collection]
+          let schema = {}
+          let allowForm = false
+
+          if (result._meta) {
+            schema = result._meta.schema || {}
+            allowForm = result._meta.allowForm || false
+          }
+
           commit(types.RECEIVE_COLLECTION_DETAIL, {
             name: payload.collection,
             mapping: result.properties,
-            schema: result._meta || {},
+            schema,
+            allowForm,
             isRealtimeOnly: false
           })
         })
@@ -75,7 +84,7 @@ export default {
     }
 
     if (payload.collections.realtime.indexOf(payload.collection) !== -1) {
-      commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: {}, isRealtimeOnly: true})
+      commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: {}, isRealtimeOnly: true, schema: {}, allowForm: false})
       return Promise.resolve()
     }
 

@@ -1,10 +1,12 @@
 <template>
-  <div class="row collection-form-line" :class="{odd: (index % 2) === 0}">
-    <p class="col s3 truncate">{{name}}</p>
-    <div class="col s4">
-      <m-select :value="value.id" @input="changeSchema" :options="optionsForAttribute">
-        <option v-for="option in optionsForAttribute" :key="option.id" :value="option.id">{{option.name}}</option>
-      </m-select>
+  <div class="row collection-form-line valign-wrapper" :class="{odd: (index % 2) === 0}">
+    <p class="col s3 attribute-title truncate">{{name}}</p>
+    <div class="col s4 attribute-type">
+      <div class="">
+        <m-select :value="value.id" @input="changeSchema" :options="optionsForAttribute">
+          <option v-for="option in optionsForAttribute" :key="option.id" :value="option.id">{{option.name}}</option>
+        </m-select>
+      </div>
     </div>
     <i
       class="fa fa-question-circle info"
@@ -38,7 +40,9 @@
       name: String,
       type: String,
       index: Number,
-      value: Object
+      value: Object,
+      values: Array,
+      chooseValues: Boolean
     },
     components: {
       Multiselect,
@@ -49,8 +53,6 @@
     },
     data () {
       return {
-        chooseValues: false,
-        values: [],
         elementDefinition: {...this.value}
       }
     },
@@ -69,8 +71,7 @@
           return
         }
 
-        this.chooseValues = this.elementDefinition.chooseValues
-        this.$emit('input', {...this.elementDefinition})
+        this.$emit('input', {name: this.name, element: {...this.elementDefinition}})
       },
       addValue (value) {
         let castValue = castByElementId(this.elementDefinition.id, value)
@@ -79,12 +80,13 @@
           return
         }
 
-        if (this.values.some(value => value === castValue)) {
+        let _values = this.values ? [...this.values] : []
+
+        if (_values.some(value => value === castValue)) {
           return
         }
 
-        this.values.push(castValue)
-        this.$emit('input', {...this.elementDefinition, values: this.values})
+        this.$emit('input', {name: this.name, element: {...this.elementDefinition, values: _values.concat([castValue])}})
       },
       removeValue (removedValue) {
         let castValue = castByElementId(this.elementDefinition.id, removedValue)
@@ -93,20 +95,8 @@
           return
         }
 
-        this.values = this.values.filter(value => value !== castValue)
-        this.$emit('input', {...this.elementDefinition, values: this.values})
-      }
-    },
-    watch: {
-      value () {
-        this.elementDefinition = {...this.value}
-        this.chooseValues = this.elementDefinition.chooseValues
-
-        if (this.value.values && this.value.values.length) {
-          this.values = [...this.value.values]
-        } else {
-          this.values = []
-        }
+        let _values = this.values.filter(value => value !== castValue)
+        this.$emit('input', {name: this.name, element: {...this.elementDefinition, values: _values}})
       }
     }
   }

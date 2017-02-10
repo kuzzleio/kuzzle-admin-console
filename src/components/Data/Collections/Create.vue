@@ -18,9 +18,7 @@
   import PageNotAllowed from '../../Common/PageNotAllowed'
 
   import CreateOrUpdate from './CreateOrUpdate'
-  import { collectionName } from '../../../vuex/modules/collection/getters'
-  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
-  import {CREATE_COLLECTION} from '../../../vuex/modules/collection/mutation-types'
+  import {CREATE_COLLECTION, RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreate',
@@ -41,12 +39,6 @@
       CreateOrUpdate,
       PageNotAllowed
     },
-    vuex: {
-      getters: {
-        collectionName,
-        indexesAndCollections
-      }
-    },
     methods: {
       create () {
         this.error = ''
@@ -59,6 +51,9 @@
             this.error = e.message
           })
       }
+    },
+    mounted () {
+      this.$store.commit(RESET_COLLECTION_DETAIL)
     }
   }
 </script>

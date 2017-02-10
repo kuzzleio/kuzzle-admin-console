@@ -4,7 +4,11 @@
       {{index}} - {{headline}}
     </headline>
 
-    <stepper :current-step="$store.state.collection.editionStep" class="card-panel card-header"></stepper>
+    <stepper
+      :current-step="$store.state.collection.editionStep"
+      :is-realtime="$store.getters.isRealtimeOnly"
+      class="card-panel card-header">
+    </stepper>
 
     <div class="row card-panel card-body">
       <div class="col s12">
@@ -35,10 +39,10 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import Focus from '../../../directives/focus.directive'
-  import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
   import Stepper from './Stepper'
   import Mapping from './Steps/Mapping'
   import CollectionForm from './Steps/CollectionForm'
+  import {SET_EDITION_STEP} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreateOrUpdate',
@@ -77,7 +81,7 @@
       }
     },
     beforeDestroy () {
-      this.$store.commit(RESET_COLLECTION_DETAIL)
+      this.$store.commit(SET_EDITION_STEP, 1)
     }
   }
 </script>

@@ -2,7 +2,7 @@
   <form class="wrapper collection-form" @submit.prevent="next">
 
     <div class="row">
-      <input type="checkbox" class="filled-in" id="allowForm" v-model="allowForm"/>
+      <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="$store.state.collection.allowForm"/>
       <label for="allowForm">Allow this collection to display a form during document edition.</label>
     </div>
 
@@ -10,11 +10,14 @@
 
     <collection-form-line
       v-for="(type, attributeName, index) in flattenMapping"
-      v-if="allowForm"
+      v-if="$store.state.collection.allowForm"
       :name="attributeName"
       :type="type"
       :index="index"
-      v-model="schema[attributeName]">
+      :choose-values="flattenSchema[attributeName].chooseValues"
+      :values="flattenSchema[attributeName].values"
+      :value="flattenSchema[attributeName]"
+      @input="changeSchema">
     </collection-form-line>
 
     <div class="row">
@@ -34,9 +37,8 @@
 </template>
 
 <script>
-  import {flattenMapping, getDefaultSchemaForType} from '../../../../services/collectionHelper'
   import title from '../../../../directives/title.directive'
-  import {SET_SCHEMA} from '../../../../vuex/modules/collection/mutation-types'
+  import {SET_SCHEMA, SET_ALLOW_FORM} from '../../../../vuex/modules/collection/mutation-types'
   import CollectionFormLine from './CollectionFormLine'
   import CollectionFormName from './CollectionFormName'
 
@@ -61,36 +63,32 @@
     },
     methods: {
       next () {
-        this.$store.commit(SET_SCHEMA, this.schema)
         this.$emit('collection-create::create')
       },
       cancel () {
         this.$emit('cancel')
       },
-      updateSchema () {
-        Object.keys(this.flattenMapping).forEach(attribute => {
-          if (this.$store.state.collection.schema && this.$store.state.collection.schema[attribute]) {
-            this.schema[attribute] = {...this.$store.state.collection.schema[attribute]}
-          } else {
-            this.schema[attribute] = {...getDefaultSchemaForType(this.flattenMapping[attribute])}
-          }
-        })
+      changeAllowForm (e) {
+        this.$store.commit(SET_ALLOW_FORM, e.target.checked)
+      },
+      changeSchema (event) {
+        this.$store.commit(SET_SCHEMA, {...this.schema, [event.name]: event.element})
       }
     },
     computed: {
       flattenMapping () {
-        return flattenMapping(this.mapping)
+        return this.$store.getters.flattenMapping
+      },
+      flattenSchema () {
+        return this.$store.getters.flattenSchemaWithType
       }
     },
-    mounted () {
-      this.updateSchema()
-    },
     watch: {
-      mapping () {
-        this.updateSchema()
-      },
       step () {
         this.$store.commit(SET_SCHEMA, this.schema)
+      },
+      flattenSchema () {
+        this.schema = {...this.flattenSchema}
       }
     }
   }

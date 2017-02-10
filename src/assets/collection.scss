@@ -45,6 +45,7 @@
     .multiselect {
       margin-top: 5px;
       margin-left: 10px;
+      margin-bottom: 5px;
       input {
         height: 0;
       }
@@ -57,6 +58,8 @@
     }
 
     .collection-form-line {
+      padding: 10px;
+      margin-bottom: 0;
       &.odd {
         background-color: #f4f4f4;
       }
@@ -70,6 +73,9 @@
           }
         }
       }
+      .attribute-title, .attribute-type {
+        margin-left: 0;
+      }
     }
 
     .collection-form-name {
@@ -82,6 +88,10 @@
   .stepper {
     padding: 20px 0 0 0;
 
+    .stepper-content {
+      min-height: 80px;
+    }
+
     &.horizontal .line {
       border-top: 1px solid gainsboro;
       margin-top: 25px;
@@ -93,6 +103,12 @@
       .step {
         &.active .step-content .circle {
           background-color: $blue-color;
+        }
+        &.disabled {
+          opacity: 0.2;
+          .step-content {
+            cursor: default;
+          }
         }
         .step-content {
           cursor: pointer;

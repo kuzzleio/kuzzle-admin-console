@@ -1,8 +1,8 @@
 <template>
   <div class="stepper horizontal row">
-    <div class="col s10 offset-s4">
+    <div class="col s10 offset-s4 stepper-content">
       <div class="step-list row">
-        <div class="step col s3 step-content" :class="{active: currentStep === 1}">
+        <div class="step col s3" :class="{active: currentStep === 1}">
           <div class="left step-content" @click="changeStep(1)">
             <div class="circle">1</div>
             <p>Mapping</p>
@@ -10,7 +10,7 @@
           <div class="line"></div>
         </div>
 
-        <div class="step col s3 step-content" :class="{active: currentStep === 2}">
+        <div class="step col s3" :class="{active: currentStep === 2, disabled: isRealtime}">
           <div class="left step-content" @click="changeStep(2)">
             <div class="circle">2</div>
             <p>Form</p>
@@ -42,10 +42,15 @@
   export default {
     name: 'Stepper',
     props: {
-      currentStep: Number
+      currentStep: Number,
+      isRealtime: Boolean
     },
     methods: {
       changeStep (number) {
+        if (this.isRealtime) {
+          return
+        }
+        
         this.$store.commit(SET_EDITION_STEP, number)
       }
     }

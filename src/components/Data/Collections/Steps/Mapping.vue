@@ -40,7 +40,14 @@
       <div class="col s12">
         <div class="row">
           <p>
-            <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealtimeOnly" :checked="collectionIsRealtimeOnly" :disabled="$store.state.route.params.collection && !collectionIsRealtimeOnly"/>
+            <input
+              type="checkbox"
+              class="filled-in"
+              tabindex="3"
+              id="realtime-collection"
+              :checked="collectionIsRealtimeOnly"
+              @change="setRealtimeOnly"
+              :disabled="$store.state.route.params.collection && !collectionIsRealtimeOnly"/>
             <label for="realtime-collection">
               Realtime only
               <span v-if="$store.state.route.params.collection && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
@@ -50,7 +57,7 @@
       </div>
 
 
-      <div class="col s8" v-show="!isRealtimeOnly">
+      <div class="col s8" v-show="!collectionIsRealtimeOnly">
         <div class="row">
           <p>Mapping:</p>
           <json-editor
@@ -63,7 +70,7 @@
         </div>
       </div>
 
-      <div class="col s4" v-show="!isRealtimeOnly">
+      <div class="col s4" v-show="!collectionIsRealtimeOnly">
         <div class="row">
           <p class="help">
             Mapping is the process of defining how a document,
@@ -82,7 +89,7 @@
     <div class="row">
       <div class="col s12">
         <button type="submit" class="btn primary waves-effect waves-light right">
-          Next
+          {{collectionIsRealtimeOnly ? 'Save' : 'Next' }}
         </button>
         <a tabindex="6" class="btn-flat waves-effect right" @click.prevent="cancel">Cancel</a>
       </div>
@@ -92,12 +99,16 @@
 
 <script>
   import JsonEditor from '../../../Common/JsonEditor'
-  import {SET_EDITION_STEP, SET_MAPPING} from '../../../../vuex/modules/collection/mutation-types'
+  import {SET_EDITION_STEP, SET_MAPPING, SET_REALTIME_ONLY} from '../../../../vuex/modules/collection/mutation-types'
+  import focus from '../../../../directives/focus.directive'
 
   export default {
     name: 'Mapping',
     components: {
       JsonEditor
+    },
+    directives: {
+      focus
     },
     props: {
       step: Number
@@ -111,10 +122,22 @@
     },
     methods: {
       next () {
-        this.$store.commit(SET_EDITION_STEP, 2)
+        if (this.collectionIsRealtimeOnly) {
+          this.$emit('collection-create::create')
+        } else {
+          this.$store.commit(SET_EDITION_STEP, 2)
+        }
       },
       cancel () {
         this.$emit('cancel')
+      },
+      setRealtimeOnly (event) {
+        this.$store.commit(SET_REALTIME_ONLY, event.target.checked)
+      }
+    },
+    computed: {
+      collectionIsRealtimeOnly () {
+        return this.$store.getters.isRealtimeOnly
       }
     },
     watch: {
