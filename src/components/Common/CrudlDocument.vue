@@ -177,8 +177,9 @@
       confirmBulkDelete () {
         this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
-            this.refreshSearch()
             this.close()
+            this.refreshSearch()
+            return null
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
@@ -187,8 +188,9 @@
       confirmSingleDelete (id) {
         this.performDelete(this.index, this.collection, [id])
           .then(() => {
-            this.refreshSearch()
             this.close()
+            this.refreshSearch()
+            return null
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
@@ -218,13 +220,11 @@
       refreshSearch () {
         // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
         // https://github.com/vuejs/vue-router/issues/296
-        this.$emit('crudl-refresh-search')
-        if (this.$route.query.from === '0') {
+        if (parseInt(this.$route.query.from) === 0) {
           this.$emit('crudl-refresh-search')
-          return
+        } else {
+          this.$router.push({query: {...this.$route.query, from: 0}})
         }
-
-        this.$router.push({query: {...this.$route.query, from: 0}})
       },
       dispatchToggle () {
         this.$emit('toggle-all')

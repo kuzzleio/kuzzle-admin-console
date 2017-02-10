@@ -141,7 +141,6 @@
         this.$emit('document-create::cancel')
       },
       updateValue (e) {
-        console.log(e)
         this.document[e.name] = e.value
       },
       switchView (e) {
