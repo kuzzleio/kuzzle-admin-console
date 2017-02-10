@@ -244,8 +244,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
   }
 
   return kuzzle
-      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}})
-      .then(() => kuzzle.refreshIndex(index))
+      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}}, {refresh: 'wait_for'})
 }
 
 export const performDeleteUsers = (index, collection, ids) => {

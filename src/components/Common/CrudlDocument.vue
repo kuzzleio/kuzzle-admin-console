@@ -86,22 +86,6 @@
       <h4>Document deletion</h4>
       <p>Do you really want to delete {{lengthDocument}} documents?</p>
 
-      <div v-if="isLoading">
-        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
-          <div class="spinner-layer">
-            <div class="circle-clipper left">
-              <div class="circle"></div>
-            </div>
-            <div class="gap-patch">
-              <div class="circle"></div>
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <span slot="footer">
         <button
           href="#"
@@ -118,22 +102,6 @@
     <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
-
-      <div v-if="isLoading">
-        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
-          <div class="spinner-layer">
-            <div class="circle-clipper left">
-              <div class="circle"></div>
-            </div>
-            <div class="gap-patch">
-              <div class="circle"></div>
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle"></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <span slot="footer">
         <button
@@ -196,8 +164,7 @@
         formatSort,
         documentIdToDelete: '',
         singleDeleteIsOpen: false,
-        bulkDeleteIsOpen: false,
-        isLoading: false
+        bulkDeleteIsOpen: false
       }
     },
     methods: {
@@ -210,11 +177,8 @@
       confirmBulkDelete () {
         this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
-            this.isLoading = true
-            setTimeout(() => {
-              this.refreshSearch()
-              this.close()
-            }, 1000)
+            this.refreshSearch()
+            this.close()
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
@@ -223,11 +187,8 @@
       confirmSingleDelete (id) {
         this.performDelete(this.index, this.collection, [id])
           .then(() => {
-            this.isLoading = true
-            setTimeout(() => {
-              this.refreshSearch()
-              this.close()
-            }, 1000)
+            this.refreshSearch()
+            this.close()
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
