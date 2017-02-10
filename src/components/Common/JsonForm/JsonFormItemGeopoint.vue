@@ -20,25 +20,23 @@
     },
     data () {
       return {
-        value: false
-      }
-    },
-    mounted () {
-      if (!this.content) {
-        this.value = {
+        value: {
           'lat': 0,
           'lon': 0
         }
-      } else {
-        this.value = this.content
       }
     },
     methods: {
-      getJsonValue () {
-        return this.$refs.jsoneditor.getJson()
-      },
       jsonChanged (v) {
         this.$emit('update-value', {name: this.name, value: v})
+      }
+    },
+    watch: {
+      content (v) {
+        if (this.value !== v) {
+          console.log(v)
+          this.value = v
+        }
       }
     }
   }

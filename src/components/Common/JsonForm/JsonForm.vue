@@ -11,14 +11,13 @@
 
       <!-- Root attributes -->
       <div class="input-field" v-else>
-        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="content.val" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
+        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document[name]" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import JsonFormItemProfileIds from './JsonFormItemProfileIds'
   import JsonFormItemInput from './JsonFormItemInput'
   import JsonFormItemCheckbox from './JsonFormItemCheckbox'
   import JsonFormItemJson from './JsonFormItemJson'
@@ -30,7 +29,6 @@
   export default {
     name: 'JsonForm',
     components: {
-      JsonFormItemProfileIds,
       JsonFormItemInput,
       JsonFormItemCheckbox,
       JsonFormItemJson,
