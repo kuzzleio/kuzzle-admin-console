@@ -78,31 +78,22 @@
     },
     methods: {
       getMappingDocument,
-      update (json, mapping) {
+      update (document) {
         this.error = ''
 
-        if (!json) {
+        if (!document) {
           this.error = 'The document is invalid, please review it'
           return
         }
 
         return kuzzle
           .collection(this.collection, this.index)
-          .collectionMapping(mapping || {})
-          .applyPromise()
+          .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), document, {refresh: 'wait_for'})
           .then(() => {
-            return kuzzle
-              .collection(this.collection, this.index)
-              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), json, {refresh: 'wait_for'})
-              .then(() => {
-                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-              })
-              .catch((err) => {
-                this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
-              })
+            this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
           })
-          .catch(err => {
-            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
+          .catch((err) => {
+            this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
           })
       },
       cancel () {

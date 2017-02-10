@@ -11,7 +11,8 @@
     props: {
       content: {type: Boolean, default: false},
       name: String,
-      type: String
+      type: String,
+      parent: String
     },
     data () {
       return {
@@ -22,8 +23,12 @@
       content (v) {
         this.value = v
       },
-      value (v) {
-        this.$emit('update-value', {name: this.name, value: v})
+      value () {
+        if (this.parent) {
+          this.value = this.content[this.parent][this.name]
+        } else {
+          this.value = this.content[this.name]
+        }
       }
     }
   }

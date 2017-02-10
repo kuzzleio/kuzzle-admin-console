@@ -9,10 +9,11 @@
   export default {
     name: 'JsonFormItemInput',
     props: {
-      content: [String, Number],
+      content: [Object, String, Number],
       name: String,
       type: String,
-      step: Number
+      step: Number,
+      parent: String
     },
     data () {
       return {
@@ -26,8 +27,12 @@
       }
     },
     watch: {
-      content (v) {
-        this.value = v
+      content () {
+        if (this.parent) {
+          this.value = this.content[this.parent][this.name]
+        } else {
+          this.value = this.content[this.name]
+        }
       }
     }
   }

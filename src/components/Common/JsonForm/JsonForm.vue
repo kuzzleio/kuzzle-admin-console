@@ -11,7 +11,7 @@
 
       <!-- Root attributes -->
       <div class="input-field" v-else>
-        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document[name]" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
+        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document" :parent="parent" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
       </div>
     </div>
   </div>

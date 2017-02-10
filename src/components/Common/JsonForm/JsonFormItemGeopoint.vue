@@ -16,7 +16,8 @@
     props: {
       content: Object,
       name: String,
-      type: String
+      type: String,
+      parent: String
     },
     data () {
       return {
@@ -32,10 +33,11 @@
       }
     },
     watch: {
-      content (v) {
-        if (this.value !== v) {
-          console.log(v)
-          this.value = v
+      content () {
+        if (this.parent) {
+          this.value = this.content[this.parent][this.name]
+        } else {
+          this.value = this.content[this.name]
         }
       }
     }
