@@ -12,7 +12,7 @@ const isObject = item => {
  * @returns {*}
  */
 
-export const mergeDeep = (target, source, propertiesCounter = 0) => {
+export const mergeSchemaMapping = (target, source, propertiesCounter = 0) => {
   if (isObject(target) && isObject(source)) {
     Object.keys(source)
       .forEach(key => {
@@ -30,7 +30,7 @@ export const mergeDeep = (target, source, propertiesCounter = 0) => {
 
             target[key] = {
               tag: 'fieldset',
-              elements: mergeDeep({}, source[key].properties, propertiesCounter)
+              elements: mergeSchemaMapping({}, source[key].properties, propertiesCounter)
             }
             propertiesCounter = 0
           }
@@ -155,4 +155,18 @@ export const formatSchema = (schema) => {
 
 export const mergeMetaAttributes = ({mapping, schema, allowForm}) => {
   return {properties: {...mapping}, _meta: {schema, allowForm}}
+}
+
+export const cleanMapping = (mapping) => {
+  let _mapping = {}
+
+  Object.keys(mapping).forEach(attr => {
+    if (mapping[attr].properties) {
+      _mapping[attr] = cleanMapping(mapping[attr].properties)
+    } else {
+      _mapping[attr] = mapping[attr].type
+    }
+  })
+
+  return _mapping
 }

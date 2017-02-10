@@ -1,7 +1,7 @@
-import {mergeDeep, countAttributes} from '../../../../src/services/collectionHelper'
+import {mergeSchemaMapping, countAttributes} from '../../../../src/services/collectionHelper'
 
 describe('objectHelper', () => {
-  describe('mergeDeep', () => {
+  describe('mergeSchemaMapping', () => {
     let source
     let target
 
@@ -26,11 +26,11 @@ describe('objectHelper', () => {
     })
 
     it('should return attribute because it is not an object', () => {
-      expect(mergeDeep('test', 'notObject')).to.equals('test')
+      expect(mergeSchemaMapping('test', 'notObject')).to.equals('test')
     })
 
     it('should deeply merge two object', () => {
-      expect(mergeDeep(target, source)).to.deep.equals({
+      expect(mergeSchemaMapping(target, source)).to.deep.equals({
         foo: {
           bar: {
             one: 'one',
