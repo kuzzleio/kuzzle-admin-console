@@ -6,7 +6,7 @@
         <div class="row input-id" v-if="!hideId">
           <div class="col s6">
             <div class="input-field">
-              <input id="id" type="text" name="collection" v-model="id" v-focus :required="mandatoryId" />
+              <input id="id" type="text" name="collection" @input="updateId" v-focus :required="mandatoryId" />
               <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
             </div>
           </div>
@@ -136,7 +136,12 @@
         this.$emit('document-create::cancel')
       },
       updateValue (e) {
+        console.log(e)
         this.document[e.name] = e.value
+      },
+      updateId (e) {
+        this.document._id = e.target.value
+        console.log(e)
       }
     }
   }
