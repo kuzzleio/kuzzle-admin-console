@@ -101,8 +101,8 @@
                 this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
               })
           })
-          .catch(err => {
-            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
+          .catch((err) => {
+            this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
           })
       },
       cancel () {
