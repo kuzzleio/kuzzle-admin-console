@@ -1,6 +1,6 @@
 import kuzzle from '../../../services/kuzzle'
 import * as types from './mutation-types'
-import * as dataTypes from '../data/mutation-types'
+import * as indexTypes from '../index/mutation-types'
 import Promise from 'bluebird'
 import {mergeMetaAttributes} from '../../../services/collectionHelper'
 
@@ -15,11 +15,11 @@ export default {
       return Promise.reject(new Error(`Collection "${state.name}" already exist`))
     }
 
-    if (state.isRealTime) {
+    if (state.isRealtimeOnly) {
       let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
       collections.push({index: index, collection: state.name})
       localStorage.setItem('realtimeCollections', JSON.stringify(collections))
-      commit(dataTypes.ADD_REALTIME_COLLECTION, {index: index, name: state.name})
+      commit(indexTypes.ADD_REALTIME_COLLECTION, {index: index, name: state.name})
       return Promise.resolve()
     }
 
@@ -33,12 +33,12 @@ export default {
         body: mergeMetaAttributes({mapping: state.mapping, schema: state.schema, allowForm: state.allowForm})
       })
       .then(() => {
-        commit(dataTypes.ADD_STORED_COLLECTION, {index: index, name: state.name})
+        commit(indexTypes.ADD_STORED_COLLECTION, {index: index, name: state.name})
       })
       .catch(error => Promise.reject(new Error(error.message)))
   },
   [types.UPDATE_COLLECTION] ({commit, state}, {index}) {
-    if (state.isRealtime) {
+    if (state.isRealtimeOnly) {
       return Promise.resolve()
     }
 
@@ -74,7 +74,7 @@ export default {
 
           commit(types.RECEIVE_COLLECTION_DETAIL, {
             name: payload.collection,
-            mapping: result.properties,
+            mapping: result.properties || {},
             schema,
             allowForm,
             isRealtimeOnly: false

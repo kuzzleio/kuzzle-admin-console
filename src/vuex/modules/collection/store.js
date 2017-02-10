@@ -41,6 +41,9 @@ export const mutations = {
   },
   [types.SET_REALTIME_ONLY] (state, payload) {
     state.isRealtimeOnly = payload
+  },
+  [types.SET_COLLECTION_NAME] (state, payload) {
+    state.name = payload
   }
 }
 

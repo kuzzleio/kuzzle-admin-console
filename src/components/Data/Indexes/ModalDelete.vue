@@ -71,7 +71,7 @@
 
 
 <script>
-  import {DELETE_INDEX} from '../../../vuex/modules/data/mutation-types'
+  import {DELETE_INDEX} from '../../../vuex/modules/index/mutation-types'
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import Title from '../../../directives/title.directive'

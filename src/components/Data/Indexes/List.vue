@@ -6,7 +6,7 @@
       <div class="col s12 m10 l8">
 
         <!-- No index view -->
-        <div class="card-panel" v-if="canSearchIndex() && !$store.state.data.indexes.length">
+        <div class="card-panel" v-if="canSearchIndex() && !$store.state.index.indexes.length">
           <div class="row valign-bottom empty-set">
             <div class="col s1 offset-s1">
               <i class="fa fa-6x fa-database grey-text text-lighten-1" aria-hidden="true"></i>
@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <div class="row actions" v-if="$store.state.data.indexes.length">
+        <div class="row actions" v-if="$store.state.index.indexes.length">
           <div class="col s9">
             <button class="btn waves-effect waves-light primary"
                v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
@@ -40,7 +40,7 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div class="input-field left-align" v-if="$store.state.data.indexes.length">
+            <div class="input-field left-align" v-if="$store.state.index.indexes.length">
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
@@ -148,7 +148,7 @@
     },
     computed: {
       filteredIndices () {
-        return this.$store.state.data.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
+        return this.$store.state.index.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
       }
     }
   }

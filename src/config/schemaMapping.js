@@ -186,9 +186,9 @@ export const config = {
   },
   nested: {
     elements: [
-      elements['input:fieldset']
+      elements['json']
     ],
-    default: elements['input:fieldset']
+    default: elements['json']
   },
   ip: {
     elements: [

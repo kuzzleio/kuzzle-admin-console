@@ -158,34 +158,34 @@
     },
     computed: {
       collectionCount () {
-        if (!this.$store.state.data.indexesAndCollections[this.index]) {
+        if (!this.$store.state.index.indexesAndCollections[this.index]) {
           return 0
         }
 
-        return this.$store.state.data.indexesAndCollections[this.index].stored.length +
-          this.$store.state.data.indexesAndCollections[this.index].realtime.length
+        return this.$store.state.index.indexesAndCollections[this.index].stored.length +
+          this.$store.state.index.indexesAndCollections[this.index].realtime.length
       },
       isCollectionForFilter () {
-        if (!this.$store.state.data.indexesAndCollections[this.index]) {
+        if (!this.$store.state.index.indexesAndCollections[this.index]) {
           return
         }
 
-        return this.$store.state.data.indexesAndCollections[this.index].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
-          this.$store.state.data.indexesAndCollections[this.index].realtime.filter(col => col.indexOf(this.filter !== -1)).length > 0
+        return this.$store.state.index.indexesAndCollections[this.index].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
+          this.$store.state.index.indexesAndCollections[this.index].realtime.filter(col => col.indexOf(this.filter !== -1)).length > 0
       },
       storedCollections () {
-        if (!this.$store.state.data.indexesAndCollections[this.index]) {
+        if (!this.$store.state.index.indexesAndCollections[this.index]) {
           return []
         }
 
-        return this.$store.state.data.indexesAndCollections[this.index].stored
+        return this.$store.state.index.indexesAndCollections[this.index].stored
       },
       realtimeCollections () {
-        if (!this.$store.state.data.indexesAndCollections[this.index]) {
+        if (!this.$store.state.index.indexesAndCollections[this.index]) {
           return []
         }
 
-        return this.$store.state.data.indexesAndCollections[this.index].realtime
+        return this.$store.state.index.indexesAndCollections[this.index].realtime
       },
       filteredStoredCollections () {
         return this.storedCollections.filter(col => col.indexOf(this.filter) !== -1)

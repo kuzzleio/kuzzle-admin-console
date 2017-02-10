@@ -15,6 +15,7 @@
         <mapping
           v-show="$store.state.collection.editionStep === 1"
           :step="$store.state.collection.editionStep"
+          @collection-create::create="create"
           @cancel="cancel">
         </mapping>
         <collection-form

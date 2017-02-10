@@ -43,7 +43,7 @@
       create () {
         this.error = ''
 
-        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.data.indexesAndCollections[this.index], index: this.index})
+        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.index.indexesAndCollections[this.index], index: this.index})
           .then(() => {
             this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })

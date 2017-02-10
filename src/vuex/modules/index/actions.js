@@ -4,6 +4,22 @@ import Promise from 'bluebird'
 import * as types from './mutation-types'
 
 export default {
+  [types.CREATE_INDEX] ({commit}, index) {
+    return kuzzle
+      .queryPromise({index: index, controller: 'index', action: 'create'}, {})
+      .then(() => {
+        commit(types.ADD_INDEX, index)
+      })
+      .catch(error => Promise.reject(new Error(error.message)))
+  },
+  [types.DELETE_INDEX] ({commit}, index) {
+    return kuzzle
+      .queryPromise({index: index, controller: 'index', action: 'delete'}, {})
+      .then(() => {
+        commit(types.DELETE_INDEX, index)
+      })
+      .catch(error => Promise.reject(new Error(error.message)))
+  },
   [types.LIST_INDEXES_AND_COLLECTION] ({commit}) {
     let promises = []
 
@@ -31,7 +47,7 @@ export default {
                   result.realtime = []
                 }
 
-                result.realtime.concat(getRealtimeCollectionFromStorage())
+                result.realtime = result.realtime.concat(getRealtimeCollectionFromStorage(index))
                 result = dedupeRealtimeCollections(result)
 
                 indexesAndCollections[index] = result
@@ -50,29 +66,5 @@ export default {
           .catch((error) => reject(error))
       })
     })
-  },
-  [types.GET_MAPPING] ({commit}, payload) {
-    kuzzle.collection(payload.collection, payload.index).getMapping((err, res) => {
-      if (err) {
-        return
-      }
-      commit(types.RECEIVE_MAPPING, res.mapping)
-    })
-  },
-  [types.CREATE_INDEX] ({commit}, index) {
-    return kuzzle
-      .queryPromise({index: index, controller: 'index', action: 'create'}, {})
-      .then(() => {
-        commit(types.ADD_INDEX, index)
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
-  },
-  [types.DELETE_INDEX] ({commit}, index) {
-    return kuzzle
-      .queryPromise({index: index, controller: 'index', action: 'delete'}, {})
-      .then(() => {
-        commit(types.DELETE_INDEX, index)
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
   }
 }

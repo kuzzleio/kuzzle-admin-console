@@ -2,21 +2,13 @@
   <form class="wrapper" @submit.prevent="next">
     <!-- Required fields -->
     <div v-if="!$store.state.route.params.collection">
-      <div class="row valign-center">
+      <div class="row">
         <!-- Collection name -->
         <div class="col s6">
           <div class="input-field">
             <input id="$store.state.route.params.collection" type="text" name="collection" required
-                   class="validate" tabindex="1" v-model="name" :value="$store.state.route.params.collection" v-focus />
+                   class="validate" tabindex="1" :value="$store.state.collection.name" @input="setName" v-focus />
             <label for="$store.state.route.params.collection">Collection name</label>
-          </div>
-        </div>
-        <!-- Toggle settings open -->
-        <div class="col s6">
-          <div class="input-field">
-            <a tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
-              <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
-              {{settingsOpen ? 'Hide settings' : 'Show settings'}}</a>
           </div>
         </div>
       </div>
@@ -26,17 +18,8 @@
       </div>
     </div>
 
-    <!-- Helper message about mapping -->
-    <div class="row deep-orange-text" v-show="!settingsOpen && !$store.state.route.params.collection">
-      <p class="col s12">
-        <i class="fa fa-exclamation-triangle " aria-hidden="true"></i>
-        Settings allow you to define mappings which enable cool functionalities such as geo spacial researches.
-        <a @click.prevent="settingsOpen = true">click here to show settings</a>
-      </p>
-    </div>
-
     <!-- Settings (mappings, realtime only ...) -->
-    <div class="row" v-show="settingsOpen || $store.state.route.params.collection">
+    <div class="row">
       <div class="col s12">
         <div class="row">
           <p>
@@ -99,7 +82,7 @@
 
 <script>
   import JsonEditor from '../../../Common/JsonEditor'
-  import {SET_EDITION_STEP, SET_MAPPING, SET_REALTIME_ONLY} from '../../../../vuex/modules/collection/mutation-types'
+  import {SET_EDITION_STEP, SET_MAPPING, SET_REALTIME_ONLY, SET_COLLECTION_NAME} from '../../../../vuex/modules/collection/mutation-types'
   import focus from '../../../../directives/focus.directive'
 
   export default {
@@ -115,12 +98,14 @@
     },
     data () {
       return {
-        name: null,
         isRealtimeOnly: false,
         settingsOpen: false
       }
     },
     methods: {
+      setName (e) {
+        this.$store.commit(SET_COLLECTION_NAME, e.target.value)
+      },
       next () {
         if (this.collectionIsRealtimeOnly) {
           this.$emit('collection-create::create')
