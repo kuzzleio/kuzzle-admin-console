@@ -1,4 +1,10 @@
-import {flattenObjectMapping, getDefaultSchemaForType, flattenObjectSchema} from '../../../services/collectionHelper'
+import {
+  flattenObjectMapping,
+  getDefaultSchemaForType,
+  flattenObjectSchema,
+  mergeSchemaMapping,
+  cleanMapping
+} from '../../../services/collectionHelper'
 
 export const isRealtimeOnly = state => {
   return state.isRealtimeOnly
@@ -23,4 +29,12 @@ export const flattenSchemaWithType = (state, getters) => {
   })
 
   return schema
+}
+
+export const schemaMappingMerged = (state) => {
+  return mergeSchemaMapping(state.schema, state.mapping)
+}
+
+export const simplifiedMapping = (state) => {
+  return cleanMapping(state.mapping)
 }

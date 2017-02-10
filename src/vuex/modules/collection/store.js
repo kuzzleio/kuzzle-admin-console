@@ -9,7 +9,7 @@ const state = {
   isRealtimeOnly: false,
   editionStep: 1,
   schema: {},
-  allowForm: false
+  allowForm: true
 }
 
 export const mutations = {
@@ -25,7 +25,7 @@ export const mutations = {
     state.mapping = {}
     state.isRealtimeOnly = false
     state.editionStep = 1
-    state.allowForm = false
+    state.allowForm = true
   },
   [types.SET_EDITION_STEP] (state, payload) {
     state.editionStep = payload

@@ -62,17 +62,3 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
 
   return schema
 }
-
-export const cleanMapping = (mapping) => {
-  let _mapping = {}
-
-  Object.keys(mapping).forEach(attr => {
-    if (mapping[attr].properties) {
-      _mapping[attr] = cleanMapping(mapping[attr].properties)
-    } else {
-      _mapping[attr] = mapping[attr].type
-    }
-  })
-
-  return _mapping
-}

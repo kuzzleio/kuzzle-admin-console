@@ -52,8 +52,11 @@ export default {
         body: mergeMetaAttributes({mapping: state.mapping, schema: state.schema, allowForm: state.allowForm})
       })
   },
-  [types.FETCH_COLLECTION_DETAIL] ({commit}, payload) {
-    if (payload.collections.stored.indexOf(payload.collection) !== -1) {
+  [types.FETCH_COLLECTION_DETAIL] ({commit, getters, state}, payload) {
+    if (!payload.collection || state.name === payload.collection) {
+      return Promise.resolve()
+    }
+    if (getters.indexCollections(payload.index).stored.indexOf(payload.collection) !== -1) {
       return kuzzle
         .queryPromise({
           controller: 'collection',

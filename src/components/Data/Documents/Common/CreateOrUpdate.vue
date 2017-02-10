@@ -15,7 +15,7 @@
         <div class="row">
           <div class="col s12 card">
             <div class="card-content">
-              <json-form :schema="schema" @update-value="updateValue" :document="document">
+              <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="document">
               </json-form>
             </div>
           </div>
@@ -34,7 +34,7 @@
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">Mapping</span>
-              <json-editor id="mapping" class="pre_ace" :content="cleanedMapping" :readonly="true"></json-editor>
+              <json-editor id="mapping" class="pre_ace" :content="$store.getters.simplifiedMapping" :readonly="true"></json-editor>
             </div>
           </div>
         </div>
@@ -91,11 +91,7 @@
 <script>
   import JsonForm from '../../../Common/JsonForm/JsonForm'
   import JsonEditor from '../../../Common/JsonEditor'
-  import {cleanMapping} from '../../../../services/documentFormat'
   import Focus from '../../../../directives/focus.directive'
-
-  import {getSchema} from '../../../../services/documentSchema'
-  import {mergeDeep} from '../../../../services/collectionHelper'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -120,8 +116,6 @@
     },
     data () {
       return {
-        mapping: {},
-        schema: {},
         newAttributeType: 'string',
         newAttributePath: null,
         newAttributeName: null,
@@ -129,11 +123,6 @@
         showAnyway: false,
         isOpen: false,
         id: null
-      }
-    },
-    computed: {
-      cleanedMapping () {
-        return cleanMapping(this.mapping)
       }
     },
     methods: {
@@ -149,23 +138,6 @@
       updateValue (e) {
         this.document[e.name] = e.value
       }
-    },
-    mounted () {
-      // @todo use store.collection.schema
-      this.getMapping(this.collection, this.index)
-        .then((res) => {
-          this.mapping = res.mapping
-
-          getSchema(this.index, this.collection)
-            .then(schema => {
-              this.schema = schema
-
-              this.schema = mergeDeep(this.schema, this.mapping)
-            })
-        })
-        .catch((e) => {
-          // todo errors
-        })
     }
   }
 </script>
