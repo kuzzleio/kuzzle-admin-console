@@ -4,6 +4,44 @@
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#29BDBB",
-  "background_color": "#29BDBB"
+  "theme_color": "#002835",
+  "background_color": "#002835",
+  "icons": [
+  {
+   "src": "static/favicon/favicon-32x32.png",
+   "sizes": "32x32",
+   "type": "image/png",
+   "density": "0.75"
+  },
+  {
+   "src": "static/favicon/apple-touch-icon-57x57.png",
+   "sizes": "57x57",
+   "type": "image/png",
+   "density": "1.0"
+  },
+  {
+   "src": "static/favicon/apple-touch-icon-72x72.png",
+   "sizes": "72x72",
+   "type": "image/png",
+   "density": "1.5"
+  },
+  {
+   "src": "static/favicon/favicon-96x96.png",
+   "sizes": "96x96",
+   "type": "image/png",
+   "density": "2.0"
+  },
+  {
+   "src": "static/favicon/apple-touch-icon-144x144.png",
+   "sizes": "144x144",
+   "type": "image/png",
+   "density": "3.0"
+  },
+  {
+   "src": "static/favicon/apple-touch-icon-152x152.png",
+   "sizes": "152x152",
+   "type": "image/png",
+   "density": "4.0"
+  }
+ ]
 }

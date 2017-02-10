@@ -5,6 +5,7 @@ import {
   , ADD_ENVIRONMENT
   , DELETE_ENVIRONMENT
   , UPDATE_ENVIRONMENT
+  , SET_CONNECTION
 } from '../../../../../../src/vuex/modules/common/kuzzle/mutation-types'
 
 describe('Kuzzle actions', () => {
@@ -12,24 +13,24 @@ describe('Kuzzle actions', () => {
 
   describe('setConnection', () => {
     it('should dispatch correct mutation with given id', (done) => {
-      testAction(actions.setConnection, ['envId'], {}, [
-        { name: CONNECT_TO_ENVIRONMENT, payload: ['envId'] }
+      testAction(actions.default[SET_CONNECTION], 'envId', {}, [
+        { type: CONNECT_TO_ENVIRONMENT, payload: 'envId' }
       ], done)
     })
 
     it('should dispatch correct mutation with null', (done) => {
-      testAction(actions.setConnection, [null], {}, [
-        { name: CONNECT_TO_ENVIRONMENT, payload: [null] }
+      testAction(actions.default[SET_CONNECTION], null, {}, [
+        { type: CONNECT_TO_ENVIRONMENT, payload: null }
       ], done)
     })
   })
 
   describe('addEnvironment', () => {
     it('should dispatch the correct mutation', (done) => {
-      let env = { host: 'host' }
+      let environment = { host: 'host' }
       let id = 'id'
-      testAction(actions.addEnvironment, [id, env], {}, [
-        { name: ADD_ENVIRONMENT, payload: [id, env] }
+      testAction(actions.default[ADD_ENVIRONMENT], {id, environment}, {}, [
+        { type: ADD_ENVIRONMENT, payload: {id, environment} }
       ], done)
     })
   })
@@ -37,8 +38,8 @@ describe('Kuzzle actions', () => {
   describe('deleteEnvironment', () => {
     it('should dispatch the correct mutation', (done) => {
       let id = 'id'
-      testAction(actions.deleteEnvironment, [id], {}, [
-        { name: DELETE_ENVIRONMENT, payload: [id] }
+      testAction(actions.default[DELETE_ENVIRONMENT], id, {}, [
+        { type: DELETE_ENVIRONMENT, payload: id }
       ], done)
     })
   })
@@ -46,9 +47,9 @@ describe('Kuzzle actions', () => {
   describe('updateEnvironment', () => {
     it('should dispatch the correct mutation', (done) => {
       let id = 'id'
-      let env = { host: 'host' }
-      testAction(actions.updateEnvironment, [id, env], {}, [
-        { name: UPDATE_ENVIRONMENT, payload: [id, env] }
+      let environment = { host: 'host' }
+      testAction(actions.default[UPDATE_ENVIRONMENT], {id, environment}, {}, [
+        { type: UPDATE_ENVIRONMENT, payload: {id, environment} }
       ], done)
     })
   })

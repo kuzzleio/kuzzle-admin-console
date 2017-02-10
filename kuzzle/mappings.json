@@ -17,10 +17,6 @@
         "geo_point": {
           "type": "geo_point"
         },
-        "geo_point_lat_lon": {
-          "type": "geo_point",
-          "lat_lon": true
-        },
         "geo_shape": {
           "type": "geo_shape"
         },

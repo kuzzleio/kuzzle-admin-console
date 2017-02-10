@@ -1,7 +1,7 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="hasRights">
     <headline>
-      Edit document - <span class="bold">{{documentToEditId}}</span>
+      Edit document - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
     </headline>
 
@@ -21,8 +21,13 @@
       :error="error"
       :index="index"
       :collection="collection"
-      :hide-id="true">
+      :hide-id="true"
+      :document="document"
+      :get-mapping="getMappingDocument">
     </create-or-update>
+  </div>
+  <div v-else>
+    <page-not-allowed></page-not-allowed>
   </div>
 </template>
 
@@ -33,52 +38,68 @@
 </style>
 
 <script>
+  import { canEditDocument } from '../../../services/userAuthorization'
+  import PageNotAllowed from '../../Common/PageNotAllowed'
+
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
   import CollectionTabs from '../Collections/Tabs'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   let room
 
   export default {
-    name: 'DocumentCreateOrUpdate',
+    name: 'DocumentUpdate',
     components: {
       Headline,
       CollectionDropdown,
       CreateOrUpdate,
-      CollectionTabs
+      CollectionTabs,
+      PageNotAllowed
     },
     props: {
       index: String,
       collection: String
     },
+    computed: {
+      hasRights () {
+        return canEditDocument(this.index, this.collection)
+      }
+    },
     data () {
       return {
         error: '',
-        show: false
+        show: false,
+        document: {}
       }
     },
     methods: {
-      update (viewState, json, mapping) {
+      getMappingDocument,
+      update (json, mapping) {
         this.error = ''
 
-        if (viewState === 'code') {
-          if (!json) {
-            this.error = 'The document is invalid, please review it'
-            return
-          }
-          this.setNewDocument(json)
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
+          return
         }
 
         return kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .updateDocumentPromise(this.documentToEditId, this.newDocument)
+          .collection(this.collection, this.index)
+          .collectionMapping(mapping || {})
+          .applyPromise()
           .then(() => {
-            kuzzle.refreshIndex(this.index)
-            this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+            return kuzzle
+              .collection(this.collection, this.index)
+              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), json, {refresh: 'wait_for'})
+              .then(() => {
+                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+              })
+              .catch((err) => {
+                this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
+              })
           })
           .catch((err) => {
             this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
@@ -86,40 +107,31 @@
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
+          this.$router.push(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
       },
       fetch () {
         this.show = false
         kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .fetchDocumentPromise(this.documentToEditId)
+          .collection(this.collection, this.index)
+          .fetchDocumentPromise(decodeURIComponent(this.$store.state.route.params.id))
           .then(res => {
-            this.setNewDocument(res.content)
-            this.$broadcast('document-create::fill', res.content)
+            this.document = res.content
+            this.$emit('document-create::fill', res.content)
             return null
           })
           .catch(err => {
-            this.$dispatch('toast', err.message, 'error')
+            this.$store.commit(SET_TOAST, {text: err.message})
           })
       }
     },
-    vuex: {
-      actions: {
-        setNewDocument
-      },
-      getters: {
-        newDocument,
-        documentToEditId
-      }
-    },
-    ready () {
+    mounted () {
       this.fetch()
       kuzzle
-        .dataCollectionFactory(this.collection, this.index)
-        .subscribe({term: {_id: this.documentToEditId}}, () => {
+        .collection(this.collection, this.index)
+        .subscribe({ids: {values: [decodeURIComponent(this.$store.state.route.params.id)]}}, () => {
           this.show = true
         })
         .onDone((error, kuzzleRoom) => {

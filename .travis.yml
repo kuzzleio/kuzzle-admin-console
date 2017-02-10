@@ -2,7 +2,7 @@ sudo: false
 #dist: trusty
 language: node_js
 node_js:
-  - 4.2.6
+  - 4.6.0
 addons:
   apt:
     sources:
@@ -10,10 +10,8 @@ addons:
     packages:
       - gcc-4.9
       - g++-4.9
-#services:
-#- docker
 env:
-  COMPOSE_VERSION: 1.2.0
+  COMPOSE_VERSION: 1.6.0
   global:
     - secure: IVNUEIDEb4Uh/5T+SXIrPuQV8x33Kzhf9oE4hIdsSQFKDNqophryVpSo3Xg34SX1ZViVau9TU8ec2E3zTxPSDyeW5Emfo7Xhzf/6oUQaN3OW+xi1HSCUGg7Tq5jIdRDnVXgFnWLl2fRoGtOrz5lfvQ5e3q6+EpCPyVDUpEjlVNDTibWvibKj4d5BR349THpOeGOUbzr87uke1TOxBkbsceVt55G3xyYRNI6DfLg4MjqaYLzhf5WnduwZc5RyZLFC5EHEhvxRy0BOfbpF20NBva05qjO1GcuNaHPfJhuuQcsaSAGmzHXi67QvDAjmCLLd7lA5HwCC2+51CGccw/CqnM64cZIJVMZnh68wd9gRHszKU8VhMx8K2eNPcGa5WTER+ald5pK2XBycm/fUNPTy/3zf30Svk5l9pyuT22WepGHmWrPxU3HzxpyGE0zPcPmzVjl23J40PBIHAHt3p2yoX2fQOKsA7c7dci6lcgX/aO3g6UGY8nd8OtEmeP9FybgVgNqJGdQP6gtT7rk6zf0lStbkC0RWu52GvLxTLthDgaQkqOFjwc0tVDYydsNZ/n046uDXw1eytt8lJT7ayu0+mnT2jzsLBvCDia1uwVRr5zHZUAuYHk+P5FM7yMjv5BaMwMbnSxU1AgIe+n0ojeb/f5wuKMBbGXTReyszPrXq/AY=
 
@@ -21,16 +19,21 @@ before_install:
   - export CC="gcc-4.9" CXX="g++-4.9"
 before_script:
   - npm install -g bower
-#- curl -sL https://raw.githubusercontent.com/travis-ci/artifacts/master/install | bash
+  - npm install
+  - bower install --allow-root --no-interactive
 script:
-  - ./docker-compose/run-test.sh
-#script:
-#- docker-compose -f docker-compose/test.yml run backoffice
+  - npm run unit
+  - npm run codecov
 
 deploy:
   provider: releases
   api_key: ${GH_TOKEN}
   file: "kuzzle-backoffice.tar"
   skip_cleanup: true
+  before_deploy:
+    - npm run build
+    - tar -cvf kuzzle-backoffice.tar dist
+    - chmod 777 kuzzle-backoffice.tar
   on:
+    tags: true
     branch: master

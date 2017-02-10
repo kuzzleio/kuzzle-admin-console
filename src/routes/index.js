@@ -1,98 +1,103 @@
 import Login from '../components/Login'
-import NotFound from '../components/404'
+// import NotFound from '../components/404'
 import store from '../vuex/store'
 import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
+import {SET_ROUTE_BEFORE_REDIRECT} from '../vuex/modules/common/routing/mutation-types'
 import {hasSecurityRights} from '../services/userAuthorization'
-import SecuritySubRoutes from './subRoutes/security'
-import DataSubRoutes from './subRoutes/data'
-import { setRouteBeforeRedirect } from '../vuex/modules/common/routing/actions'
+import SecuritySubRoutes from './children/security'
+import DataSubRoutes from './children/data'
 
-export default function createRoutes (router) {
-  router.map({
-    '/': {
-      name: 'Home',
-      component (resolve) {
-        require(['../components/Home'], resolve)
-      },
-      auth: true,
-      subRoutes: {
-        '/security': {
-          name: 'Security',
-          component (resolve) {
-            if (!hasSecurityRights()) {
-              require(['../components/Common/PageNotAllowed'], resolve)
-            } else {
-              require(['../components/Security/Layout'], resolve)
-            }
-          },
-          subRoutes: SecuritySubRoutes
+export default function createRoutes (VueRouter) {
+  let router = new VueRouter({
+    routes: [
+      {
+        path: '/',
+        name: 'Home',
+        redirect: '/data',
+        component (resolve) {
+          require(['../components/Home'], resolve)
         },
-        '/data': {
-          name: 'Data',
-          component (resolve) {
-            require(['../components/Data/Layout'], resolve)
+        meta: {
+          auth: true
+        },
+        children: [
+          {
+            path: '/security',
+            name: 'Security',
+            redirect: '/security/users',
+            component (resolve) {
+              if (!hasSecurityRights()) {
+                require(['../components/Common/PageNotAllowed'], resolve)
+              } else {
+                require(['../components/Security/Layout'], resolve)
+              }
+            },
+            children: SecuritySubRoutes
           },
-          subRoutes: DataSubRoutes
+          {
+            path: '/data',
+            name: 'DataLayout',
+            meta: {
+              auth: true
+            },
+            component (resolve) {
+              require(['../components/Data/Layout'], resolve)
+            },
+            children: DataSubRoutes
+          }
+        ]
+      },
+      {
+        path: '/signup',
+        name: 'Signup',
+        component (resolve) {
+          require(['../components/Signup'], resolve)
         }
+      },
+      {
+        path: '/login',
+        name: 'Login',
+        meta: {
+          auth: false
+        },
+        component: Login
       }
-    },
-    '/signup': {
-      name: 'Signup',
-      component (resolve) {
-        require(['../components/Signup'], resolve)
-      }
-    },
-    '/login': {
-      name: 'Login',
-      component: Login
-    },
-    '*': {
-      name: 'NotFound',
-      component: NotFound
-    }
-  })
+    ]}, 'hash')
 
-  router.redirect({
-    '/security': '/security/users',
-    '/': '/data'
-  })
-
-  router.beforeEach(transition => {
-    Array.prototype.forEach.call(document.querySelectorAll('.loader'), element => {
-      element.classList.add('loading')
-    })
-    transition.next()
-  })
-
-  router.afterEach(transition => {
+  router.afterEach(() => {
     Array.prototype.forEach.call(document.querySelectorAll('.loader'), element => {
       element.classList.remove('loading')
     })
   })
 
-  router.beforeEach(transition => {
-    if (transition.to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
-      transition.redirect('/signup')
+  router.beforeEach((to, from, next) => {
+    Array.prototype.forEach.call(document.querySelectorAll('.loader'), element => {
+      element.classList.add('loading')
+    })
+
+    if (to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
+      next('/signup')
       return
     }
 
-    if (transition.to.name === 'Signup' && adminAlreadyExists(store.state)) {
-      transition.redirect('/login')
+    if (to.name === 'Signup' && adminAlreadyExists(store.state)) {
+      next('/login')
       return
     }
 
-    if (transition.to.name === 'Login' && isAuthenticated(store.state)) {
-      transition.redirect(transition.from.path ? transition.from.path : '/')
+    if (to.name === 'Login' && isAuthenticated(store.state)) {
+      router.push({name: from !== undefined ? from.name : 'Login'})
+      next(from.path ? from.path : '/')
       return
     }
 
-    if (transition.to.auth && !isAuthenticated(store.state)) {
-      setRouteBeforeRedirect(store, transition.to.name)
-      transition.redirect('/login')
+    if (to.matched.some(record => record.meta.auth) && !isAuthenticated(store.state)) {
+      store.commit(SET_ROUTE_BEFORE_REDIRECT, to.name)
+      next('/login')
       return
     }
 
-    transition.next()
+    next()
   })
 
   return router

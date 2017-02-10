@@ -1,29 +1,41 @@
 <template>
-  <pre id="jsoneditor" class="{{class}}"></pre>
+  <pre :id="id" :class="classes"></pre>
 </template>
 
-<style type="text/css" media="screen">
+<style lang="scss" rel="stylesheet/scss">
   .ace_text-input {
     position: relative;
+  }
+  .ace-tomorrow.ace_editor.readonly {
+    background-color: #d6d6d6;
+    .ace_gutter, .ace_active-line {
+      background-color: #d6d6d6;
+    }
+    .ace_selection {
+      background: #a7c4de;
+    }
   }
 </style>
 
 <script>
+  import Vue from 'vue'
+
   export default {
     name: 'JsonEditor',
     props: [
       'content',
-      'class',
-      'readonly'
+      'myclass',
+      'readonly',
+      'id'
     ],
+    computed: {
+      classes () {
+        return ((this.readonly ? 'readonly ' : '') + this.myclass)
+      }
+    },
     data () {
       return {
         editor: {}
-      }
-    },
-    events: {
-      'json-editor-refresh' () {
-        this.editor.renderer.updateFull(true)
       }
     },
     methods: {
@@ -36,23 +48,29 @@
       }
     },
     watch: {
-      content: function () {
-        if (this.content) {
+      content () {
+        if (this.content && this.editor.getSession) {
           this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
         }
       }
     },
-    ready () {
-      /* eslint no-undef: 0 */
-      this.editor = ace.edit('jsoneditor')
-      this.editor.setTheme('ace/theme/tomorrow')
-      this.editor.getSession().setMode('ace/mode/json')
-      this.editor.setFontSize(13)
-      this.editor.getSession().setTabSize(2)
-      this.editor.setReadOnly(this.readonly)
-      this.editor.$blockScrolling = Infinity
+    mounted () {
+      Vue.nextTick(() => {
+        /* eslint no-undef: 0 */
+        if (!this.id) {
+          return
+        }
 
-      this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
+        this.editor = ace.edit(this.id)
+        this.editor.setTheme('ace/theme/tomorrow')
+        this.editor.getSession().setMode('ace/mode/json')
+        this.editor.setFontSize(13)
+        this.editor.getSession().setTabSize(2)
+        this.editor.setReadOnly(this.readonly)
+        this.editor.$blockScrolling = Infinity
+        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
+        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
+      })
     }
   }
 </script>

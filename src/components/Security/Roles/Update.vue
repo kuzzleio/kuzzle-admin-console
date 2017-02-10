@@ -3,60 +3,73 @@
   title="Update role"
   :content="content"
   :update-id="id"
+  :error="error"
   @security-create::create="update"
-  @security-create::cancel="cancel">
+  @security-create::cancel="cancel"
+  :document="document"
+  :get-mapping="getMappingRoles">
   </create>
 </template>
 
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingRoles } from '../../../services/kuzzleWrapper'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
+    name: 'RolesUpdate',
     components: {
       Create
     },
     data () {
       return {
-        content: {},
-        id: null
+        error: '',
+        id: null,
+        document: {}
       }
     },
     methods: {
-      update (content) {
-        if (!content || Object.keys(content).length === 0) {
+      getMappingRoles,
+      update (id, json) {
+        this.error = ''
+
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
           return
         }
 
         kuzzle
           .security
-          .updateRolePromise(this.$route.params.id, content, {replaceIfExist: true})
+          .updateRolePromise(this.id, json, {replaceIfExist: true})
           .then(() => {
-            this.$router.go({name: 'SecurityRolesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityRolesList'})
+            }, 1000)
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
+          this.$router.push(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityRolesList'})
+          this.$router.push({name: 'SecurityRolesList'})
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
-        .getRolePromise(this.$route.params.id)
+        .fetchRolePromise(this.$route.params.id)
         .then((role) => {
           this.id = role.id
-          this.content = role.content
+          this.document = role.content
         })
         .catch((e) => {
-          this.$dispatch('toast', e.message, 'error')
-          this.$router.go({name: 'SecurityRolesCreate'})
+          this.$store.commit(SET_TOAST, {text: e.message})
+          this.$router.push({name: 'SecurityRolesCreate'})
         })
     }
   }

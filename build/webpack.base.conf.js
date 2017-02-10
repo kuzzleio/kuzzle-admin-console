@@ -17,6 +17,7 @@ module.exports = {
     extensions: ['', '.js', '.vue'],
     fallback: [path.join(__dirname, '../node_modules')],
     alias: {
+      'vue$': 'vue/dist/vue.js',
       'src': path.resolve(__dirname, '../src'),
       'assets': path.resolve(__dirname, '../src/assets'),
       'components': path.resolve(__dirname, '../src/components')
@@ -84,8 +85,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         'BACKEND_HOST': JSON.stringify(process.env.BACKEND_HOST),
-        'BACKEND_IOPORT': JSON.stringify(process.env.BACKEND_IOPORT),
-        'BACKEND_WSPORT': JSON.stringify(process.env.BACKEND_WSPORT)
+        'BACKEND_PORT': JSON.stringify(process.env.BACKEND_PORT)
       }
     })
   ]

@@ -16,7 +16,7 @@
     </div>
     <div class="row">
       <div class="col m8">
-        <p class="error card red white-text" v-if="error">
+        <p class="error card red-color white-text" v-if="error">
           <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
           Login failed: <br />{{error}}
         </p>
@@ -58,8 +58,8 @@
 
 
 <script>
-  import {doLogin} from '../../../vuex/modules/auth/actions'
   import Focus from '../../../directives/focus.directive'
+  import {DO_LOGIN} from '../../../vuex/modules/auth/mutation-types'
 
   export default {
     name: 'LoginForm',
@@ -82,17 +82,12 @@
       },
       login () {
         this.error = ''
-        this.doLogin(this.username, this.password)
+        this.$store.dispatch(DO_LOGIN, {username: this.username, password: this.password})
           .then(() => {
             this.onLogin()
           }).catch((err) => {
             this.error = err.message
           })
-      }
-    },
-    vuex: {
-      actions: {
-        doLogin
       }
     }
   }

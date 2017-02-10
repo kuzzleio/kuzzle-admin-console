@@ -10,56 +10,56 @@ function isActionAllowed (sessionUser, controller, action, index = '*', collecti
 // Index CRUDL
 
 export const canSearchIndex = () => {
-  return isActionAllowed(store.state.user, 'read', 'listIndexes')
+  return isActionAllowed(store.state.user, 'index', 'list')
 }
 export const canCreateIndex = () => {
-  return isActionAllowed(store.state.user, 'admin', 'createIndex')
+  return isActionAllowed(store.state.user, 'index', 'create')
 }
 export const canDeleteIndex = index => {
-  return isActionAllowed(store.state.user, 'admin', 'deleteIndex', index)
+  return isActionAllowed(store.state.user, 'index', 'delete', index)
 }
 
 // Collection CRUDL
 
 export const canSearchCollection = index => {
-  return isActionAllowed(store.state.user, 'read', 'listCollections', index)
+  return isActionAllowed(store.state.user, 'collection', 'list', index)
 }
 export const canCreateCollection = index => {
-  return isActionAllowed(store.state.user, 'write', 'createCollection', index)
+  return isActionAllowed(store.state.user, 'collection', 'create', index)
 }
 export const canEditCollection = (index, collection) => {
-  return isActionAllowed(store.state.user, 'admin', 'updateMapping', index, collection)
+  return isActionAllowed(store.state.user, 'collection', 'updateMapping', index, collection)
 }
 export const canTruncateCollection = (index, collection) => {
-  return isActionAllowed(store.state.user, 'admin', 'truncateCollection', index, collection)
+  return isActionAllowed(store.state.user, 'collection', 'truncate', index, collection)
 }
 
 // Documents CRUDL
 
 export const canReadDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'read', 'get', index, collection)
+  return isActionAllowed(store.state.user, 'document', 'get', index, collection)
 }
 export const canSearchDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'read', 'search', index, collection)
+  return isActionAllowed(store.state.user, 'document', 'search', index, collection)
 }
 export const canCreateDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'write', 'create', index, collection)
+  return isActionAllowed(store.state.user, 'document', 'create', index, collection)
 }
 export const canEditDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'write', 'createOrReplace', index, collection)
+  return isActionAllowed(store.state.user, 'document', 'createOrReplace', index, collection)
 }
 export const canDeleteDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'write', 'delete', index, collection)
+  return isActionAllowed(store.state.user, 'document', 'delete', index, collection)
 }
 
 // Realtime
 
 export const canSubscribe = (index, collection) => {
-  return isActionAllowed(store.state.user, 'subscribe', 'on', index, collection) &&
-    isActionAllowed(store.state.user, 'subscribe', 'off', index, collection)
+  return isActionAllowed(store.state.user, 'realtime', 'subscribe', index, collection) &&
+    isActionAllowed(store.state.user, 'realtime', 'unsubscribe', index, collection)
 }
 export const canPublish = (index, collection) => {
-  return isActionAllowed(store.state.user, 'write', 'publish', index, collection)
+  return isActionAllowed(store.state.user, 'realtime', 'publish', index, collection)
 }
 
 // Security roles CRUDL

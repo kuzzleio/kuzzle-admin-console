@@ -4,7 +4,7 @@ import DataRoutes from '../../../../../src/routes/subRoutes/data'
 import { mockedComponent } from '../../helper'
 import VueRouter from 'vue-router'
 
-Vue.use(VueRouter)
+// Vue.use(VueRouter)
 
 let LayoutInjector = require('!!vue?inject!../../../../../src/components/Data/Layout')
 let Layout

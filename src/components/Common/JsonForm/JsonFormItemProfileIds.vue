@@ -1,8 +1,7 @@
 <template>
   <div class="row input-field">
-    <multiselect :selected="selected" :options="profiles" placeholder=""
-                 @update="setProfileIds" :multiple="true"></multiselect>
-    <label :class="{'active': selected.length !== 0}">profileIds</label>
+    <multiselect :value="selected" :options="profiles" placeholder="Profiles"
+                 @input="setProfileIds" :multiple="true"></multiselect>
   </div>
 </template>
 
@@ -23,7 +22,7 @@
 </style>
 
 <script>
-  import {setPartial} from '../../../vuex/modules/data/actions'
+  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
   import kuzzle from '../../../services/kuzzle'
   import Multiselect from 'vue-multiselect'
 
@@ -42,11 +41,11 @@
       content () {
         if (this.content) {
           this.selected = this.content
-          this.setPartial('profileIds', this.content)
+          this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
         .searchProfilesPromise({})
@@ -57,7 +56,7 @@
 
           if (this.content) {
             this.selected = this.content
-            this.setPartial('profileIds', this.content)
+            this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.content})
           }
         })
         .catch(err => {
@@ -68,18 +67,13 @@
     methods: {
       setProfileIds (selected) {
         this.selected = selected
-        this.setPartial('profileIds', this.selected)
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: 'profileIds', value: this.selected})
       }
     },
     data () {
       return {
         profiles: [],
         selected: []
-      }
-    },
-    vuex: {
-      actions: {
-        setPartial
       }
     }
   }

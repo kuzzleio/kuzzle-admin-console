@@ -1,3 +1,7 @@
+html {
+  font-family: $body-font-family;
+}
+
 nav {
   height: 50px;
   line-height: 50px;
@@ -8,7 +12,8 @@ nav {
 }
 
 .btn {
-  font-family: "Roboto", sans-serif;
+  font-family: $button-font-family;
+  color: $primary-color;
 
   + .btn {
     margin-left: 10px;
@@ -86,7 +91,7 @@ strong {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Roboto", sans-serif;
+  font-family: $header-font-family;
   font-weight: 300;
   color: #555;
 }
@@ -119,6 +124,7 @@ i, span {
 }
 
 .primary {
+  color: #FFF;
   background-color: $primary-color;
   &:hover, &:focus {
     background-color: lighten($primary-color, 5%);
@@ -126,6 +132,7 @@ i, span {
 }
 
 .secondary {
+  color: $primary-color;
   background-color: $secondary-color;
   &:hover, &:focus {
     background-color: lighten($secondary-color, 5%);
@@ -133,6 +140,7 @@ i, span {
 }
 
 .tertiary {
+  color: #FFF;
   background-color: $tertiary-color;
   &:hover, &:focus {
     background-color: lighten($tertiary-color, 5%);
@@ -140,6 +148,7 @@ i, span {
 }
 
 .red-color {
+  color: #FFF;
   background-color: $red-color;
   &:hover, &:focus {
     background-color: lighten($red-color, 5%);
@@ -205,4 +214,26 @@ input[type=tel], input[type=number], input[type=search], textarea.materialize-te
 .disabled,
 .dropdown-content li > a.disabled {
   color: $disabled-color;
+}
+
+.json-formatter-row, .json-formatter-row a, .json-formatter-row a:hover {
+  font-weight: bold;
+  font-family: "AnonymousPro";
+  font-size: 1rem;
+}
+
+.switch label input[type=checkbox]:checked + .lever {
+  background-color: #e4e1e1;
+}
+
+.text-error {
+  color: $red-color;
+}
+
+.text-warning {
+  color: $skin-color;
+}
+
+.text-active {
+  color: $blue-color;
 }

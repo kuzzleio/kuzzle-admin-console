@@ -5,23 +5,23 @@
         <ul>
           <li class="logo">
             <a href="#" class="">
-              <img src="../../assets/logo-white-horizontal.png" alt="Kuzzle.io" />
+              <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
             </a>
           </li>
-          <li class="nav" v-link-active>
-            <a v-link="{name: 'Data', activeClass: 'active'}">Data</a>
-          </li>
-          <li class="nav" v-link-active v-if="hasSecurityRights()">
-            <a v-link="{name: 'Security', activeClass: 'active'}">Security</a>
-          </li>
+          <router-link tag="li" class="nav" :to="{name: 'Data'}" active-class="active">
+            <a>Data</a>
+          </router-link>
+          <router-link v-if="hasSecurityRights()" tag="li" class="nav" :to="{name: 'Security'}" active-class="active">
+            <a>Security</a>
+          </router-link>
         </ul>
 
         <ul class="right">
           <li>
-            Welcome <strong>{{user.id}}</strong>
+            Welcome <strong>{{$store.getters.user}}</strong>
           </li>
           <li>
-            <environment-switch blend-color="true" style="display: inline-flex"></environment-switch>
+            <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>
             <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
@@ -34,67 +34,72 @@
 
 <script>
   import {hasSecurityRights} from '../../services/userAuthorization'
-  import {user} from '../../vuex/modules/auth/getters'
-  import {doLogout} from '../../vuex/modules/auth/actions'
-  import { currentEnvironment } from '../../vuex/modules/common/kuzzle/getters'
+  import {DO_LOGOUT} from '../../vuex/modules/auth/mutation-types'
   import {DEFAULT_COLOR} from '../../services/environment'
   import EnvironmentSwitch from './Environments/Switch'
 
   export default {
+    name: 'MainMenu',
     components: {
       EnvironmentSwitch
     },
     computed: {
       currentEnvironmentColor () {
-        if (!this.currentEnvironment) {
+        if (!this.$store.getters.currentEnvironment) {
           return DEFAULT_COLOR
         }
 
-        return this.currentEnvironment.color
+        return this.$store.getters.currentEnvironment.color
       }
     },
     methods: {
-      hasSecurityRights
-    },
-    vuex: {
-      getters: {
-        user,
-        currentEnvironment
+      doLogout () {
+        this.$store.dispatch(DO_LOGOUT)
+        this.$router.push({name: 'Login'})
       },
-      actions: {
-        doLogout
+      hasSecurityRights,
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-header {
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-}
 nav {
   padding-right: 20px;
 
-  li {
-    font-family: "Roboto", Arial, sans-serif;
+  li.nav {
+    font-family: "Gobold", Arial, sans-serif;
+  }
 
+  li {
     .logout {
       font-size: 1.2em;
       height: 18px;
     }
+
     &.nav {
       font-size: 1.1rem;
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 400;
+
+      &.active, &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
     }
   }
 }
-.logo {
+.logo, .logo a {
+  height: 50px;
 }
 
 .logo img {
   height: 50px;
-  padding: 10px 63px 10px 0;
+  padding: 4px 50px 6px 39px;
 }
 </style>

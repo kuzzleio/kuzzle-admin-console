@@ -17,12 +17,12 @@
 
     <div class="col s4 m4 l6 right-align truncate">
       <i
-        :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle deep-orange-text'"
+        :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle text-warning'"
         class="fa"
         v-if="warning.message"
         aria-hidden="true">
       </i>
-      <span :class="warning.info ? 'blue-text' : 'deep-orange-text'" v-if="warning.message">{{warning.message}}</span>
+      <span :class="warning.info ? 'blue-text' : 'text-warning'" v-if="warning.message">{{warning.message}}</span>
       &nbsp;
     </div>
 
@@ -44,8 +44,12 @@
       index: String,
       collection: String,
       warning: Object,
-      subscribed: Boolean,
-      scrollGlueActive: Boolean
+      subscribed: Boolean
+    },
+    data () {
+      return {
+        scrollGlueActive: true
+      }
     },
     directives: {
       Title
@@ -53,18 +57,18 @@
     methods: {
       canSubscribe,
       toggleSubscription () {
-        this.$dispatch('realtime-toggle-subscription')
+        this.$emit('realtime-toggle-subscription')
       },
       clear () {
-        this.$dispatch('realtime-clear-messages')
+        this.$emit('realtime-clear-messages')
       }
     },
-    ready () {
-      this.$dispatch('realtime-scroll-glue', this.scrollGlueActive)
+    mounted () {
+      this.$emit('realtime-scroll-glue', this.scrollGlueActive)
     },
     watch: {
-      scrollGlueActive: function (value) {
-        this.$dispatch('realtime-scroll-glue', value)
+      scrollGlueActive (value) {
+        this.$emit('realtime-scroll-glue', value)
       }
     }
   }

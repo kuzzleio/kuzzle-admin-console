@@ -26,9 +26,9 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="indexName in indexes | orderBy '$key' | filterIndexes filter">
+            v-for="indexName in orderedFilteredIndices(filter)">
             <index-branch
-              :force-open="indexes.length === 1"
+              :force-open="indexCount === 1"
               :index-name="indexName"
               :route-name="routeName"
               :collections="indexesAndCollections[indexName]"
@@ -44,10 +44,10 @@
 </template>
 
 <script>
-  import {indexes, indexesAndCollections} from '../../../vuex/modules/data/getters'
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
   import {filterIndexesByKeyword} from '../../../services/data'
+  import orderBy from 'lodash/orderBy'
 
   export default {
     name: 'Treeview',
@@ -64,18 +64,24 @@
         filter: ''
       }
     },
-    filters: {
-      filterIndexes (indexes, filterInput) {
-        return filterIndexesByKeyword(indexes, this.indexesAndCollections, filterInput)
+    methods: {
+      canSearchIndex,
+      orderedFilteredIndices (order) {
+        if (order) {
+          return orderBy(this.filteredIndices, order)
+        }
+        return this.filteredIndices
       }
     },
-    methods: {
-      canSearchIndex
-    },
-    vuex: {
-      getters: {
-        indexes,
-        indexesAndCollections
+    computed: {
+      filteredIndices () {
+        return filterIndexesByKeyword(this.$store.getters.indexes, this.$store.state.data.indexesAndCollections, this.filter)
+      },
+      indexesAndCollections () {
+        return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : {}
+      },
+      indexCount () {
+        return Object.keys(this.indexesAndCollections).length
       }
     }
   }

@@ -27,12 +27,12 @@
             Please try with another filters.
           </p>
           <p>
-            <em>Learn more about filtering syntax on <a href="http://kuzzle.io/guide/#filtering-syntax" target="_blank">http://kuzzle.io/guide</a></em>
+            <em>Learn more about filtering syntax on <a href="http://docs.kuzzle.io/elasticsearch-cookbook/" target="_blank">Kuzzle Elasticsearch Cookbook</a></em>
           </p>
         </div>
       </div>
 
-      <div class="row actions" v-show="documents.length">
+      <div class="row actions" v-if="documents.length">
         <div class="col s8">
           <button
             class="btn btn-small waves-effect waves-light tertiary"
@@ -44,18 +44,19 @@
           </button>
 
           <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
-                  @click.prevent="create",
+                  @click.prevent="create"
                   :class="!displayCreate ? 'disabled' : ''"
                   :disabled="!displayCreate"
-                  title="{{displayCreate ? '' : 'You are not allowed to create a document in this collection'}}">
-            <i class="fa fa-plus-circle left"></i>Create
+                  :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'">
+            <i class="fa fa-plus-circle left"></i>
+            Create
           </button>
 
           <button class="btn btn-small waves-effect waves-light"
-                  :class="displayBulkDelete ? 'red' : 'disabled'"
+                  :class="displayBulkDelete ? 'red-color' : 'disabled'"
                   :disabled="!displayBulkDelete"
-                  @click="$broadcast('modal-open', 'bulk-delete')"
-                  title="{{displayBulkDelete ? '' : 'You need to select at least one element'}}">
+                  @click="deleteBulk"
+                  :title="displayBulkDelete ? '' : 'You need to select at least one element'">
             <i class="fa fa-minus-circle left"></i>
             Delete
           </button>
@@ -64,7 +65,7 @@
 
       <div class="row" v-show="documents.length">
         <div class="col s12">
-          <slot v-if="documents.length"></slot>
+          <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
         </div>
       </div>
 
@@ -75,43 +76,75 @@
                 :total="totalDocuments"
                 :from="paginationFrom"
                 :size="paginationSize"
+                :max-page="1000"
         ></pagination>
       </div>
     </div>
     </div>
 
-    <modal id="bulk-delete">
+    <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Document deletion</h4>
-      <p>Do you really want to delete {{lengthDocument}} {{lengthDocument | pluralize 'document'}}?</p>
+      <p>Do you really want to delete {{lengthDocument}} documents?</p>
+
+      <div v-if="isLoading">
+        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
+          <div class="spinner-layer">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <span slot="footer">
-            <button
-              href="#"
-              class="waves-effect waves-green btn red"
-              @click="confirmBulkDelete()">
-                I'm sure!
-            </button>
-            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'bulk-delete')">
-                Cancel
-            </button>
-          </span>
+        <button
+          href="#"
+          class="waves-effect waves-green btn red-color"
+          @click="confirmBulkDelete()">
+            I'm sure!
+        </button>
+        <button href="#" class="btn-flat" @click.prevent="close">
+            Cancel
+        </button>
+      </span>
     </modal>
 
-    <modal id="single-delete">
+    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
+      <div v-if="isLoading">
+        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
+          <div class="spinner-layer">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div>
+            <div class="gap-patch">
+              <div class="circle"></div>
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <span slot="footer">
-            <button
-              href="#"
-              class="waves-effect waves-green btn red"
-              @click="confirmSingleDelete(documentIdToDelete)">
-                I'm sure!
-            </button>
-            <button href="#" class="btn-flat" @click.prevent="$broadcast('modal-close', 'single-delete')">
-                Cancel
-            </button>
-          </span>
+        <button
+          class="waves-effect waves-green btn red-color"
+          @click="confirmSingleDelete(documentIdToDelete)">
+            I'm sure!
+        </button>
+        <button class="btn-flat" @click.prevent="close">
+            Cancel
+        </button>
+      </span>
     </modal>
   </div>
 </template>
@@ -120,14 +153,9 @@
   import Pagination from '../Materialize/Pagination'
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
-  import {
-    setBasicFilter
-  } from '../../vuex/modules/common/crudlDocument/actions'
-  import {
-    basicFilterForm
-  } from '../../vuex/modules/common/crudlDocument/getters'
+  import {SET_BASIC_FILTER} from '../../vuex/modules/common/crudlDocument/mutation-types'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
-  import {deleteDocuments} from '../../services/kuzzleWrapper'
+  import {SET_TOAST} from '../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'CrudlDocument',
@@ -158,89 +186,104 @@
       rawFilter: Object,
       basicFilter: Array,
       sorting: Object,
-      availableFilters: Object
-    },
-    vuex: {
-      actions: {
-        setBasicFilter
-      },
-      getters: {
-        basicFilterForm
-      }
+      availableFilters: Object,
+      documentToDelete: String,
+      performDelete: Function
     },
     data () {
       return {
         formatFromBasicSearch,
         formatSort,
-        documentIdToDelete: ''
+        documentIdToDelete: '',
+        singleDeleteIsOpen: false,
+        bulkDeleteIsOpen: false,
+        isLoading: false
       }
     },
     methods: {
       create () {
-        this.$dispatch('create-clicked')
+        this.$emit('create-clicked')
       },
       changePage (from) {
-        this.$router.go({query: {...this.$route.query, from}})
+        this.$router.push({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
-        deleteDocuments(this.index, this.collection, this.selectedDocuments)
+        this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
-            this.refreshSearch()
-            this.$broadcast('modal-close', 'bulk-delete')
+            this.isLoading = true
+            setTimeout(() => {
+              this.refreshSearch()
+              this.close()
+            }, 1000)
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
       confirmSingleDelete (id) {
-        deleteDocuments(this.index, this.collection, [id])
+        this.performDelete(this.index, this.collection, [id])
           .then(() => {
-            this.refreshSearch()
-            this.$broadcast('modal-close', 'single-delete')
+            this.isLoading = true
+            setTimeout(() => {
+              this.refreshSearch()
+              this.close()
+            }, 1000)
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
       quickSearch (searchTerm) {
-        this.$router.go({query: {searchTerm, from: 0}})
+        this.$router.push({query: {searchTerm, from: 0}})
       },
       basicSearch (filters, sorting) {
         if (!filters && !sorting) {
-          this.$router.go({query: {basicFilter: null, sorting: null, from: 0}})
+          this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
           return
         }
 
         let basicFilter = JSON.stringify(filters)
-        this.$router.go({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
+        this.$router.push({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
       },
       rawSearch (filters) {
         if (!filters || Object.keys(filters).length === 0) {
-          this.$router.go({query: {rawFilter: null, from: 0}})
+          this.$router.push({query: {rawFilter: null, from: 0}})
           return
         }
 
         let rawFilter = JSON.stringify(filters)
-        this.$router.go({query: {rawFilter, from: 0}})
+        this.$router.push({query: {rawFilter, from: 0}})
       },
       refreshSearch () {
-        // If we are already on the page, the $router.go function doesn't trigger the route.data() function of top level components...
+        // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
         // https://github.com/vuejs/vue-router/issues/296
+        this.$emit('crudl-refresh-search')
         if (this.$route.query.from === '0') {
-          this.$dispatch('crudl-refresh-search')
+          this.$emit('crudl-refresh-search')
           return
         }
 
-        this.$router.go({query: {...this.$route.query, from: 0}})
+        this.$router.push({query: {...this.$route.query, from: 0}})
       },
       dispatchToggle () {
-        this.$dispatch('toggle-all')
+        this.$emit('toggle-all')
+      },
+      setBasicFilter (value) {
+        this.$store.commit(SET_BASIC_FILTER, value)
+      },
+      deleteBulk () {
+        this.bulkDeleteIsOpen = true
+      },
+      close () {
+        this.singleDeleteIsOpen = false
+        this.bulkDeleteIsOpen = false
+        this.documentIdToDelete = []
       }
     },
-    events: {
-      'delete-document' (id) {
-        this.documentIdToDelete = id
-        this.$broadcast('modal-open', 'single-delete')
+    watch: {
+      documentToDelete (val) {
+        this.documentIdToDelete = val
+        this.singleDeleteIsOpen = true
       }
     }
   }

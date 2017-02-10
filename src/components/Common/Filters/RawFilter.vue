@@ -1,9 +1,9 @@
 <template>
   <form>
-    <button class="btn btn-small waves-effect waves-light" @click="fillRawWithBasic">Fill from basic form</button>
     <json-editor
-      v-ref:jsoneditor
-      class="pre_ace"
+      id="rawsearch"
+      ref="jsoneditor"
+      myclass="pre_ace"
       :content="filters.raw"
     >
     </json-editor>
@@ -67,7 +67,7 @@
         this.jsonInvalid = false
         this.filters.raw = json
 
-        this.$dispatch('filters-raw-search', this.filters.raw)
+        this.$emit('filters-raw-search', this.filters.raw)
       },
       fillRawWithBasic () {
         if (this.basicFilterForm.basic) {
@@ -77,13 +77,13 @@
           this.filters.raw = {...this.filters.raw, sort: this.formatSort(this.basicFilterForm.sorting)}
         }
 
-        this.$broadcast('json-editor-refresh')
+        this.$emit('json-editor-refresh')
       },
       resetRawSearch () {
         this.filters.raw = {}
       }
     },
-    ready () {
+    mounted () {
       this.filters.raw = this.rawFilter || {}
     }
   }

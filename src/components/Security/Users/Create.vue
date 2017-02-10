@@ -11,7 +11,9 @@
       :mandatory-id="true"
       :error="error"
       index="%kuzzle"
-      collection="users">
+      collection="users"
+      :document="document"
+      :get-mapping="getMappingUsers">
     </create-or-update>
   </div>
 </template>
@@ -21,8 +23,7 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UserCreate',
@@ -36,37 +37,38 @@
     },
     data () {
       return {
-        error: ''
+        error: '',
+        document: {}
       }
     },
     methods: {
-      create (viewState, json) {
+      getMappingUsers,
+      create (json) {
         this.error = ''
 
-        if (viewState === 'code') {
-          if (!json) {
-            this.error = 'The document is invalid, please review it'
-            return
-          }
-          if (!json._id) {
-            this.error = 'The document must have a field "_id"'
-            return
-          }
-          this.setNewDocument(json)
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
+          return
+        }
+        if (!json._id) {
+          this.error = 'The document must have an id'
+          return
         }
 
-        if (!this.newDocument._id) {
-          this.error = 'The document identifier is required'
-          return
+        let document = {...json}
+        let id = null
+
+        if (document._id) {
+          id = document._id
+          delete document._id
         }
 
         kuzzle
           .security
-          .createUserPromise(this.newDocument._id, this.newDocument)
-          .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityUsersList'})
-          }).catch(err => {
+          .createUserPromise(id, document)
+          .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
+          .then(() => this.$router.push({name: 'SecurityUsersList'}))
+          .catch(err => {
             this.error = 'An error occurred while creating user: <br />' + err.message
           })
       },
@@ -74,16 +76,8 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityUsersList'})
+          this.$router.push({name: 'SecurityUsersList'})
         }
-      }
-    },
-    vuex: {
-      getters: {
-        newDocument
-      },
-      actions: {
-        setNewDocument
       }
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" v-if="hasRights">
     <headline>
       {{collection}}
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
@@ -13,19 +13,26 @@
       @document-create::reset-error="error = null"
       :error="error"
       :index="index"
-      :collection="collection">
+      :collection="collection"
+      :document="document"
+      :get-mapping="getMappingDocument">
     </create-or-update>
+  </div>
+  <div v-else>
+    <page-not-allowed></page-not-allowed>
   </div>
 </template>
 
 
 <script>
+  import { canCreateDocument } from '../../../services/userAuthorization'
+  import PageNotAllowed from '../../Common/PageNotAllowed'
+
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
-  import {newDocument} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
   import CollectionTabs from '../Collections/Tabs'
 
   export default {
@@ -34,7 +41,8 @@
       Headline,
       CollectionDropdown,
       CreateOrUpdate,
-      CollectionTabs
+      CollectionTabs,
+      PageNotAllowed
     },
     props: {
       index: String,
@@ -42,32 +50,43 @@
     },
     data () {
       return {
-        error: ''
+        error: '',
+        document: {}
+      }
+    },
+    computed: {
+      hasRights () {
+        return canCreateDocument(this.index, this.collection)
       }
     },
     methods: {
-      create (viewState, json, mapping) {
+      getMappingDocument,
+      create (json, mapping) {
         this.error = ''
 
-        if (viewState === 'code') {
-          if (!json) {
-            this.error = 'The document is invalid, please review it'
-            return
-          }
-          this.setNewDocument(json)
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
+          return
         }
 
         return kuzzle
-          .dataCollectionFactory(this.collection, this.index)
-          .dataMappingFactory(mapping || {})
+          .collection(this.collection, this.index)
+          .collectionMapping(mapping || {})
           .applyPromise()
           .then(() => {
+            let document = {...json}
+            let id = null
+
+            if (document._id) {
+              id = document._id
+              delete document._id
+            }
+
             return kuzzle
-              .dataCollectionFactory(this.collection, this.index)
-              .createDocumentPromise(this.newDocument)
+              .collection(this.collection, this.index)
+              .createDocumentPromise(id, document, {refresh: 'wait_for'})
               .then(() => {
-                kuzzle.refreshIndex(this.index)
-                this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
               .catch(err => {
                 this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
@@ -81,16 +100,8 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
+          this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
-      }
-    },
-    vuex: {
-      getters: {
-        newDocument
-      },
-      actions: {
-        setNewDocument
       }
     }
   }

@@ -1,41 +1,38 @@
-proxy:
-  image: kuzzleio/proxy:develop
-  ports:
-    - "7511:7511"
-    - "7512:7512"
-    - "7513:7513"
+version: '2'
 
-backoffice:
-  image: kuzzleio/bo-dev:alpine
-  command: /run-dev.sh
-  volumes:
-    - "..:/var/app"
-    - "./run-dev.sh:/run-dev.sh"
-  ports:
-    - "3000:3000"
-  links:
-    - proxy:kuzzle
-    # add link to elasticsearch in order to perform a dump
-    - elasticsearch
-  environment:
-    - DEBUG_PHANTOM
-    - KUZZLE_URL
+services:
+  proxy:
+    image: kuzzleio/proxy
+    ports:
+      - "7511-7513:7511-7513"
 
-kuzzle:
-  image: kuzzleio/kuzzle:develop
-  volumes:
-      - "../kuzzle/fixtures.json:/fixtures.json"
-      - "../kuzzle/mappings.json:/mappings.json"
-  links:
-    - elasticsearch
-    - redis
-    - proxy:api
-  environment:
-    - kuzzle_fixtures=/fixtures.json
-    - kuzzle_mappings=/mappings.json
+  backoffice:
+    image: kuzzleio/dev
+    command: sh -c 'chmod 755 /run.sh && /run.sh'
+    volumes:
+      - "..:/var/app"
+      - "./scripts/run-dev.sh:/run.sh"
+    ports:
+      - "3000:3000"
+    environment:
+      - DEBUG_PHANTOM
 
-redis:
-  image: redis:3.0-alpine
+  kuzzle:
+    image: kuzzleio/kuzzle:develop
+    volumes:
+        - "../../kuzzle/:/var/app"
+        - "../kuzzle/fixtures.json:/fixtures.json"
+        - "../kuzzle/mappings.json:/mappings.json"
+    environment:
+      - kuzzle_services__db__host=elasticsearch
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_services__proxyBroker__host=proxy
+      - kuzzle_fixtures=/fixtures.json
+      - kuzzle_mappings=/mappings.json
 
-elasticsearch:
-  image: kuzzleio/elasticsearch:2.3.4
+  redis:
+    image: redis:3.2-alpine
+
+  elasticsearch:
+    image: elasticsearch:5.0

@@ -13,6 +13,28 @@ export const dedupeRealtimeCollections = (collections) => {
   }
 }
 
+export const splitRealtimeStoredCollections = (collections) => {
+  if (collections.length === 0) {
+    return {
+      realtime: [],
+      stored: []
+    }
+  }
+
+  return {
+    realtime: collections.filter((collection) => collection.type === 'realtime').map((collection) => collection.name) || [],
+    stored: collections.filter((collection) => collection.type === 'stored').map((collection) => collection.name) || []
+  }
+}
+
+export const getRealtimeCollectionFromStorage = (index) => {
+  let realtimeCollections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
+    .filter(o => o.index === index)
+    .map(o => o.collection)
+
+  return realtimeCollections
+}
+
 export const generateHash = (s) => {
   var hash = 0
   if (!s || s.length === 0) return hash

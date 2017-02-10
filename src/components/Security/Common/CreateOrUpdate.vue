@@ -17,11 +17,20 @@
           </div>
         </div>
 
-        <json-editor
-          v-ref:jsoneditor
-          class="pre_ace"
-          :content="content">
-        </json-editor>
+        <div class="row">
+          <div class="col s6 card">
+            <div class="card-content">
+              <span class="card-title">{{updateId ? 'Document' : 'New document'}}</span>
+              <json-editor id="document" class="pre_ace" :content="document" ref="jsoneditor"></json-editor>
+            </div>
+          </div>
+          <div class="col s6 card">
+            <div class="card-content">
+              <span class="card-title">Mapping</span>
+              <json-editor id="mapping" class="pre_ace" :content="cleanedMapping" :readonly="true"></json-editor>
+            </div>
+          </div>
+        </div>
 
         <div class="row">
           <div class="col s5 m4 l3">
@@ -33,9 +42,7 @@
             </button>
           </div>
           <div class="col s7 m8 l9" v-if="error">
-            <p class="error card red white-text" v-if="error">
-              <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              {{{error}}}
+            <p class="error card red-color" v-if="error" v-html="error">
             </p>
           </div>
         </div>
@@ -69,34 +76,51 @@
 <script>
   import JsonEditor from '../../Common/JsonEditor'
   import Headline from '../../Materialize/Headline'
+  import {cleanMapping} from '../../../services/documentFormat'
 
   export default {
     props: {
       error: String,
-      content: Object,
+      document: Object,
       title: String,
-      updateId: String
+      updateId: String,
+      getMapping: {type: Function, required: true}
     },
-
+    name: 'SecurityCreateOrUpdate',
     components: {
       JsonEditor,
       Headline
     },
     data () {
       return {
-        id: null
+        id: null,
+        mapping: {}
+      }
+    },
+    computed: {
+      cleanedMapping () {
+        return cleanMapping(this.mapping)
       }
     },
     methods: {
       dismissError () {
-        this.$dispatch('security-create::reset-error')
+        this.$emit('security-create::reset-error')
       },
       create () {
-        this.$dispatch('security-create::create', this.id, this.$refs.jsoneditor.getJson())
+        this.$emit('security-create::create', this.id, this.$refs.jsoneditor.getJson())
       },
       cancel () {
-        this.$dispatch('security-create::cancel')
+        this.$emit('security-create::cancel')
       }
+    },
+    mounted () {
+      this.getMapping(this.collection, this.index)
+        .then((res) => {
+          this.mapping = res.mapping
+        })
+        .catch((e) => {
+          // todo errors
+        })
     }
   }
 </script>

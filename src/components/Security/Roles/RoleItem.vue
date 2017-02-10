@@ -5,11 +5,11 @@
     <input
       type="checkbox"
       class="filled-in"
-      id="checkbox-{{document.id}}"
-      value="{{document.id}}"
+      :id="checkboxId"
+      :value="document.id"
       @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label for="checkbox-{{document.id}}" ></label>
+    <label :for="checkboxId" ></label>
     <!-- The following anchor will go to the profile details page -->
     <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
@@ -22,7 +22,7 @@
           v-title="{active: !canEditRole(), title: 'You are not allowed to edit this role'}">
           <i class="fa fa-pencil" :class="{'disabled': !canEditRole()}"></i>
       </a>
-      <dropdown :id="document.id" class="icon-black">
+      <dropdown :id="document.id" myclass="icon-black">
         <li><a @click="deleteDocument(document.id)"
                :class="{'disabled': !canDeleteRole()}"
                v-title="{active: !canDeleteRole(), title: 'You are not allowed to delete this role'}">
@@ -61,21 +61,26 @@ export default {
       collapsed: true
     }
   },
+  computed: {
+    checkboxId () {
+      return `checkbox-${this.document.id}`
+    }
+  },
   methods: {
     toggleCollapse () {
       this.collapsed = !this.collapsed
     },
     notifyCheckboxClick () {
-      this.$dispatch('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.document.id)
     },
     deleteDocument () {
       if (this.canDeleteRole()) {
-        this.$dispatch('delete-document', this.document.id)
+        this.$emit('delete-document', this.document.id)
       }
     },
     update () {
       if (this.canEditRole()) {
-        this.$dispatch('common-list::edit-document', 'SecurityRolesUpdate', this.document.id)
+        this.$emit('common-list::edit-document', 'SecurityRolesUpdate', this.document.id)
       }
     },
     canEditRole,

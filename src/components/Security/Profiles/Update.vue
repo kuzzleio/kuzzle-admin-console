@@ -3,60 +3,73 @@
   title="Update profile"
   :content="content"
   :update-id="id"
+  :error="error"
   @security-create::create="update"
-  @security-create::cancel="cancel">
+  @security-create::cancel="cancel"
+  :document="document"
+  :get-mapping="getMappingProfiles">
   </create>
 </template>
 
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingProfiles } from '../../../services/kuzzleWrapper'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
+    name: 'SecurityUpdate',
     components: {
       Create
     },
     data () {
       return {
-        content: {},
+        document: {},
+        error: '',
         id: null
       }
     },
     methods: {
-      update (content) {
-        if (!content || Object.keys(content).length === 0) {
+      getMappingProfiles,
+      update (id, json) {
+        this.error = ''
+
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
           return
         }
 
         kuzzle
           .security
-          .updateProfilePromise(this.$route.params.id, content, {replaceIfExist: true})
+          .updateProfilePromise(this.id, json, {replaceIfExist: true})
           .then(() => {
-            this.$router.go({name: 'SecurityProfilesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityProfilesList'})
+            }, 1000)
           })
           .catch((e) => {
-            this.$dispatch('toast', e.message, 'error')
+            this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityProfilesList'})
+          this.$router.push({name: 'SecurityProfilesList'})
         }
       }
     },
-    ready () {
+    mounted () {
       kuzzle
         .security
-        .getProfilePromise(this.$route.params.id)
+        .fetchProfilePromise(this.$route.params.id)
         .then((profile) => {
           this.id = profile.id
-          this.content = profile.content
+          this.document = profile.content
         })
         .catch((e) => {
-          this.$dispatch('toast', e.message, 'error')
-          this.$router.go({name: 'SecurityProfilesCreate'})
+          this.$store.commit(SET_TOAST, {text: e.message})
+          this.$router.push({name: 'SecurityProfilesCreate'})
         })
     }
   }

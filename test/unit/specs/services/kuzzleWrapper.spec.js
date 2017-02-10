@@ -31,7 +31,7 @@ describe('Kuzzle wrapper service', () => {
         './kuzzle': {
           dataCollectionFactory () {
             return {
-              advancedSearch (filters, cb) {
+              search (filters, cb) {
                 if (triggerError) {
                   cb(new Error('error'))
                 } else {
@@ -107,7 +107,7 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should disconnect and reconnect kuzzle after setting the environment params', () => {
-      kuzzleWrapper.connectToEnvironment({host: 'toto.toto', ioPort: 7512, wsPort: 7513})
+      kuzzleWrapper.connectToEnvironment({host: 'toto.toto', port: 7512})
 
       expect(disconnectMock.called).to.equals(true)
       expect(connectMock.called).to.equals(true)
@@ -222,7 +222,7 @@ describe('Kuzzle wrapper service', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
           host: 'toto',
-          wsPort: 8888,
+          port: 8888,
           state: 'connecting',
           addListener (event, cb) {
             cb()

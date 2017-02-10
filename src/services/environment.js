@@ -1,29 +1,17 @@
-import {
-  waitForConnected
-  , connectToEnvironment
-} from './kuzzleWrapper'
 import store from '../vuex/store'
-import { reset } from '../vuex/actions'
-import {
-  environments
-  , currentEnvironmentId
-  , currentEnvironment
-} from '../vuex/modules/common/kuzzle/getters'
-import * as kuzzleActions from '../vuex/modules/common/kuzzle/actions'
-import * as authActions from '../vuex/modules/auth/actions'
-import Promise from 'bluebird'
+import * as authTypes from '../vuex/modules/auth/mutation-types'
+import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 
 export const LAST_CONNECTED = 'lastConnectedEnv'
 const ENVIRONMENTS = 'environments'
-export const DEFAULT_COLOR = '#00757F'
+export const DEFAULT_COLOR = '#002835'
 export const DEFAULT = 'default'
 
 const defaultEnvironment = {
   [DEFAULT]: {
     name: 'localhost',
     host: 'localhost',
-    ioPort: 7512,
-    wsPort: 7513,
+    port: 7512,
     color: DEFAULT_COLOR
   }
 }
@@ -61,12 +49,11 @@ export const loadEnvironments = () => {
  * @param  {String} The name of the environment (displayed in the list).
  * @param  {String} The HEX color code of the main header bar when connected.
  * @param  {String} The hostname.
- * @param  {int} The port number for the Socket.IO protocol.
- * @param  {int} The port number for the Websocket protocol.
+ * @param  {int} The port number.
  *
  * @return {Object} The environment object.
  */
-export const createEnvironment = (name, color, host, ioPort, wsPort) => {
+export const createEnvironment = (name, color, host, port) => {
   if (!color) {
     color = DEFAULT_COLOR
   }
@@ -75,11 +62,10 @@ export const createEnvironment = (name, color, host, ioPort, wsPort) => {
     name,
     color,
     host,
-    ioPort,
-    wsPort
+    port
   }
 
-  kuzzleActions.addEnvironment(store, name, newEnvironment)
+  store.dispatch(kuzzleTypes.ADD_ENVIRONMENT, {id: name, environment: newEnvironment, persist: true})
   return newEnvironment
 }
 
@@ -89,65 +75,20 @@ export const loadLastConnectedEnvId = () => {
 }
 
 export const deleteEnvironment = (id) => {
-  if (currentEnvironmentId(store.state) === id) {
-    authActions.doLogout(store)
+  if (store.getters.currentEnvironmentId === id) {
+    store.dispatch(authTypes.DO_LOGOUT)
   }
 
-  kuzzleActions.deleteEnvironment(store, id)
-}
-
-export const updateEnvironment = (id, name, color, host, ioPort, wsPort) => {
-  let envToUpdate = environments(store.state)[id]
-  if (!envToUpdate) {
-    throw new Error(`The provided id ${id} does not correspond to any existing
-      environment`)
-  }
-
-  envToUpdate = {
-    ...envToUpdate, name, color, host, ioPort, wsPort
-  }
-
-  kuzzleActions.updateEnvironment(store, id, envToUpdate)
-  return envToUpdate
+  store.dispatch(kuzzleTypes.DELETE_ENVIRONMENT, id)
 }
 
 export const setTokenToCurrentEnvironment = (token) => {
-  kuzzleActions.updateEnvironment(
-    store,
-    currentEnvironmentId(store.state),
-    {
-      ...currentEnvironment(store.state),
+  store.dispatch(kuzzleTypes.UPDATE_ENVIRONMENT, {
+    id: store.getters.currentEnvironmentId,
+    environment: {
+      ...store.getters.currentEnvironment,
       token: token
     }
-  )
-
-  return currentEnvironment(store.state)
-}
-
-export const switchEnvironment = (id) => {
-  if (!id) {
-    throw new Error(`cannot switch to ${id} environment`)
-  }
-
-  let environment = environments(store.state)[id]
-  if (!environment) {
-    throw new Error(`Id ${id} does not match any environment`)
-  }
-
-  reset(store)
-
-  connectToEnvironment(environment)
-
-  return waitForConnected(10000)
-    .then(() => {
-      kuzzleActions.setConnection(store, id)
-
-      return authActions.loginByToken(store, environment.token)
-        .then(user => {
-          if (!user.id) {
-            return authActions.checkFirstAdmin(store)
-          }
-          return Promise.resolve()
-        })
-    })
+  })
+  return store.getters.currentEnvironment
 }

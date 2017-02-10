@@ -28,10 +28,12 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
       type = 'array'
     }
   } else {
-    type = typeof jsonDocument
-
-    if (type === 'number') {
-      type = Number.isInteger(jsonDocument) ? 'long' : 'double'
+    if (typeof jsonDocument === 'string') {
+      type = 'text'
+    } else if (typeof jsonDocument === 'number') {
+      type = 'integer'
+    } else {
+      type = typeof jsonDocument
     }
   }
 
@@ -49,13 +51,28 @@ export const getUpdatedSchema = (jsonDocument, collection) => {
     })
     schema = {
       properties: properties,
-      type: type
+      type
     }
   } else {
     schema = {
-      type: type,
-      val: jsonDocument
+      val: jsonDocument,
+      type
     }
   }
+
   return schema
+}
+
+export const cleanMapping = (mapping) => {
+  let _mapping = {}
+
+  Object.keys(mapping).forEach(attr => {
+    if (mapping[attr].properties) {
+      _mapping[attr] = cleanMapping(mapping[attr].properties)
+    } else {
+      _mapping[attr] = mapping[attr].type
+    }
+  })
+
+  return _mapping
 }

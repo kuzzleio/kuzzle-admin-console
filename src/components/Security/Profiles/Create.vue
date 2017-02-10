@@ -5,48 +5,56 @@
   :error="error"
   @security-create::reset-error="error = ''"
   @security-create::create="create"
-  @security-create::cancel="cancel">
+  @security-create::cancel="cancel"
+  :document="document"
+  :get-mapping="getMappingProfiles">
   </create>
 </template>
 
 <script>
   import Create from '../Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
+  import { getMappingProfiles } from '../../../services/kuzzleWrapper'
 
   export default {
+    name: 'SecurityCreate',
     components: {
       Create
     },
     data () {
       return {
         error: '',
-        content: {}
+        document: {}
       }
     },
     methods: {
-      create (id, content) {
-        if (!id) {
-          this.error = 'The profile identifier is required'
+      getMappingProfiles,
+      create (id, json) {
+        this.error = ''
+
+        if (!json) {
+          this.error = 'The document is invalid, please review it'
           return
         }
-        if (!content || Object.keys(content).length === 0) {
-          this.error = 'The profile must have a content'
+        if (!id) {
+          this.error = 'The document must have an id'
           return
         }
 
         kuzzle
           .security
-          .createProfilePromise(id, content, {replaceIfExist: true})
+          .createProfilePromise(id, json, {replaceIfExist: true})
           .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityProfilesList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityProfilesList'})
+            }, 1000)
           })
           .catch((e) => {
             this.error = 'An error occurred while creating profile: <br />' + e.message
           })
       },
       cancel () {
-        this.$router.go({name: 'SecurityProfilesList'})
+        this.$router.push({name: 'SecurityProfilesList'})
       }
     }
   }

@@ -17,9 +17,9 @@ export const formatFromBasicSearch = (groups = [[]]) => {
       .map(function (filter) {
         switch (filter.operator) {
           case 'match':
-            return {term: {[filter.attribute]: filter.value}}
+            return {equals: {[filter.attribute]: filter.value}}
           case 'not_match':
-            return {not: {term: {[filter.attribute]: filter.value}}}
+            return {not: {equals: {[filter.attribute]: filter.value}}}
           case 'regexp':
             return {regexp: {[filter.attribute]: filter.value}}
           case 'exists':

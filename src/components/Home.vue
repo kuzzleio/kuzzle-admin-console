@@ -1,20 +1,22 @@
 <template>
-  <main-menu></main-menu>
+  <div>
+    <main-menu @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></main-menu>
 
-  <main class="loader">
-    <router-view></router-view>
-  </main>
+    <main class="loader">
+      <router-view></router-view>
+    </main>
 
-  <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false">
-    <h5>Your session has expired</h5>
-    <h6>Please, relogin</h6>
-    <login-form :on-login="onLogin"></login-form>
-  </modal>
+    <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="tokenExpiredIsOpen" :close="noop">
+      <h5>Your session has expired</h5>
+      <h6>Please, relogin</h6>
+      <login-form :on-login="onLogin" ></login-form>
+    </modal>
 
-  <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false">
-    <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
-    <kuzzle-disconnected :host="kuzzleHost" :port="kuzzlePort"></kuzzle-disconnected>
-  </modal>
+    <modal class="small-modal" id="kuzzleDisconnected" :has-footer="false" :can-close="false" :close="noop" :is-open="kuzzleDisconnectedIsOpen">
+      <h5><i class="fa fa-warning red-color"></i> Can't connect to Kuzzle</h5>
+      <kuzzle-disconnected :host="$store.state.kuzzle.host" :port="$store.state.kuzzle.port"></kuzzle-disconnected>
+    </modal>
+  </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -45,8 +47,6 @@
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
   import KuzzleDisconnected from './Error/KuzzleDisconnected'
-  import { tokenValid } from '../vuex/modules/auth/getters'
-  import { kuzzleIsConnected, kuzzleHost, kuzzlePort } from '../vuex/modules/common/kuzzle/getters'
 
   export default {
     name: 'Home',
@@ -56,37 +56,39 @@
       Modal,
       KuzzleDisconnected
     },
-    vuex: {
-      getters: {
-        tokenValid,
-        kuzzleIsConnected,
-        kuzzleHost,
-        kuzzlePort
-      }
-    },
     data () {
       return {
         host: null,
-        port: null
+        port: null,
+        tokenExpiredIsOpen: false,
+        kuzzleDisconnectedIsOpen: false
       }
     },
     methods: {
       onLogin () {
-        this.$broadcast('modal-close', 'tokenExpired')
-      }
+        this.tokenExpiredIsOpen = false
+        this.$emit('modal-close', 'tokenExpired')
+      },
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
+      },
+      noop () {}
     },
     watch: {
-      tokenValid (valid) {
+      '$store.state.auth.tokenValid' (valid) {
         if (!valid) {
-          this.$broadcast('modal-open', 'tokenExpired')
+          this.tokenExpiredIsOpen = true
         }
       },
-      kuzzleIsConnected (isConnected) {
+      '$store.state.kuzzle.connectedTo' (isConnected) {
         if (!isConnected) {
-          this.$broadcast('modal-open', 'kuzzleDisconnected')
+          this.kuzzleDisconnectedIsOpen = true
           return
         }
-        this.$broadcast('modal-close', 'kuzzleDisconnected')
+        this.kuzzleDisconnectedIsOpen = false
       }
     }
   }

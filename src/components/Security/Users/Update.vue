@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit user - <span class="bold">{{documentToEditId}}</span>
+      Edit user - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
     </headline>
 
     <create-or-update
@@ -9,7 +9,9 @@
       @document-create::cancel="cancel"
       index="%kuzzle"
       collection="users"
-      :hide-id="true">
+      :hide-id="true"
+      :document="document"
+      :get-mapping="getMappingUsers">
     </create-or-update>
   </div>
 </template>
@@ -24,8 +26,8 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import {newDocument, documentToEditId} from '../../../vuex/modules/data/getters'
-  import {setNewDocument} from '../../../vuex/modules/data/actions'
+  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
+  import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -37,26 +39,30 @@
       index: String,
       collection: String
     },
+    data () {
+      return {
+        document: null
+      }
+    },
     methods: {
-      update (viewState, json) {
-        if (viewState === 'code') {
-          if (!json) {
-            this.$dispatch('toast', 'Invalid document', 'error')
-            return
-          }
-          this.setNewDocument(json)
+      getMappingUsers,
+      update (json) {
+        if (!json) {
+          this.$store.commit(SET_TOAST, {text: 'Invalid document'})
+          return
         }
 
         kuzzle
           .security
-          .updateUserPromise(this.documentToEditId, this.newDocument)
+          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), json)
           .then(() => {
-            kuzzle.refreshIndex('%kuzzle')
-            this.$router.go({name: 'SecurityUsersList'})
+            setTimeout(() => { // we can't perform refresh index on %kuzzle
+              this.$router.push({name: 'SecurityUsersList'})
+            }, 1000)
           })
           .catch((err) => {
             if (err) {
-              this.$dispatch('toast', err.message, 'error')
+              this.$store.commit(SET_TOAST, {text: err.message})
             }
           })
       },
@@ -64,30 +70,21 @@
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.go(this.$router._prevTransition.to)
         } else {
-          this.$router.go({name: 'SecurityUsersList'})
+          this.$router.push({name: 'SecurityUsersList'})
         }
       }
     },
-    vuex: {
-      actions: {
-        setNewDocument
-      },
-      getters: {
-        newDocument,
-        documentToEditId
-      }
-    },
-    ready () {
+    mounted () {
       kuzzle
         .security
-        .getUserPromise(this.documentToEditId)
+        .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
         .then((res) => {
-          this.setNewDocument(res.content)
-          this.$broadcast('document-create::fill', res.content)
+          this.document = res.content
+          this.$emit('document-create::fill', res.content)
           return null
         })
         .catch(err => {
-          this.$dispatch('toast', err.message, 'error')
+          this.$store.commit(SET_TOAST, {text: err.message})
         })
     }
   }

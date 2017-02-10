@@ -1,5 +1,6 @@
 import {
   dedupeRealtimeCollections,
+  splitRealtimeStoredCollections,
   generateHash,
   filterIndexesByKeyword
 } from '../../../../src/services/data'
@@ -21,6 +22,51 @@ describe('Data services', () => {
         stored: ['foo']
       }
       expect(dedupeRealtimeCollections(nothingToDedupe)).to.deep.equals(nothingToDedupe)
+    })
+  })
+
+  describe('splitRealtimeStoredCollections', () => {
+    it('should correctly split realtime and stored collections', () => {
+      let collectionsToSplit = [
+        {name: 'bar', type: 'realtime'},
+        {name: 'foo', type: 'realtime'},
+        {name: 'foobar', type: 'stored'}
+      ]
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: ['bar', 'foo'],
+        stored: ['foobar']
+      })
+    })
+
+    it('should correctly split an empty collections result', () => {
+      let collectionsToSplit = []
+
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: [],
+        stored: []
+      })
+    })
+
+    it('should correctly split an empty stored collections result', () => {
+      let collectionsToSplit = [
+        {name: 'bar', type: 'realtime'}
+      ]
+
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: ['bar'],
+        stored: []
+      })
+    })
+
+    it('should correctly split an empty realtime collections result', () => {
+      let collectionsToSplit = [
+        {name: 'foobar', type: 'stored'}
+      ]
+
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
+        realtime: [],
+        stored: ['foobar']
+      })
     })
   })
 

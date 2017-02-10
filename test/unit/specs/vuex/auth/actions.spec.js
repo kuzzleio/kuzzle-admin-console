@@ -1,6 +1,13 @@
 import Promise from 'bluebird'
 import { testAction, testActionPromise } from '../../helper'
-import { SET_CURRENT_USER, SET_TOKEN_VALID } from '../../../../../src/vuex/modules/auth/mutation-types'
+import {
+  SET_CURRENT_USER,
+  SET_TOKEN_VALID,
+  DO_LOGIN,
+  LOGIN_BY_TOKEN,
+  CHECK_FIRST_ADMIN,
+  DO_LOGOUT
+} from '../../../../../src/vuex/modules/auth/mutation-types'
 import SessionUser from '../../../../../src/models/SessionUser'
 
 const actionsInjector = require('inject!../../../../../src/vuex/modules/auth/actions')
@@ -41,9 +48,6 @@ describe('doLogin action', () => {
         })
       }
     },
-    '../../../services/router': {
-      go: sinon.mock()
-    },
     '../../../services/userCookies': {
       set: sinon.spy(),
       get: sinon.spy(),
@@ -64,7 +68,7 @@ describe('doLogin action', () => {
 
   it('should catch error if login fail', (done) => {
     triggerError.login = true
-    testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
+    testActionPromise(actions.default[DO_LOGIN], {username: 'user', password: 'pwd'}, {}, [], done).catch(e => {
       expect(e.message).to.equals('login error')
       done()
     })
@@ -72,7 +76,7 @@ describe('doLogin action', () => {
 
   it('should catch error if whoAmI fail', (done) => {
     triggerError.whoAmI = true
-    testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
+    testActionPromise(actions.default[DO_LOGIN], {username: 'user', password: 'pwd'}, {}, [], done).catch(e => {
       expect(e.message).to.equals('whoAmI error')
       done()
     })
@@ -80,26 +84,26 @@ describe('doLogin action', () => {
 
   it('should catch error if getMyRights fail', (done) => {
     triggerError.getMyRights = true
-    testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [], done).catch(e => {
+    testActionPromise(actions.default[DO_LOGIN], {username: 'user', password: 'pwd'}, {}, [], done).catch(e => {
       expect(e.message).to.equals('getMyRights error')
       done()
     })
   })
 
   it('should store the user, dispatch user and token-valid mutation', (done) => {
-    testActionPromise(actions.doLogin, ['user', 'pwd'], {}, [
+    testActionPromise(actions.default[DO_LOGIN], {username: 'user', password: 'pwd'}, {}, [
       {
-        name: SET_CURRENT_USER,
-        payload: [{
+        type: SET_CURRENT_USER,
+        payload: {
           id: 'foo',
           token: 'jwt',
           params: {foo: 'bar'},
           rights: [{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}]
-        }]
+        }
       },
       {
-        name: SET_TOKEN_VALID,
-        payload: [true]
+        type: SET_TOKEN_VALID,
+        payload: true
       }
     ], done)
   })
@@ -163,25 +167,25 @@ describe('loginByToken action', () => {
 
   it('should login user from token', (done) => {
     let actions = injectMock()
-    testActionPromise(actions.loginByToken, ['a-token'], {}, [
-      { name: SET_CURRENT_USER, payload: [loggedUser] },
-      { name: SET_TOKEN_VALID, payload: [true] }
+    testActionPromise(actions.default[LOGIN_BY_TOKEN], {token: 'a-token'}, {}, [
+      { type: SET_CURRENT_USER, payload: loggedUser },
+      { type: SET_TOKEN_VALID, payload: true }
     ], done)
   })
 
   it('should not log the user if no token is provided', (done) => {
     let actions = injectMock()
-    testActionPromise(actions.loginByToken, [], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] },
-      { name: SET_TOKEN_VALID, payload: [false] }
+    testActionPromise(actions.default[LOGIN_BY_TOKEN], {}, {}, [
+      { type: SET_CURRENT_USER, payload: SessionUser() },
+      { type: SET_TOKEN_VALID, payload: false }
     ], done)
   })
 
   it('should not login user from cookie because the jwt token is wrong', (done) => {
     let actions = injectMock(true, true)
-    testActionPromise(actions.loginByToken, ['a-token'], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] },
-      { name: SET_TOKEN_VALID, payload: [false] }
+    testActionPromise(actions.default[LOGIN_BY_TOKEN], {token: 'a-token'}, {}, [
+      { type: SET_CURRENT_USER, payload: SessionUser() },
+      { type: SET_TOKEN_VALID, payload: false }
     ])
     .catch((e) => {
       expect(e.message).to.be.equal('checkToken error')
@@ -191,9 +195,9 @@ describe('loginByToken action', () => {
 
   it('should do nothing if the token identifies an invalid session', (done) => {
     let actions = injectMock(false)
-    testActionPromise(actions.loginByToken, ['a-token'], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] },
-      { name: SET_TOKEN_VALID, payload: [false] }
+    testActionPromise(actions.default[LOGIN_BY_TOKEN], {token: 'a-token'}, {}, [
+      { type: SET_CURRENT_USER, payload: SessionUser() },
+      { type: SET_TOKEN_VALID, payload: false }
     ], done)
       .catch(e => {
         console.log(e)
@@ -230,7 +234,7 @@ describe('checkFirstAdmin action', () => {
   it('should reject if error comes from Kuzzle', (done) => {
     triggerError = true
     injectMock()
-    testActionPromise(actions.checkFirstAdmin, [], {}, [])
+    testActionPromise(actions.default[CHECK_FIRST_ADMIN], {}, {}, [])
       .catch((e) => {
         expect(e.message).to.be.equal('error from Kuzzle')
         done()
@@ -240,32 +244,16 @@ describe('checkFirstAdmin action', () => {
   it('should dispatch true if admin already exists', (done) => {
     triggerError = false
     injectMock(true)
-    testActionPromise(actions.checkFirstAdmin, [], {}, [
-      { name: 'SET_ADMIN_EXISTS', payload: [true] }
+    testActionPromise(actions.default[CHECK_FIRST_ADMIN], null, {}, [
+      { type: 'SET_ADMIN_EXISTS', payload: true }
     ], done)
   })
 
   it('should dispatch false if there is no admin', (done) => {
     triggerError = false
     injectMock(false)
-    testActionPromise(actions.checkFirstAdmin, [], {}, [
-      { name: 'SET_ADMIN_EXISTS', payload: [false] }
-    ], done)
-  })
-})
-
-describe('setFirstAdmin action', () => {
-  let actions = actionsInjector({})
-
-  it('should dispatch true', (done) => {
-    testAction(actions.setFirstAdmin, [true], {}, [
-      { name: 'SET_ADMIN_EXISTS', payload: [true] }
-    ], done)
-  })
-
-  it('should dispatch false', (done) => {
-    testAction(actions.setFirstAdmin, [false], {}, [
-      { name: 'SET_ADMIN_EXISTS', payload: [false] }
+    testActionPromise(actions.default[CHECK_FIRST_ADMIN], null, {}, [
+      { type: 'SET_ADMIN_EXISTS', payload: false }
     ], done)
   })
 })
@@ -279,18 +267,15 @@ describe('logout action', () => {
     '../../../services/userCookies': {
       delete: sinon.mock()
     },
-    '../../../services/router': {
-      go: sinon.mock()
-    },
     '../../../services/environment': {
       setTokenToCurrentEnvironment: sinon.spy()
     }
   })
 
   it('should logout user', (done) => {
-    testAction(actions.doLogout, [], {}, [
-      { name: SET_CURRENT_USER, payload: [SessionUser()] },
-      { name: SET_TOKEN_VALID, payload: [false] }
+    testAction(actions.default[DO_LOGOUT], {}, {}, [
+      { type: SET_CURRENT_USER, payload: SessionUser() },
+      { type: SET_TOKEN_VALID, payload: false }
     ], done)
   })
 })

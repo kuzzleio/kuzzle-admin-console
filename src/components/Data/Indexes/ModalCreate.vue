@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="tryCreateIndex(index)">
-    <modal :id="id">
+    <modal :id="id" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>Index creation</h4>
@@ -44,7 +44,7 @@
         <button
           href="#!"
           class="btn-flat waves-effect waves-grey"
-          @click.prevent="$broadcast('modal-close', id)">
+          @click.prevent="close">
             Cancel
         </button>
       </span>
@@ -79,25 +79,18 @@
 
 
 <script>
-  import {createIndex} from '../../../vuex/modules/data/actions'
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
+  import * as types from '../../../vuex/modules/data/mutation-types'
 
   export default {
-    name: 'IndexCreateModal',
-    props: {
-      id: String
-    },
+    name: 'CreateModal',
+    props: ['id', 'isOpen', 'close'],
     directives: {
       Focus
     },
     components: {
       Modal
-    },
-    vuex: {
-      actions: {
-        createIndex
-      }
     },
     methods: {
       toggleTruncatedError () {
@@ -108,11 +101,11 @@
           return
         }
 
-        this.createIndex(index)
+        this.$store.dispatch(types.CREATE_INDEX, index)
           .then(() => {
             this.index = ''
             this.error = ''
-            this.$broadcast('modal-close', this.id)
+            this.close()
           })
           .catch(err => {
             this.error = err.message

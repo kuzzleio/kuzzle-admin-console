@@ -6,7 +6,7 @@ import VueRouter from 'vue-router'
 
 describe('App.vue', () => {
   let sandbox = sinon.sandbox.create()
-  Vue.use(VueRouter)
+  // Vue.use(VueRouter)
 
   const createApp = () => {
     let App = AppInjector({

@@ -6,12 +6,12 @@
 </template>
 
 <script>
-  import {setPartial} from '../../../vuex/modules/data/actions'
+  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
 
   export default{
     name: 'JsonFormItemCheckbox',
     props: {
-      content: Boolean,
+      content: {type: Boolean, default: false},
       name: String,
       type: String,
       fullName: String
@@ -21,14 +21,19 @@
         value: false
       }
     },
-    watch: {
-      value (v) {
-        this.setPartial(this.fullName, v)
+    mounted () {
+      if (!this.content) {
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: false})
+      } else {
+        this.value = this.content
       }
     },
-    vuex: {
-      actions: {
-        setPartial
+    watch: {
+      value (v) {
+        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: v})
+      },
+      content (v) {
+        this.value = v
       }
     }
   }

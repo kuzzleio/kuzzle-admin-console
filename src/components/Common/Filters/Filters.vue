@@ -5,7 +5,8 @@
         <quick-filter
           :search-term="searchTerm"
           :display-block-filter="displayBlockFilter"
-          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter">
+          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter"
+          @filters-quick-search="broadcastFilterQuickSearch">
         </quick-filter>
       </div>
     </div>
@@ -33,9 +34,9 @@
     <div class="row card-panel open-search" v-show="displayBlockFilter">
       <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
       <div class="col s12">
-        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter">
-          <tab name="basic"><a href="">Basic Mode</a></tab>
-          <tab name="raw"><a href="">Raw JSON Mode</a></tab>
+        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter" :object-tab-active="objectTabActive">
+          <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
+          <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
           <div slot="contents" class="card">
             <div class="col s12">
@@ -47,7 +48,7 @@
                   :label-search-button="labelSearchButton"
                   :sorting="sorting"
                   :set-basic-filter="setBasicFilter"
-                  @filters-basic-search="complexSearch = true">
+                  @filters-basic-search="broadcastFilterBasicSearch">
                 </basic-filter>
               </div>
 
@@ -58,7 +59,8 @@
                   :sorting-enabled="sortingEnabled"
                   :label-search-button="labelSearchButton"
                   :format-sort="formatSort"
-                  :basic-filter-form="basicFilterForm">
+                  :basic-filter-form="basicFilterForm"
+                  @filters-raw-search="broadcastRawSearch">
                 </raw-filter>
               </div>
             </div>
@@ -75,6 +77,7 @@
   import QuickFilter from './QuickFilter'
   import BasicFilter from './BasicFilter'
   import RawFilter from './RawFilter'
+  import Vue from 'vue'
 
   export default {
     name: 'Filters',
@@ -121,40 +124,48 @@
     },
     watch: {
       'displayBlockFilter' () {
-        this.$broadcast('json-editor-refresh')
+        this.$emit('json-editor-refresh')
       },
       'tabActive' () {
-        this.$broadcast('json-editor-refresh')
-      }
-    },
-    events: {
-      'filters-basic-search' () {
-        this.displayBlockFilter = false
-      },
-      'filters-raw-search' () {
-        this.displayBlockFilter = false
+        this.$emit('json-editor-refresh')
       }
     },
     data () {
       return {
         displayBlockFilter: false,
         tabActive: 'basic',
-        jsonInvalid: false
+        jsonInvalid: false,
+        objectTabActive: null
       }
     },
     methods: {
+      broadcastFilterQuickSearch (term) {
+        this.$emit('filters-quick-search', term)
+      },
       switchFilter (name) {
         this.tabActive = name
       },
       resetComplexSearch () {
-        this.$dispatch('filters-raw-search', {})
+        this.$emit('filters-raw-search', {})
       },
       refreshSearch () {
-        this.$dispatch('filters-refresh-search')
+        this.$emit('filters-refresh-search')
+      },
+      broadcastFilterBasicSearch (filters, sorting) {
+        this.displayBlockFilter = false
+        this.$emit('filters-basic-search', filters, sorting)
+      },
+      setObjectTabActive (tab) {
+        this.objectTabActive = tab
+      },
+      broadcastRawSearch (filter) {
+        this.$emit('filters-raw-search', filter)
       }
     },
-    ready () {
-      window.document.addEventListener('keydown', this.handleEsc)
+    mounted () {
+      Vue.nextTick(() => {
+        window.document.addEventListener('keydown', this.handleEsc)
+      })
     },
     destroyed () {
       window.document.removeEventListener('keydown', this.handleEsc)

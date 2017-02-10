@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="hasRights">
     <create-or-update
       headline="Create collection"
       @collection-create::create="create"
@@ -8,13 +8,19 @@
       :index="index">
     </create-or-update>
   </div>
+  <div v-else>
+    <page-not-allowed></page-not-allowed>
+  </div>
 </template>
 
 <script>
+  import { canCreateCollection } from '../../../services/userAuthorization'
+  import PageNotAllowed from '../../Common/PageNotAllowed'
+
   import CreateOrUpdate from './CreateOrUpdate'
-  import { createCollection } from '../../../vuex/modules/collection/actions'
   import { collectionName } from '../../../vuex/modules/collection/getters'
   import { indexesAndCollections } from '../../../vuex/modules/data/getters'
+  import {CREATE_COLLECTION} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreate',
@@ -26,13 +32,16 @@
         error: ''
       }
     },
+    computed: {
+      hasRights () {
+        return canCreateCollection(this.index, this.collection)
+      }
+    },
     components: {
-      CreateOrUpdate
+      CreateOrUpdate,
+      PageNotAllowed
     },
     vuex: {
-      actions: {
-        createCollection
-      },
       getters: {
         collectionName,
         indexesAndCollections
@@ -42,9 +51,9 @@
       create (name, mapping, isRealtime) {
         this.error = ''
 
-        this.createCollection(this.indexesAndCollections[this.index], this.index, name, mapping, isRealtime)
+        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.data.indexesAndCollections[this.index], index: this.index, collectionName: name, mapping, isRealtime})
           .then(() => {
-            this.$router.go({name: 'DataIndexSummary', params: {index: this.index}})
+            this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })
           .catch((e) => {
             this.error = e.message

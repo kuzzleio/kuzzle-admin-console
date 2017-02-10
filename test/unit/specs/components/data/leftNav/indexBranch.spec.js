@@ -10,7 +10,7 @@ describe('IndexBranch component', () => {
   let collections
 
   beforeEach(() => {
-    Vue.use(VueRouter)
+    // Vue.use(VueRouter)
 
     collections = {
       'stored': [

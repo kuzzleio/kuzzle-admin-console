@@ -1,19 +1,18 @@
 <template>
   <div>
-    <div v-if="active" :transition="transition" :id="id" class="modal" :class="computedClasses">
+    <div v-if="isOpen" :id="id" class="modal" :class="computedClasses">
       <slot name="content">
         <div class="modal-content">
           <slot></slot>
         </div>
-        <div class="modal-footer" v-if="hasFooter">
+        <div class="modal-footer" :class="{grey: loading}" v-if="hasFooter">
           <slot name="footer"></slot>
         </div>
       </slot>
     </div>
 
     <div
-      v-if="active"
-      transition="modal-overlay"
+      v-if="isOpen"
       @click="canClose && close()"
       class="lean-overlay"
       style="z-index: 1002; display: block; opacity: 0.5;">
@@ -22,6 +21,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   // translated from https://github.com/appcomponents/material-components/tree/master/src/components/modal
   const ESC_KEY = 27
 
@@ -43,23 +43,19 @@
         'default': true,
         required: false
       },
-      bottom: Boolean
-    },
-    events: {
-      'modal-open': function (id) {
-        if (this.id === id) {
-          this.open()
-        }
+      footerFixed: {
+        type: Boolean,
+        'default': false
       },
-      'modal-close': function (id) {
-        if (this.id === id) {
-          this.close()
-          return true
-        }
-      }
+      close: {
+        type: Function
+      },
+      bottom: Boolean,
+      isOpen: Boolean,
+      loading: Boolean
     },
     watch: {
-      active: function (active) {
+      isOpen: function (active) {
         if (active) {
           window.document.body.style.overflow = 'hidden'
         } else {
@@ -67,28 +63,31 @@
         }
       }
     },
-    data () {
-      return {
-        active: false
-      }
-    },
-    ready () {
-      window.document.addEventListener('keydown', this.handleEsc)
+    mounted () {
+      Vue.nextTick(() => {
+        window.document.addEventListener('keydown', this.handleEsc)
+      })
     },
     destroyed () {
       window.document.removeEventListener('keydown', this.handleEsc)
     },
     computed: {
       computedClasses () {
-        if (!this.active) {
+        let cssClass = ''
+
+        if (!this.isOpen) {
           return null
         }
 
-        if (this.bottom) {
-          return 'bottom-modal bottom-sheet ' + this.class
+        if (this.footerFixed) {
+          cssClass = 'modal-fixed-footer '
         }
 
-        return 'normal-modal ' + this.class
+        if (this.bottom) {
+          return cssClass + 'bottom-modal bottom-sheet ' + this.class + (this.loading ? ' grey' : '')
+        }
+
+        return cssClass + 'normal-modal ' + this.class + (this.loading ? ' grey' : '')
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'
@@ -102,11 +101,11 @@
           this.close()
         }
       },
-      open () {
-        this.active = true
-      },
-      close () {
-        this.active = false
+      closeModal (id) {
+        if (this.id === id) {
+          this.close()
+          return true
+        }
       }
     }
   }
@@ -142,72 +141,8 @@
       }
     }
   }
-  .modal-overlay-transition {
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
 
-    -webkit-animation-duration: 0.3s;
-    animation-duration: 0.3s;
-
-    -webkit-animation-name: fadeIn-0-5;
-    animation-name: fadeIn-0-5;
-  }
-
-  .modal-overlay-enter, .modal-overlay-leave {
-    opacity: 0;
-  }
-
-  .modal-overlay-leave {
-    -webkit-animation-duration: 0.2s;
-    animation-duration: 0.2s;
-
-    -webkit-animation-name: fadeOut-0-5;
-    animation-name: fadeOut-0-5;
-  }
-
-  .modal-transition {
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-
-    -webkit-animation-duration: 0.3s;
-    animation-duration: 0.3s;
-
-    -webkit-animation-name: zoomIn;
-    animation-name: zoomIn;
-  }
-
-  .modal-leave {
-    opacity: 0;
-  }
-
-  .modal-leave {
-    -webkit-animation-duration: 0.2s;
-    animation-duration: 0.2s;
-
-    -webkit-animation-name: fadeOut;
-    animation-name: fadeOut;
-  }
-
-  .modal-bottom-transition {
-    -webkit-animation-fill-mode: both;
-    animation-fill-mode: both;
-
-    -webkit-animation-duration: 0.3s;
-    animation-duration: 0.3s;
-
-    -webkit-animation-name: slideInUp;
-    animation-name: slideInUp;
-  }
-
-  .modal-bottom-leave {
-    opacity: 0;
-  }
-
-  .modal-bottom-leave {
-    -webkit-animation-duration: 0.2s;
-    animation-duration: 0.2s;
-
-    -webkit-animation-name: slideOutDown;
-    animation-name: slideOutDown;
+  .grey {
+    background-color: rgba(0, 0, 0, .3);
   }
 </style>

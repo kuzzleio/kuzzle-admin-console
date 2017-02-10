@@ -1,10 +1,10 @@
 <template>
   <div>
     <div
-      v-for="value in valueItems"
-      track-by="$index"
-      @mouseover="showRemoveElement($index)"
-      @mouseout="hideRemoveElement($index)"
+      v-for="(value, index) in valueItems"
+      :key="index"
+      @mouseover="showRemoveElement(index)"
+      @mouseout="hideRemoveElement(index)"
       class="array-value input-field">
 
         <input
@@ -12,15 +12,15 @@
           :type="type"
           step="0.1"
           number
-          v-model="value"/>
+          :v-model="valueItems[index]"/>
 
         <inline-actions
           :name="name"
           :full-name="fullName"
           :value-items="valueItems"
           :type="type"
-          :index="$index"
-          :display="displayedLines[$index]">
+          :index="index"
+          :display="displayedLines[index]">
         </inline-actions>
     </div>
   </div>
@@ -34,6 +34,7 @@
 
 <script>
   import InlineActions from './InlineActions'
+  import Vue from 'vue'
 
   export default {
     name: 'JsonFormItemArrayInput',
@@ -49,10 +50,10 @@
     },
     methods: {
       showRemoveElement (index) {
-        this.displayedLines.$set(index, true)
+        Vue.set(this.displayedLines, index, true)
       },
       hideRemoveElement (index) {
-        this.displayedLines.$set(index, false)
+        Vue.set(this.displayedLines, index, false)
       }
     },
     watch: {
@@ -60,7 +61,7 @@
         this.displayedLines = this.valueItems.map(() => false)
       }
     },
-    ready () {
+    mounted () {
       this.displayedLines = this.valueItems.map(() => false)
     }
   }

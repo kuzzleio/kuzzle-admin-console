@@ -10,7 +10,11 @@
       collection="roles"
       index="%kuzzle"
       @create-clicked="createRole"
-      :display-create="canCreateRole()">
+      :display-create="canCreateRole()"
+      :perform-search="performSearchRoles"
+      :perform-delete="performDeleteRoles"
+      route-create="SecurityRolesCreate"
+      route-update="SecurityRolesUpdate">
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
@@ -22,14 +26,14 @@
               Here you'll see the kuzzle's roles<br/>
               <em>Currently there is no role.</em>
             </p>
-            <button :disabled="!canCreateRole()"
+            <router-link :disabled="!canCreateRole()"
                     :class="!canCreateRole() ? 'disabled' : ''"
-                    title="{{!canCreateRole() ? 'You are not allowed to create new roles' : ''}}"
-                    v-link="{name: 'SecurityRolesCreate'}"
+                    :title="!canCreateRole() ? 'You are not allowed to create new roles' : ''"
+                    :to="{name: 'SecurityRolesCreate'}"
                     class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a role
-            </button>
+            </router-link>
           </div>
         </div>
       </div>
@@ -42,6 +46,7 @@
   import CommonList from '../../Common/List'
   import { canSearchRole, canCreateRole } from '../../../services/userAuthorization'
   import Headline from '../../Materialize/Headline'
+  import { performSearchRoles, performDeleteRoles } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'RolesList',
@@ -52,14 +57,16 @@
     },
     methods: {
       createRole () {
-        this.$router.go({name: 'SecurityRolesCreate'})
+        this.$router.push({name: 'SecurityRolesCreate'})
       },
       canSearchRole,
-      canCreateRole
+      canCreateRole,
+      performSearchRoles,
+      performDeleteRoles
     },
     route: {
       data () {
-        this.$broadcast('crudl-refresh-search')
+        this.$emit('crudl-refresh-search')
       }
     }
   }

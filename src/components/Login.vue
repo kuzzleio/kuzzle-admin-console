@@ -6,13 +6,13 @@
           <div class="row">
             <div class="col s12">
               <h2 class="center-align logo">
-                <img src="../assets/logo.png" alt="Welcome to the Kuzzle Backoffice" style="width: 70%" />
+                <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Backoffice" style="width: 70%" />
               </h2>
             </div>
           </div>
           <div class="row">
             <div class="col offset-s1 s2">
-              <environment-switch></environment-switch>
+              <environment-switch @environment::create="editEnvironment"></environment-switch>
             </div>
           </div>
           <div class="row">
@@ -43,8 +43,7 @@
 <script>
   import LoginForm from './Common/Login/Form'
   import EnvironmentSwitch from './Common/Environments/Switch'
-  import { routeBeforeRedirect } from '../vuex/modules/common/routing/getters'
-  import { setRouteBeforeRedirect } from '../vuex/modules/common/routing/actions'
+  import * as types from '../vuex/modules/common/routing/mutation-types'
 
   export default {
     name: 'Login',
@@ -59,21 +58,16 @@
     },
     methods: {
       onLogin () {
-        if (this.routeBeforeRedirect) {
-          this.$router.go({name: this.routeBeforeRedirect})
+        if (this.$store.getters.routeBeforeRedirect) {
+          this.$router.push({name: this.$store.getters.routeBeforeRedirect})
         } else {
-          this.$router.go({name: 'Home'})
+          this.$router.push({name: 'Home'})
         }
 
-        this.setRouteBeforeRedirect(null)
-      }
-    },
-    vuex: {
-      getters: {
-        routeBeforeRedirect
+        this.$store.commit(types.SET_ROUTE_BEFORE_REDIRECT, null)
       },
-      actions: {
-        setRouteBeforeRedirect
+      editEnvironment (id) {
+        this.$emit('environment::create', id)
       }
     }
   }

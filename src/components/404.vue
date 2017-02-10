@@ -1,9 +1,11 @@
 <template>
-  <main-menu></main-menu>
+  <div>
+    <main-menu></main-menu>
 
-  <div class="row center">
-    <h1>404 not found</h1>
-    <a href="#">Go back to the main page</a>
+    <div class="row center">
+      <h1>404 not found</h1>
+      <a href="#">Go back to the main page</a>
+    </div>
   </div>
 </template>
 

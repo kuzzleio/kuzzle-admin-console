@@ -6,7 +6,7 @@
         {{name}}
         <i @click="addAttribute" class="fa fa-plus-circle primary"></i>
       </legend>
-      <div v-for="(nestedName, nestedContent) in content.properties">
+      <div v-for="(nestedContent, nestedName) in content.properties">
         <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
       </div>
     </fieldset>
@@ -94,6 +94,7 @@
   import JsonFormItemText from './JsonFormItemText'
   import JsonFormItemArray from './JsonFormItemArray/JsonFormItemArray'
   import JsonFormItemProfileIds from './JsonFormItemProfileIds'
+  import JsonFormItemGeoPoint from './JsonFormItemGeoPoint'
 
   export default {
     name: 'JsonForm',
@@ -102,7 +103,8 @@
       JsonFormItemNumber,
       JsonFormItemText,
       JsonFormItemArray,
-      JsonFormItemProfileIds
+      JsonFormItemProfileIds,
+      JsonFormItemGeoPoint
     },
     computed: {
       path () {
@@ -122,11 +124,14 @@
           case 'double':
           case 'float':
           case 'number':
+          case 'numeric':
             return 'JsonFormItemNumber'
           case 'array':
             return 'JsonFormItemArray'
           case 'profileIds':
             return 'JsonFormItemProfileIds'
+          case 'geo_point':
+            return 'JsonFormItemGeoPoint'
           default:
             return 'JsonFormItemText'
         }
@@ -142,7 +147,7 @@
         return !!content.properties
       },
       addAttribute () {
-        this.$dispatch('document-create::add-attribute', this.path)
+        this.$emit('document-create::add-attribute', this.path)
       }
     }
   }
