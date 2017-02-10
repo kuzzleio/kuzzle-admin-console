@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class="">{{name}}</span>
-    <json-editor :id="name" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
+    <json-editor :id="name" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
   </div>
 </template>
 

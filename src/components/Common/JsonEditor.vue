@@ -1,6 +1,6 @@
 <template>
   <div>
-    <pre :id="id" :class="classes"></pre>
+    <pre :id="id" :class="classes" :style="style"></pre>
   </div>
 </template>
 
@@ -24,15 +24,23 @@
 
   export default {
     name: 'JsonEditor',
-    props: [
-      'content',
-      'myclass',
-      'readonly',
-      'id'
-    ],
+    props: {
+      content: Object,
+      myclass: String,
+      readonly: Boolean,
+      id: String,
+      height: {type: Number, 'default': 100}
+    },
     computed: {
       classes () {
         return ((this.readonly ? 'readonly ' : '') + this.myclass)
+      },
+      style () {
+        if (this.height === undefined) {
+          return {height: '100px'}
+        } else {
+          return {height: this.height}
+        }
       }
     },
     data () {

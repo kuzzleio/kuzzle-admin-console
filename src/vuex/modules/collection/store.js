@@ -9,7 +9,8 @@ const state = {
   isRealtimeOnly: false,
   editionStep: 1,
   schema: {},
-  allowForm: true
+  allowForm: true,
+  defaultViewJson: false
 }
 
 export const mutations = {
@@ -44,6 +45,9 @@ export const mutations = {
   },
   [types.SET_COLLECTION_NAME] (state, payload) {
     state.name = payload
+  },
+  [types.SET_COLLECTION_DEFAULT_VIEW_JSON] (state, {jsonView}) {
+    state.defaultViewJson = jsonView
   }
 }
 

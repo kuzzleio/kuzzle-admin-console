@@ -21,13 +21,13 @@
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">{{updateId ? 'Document' : 'New document'}}</span>
-              <json-editor id="document" class="pre_ace" :content="document" ref="jsoneditor"></json-editor>
+              <json-editor :height="400" id="document" class="pre_ace" :content="document" ref="jsoneditor"></json-editor>
             </div>
           </div>
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">Mapping</span>
-              <json-editor id="mapping" class="pre_ace" :content="cleanedMapping" :readonly="true"></json-editor>
+              <json-editor :height="400" id="mapping" class="pre_ace" :content="cleanedMapping" :readonly="true"></json-editor>
             </div>
           </div>
         </div>

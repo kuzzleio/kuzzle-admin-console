@@ -1,7 +1,16 @@
 <template>
-  <div>
+  <div class="document-create-update">
     <div class="card-panel">
       <form class="wrapper" @submit.prevent="create">
+
+        <div class="switch right">
+          <label>
+            Form
+            <input type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
+            <span class="lever"></span>
+            JSON
+          </label>
+        </div>
 
         <div class="row input-id" v-if="!hideId">
           <div class="col s6">
@@ -12,7 +21,7 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" v-if="!$store.state.collection.defaultViewJson">
           <div class="col s12 card">
             <div class="card-content">
               <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="document">
@@ -22,11 +31,11 @@
         </div>
 
         <!-- Json view -->
-        <div class="row">
+        <div class="row" v-if="$store.state.collection.defaultViewJson">
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
-              <json-editor id="document" class="pre_ace" :content="document" ref="jsoneditor"></json-editor>
+              <json-editor id="document" class="document-json" :content="document" ref="jsoneditor"></json-editor>
             </div>
           </div>
 
@@ -34,7 +43,7 @@
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">Mapping</span>
-              <json-editor id="mapping" class="pre_ace" :content="$store.getters.simplifiedMapping" :readonly="true"></json-editor>
+              <json-editor id="mapping" class="document-json" :content="$store.getters.simplifiedMapping" :readonly="true"></json-editor>
             </div>
           </div>
         </div>
@@ -67,9 +76,6 @@
   .input-id {
     margin-bottom: 0;
   }
-  .pre_ace, .ace_editor {
-    height: 500px;
-  }
   .error {
     position: relative;
     padding: 8px 12px;
@@ -92,6 +98,7 @@
   import JsonForm from '../../../Common/JsonForm/JsonForm'
   import JsonEditor from '../../../Common/JsonEditor'
   import Focus from '../../../../directives/focus.directive'
+  import {SET_COLLECTION_DEFAULT_VIEW_JSON} from '../../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -119,8 +126,6 @@
         newAttributeType: 'string',
         newAttributePath: null,
         newAttributeName: null,
-        big: false,
-        showAnyway: false,
         isOpen: false,
         id: null
       }
@@ -137,6 +142,13 @@
       },
       updateValue (e) {
         this.document[e.name] = e.value
+      },
+      switchView (e) {
+        this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
+          index: this.$store.state.route.params.index,
+          collection: this.$store.state.route.params.collection,
+          jsonView: e.target.checked
+        })
       }
     }
   }

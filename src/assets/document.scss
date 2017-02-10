@@ -1,0 +1,13 @@
+.document-create-update {
+  .document-json {
+    .pre_ace, .ace_editor {
+      height: 500px;
+    }
+
+    .field-json {
+      .pre_ace, .ace_editor {
+        height: 100px;
+      }
+    }
+  }
+}
