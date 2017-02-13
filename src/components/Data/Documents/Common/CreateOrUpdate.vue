@@ -6,8 +6,15 @@
         <div class="switch right">
           <label>
             Form
-            <input type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
-            <span class="lever"></span>
+            <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
+            <span
+              class="lever"
+              v-title="{
+              active: warningSwitch,
+              position: 'bottom',
+              title: 'This object has too many levels, the view json is forced for this attribute.'
+              }">
+            </span>
             JSON
           </label>
         </div>
@@ -24,7 +31,7 @@
         <div class="row" v-if="!$store.state.collection.defaultViewJson">
           <div class="col s12 card">
             <div class="card-content">
-              <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="document">
+              <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="value">
               </json-form>
             </div>
           </div>
@@ -35,7 +42,7 @@
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
-              <json-editor id="document" class="document-json" :content="document" ref="jsoneditor"></json-editor>
+              <json-editor id="document" class="document-json" :content="jsonDocument" ref="jsoneditor" @changed="jsonChanged"></json-editor>
             </div>
           </div>
 
@@ -98,7 +105,13 @@
   import JsonForm from '../../../Common/JsonForm/JsonForm'
   import JsonEditor from '../../../Common/JsonEditor'
   import Focus from '../../../../directives/focus.directive'
+  import title from '../../../../directives/title.directive'
   import {SET_COLLECTION_DEFAULT_VIEW_JSON} from '../../../../vuex/modules/collection/mutation-types'
+//  import {hasSameSchema} from '../../../../services/collectionHelper'
+
+  // We have to init the JSON only if the data comes from the server.
+  // This flag allow to not trigger an infinite loop when the doc is updated
+  let jsonAlreadyInit = false
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -115,19 +128,17 @@
         'default': false,
         type: Boolean
       },
-      document: Object,
+      value: Object,
       getMapping: {type: Function, required: true}
     },
     directives: {
-      Focus
+      Focus,
+      title
     },
     data () {
       return {
-        newAttributeType: 'string',
-        newAttributePath: null,
-        newAttributeName: null,
-        isOpen: false,
-        id: null
+        jsonDocument: {},
+        warningSwitch: false
       }
     },
     methods: {
@@ -135,13 +146,13 @@
         this.$emit('document-create::reset-error')
       },
       create () {
-        this.$emit('document-create::create', this.document)
+        this.$emit('document-create::create', this.value)
       },
       cancel () {
         this.$emit('document-create::cancel')
       },
       updateValue (e) {
-        this.document[e.name] = e.value
+        this.$emit('input', {...this.value, [e.name]: e.value})
       },
       switchView (e) {
         this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
@@ -149,10 +160,31 @@
           collection: this.$store.state.route.params.collection,
           jsonView: e.target.checked
         })
+        this.jsonDocument = {...this.value}
       },
       updateId (e) {
-        this.document._id = e.target.value
+        this.$emit('input', {...this.value, _id: e.target.value})
+      },
+      jsonChanged (json) {
+//        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
+        this.$emit('input', {...json, _id: this.value._id})
+      },
+      initJsonDocument () {
+        if (!Object.keys(this.value).length) {
+          return
+        }
+
+        if (!jsonAlreadyInit) {
+          this.jsonDocument = {...this.value}
+          jsonAlreadyInit = true
+        }
       }
+    },
+    mounted () {
+      this.initJsonDocument()
+    },
+    watch: {
+      value: 'initJsonDocument'
     }
   }
 </script>

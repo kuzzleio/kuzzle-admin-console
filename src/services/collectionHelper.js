@@ -73,6 +73,13 @@ export const flattenObjectMapping = (mapping, path = '', level = 1) => {
   return flattenObj
 }
 
+/**
+ * Returns the schema with only one level: {a: [...], b: {c: [...]}} will returns {'a': [...], 'b.c': [...]}
+ * @param schema {Object}
+ * @param path {String}
+ * @param level {Number}
+ * @returns {Object}
+ */
 export const flattenObjectSchema = (schema, path = '', level = 1) => {
   let flattenObj = {}
 
@@ -136,6 +143,11 @@ export const castByElementId = (id, value) => {
   }
 }
 
+/**
+ * Format schema in order to be stored in Kuzzle: add the tag "fieldset" for attribute with sub properties
+ * @param schema {Object}
+ * @returns the formatted schema ready to be stored
+ */
 export const formatSchema = (schema) => {
   let formattedSchema = {}
   Object.keys(schema).map(attributeName => {
@@ -153,10 +165,22 @@ export const formatSchema = (schema) => {
   return formattedSchema
 }
 
+/**
+ * Returns the merge of mapping, schema and allowForm in order to be stored in Kuzzle
+ * @param mapping {Object}
+ * @param schema {Object}
+ * @param allowForm {Boolean}
+ * @returns {{properties: {}, _meta: {schema: *, allowForm: *}}}
+ */
 export const mergeMetaAttributes = ({mapping, schema, allowForm}) => {
   return {properties: {...mapping}, _meta: {schema, allowForm}}
 }
 
+/**
+ * Returns a cleaned mapping with only "attribute: attributeType"
+ * @param mapping {Object}
+ * @returns the cleaned mapping
+ */
 export const cleanMapping = (mapping) => {
   let _mapping = {}
 
@@ -169,4 +193,30 @@ export const cleanMapping = (mapping) => {
   })
 
   return _mapping
+}
+
+/**
+ * Returns true if there is attribute in json not present in document
+ * @param document {Object}
+ * @param schema {Object}
+ */
+export const hasSameSchema = (document, schema) => {
+  return Object.keys(document).every(attribute => {
+    return checkPathSchemaRecursive(document, schema, attribute)
+  })
+}
+
+const checkPathSchemaRecursive = (document, schema, path) => {
+  if (!_.has(schema, path)) {
+    return false
+  }
+
+  let value = _.get(schema, path)
+  if (value.properties) {
+    return Object.keys(document).every(attribute => {
+      return checkPathSchemaRecursive(document, schema, path + '.' + attribute)
+    })
+  }
+
+  return true
 }

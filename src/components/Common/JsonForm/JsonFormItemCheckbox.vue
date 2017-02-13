@@ -19,17 +19,20 @@
         value: false
       }
     },
-    watch: {
-      content (v) {
-        this.value = v
-      },
-      value () {
+    methods: {
+      initValue () {
         if (this.parent) {
           this.value = this.content[this.parent][this.name]
         } else {
           this.value = this.content[this.name]
         }
       }
+    },
+    mounted () {
+      this.initValue()
+    },
+    watch: {
+      content: 'initValue'
     }
   }
 </script>

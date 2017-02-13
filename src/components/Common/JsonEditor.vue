@@ -83,9 +83,7 @@
         this.editor.on('change', () => {
           let value = this.getJson()
           if (value) {
-            if (value.lat !== this.content.lat && value.lon !== this.content.lon) {
-              this.$emit('changed', value)
-            }
+            this.$emit('changed', value)
           }
         })
       })

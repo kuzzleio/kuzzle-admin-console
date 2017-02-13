@@ -85,7 +85,9 @@
     },
     watch: {
       step () {
-        this.$store.commit(SET_SCHEMA, this.schema)
+        if (Object.keys(this.schema).length) {
+          this.$store.commit(SET_SCHEMA, this.schema)
+        }
       },
       flattenSchema () {
         this.schema = {...this.flattenSchema}

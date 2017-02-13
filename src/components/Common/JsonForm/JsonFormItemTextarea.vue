@@ -17,7 +17,7 @@
   export default {
     name: 'JsonFormItemTextarea',
     props: {
-      content: [String, Number],
+      content: Object,
       name: String,
       type: String,
       step: Number,
@@ -32,16 +32,20 @@
     methods: {
       update (e) {
         this.$emit('update-value', {name: this.name, value: e.target.value})
-      }
-    },
-    watch: {
-      content () {
+      },
+      initValue () {
         if (this.parent) {
           this.value = this.content[this.parent][this.name]
         } else {
           this.value = this.content[this.name]
         }
       }
+    },
+    mounted () {
+      this.initValue()
+    },
+    watch: {
+      content: 'initValue'
     }
   }
 </script>

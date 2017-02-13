@@ -1,7 +1,22 @@
 <template>
   <div>
-    <span class="">{{name}}</span>
-    <json-editor :id="name" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
+    <div class="json-form">
+      <!-- For nested objects -->
+      <fieldset>
+        <legend>
+          {{name}}
+        </legend>
+
+        <div class="input-field">
+          <input id="lat" type="number" v-model="value.lat" @input="updateLocation" step="0.0000001"/>
+          <label for="lat" :class="{'active': value.lat !== null}">latitude</label>
+        </div>
+        <div class="input-field">
+          <input id="lng" type="number" v-model="value.lon" @input="updateLocation" step="0.0000001"/>
+          <label for="lng" :class="{'active': value.lon !== null}">longitude</label>
+        </div>
+      </fieldset>
+    </div>
   </div>
 </template>
 
@@ -22,24 +37,34 @@
     data () {
       return {
         value: {
-          'lat': 0,
-          'lon': 0
+          lat: null,
+          lon: null
         }
       }
     },
     methods: {
-      jsonChanged (v) {
-        this.$emit('update-value', {name: this.name, value: v})
-      }
-    },
-    watch: {
-      content () {
+      updateLocation (v) {
+        this.$emit('update-value', {name: this.name, value: this.value})
+      },
+      initValue () {
         if (this.parent) {
-          this.value = this.content[this.parent][this.name]
+          if (this.content[this.parent][this.name]) {
+            this.value.lat = this.content[this.parent][this.name].lat
+            this.value.lon = this.content[this.parent][this.name].lon
+          }
         } else {
-          this.value = this.content[this.name]
+          if (this.content[this.name]) {
+            this.value.lat = this.content[this.name].lat
+            this.value.lon = this.content[this.name].lon
+          }
         }
       }
+    },
+    mounted () {
+      this.initValue()
+    },
+    watch: {
+      content: 'initValue'
     }
   }
 </script>

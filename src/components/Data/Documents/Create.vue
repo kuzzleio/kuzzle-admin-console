@@ -14,7 +14,7 @@
       :error="error"
       :index="index"
       :collection="collection"
-      :document="document"
+      v-model="document"
       :get-mapping="getMappingDocument">
     </create-or-update>
   </div>
