@@ -6,7 +6,7 @@
         <legend>
           {{name}}
         </legend>
-        <json-form :schema="content.elements" :parent="name" :document="document"></json-form>
+        <json-form :schema="content.properties" :parent="name" :document="document" @update-value="updateNested"></json-form>
       </fieldset>
 
       <!-- Root attributes -->
@@ -24,8 +24,6 @@
   import JsonFormItemGeopoint from './JsonFormItemGeopoint'
   import JsonFormItemTextarea from './JsonFormItemTextarea'
 
-  import Vue from 'vue'
-
   export default {
     name: 'JsonForm',
     components: {
@@ -42,7 +40,7 @@
     },
     methods: {
       isNested (content) {
-        return (content.elements && Object.keys(content.elements).length)
+        return (content.properties && Object.keys(content.properties).length)
       },
       componentItem (content) {
         switch (content.tag) {
@@ -60,12 +58,10 @@
         }
       },
       update (content) {
-        if (this.parent) {
-          Vue.set(this.document, this.parent, {[content.name]: content.value})
-        } else {
-          Vue.set(this.document, content.name, content.value)
-          this.$emit('update-value', {name: content.name, value: content.value})
-        }
+        this.$emit('update-value', {name: content.name, value: content.value, parent: this.parent})
+      },
+      updateNested (content) {
+        this.$emit('update-value', {name: content.parent, value: {...this.document[content.parent], [content.name]: content.value}})
       }
     }
   }

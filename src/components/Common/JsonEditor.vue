@@ -78,7 +78,6 @@
         this.editor.getSession().setTabSize(2)
         this.editor.setReadOnly(this.readonly)
         this.editor.$blockScrolling = Infinity
-        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
         this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
         this.editor.on('change', () => {
           let value = this.getJson()

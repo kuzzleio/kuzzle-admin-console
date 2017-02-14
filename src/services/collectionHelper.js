@@ -146,7 +146,7 @@ export const castByElementId = (id, value) => {
 /**
  * Format schema in order to be stored in Kuzzle: add the tag "fieldset" for attribute with sub properties
  * @param schema {Object}
- * @returns the formatted schema ready to be stored
+ * @returns {Object} the formatted schema ready to be stored
  */
 export const formatSchema = (schema) => {
   let formattedSchema = {}
@@ -155,7 +155,6 @@ export const formatSchema = (schema) => {
 
     if (attributeName.indexOf('.') !== -1) {
       let path = attributeName.split('.')
-      _.set(formattedSchema, path[0], {tag: 'fieldset', properties: {}})
       fullPath = [path[0], 'properties', ...path.slice(1)].join('.')
     }
 

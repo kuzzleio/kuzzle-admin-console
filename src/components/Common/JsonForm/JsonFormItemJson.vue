@@ -8,6 +8,10 @@
 <script>
   import JsonEditor from '../../Common/JsonEditor'
 
+  // We have to init the JSON only if the data comes from the server.
+  // This flag allow to not trigger an infinite loop when the doc is updated
+  let jsonAlreadyInit = false
+
   export default {
     name: 'JsonFormItemJson',
     components: {
@@ -30,16 +34,27 @@
       },
       jsonChanged (v) {
         this.$emit('update-value', {name: this.name, value: v})
+        jsonAlreadyInit = true
       },
       initValue () {
-        if (this.parent) {
-          this.value = this.content[this.parent][this.name]
-        } else {
-          this.value = this.content[this.name]
+        if (!jsonAlreadyInit) {
+          if (!Object.keys(this.content).length) {
+            this.value = {}
+            return
+          }
+
+          if (this.parent) {
+            this.value = this.content[this.parent][this.name] || {}
+          } else {
+            this.value = this.content[this.name] || {}
+          }
+
+          jsonAlreadyInit = true
         }
       }
     },
     mounted () {
+      jsonAlreadyInit = false
       this.initValue()
     },
     watch: {

@@ -3,20 +3,22 @@
     <div class="card-panel">
       <form class="wrapper" @submit.prevent="create">
 
-        <div class="switch right">
-          <label>
-            Form
-            <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
-            <span
-              class="lever"
-              v-title="{
-              active: warningSwitch,
-              position: 'bottom',
-              title: 'This object has too many levels, the view json is forced for this attribute.'
-              }">
-            </span>
-            JSON
-          </label>
+        <div class="row">
+          <div class="switch right">
+            <label>
+              Form
+              <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
+              <span
+                class="lever"
+                v-title="{
+                active: warningSwitch,
+                position: 'bottom',
+                title: 'This object has too many levels, the view json is forced for this attribute.'
+                }">
+              </span>
+              JSON
+            </label>
+          </div>
         </div>
 
         <div class="row input-id" v-if="!hideId">
@@ -38,7 +40,7 @@
         </div>
 
         <!-- Json view -->
-        <div class="row" v-if="$store.state.collection.defaultViewJson">
+        <div class="row json-view" v-if="$store.state.collection.defaultViewJson">
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
@@ -168,19 +170,22 @@
       jsonChanged (json) {
 //        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
         this.$emit('input', {...json, _id: this.value._id})
+        jsonAlreadyInit = true
       },
       initJsonDocument () {
-        if (!Object.keys(this.value).length) {
-          return
-        }
-
         if (!jsonAlreadyInit) {
+          if (!Object.keys(this.value).length) {
+            this.jsonDocument = {}
+            return
+          }
+
           this.jsonDocument = {...this.value}
           jsonAlreadyInit = true
         }
       }
     },
     mounted () {
+      jsonAlreadyInit = false
       this.initJsonDocument()
     },
     watch: {

@@ -1,12 +1,21 @@
 .document-create-update {
-  .document-json {
-    .pre_ace, .ace_editor {
-      height: 500px;
-    }
+  form.wrapper {
+    padding-top: 0;
+  }
 
-    .field-json {
+  .json-view {
+    .card-content {
+      padding-top: 0;
+    }
+    .document-json {
       .pre_ace, .ace_editor {
-        height: 100px;
+        height: 500px;
+      }
+
+      .field-json {
+        .pre_ace, .ace_editor {
+          height: 100px;
+        }
       }
     }
   }
