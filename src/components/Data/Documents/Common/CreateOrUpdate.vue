@@ -3,7 +3,7 @@
     <div class="card-panel">
       <form class="wrapper" @submit.prevent="create">
 
-        <div class="row">
+        <div class="row" v-if="$store.state.collection.allowForm">
           <div class="switch right">
             <label>
               Form
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div class="row" v-if="!$store.state.collection.defaultViewJson">
+        <div class="row" v-show="isFormView">
           <div class="col s12 card">
             <div class="card-content">
               <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="value">
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Json view -->
-        <div class="row json-view" v-if="$store.state.collection.defaultViewJson">
+        <div class="row json-view" v-show="!isFormView">
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
@@ -165,11 +165,11 @@
         this.jsonDocument = {...this.value}
       },
       updateId (e) {
-        this.$emit('input', {...this.value, _id: e.target.value})
+        this.$emit('change-id', e.target.value)
       },
       jsonChanged (json) {
 //        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
-        this.$emit('input', {...json, _id: this.value._id})
+        this.$emit('input', json)
         jsonAlreadyInit = true
       },
       initJsonDocument () {
@@ -182,6 +182,11 @@
           this.jsonDocument = {...this.value}
           jsonAlreadyInit = true
         }
+      }
+    },
+    computed: {
+      isFormView () {
+        return !this.$store.state.collection.defaultViewJson && this.$store.state.collection.allowForm
       }
     },
     mounted () {

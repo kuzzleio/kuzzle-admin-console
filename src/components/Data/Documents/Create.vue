@@ -15,6 +15,7 @@
       :index="index"
       :collection="collection"
       v-model="document"
+      @change-id="updateId"
       :get-mapping="getMappingDocument">
     </create-or-update>
   </div>
@@ -51,7 +52,8 @@
     data () {
       return {
         error: '',
-        document: {}
+        document: {},
+        id: null
       }
     },
     computed: {
@@ -61,6 +63,9 @@
     },
     methods: {
       getMappingDocument,
+      updateId (id) {
+        this.id = id
+      },
       create (document) {
         this.error = ''
 
@@ -69,7 +74,7 @@
           return
         }
 
-        let id = null
+        let id = this.id
 
         if (document._id) {
           id = document._id
