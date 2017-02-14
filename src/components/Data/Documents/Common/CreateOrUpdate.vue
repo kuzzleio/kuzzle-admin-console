@@ -13,7 +13,7 @@
                 v-title="{
                 active: warningSwitch,
                 position: 'bottom',
-                title: 'This object has too many levels, the view json is forced for this attribute.'
+                title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
                 }">
               </span>
               JSON
@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <div class="row" v-show="isFormView">
+        <div class="row" v-if="isFormView">
           <div class="col s12 card">
             <div class="card-content">
               <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="value">
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Json view -->
-        <div class="row json-view" v-show="!isFormView">
+        <div class="row json-view" v-if="!isFormView">
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
@@ -109,7 +109,7 @@
   import Focus from '../../../../directives/focus.directive'
   import title from '../../../../directives/title.directive'
   import {SET_COLLECTION_DEFAULT_VIEW_JSON} from '../../../../vuex/modules/collection/mutation-types'
-//  import {hasSameSchema} from '../../../../services/collectionHelper'
+  import {hasSameSchema} from '../../../../services/collectionHelper'
 
   // We have to init the JSON only if the data comes from the server.
   // This flag allow to not trigger an infinite loop when the doc is updated
@@ -168,7 +168,7 @@
         this.$emit('change-id', e.target.value)
       },
       jsonChanged (json) {
-//        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
+        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
         this.$emit('input', json)
         jsonAlreadyInit = true
       },

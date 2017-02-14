@@ -206,13 +206,13 @@ export const hasSameSchema = (document, schema) => {
 }
 
 const checkPathSchemaRecursive = (document, schema, path) => {
-  if (!_.has(schema, path)) {
+  let pathSchema = path.split('.').join('.properties.')
+  if (!_.has(schema, pathSchema)) {
     return false
   }
 
-  let value = _.get(schema, path)
-  if (value.properties) {
-    return Object.keys(document).every(attribute => {
+  if (_.get(schema, pathSchema).properties) {
+    return Object.keys(_.get(document, path)).every(attribute => {
       return checkPathSchemaRecursive(document, schema, path + '.' + attribute)
     })
   }
