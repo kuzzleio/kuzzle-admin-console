@@ -148,7 +148,7 @@
         this.$emit('document-create::reset-error')
       },
       create () {
-        this.$emit('document-create::create', this.value)
+        this.$emit('document-create::create', {...this.value})
       },
       cancel () {
         this.$emit('document-create::cancel')

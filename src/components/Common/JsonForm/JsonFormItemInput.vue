@@ -31,7 +31,9 @@
         }
 
         if (this.parent) {
-          this.value = this.content[this.parent][this.name]
+          if (this.content[this.parent] && this.content[this.parent][this.name]) {
+            this.value = this.content[this.parent][this.name]
+          }
         } else {
           this.value = this.content[this.name]
         }
