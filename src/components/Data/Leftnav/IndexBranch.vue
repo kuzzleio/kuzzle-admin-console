@@ -16,12 +16,12 @@
          </router-link>
       </li>
       <li v-for="collectionName in orderedFilteredRealtimeCollections">
-        <router-link class="tree-item truncate"
+        <router-link class="tree-item"
            :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
           <span v-html="highlight(collectionName, filter)"></span>
-          <i class="fa fa-times remove" @click.prevent="removeRealtimeCollection(indexName, collectionName)"></i>
+          <i class="fa fa-times right remove" @click.prevent="removeRealtimeCollection(indexName, collectionName)"></i>
         </router-link>
       </li>
     </ul>

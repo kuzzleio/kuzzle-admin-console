@@ -1,5 +1,5 @@
 <template>
-  <div class="col s12 m6 l4">
+  <div class="col s12 m6 l4 collection-boxed">
     <div class="card">
       <div class="card-title row">
 
@@ -25,14 +25,14 @@
       </div>
 
       <div class="card-action right-align">
-        <router-link class="btn btn-tiny"
+        <router-link class="btn btn-small"
            v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canCreateDocument(index, collection)}"
 		       :to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
            v-if="!isRealtime && canCreateDocument(index, collection)">
           Create a document
         </router-link>
-        <router-link class="btn btn-tiny"
+        <router-link class="btn btn-small"
            v-if="isRealtime && canManageRealtime(index, collection)"
            v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canManageRealtime(index, collection)}"

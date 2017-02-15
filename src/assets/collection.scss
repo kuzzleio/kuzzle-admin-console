@@ -134,3 +134,11 @@
     }
   }
 }
+
+.collection-boxed {
+  .dropdown-content > li{
+    a.remove {
+      color: $red-color;
+    }
+  }
+}
