@@ -35,6 +35,14 @@ export const mutations = {
   [types.DELETE_INDEX] (state, index) {
     state.indexes.splice(state.indexes.indexOf(index), 1)
     delete state.indexesAndCollections[index]
+  },
+  [types.REMOVE_REALTIME_COLLECTION] (state, {index, collection}) {
+    if (!state.indexesAndCollections[index] || !state.indexesAndCollections[index].realtime) {
+      return
+    }
+
+    state.indexesAndCollections[index].realtime = state.indexesAndCollections[index].realtime
+      .filter(realtimeCollection => realtimeCollection !== collection)
   }
 }
 

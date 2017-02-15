@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'open': open || filter || forceOpen }">
+  <div :class="{ 'open': open || filter || forceOpen }" class="index-branch">
     <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch"></i>
     <router-link :to="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
        :class="{ 'active': isIndexActive(indexName) }">
@@ -21,6 +21,7 @@
            :class="{ 'active': isCollectionActive(indexName, collectionName) }">
           <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
           <span v-html="highlight(collectionName, filter)"></span>
+          <i class="fa fa-times remove" @click.prevent="removeRealtimeCollection(indexName, collectionName)"></i>
         </router-link>
       </li>
     </ul>
@@ -29,6 +30,7 @@
 
 <script>
 import orderBy from 'lodash/orderBy'
+import {REMOVE_REALTIME_COLLECTION} from '../../../vuex/modules/index/mutation-types'
 
 export default {
   props: {
@@ -121,6 +123,12 @@ export default {
       }
 
       return value
+    },
+    removeRealtimeCollection (indexName, collectionName) {
+      this.$store.dispatch(REMOVE_REALTIME_COLLECTION, {index: indexName, collection: collectionName})
+      if (this.$route.params.index === indexName && this.$route.params.collection === collectionName) {
+        this.$router.push({name: 'DataIndexSummary', params: {index: indexName}})
+      }
     }
   },
   watch: {

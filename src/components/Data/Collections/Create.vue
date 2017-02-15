@@ -18,7 +18,8 @@
   import PageNotAllowed from '../../Common/PageNotAllowed'
 
   import CreateOrUpdate from './CreateOrUpdate'
-  import {CREATE_COLLECTION, RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
+  import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
+  import {CREATE_COLLECTION_IN_INDEX} from '../../../vuex/modules/index/mutation-types'
 
   export default {
     name: 'CollectionCreate',
@@ -43,7 +44,11 @@
       create () {
         this.error = ''
 
-        this.$store.dispatch(CREATE_COLLECTION, {existingCollections: this.$store.state.index.indexesAndCollections[this.index], index: this.index})
+        this.$store.dispatch(CREATE_COLLECTION_IN_INDEX, {
+          index: this.index,
+          collection: this.$store.state.collection.name,
+          isRealtimeOnly: this.$store.state.collection.isRealtimeOnly
+        })
           .then(() => {
             this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
           })
