@@ -24,6 +24,7 @@ export const mutations = {
   [types.RESET_COLLECTION_DETAIL] (state) {
     state.name = null
     state.mapping = {}
+    state.schema = {}
     state.isRealtimeOnly = false
     state.editionStep = 1
     state.allowForm = true

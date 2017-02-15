@@ -41,7 +41,7 @@
 
         <!-- Json view -->
         <div class="row json-view" v-if="!isFormView">
-          <div class="col s6 card">
+          <div class="col s6 card" :class="{s12: $store.state.collection.isRealtimeOnly}">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
               <json-editor id="document" class="document-json" :content="jsonDocument" ref="jsoneditor" @changed="jsonChanged"></json-editor>
@@ -49,7 +49,7 @@
           </div>
 
           <!-- Mapping -->
-          <div class="col s6 card">
+          <div class="col s6 card" v-if="!$store.state.collection.isRealtimeOnly">
             <div class="card-content">
               <span class="card-title">Mapping</span>
               <json-editor id="mapping" class="document-json" :content="$store.getters.simplifiedMapping" :readonly="true"></json-editor>
