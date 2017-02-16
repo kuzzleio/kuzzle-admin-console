@@ -1,6 +1,6 @@
 <template>
   <div class="row input-field">
-    <div class="col s6">
+    <div class="col s7">
       <span class="">{{name}}</span>
       <json-editor :id="name + 'json'" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
     </div>

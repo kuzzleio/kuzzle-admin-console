@@ -326,7 +326,4 @@
       top: 10px
     }
   }
-  .pre_ace, .ace_editor {
-    height: 250px;
-  }
 </style>
