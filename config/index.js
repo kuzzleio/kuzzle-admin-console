@@ -14,7 +14,8 @@ module.exports = {
     // Before setting to `true`, make sure to:
     // npm install --save-dev compression-webpack-plugin
     productionGzip: false,
-    productionGzipExtensions: ['js', 'css']
+    productionGzipExtensions: ['js', 'css'],
+    aceWorkerJson: path.join('bower_components', 'ace-builds', 'src-min-noconflict', 'worker-json.js')
   },
   dev: {
     env: require('./dev.env'),

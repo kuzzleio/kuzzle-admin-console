@@ -17,7 +17,7 @@ rm('-rf', assetsPath)
 mkdir('-p', assetsPath)
 cp('-R', 'static/*', assetsPath)
 
-cp('-R', path.join('bower_components', 'ace-builds', 'src-min-noconflict', 'worker-json.js'), path.join(assetsPath, '..'))
+cp('-R', config.build.aceWorkerJson, path.join(assetsPath, '..'))
 
 webpack(webpackConfig, function (err, stats) {
   spinner.stop()
