@@ -71,7 +71,11 @@
           return
         }
 
-        this.$emit('input', {name: this.name, element: {...this.elementDefinition}})
+        let elementDefinition = {...this.elementDefinition}
+        if (elementDefinition.chooseValues) {
+          elementDefinition.values = this.values || []
+        }
+        this.$emit('input', {name: this.name, element: elementDefinition})
       },
       addValue (value) {
         let castValue = castByElementId(this.elementDefinition.id, value)

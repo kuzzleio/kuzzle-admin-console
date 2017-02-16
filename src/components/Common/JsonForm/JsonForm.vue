@@ -24,6 +24,7 @@
   import JsonFormItemGeopoint from './JsonFormItemGeopoint'
   import JsonFormItemTextarea from './JsonFormItemTextarea'
   import JsonFormItemSelect from './JsonFormItemSelect'
+  import JsonFormItemMultiSelect from './JsonFormItemMultiSelect'
 
   export default {
     name: 'JsonForm',
@@ -33,7 +34,8 @@
       JsonFormItemJson,
       JsonFormItemGeopoint,
       JsonFormItemTextarea,
-      JsonFormItemSelect
+      JsonFormItemSelect,
+      JsonFormItemMultiSelect
     },
     props: {
       schema: [Object, Array],
@@ -57,6 +59,8 @@
             return 'JsonFormItemTextarea'
           case 'select':
             return 'JsonFormItemSelect'
+          case 'mselect':
+            return 'JsonFormItemMultiSelect'
           default:
             return 'JsonFormItemJson'
         }

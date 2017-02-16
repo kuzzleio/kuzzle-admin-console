@@ -1,7 +1,7 @@
 <template>
   <div class="row input-field">
     <label :class="{'active': value}">{{name}}</label>
-    <m-select :value="value" @input="update" :options="options">
+    <m-select :value="castedValue" @input="update" :options="options">
       <option v-for="option in options" :key="option.id" :value="option.id">{{option.name}}</option>
     </m-select>
   </div>
@@ -9,6 +9,7 @@
 
 <script>
   import MSelect from '../../Common/MSelect'
+  import {castByElementId} from '../../../services/collectionHelper'
 
   const NULL_ID = '_NULL_'
 
@@ -40,11 +41,19 @@
               name: option
             }
           }))
+      },
+      castedValue () {
+        return String(this.value)
       }
     },
     methods: {
       update (value) {
         let _value = value === NULL_ID ? null : value
+
+        if (_value !== NULL_ID) {
+          _value = castByElementId(this.schema.id, _value)
+        }
+
         this.$emit('update-value', {name: this.name, value: _value})
       },
       initValue () {
