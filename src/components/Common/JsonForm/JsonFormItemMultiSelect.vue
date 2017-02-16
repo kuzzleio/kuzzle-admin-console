@@ -37,7 +37,7 @@
         return this.schema.values || []
       },
       valueAsArray () {
-        if (!Array.isArray(this.value)) {
+        if (this.value && !Array.isArray(this.value)) {
           return [this.value]
         }
 

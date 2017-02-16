@@ -1,7 +1,13 @@
 <template>
   <div class="row input-field">
-    <span class="">{{name}}</span>
-    <json-editor :id="name" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
+    <div class="col s6">
+      <span class="">{{name}}</span>
+      <json-editor :id="name + 'json'" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
+    </div>
+    <div class="col s5">
+      <span class="">{{name}} mapping</span>
+      <json-editor :id="name + 'mapping'" class="field-json" :content="attributeMapping" :readonly="true" ref="jsoneditor"></json-editor>
+    </div>
   </div>
 </template>
 
@@ -21,11 +27,25 @@
       content: Object,
       name: String,
       type: String,
-      parent: String
+      parent: String,
+      mapping: Object
     },
     data () {
       return {
-        value: {}
+        value: null
+      }
+    },
+    computed: {
+      attributeMapping () {
+        let _mapping = {}
+
+        if (this.parent) {
+          _mapping = this.$store.getters.simplifiedMapping[this.parent][this.name] || {}
+        } else {
+          _mapping = this.$store.getters.simplifiedMapping[this.name] || {}
+        }
+
+        return _mapping
       }
     },
     methods: {
@@ -39,14 +59,16 @@
       initValue () {
         if (!jsonAlreadyInit) {
           if (!Object.keys(this.content).length) {
-            this.value = {}
+            this.value = null
             return
           }
 
           if (this.parent) {
-            this.value = this.content[this.parent][this.name] || {}
+            if (this.content[this.parent] && this.content[this.parent][this.name]) {
+              this.value = this.content[this.parent][this.name] || null
+            }
           } else {
-            this.value = this.content[this.name] || {}
+            this.value = this.content[this.name] || null
           }
 
           jsonAlreadyInit = true

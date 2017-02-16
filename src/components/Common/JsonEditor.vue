@@ -25,7 +25,7 @@
   export default {
     name: 'JsonEditor',
     props: {
-      content: Object,
+      content: [Object, String, Number, Array],
       myclass: String,
       readonly: Boolean,
       id: String,
@@ -78,7 +78,9 @@
         this.editor.getSession().setTabSize(2)
         this.editor.setReadOnly(this.readonly)
         this.editor.$blockScrolling = Infinity
-        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
+        if (this.content !== null) {
+          this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
+        }
         this.editor.on('change', () => {
           let value = this.getJson()
           if (value) {
