@@ -33,6 +33,14 @@
           $el.material_select('destroy')
           $el.material_select()
         }, 100)
+      },
+      value () {
+        this.content = this.value
+        setTimeout(() => {
+          let $el = $(this.$refs.mselect)
+          $el.material_select('destroy')
+          $el.material_select()
+        }, 100)
       }
     },
     mounted () {

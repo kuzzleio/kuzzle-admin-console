@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="row input-field">
     <span class="">{{name}}</span>
     <json-editor :id="name" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
   </div>

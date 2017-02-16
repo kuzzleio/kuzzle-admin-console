@@ -11,7 +11,7 @@
 
       <!-- Root attributes -->
       <div class="input-field" v-else>
-        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document" :parent="parent" :type="content.type" :step="content.step" :schema="content.elements" @update-value="update"></component>
+        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document" :parent="parent" :type="content.type" :step="content.step" :schema="content" @update-value="update"></component>
       </div>
     </div>
   </div>
@@ -23,6 +23,7 @@
   import JsonFormItemJson from './JsonFormItemJson'
   import JsonFormItemGeopoint from './JsonFormItemGeopoint'
   import JsonFormItemTextarea from './JsonFormItemTextarea'
+  import JsonFormItemSelect from './JsonFormItemSelect'
 
   export default {
     name: 'JsonForm',
@@ -31,7 +32,8 @@
       JsonFormItemCheckbox,
       JsonFormItemJson,
       JsonFormItemGeopoint,
-      JsonFormItemTextarea
+      JsonFormItemTextarea,
+      JsonFormItemSelect
     },
     props: {
       schema: [Object, Array],
@@ -53,6 +55,8 @@
             return 'JsonFormItemGeopoint'
           case 'textarea':
             return 'JsonFormItemTextarea'
+          case 'select':
+            return 'JsonFormItemSelect'
           default:
             return 'JsonFormItemJson'
         }
@@ -106,7 +110,6 @@
     .input-field {
       padding-right: 80px;
       input {
-        height: 2rem;
         margin-bottom: 10px;
       }
       .select-wrapper + label {
