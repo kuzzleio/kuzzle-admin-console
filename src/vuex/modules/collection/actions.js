@@ -31,9 +31,14 @@ export default {
       })
   },
   [types.FETCH_COLLECTION_DETAIL] ({commit, getters, state, dispatch}, {index, collection}) {
-    if (!collection || state.name === collection) {
+    if (state.name === collection) {
       return Promise.resolve()
     }
+    if (!collection) {
+      commit(types.RESET_COLLECTION_DETAIL)
+      return Promise.resolve
+    }
+
     if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
       return kuzzle
         .queryPromise({
