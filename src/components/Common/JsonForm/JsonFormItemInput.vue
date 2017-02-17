@@ -1,7 +1,7 @@
 <template>
   <div class="row input-field">
     <input :type="type" :value="value" @input="update" :step="step" @focus="display = true"/>
-    <label :class="{'active': value}">{{name}}</label>
+    <label :class="{'active': value !== n}">{{name}}</label>
   </div>
 </template>
 

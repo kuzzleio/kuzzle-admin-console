@@ -1,14 +1,8 @@
 <template>
   <div class="row input-field">
     <div class="row">
-      <form class="col s12">
-        <div class="row">
-          <div class="input-field col s12">
-            <textarea @input="update" :id="name" class="materialize-textarea">{{value}}</textarea>
-            <label :for="name">{{name}}</label>
-          </div>
-        </div>
-      </form>
+      <textarea @input="update" :id="name" class="materialize-textarea">{{value}}</textarea>
+      <label :for="name">{{name}}</label>
     </div>
   </div>
 </template>

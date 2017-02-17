@@ -10,6 +10,11 @@ export const elements = {
     name: 'Textarea',
     tag: 'textarea'
   },
+  'rich-text': {
+    id: 'rich-text',
+    name: 'Rich text',
+    tag: 'rich-text'
+  },
   'select:text': {
     id: 'select:text',
     name: 'Select box with text',
@@ -110,6 +115,7 @@ export const config = {
     elements: [
       elements['input:text'],
       elements['textarea'],
+      elements['rich-text'],
       elements['select:text'],
       elements['mselect']
     ],

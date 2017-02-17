@@ -23,6 +23,7 @@
   import JsonFormItemJson from './JsonFormItemJson'
   import JsonFormItemGeopoint from './JsonFormItemGeopoint'
   import JsonFormItemTextarea from './JsonFormItemTextarea'
+  import JsonFormItemRichEditor from './JsonFormItemRichEditor'
   import JsonFormItemSelect from './JsonFormItemSelect'
   import JsonFormItemMultiSelect from './JsonFormItemMultiSelect'
 
@@ -35,7 +36,8 @@
       JsonFormItemGeopoint,
       JsonFormItemTextarea,
       JsonFormItemSelect,
-      JsonFormItemMultiSelect
+      JsonFormItemMultiSelect,
+      JsonFormItemRichEditor
     },
     props: {
       schema: [Object, Array],
@@ -61,6 +63,8 @@
             return 'JsonFormItemSelect'
           case 'mselect':
             return 'JsonFormItemMultiSelect'
+          case 'rich-text':
+            return 'JsonFormItemRichEditor'
           default:
             return 'JsonFormItemJson'
         }

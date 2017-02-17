@@ -25,7 +25,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "http-server": "0.9.0",
-    "lodash": "^4.17.2"
+    "lodash": "^4.17.2",
+    "vue-quill-editor": "^1.1.1"
   },
   "devDependencies": {
     "babel-core": "6.14.0",
