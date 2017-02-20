@@ -76,8 +76,10 @@
       }
     },
     mounted () {
-      jsonAlreadyInit = false
-      this.initValue()
+      setTimeout(() => {
+        jsonAlreadyInit = false
+        this.initValue()
+      }, 0)
     },
     watch: {
       content: 'initValue'

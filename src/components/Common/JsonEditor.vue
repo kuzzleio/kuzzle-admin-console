@@ -83,6 +83,7 @@
         }
         this.editor.on('change', () => {
           let value = this.getJson()
+
           if (value) {
             this.$emit('changed', value)
           }
