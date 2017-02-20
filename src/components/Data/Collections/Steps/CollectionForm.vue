@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper collection-form" @submit.prevent="next">
+  <div class="wrapper collection-form">
 
     <div class="row">
       <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="$store.state.collection.allowForm"/>
@@ -27,13 +27,13 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <button type="submit" class="btn primary waves-effect waves-light right">
+        <button type="submit" class="btn primary waves-effect waves-light right" @click.prevent="next">
           Save
         </button>
         <a tabindex="6" class="btn-flat waves-effect right" @click.prevent="cancel">Cancel</a>
       </div>
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
