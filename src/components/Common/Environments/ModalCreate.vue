@@ -30,7 +30,7 @@
         <div class="col s12">
           <div class="input-field left-align">
             <input id="port" type="number" v-model="environment.port" required :class="{invalid: errors.port}">
-            <label for="port" :class="{'active': environment.port}" data-error="port must be an integer between 1000 and 9999">port</label>
+            <label for="port" :class="{'active': environment.port}" data-error="port number must be an integer">port</label>
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@
     methods: {
       createEnvironments () {
         this.errors.name = (!this.environment.name)
-        this.errors.port = (!this.environment.port || this.environment.port < 1000 || this.environment.port > 9999)
+        this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
 
