@@ -8,6 +8,7 @@ import routing from './modules/common/routing/store'
 import collection from './modules/collection/store'
 import toaster from './modules/common/toaster/store'
 import index from './modules/index/store'
+import security from './modules/security/store'
 
 Vue.use(Vuex)
 
@@ -20,7 +21,8 @@ export default new Vuex.Store({
     collection,
     routing,
     toaster,
-    index
+    index,
+    security
   },
   strict: process.env.NODE_ENV !== 'production'
 })

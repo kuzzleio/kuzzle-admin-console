@@ -27,7 +27,7 @@
           <div class="col s6 card">
             <div class="card-content">
               <span class="card-title">Mapping</span>
-              <json-editor :height="400" id="mapping" class="pre_ace" :content="cleanedMapping" :readonly="true"></json-editor>
+              <json-editor :height="400" id="mapping" class="pre_ace" :content="document" :readonly="true"></json-editor>
             </div>
           </div>
         </div>

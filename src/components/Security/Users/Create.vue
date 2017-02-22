@@ -10,10 +10,9 @@
       @document-create::reset-error="error = ''"
       :mandatory-id="true"
       :error="error"
-      index="%kuzzle"
       collection="users"
-      :document="document"
-      :get-mapping="getMappingUsers">
+      v-model="document"
+      @change-id="updateId">
     </create-or-update>
   </div>
 </template>
@@ -26,7 +25,7 @@
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
-    name: 'UserCreate',
+    name: 'UsersSecurityCreate',
     components: {
       Headline,
       CreateOrUpdate
@@ -38,34 +37,27 @@
     data () {
       return {
         error: '',
-        document: {}
+        document: {},
+        id: null
       }
     },
     methods: {
       getMappingUsers,
-      create (json) {
+      create (user) {
         this.error = ''
 
-        if (!json) {
+        if (!user) {
           this.error = 'The document is invalid, please review it'
           return
         }
-        if (!json._id) {
-          this.error = 'The document must have an id'
+        if (!this.id) {
+          this.error = 'You must set an ID'
           return
-        }
-
-        let document = {...json}
-        let id = null
-
-        if (document._id) {
-          id = document._id
-          delete document._id
         }
 
         kuzzle
           .security
-          .createUserPromise(id, document)
+          .createUserPromise(this.id, user)
           .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
           .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {
@@ -78,6 +70,9 @@
         } else {
           this.$router.push({name: 'SecurityUsersList'})
         }
+      },
+      updateId (id) {
+        this.id = id
       }
     }
   }

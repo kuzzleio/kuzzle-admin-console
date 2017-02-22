@@ -130,8 +130,7 @@
         'default': false,
         type: Boolean
       },
-      value: Object,
-      getMapping: {type: Function, required: true}
+      value: Object
     },
     directives: {
       Focus,
@@ -174,13 +173,15 @@
       },
       initJsonDocument () {
         if (!jsonAlreadyInit) {
-          if (!Object.keys(this.value).length) {
-            this.jsonDocument = {}
-            return
-          }
+          if (this.value) {
+            if (!Object.keys(this.value).length) {
+              this.jsonDocument = {}
+              return
+            }
 
-          this.jsonDocument = {...this.value}
-          jsonAlreadyInit = true
+            this.jsonDocument = {...this.value}
+            jsonAlreadyInit = true
+          }
         }
       }
     },
