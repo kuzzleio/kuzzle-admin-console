@@ -2,11 +2,9 @@ import Vue from 'vue'
 const AppInjector = require('!!vue?inject!../../../../src/App')
 import { mockedComponent, mockedDirective } from '../helper'
 import store from '../../../../src/vuex/store'
-import VueRouter from 'vue-router'
 
 describe('App.vue', () => {
   let sandbox = sinon.sandbox.create()
-  // Vue.use(VueRouter)
 
   const createApp = () => {
     let App = AppInjector({
@@ -35,34 +33,6 @@ describe('App.vue', () => {
   afterEach(() => sandbox.reset())
 
   describe('Methods', () => {
-    describe('editEnvironment', () => {
-      it('should affect the props and dispatch event', () => {
-        let RootComponent = createApp()
-        let router = new VueRouter({ abstract: true })
-        router.start(RootComponent, 'body')
-        router.go('/')
-        let $vm = router.app.$refs.app
-        let $broadcast = sandbox.stub($vm, '$broadcast')
-
-        $vm.editEnvironment('toto')
-        expect($vm.environmentId).to.be.equal('toto')
-        expect($broadcast.calledWith('modal-open', 'create-env')).to.be.equal(true)
-      })
-    })
-
-    describe('deleteEnvironment', () => {
-      it('should affect the props and dispatch event', () => {
-        let RootComponent = createApp()
-        let router = new VueRouter({ abstract: true })
-        router.start(RootComponent, 'body')
-        router.go('/')
-        let $vm = router.app.$refs.app
-        let $broadcast = sandbox.stub($vm, '$broadcast')
-
-        $vm.deleteEnvironment('tata')
-        expect($vm.environmentId).to.be.equal('tata')
-        expect($broadcast.calledWith('modal-open', 'delete-env')).to.be.equal(true)
-      })
-    })
+    createApp()
   })
 })
