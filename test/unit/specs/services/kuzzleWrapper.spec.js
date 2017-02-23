@@ -1,4 +1,4 @@
-const kuzzleWrapperInjector = require('inject!../../../../src/services/kuzzleWrapper')
+const kuzzleWrapperInjector = require('inject-loader!../../../../src/services/kuzzleWrapper')
 
 let sandbox = sinon.sandbox.create()
 

@@ -1,4 +1,4 @@
-import {mergeDeep, countAttributes} from '../../../../src/services/objectHelper'
+import {mergeDeep} from '../../../../src/services/objectHelper'
 
 describe('objectHelper', () => {
   describe('mergeDeep', () => {
@@ -41,37 +41,6 @@ describe('objectHelper', () => {
           zab: 'kk'
         }
       })
-    })
-  })
-
-  describe('countAttributes', () => {
-    let object = {
-      foo: {
-        properties: {
-          bar: {
-            properties: {
-              baz: {
-                properties: {
-                  value: 'hello'
-                }
-              }
-            }
-          }
-        }
-      },
-      rab: {
-        properties: {
-          oof: {
-            properties: {
-              eulav: 'world'
-            }
-          }
-        }
-      }
-    }
-
-    it('should return the number of attribute of an object', () => {
-      expect(countAttributes(object)).to.equals(7)
     })
   })
 })

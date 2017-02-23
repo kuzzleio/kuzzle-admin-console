@@ -1,5 +1,5 @@
 import { testAction } from '../../../helper'
-const actionsInjector = require('inject!../../../../../../src/vuex/modules/common/kuzzle/actions')
+const actionsInjector = require('inject-loader!../../../../../../src/vuex/modules/common/kuzzle/actions')
 import {
   CONNECT_TO_ENVIRONMENT
   , ADD_ENVIRONMENT

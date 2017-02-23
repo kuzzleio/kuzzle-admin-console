@@ -10,7 +10,7 @@ import {
 } from '../../../../../src/vuex/modules/auth/mutation-types'
 import SessionUser from '../../../../../src/models/SessionUser'
 
-const actionsInjector = require('inject!../../../../../src/vuex/modules/auth/actions')
+const actionsInjector = require('inject-loader!../../../../../src/vuex/modules/auth/actions')
 
 describe('doLogin action', () => {
   let triggerError

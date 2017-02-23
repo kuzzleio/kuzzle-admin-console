@@ -16,10 +16,7 @@
 <script>
   import { canCreateCollection } from '../../../services/userAuthorization'
   import PageNotAllowed from '../../Common/PageNotAllowed'
-
   import CreateOrUpdate from './CreateOrUpdate'
-  import { collectionName } from '../../../vuex/modules/collection/getters'
-  import { indexesAndCollections } from '../../../vuex/modules/data/getters'
   import {CREATE_COLLECTION} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
@@ -40,12 +37,6 @@
     components: {
       CreateOrUpdate,
       PageNotAllowed
-    },
-    vuex: {
-      getters: {
-        collectionName,
-        indexesAndCollections
-      }
     },
     methods: {
       create (name, mapping, isRealtime) {

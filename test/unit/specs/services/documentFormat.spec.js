@@ -1,4 +1,4 @@
-import documentFormatInjector from 'inject!../../../../src/services/documentFormat'
+import documentFormatInjector from 'inject-loader!../../../../src/services/documentFormat'
 
 describe('documentFormat', () => {
   let documentFormat = documentFormatInjector({})
