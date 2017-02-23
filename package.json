@@ -75,7 +75,7 @@
     "karma-webpack": "^2.0.2",
     "kuzzle-sdk": "^3.2.0",
     "lolex": "^1.5.2",
-    "materialize-css": "^0.97.8",
+    "materialize-css": "0.97.6",
     "mocha": "^3.2.0",
     "moment": "^2.17.1",
     "nightwatch": "^0.9.12",
