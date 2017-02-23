@@ -54,18 +54,18 @@ describe('documentFormat', () => {
     })
 
     it('should make an object from a json', () => {
-      expect(documentFormat.getUpdatedSchema(jsonDocument)).to.deep.equals({
+      expect(documentFormat.getUpdatedSchema(jsonDocument)).to.eql({
         properties: {
-          foo: {type: 'string', val: 'bar'},
+          foo: {type: 'text', val: 'bar'},
           poo: {
-            properties: {fo: {type: 'string', val: 'poofo'}},
+            properties: {fo: {type: 'text', val: 'poofo'}},
             type: 'object',
             val: {fo: 'poofo'}
           },
           oof: {
             properties: {
               bar: {
-                properties: {baz: {type: 'string', val: 'okay'}},
+                properties: {baz: {type: 'text', val: 'okay'}},
                 type: 'object',
                 val: {baz: 'okay'}
               }
@@ -74,7 +74,7 @@ describe('documentFormat', () => {
             val: {bar: {baz: 'okay'}}
           },
           name: {
-            properties: {surname: {type: 'string', val: 'keke'}},
+            properties: {surname: {type: 'text', val: 'keke'}},
             type: 'object',
             val: {surname: 'keke'}
           }
