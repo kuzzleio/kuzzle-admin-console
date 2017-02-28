@@ -26,6 +26,7 @@ export const waitForConnected = (timeout = 1000) => {
 export const connectToEnvironment = (environment) => {
   // fix default port for users that have an old environment settings in their localStorage:
   if (environment.port === undefined) environment.port = 7512
+  if (typeof environment.ssl !== 'boolean') environment.ssl = false
 
   if (kuzzle.state === 'connected') {
     kuzzle.disconnect()
@@ -33,6 +34,7 @@ export const connectToEnvironment = (environment) => {
 
   kuzzle.host = environment.host
   kuzzle.port = environment.port
+  kuzzle.sslConnection = environment.ssl
   kuzzle.connect()
 }
 
