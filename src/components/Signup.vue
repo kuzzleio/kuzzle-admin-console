@@ -165,7 +165,7 @@
         kuzzle
           .queryPromise(
             {controller: 'security', action: 'createFirstAdmin'},
-            {_id: this.username, body: {username: this.username, password: this.password1, reset: this.reset}})
+            {_id: this.username, reset: this.reset, body: {username: this.username, password: this.password1}})
           .then(() => {
             this.$store.commit(types.SET_ADMIN_EXISTS, true)
             this.$router.push({name: 'Login'})
