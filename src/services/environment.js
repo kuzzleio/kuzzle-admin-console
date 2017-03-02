@@ -12,6 +12,7 @@ const defaultEnvironment = {
     name: 'localhost',
     host: 'localhost',
     port: 7512,
+    ssl: false,
     color: DEFAULT_COLOR
   }
 }
@@ -50,10 +51,11 @@ export const loadEnvironments = () => {
  * @param  {String} The HEX color code of the main header bar when connected.
  * @param  {String} The hostname.
  * @param  {int} The port number.
+ * @param  {boolean} ssl mode
  *
  * @return {Object} The environment object.
  */
-export const createEnvironment = (name, color, host, port) => {
+export const createEnvironment = (name, color, host, port, ssl) => {
   if (!color) {
     color = DEFAULT_COLOR
   }
@@ -62,7 +64,8 @@ export const createEnvironment = (name, color, host, port) => {
     name,
     color,
     host,
-    port
+    port,
+    ssl
   }
 
   store.dispatch(kuzzleTypes.ADD_ENVIRONMENT, {id: name, environment: newEnvironment, persist: true})
