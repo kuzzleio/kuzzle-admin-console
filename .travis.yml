@@ -24,8 +24,8 @@ before_script:
   - npm install
   - bower install --allow-root --no-interactive
 script:
-  - npm run unit
-  - npm run codecov
+#  - npm run unit
+#  - npm run codecov
   - BROWSER=firefox docker-compose -p e2e-firefox run testim
   - docker-compose -p e2e-chrome run testim
 
