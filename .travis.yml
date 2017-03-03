@@ -1,4 +1,6 @@
 sudo: false
+services:
+  - docker
 #dist: trusty
 language: node_js
 node_js:
@@ -24,6 +26,8 @@ before_script:
 script:
   - npm run unit
   - npm run codecov
+  - BROWSER=firefox docker-compose -p e2e-firefox run testim
+  - docker-compose -p e2e-chrome run testim
 
 deploy:
   provider: releases

@@ -1,0 +1,75 @@
+version: '2'
+
+services:
+  proxy:
+    image: kuzzleio/proxy
+
+  kuzzle:
+    image: kuzzleio/kuzzle
+    depends_on:
+      - proxy
+      - redis
+      - elasticsearch
+    environment:
+      - kuzzle_services__db__host=elasticsearch
+      - kuzzle_services__internalCache__node__host=redis
+      - kuzzle_services__memoryStorage__node__host=redis
+      - kuzzle_services__proxyBroker__host=proxy
+      - NODE_ENV=production
+
+  redis:
+    image: redis:3.2
+
+  elasticsearch:
+    image: elasticsearch:5.0
+
+  backoffice:
+    image: node
+    volumes:
+     - "../../:/opt/"
+    environment:
+     BACKEND_HOST: proxy
+    command: sh /opt/test/e2e/run-test.sh
+    depends_on:
+     - proxy
+    links:
+     - proxy
+
+  testim:
+    image: testim/docker-cli
+    volumes:
+      - ".:/opt/"
+    command: "--config-file /opt/config-file.js"
+    environment:
+     - BROWSER
+    depends_on:
+     - hub
+
+  hub:
+   image: selenium/hub
+   restart: always
+   environment:
+     - GRID_MAX_SESSION=50
+     - JAVA_OPTS=-Xmx8g -Xms8g
+   depends_on:
+    - backoffice
+    - chrome
+    - firefox
+
+  chrome:
+   image: testim/node-chrome
+   volumes:
+     - /dev/shm:/dev/shm
+   restart: always
+   environment:
+    HUB_PORT_4444_TCP_ADDR: hub
+    HUB_PORT_4444_TCP_PORT: 4444
+
+  firefox:
+   image: testim/node-firefox
+   volumes:
+     - /dev/shm:/dev/shm
+   restart: always
+   environment:
+    HUB_PORT_4444_TCP_ADDR: hub
+    HUB_PORT_4444_TCP_PORT: 4444

@@ -10,7 +10,7 @@ export const DEFAULT = 'default'
 const defaultEnvironment = {
   [DEFAULT]: {
     name: 'localhost',
-    host: 'localhost',
+    host: process.env.BACKEND_HOST || 'localhost',
     port: 7512,
     color: DEFAULT_COLOR
   }
