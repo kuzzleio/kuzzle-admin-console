@@ -26,7 +26,7 @@ before_script:
 script:
 #  - npm run unit
 #  - npm run codecov
-  - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
+  - npm run e2e
 
 deploy:
   provider: releases
