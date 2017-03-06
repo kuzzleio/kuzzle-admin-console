@@ -54,6 +54,8 @@ services:
      - JAVA_OPTS=-Xmx8g -Xms8g
    depends_on:
     - backoffice
+    - chrome
+    - firefox
 
   chrome:
    image: testim/node-chrome
