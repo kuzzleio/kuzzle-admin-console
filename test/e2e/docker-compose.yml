@@ -54,8 +54,6 @@ services:
      - JAVA_OPTS=-Xmx8g -Xms8g
    depends_on:
     - backoffice
-    - chrome
-    - firefox
 
   chrome:
    image: testim/node-chrome
@@ -63,8 +61,10 @@ services:
      - /dev/shm:/dev/shm
    restart: always
    environment:
-    HUB_PORT_4444_TCP_ADDR: localhost
+    HUB_PORT_4444_TCP_ADDR: hub
     HUB_PORT_4444_TCP_PORT: 4444
+   depends_on:
+    - hub
 
   firefox:
    image: testim/node-firefox
@@ -72,5 +72,7 @@ services:
      - /dev/shm:/dev/shm
    restart: always
    environment:
-    HUB_PORT_4444_TCP_ADDR: localhost
+    HUB_PORT_4444_TCP_ADDR: hub
     HUB_PORT_4444_TCP_PORT: 4444
+   depends_on:
+    - hub
