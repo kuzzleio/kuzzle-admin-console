@@ -67,7 +67,6 @@ services:
     - hub
    links:
     - hub
-    - backoffice
 
   firefox:
    image: testim/node-firefox
@@ -81,4 +80,3 @@ services:
     - hub
    links:
     - hub
-    - backoffice
