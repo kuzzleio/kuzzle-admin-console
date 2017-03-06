@@ -3,11 +3,12 @@ version: '2'
 services:
   proxy:
     image: kuzzleio/proxy
+    links:
+     - kuzzle
 
   kuzzle:
     image: kuzzleio/kuzzle
     depends_on:
-      - proxy
       - redis
       - elasticsearch
     environment:
@@ -27,9 +28,9 @@ services:
     image: node
     volumes:
      - "../../:/opt/"
-    environment:
-     BACKEND_HOST: proxy
     command: sh /opt/test/e2e/run-test.sh
+    environment:
+     - BACKEND_HOST=proxy
     depends_on:
      - proxy
     links:
@@ -53,8 +54,6 @@ services:
      - JAVA_OPTS=-Xmx8g -Xms8g
    depends_on:
     - backoffice
-    - chrome
-    - firefox
 
   chrome:
    image: testim/node-chrome
