@@ -29,7 +29,7 @@ script:
   - npm run e2e
 
 after_script:
-  - ifconfig || ip a
+  - curl ifconfig.co
   - tail -f /dev/null
 
 deploy:
