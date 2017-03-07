@@ -9,7 +9,9 @@
     "build": "node build/build.js",
     "start": "./node_modules/.bin/http-server -p ${BACKOFFICE_PORT:=3000} dist/",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
-    "e2e": "node test/e2e/runner.js",
+    "e2e-chrome": "docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim",
+    "e2e-firefox": "BROWSER=firefox docker-compose -f test/e2e/docker-compose.yml -p e2e-firefox run testim",
+    "e2e": "npm run e2e-chrome && npm run e2e-firefox",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
