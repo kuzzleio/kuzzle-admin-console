@@ -23,11 +23,21 @@ services:
   elasticsearch:
     image: elasticsearch:5.0
 
+#  backoffice:
+#    image: node
+#    volumes:
+#     - "../../:/opt/"
+#    command: sh /opt/test/e2e/run-test.sh
+#    environment:
+#     - BACKEND_HOST=proxy
+#    depends_on:
+#     - proxy
   backoffice:
-    image: node
+    image: nginx
     volumes:
-     - "../../:/opt/"
-    command: sh /opt/test/e2e/run-test.sh
+      - "../../dist:/usr/share/nginx/html"
+    ports:
+      - "3000:80"
     environment:
      - BACKEND_HOST=proxy
     depends_on:

@@ -26,6 +26,7 @@ before_script:
 script:
 #  - npm run unit
 #  - npm run codecov
+  - npm run install_deps
   - npm run e2e
 
 after_script:
