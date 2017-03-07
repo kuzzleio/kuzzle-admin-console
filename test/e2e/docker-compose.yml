@@ -36,12 +36,8 @@ services:
     image: nginx
     volumes:
       - "../../dist:/usr/share/nginx/html"
-    environment:
-     - BACKEND_HOST=proxy
     ports:
      - "80:80"
-    depends_on:
-     - kuzzle
 
   testim:
     image: testim/docker-cli
