@@ -32,6 +32,8 @@ services:
      - BACKEND_HOST=proxy
     depends_on:
      - proxy
+    ports:
+     - "3000:3000"
 
   testim:
     image: testim/docker-cli
