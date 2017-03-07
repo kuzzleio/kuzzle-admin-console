@@ -1,4 +1,4 @@
-const kuzzleWrapperInjector = require('inject!../../../../src/services/kuzzleWrapper')
+const kuzzleWrapperInjector = require('inject-loader!../../../../src/services/kuzzleWrapper')
 
 let sandbox = sinon.sandbox.create()
 
@@ -29,7 +29,7 @@ describe('Kuzzle wrapper service', () => {
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
-          dataCollectionFactory () {
+          collection () {
             return {
               search (filters, cb) {
                 if (triggerError) {
@@ -37,6 +37,15 @@ describe('Kuzzle wrapper service', () => {
                 } else {
                   cb(null, fakeResponse)
                 }
+              },
+              searchPromise () {
+                return new Promise((resolve, reject) => {
+                  if (triggerError) {
+                    reject(new Error('error'))
+                  } else {
+                    resolve(fakeResponse)
+                  }
+                })
               }
             }
           }
@@ -45,7 +54,7 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject a promise as there is no collection nor index', (done) => {
-      kuzzleWrapper.performSearch()
+      kuzzleWrapper.performSearchDocuments()
         .then(() => {})
         .catch(err => {
           expect(err.message).to.equals('Missing collection or index')
@@ -54,7 +63,7 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject a promise', (done) => {
-      kuzzleWrapper.performSearch('collection', 'index')
+      kuzzleWrapper.performSearchDocuments('collection', 'index')
         .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
@@ -64,7 +73,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should receive documents', (done) => {
       triggerError = false
-      kuzzleWrapper.performSearch('collection', 'index')
+      kuzzleWrapper.performSearchDocuments('collection', 'index')
         .then(res => {
           expect(res).to.deep.equals(fakeResponse)
           done()
@@ -74,7 +83,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should receive sorted documents with additional attributes for the sort array', (done) => {
       triggerError = false
-      kuzzleWrapper.performSearch('collection', 'index', {}, {}, [{'name.first': 'asc'}])
+      kuzzleWrapper.performSearchDocuments('collection', 'index', {}, {}, [{'name.first': 'asc'}])
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
@@ -83,7 +92,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should treat a String sort argument as the field to sort by', (done) => {
       triggerError = false
-      kuzzleWrapper.performSearch('collection', 'index', {}, {}, ['name.first'])
+      kuzzleWrapper.performSearchDocuments('collection', 'index', {}, {}, ['name.first'])
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()

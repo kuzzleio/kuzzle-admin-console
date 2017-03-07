@@ -27,11 +27,22 @@
       </div>
 
       <div class="row">
-        <div class="col s12">
+        <div class="col s6">
           <div class="input-field left-align">
             <input id="port" type="number" v-model="environment.port" required :class="{invalid: errors.port}">
-            <label for="port" :class="{'active': environment.port}" data-error="port must be an integer between 1000 and 9999">port</label>
+            <label for="port" :class="{'active': environment.port}" data-error="port number must be an integer">Port</label>
           </div>
+        </div>
+        <div class="col s6">
+          <div class="input-field left-align">
+            <input id="ssl" type="checkbox" v-model="environment.ssl">
+            <label for="ssl">use SSL</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s12">
         </div>
       </div>
 
@@ -84,6 +95,9 @@
         background-color: #EEE;
       }
     }
+  }
+  .row {
+    margin-bottom: 5px;
   }
   .last-row {
     margin-bottom: 5px;
@@ -152,7 +166,7 @@
     methods: {
       createEnvironments () {
         this.errors.name = (!this.environment.name)
-        this.errors.port = (!this.environment.port || this.environment.port < 1000 || this.environment.port > 9999)
+        this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
 
@@ -164,7 +178,8 @@
                 name: this.environment.name,
                 color: this.environment.color,
                 host: this.environment.host,
-                port: this.environment.port
+                port: this.environment.port,
+                ssl: this.environment.ssl
               }
             })
           } else {
@@ -172,7 +187,8 @@
               this.environment.name,
               this.environment.color,
               this.environment.host,
-              this.environment.port)
+              this.environment.port,
+              this.environment.ssl)
           }
 
           this.close()
@@ -189,11 +205,13 @@
           this.environment.host = this.environments[this.environmentId].host
           this.environment.port = this.environments[this.environmentId].port
           this.environment.color = this.environments[this.environmentId].color
+          this.environment.ssl = this.environments[this.environmentId].ssl
         } else {
           this.environment.name = null
           this.environment.host = null
           this.environment.port = 7512
           this.environment.color = DEFAULT_COLOR
+          this.environment.ssl = false
         }
       }
     }

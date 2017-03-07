@@ -1,5 +1,5 @@
 // import Promise from 'bluebird'
-// const environmentInjector = require('inject!../../../../src/services/environment')
+// const environmentInjector = require('inject-loader!../../../../src/services/environment')
 // let sandbox = sinon.sandbox.create()
 // let environment
 // let dummyEnvironments = {
