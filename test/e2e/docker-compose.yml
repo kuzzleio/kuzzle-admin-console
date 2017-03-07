@@ -3,14 +3,13 @@ version: '2'
 services:
   proxy:
     image: kuzzleio/proxy
-    links:
-     - kuzzle
 
   kuzzle:
     image: kuzzleio/kuzzle
     depends_on:
       - redis
       - elasticsearch
+      - proxy
     environment:
       - kuzzle_services__db__host=elasticsearch
       - kuzzle_services__internalCache__node__host=redis
@@ -32,8 +31,6 @@ services:
     environment:
      - BACKEND_HOST=proxy
     depends_on:
-     - proxy
-    links:
      - proxy
 
   testim:
