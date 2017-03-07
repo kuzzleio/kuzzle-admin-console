@@ -3,6 +3,8 @@ version: '2'
 services:
   proxy:
     image: kuzzleio/proxy
+    depends_on:
+     - kuzzle
 
   kuzzle:
     image: kuzzleio/kuzzle
@@ -38,6 +40,8 @@ services:
       - "../../dist:/usr/share/nginx/html"
     environment:
      - BACKEND_HOST=proxy
+    ports:
+     - "80:80"
     depends_on:
      - proxy
 
