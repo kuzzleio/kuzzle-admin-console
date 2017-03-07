@@ -3,8 +3,6 @@ version: '2'
 services:
   proxy:
     image: kuzzleio/proxy
-    depends_on:
-     - kuzzle
 
   kuzzle:
     image: kuzzleio/kuzzle
@@ -43,7 +41,7 @@ services:
     ports:
      - "80:80"
     depends_on:
-     - proxy
+     - kuzzle
 
   testim:
     image: testim/docker-cli
