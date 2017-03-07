@@ -36,8 +36,6 @@ services:
     image: nginx
     volumes:
       - "../../dist:/usr/share/nginx/html"
-    ports:
-      - "3000:80"
     environment:
      - BACKEND_HOST=proxy
     depends_on:
