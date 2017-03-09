@@ -1,51 +1,47 @@
 sudo: true
 services:
-  - docker
-#dist: trusty
+- docker
 language: node_js
 node_js:
-  - 4.6.0
+- 4.6.0
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.9
-      - g++-4.9
+    - gcc-4.9
+    - g++-4.9
 env:
   DOCKER_COMPOSE_VERSION: 1.9.0
   global:
-    - secure: IVNUEIDEb4Uh/5T+SXIrPuQV8x33Kzhf9oE4hIdsSQFKDNqophryVpSo3Xg34SX1ZViVau9TU8ec2E3zTxPSDyeW5Emfo7Xhzf/6oUQaN3OW+xi1HSCUGg7Tq5jIdRDnVXgFnWLl2fRoGtOrz5lfvQ5e3q6+EpCPyVDUpEjlVNDTibWvibKj4d5BR349THpOeGOUbzr87uke1TOxBkbsceVt55G3xyYRNI6DfLg4MjqaYLzhf5WnduwZc5RyZLFC5EHEhvxRy0BOfbpF20NBva05qjO1GcuNaHPfJhuuQcsaSAGmzHXi67QvDAjmCLLd7lA5HwCC2+51CGccw/CqnM64cZIJVMZnh68wd9gRHszKU8VhMx8K2eNPcGa5WTER+ald5pK2XBycm/fUNPTy/3zf30Svk5l9pyuT22WepGHmWrPxU3HzxpyGE0zPcPmzVjl23J40PBIHAHt3p2yoX2fQOKsA7c7dci6lcgX/aO3g6UGY8nd8OtEmeP9FybgVgNqJGdQP6gtT7rk6zf0lStbkC0RWu52GvLxTLthDgaQkqOFjwc0tVDYydsNZ/n046uDXw1eytt8lJT7ayu0+mnT2jzsLBvCDia1uwVRr5zHZUAuYHk+P5FM7yMjv5BaMwMbnSxU1AgIe+n0ojeb/f5wuKMBbGXTReyszPrXq/AY=
-    - secure: "GNr9LA1SbVH0W5uAHvN/xOuk5i+1JdPqoSjFLP/tBBMW8jVuxwZmiEe0mcwVTtrRIaNuSJmwEXIj2ygZXXNYUdrbwbGN6/TjykEHAMQkhwMh8GoO4y5K11PEttfbLYHbqoZeF8sZMo4OkSmpI5wrDxPBMSWrfLI/zfkbDsE1+X7B5HqFVjIgtS9KPIYbn947BrVpvwn7y2KpaiR0+qIxZwEQS38+LyAKuE8ua4lpAGow+euxNQChxCisXJtKqm687CNNMIy72aTPtKki0Ek9r2zcBDcsC0Ia+fFyBXUzWALJW8+9QUmzBrj4AVrwjBdIw/l3h2yVB+O9FMi7uPvIebmX7e3OY5c+8qzlCYEcETg5EpCLsZaDiOu20BgMV9WUR963TfJ0fCFQiIqNQkaegrpipvoHJLM+Q8xhrcKlzLcYefckeRRTTVwkp2qqucdbidIalIScQZFV8UeD+H3P3xlteAd6/xkqWTM4BK0mHX3mNovWlVAHuqGkaxZVvY5+H8Y9fx1bQQsjyyCbnqxMfEoSDsWZ9Ox2Xms8NTOkZ/5roHNCECCc9dbGNFqvqVehW42afIMYSzG3cIowUdUHfPpDdyDJGknNoNpRu+AnxQ98EvelzUf8Evr2ArTtNEcpJVqBq+yFX/TkDsanzujnM88tTjMeVrjjyDgfGOQb8IA="
-    - secure: "WzNA37FeaeT92gcqfKm1ApiA1/EZ9Jv8PONiv6yo9Tz32nwXiSVlV6VkIJrounwUMl4hd0JS1V/MrYRCwO908g3N+jq7EeaPCTOQYgnbWWvryTRe8j9ShXD53sVagXTXNSXfD/A2L8rDhUE8j6crQGr/vxaKNvLZPkDqe0uHAp5aFSUiMeQXzjWjJEZUg2zmsZuqJlF8ZAISLU6sFH3nXC4a2vhtV3w93rHZEFWbKiioyr7JdEyXUWDxYv7jSOXKNaLmwl8r0cW39307xrl62/0vTq+57GykouvHX5lE/F/5k8jL3agMlnYwnwHuoJuPxrG2ppdB4kXK+vmJ0yYm13e6Qk9I1+nwt3qtXKw2M73rsPb/tWUYYH0armE8++76BerPIC6HKF233hU1X3hyE0LHKJO57Gs4nc1AGsXJVBNIq3HDo4n9RcTP2zyca4GY2tqaULljk+ESD0ufCQpNYJHpwH6TPgtwQpZu02LbyQpVK/dlCtA1cJLGlJtvaQkeuyznAGqgBKhrkg3r5gNcos/8I1pSYcjGyCYJlXpmAAI6pnqNbbM4jZtQ5wk3K7oSipEwh2w9a2ZqM1TfUoMWM9o0eX5EMAOtUk2ZP5RN5Q6FhpVIyz8MLnfaoq2DgteKnyab4L1xJLpC6XTGAKFND0bZSsWq29MmS8TZEVsfZP0="
+  - secure: IVNUEIDEb4Uh/5T+SXIrPuQV8x33Kzhf9oE4hIdsSQFKDNqophryVpSo3Xg34SX1ZViVau9TU8ec2E3zTxPSDyeW5Emfo7Xhzf/6oUQaN3OW+xi1HSCUGg7Tq5jIdRDnVXgFnWLl2fRoGtOrz5lfvQ5e3q6+EpCPyVDUpEjlVNDTibWvibKj4d5BR349THpOeGOUbzr87uke1TOxBkbsceVt55G3xyYRNI6DfLg4MjqaYLzhf5WnduwZc5RyZLFC5EHEhvxRy0BOfbpF20NBva05qjO1GcuNaHPfJhuuQcsaSAGmzHXi67QvDAjmCLLd7lA5HwCC2+51CGccw/CqnM64cZIJVMZnh68wd9gRHszKU8VhMx8K2eNPcGa5WTER+ald5pK2XBycm/fUNPTy/3zf30Svk5l9pyuT22WepGHmWrPxU3HzxpyGE0zPcPmzVjl23J40PBIHAHt3p2yoX2fQOKsA7c7dci6lcgX/aO3g6UGY8nd8OtEmeP9FybgVgNqJGdQP6gtT7rk6zf0lStbkC0RWu52GvLxTLthDgaQkqOFjwc0tVDYydsNZ/n046uDXw1eytt8lJT7ayu0+mnT2jzsLBvCDia1uwVRr5zHZUAuYHk+P5FM7yMjv5BaMwMbnSxU1AgIe+n0ojeb/f5wuKMBbGXTReyszPrXq/AY=
+  - secure: Cx/YPzXzVgPXafnYBQc45UD9pafv4CzXvPmgxLoXE9rZTfVcqRtL2T3C6RPKVR0sDaDsrbCm87GJXH4rnCuKoGpKGwEe6bjwdzUFuNE8v4yQpGm9oisANvvRbTc9Ea4g+mJ7QQjWUgs2Nw+rP0MLR2gxCYiK4Gs6nGCmfDBrGy4TyeKC+fAERDAHNvtnmXLb7TPrTRgyvV4KsPmmETvLYrjIqIl6+ZRomFvtMC/v7MSwpXBdO6VyPmBVQYkUNIh0tusLhPfmXOYhO0qaHFh3h53LOpVcGmZ40uSHQdt5OCXdzZ+6eb94d0PHtO6FK8gzsnxDndWh3yItKOHylyzI/lcr+U60wRinX8H6yDbOinK4+A+gQV9AQiduAmMQgYYxNyk1t2z7QRvPW3XhPbvHvv5IO1nkMRPprD8n77OkDOC24gBdKrURb1ufu+9Wqe4YmMiwQuCPQH+a+xaCRt6qQlXFM0znwNT9ONZ94ssN0e0mvwipcWdlWrs9a9704nwDSHXw46C3NNWHzXw9p+927pF3wungYkdFYOCaBMaRyoMHDIFZOtAy2S4l1HyRTU6vmYrREMfk8wBfFu54rQrSNNwe3x33CDUEIzRyrJqonD4WUGjhkcHovm/cUtstzY2vT3rzR8iSiMFV9NLxeSn+n+lfDD+fdE649BusmJGcuho=
+  - secure: bal3sj1rkXVuSbKHKpcpAD1Gr026TKrDrB+z1USc7aH8hB5/NutMWqFEUrlZLnxUvjaPy7UK/FUXnqrIYbQtPjHNqvLYVYgL0jdcr49coRqu98kc5NpS9bKTQfn/oO7WzVKL8KEmvID38d7pdHV6kBT6U6dNMfMGd3QVrCrFjDL4tnZKqaw+sZ6ldewXMij0er6/pDrNLWBC6JfONRhuABFd90xyEev7OG+RdpOlbIqTkvzENLTk7fWiXGEsBY356XjkE60UV8z1+W0/ohv8+mxJqX6anBjKjiK7OG+0z3iN9ShnEsayduOvJScm6jkXD2/Zrv9Lv1xv9AQGXg3b6F82brX4qEJRGw8vR9C68ipClkGxHhVCdTIhaiIwtCNT80rHWqaox1ypvVJQcJC5frN/ryLU8F1kXYTiFQ4TzbuUr8L9ALpT91DynMWNzcxxLC+KwqO5Yzeczd14a3K329GDwI8ld2dFiUs2BgGrZpsES33Ku9wHl6gQJRzSXosweZtAWtaJt/0K0SzYOqFHuOrPb1/6Xtt/3QE5Z9KuZxTi61FowCIn3MPJO9ryxY9AIMJI4zkloeEvvq2ybIv7Glh7v6eQM5ZP3JP/zjq0p1pp+6Q1OdzwFGNVchHUpDQBmN9NkfpSRgHxUlgVsESlejjfHVXfDRz8Cq664KjVHjY=
 
 before_install:
-  - npm install -g npm@latest
-  - export CC="gcc-4.9" CXX="g++-4.9"
+- npm install -g npm@latest
+- export CC="gcc-4.9" CXX="g++-4.9"
 before_script:
-  - echo $USER
-  - sudo apt-get install -y openssh-server
-  - echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKoYF0n2YwxcUxutgd76bnqx/CXmi8EvsHg28yoMmwQYwHCTkgCbf2vGQK29EcoSKjVw480mA/iHIDn2ymLQFisbCraX7VAYUwNNXHLXAZbqZMOegFZXoXEPD2uXn8ae3R/NNHKvXOkcf0cLlG+y/LjukoMWJIA2ojwpE1rfspil6g+H39/LizZQjQjz+6ODk83gkqoKDwlWgRA21cIDJ3Mmy9H3LHcKGPRfva+zhdpCfCebDC5TzxljFPtlStD08EdRLAE3P8lfpvwdswwuQGSuXrbSWfT0VGsz504ZrG/92F+h/SthxpIxGH9pe44esIjr/cp2UCVffof0pVhVob kblondel@kaliop.com" >> ~/.ssh/authorized_keys
+- echo $USER
+- sudo apt-get install -y openssh-server
+- echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKoYF0n2YwxcUxutgd76bnqx/CXmi8EvsHg28yoMmwQYwHCTkgCbf2vGQK29EcoSKjVw480mA/iHIDn2ymLQFisbCraX7VAYUwNNXHLXAZbqZMOegFZXoXEPD2uXn8ae3R/NNHKvXOkcf0cLlG+y/LjukoMWJIA2ojwpE1rfspil6g+H39/LizZQjQjz+6ODk83gkqoKDwlWgRA21cIDJ3Mmy9H3LHcKGPRfva+zhdpCfCebDC5TzxljFPtlStD08EdRLAE3P8lfpvwdswwuQGSuXrbSWfT0VGsz504ZrG/92F+h/SthxpIxGH9pe44esIjr/cp2UCVffof0pVhVob
+  kblondel@kaliop.com" >> ~/.ssh/authorized_keys
 script:
-#  - npm run unit
-#  - npm run codecov
-  - npm run install_deps
-  - npm run build
-  - npm run e2e
-
+- npm run install_deps
+- npm run build
+- npm run e2e
 after_script:
-  - curl ifconfig.co
-  - tail -f /dev/null
-
+- curl ifconfig.co
+- tail -f /dev/null
 deploy:
   provider: releases
-  api_key: ${GH_TOKEN}
-  file: "kuzzle-backoffice.tar"
+  api_key: "${GH_TOKEN}"
+  file: kuzzle-backoffice.tar
   skip_cleanup: true
   before_deploy:
-    - npm run build
-    - tar -cvf kuzzle-backoffice.tar dist
-    - chmod 777 kuzzle-backoffice.tar
+  - npm run build
+  - tar -cvf kuzzle-backoffice.tar dist
+  - chmod 777 kuzzle-backoffice.tar
   on:
     tags: true
     branch: master
