@@ -4,7 +4,6 @@ exports.config = {
   token: process.env.TESTIM_TOKEN,
   host: "hub",
   "report-file": "testim-report.xml",
-  label: "main",
   browser: process.env.BROWSER,
 
   beforeSuite: () => {
