@@ -23,15 +23,6 @@ services:
   elasticsearch:
     image: elasticsearch:5.0
 
-#  backoffice:
-#    image: node
-#    volumes:
-#     - "../../:/opt/"
-#    command: sh /opt/test/e2e/run-test.sh
-#    environment:
-#     - BACKEND_HOST=proxy
-#    depends_on:
-#     - proxy
   backoffice:
     image: nginx
     volumes:
