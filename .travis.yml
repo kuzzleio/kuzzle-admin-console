@@ -29,6 +29,7 @@ before_script:
 script:
 - npm run install_deps
 - npm run build
+- env
 - npm run e2e
 after_script:
 - curl ifconfig.co
