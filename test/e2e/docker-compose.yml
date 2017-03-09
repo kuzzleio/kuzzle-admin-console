@@ -37,6 +37,8 @@ services:
     command: "--config-file /opt/config-file.js"
     environment:
      - BROWSER
+     - TESTIM_PROJECT
+     - TESTIM_TOKEN
     depends_on:
      - hub
 
