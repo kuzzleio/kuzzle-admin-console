@@ -21,18 +21,11 @@ env:
 before_install:
 - npm install -g npm@latest
 - export CC="gcc-4.9" CXX="g++-4.9"
-before_script:
-- echo $USER
-- sudo apt-get install -y openssh-server
-- echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKoYF0n2YwxcUxutgd76bnqx/CXmi8EvsHg28yoMmwQYwHCTkgCbf2vGQK29EcoSKjVw480mA/iHIDn2ymLQFisbCraX7VAYUwNNXHLXAZbqZMOegFZXoXEPD2uXn8ae3R/NNHKvXOkcf0cLlG+y/LjukoMWJIA2ojwpE1rfspil6g+H39/LizZQjQjz+6ODk83gkqoKDwlWgRA21cIDJ3Mmy9H3LHcKGPRfva+zhdpCfCebDC5TzxljFPtlStD08EdRLAE3P8lfpvwdswwuQGSuXrbSWfT0VGsz504ZrG/92F+h/SthxpIxGH9pe44esIjr/cp2UCVffof0pVhVob
-  kblondel@kaliop.com" >> ~/.ssh/authorized_keys
+
 script:
 - npm run install_deps
 - npm run build
-- npm run e2e
-after_script:
-- curl ifconfig.co
-- tail -f /dev/null
+- npm run e2e-chrome
 deploy:
   provider: releases
   api_key: "${GH_TOKEN}"
