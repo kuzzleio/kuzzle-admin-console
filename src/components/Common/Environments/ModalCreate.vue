@@ -166,7 +166,7 @@
     methods: {
       createEnvironments () {
         this.errors.name = (!this.environment.name)
-        this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
+        // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
 
