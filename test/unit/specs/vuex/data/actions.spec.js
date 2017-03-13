@@ -131,7 +131,7 @@ describe('Data module', () => {
 
     const actions = actionsInjector({
       '../../../services/kuzzle': {
-        dataCollectionFactory () {
+        collection () {
           return {
             getMapping: (cb) => {
               if (triggerError) {

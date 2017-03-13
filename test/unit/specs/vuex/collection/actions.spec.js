@@ -20,12 +20,12 @@ describe('Collections module', () => {
     let triggerError
     let actions = actionsInjector({
       '../../../services/kuzzle': {
-        dataCollectionFactory: () => {
+        collection: () => {
           return {
             create: cb => {
               cb()
             },
-            dataMappingFactory: () => {
+            collectionMapping: () => {
               return {
                 applyPromise: () => {
                   if (triggerError) {

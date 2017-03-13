@@ -4,7 +4,8 @@ const {
   RESET,
   ADD_ENVIRONMENT,
   UPDATE_ENVIRONMENT,
-  DELETE_ENVIRONMENT
+  DELETE_ENVIRONMENT,
+  SET_ERROR_FROM_KUZZLE
 } = mutations
 
 let state
@@ -44,11 +45,11 @@ describe('kuzzle environments mutations test', () => {
 
   describe('ADD_ENVIRONMENT', () => {
     it('should not add a falsy environment', () => {
-      expect(ADD_ENVIRONMENT.bind(this, state, 'valid', null)).to.throw(Error)
+      expect(ADD_ENVIRONMENT.bind(this, state, false)).to.throw(Error)
     })
 
     it('should not overwrite an existing environment', () => {
-      expect(ADD_ENVIRONMENT.bind(this, state, 'valid', {})).to.throw(Error)
+      expect(ADD_ENVIRONMENT.bind(this, state, {environment: {}, id: 'valid'})).to.throw(Error)
     })
 
     it('should create a new environment', () => {
@@ -88,6 +89,13 @@ describe('kuzzle environments mutations test', () => {
     it('should delete an existing environment', () => {
       DELETE_ENVIRONMENT(state, 'valid')
       expect(state.environments).to.not.have.property('valid')
+    })
+  })
+
+  describe('SET_ERROR_FROM_KUZZLE', () => {
+    it('should set an error', () => {
+      SET_ERROR_FROM_KUZZLE(state, 'error')
+      expect(state.errorFromKuzzle).to.equals('error')
     })
   })
 })

@@ -15,11 +15,11 @@ describe('List getters tests', () => {
 
   describe('sorting tests', () => {
     it('should return null if sorting is undefined', () => {
-      expect(sorting({route: {query: {}}})).to.be.null
+      expect(sorting({route: {query: {}}}, {}, {route: {query: {}}})).to.be.null
     })
 
     it('should return an empty array if sorting is not JSON', () => {
-      expect(sorting({route: {query: {sorting: 'not a json'}}})).to.deep.equals([])
+      expect(sorting({route: {query: {sorting: 'not a json'}}}, {}, {route: {query: {sorting: 'fake'}}})).to.deep.equals([])
     })
   })
 })
