@@ -36,9 +36,6 @@ describe('objectHelper', () => {
             one: 'one',
             two: 'two'
           }
-        },
-        baz: {
-          zab: 'kk'
         }
       })
     })

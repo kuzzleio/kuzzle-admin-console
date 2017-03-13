@@ -130,30 +130,26 @@ describe('Kuzzle wrapper service', () => {
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
-          dataCollectionFactory () {
-            return {
-              deleteDocument (filters, cb) {
-                if (triggerError) {
-                  cb(new Error('error'))
-                } else {
-                  cb(null)
-                }
-              }
+          queryPromise () {
+            if (triggerError) {
+              return Promise.reject(new Error('error'))
+            } else {
+              return Promise.resolve()
             }
           },
-          refreshIndex (index, cb) {
-            cb()
+          refreshIndex (index) {
+            return Promise.resolve()
           }
         }
       })
     })
 
     it('should do nothing if there is no ids nor index and collection', () => {
-      kuzzleWrapper.deleteDocuments()
+      kuzzleWrapper.performDeleteDocuments()
     })
 
     it('should reject a promise', (done) => {
-      kuzzleWrapper.deleteDocuments('index', 'collection', [42])
+      kuzzleWrapper.performDeleteDocuments('index', 'collection', [42])
         .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
@@ -163,7 +159,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should delete a document and refresh the index, then resolve a promise', (done) => {
       triggerError = false
-      kuzzleWrapper.deleteDocuments('index', 'collection', [42])
+      kuzzleWrapper.performDeleteDocuments('index', 'collection', [42])
         .then(() => {
           done()
         })
@@ -240,7 +236,7 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      let store = { store: 'mystore' }
+      let store = {state: {kuzzle: {}}, commit: sandbox.stub()}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
       expect(removeAllListeners.calledWith('queryError'))

@@ -2,7 +2,6 @@ import * as types from './mutation-types'
 import * as authTypes from '../../auth/mutation-types'
 import { LAST_CONNECTED, persistEnvironments } from '../../../../services/environment'
 import { waitForConnected, connectToEnvironment } from '../../../../services/kuzzleWrapper'
-import kuzzle from '../../../../services/kuzzle'
 
 export default {
   [types.SET_CONNECTION] ({commit}, id) {
@@ -30,13 +29,7 @@ export default {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     persistEnvironments(state.environments)
   },
-  [types.FETCH_SERVER_INFO] ({commit}) {
-    return kuzzle.getServerInfoPromise()
-      .then((res) => {
-        commit(types.SET_STORAGE_ENGINE_VERSION, res.services.storageEngine.api)
-      })
-  },
-  [types.SWITH_ENVIRONMENT] ({commit, state, dispatch}, id) {
+  [types.SWITCH_ENVIRONMENT] ({commit, state, dispatch}, id) {
     if (!id) {
       throw new Error(`cannot switch to ${id} environment`)
     }
@@ -62,7 +55,6 @@ export default {
 
             return
           })
-          .then(() => dispatch(types.FETCH_SERVER_INFO))
       })
   }
 }

@@ -73,7 +73,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.26",
     "karma-webpack": "^2.0.2",
-    "kuzzle-sdk": "3.4.1",
+    "kuzzle-sdk": "git://github.com/kuzzleio/sdk-javascript.git#bufferutil-utf8validate-as-peerdeps",
     "lolex": "^1.5.2",
     "materialize-css": "0.97.6",
     "mocha": "^3.2.0",

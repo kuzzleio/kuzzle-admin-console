@@ -41,13 +41,6 @@ export const mutations = {
     }
     state.connectedTo = id
   },
-  [types.SET_STORAGE_ENGINE_VERSION] (state, version) {
-    if (!state.connectedTo || !state.environments[state.connectedTo]) {
-      return
-    }
-
-    state.environments[state.connectedTo].storageEngineVersion = version
-  },
   [types.SET_ERROR_FROM_KUZZLE] (state, isOnError) {
     state.errorFromKuzzle = isOnError
   },
