@@ -93,7 +93,7 @@
           .then(() => {
             return kuzzle
               .collection(this.collection, this.index)
-              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), json, {refresh: 'wait_for'})
+              .replaceDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), json, {refresh: 'wait_for'})
               .then(() => {
                 this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
               })
