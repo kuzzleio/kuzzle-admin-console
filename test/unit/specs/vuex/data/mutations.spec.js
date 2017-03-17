@@ -1,6 +1,8 @@
 import { mutations } from '../../../../../src/vuex/modules/data/store'
 
 const {
+  ADD_NOTIFICATION,
+  EMPTY_NOTIFICATION,
   ADD_INDEX,
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
@@ -8,9 +10,30 @@ const {
   RECEIVE_MAPPING,
   SET_PARTIAL_TO_DOCUMENT,
   SET_NEW_DOCUMENT,
-  UNSET_NEW_DOCUMENT } = mutations
+  UNSET_NEW_DOCUMENT,
+  DELETE_INDEX} = mutations
 
 describe('Data mutation', () => {
+  describe('ADD_NOTIFICATION', () => {
+    it('should add a notification to the notifications array', () => {
+      let state = {
+        notifications: []
+      }
+
+      ADD_NOTIFICATION(state, {test: true})
+      expect(state.notifications).to.deep.equals([{test: true}])
+    })
+  })
+  describe('EMPTY_NOTIFICATION', () => {
+    it('should empty the notifications array', () => {
+      let state = {
+        notifications: [{test: true}]
+      }
+
+      EMPTY_NOTIFICATION(state)
+      expect(state.notifications).to.be.empty
+    })
+  })
   describe('ADD_INDEX test', () => {
     it('should add the index with an empty collection set', () => {
       let state = {
@@ -28,36 +51,37 @@ describe('Data mutation', () => {
   })
 
   describe('ADD_STORED_COLLECTION test', () => {
-    it('should add a stored collection', () => {
-      let state = {
+    let state
+    beforeEach(() => {
+      state = {
+        indexes: ['foo'],
         indexesAndCollections: {
-          oof: {
-
-          },
           foo: {
             stored: [],
             realtime: []
           }
         }
       }
+    })
 
+    it('should add a stored collection', () => {
+      ADD_STORED_COLLECTION(state, {index: 'foo2', name: 'bar'})
+      expect(state.indexesAndCollections['foo2']).to.deep.equal({stored: ['bar'], realtime: []})
+      expect(state.indexes).to.deep.equals(['foo', 'foo2'])
+    })
+
+    it('should not add a stored collection if it already exists', () => {
       ADD_STORED_COLLECTION(state, {index: 'foo', name: 'bar'})
       expect(state.indexesAndCollections['foo']).to.deep.equal({stored: ['bar'], realtime: []})
     })
 
     it('should add a realtime collection', () => {
-      let state = {
-        indexesAndCollections: {
-          oof: {
+      ADD_REALTIME_COLLECTION(state, {index: 'foo2', name: 'bar'})
+      expect(state.indexesAndCollections['foo2']).to.deep.equal({stored: [], realtime: ['bar']})
+      expect(state.indexes).to.deep.equals(['foo', 'foo2'])
+    })
 
-          },
-          foo: {
-            stored: [],
-            realtime: []
-          }
-        }
-      }
-
+    it('should not add a realtime collection if it already exists', () => {
       ADD_REALTIME_COLLECTION(state, {index: 'foo', name: 'bar'})
       expect(state.indexesAndCollections['foo']).to.deep.equal({stored: [], realtime: ['bar']})
     })
@@ -107,6 +131,23 @@ describe('Data mutation', () => {
 
       UNSET_NEW_DOCUMENT(state)
       expect(state.newDocument).to.deep.equals({})
+    })
+  })
+
+  describe('DELETE_INDEX', () => {
+    it('should delete an index from the store', () => {
+      let state = {
+        indexes: ['foo'],
+        indexesAndCollections: {
+          foo: {
+            stored: [],
+            realtime: []
+          }
+        }
+      }
+
+      DELETE_INDEX(state, 'foo')
+      expect(state.indexesAndCollections).to.deep.equal({})
     })
   })
 })

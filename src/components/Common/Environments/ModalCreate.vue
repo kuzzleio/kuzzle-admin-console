@@ -27,20 +27,22 @@
       </div>
 
       <div class="row">
-        <div class="col s12">
+        <div class="col s6">
           <div class="input-field left-align">
-            <input id="ioport" type="number" v-model="environment.ioPort" required :class="{invalid: errors.ioPort}">
-            <label for="ioport" :class="{'active': environment.ioPort}" data-error="ioPort must be an integer between 1000 and 9999">ioPort</label>
+            <input id="port" type="number" v-model="environment.port" required :class="{invalid: errors.port}">
+            <label for="port" :class="{'active': environment.port}" data-error="port number must be an integer">Port</label>
+          </div>
+        </div>
+        <div class="col s6">
+          <div class="input-field left-align">
+            <input id="ssl" type="checkbox" v-model="environment.ssl">
+            <label for="ssl">use SSL</label>
           </div>
         </div>
       </div>
 
-      <div class="row last-row">
+      <div class="row">
         <div class="col s12">
-          <div class="input-field left-align">
-            <input id="wsport" type="number" v-model="environment.wsPort" required :class="{invalid: errors.wsPort}">
-            <label for="wsport" :class="{'active': environment.wsPort}" data-error="wsPort must be an integer between 1000 and 9999">wsPort</label>
-          </div>
         </div>
       </div>
 
@@ -94,6 +96,9 @@
       }
     }
   }
+  .row {
+    margin-bottom: 5px;
+  }
   .last-row {
     margin-bottom: 5px;
   }
@@ -146,15 +151,13 @@
     data () {
       return {
         errors: {
-          wsPort: false,
-          ioPort: false,
+          port: false,
           host: false
         },
         environment: {
           name: null,
           host: null,
-          ioPort: 7512,
-          wsPort: 7513,
+          port: 7512,
           color: DEFAULT_COLOR
         },
         colors: [DEFAULT_COLOR, '#0277bd', '#8e24aa', '#689f38', '#f57c00', '#e53935', '#546e7a', '#d81b60']
@@ -163,12 +166,11 @@
     methods: {
       createEnvironments () {
         this.errors.name = (!this.environment.name)
-        this.errors.wsPort = (!this.environment.wsPort || this.environment.wsPort < 1000 || this.environment.wsPort > 9999)
-        this.errors.ioPort = (!this.environment.ioPort || this.environment.ioPort < 1000 || this.environment.ioPort > 9999)
+        // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
 
-        if (!this.errors.name && !this.errors.wsPort && !this.errors.ioPort && !this.errors.host) {
+        if (!this.errors.name && !this.errors.port && !this.errors.host) {
           if (this.environmentId) {
             this.$store.dispatch(UPDATE_ENVIRONMENT, {
               id: this.environmentId,
@@ -176,8 +178,8 @@
                 name: this.environment.name,
                 color: this.environment.color,
                 host: this.environment.host,
-                ioPort: this.environment.ioPort,
-                wsPort: this.environment.wsPort
+                port: this.environment.port,
+                ssl: this.environment.ssl
               }
             })
           } else {
@@ -185,8 +187,8 @@
               this.environment.name,
               this.environment.color,
               this.environment.host,
-              this.environment.ioPort,
-              this.environment.wsPort)
+              this.environment.port,
+              this.environment.ssl)
           }
 
           this.close()
@@ -201,15 +203,15 @@
         if (this.environmentId && this.environments[this.environmentId]) {
           this.environment.name = this.environments[this.environmentId].name
           this.environment.host = this.environments[this.environmentId].host
-          this.environment.ioPort = this.environments[this.environmentId].ioPort
-          this.environment.wsPort = this.environments[this.environmentId].wsPort
+          this.environment.port = this.environments[this.environmentId].port
           this.environment.color = this.environments[this.environmentId].color
+          this.environment.ssl = this.environments[this.environmentId].ssl
         } else {
           this.environment.name = null
           this.environment.host = null
-          this.environment.ioPort = 7512
-          this.environment.wsPort = 7513
+          this.environment.port = 7512
           this.environment.color = DEFAULT_COLOR
+          this.environment.ssl = false
         }
       }
     }

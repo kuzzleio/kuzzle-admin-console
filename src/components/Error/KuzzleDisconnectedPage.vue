@@ -39,7 +39,7 @@
     },
     mounted () {
       this.host = kuzzle.host
-      this.port = kuzzle.wsPort
+      this.port = kuzzle.port
 
       idReconnect = kuzzle.addListener('reconnected', () => {
         this.$router.push({name: 'Home'})

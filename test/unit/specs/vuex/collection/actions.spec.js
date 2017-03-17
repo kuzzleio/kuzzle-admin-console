@@ -2,7 +2,7 @@ import {
   CREATE_COLLECTION,
   FETCH_COLLECTION_DETAIL
 } from '../../../../../src/vuex/modules/collection/mutation-types'
-import actionsInjector from 'inject!../../../../../src/vuex/modules/collection/actions'
+import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/collection/actions'
 import {testActionPromise} from '../../helper'
 
 describe('Collections module', () => {
@@ -20,12 +20,12 @@ describe('Collections module', () => {
     let triggerError
     let actions = actionsInjector({
       '../../../services/kuzzle': {
-        dataCollectionFactory: () => {
+        collection: () => {
           return {
             create: cb => {
               cb()
             },
-            dataMappingFactory: () => {
+            collectionMapping: () => {
               return {
                 applyPromise: () => {
                   if (triggerError) {

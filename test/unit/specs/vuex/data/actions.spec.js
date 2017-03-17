@@ -1,4 +1,4 @@
-import actionsInjector from 'inject!../../../../../src/vuex/modules/data/actions'
+import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/data/actions'
 import {
   // ADD_LOCAL_REALTIME_COLLECTION,
   LIST_INDEXES_AND_COLLECTION,
@@ -131,7 +131,7 @@ describe('Data module', () => {
 
     const actions = actionsInjector({
       '../../../services/kuzzle': {
-        dataCollectionFactory () {
+        collection () {
           return {
             getMapping: (cb) => {
               if (triggerError) {

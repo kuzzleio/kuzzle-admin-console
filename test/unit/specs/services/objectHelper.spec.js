@@ -1,4 +1,4 @@
-import {mergeSchemaMapping, countAttributes} from '../../../../src/services/collectionHelper'
+import {mergeSchemaMapping} from '../../../../src/services/collectionHelper'
 
 describe('objectHelper', () => {
   describe('mergeSchemaMapping', () => {
@@ -36,42 +36,8 @@ describe('objectHelper', () => {
             one: 'one',
             two: 'two'
           }
-        },
-        baz: {
-          zab: 'kk'
         }
       })
-    })
-  })
-
-  describe('countAttributes', () => {
-    let object = {
-      foo: {
-        properties: {
-          bar: {
-            properties: {
-              baz: {
-                properties: {
-                  value: 'hello'
-                }
-              }
-            }
-          }
-        }
-      },
-      rab: {
-        properties: {
-          oof: {
-            properties: {
-              eulav: 'world'
-            }
-          }
-        }
-      }
-    }
-
-    it('should return the number of attribute of an object', () => {
-      expect(countAttributes(object)).to.equals(7)
     })
   })
 })

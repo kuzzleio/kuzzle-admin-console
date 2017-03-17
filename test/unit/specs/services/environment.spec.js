@@ -1,5 +1,5 @@
 // import Promise from 'bluebird'
-// const environmentInjector = require('inject!../../../../src/services/environment')
+// const environmentInjector = require('inject-loader!../../../../src/services/environment')
 // let sandbox = sinon.sandbox.create()
 // let environment
 // let dummyEnvironments = {
@@ -157,8 +157,7 @@
 //         'environment',
 //         null,
 //         'localhost',
-//         7512,
-//         7513
+//         7512
 //       )
 //       expect(resultEnv.color).to.equals(environment.DEFAULT_COLOR)
 //     })
@@ -191,17 +190,15 @@
 //       const host = 'localhost'
 //       const color = '#000'
 //       const name = 'toto'
-//       const ioPort = 7582
-//       const wsPort = 7545
+//       const port = 7582
 //
 //       const updatedEnv = envService
-//         .updateEnvironment('valid', name, color, host, ioPort, wsPort)
+//         .updateEnvironment('valid', name, color, host, port)
 //
 //       expect(updatedEnv.host).to.equals(host)
 //       expect(updatedEnv.color).to.equals(color)
 //       expect(updatedEnv.name).to.equals(name)
-//       expect(updatedEnv.ioPort).to.equals(ioPort)
-//       expect(updatedEnv.wsPort).to.equals(wsPort)
+//       expect(updatedEnv.port).to.equals(port)
 //       expect(updatedEnv.user).to.equals(dummyEnvironments['valid'].user)
 //     })
 //   })

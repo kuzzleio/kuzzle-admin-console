@@ -12,7 +12,7 @@
           </div>
           <div class="row">
             <div class="col offset-s1 s2">
-              <environment-switch @environment::create="editEnvironment"></environment-switch>
+              <environment-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
             </div>
           </div>
           <div class="row">
@@ -68,6 +68,9 @@
       },
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }

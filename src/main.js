@@ -24,7 +24,7 @@ if (!lastConnected || !store.state.kuzzle.environments[lastConnected]) {
 }
 Vue.use(VueRouter)
 
-store.dispatch(types.SWITH_ENVIRONMENT, lastConnected)
+store.dispatch(types.SWITCH_ENVIRONMENT, lastConnected)
   .then(() => {
     let router = require('./services/router').default
     sync(store, router)

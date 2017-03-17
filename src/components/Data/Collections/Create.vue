@@ -16,7 +16,6 @@
 <script>
   import { canCreateCollection } from '../../../services/userAuthorization'
   import PageNotAllowed from '../../Common/PageNotAllowed'
-
   import CreateOrUpdate from './CreateOrUpdate'
   import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
   import {CREATE_COLLECTION_IN_INDEX} from '../../../vuex/modules/index/mutation-types'

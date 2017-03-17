@@ -28,7 +28,7 @@
 
 <script>
   import { DEFAULT_COLOR } from '../../../services/environment'
-  import { SWITH_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
+  import { SWITCH_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
   import tinycolor from 'tinycolor2/tinycolor'
   import Promise from 'bluebird'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -66,7 +66,7 @@
     },
     methods: {
       clickSwitch (id) {
-        return this.$store.dispatch(SWITH_ENVIRONMENT, id)
+        return this.$store.dispatch(SWITCH_ENVIRONMENT, id)
           .then(() => {
             /* Ugly hack in order to force Vue to refresh and pass in router.beforeEach and let check if user is auth */
             this.$router.push({path: '/fake-route'})
