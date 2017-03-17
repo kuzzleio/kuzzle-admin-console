@@ -12,8 +12,7 @@
       :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
       :format-sort="formatSort"
-      :set-basic-filter="setBasicFilter"
-      :basic-filter-form="basicFilterForm">
+      :set-basic-filter="setBasicFilter">
     </filters>
 
     <div class="card-panel card-body">
@@ -164,7 +163,8 @@
         formatSort,
         documentIdToDelete: '',
         singleDeleteIsOpen: false,
-        bulkDeleteIsOpen: false
+        bulkDeleteIsOpen: false,
+        isLoading: false
       }
     },
     methods: {
@@ -175,10 +175,12 @@
         this.$router.push({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
+        this.isLoading = true
         this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
             this.close()
             this.refreshSearch()
+            this.isLoading = false
             return null
           })
           .catch((e) => {

@@ -3,8 +3,7 @@
     <treeview
       :route-name="$route.name"
       :index="$store.state.route.params.index"
-      :collection="$store.state.route.params.collection"
-      :tree="indexesAndCollections">
+      :collection="$store.state.route.params.collection">
     </treeview>
     <section>
       <section class="view">

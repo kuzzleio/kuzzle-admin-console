@@ -1,7 +1,6 @@
 <template>
   <create-or-update
   title="Update profile"
-  :content="content"
   :update-id="id"
   :error="error"
   @document-create::create="update"

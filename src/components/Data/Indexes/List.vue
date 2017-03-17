@@ -77,7 +77,8 @@
           <div v-if="canSearchIndex()">
             <index-boxed
               :index="indexName"
-              v-for="(indexName, key) in orderedFilteredIndices(key)">
+              v-for="(indexName, key) in orderedFilteredIndices()"
+              :key="key">
             </index-boxed>
           </div>
           <modal-create v-if="canCreateIndex" id="index-create" :is-open="isOpen" :close="close"></modal-create>
@@ -130,8 +131,8 @@
     methods: {
       canSearchIndex,
       canCreateIndex,
-      orderedFilteredIndices (order) {
-        return _.orderBy(this.filteredIndices, order)
+      orderedFilteredIndices () {
+        return _.orderBy(this.filteredIndices)
       },
       openModal () {
         this.isOpen = true

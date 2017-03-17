@@ -68,7 +68,7 @@
     },
     computed: {
       filteredIndices () {
-        return [...filterIndexesByKeyword(this.$store.getters.indexes, this.$store.state.data.indexesAndCollections, this.filter)]
+        return [...filterIndexesByKeyword(this.$store.state.index.indexes, this.$store.state.index.indexesAndCollections, this.filter)]
       },
       orderedFilteredIndices () {
         return this.filteredIndices.sort()
