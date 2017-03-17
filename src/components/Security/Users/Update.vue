@@ -54,7 +54,7 @@
 
         kuzzle
           .security
-          .createUserPromise(decodeURIComponent(this.$store.state.route.params.id), json)
+          .createUserPromise(decodeURIComponent(this.$store.state.route.params.id), json, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityUsersList'})
