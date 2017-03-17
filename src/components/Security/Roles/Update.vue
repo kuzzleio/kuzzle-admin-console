@@ -41,7 +41,7 @@
 
         kuzzle
           .security
-          .updateRolePromise(this.id, json, {replaceIfExist: true})
+          .createRolePromise(this.id, json, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityRolesList'})
