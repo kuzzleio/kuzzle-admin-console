@@ -21,6 +21,10 @@
     },
     methods: {
       initValue () {
+        if (!this.content) {
+          return
+        }
+
         if (this.parent) {
           this.value = this.content[this.parent][this.name] || false
         } else {

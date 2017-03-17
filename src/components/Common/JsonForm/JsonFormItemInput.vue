@@ -1,7 +1,7 @@
 <template>
   <div class="row input-field">
     <input :type="type" :value="value" @input="update" :step="step" @focus="display = true"/>
-    <label :class="{'active': value !== n}">{{name}}</label>
+    <label :class="{'active': value !== null}">{{name}}</label>
   </div>
 </template>
 
@@ -26,7 +26,7 @@
         this.$emit('update-value', {name: this.name, value: e.target.value})
       },
       initValue () {
-        if (!Object.keys(this.content).length) {
+        if (!this.content || !Object.keys(this.content).length) {
           return
         }
 
