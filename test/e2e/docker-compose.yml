@@ -33,7 +33,7 @@ services:
       - kuzzle
 
   testim:
-    build: ./
+    image: kuzzleio/testim
     command: sh -c 'chmod 755 /opt/run-test.sh && /opt/run-test.sh'
     volumes:
       - "./run-test.sh:/opt/run-test.sh"
