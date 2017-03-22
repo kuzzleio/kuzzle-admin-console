@@ -6,9 +6,9 @@
         <!-- Collection name -->
         <div class="col s6">
           <div class="input-field">
-            <input id="$store.state.route.params.collection" type="text" name="collection" required
+            <input id="collection-name" type="text" name="collection" required
                    class="validate" tabindex="1" :value="$store.state.collection.name" @input="setName" v-focus />
-            <label for="$store.state.route.params.collection">Collection name</label>
+            <label for="collection-name">Collection name</label>
           </div>
         </div>
       </div>
@@ -82,7 +82,12 @@
 
 <script>
   import JsonEditor from '../../../Common/JsonEditor'
-  import {SET_EDITION_STEP, SET_MAPPING, SET_REALTIME_ONLY, SET_COLLECTION_NAME} from '../../../../vuex/modules/collection/mutation-types'
+  import {
+    SET_EDITION_STEP,
+    SET_MAPPING,
+    SET_REALTIME_ONLY,
+    SET_COLLECTION_NAME
+  } from '../../../../vuex/modules/collection/mutation-types'
   import focus from '../../../../directives/focus.directive'
 
   export default {

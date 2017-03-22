@@ -28,13 +28,15 @@ services:
     volumes:
       - "../../dist:/usr/share/nginx/html"
     ports:
-     - "80:80"
+      - "80:80"
+    depends_on:
+      - kuzzle
 
   testim:
-    image: testim/docker-cli
+    build: ./
+    command: sh -c 'chmod 755 /opt/run-test.sh && /opt/run-test.sh'
     volumes:
-      - ".:/opt/"
-    command: "--config-file /opt/config-file.js"
+      - "./run-test.sh:/opt/run-test.sh"
     environment:
      - BROWSER
      - TESTIM_PROJECT

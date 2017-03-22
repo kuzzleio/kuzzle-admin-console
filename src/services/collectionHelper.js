@@ -117,7 +117,7 @@ export const getSchemaForType = (type) => {
 
 export const getDefaultSchemaForType = (type) => {
   if (!config[type] || !config[type].default) {
-    return [{...elementJson}]
+    return {...elementJson}
   }
 
   return {...config[type].default}

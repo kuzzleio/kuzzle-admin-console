@@ -24,7 +24,7 @@ export const flattenSchemaWithType = (state, getters) => {
     if (getters.flattenSchema && getters.flattenSchema[attribute]) {
       schema[attribute] = {...getters.flattenSchema[attribute]}
     } else {
-      schema[attribute] = {...getDefaultSchemaForType(getters.flattenSchema[attribute])}
+      schema[attribute] = {...getDefaultSchemaForType(getters.flattenMapping[attribute])}
     }
   })
 

@@ -14,9 +14,9 @@
       :name="attributeName"
       :type="type"
       :index="index"
-      :choose-values="flattenSchema[attributeName].chooseValues"
-      :values="flattenSchema[attributeName].values"
-      :value="flattenSchema[attributeName]"
+      :choose-values="flattenSchemaWithType[attributeName].chooseValues"
+      :values="flattenSchemaWithType[attributeName].values"
+      :value="flattenSchemaWithType[attributeName]"
       @input="changeSchema">
     </collection-form-line>
 
@@ -63,6 +63,7 @@
     },
     methods: {
       next () {
+        this.$store.commit(SET_SCHEMA, this.schema)
         this.$emit('collection-create::create')
       },
       cancel () {
@@ -79,18 +80,19 @@
       flattenMapping () {
         return this.$store.getters.flattenMapping
       },
-      flattenSchema () {
+      flattenSchemaWithType () {
         return this.$store.getters.flattenSchemaWithType
       }
     },
     watch: {
       step () {
-        if (Object.keys(this.schema).length) {
-          this.$store.commit(SET_SCHEMA, this.schema)
-        }
+
+//        if (Object.keys(this.schema).length) {
+//          this.$store.commit(SET_SCHEMA, this.schema)
+//        }
       },
-      flattenSchema () {
-        this.schema = {...this.flattenSchema}
+      flattenSchemaWithType () {
+        this.schema = {...this.flattenSchemaWithType}
       }
     }
   }

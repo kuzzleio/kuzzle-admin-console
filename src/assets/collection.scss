@@ -63,12 +63,17 @@
       margin-bottom: 0;
       &.odd {
         background-color: #f4f4f4;
+
+        .multiselect__tags {
+          background-color: #fff !important;
+        }
       }
       .multiselect {
         .multiselect__input {
           margin-bottom: 0;
         }
         .multiselect__tags {
+          background-color: #fbfbfb;
           span {
             background-color: $blue-color;
           }

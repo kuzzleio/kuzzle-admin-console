@@ -1,5 +1,6 @@
 import kuzzle from '../../../services/kuzzle'
 import { dedupeRealtimeCollections, splitRealtimeStoredCollections, getRealtimeCollectionFromStorage } from '../../../services/data'
+import { removeIndex } from 'services/localStore'
 import Promise from 'bluebird'
 import * as types from './mutation-types'
 import * as collectionTypes from '../collection/mutation-types'
@@ -17,6 +18,7 @@ export default {
     return kuzzle
       .queryPromise({index: index, controller: 'index', action: 'delete'}, {})
       .then(() => {
+        removeIndex(index)
         commit(types.DELETE_INDEX, index)
       })
       .catch(error => Promise.reject(new Error(error.message)))

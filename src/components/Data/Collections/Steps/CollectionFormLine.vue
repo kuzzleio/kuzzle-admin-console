@@ -18,7 +18,6 @@
         :options="[]"
         :taggable="true"
         tag-placeholder="Add this as new value."
-        :placeholder="placeholder"
         @tag="addValue"
         @remove="removeValue"
         :value="values"
@@ -31,6 +30,7 @@
 <script>
   import {getSchemaForType, getElementDefinition, castByElementId} from '../../../../services/collectionHelper'
   import Multiselect from 'vue-multiselect'
+  import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
   import MSelect from '../../../Common/MSelect'
   import title from '../../../../directives/title.directive'
 

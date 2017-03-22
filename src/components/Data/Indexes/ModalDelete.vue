@@ -75,7 +75,6 @@
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import Title from '../../../directives/title.directive'
-  import { removeIndex } from '../../../services/localStore'
 
   export default {
     name: 'IndexDeleteModal',
@@ -105,8 +104,8 @@
           .then(() => {
             this.indexConfirmation = ''
             this.error = ''
-            removeIndex(index)
             this.close()
+            this.$router.push({name: 'Data'})
           })
           .catch(err => {
             this.error = err.message

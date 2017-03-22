@@ -47,7 +47,11 @@
         this.$emit('update-value', {name: this.name, value: this.value})
       },
       initValue () {
-        if (this.parent) {
+        if (!this.content) {
+          return
+        }
+
+        if (this.parent && this.content[this.parent]) {
           if (this.content[this.parent][this.name]) {
             this.value.lat = this.content[this.parent][this.name].lat
             this.value.lon = this.content[this.parent][this.name].lon
