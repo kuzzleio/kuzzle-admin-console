@@ -8,9 +8,7 @@ exports.config = {
 
   beforeSuite: () => {
     return {
-      env_name: "local",
-      login: "kuzzle-bo-admin",
-      password: "test"
+      kuzzle_env: process.env.KUZZLE_ENV ? process.env.KUZZLE_ENV : 'localhost'
     }
   }
 }

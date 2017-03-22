@@ -37,6 +37,7 @@ services:
     command: sh -c 'chmod 755 /opt/run-test.sh && /opt/run-test.sh'
     volumes:
       - "./run-test.sh:/opt/run-test.sh"
+      - "./config-file.js:/opt/config-file.js"
     environment:
      - BROWSER
      - TESTIM_PROJECT
