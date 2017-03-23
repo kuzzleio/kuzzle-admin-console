@@ -8,7 +8,7 @@ exports.config = {
 
   beforeSuite: () => {
     return {
-      kuzzle_env: process.env.KUZZLE_ENV ? process.env.KUZZLE_ENV : 'localhost'
+      kuzzle_env: 'proxy'
     }
   }
 }
