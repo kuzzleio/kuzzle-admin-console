@@ -48,7 +48,7 @@ services:
    image: selenium/hub
    environment:
      - GRID_MAX_SESSION=50
-     - JAVA_OPTS=-Xmx8g -Xms8g
+#     - JAVA_OPTS=-Xmx8g -Xms8g
    depends_on:
     - backoffice
     - chrome
