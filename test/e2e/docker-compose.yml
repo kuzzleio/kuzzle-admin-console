@@ -24,11 +24,10 @@ services:
     image: elasticsearch:5.0
 
   backoffice:
-    image: nginx
+    image: kuzzleio/dev
+    command:  sh -c 'rm -rf node_modules && npm run install_deps && npm run dev'
     volumes:
-      - "../../dist:/usr/share/nginx/html"
-    ports:
-      - "80:80"
+      - "../../:/var/app"
     depends_on:
       - kuzzle
 
@@ -47,7 +46,6 @@ services:
 
   hub:
    image: selenium/hub
-   restart: always
    environment:
      - GRID_MAX_SESSION=50
      - JAVA_OPTS=-Xmx8g -Xms8g
@@ -60,7 +58,6 @@ services:
    image: testim/node-chrome
    volumes:
      - /dev/shm:/dev/shm
-   restart: always
    environment:
     HUB_PORT_4444_TCP_ADDR: hub
     HUB_PORT_4444_TCP_PORT: 4444
@@ -71,7 +68,6 @@ services:
    image: testim/node-firefox
    volumes:
      - /dev/shm:/dev/shm
-   restart: always
    environment:
     HUB_PORT_4444_TCP_ADDR: hub
     HUB_PORT_4444_TCP_PORT: 4444

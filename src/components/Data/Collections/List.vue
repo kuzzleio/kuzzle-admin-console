@@ -71,6 +71,7 @@
           <div v-if="canSearchCollection(index)">
             <collection-boxed
               v-for="collection in orderedFilteredStoredCollections(1)"
+              :key="Math.random()"
               :index="index"
               :collection="collection"
               :is-realtime="false">
@@ -78,6 +79,7 @@
 
             <collection-boxed
                 v-for="collection in orderedFilteredRealtimeCollections(1)"
+                :key="Math.random()"
                 :index="index"
                 :collection="collection"
                 :is-realtime="true">

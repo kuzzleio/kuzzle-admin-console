@@ -1,16 +1,7 @@
 sudo: true
 services:
 - docker
-language: node_js
-node_js:
-- 6.9.1
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-4.9
-    - g++-4.9
+
 env:
   global:
   - DOCKER_COMPOSE_VERSION=1.9.0
@@ -18,15 +9,10 @@ env:
   - secure: gfJ1/G69s0pOJhqoOB3bMAClvPPj3i++ckCCP/Yz2OMBFoAF3YCb2k2p5fRNX46s/hqkddHZnuSzaPRXHW5tToS7OhpN1HB6EDIfBS80zD1ZH5n5B8s/jKwzQLWv85bZATKc+R8Ir2ukBd/BQFurzd8JtQDpGS2hSCppOUQQApE3F+ghpET8dFPP7qncn1p98UBbbYyxiR53EM2xo93kByooe7nJiwjLvGVCp7zF9ZGKdp+yUzIb5tvOLnxvXrD2IvGl2Cuyf6bdqXUeM5yEhv0JwuD7SsIydCJZhTY8zCkMl3ITThY8HKV19sU6/zlG6aUsD5QAT58DiKk69icRc03kYCeLjUtuVHq/Nzq1grixc/uIi/KJlKxXd6h1NovAhLAkuuqjpLTKePOVeQdwCBZWQdXWPXUBK80px/ZYauydUqmaxHZq5JAM8hg0DbYICCqVcvro7WcUjCEW+VczO36wNU/qjbSsPehysIlWjt7qvcBfGPoGhlIm098jbXNQh0tM3PYInXiIPl/v1ctGUVWBlUkyppxgV3MYHFM04Pwv9lqovWmWuk+c4a22UE08/sTsHHrmS9T4zPfD6d/5Y1v8l8jMc9HGVa2ro642sRGgWS0QkazuQZ4ySYYpt98uv1NMq33L3ffbvsZo2mVCZ1ZWocCG7SbdWhJeOCysMMU=
 
 before_install:
-- npm install -g npm@latest
-- export CC="gcc-4.9" CXX="g++-4.9"
-script:
-- npm run install_deps
-- npm run e2e-chrome
+- sudo sysctl -w vm.max_map_count=262144
 
-after_script:
-- echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdkbG07a/Fqrrh65BlY+wE458wyneyFSdQ+Pe+UR/t8v8ZDKdT+spsjyxKVUxzOk46zIRlq3v1eMvlPcjCI/kjk+SEu347U5qG/BUly6tNONEF1XytBBB7YLBG+YGfufWGzex6ZbkYdQxDiheefBC/P5K1OvT0WcOMiqzBOrnIk7Xs2rtkI3aiJ/ncgTgjnN0sAFrQRPtTgUuhsuJWLUr2OHTmH/w5Q76onZjp7rpnl3Ad8j6P0JCmlFcQL6pp6vt9ZimYGsZbrblPXFBo38yH+kUF9qgUpkV6Nw5psJxC09qP8hmK2j9AfcIIwSNRtO0f97pKjDAGa6BE/gw9dqzJ asendra@kd-5Z4KS12" >> ~/.ssh/authorized_keys
-- curl https://ifconfig.co/
+script:
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 
 deploy:
   provider: releases

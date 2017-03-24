@@ -10,6 +10,7 @@
 
     <collection-form-line
       v-for="(type, attributeName, index) in flattenMapping"
+      :key="index"
       v-if="$store.state.collection.allowForm"
       :name="attributeName"
       :type="type"
