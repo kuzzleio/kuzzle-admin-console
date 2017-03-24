@@ -1,4 +1,4 @@
-sudo: true
+sudo: required
 services:
 - docker
 
@@ -9,7 +9,6 @@ env:
   - secure: gfJ1/G69s0pOJhqoOB3bMAClvPPj3i++ckCCP/Yz2OMBFoAF3YCb2k2p5fRNX46s/hqkddHZnuSzaPRXHW5tToS7OhpN1HB6EDIfBS80zD1ZH5n5B8s/jKwzQLWv85bZATKc+R8Ir2ukBd/BQFurzd8JtQDpGS2hSCppOUQQApE3F+ghpET8dFPP7qncn1p98UBbbYyxiR53EM2xo93kByooe7nJiwjLvGVCp7zF9ZGKdp+yUzIb5tvOLnxvXrD2IvGl2Cuyf6bdqXUeM5yEhv0JwuD7SsIydCJZhTY8zCkMl3ITThY8HKV19sU6/zlG6aUsD5QAT58DiKk69icRc03kYCeLjUtuVHq/Nzq1grixc/uIi/KJlKxXd6h1NovAhLAkuuqjpLTKePOVeQdwCBZWQdXWPXUBK80px/ZYauydUqmaxHZq5JAM8hg0DbYICCqVcvro7WcUjCEW+VczO36wNU/qjbSsPehysIlWjt7qvcBfGPoGhlIm098jbXNQh0tM3PYInXiIPl/v1ctGUVWBlUkyppxgV3MYHFM04Pwv9lqovWmWuk+c4a22UE08/sTsHHrmS9T4zPfD6d/5Y1v8l8jMc9HGVa2ro642sRGgWS0QkazuQZ4ySYYpt98uv1NMq33L3ffbvsZo2mVCZ1ZWocCG7SbdWhJeOCysMMU=
 
 before_install:
-- sudo swapon
 - sudo sysctl -w vm.max_map_count=262144
 
 script:
