@@ -25,7 +25,7 @@ services:
 
   backoffice:
     image: kuzzleio/dev
-    command:  sh -c 'rm -rf node_modules && npm run install_deps && npm run dev'
+    command:  sh -c 'npm run dev'
     volumes:
       - "../../:/var/app"
     depends_on:
