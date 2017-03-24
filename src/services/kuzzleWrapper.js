@@ -62,7 +62,7 @@ export const initStoreWithKuzzle = (store) => {
   kuzzle.addListener('connected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, false)
   })
-  kuzzle.removeListener('discarded')
+  kuzzle.removeAllListeners('discarded')
   kuzzle.addListener('discarded', function (data) {
     store.commit(SET_TOAST, {text: data.message})
   })

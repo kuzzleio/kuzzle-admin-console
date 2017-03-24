@@ -1,8 +1,6 @@
-import { mutations } from '../../../../../src/vuex/modules/data/store'
+import { mutations } from '../../../../../src/vuex/modules/index/store'
 
 const {
-  ADD_NOTIFICATION,
-  EMPTY_NOTIFICATION,
   ADD_INDEX,
   ADD_STORED_COLLECTION,
   ADD_REALTIME_COLLECTION,
@@ -14,26 +12,6 @@ const {
   DELETE_INDEX} = mutations
 
 describe('Data mutation', () => {
-  describe('ADD_NOTIFICATION', () => {
-    it('should add a notification to the notifications array', () => {
-      let state = {
-        notifications: []
-      }
-
-      ADD_NOTIFICATION(state, {test: true})
-      expect(state.notifications).to.deep.equals([{test: true}])
-    })
-  })
-  describe('EMPTY_NOTIFICATION', () => {
-    it('should empty the notifications array', () => {
-      let state = {
-        notifications: [{test: true}]
-      }
-
-      EMPTY_NOTIFICATION(state)
-      expect(state.notifications).to.be.empty
-    })
-  })
   describe('ADD_INDEX test', () => {
     it('should add the index with an empty collection set', () => {
       let state = {

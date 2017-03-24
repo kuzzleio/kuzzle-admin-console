@@ -1,11 +1,11 @@
-import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/data/actions'
+import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/index/actions'
 import {
   // ADD_LOCAL_REALTIME_COLLECTION,
   LIST_INDEXES_AND_COLLECTION,
   GET_MAPPING,
   CREATE_INDEX,
   DELETE_INDEX
-} from '../../../../../src/vuex/modules/data/mutation-types'
+} from '../../../../../src/vuex/modules/index/mutation-types'
 import {testAction, testActionPromise} from '../../helper'
 
 describe('Data module', () => {
