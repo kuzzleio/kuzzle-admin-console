@@ -2,7 +2,7 @@ import _ from 'lodash'
 import {config, elementJson, elements} from '../config/schemaMapping'
 
 const isObject = item => {
-  return (item && typeof item === 'object' && !Array.isArray(item) && item !== null)
+  return (item && typeof item === 'object' && !Array.isArray(item))
 }
 
 /**
@@ -17,20 +17,18 @@ export const mergeSchemaMapping = (target, source, propertiesCounter = 0) => {
     Object.keys(source)
       .forEach(key => {
         if (!target[key]) {
-          if (config[source[key].type]) {
-            target[key] = config[source[key].type].default
+          if (source[key].type) {
+            target[key] = config[source[key].type] ? config[source[key].type].default : {...elements['json']}
           } else if (source[key].properties) {
             if (propertiesCounter >= 2) {
-              target[key] = {
-                tag: 'json'
-              }
+              target[key] = {...elements['json']}
               return
             }
             propertiesCounter += 1
 
             target[key] = {
               tag: 'fieldset',
-              elements: mergeSchemaMapping({}, source[key].properties, propertiesCounter)
+              properties: mergeSchemaMapping({}, source[key].properties, propertiesCounter)
             }
             propertiesCounter = 0
           }
@@ -38,16 +36,6 @@ export const mergeSchemaMapping = (target, source, propertiesCounter = 0) => {
       })
   }
   return target
-}
-
-/**
- * Restructure object according to it's type
- * @param document
- */
-export const formatType = (document, collection) => {
-  if (collection === 'users' && document.profileIds !== undefined) {
-    document.profileIds.type = 'profileIds'
-  }
 }
 
 export const flattenObjectMapping = (mapping, path = '', level = 1) => {
@@ -133,7 +121,7 @@ export const castByElementId = (id, value) => {
     return value
   }
 
-  switch (element.type) {
+  switch (element.cast) {
     case 'integer':
       return parseInt(value) || null
     case 'float':
@@ -195,7 +183,7 @@ export const cleanMapping = (mapping) => {
 }
 
 /**
- * Returns true if there is attribute in json not present in document
+ * Returns true if there is no attribute in json that is not present in document
  * @param document {Object}
  * @param schema {Object}
  */

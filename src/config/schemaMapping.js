@@ -26,14 +26,14 @@ export const elements = {
     id: 'select:integer',
     name: 'Select box with integer',
     tag: 'select',
-    type: 'integer',
+    cast: 'integer',
     chooseValues: true
   },
   'select:float': {
     id: 'select:float',
     name: 'Select box with float',
     tag: 'select',
-    type: 'float',
+    cast: 'float',
     chooseValues: true
   },
   'mselect:text': {
@@ -48,7 +48,7 @@ export const elements = {
     name: 'Multi select',
     tag: 'mselect',
     chooseValues: true,
-    type: 'integer'
+    cast: 'integer'
   },
   'checkbox': {
     id: 'checkbox',
@@ -60,6 +60,7 @@ export const elements = {
     name: 'Input number',
     tag: 'input',
     type: 'number',
+    cast: 'integer',
     step: 1
   },
   'input:number:short': {
@@ -67,6 +68,7 @@ export const elements = {
     name: 'Input number',
     tag: 'input',
     type: 'number',
+    cast: 'float',
     step: 0.001
   },
   'input:number:float': {
@@ -74,6 +76,7 @@ export const elements = {
     name: 'Input number',
     tag: 'input',
     type: 'number',
+    cast: 'float',
     step: 1e-9
   },
   'input:number:double': {
@@ -81,6 +84,7 @@ export const elements = {
     name: 'Input number',
     tag: 'input',
     type: 'number',
+    cast: 'float',
     step: 1e-17
   },
   'input:number:halfFloat': {
@@ -88,6 +92,7 @@ export const elements = {
     name: 'Input number',
     tag: 'input',
     type: 'number',
+    cast: 'float',
     step: 1e-4
   },
   'input:fieldset': {
