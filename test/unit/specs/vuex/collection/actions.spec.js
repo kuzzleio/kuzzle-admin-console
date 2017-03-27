@@ -14,7 +14,6 @@ describe('Collections module', () => {
     }
 
     beforeEach(() => {
-      // eslint-disable-next-line no-undef
       localStorage.clear()
     })
 

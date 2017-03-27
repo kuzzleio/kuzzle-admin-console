@@ -20,6 +20,7 @@ export const flattenSchema = state => {
 
 export const flattenSchemaWithType = (state, getters) => {
   let schema = {}
+
   Object.keys(getters.flattenMapping).forEach(attribute => {
     if (getters.flattenSchema && getters.flattenSchema[attribute]) {
       schema[attribute] = {...getters.flattenSchema[attribute]}
