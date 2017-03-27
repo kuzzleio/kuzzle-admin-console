@@ -10,20 +10,11 @@ import * as types from './vuex/modules/common/kuzzle/mutation-types'
 
 initStoreWithKuzzle(store)
 
-let loadedEnv = environment.loadEnvironments()
 let lastConnected = environment.loadLastConnectedEnvId()
 
-Object.keys(loadedEnv).forEach(id => {
-  store.dispatch(types.ADD_ENVIRONMENT, {id, environment: loadedEnv[id], persist: false})
-})
-
-environment.persistEnvironments(store.state.kuzzle.environments)
-
-if (!lastConnected || !store.state.kuzzle.environments[lastConnected]) {
-  lastConnected = Object.keys(store.state.kuzzle.environments)[0]
-}
 Vue.use(VueRouter)
 
+store.dispatch(types.LOAD_ENVIRONMENTS)
 store.dispatch(types.SWITCH_ENVIRONMENT, lastConnected)
   .then(() => {
     let router = require('./services/router').default

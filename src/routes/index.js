@@ -1,4 +1,5 @@
 import Login from '../components/Login'
+import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage'
 // import NotFound from '../components/404'
 import store from '../vuex/store'
 import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
@@ -61,6 +62,14 @@ export default function createRoutes (VueRouter) {
           auth: false
         },
         component: Login
+      },
+      {
+        path: '/create-env',
+        name: 'CreateEnv',
+        meta: {
+          auth: false
+        },
+        component: CreateEnvironmentPage
       }
     ]}, 'hash')
 
@@ -74,6 +83,11 @@ export default function createRoutes (VueRouter) {
     Array.prototype.forEach.call(document.querySelectorAll('.loader'), element => {
       element.classList.add('loading')
     })
+
+    if (to.name !== 'CreateEnv' && !store.getters.currentEnvironment) {
+      next('/create-env')
+      return
+    }
 
     if (to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
       next('/signup')

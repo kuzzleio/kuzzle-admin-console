@@ -84,49 +84,6 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  .signup {
-    position: fixed;
-    top:0;
-    left:0;
-    bottom: 0;
-    right: 0;
-    padding-top: 50px;
-    height: 100%;
-    overflow: auto;
-  }
-  .logo {
-    margin-top: 60px;
-  }
-
-  .message-warning {
-    padding: 25px;
-    background-color: #e4e4e4;
-
-    .divider {
-      background-color: #CCC;
-      margin-bottom: 10px;
-    }
-  }
-
-  [type="checkbox"] + label {
-    line-height: 19px;
-  }
-
-  .reset.input-field {
-    margin-top: 0;
-  }
-
-  .message.error {
-    margin-top: 25px;
-  }
-
-  .preloader-wrapper {
-    width: 35px;
-    height: 35px;
-  }
-</style>
-
 <script>
   import kuzzle from '../services/kuzzle'
   import * as types from '../vuex/modules/auth/mutation-types'

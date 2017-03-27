@@ -2,7 +2,7 @@ import { testAction } from '../../../helper'
 const actionsInjector = require('inject-loader!../../../../../../src/vuex/modules/common/kuzzle/actions')
 import {
   CONNECT_TO_ENVIRONMENT
-  , ADD_ENVIRONMENT
+  , CREATE_ENVIRONMENT
   , DELETE_ENVIRONMENT
   , UPDATE_ENVIRONMENT
   , SET_CONNECTION
@@ -29,8 +29,8 @@ describe('Kuzzle actions', () => {
     it('should dispatch the correct mutation', (done) => {
       let environment = { host: 'host' }
       let id = 'id'
-      testAction(actions.default[ADD_ENVIRONMENT], {id, environment}, {}, [
-        { type: ADD_ENVIRONMENT, payload: {id, environment} }
+      testAction(actions.default[CREATE_ENVIRONMENT], {id, environment}, {}, [
+        { type: CREATE_ENVIRONMENT, payload: {id, environment} }
       ], done)
     })
   })

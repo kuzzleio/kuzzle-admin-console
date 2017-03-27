@@ -1,14 +1,5 @@
 <template>
   <div>
-    <div v-if="!$store.state.kuzzle.connectedTo && !$store.state.kuzzle.errorFromKuzzle">
-      <error-layout>
-        <kuzzle-disconnected-page
-          @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment">
-        </kuzzle-disconnected-page>
-      </error-layout>
-    </div>
-
     <div v-if="$store.state.kuzzle.errorFromKuzzle">
       <error-layout>
         <kuzzle-error-page
@@ -18,7 +9,7 @@
       </error-layout>
     </div>
 
-    <div v-if="$store.state.kuzzle.connectedTo && !$store.state.kuzzle.errorFromKuzzle">
+    <div v-if="!$store.state.kuzzle.errorFromKuzzle">
       <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
