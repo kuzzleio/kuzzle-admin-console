@@ -1,7 +1,7 @@
 import * as collectionHelper from '../../../../src/services/collectionHelper'
 import { config, elements } from '../../../../src/config/schemaMapping'
 
-describe.only('CollectionHelper', () => {
+describe('CollectionHelper', () => {
   describe('mergeSchemaMapping', () => {
     it('should return target if target is not an object', () => {
       expect(collectionHelper.mergeSchemaMapping('toto', {toto: 'tata'})).be.eql('toto')
