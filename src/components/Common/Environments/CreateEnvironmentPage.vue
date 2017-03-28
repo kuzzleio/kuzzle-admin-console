@@ -47,7 +47,7 @@
     methods: {
       createEnvironment () {
         try {
-          this.$refs.createEnvironmentComponent.createEnvironments()
+          this.$refs.createEnvironmentComponent.createEnvironment()
           this.$router.push({name: 'Home'})
         } catch (e) {
         }

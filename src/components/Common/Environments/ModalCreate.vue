@@ -43,8 +43,11 @@
     },
     methods: {
       createEnvironment () {
-        this.$refs.createEnvironmentComponent.createEnvironments()
-        this.close()
+        try {
+          this.$refs.createEnvironmentComponent.createEnvironment()
+          this.close()
+        } catch (e) {
+        }
       }
     }
   }

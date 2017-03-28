@@ -84,8 +84,12 @@ export default function createRoutes (VueRouter) {
       element.classList.add('loading')
     })
 
-    if (to.name !== 'CreateEnv' && (!store.getters.currentEnvironment || !store.getters.hasEnvironment)) {
+    if (to.name !== 'CreateEnv' && !store.getters.hasEnvironment) {
       next('/create-env')
+      return
+    }
+    if (to.name === 'CreateEnv' && store.getters.hasEnvironment) {
+      next('/')
       return
     }
 
@@ -93,7 +97,6 @@ export default function createRoutes (VueRouter) {
       next('/signup')
       return
     }
-
     if (to.name === 'Signup' && adminAlreadyExists(store.state)) {
       next('/login')
       return
@@ -104,7 +107,6 @@ export default function createRoutes (VueRouter) {
       next(from.path ? from.path : '/')
       return
     }
-
     if (to.matched.some(record => record.meta.auth) && !isAuthenticated(store.state)) {
       store.commit(SET_ROUTE_BEFORE_REDIRECT, to.name)
       next('/login')

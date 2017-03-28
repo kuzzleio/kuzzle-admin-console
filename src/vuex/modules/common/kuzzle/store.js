@@ -16,14 +16,14 @@ export const mutations = {
       throw new Error(`Unable to add new environment to already existing id "${payload.name}"`)
     }
 
-    state.environments[payload.name] = {...payload}
+    state.environments = {...state.environments, [payload.name]: payload}
   },
   [types.UPDATE_ENVIRONMENT] (state, payload) {
     if (Object.keys(state.environments).indexOf(payload.id) === -1) {
       throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`)
     }
-    state.environments[payload.id] = payload.environment
+    state.environments = {...state.environments, [payload.id]: payload.environment}
   },
   [types.DELETE_ENVIRONMENT] (state, id) {
     if (Object.keys(state.environments).indexOf(id) === -1) {

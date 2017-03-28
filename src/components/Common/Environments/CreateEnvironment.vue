@@ -3,8 +3,8 @@
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
-          <input id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name}">
-          <label for="env-name" :class="{'active': environment.name}" data-error="Name is required">Name</label>
+          <input id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name || environmentAlreadyExists}">
+          <label for="env-name" :class="{'active': environment.name}" data-error="Name is required and must be unique">Name</label>
         </div>
       </div>
     </div>
@@ -73,6 +73,9 @@
     computed: {
       environments () {
         return this.$store.state.kuzzle.environments
+      },
+      environmentAlreadyExists () {
+        return this.$store.state.kuzzle.environments[this.environment.name] !== undefined
       }
     },
     data () {
@@ -91,13 +94,13 @@
       }
     },
     methods: {
-      createEnvironments () {
+      createEnvironment () {
         this.errors.name = (!this.environment.name)
         // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
 
-        if (this.errors.name || this.errors.host) {
+        if (this.errors.name || this.errors.host || this.environmentAlreadyExists) {
           throw new Error('Name or host invalid')
         }
 
