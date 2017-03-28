@@ -1,54 +1,97 @@
 import kuzzle from '../../../services/kuzzle'
 import * as types from './mutation-types'
-import * as dataTypes from '../data/mutation-types'
 import Promise from 'bluebird'
+import {mergeMetaAttributes} from '../../../services/collectionHelper'
 
 export default {
-  [types.CREATE_COLLECTION] ({commit}, payload) {
-    if (!payload.collectionName) {
-      return Promise.reject(new Error('Invalid collection name'))
-    }
-
-    if (payload.existingCollections.stored.indexOf(payload.collectionName) !== -1 ||
-      payload.existingCollections.realtime.indexOf(payload.collectionName) !== -1) {
-      return Promise.reject(new Error(`Collection "${payload.collectionName}" already exist`))
-    }
-
-    if (payload.isRealTime) {
-      // eslint-disable-next-line no-undef
-      let collections = JSON.parse(localStorage.getItem('realtimeCollections') || '[]')
-      collections.push({index: payload.index, collection: payload.collectionName})
-      // eslint-disable-next-line no-undef
-      localStorage.setItem('realtimeCollections', JSON.stringify(payload.collections))
-      commit(dataTypes.ADD_REALTIME_COLLECTION, {index: payload.index, name: payload.collectionName})
+  [types.CREATE_COLLECTION] ({state}, {index}) {
+    return kuzzle
+      .queryPromise({
+        controller: 'collection',
+        action: 'updateMapping'
+      }, {
+        collection: state.name,
+        index,
+        body: mergeMetaAttributes({mapping: state.mapping, schema: state.schema, allowForm: state.allowForm})
+      })
+  },
+  [types.UPDATE_COLLECTION] ({commit, state}, {index}) {
+    if (state.isRealtimeOnly) {
       return Promise.resolve()
     }
 
     return kuzzle
-      .collection(payload.collectionName, payload.index)
-      .collectionMapping(payload.mapping || {})
-      .applyPromise()
-      .then(() => {
-        commit(dataTypes.ADD_STORED_COLLECTION, {index: payload.index, name: payload.collectionName})
+      .queryPromise({
+        controller: 'collection',
+        action: 'updateMapping'
+      }, {
+        collection: state.name,
+        index,
+        body: mergeMetaAttributes({mapping: state.mapping, schema: state.schema, allowForm: state.allowForm})
       })
-      .catch(error => Promise.reject(new Error(error.message)))
   },
-  [types.FETCH_COLLECTION_DETAIL] ({commit}, payload) {
-    if (payload.collections.stored.indexOf(payload.collection) !== -1) {
+  [types.FETCH_COLLECTION_DETAIL] ({commit, getters, state, dispatch}, {index, collection}) {
+    if (!collection) {
+      commit(types.RESET_COLLECTION_DETAIL)
+      return Promise.resolve
+    }
+
+    if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
       return kuzzle
-        .collection(payload.collection, payload.index)
-        .getMappingPromise()
-        .then(result => {
-          commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: result.mapping, isRealtimeOnly: false})
+        .queryPromise({
+          controller: 'collection',
+          action: 'getMapping'
+        }, {
+          collection: collection,
+          index: index
+        })
+        .then(response => {
+          let result = response.result[index].mappings[collection]
+          let schema = {}
+          let allowForm = false
+
+          if (result._meta) {
+            schema = result._meta.schema || {}
+            allowForm = result._meta.allowForm || false
+          }
+
+          dispatch(types.GET_COLLECTION_DEFAULT_VIEW_JSON, {index, collection})
+
+          commit(types.RECEIVE_COLLECTION_DETAIL, {
+            name: collection,
+            mapping: result.properties || {},
+            schema,
+            allowForm,
+            isRealtimeOnly: false
+          })
         })
         .catch(error => Promise.reject(new Error(error.message)))
     }
 
-    if (payload.collections.realtime.indexOf(payload.collection) !== -1) {
-      commit(types.RECEIVE_COLLECTION_DETAIL, {name: payload.collection, mapping: {}, isRealtimeOnly: true})
+    if (getters.indexCollections(index).realtime.indexOf(collection) !== -1) {
+      commit(types.RECEIVE_COLLECTION_DETAIL, {name: collection, mapping: {}, isRealtimeOnly: true, schema: {}, allowForm: false})
       return Promise.resolve()
     }
 
-    return Promise.reject(new Error(`Unknown collection ${payload.collection}`))
+    return Promise.reject(new Error(`Unknown collection ${collection}`))
+  },
+  [types.GET_COLLECTION_DEFAULT_VIEW_JSON] ({commit, dispatch}, {index, collection}) {
+    let indexes = JSON.parse(localStorage.getItem('defaultJsonView') || '{}')
+    if (!indexes[index]) {
+      return dispatch(types.SET_COLLECTION_DEFAULT_VIEW_JSON, {index, collection, jsonView: false})
+    }
+
+    return dispatch(types.SET_COLLECTION_DEFAULT_VIEW_JSON, {index, collection, jsonView: indexes[index][collection] || false})
+  },
+  [types.SET_COLLECTION_DEFAULT_VIEW_JSON] ({commit}, {index, collection, jsonView}) {
+    let indexes = JSON.parse(localStorage.getItem('defaultJsonView') || '{}')
+    if (!indexes[index]) {
+      indexes[index] = {}
+    }
+
+    indexes[index][collection] = jsonView
+
+    localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
+    return commit(types.SET_COLLECTION_DEFAULT_VIEW_JSON, {jsonView})
   }
 }

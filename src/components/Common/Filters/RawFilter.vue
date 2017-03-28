@@ -28,12 +28,6 @@
       },
       formatFromBasicSearch: Function,
       formatSort: Function,
-      basicFilterForm: {
-        type: Object,
-        'default' () {
-          return {}
-        }
-      },
       labelSearchButton: {
         type: String,
         required: false,
@@ -52,7 +46,8 @@
       return {
         filters: {
           raw: {}
-        }
+        },
+        jsonInvalid: false
       }
     },
     methods: {
@@ -68,16 +63,6 @@
         this.filters.raw = json
 
         this.$emit('filters-raw-search', this.filters.raw)
-      },
-      fillRawWithBasic () {
-        if (this.basicFilterForm.basic) {
-          this.filters.raw = this.formatFromBasicSearch(this.basicFilterForm.basic)
-        }
-        if (this.sortingEnabled && this.basicFilterForm.sorting) {
-          this.filters.raw = {...this.filters.raw, sort: this.formatSort(this.basicFilterForm.sorting)}
-        }
-
-        this.$emit('json-editor-refresh')
       },
       resetRawSearch () {
         this.filters.raw = {}

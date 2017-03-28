@@ -183,11 +183,10 @@
 
         // TODO: refactor how search is done
         // Execute search with corresponding filters
-        return this.performSearch(this.collection, this.index, filters, pagination, sorting)
+        this.performSearch(this.collection, this.index, filters, pagination, sorting)
           .then(res => {
             this.documents = res.documents
             this.totalDocuments = res.total
-            return {documents: this.documents, totalDocuments: this.totalDocuments}
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: 'An error occurred while performing search: <br />' + e.message})

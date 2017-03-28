@@ -230,7 +230,7 @@ describe('Kuzzle wrapper service', () => {
           port: 8888,
           state: 'connecting',
           addListener (event, cb) {
-            cb()
+            cb({message: null})
           },
           removeAllListeners
         }
@@ -240,6 +240,7 @@ describe('Kuzzle wrapper service', () => {
       kuzzleWrapper.initStoreWithKuzzle(store)
 
       expect(removeAllListeners.calledWith('queryError'))
+      expect(removeAllListeners.calledWith('discarded'))
       expect(setTokenValid.calledWithMatch(store, false))
     })
   })

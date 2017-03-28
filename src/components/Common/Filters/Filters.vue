@@ -59,7 +59,6 @@
                   :sorting-enabled="sortingEnabled"
                   :label-search-button="labelSearchButton"
                   :format-sort="formatSort"
-                  :basic-filter-form="basicFilterForm"
                   @filters-raw-search="broadcastRawSearch">
                 </raw-filter>
               </div>
@@ -109,7 +108,6 @@
       rawFilter: Object,
       basicFilter: Array,
       setBasicFilter: Function,
-      basicFilterForm: Object,
       searchTerm: String,
       sorting: Object,
       formatFromBasicSearch: Function,
@@ -325,8 +323,5 @@
     .select-wrapper span.caret {
       top: 10px
     }
-  }
-  .pre_ace, .ace_editor {
-    height: 250px;
   }
 </style>

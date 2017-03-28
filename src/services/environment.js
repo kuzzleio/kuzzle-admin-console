@@ -32,7 +32,6 @@ export const loadEnvironments = () => {
   let loadedEnv = {}
 
   try {
-    // eslint-disable-next-line no-undef
     loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENTS) || '{}')
     if (Object.keys(loadedEnv).length === 0) {
       return defaultEnvironment

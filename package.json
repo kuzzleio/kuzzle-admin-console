@@ -28,7 +28,8 @@
   "license": "Apache-2.0",
   "dependencies": {
     "http-server": "0.9.0",
-    "lodash": "^4.17.2"
+    "lodash": "^4.17.2",
+    "vue-quill-editor": "^1.1.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
@@ -100,7 +101,7 @@
     "velocity-animate": "^1.4.0",
     "vue": "^2.1.10",
     "vue-loader": "^11.0.0",
-    "vue-multiselect": "^1.1.4",
+    "vue-multiselect": "2.0.0-beta.15",
     "vue-router": "^2.2.0",
     "vue-style-loader": "^2.0.0",
     "vue-template-compiler": "^2.1.10",

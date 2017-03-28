@@ -117,6 +117,7 @@
           <ul class="collapsible" v-collapsible data-collapsible="expandable">
             <notification
               v-for="notification in notifications"
+              :key="Math.random()"
               :notification="notification">
             </notification>
           </ul>

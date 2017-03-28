@@ -1,14 +1,15 @@
-import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/data/actions'
+import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/index/actions'
 import {
   // ADD_LOCAL_REALTIME_COLLECTION,
   LIST_INDEXES_AND_COLLECTION,
-  GET_MAPPING,
   CREATE_INDEX,
-  DELETE_INDEX
-} from '../../../../../src/vuex/modules/data/mutation-types'
+  DELETE_INDEX,
+  ADD_INDEX,
+  RECEIVE_INDEXES_COLLECTIONS
+} from '../../../../../src/vuex/modules/index/mutation-types'
 import {testAction, testActionPromise} from '../../helper'
 
-describe('Data module', () => {
+describe('Index module', () => {
   describe('index', () => {
     describe('createIndex', () => {
       let triggerError = true
@@ -26,7 +27,7 @@ describe('Data module', () => {
 
       it('should not dispatch the created index if kuzzle reject', (done) => {
         triggerError = true
-        testActionPromise(actions.default[CREATE_INDEX], 'myindex', {}, [], done)
+        testActionPromise(actions.default[CREATE_INDEX], 'myindex', {indexes: [], indexesAndCollections: {}}, [], done)
           .catch((error) => {
             expect(error.message).to.be.equal('error')
             done()
@@ -35,8 +36,8 @@ describe('Data module', () => {
 
       it('should dispatch the created index if success', (done) => {
         triggerError = false
-        testAction(actions.default[CREATE_INDEX], 'myindex', {}, [
-          {type: 'ADD_INDEX', payload: 'myindex'}
+        testActionPromise(actions.default[CREATE_INDEX], 'myindex', {indexes: [], indexesAndCollections: {}}, [
+          {type: ADD_INDEX, payload: 'myindex'}
         ], done)
       })
     })
@@ -66,7 +67,7 @@ describe('Data module', () => {
       it('should dispatch the deleted index if success', (done) => {
         triggerError = false
         testAction(actions.default[DELETE_INDEX], 'myindex', {}, [
-          {type: 'DELETE_INDEX', payload: 'myindex'}
+          {type: DELETE_INDEX, payload: 'myindex'}
         ], done)
       })
     })
@@ -110,7 +111,7 @@ describe('Data module', () => {
       // eslint-disable-next-line no-undef
       localStorage.getItem = sandbox.stub(localStorage, 'getItem').returns(undefined)
       testActionPromise(actions.default[LIST_INDEXES_AND_COLLECTION], null, {}, [
-        {type: 'RECEIVE_INDEXES_COLLECTIONS',
+        {type: RECEIVE_INDEXES_COLLECTIONS,
           payload: {
             index1: {
               stored: ['collection1', 'collection2'],
@@ -122,33 +123,6 @@ describe('Data module', () => {
             }
           }
         }
-      ], done)
-    })
-  })
-
-  describe('getMapping test action', () => {
-    let triggerError = true
-
-    const actions = actionsInjector({
-      '../../../services/kuzzle': {
-        collection () {
-          return {
-            getMapping: (cb) => {
-              if (triggerError) {
-                cb(new Error('error'))
-              } else {
-                cb(null, {mapping: 'mapping'})
-              }
-            }
-          }
-        }
-      }
-    })
-
-    it('should get the mapping properly', (done) => {
-      triggerError = false
-      testAction(actions.default[GET_MAPPING], {collection: 'toto', index: 'tutu'}, {}, [
-        {type: 'RECEIVE_MAPPING', payload: 'mapping'}
       ], done)
     })
   })

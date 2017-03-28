@@ -1,0 +1,149 @@
+.collection-edit {
+  .help {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  .pre_ace {
+    min-height: 500px;
+  }
+  .actions {
+    margin-left: 0 !important;
+    margin-right: auto;
+  }
+  .error {
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, .2);
+    }
+  }
+
+  .collection-form {
+    .info {
+      margin-left: 5px;
+      cursor: pointer;
+      font-size: 1.1em;
+      color: $lavandia-color
+    }
+    .select-wrapper {
+      margin-top: 5px;
+      span.caret {
+        top: 10px;
+      }
+      input.select-dropdown {
+        height: 2rem;
+      }
+    }
+    .multiselect {
+      margin-top: 5px;
+      margin-left: 10px;
+      margin-bottom: 5px;
+      input {
+        height: 0;
+      }
+      .multiselect__select {
+        display: none;
+      }
+      .multiselect__input, .multiselect__input:focus {
+        border-bottom: 0;
+      }
+    }
+
+    .collection-form-line {
+      padding: 10px;
+      margin-bottom: 0;
+      &.odd {
+        background-color: #f4f4f4;
+
+        .multiselect__tags {
+          background-color: #fff !important;
+        }
+      }
+      .multiselect {
+        .multiselect__input {
+          margin-bottom: 0;
+        }
+        .multiselect__tags {
+          background-color: #fbfbfb;
+          span {
+            background-color: $blue-color;
+          }
+        }
+      }
+      .attribute-title, .attribute-type {
+        margin-left: 0;
+      }
+    }
+
+    .collection-form-name {
+      .list-names {
+        margin-top: 15px;
+      }
+    }
+  }
+
+  .stepper {
+    padding: 20px 0 0 0;
+
+    .stepper-content {
+      min-height: 80px;
+    }
+
+    &.horizontal .line {
+      border-top: 1px solid gainsboro;
+      margin-top: 25px;
+      margin-left: 60px;
+    }
+
+    .step-list {
+      margin-bottom: 0;
+      .step {
+        &.active .step-content .circle {
+          background-color: $blue-color;
+        }
+        &.disabled {
+          opacity: 0.2;
+          .step-content {
+            cursor: default;
+          }
+        }
+        .step-content {
+          cursor: pointer;
+          .circle {
+            background: #9e9e9e;
+            width: 45px;
+            height: 45px;
+            line-height: 44px;
+            border-radius: 23px;
+            position: relative;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+          }
+          p {
+            margin-top: 0;
+            text-align: center;
+          }
+        }
+      }
+
+    }
+  }
+}
+
+.collection-boxed {
+  .dropdown-content > li{
+    a.remove {
+      color: $red-color;
+    }
+  }
+}

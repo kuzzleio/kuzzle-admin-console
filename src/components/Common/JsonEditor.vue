@@ -1,5 +1,7 @@
 <template>
-  <pre :id="id" :class="classes"></pre>
+  <div>
+    <pre :id="id" :class="classes" :style="style"></pre>
+  </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
@@ -22,15 +24,23 @@
 
   export default {
     name: 'JsonEditor',
-    props: [
-      'content',
-      'myclass',
-      'readonly',
-      'id'
-    ],
+    props: {
+      content: [Object, String, Number, Array],
+      myclass: String,
+      readonly: Boolean,
+      id: String,
+      height: {type: Number, 'default': 100}
+    },
     computed: {
       classes () {
         return ((this.readonly ? 'readonly ' : '') + this.myclass)
+      },
+      style () {
+        if (this.height === undefined) {
+          return {height: '100px'}
+        } else {
+          return {height: this.height}
+        }
       }
     },
     data () {
@@ -68,8 +78,16 @@
         this.editor.getSession().setTabSize(2)
         this.editor.setReadOnly(this.readonly)
         this.editor.$blockScrolling = Infinity
-        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2), -1)
-        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
+        if (this.content !== null) {
+          this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
+        }
+        this.editor.on('change', () => {
+          let value = this.getJson()
+
+          if (value) {
+            this.$emit('changed', value)
+          }
+        })
       })
     }
   }

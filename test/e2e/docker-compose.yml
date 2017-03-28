@@ -24,17 +24,19 @@ services:
     image: elasticsearch:5.0
 
   backoffice:
-    image: nginx
+    image: kuzzleio/dev
+    command:  sh -c 'npm run dev'
     volumes:
-      - "../../dist:/usr/share/nginx/html"
-    ports:
-     - "80:80"
+      - "../../:/var/app"
+    depends_on:
+      - kuzzle
 
   testim:
-    image: testim/docker-cli
+    image: kuzzleio/testim
+    command: sh -c 'chmod 755 /opt/run-test.sh && /opt/run-test.sh'
     volumes:
-      - ".:/opt/"
-    command: "--config-file /opt/config-file.js"
+      - "./run-test.sh:/opt/run-test.sh"
+      - "./config-file.js:/opt/config-file.js"
     environment:
      - BROWSER
      - TESTIM_PROJECT
@@ -44,10 +46,9 @@ services:
 
   hub:
    image: selenium/hub
-   restart: always
    environment:
      - GRID_MAX_SESSION=50
-     - JAVA_OPTS=-Xmx8g -Xms8g
+#     - JAVA_OPTS=-Xmx8g -Xms8g
    depends_on:
     - backoffice
     - chrome
@@ -57,7 +58,6 @@ services:
    image: testim/node-chrome
    volumes:
      - /dev/shm:/dev/shm
-   restart: always
    environment:
     HUB_PORT_4444_TCP_ADDR: hub
     HUB_PORT_4444_TCP_PORT: 4444
@@ -68,7 +68,6 @@ services:
    image: testim/node-firefox
    volumes:
      - /dev/shm:/dev/shm
-   restart: always
    environment:
     HUB_PORT_4444_TCP_ADDR: hub
     HUB_PORT_4444_TCP_PORT: 4444

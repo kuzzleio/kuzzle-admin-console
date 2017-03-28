@@ -68,13 +68,13 @@
     },
     computed: {
       filteredIndices () {
-        return [...filterIndexesByKeyword(this.$store.getters.indexes, this.$store.state.data.indexesAndCollections, this.filter)]
+        return [...filterIndexesByKeyword(this.$store.state.index.indexes, this.$store.state.index.indexesAndCollections, this.filter)]
       },
       orderedFilteredIndices () {
         return this.filteredIndices.sort()
       },
       indexesAndCollections () {
-        return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : {}
+        return Object.keys(this.$store.state.index.indexesAndCollections).length ? this.$store.state.index.indexesAndCollections : {}
       },
       indexCount () {
         return Object.keys(this.indexesAndCollections).length

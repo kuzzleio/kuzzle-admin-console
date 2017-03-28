@@ -12,8 +12,7 @@
       :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
       :format-sort="formatSort"
-      :set-basic-filter="setBasicFilter"
-      :basic-filter-form="basicFilterForm">
+      :set-basic-filter="setBasicFilter">
     </filters>
 
     <div class="card-panel card-body">
@@ -86,22 +85,6 @@
       <h4>Document deletion</h4>
       <p>Do you really want to delete {{lengthDocument}} documents?</p>
 
-      <div v-if="isLoading">
-        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
-          <div class="spinner-layer">
-            <div class="circle-clipper left">
-              <div class="circle"></div>
-            </div>
-            <div class="gap-patch">
-              <div class="circle"></div>
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <span slot="footer">
         <button
           href="#"
@@ -118,22 +101,6 @@
     <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
-
-      <div v-if="isLoading">
-        <div class="preloader-wrapper active valign-wrapper" style="margin-left: auto; margin-right: auto; display: inherit!important">
-          <div class="spinner-layer">
-            <div class="circle-clipper left">
-              <div class="circle"></div>
-            </div>
-            <div class="gap-patch">
-              <div class="circle"></div>
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle"></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <span slot="footer">
         <button
@@ -208,13 +175,13 @@
         this.$router.push({query: {...this.$route.query, from}})
       },
       confirmBulkDelete () {
+        this.isLoading = true
         this.performDelete(this.index, this.collection, this.selectedDocuments)
           .then(() => {
-            this.isLoading = true
-            setTimeout(() => {
-              this.refreshSearch()
-              this.close()
-            }, 1000)
+            this.close()
+            this.refreshSearch()
+            this.isLoading = false
+            return null
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
@@ -223,11 +190,9 @@
       confirmSingleDelete (id) {
         this.performDelete(this.index, this.collection, [id])
           .then(() => {
-            this.isLoading = true
-            setTimeout(() => {
-              this.refreshSearch()
-              this.close()
-            }, 1000)
+            this.close()
+            this.refreshSearch()
+            return null
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
@@ -257,13 +222,11 @@
       refreshSearch () {
         // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
         // https://github.com/vuejs/vue-router/issues/296
-        this.$emit('crudl-refresh-search')
-        if (this.$route.query.from === '0') {
+        if (parseInt(this.$route.query.from) === 0) {
           this.$emit('crudl-refresh-search')
-          return
+        } else {
+          this.$router.push({query: {...this.$route.query, from: 0}})
         }
-
-        this.$router.push({query: {...this.$route.query, from: 0}})
       },
       dispatchToggle () {
         this.$emit('toggle-all')

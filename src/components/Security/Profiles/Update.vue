@@ -1,18 +1,17 @@
 <template>
-  <create
+  <create-or-update
   title="Update profile"
-  :content="content"
   :update-id="id"
   :error="error"
-  @security-create::create="update"
-  @security-create::cancel="cancel"
-  :document="document"
-  :get-mapping="getMappingProfiles">
-  </create>
+  @document-create::create="update"
+  @document-create::cancel="cancel"
+  v-model="document"
+  :hide-id="true">
+  </create-or-update>
 </template>
 
 <script>
-  import Create from '../Common/CreateOrUpdate'
+  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingProfiles } from '../../../services/kuzzleWrapper'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -20,7 +19,7 @@
   export default {
     name: 'SecurityUpdate',
     components: {
-      Create
+      CreateOrUpdate
     },
     data () {
       return {
@@ -31,17 +30,17 @@
     },
     methods: {
       getMappingProfiles,
-      update (id, json) {
+      update (profile) {
         this.error = ''
 
-        if (!json) {
+        if (!profile) {
           this.error = 'The document is invalid, please review it'
           return
         }
 
         kuzzle
           .security
-          .createProfilePromise(this.id, json, {replaceIfExist: true})
+          .createProfilePromise(this.id, profile, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityProfilesList'})

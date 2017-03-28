@@ -2,6 +2,7 @@ import kuzzle from './kuzzle'
 import Promise from 'bluebird'
 import * as types from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
+import {SET_TOAST} from '../vuex/modules/common/toaster/mutation-types'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -60,6 +61,10 @@ export const initStoreWithKuzzle = (store) => {
   })
   kuzzle.addListener('connected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, false)
+  })
+  kuzzle.removeAllListeners('discarded')
+  kuzzle.addListener('discarded', function (data) {
+    store.commit(SET_TOAST, {text: data.message})
   })
 }
 
@@ -248,8 +253,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
   }
 
   return kuzzle
-      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}})
-      .then(() => kuzzle.refreshIndex(index))
+      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}}, {refresh: 'wait_for'})
 }
 
 export const performDeleteUsers = (index, collection, ids) => {

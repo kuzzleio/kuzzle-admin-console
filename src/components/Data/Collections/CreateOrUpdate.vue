@@ -1,154 +1,57 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper collection-edit">
     <headline>
       {{index}} - {{headline}}
     </headline>
 
-    <div class="row">
-      <div class="col s12 m10 l8 card">
-        <form class="wrapper" @submit.prevent="create">
-          <!-- Required fields -->
-          <div v-if="!$store.state.route.params.collection">
-            <div class="row valign-center">
-              <!-- Collection name -->
-              <div class="col s6">
-                <div class="input-field">
-                  <input id="$store.state.route.params.collection" type="text" name="collection" required
-                         class="validate" tabindex="1" v-model="name" :value="$store.state.route.params.collection" v-focus />
-                  <label for="$store.state.route.params.collection">Collection name</label>
-                </div>
-              </div>
-              <!-- Toggle settings open -->
-              <div class="col s6">
-                <div class="input-field">
-                  <a tabindex="2" type="submit" class="btn-flat waves-effect waves-light" @click.prevent="settingsOpen = !settingsOpen">
-                    <i class="fa left" :class="settingsOpen ? 'fa-caret-down' : 'fa-caret-right'" aria-hidden="true"></i>
-                    {{settingsOpen ? 'Hide settings' : 'Show settings'}}</a>
-                </div>
-              </div>
-            </div>
+    <stepper
+      :current-step="$store.state.collection.editionStep"
+      :is-realtime="$store.getters.isRealtimeOnly"
+      class="card-panel card-header">
+    </stepper>
 
-            <div class="row">
-              <div class="divider"></div>
-            </div>
+    <div class="row card-panel card-body">
+      <div class="col s12">
+        <mapping
+          v-show="$store.state.collection.editionStep === 1"
+          :step="$store.state.collection.editionStep"
+          @collection-create::create="create"
+          @cancel="cancel">
+        </mapping>
+        <collection-form
+          v-show="$store.state.collection.editionStep === 2"
+          :mapping="$store.state.collection.mapping"
+          :step="$store.state.collection.editionStep"
+          @collection-create::create="create"
+          @cancel="cancel">
+        </collection-form>
+
+        <div class="col s7 m8 l8" v-if="error">
+          <div class="card error red-color white-text">
+            <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+            An error occurred while {{$store.state.route.params.collection ? 'updating' : 'creating'}} collection: <br>{{error}}
           </div>
-
-          <!-- Helper message about mapping -->
-          <div class="row deep-orange-text" v-show="!settingsOpen && !$store.state.route.params.collection">
-            <p class="col s12">
-              <i class="fa fa-exclamation-triangle " aria-hidden="true"></i>
-              Settings allow you to define mappings which enable cool functionalities such as geo spacial researches.
-              <a @click.prevent="settingsOpen = true">click here to show settings</a>
-            </p>
-          </div>
-
-          <!-- Settings (mappings, realtime only ...) -->
-          <div class="row" v-show="settingsOpen || $store.state.route.params.collection">
-            <div class="col s12">
-              <div class="row">
-                <p>
-                  <input type="checkbox" class="filled-in" tabindex="3" id="realtime-collection" v-model="isRealtimeOnly" :checked="collectionIsRealtimeOnly" :disabled="$store.state.route.params.collection && !collectionIsRealtimeOnly"/>
-                  <label for="realtime-collection">
-                    Realtime only
-                    <span v-if="$store.state.route.params.collection && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
-                  </label>
-                </p>
-              </div>
-            </div>
-
-
-            <div class="col s8" v-show="!isRealtimeOnly">
-              <div class="row">
-                <p>Mapping:</p>
-                <json-editor
-                  id="collection"
-                  tabindex="4"
-                  ref="jsoneditor"
-                  myclass="pre_ace"
-                  :content="$store.state.collection.mapping">
-                </json-editor>
-              </div>
-            </div>
-
-            <div class="col s4" v-show="!isRealtimeOnly">
-              <div class="row">
-                <p class="help">
-                  Mapping is the process of defining how a document,
-                  and the fields it contains, are stored and indexed.
-                  <a href="http://docs.kuzzle.io/api-reference/#updatemapping" target="_blank">Read more about mapping</a>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="divider"></div>
-          </div>
-
-          <!-- Actions -->
-          <div class="row">
-            <div class="col s5 m4 l4">
-                <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-                <button type="submit" class="btn primary waves-effect waves-light">
-                  <i v-if="!$store.state.route.params.collection" class="fa fa-plus-circle left"></i>
-                  <i v-else class="fa fa-pencil left"></i>
-                  {{$store.state.route.params.collection ? 'Update' : 'Create'}}
-                </button>
-            </div>
-            <div class="col s7 m8 l8" v-if="error">
-              <div class="card error red-color white-text">
-                <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-                An error occurred while {{$store.state.route.params.collection ? 'updating' : 'creating'}} collection: <br>{{error}}
-              </div>
-            </div>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  .help {
-    color: #777;
-    font-size: 0.9rem;
-  }
-  .pre_ace {
-    min-height: 300px;
-  }
-  .actions {
-    margin-left: 0 !important;
-    margin-right: auto;
-  }
-  .error {
-    position: relative;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  .dismiss-error {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 2px;
-
-    &:hover {
-      background-color: rgba(255, 255, 255, .2);
-    }
-  }
-</style>
-
 <script>
   import Headline from '../../Materialize/Headline'
-  import JsonEditor from '../../Common/JsonEditor'
   import Focus from '../../../directives/focus.directive'
-  import {RESET_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
+  import Stepper from './Stepper'
+  import Mapping from './Steps/Mapping'
+  import CollectionForm from './Steps/CollectionForm'
+  import {SET_EDITION_STEP} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreateOrUpdate',
     components: {
       Headline,
-      JsonEditor
+      Stepper,
+      Mapping,
+      CollectionForm
     },
     directives: {
       Focus
@@ -158,13 +61,6 @@
       index: String,
       headline: String
     },
-    data () {
-      return {
-        name: null,
-        isRealtimeOnly: false,
-        settingsOpen: false
-      }
-    },
     watch: {
       '$store.state.collection.isRealtimeOnly' (value) {
         this.isRealtimeOnly = value
@@ -172,7 +68,7 @@
     },
     methods: {
       create () {
-        this.$emit('collection-create::create', this.name || this.$store.state.route.params.collection, this.$refs.jsoneditor.getJson(), this.isRealtimeOnly)
+        this.$emit('collection-create::create')
       },
       dismissError () {
         this.$emit('collection-create::reset-error')
@@ -186,7 +82,7 @@
       }
     },
     beforeDestroy () {
-      this.$store.commit(RESET_COLLECTION_DETAIL)
+      this.$store.commit(SET_EDITION_STEP, 1)
     }
   }
 </script>

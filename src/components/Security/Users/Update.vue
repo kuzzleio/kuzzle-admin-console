@@ -10,8 +10,7 @@
       index="%kuzzle"
       collection="users"
       :hide-id="true"
-      :document="document"
-      :get-mapping="getMappingUsers">
+      v-model="document">
     </create-or-update>
   </div>
 </template>
@@ -30,7 +29,7 @@
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
-    name: 'DocumentCreateOrUpdate',
+    name: 'UpdateUser',
     components: {
       Headline,
       CreateOrUpdate
@@ -46,15 +45,15 @@
     },
     methods: {
       getMappingUsers,
-      update (json) {
-        if (!json) {
+      update (user) {
+        if (!user) {
           this.$store.commit(SET_TOAST, {text: 'Invalid document'})
           return
         }
 
         kuzzle
           .security
-          .createUserPromise(decodeURIComponent(this.$store.state.route.params.id), json, {replaceIfExist: true})
+          .createUserPromise(decodeURIComponent(this.$store.state.route.params.id), user, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityUsersList'})
