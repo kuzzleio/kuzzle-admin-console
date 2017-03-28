@@ -28,10 +28,10 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <button type="submit" class="btn primary waves-effect waves-light right" @click.prevent="next">
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
+        <button type="submit" class="btn primary waves-effect waves-light" @click.prevent="next">
           Save
         </button>
-        <a tabindex="6" class="btn-flat waves-effect right" @click.prevent="cancel">Cancel</a>
       </div>
     </div>
   </div>
