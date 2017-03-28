@@ -71,10 +71,10 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <button type="submit" class="btn primary waves-effect waves-light right">
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
+        <button type="submit" class="btn primary waves-effect waves-light">
           {{collectionIsRealtimeOnly ? 'Save' : 'Next' }}
         </button>
-        <a tabindex="6" class="btn-flat waves-effect right" @click.prevent="cancel">Cancel</a>
       </div>
     </div>
   </form>
