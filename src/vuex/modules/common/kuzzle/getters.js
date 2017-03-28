@@ -13,6 +13,10 @@ export const currentEnvironment = (state, getters) => {
   return state.environments[getters.currentEnvironmentId]
 }
 
+export const hasEnvironment = (state) => {
+  return Object.keys(state.environments).length !== 0
+}
+
 export const kuzzleHost = state => {
   return state.host
 }

@@ -5,6 +5,7 @@ import actions from './actions'
 
 const state = {
   environments: {},
+  lastConnectedEnv: null,
   connectedTo: null,
   errorFromKuzzle: false
 }
@@ -44,6 +45,9 @@ export const mutations = {
   },
   [types.SET_ENVIRONMENTS] (state, payload) {
     state.environments = {...payload}
+  },
+  [types.SET_LAST_CONNECTED_ENVIRONMENT] (state, payload) {
+    state.lastConnectedEnv = payload
   },
   [types.RESET] (state) {
     state.connectedTo = null

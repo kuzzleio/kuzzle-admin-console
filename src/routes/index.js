@@ -84,7 +84,7 @@ export default function createRoutes (VueRouter) {
       element.classList.add('loading')
     })
 
-    if (to.name !== 'CreateEnv' && !store.getters.currentEnvironment) {
+    if (to.name !== 'CreateEnv' && (!store.getters.currentEnvironment || !store.getters.hasEnvironment)) {
       next('/create-env')
       return
     }

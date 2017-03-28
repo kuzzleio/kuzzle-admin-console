@@ -1,14 +1,14 @@
 import * as types from './mutation-types'
 import * as authTypes from '../../auth/mutation-types'
-import { LAST_CONNECTED } from '../../../../services/environment'
 import { waitForConnected, connectToEnvironment } from '../../../../services/kuzzleWrapper'
 
 const ENVIRONMENT_ITEM_NAME = 'environments'
+const LAST_CONNECTED_NAME = 'lastConnectedEnv'
 
 export default {
-  [types.SET_CONNECTION] ({commit}, id) {
+  [types.SET_CONNECTION] ({commit, dispatch}, id) {
     commit(types.CONNECT_TO_ENVIRONMENT, id)
-    localStorage.setItem(LAST_CONNECTED, id)
+    dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, id)
   },
   [types.CREATE_ENVIRONMENT] ({commit, state, dispatch}, payload) {
     try {
@@ -22,13 +22,30 @@ export default {
 
     dispatch(types.SWITCH_ENVIRONMENT, payload.name)
   },
-  [types.DELETE_ENVIRONMENT] ({commit, state}, id) {
+  [types.DELETE_ENVIRONMENT] ({commit, state, dispatch}, id) {
     commit(types.DELETE_ENVIRONMENT, id)
+
+    if (state.lastConnectedEnv === id) {
+      dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, null)
+      localStorage.removeItem(LAST_CONNECTED_NAME)
+    }
+
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
   },
   [types.UPDATE_ENVIRONMENT] ({commit, state}, payload) {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
+  },
+  [types.SWITCH_LAST_ENVIRONMENT] ({commit, state, dispatch}) {
+    if (!state.lastConnectedEnv && Object.keys(state.environments).length === 0) {
+      return
+    }
+
+    if (!state.lastConnectedEnv) {
+      dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, Object.keys(state.environments)[0])
+    }
+
+    dispatch(types.SWITCH_ENVIRONMENT, state.lastConnectedEnv)
   },
   [types.SWITCH_ENVIRONMENT] ({commit, state, dispatch}, id) {
     if (!id) {
@@ -59,12 +76,19 @@ export default {
   },
   [types.LOAD_ENVIRONMENTS] ({commit}) {
     let loadedEnv
+    let lastConnectedEnv
 
     try {
       loadedEnv = JSON.parse(localStorage.getItem(ENVIRONMENT_ITEM_NAME) || '{}')
       commit(types.SET_ENVIRONMENTS, loadedEnv)
+      lastConnectedEnv = localStorage.getItem(LAST_CONNECTED_NAME)
+      commit(types.SET_LAST_CONNECTED_ENVIRONMENT, lastConnectedEnv)
     } catch (e) {
       commit(types.SET_ENVIRONMENTS, {})
     }
+  },
+  [types.SET_LAST_CONNECTED_ENVIRONMENT] ({commit}, payload) {
+    localStorage.setItem(LAST_CONNECTED_NAME, payload)
+    commit(types.SET_LAST_CONNECTED_ENVIRONMENT, payload)
   }
 }
