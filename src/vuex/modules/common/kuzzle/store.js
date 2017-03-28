@@ -12,11 +12,14 @@ const state = {
 
 export const mutations = {
   [types.CREATE_ENVIRONMENT] (state, payload) {
-    if (Object.keys(state.environments).indexOf(payload.name) !== -1) {
-      throw new Error(`Unable to add new environment to already existing id "${payload.name}"`)
+    if (!payload) {
+      throw new Error(`The environment can't be falsy`)
+    }
+    if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
+      throw new Error(`Unable to add new environment to already existing id "${payload.id}"`)
     }
 
-    state.environments = {...state.environments, [payload.name]: payload}
+    state.environments = {...state.environments, [payload.id]: payload.environment}
   },
   [types.UPDATE_ENVIRONMENT] (state, payload) {
     if (Object.keys(state.environments).indexOf(payload.id) === -1) {

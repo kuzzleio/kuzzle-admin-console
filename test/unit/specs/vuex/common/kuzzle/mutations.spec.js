@@ -1,12 +1,12 @@
 import { mutations } from '../../../../../../src/vuex/modules/common/kuzzle/store'
-const {
+import {
   CONNECT_TO_ENVIRONMENT,
   RESET,
-  ADD_ENVIRONMENT,
+  CREATE_ENVIRONMENT,
   UPDATE_ENVIRONMENT,
   DELETE_ENVIRONMENT,
   SET_ERROR_FROM_KUZZLE
-} = mutations
+} from '../../../../../../src/vuex/modules/common/kuzzle/mutation-types'
 
 let state
 
@@ -14,42 +14,46 @@ describe('kuzzle environments mutations test', () => {
   beforeEach(() => {
     state = {
       environments: {
-        valid: {},
-        invalid: {}
+        local: {
+          name: 'local',
+          host: 'localhost',
+          port: 7512
+        }
       },
-      connectedTo: null
+      connectedTo: null,
+      lastConnectedEnv: null
     }
   })
 
   describe('CONNECT_TO_ENVIRONMENT', () => {
     it('should throw if the id is invalid', () => {
-      expect(CONNECT_TO_ENVIRONMENT.bind(this, state, 'foo')).to.throw(Error)
-      expect(CONNECT_TO_ENVIRONMENT.bind(this, state, null)).to.throw(Error)
+      expect(() => { mutations[CONNECT_TO_ENVIRONMENT](this, state, 'foo') }).to.throw(Error)
+      expect(() => { mutations[CONNECT_TO_ENVIRONMENT](state, null) }).to.throw(Error)
     })
 
     it('should set connectedTo to the valid given id', () => {
-      CONNECT_TO_ENVIRONMENT(state, 'valid')
+      mutations[CONNECT_TO_ENVIRONMENT](state, 'local')
 
-      expect(state.connectedTo).to.equals('valid')
+      expect(state.connectedTo).to.equals('local')
     })
   })
 
   describe('RESET', () => {
     it('should reset connectedTo', () => {
-      state.connectedTo = 'valid'
+      state.connectedTo = 'local'
 
-      RESET(state)
+      mutations[RESET](state)
       expect(state.connectedTo).to.equals(null)
     })
   })
 
-  describe('ADD_ENVIRONMENT', () => {
+  describe('CREATE_ENVIRONMENT', () => {
     it('should not add a falsy environment', () => {
-      expect(ADD_ENVIRONMENT.bind(this, state, false)).to.throw(Error)
+      expect(() => { mutations[CREATE_ENVIRONMENT](state, false) }).to.throw(Error)
     })
 
     it('should not overwrite an existing environment', () => {
-      expect(ADD_ENVIRONMENT.bind(this, state, {environment: {}, id: 'valid'})).to.throw(Error)
+      expect(() => { mutations[CREATE_ENVIRONMENT](state, {environment: {}, id: 'local'}) }).to.throw(Error)
     })
 
     it('should create a new environment', () => {
@@ -57,16 +61,16 @@ describe('kuzzle environments mutations test', () => {
         host: 'localhost',
         port: 7512
       }
-      ADD_ENVIRONMENT(state, {id: 'new', environment: newEnvironment})
+      mutations[CREATE_ENVIRONMENT](state, {id: 'new', environment: newEnvironment})
       expect(state.environments.new).to.deep.equals(newEnvironment)
     })
   })
 
   describe('UPDATE_ENVIRONMENT', () => {
     it('should throw if the environment does not exist', () => {
-      expect(UPDATE_ENVIRONMENT.bind(this, state, {id: 'unexisting', environment: {}})).to.throw(Error)
-      expect(UPDATE_ENVIRONMENT.bind(this, state, {id: null, environment: {}})).to.throw(Error)
-      expect(UPDATE_ENVIRONMENT.bind(this, state, {id: undefined, environment: {}})).to.throw(Error)
+      expect(() => { mutations[UPDATE_ENVIRONMENT](state, {id: 'unexisting', environment: {}}) }).to.throw(Error)
+      expect(() => { mutations[UPDATE_ENVIRONMENT](state, {id: null, environment: {}}) }).to.throw(Error)
+      expect(() => { mutations[UPDATE_ENVIRONMENT](state, {id: undefined, environment: {}}) }).to.throw(Error)
     })
 
     it('should update an existing environment', () => {
@@ -74,27 +78,27 @@ describe('kuzzle environments mutations test', () => {
         host: 'localhost',
         port: 7512
       }
-      UPDATE_ENVIRONMENT(state, {id: 'valid', environment: newEnvironment})
-      expect(state.environments.valid).to.deep.equals(newEnvironment)
+      mutations[UPDATE_ENVIRONMENT](state, {id: 'local', environment: newEnvironment})
+      expect(state.environments.local).to.deep.equals(newEnvironment)
     })
   })
 
   describe('DELETE_ENVIRONMENT', () => {
     it('should return if the environment does not exist', () => {
-      expect(DELETE_ENVIRONMENT.bind(this, state, 'unexisting', {})).to.not.throw(Error)
-      expect(DELETE_ENVIRONMENT.bind(this, state, null, {})).to.not.throw(Error)
-      expect(DELETE_ENVIRONMENT.bind(this, state, undefined, {})).to.not.throw(Error)
+      expect(() => { mutations[DELETE_ENVIRONMENT](state, 'unexisting', {}) }).to.not.throw(Error)
+      expect(() => { mutations[DELETE_ENVIRONMENT](state, null, {}) }).to.not.throw(Error)
+      expect(() => { mutations[DELETE_ENVIRONMENT](state, undefined, {}) }).to.not.throw(Error)
     })
 
     it('should delete an existing environment', () => {
-      DELETE_ENVIRONMENT(state, 'valid')
+      mutations[DELETE_ENVIRONMENT](state, 'valid')
       expect(state.environments).to.not.have.property('valid')
     })
   })
 
   describe('SET_ERROR_FROM_KUZZLE', () => {
     it('should set an error', () => {
-      SET_ERROR_FROM_KUZZLE(state, 'error')
+      mutations[SET_ERROR_FROM_KUZZLE](state, 'error')
       expect(state.errorFromKuzzle).to.equals('error')
     })
   })

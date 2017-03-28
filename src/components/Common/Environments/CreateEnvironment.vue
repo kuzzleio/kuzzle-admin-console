@@ -117,11 +117,14 @@
           })
         } else {
           this.$store.dispatch(CREATE_ENVIRONMENT, {
-            name: this.environment.name,
-            color: this.environment.color,
-            host: this.environment.host,
-            port: this.environment.port,
-            ssl: this.environment.ssl
+            id: this.environmentId,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: this.environment.port,
+              ssl: this.environment.ssl
+            }
           })
         }
       },
