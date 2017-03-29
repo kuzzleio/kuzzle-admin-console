@@ -68,13 +68,7 @@ export default {
 
     return waitForConnected(1000)
       .then(() => dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token}))
-      .then(user => {
-        if (!user.id) {
-          return dispatch(authTypes.CHECK_FIRST_ADMIN)
-        }
-
-        return Promise.resolve()
-      })
+      .then(() => dispatch(authTypes.CHECK_FIRST_ADMIN))
   },
   [types.LOAD_ENVIRONMENTS] ({commit}) {
     let loadedEnv
