@@ -42,40 +42,6 @@ describe('Environment service', () => {
     sandbox.reset()
   })
 
-  describe('loadEnvironments', () => {
-    it('should create default environment when none are available in localstorage', () => {
-      sandbox.stub(localStorage, 'getItem').returns(null)
-      let env = envService.loadEnvironments()
-      expect(env).to.have.property('default')
-    })
-
-    it('should create default environment when the localstorage is not valid', () => {
-      sandbox.stub(JSON, 'parse').throws()
-      let env = envService.loadEnvironments()
-      expect(env).to.have.property('default')
-    })
-
-    it('should return the stored environments when available', () => {
-      // eslint-disable-next-line no-undef
-      sandbox.stub(localStorage, 'getItem').returns(
-        JSON.stringify(dummyEnvironments))
-      let env = envService.loadEnvironments()
-      expect(env).to.deep.equals(dummyEnvironments)
-    })
-  })
-
-  describe('createEnvironment', () => {
-    it('should assign default color when no color is provided', () => {
-      let resultEnv = envService.createEnvironment(
-        'environment',
-        null,
-        'localhost',
-        7512
-      )
-      expect(resultEnv.color).to.equals(envService.DEFAULT_COLOR)
-    })
-  })
-
   describe('setTokenToCurrentEnvironment', () => {
     it('should call update environment action and return currentEnvironment', () => {
       let current = envService.setTokenToCurrentEnvironment('toto')

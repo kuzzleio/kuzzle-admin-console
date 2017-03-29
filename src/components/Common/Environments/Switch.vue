@@ -15,7 +15,7 @@
       <li v-for="(env, index) in $store.state.kuzzle.environments" class="environment">
         <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
-          <span class="host environment-attribute">{{env.host}}</span>
+          <span class="host environment-attribute truncate">{{env.host}}</span>
         </div>
         <i class="edit primary fa fa-pencil" @click.prevent="$emit('environment::create', index)"></i>
         <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
@@ -111,6 +111,7 @@
     .environment {
       position: relative;
       border-bottom: 1px solid #eaeaea;
+      line-height: 1.2rem;
 
       .environment-attribute {
         display: block;
@@ -129,17 +130,17 @@
     }
     .edit {
       position: absolute;
-      top: 25px;
+      top: 20px;
       right: 35px;
-      font-size: 1.2em;
+      font-size: 1em;
     }
     .delete {
       position: absolute;
-      top: 25px;
+      top: 20px;
       right: 10px;
       padding: 0;
       margin: 0;
-      font-size: 1.2em;
+      font-size: 1em;
     }
   }
 </style>

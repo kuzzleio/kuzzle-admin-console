@@ -5,26 +5,28 @@ import actions from './actions'
 
 const state = {
   environments: {},
+  lastConnectedEnv: null,
   connectedTo: null,
   errorFromKuzzle: false
 }
 
 export const mutations = {
-  [types.ADD_ENVIRONMENT] (state, payload) {
-    if (!payload.environment) {
-      throw new Error('Cannot store a falsy environment')
+  [types.CREATE_ENVIRONMENT] (state, payload) {
+    if (!payload) {
+      throw new Error(`The environment can't be falsy`)
     }
     if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
       throw new Error(`Unable to add new environment to already existing id "${payload.id}"`)
     }
-    Vue.set(state.environments, payload.id, payload.environment)
+
+    state.environments = {...state.environments, [payload.id]: payload.environment}
   },
   [types.UPDATE_ENVIRONMENT] (state, payload) {
     if (Object.keys(state.environments).indexOf(payload.id) === -1) {
       throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`)
     }
-    state.environments[payload.id] = payload.environment
+    state.environments = {...state.environments, [payload.id]: payload.environment}
   },
   [types.DELETE_ENVIRONMENT] (state, id) {
     if (Object.keys(state.environments).indexOf(id) === -1) {
@@ -43,6 +45,12 @@ export const mutations = {
   },
   [types.SET_ERROR_FROM_KUZZLE] (state, isOnError) {
     state.errorFromKuzzle = isOnError
+  },
+  [types.SET_ENVIRONMENTS] (state, payload) {
+    state.environments = {...payload}
+  },
+  [types.SET_LAST_CONNECTED_ENVIRONMENT] (state, payload) {
+    state.lastConnectedEnv = payload
   },
   [types.RESET] (state) {
     state.connectedTo = null
