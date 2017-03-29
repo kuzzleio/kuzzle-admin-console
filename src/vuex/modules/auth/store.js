@@ -5,11 +5,12 @@ import {
 } from './mutation-types'
 import SessionUser from '../../../models/SessionUser'
 import actions from './actions'
+import * as getters from './getters'
 
 const state = {
   user: SessionUser(),
   tokenValid: false,
-  adminAlreadyExists: true
+  adminAlreadyExists: false
 }
 
 export const mutations = {
@@ -27,5 +28,6 @@ export const mutations = {
 export default {
   state,
   mutations,
+  getters,
   actions
 }

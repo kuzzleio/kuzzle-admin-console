@@ -18,9 +18,6 @@
 
         <ul class="right">
           <li>
-            Welcome <strong>{{$store.getters.user}}</strong>
-          </li>
-          <li>
             <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>

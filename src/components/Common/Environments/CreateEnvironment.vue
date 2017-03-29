@@ -105,7 +105,7 @@
         }
 
         if (this.environmentId) {
-          this.$store.dispatch(UPDATE_ENVIRONMENT, {
+          return this.$store.dispatch(UPDATE_ENVIRONMENT, {
             id: this.environmentId,
             environment: {
               name: this.environment.name,
@@ -116,8 +116,8 @@
             }
           })
         } else {
-          this.$store.dispatch(CREATE_ENVIRONMENT, {
-            id: this.environmentId,
+          return this.$store.dispatch(CREATE_ENVIRONMENT, {
+            id: this.environment.name,
             environment: {
               name: this.environment.name,
               color: this.environment.color,

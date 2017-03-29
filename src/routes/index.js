@@ -2,7 +2,6 @@ import Login from '../components/Login'
 import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage'
 // import NotFound from '../components/404'
 import store from '../vuex/store'
-import {isAuthenticated, adminAlreadyExists} from '../vuex/modules/auth/getters'
 import {SET_ROUTE_BEFORE_REDIRECT} from '../vuex/modules/common/routing/mutation-types'
 import {hasSecurityRights} from '../services/userAuthorization'
 import SecuritySubRoutes from './children/security'
@@ -84,36 +83,31 @@ export default function createRoutes (VueRouter) {
       element.classList.add('loading')
     })
 
-    if (to.name !== 'CreateEnv' && !store.getters.hasEnvironment) {
-      next('/create-env')
-      return
+    if (!store.getters.hasEnvironment) {
+      if (to.name !== 'CreateEnv') {
+        next('/create-env')
+        return
+      }
+    } else if (!store.getters.adminAlreadyExists) {
+      if (to.name !== 'Signup') {
+        next('/signup')
+        return
+      }
+    } else if (!store.getters.isAuthenticated) {
+      if (to.matched.some(record => record.meta.auth)) {
+        store.commit(SET_ROUTE_BEFORE_REDIRECT, to.name)
+        next('/login')
+        return
+      }
     }
-    if (to.name === 'CreateEnv' && store.getters.hasEnvironment) {
+
+    if ((to.name === 'CreateEnv' && store.getters.hasEnvironment) ||
+      (to.name === 'Signup' && store.getters.adminAlreadyExists) ||
+      (to.name === 'Login' && store.getters.isAuthenticated)) {
       next('/')
-      return
+    } else {
+      next()
     }
-
-    if (to.name !== 'Signup' && !adminAlreadyExists(store.state)) {
-      next('/signup')
-      return
-    }
-    if (to.name === 'Signup' && adminAlreadyExists(store.state)) {
-      next('/login')
-      return
-    }
-
-    if (to.name === 'Login' && isAuthenticated(store.state)) {
-      router.push({name: from !== undefined ? from.name : 'Login'})
-      next(from.path ? from.path : '/')
-      return
-    }
-    if (to.matched.some(record => record.meta.auth) && !isAuthenticated(store.state)) {
-      store.commit(SET_ROUTE_BEFORE_REDIRECT, to.name)
-      next('/login')
-      return
-    }
-
-    next()
   })
 
   return router

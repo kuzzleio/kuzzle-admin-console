@@ -20,7 +20,7 @@ export default {
 
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
 
-    dispatch(types.SWITCH_ENVIRONMENT, payload.name)
+    return dispatch(types.SWITCH_ENVIRONMENT, payload.id)
   },
   [types.DELETE_ENVIRONMENT] ({commit, state, dispatch}, id) {
     commit(types.DELETE_ENVIRONMENT, id)
@@ -35,6 +35,7 @@ export default {
   [types.UPDATE_ENVIRONMENT] ({commit, state}, payload) {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
+    return Promise.resolve()
   },
   [types.SWITCH_LAST_ENVIRONMENT] ({state, dispatch}) {
     if (Object.keys(state.environments).length === 0) {
@@ -48,7 +49,7 @@ export default {
       dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, lastConnectedEnv)
     }
 
-    dispatch(types.SWITCH_ENVIRONMENT, lastConnectedEnv)
+    return dispatch(types.SWITCH_ENVIRONMENT, lastConnectedEnv)
   },
   [types.SWITCH_ENVIRONMENT] ({commit, state, dispatch}, id) {
     if (!id) {
@@ -66,15 +67,13 @@ export default {
     dispatch(types.SET_CONNECTION, id)
 
     return waitForConnected(5000)
-      .then(() => {
-        return dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token})
-          .then(user => {
-            if (!user.id) {
-              return dispatch(authTypes.CHECK_FIRST_ADMIN)
-            }
+      .then(() => dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token}))
+      .then(user => {
+        if (!user.id) {
+          return dispatch(authTypes.CHECK_FIRST_ADMIN)
+        }
 
-            return
-          })
+        return Promise.resolve()
       })
   },
   [types.LOAD_ENVIRONMENTS] ({commit}) {
