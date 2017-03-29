@@ -45,7 +45,7 @@
       createEnvironment () {
         try {
           this.$refs.createEnvironmentComponent.createEnvironment()
-            .then(() => this.close())
+          this.close()
         } catch (e) {
         }
       }

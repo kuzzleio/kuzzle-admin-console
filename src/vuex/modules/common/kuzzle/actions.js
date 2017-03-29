@@ -66,7 +66,7 @@ export default {
     connectToEnvironment(environment)
     dispatch(types.SET_CONNECTION, id)
 
-    return waitForConnected(5000)
+    return waitForConnected(1000)
       .then(() => dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token}))
       .then(user => {
         if (!user.id) {
