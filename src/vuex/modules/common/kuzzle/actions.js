@@ -36,16 +36,19 @@ export default {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
   },
-  [types.SWITCH_LAST_ENVIRONMENT] ({commit, state, dispatch}) {
-    if (!state.lastConnectedEnv && Object.keys(state.environments).length === 0) {
+  [types.SWITCH_LAST_ENVIRONMENT] ({state, dispatch}) {
+    if (Object.keys(state.environments).length === 0) {
       return
     }
 
-    if (!state.lastConnectedEnv) {
-      dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, Object.keys(state.environments)[0])
+    let lastConnectedEnv = state.lastConnectedEnv
+
+    if (!lastConnectedEnv) {
+      lastConnectedEnv = Object.keys(state.environments)[0]
+      dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, lastConnectedEnv)
     }
 
-    dispatch(types.SWITCH_ENVIRONMENT, state.lastConnectedEnv)
+    dispatch(types.SWITCH_ENVIRONMENT, lastConnectedEnv)
   },
   [types.SWITCH_ENVIRONMENT] ({commit, state, dispatch}, id) {
     if (!id) {
