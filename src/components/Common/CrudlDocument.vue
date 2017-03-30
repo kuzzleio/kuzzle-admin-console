@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <div class="row" v-show="documents.length">
+      <div class="row collection-wrapper" v-show="documents.length">
         <div class="col s12">
           <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
         </div>
