@@ -15,15 +15,15 @@
       </div>
     </div>
     <div class="row">
-      <div class="col m8">
+      <div class="col s8">
         <p class="error card red-color white-text" v-if="error">
           <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
           Login failed: <br />{{error}}
         </p>
         <p v-if="!error">&nbsp;</p>
       </div>
-      <div class="col m4">
-        <p class="right-align">
+      <div class="col s4">
+        <p class="right">
           <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
         </p>
       </div>

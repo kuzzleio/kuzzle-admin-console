@@ -2,7 +2,7 @@
   <div class="login">
     <div class="container">
       <div class="row">
-        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l4 offset-l4">
+        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
           <div class="row">
             <div class="col s12">
               <h2 class="center-align logo">
@@ -11,7 +11,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col offset-s1 s2">
+            <div class="col offset-s4 s2">
               <environment-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
             </div>
           </div>
