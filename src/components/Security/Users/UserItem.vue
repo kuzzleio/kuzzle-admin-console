@@ -88,6 +88,10 @@ export default {
   },
   computed: {
     profileList () {
+      if (!this.document.content.profileIds) {
+        return []
+      }
+
       return this.document.content.profileIds.filter((item, idx) => {
         return idx < MAX_PROFILES
       })
