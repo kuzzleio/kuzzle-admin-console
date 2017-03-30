@@ -210,6 +210,9 @@ input[type=date], input[type=datetime], input[type=datetime-local],
 input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
   border-bottom: 1px solid #e4e1e1;
 }
+input[type=checkbox] + label {
+  color: #444
+}
 
 .disabled,
 .dropdown-content li > a.disabled {
