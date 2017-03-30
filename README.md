@@ -3,7 +3,7 @@
 
 # kuzzle Back-office
 
-> This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration with many boards for analytics.
+> This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration.
 
 # Releases mapping
 | Back-office  | Kuzzle |
@@ -27,52 +27,20 @@ You can check the last version of Back-office here: [kuzzle-backoffice](http://k
 
 For installing the Back-office on your own host, follow next steps.
 
-## With Docker
-### I want to use the all-in-one recipe
-The easiest way to deploy the Kuzzle stack is by using the `docker-compose.yml` file at the root directory of this project. But you can also create your own `docker-compose` in order to change ports or something else.
-
+## Use the BO on your server
+You can build the Back-Office with:
 ```
-$ wget https://raw.githubusercontent.com/kuzzleio/kuzzle-build/master/docker-compose/backoffice-docker-compose.yml
-$ docker pull kuzzleio/backoffice
-$ BACKOFFICE_PORT=3000 docker-compose -f backoffice-docker-compose.yml up
-```
-
->Where `BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
-
-After a while, you can access to `http://<your-ip>:3000`.
-
-### I just want to run the Back-office
-If you already have a Kuzzle stack running somewhere, be sure your Kuzzle Proxy IP and Websocket port (default 7511) is open and accessible from everywhere.
-
-```
-$ docker pull kuzzleio/backoffice
-$ docker run -p 3000:3000 -e "BACKOFFICE_PORT=3000" kuzzleio/backoffice
-```
->`BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
-
-## Without Docker
-Be sure to have node v4.4 and bower installed.
-
-```
-$ git clone https://github.com/kuzzleio/kuzzle-backoffice
-$ npm install
-$ bower install
-```
-
-At this point you can choose whether to run with the embed server or without:
-
-### With the embed server
-```
-$ npm run build && BACKOFFICE_PORT=3000 npm start
-```
->`BACKOFFICE_PORT` _(default: 3000)_ corresponding to the port for accessing to the Back-office.
-
-You can now access `http://<back-office-ip>:<BACKOFFICE_PORT>`
-
-### Without the server
-You can choose to only build the `dist/` folder and access it with your own server:
-```
+$ npm run install_deps
 $ npm run build
 ```
 
-The `dist` folder is now generated. You can either open the `index.html` file or in order to prevent CSRF error, you can create a web server (like with nginx).
+The `dist` folder is now generated, you can expose it through a web server (like nginx) in order to expose it.
+
+## Run the dev instance
+You can run the dev instance (with hot-reload) with:
+```
+$ npm run install_deps
+$ npm run dev
+```
+
+The BO is now accessible at http://localhost:3000
