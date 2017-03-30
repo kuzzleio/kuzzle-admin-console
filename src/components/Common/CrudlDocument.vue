@@ -11,7 +11,6 @@
       :basic-filter="basicFilter"
       :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
-      :format-sort="formatSort"
       :set-basic-filter="setBasicFilter">
     </filters>
 
