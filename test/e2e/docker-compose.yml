@@ -28,6 +28,14 @@ services:
     command:  sh -c 'npm run dev'
     volumes:
       - "../../:/var/app"
+    environment:
+      - TRAVIS
+      - TRAVIS_COMMIT
+      - TRAVIS_JOB_NUMBER
+      - TRAVIS_BRANCH
+      - TRAVIS_JOB_ID
+      - TRAVIS_PULL_REQUEST
+      - TRAVIS_REPO_SLUG
     depends_on:
       - kuzzle
 
