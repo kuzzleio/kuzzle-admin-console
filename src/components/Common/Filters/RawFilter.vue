@@ -27,7 +27,6 @@
         }
       },
       formatFromBasicSearch: Function,
-      formatSort: Function,
       labelSearchButton: {
         type: String,
         required: false,
