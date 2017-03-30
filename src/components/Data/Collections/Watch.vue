@@ -57,7 +57,6 @@
             :raw-filter="$store.getters.rawFilter"
             :basic-filter="$store.getters.basicFilter"
             :format-from-basic-search="formatFromBasicSearch"
-            :format-sort="formatSort"
             :set-basic-filter="setBasicFilter"
             :basic-filter-form="$store.getters.basicFilterForm">
           </filters>

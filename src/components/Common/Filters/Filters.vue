@@ -58,7 +58,6 @@
                   :format-from-basic-search="formatFromBasicSearch"
                   :sorting-enabled="sortingEnabled"
                   :label-search-button="labelSearchButton"
-                  :format-sort="formatSort"
                   @filters-raw-search="broadcastRawSearch">
                 </raw-filter>
               </div>
@@ -110,8 +109,7 @@
       setBasicFilter: Function,
       searchTerm: String,
       sorting: Object,
-      formatFromBasicSearch: Function,
-      formatSort: Function
+      formatFromBasicSearch: Function
     },
     components: {
       Tabs,
