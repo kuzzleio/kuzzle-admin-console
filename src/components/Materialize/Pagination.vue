@@ -1,39 +1,43 @@
 <template>
-  <ul class="pagination">
-    <li @click.prevent="firstPage" :class="{disabled: currentPage == 1}" class="chevron">
-      <a href="#">
-        <i class="fa fa-angle-double-left fast-pagination waves-effect"></i>
-      </a>
-    </li>
-    <li @click.prevent="previousPage" :class="{disabled: currentPage == 1}" class="chevron">
-      <a href="#" class="waves-effect">
-        <i class="fa fa-chevron-left"></i>
-      </a>
-    </li>
+  <div>
+    <ul class="pagination">
+      <li @click.prevent="firstPage" :class="{disabled: currentPage == 1}" class="chevron">
+        <a href="#">
+          <i class="fa fa-angle-double-left fast-pagination waves-effect"></i>
+        </a>
+      </li>
+      <li @click.prevent="previousPage" :class="{disabled: currentPage == 1}" class="chevron">
+        <a href="#" class="waves-effect">
+          <i class="fa fa-chevron-left"></i>
+        </a>
+      </li>
 
-    <li v-for="n in pager"
-        :class="{active: currentPage === n}"
-        class="waves-effect" @click.prevent="setCurrentPage(n)">
-      <a href="#">{{n}}</a>
-    </li>
+      <li v-for="n in pager"
+          :class="{active: currentPage === n}"
+          class="waves-effect" @click.prevent="setCurrentPage(n)">
+        <a href="#">{{n}}</a>
+      </li>
 
-    <li @click.prevent="nextPage" :class="{disabled: currentPage == pages}" class="chevron">
-      <a href="#">
-        <i class="fa fa-chevron-right waves-effect"></i>
-      </a>
-    </li>
-    <li
-      @click.prevent="lastPage" :class="{disabled: currentPage == pages}" class="chevron">
-      <a href="#">
-        <i class="fa fa-angle-double-right fast-pagination waves-effect"></i>
-      </a>
-    </li>
-  </ul>
+      <li @click.prevent="nextPage" :class="{disabled: currentPage == pages}" class="chevron">
+        <a href="#">
+          <i class="fa fa-chevron-right waves-effect"></i>
+        </a>
+      </li>
+      <li
+        @click.prevent="lastPage" :class="{disabled: currentPage == pages}" class="chevron">
+        <a href="#">
+          <i class="fa fa-angle-double-right fast-pagination waves-effect"></i>
+        </a>
+      </li>
+    </ul>
+    <p class="pagination-info">{{ from + numberInPage }} / {{ total }}</p>
+  </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .pagination {
+  .pagination, .pagination-info {
     text-align: center;
+    margin-bottom: 5px;
 
     li {
       font-size: 1rem;
@@ -53,6 +57,11 @@
       }
     }
   }
+  .pagination-info {
+    color: #989898;
+    font-size: 0.95em;
+    margin-top: 2px;
+  }
 </style>
 
 <script>
@@ -65,7 +74,8 @@
       },
       from: Number,
       size: Number,
-      maxPage: Number
+      maxPage: Number,
+      numberInPage: Number
     },
     computed: {
       pages () {

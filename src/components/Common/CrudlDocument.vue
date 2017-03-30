@@ -76,6 +76,7 @@
                 :from="paginationFrom"
                 :size="paginationSize"
                 :max-page="1000"
+                :number-in-page="documents.length"
         ></pagination>
       </div>
     </div>
