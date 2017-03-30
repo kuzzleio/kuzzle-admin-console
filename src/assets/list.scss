@@ -1,7 +1,6 @@
-.list-document {
-  .no-document {
-    text-align: center;
-  }
+.collection-wrapper {
+  min-height: 453px;
+
   .collection {
     overflow: inherit;
 
@@ -16,7 +15,7 @@
       }
       .actions {
         margin-top: 1px;
-        font-size: 1.3em;
+        font-size: 1em;
 
         .action {
           cursor: pointer;
@@ -84,7 +83,7 @@
   }
 
   .profile-chip {
-    margin: 0 0 5px 5px;
+    margin: 0 0 0 5px;
     max-width: 150px;
   }
 
