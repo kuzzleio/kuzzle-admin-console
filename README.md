@@ -34,13 +34,13 @@ $ npm run install_deps
 $ npm run build
 ```
 
-The `dist` folder is now generated, you can expose it through a web server (like nginx) in order to expose it.
+The resulting `dist` folder now contains a ready-to-use back-office. You can access it through the network by exposing it using a web server (e.g. nginx)
 
-## Run the dev instance
-You can run the dev instance (with hot-reload) with:
+## Contributing to this project
+This project includes a development-mode, with hot-reload. To start the back-office in development-mode:
 ```
 $ npm run install_deps
 $ npm run dev
 ```
 
-The BO is now accessible at http://localhost:3000
+The BO is now accessible at the following URL: [http://localhost:3000](http://localhost:3000)
