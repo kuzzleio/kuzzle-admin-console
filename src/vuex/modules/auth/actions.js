@@ -80,15 +80,17 @@ export default {
       .queryPromise({controller: 'server', action: 'adminExists'}, {})
       .then(res => {
         if (!res.result.exists) {
-          commit(types.SET_ADMIN_EXISTS, false)
-          return Promise.resolve()
+          return commit(types.SET_ADMIN_EXISTS, false)
         }
 
-        commit(types.SET_ADMIN_EXISTS, true)
-        return Promise.resolve()
+        return commit(types.SET_ADMIN_EXISTS, true)
       })
       .catch(error => {
-        return Promise.reject(error)
+        if (error.status === 403) {
+          return commit(types.SET_ADMIN_EXISTS, true)
+        } else {
+          return Promise.reject(error)
+        }
       })
   },
   [types.DO_LOGOUT] ({commit}) {
