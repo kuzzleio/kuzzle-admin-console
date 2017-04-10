@@ -12,18 +12,23 @@ before_install:
 - sudo sysctl -w vm.max_map_count=262144
 
 script:
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run unit && npm run codecov
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run unit && npm run codecov && npm run build
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 
+before_deploy:
+- echo "Push generated dist folder"
+- git config --global user.email "support@kuzzle.io"
+- git config --global user.name "Travis CI"
+- git add dist/
+- git commit -am "Travis CI - [ci skip] - automatic dist folder" > /dev/null 2>&1
+- git push origin ${TRAVIS_BRANCH}
+
 deploy:
-  provider: releases
-  api_key: "${GH_TOKEN}"
-  file: kuzzle-backoffice.tar
+  provider: npm
   skip_cleanup: true
-  before_deploy:
-  - npm run build
-  - tar -cvf kuzzle-backoffice.tar dist
-  - chmod 777 kuzzle-backoffice.tar
+  email: support@kuzzle.io
+  api_key:
+    secure: fyAUrBhmctUri2wPCcdufPME6EyFLpC4OS4wMAmUc7iNNSUl2C9On0HMkmz1JKD/+fMhlFCvQcpD6O8hNThneSqrv/PANAyz9YXblv35W9v1XbYrzm5IWQ4D30+Zg350SK6Wqn4Wr6jZkRXQKhBo8GQ5aLsDdhr7RgRBpw8p6GwDuda41K9cAOh8vbX2u6guOfeJW+jfwfXgwZUl/DEor8XkIJYcVwOF0989FT0urYf28afnxVgaj5XuIyNQMLC0R0KAsbYO0EPDy1O7a34SFUoNVBXPqP+5wYocML6mKNOFtLfvTAfIeErQc6Is3roJvZqMkcu8zzRH+OdbQfa+3+sUTPbxBAaNvcITO/z36QnYh/Swbnfxn0dD5ue2bAXseVpa55fWw0DPOQkcQ3VJ9hHQfMWTn+4EH6lqYEynSJ0KGbHqzm3Qm15fCj0s+vjvs4axGcYEpZlJaTu9o3oHYJTTDfbkk4b7nbKGQ/vDsYFTRL2yRprYlCQ8YoUnDMOB3YHxmRs7Jgxb9lbg8iD5ZMtP1+QIhUMJTI16ruxs88bRvCaTkfdTOGv0qVhgA9a00+G1XMLxCzpvI8wKgo7+GKRPUyvR2bRCQS6mHtbp6beCqPxgzyfGzg8XU09disST7spqH3E8ohWwVfgkjoBlS9+y62iaiwXRsTVXyeGJpac=
   on:
-    tags: true
-    branch: master
+    repo: kuzzleio/kuzzle-backoffice
+    branch: test-npm-publish
