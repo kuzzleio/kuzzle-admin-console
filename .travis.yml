@@ -12,7 +12,7 @@ before_install:
 - sudo sysctl -w vm.max_map_count=262144
 
 script:
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run build
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice node -v && npm -v && npm run install_deps && npm run build
 #- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run unit && npm run codecov && npm run build
 #- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 
@@ -22,7 +22,8 @@ before_deploy:
 - git config --global user.name "Travis CI"
 - git add dist/
 - git commit -am "Travis CI - [ci skip] - automatic dist folder" > /dev/null 2>&1
-- git push origin ${TRAVIS_BRANCH}
+- git remote add ssh-origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
+- git push ssh-origin ${TRAVIS_BRANCH}
 
 deploy:
   provider: npm
