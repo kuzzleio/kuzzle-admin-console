@@ -40,7 +40,6 @@ import Toaster from './components/Materialize/Toaster.vue'
 
 window.jQuery = window.$ = require('jquery')
 require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
-
 import 'font-awesome/css/font-awesome.css'
 
 export default {
