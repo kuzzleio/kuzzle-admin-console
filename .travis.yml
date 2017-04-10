@@ -12,8 +12,9 @@ before_install:
 - sudo sysctl -w vm.max_map_count=262144
 
 script:
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run unit && npm run codecov && npm run build
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run build
+#- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run unit && npm run codecov && npm run build
+#- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 
 before_deploy:
 - echo "Push generated dist folder"
