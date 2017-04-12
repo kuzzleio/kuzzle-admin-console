@@ -27,8 +27,7 @@ describe('Kuzzle actions', () => {
   })
 
   beforeEach(() => {
-    waitForConnected.reset()
-    connectToEnvironment.reset()
+    sandbox.resetHistory()
   })
 
   describe('SET_CONNECTION', () => {
