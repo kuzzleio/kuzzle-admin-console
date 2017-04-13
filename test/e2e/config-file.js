@@ -1,4 +1,3 @@
-console.log(process.env)
 exports.config = {
   project: process.env.TESTIM_PROJECT,
   token: process.env.TESTIM_TOKEN,
