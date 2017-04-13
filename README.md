@@ -28,13 +28,18 @@ You can check the last version of Back-office here: [kuzzle-backoffice](http://k
 For installing the Back-office on your own host, follow next steps.
 
 ## Use the BO on your server
-You can build the Back-Office with:
+You can run the Back-Office with:
 ```
-$ npm run install_deps
-$ npm run build
+$ npm install -g kuzzle-backoffice
+$ kuzzle-backoffice start
+Back-Office available at http://localhost:3000
 ```
 
-The resulting `dist` folder now contains a ready-to-use back-office. You can access it through the network by exposing it using a web server (e.g. nginx)
+You can start the BO on a different port
+```
+$ kuzzle-backoffice start -p 8080
+Back-Office available at http://localhost:8080
+```
 
 ## Contributing to this project
 This project includes a development-mode, with hot-reload. To start the back-office in development-mode:

@@ -1,29 +1,36 @@
 sudo: required
 services:
 - docker
-
 env:
   global:
   - DOCKER_COMPOSE_VERSION=1.9.0
-  #GH_TOKEN
   - secure: gfJ1/G69s0pOJhqoOB3bMAClvPPj3i++ckCCP/Yz2OMBFoAF3YCb2k2p5fRNX46s/hqkddHZnuSzaPRXHW5tToS7OhpN1HB6EDIfBS80zD1ZH5n5B8s/jKwzQLWv85bZATKc+R8Ir2ukBd/BQFurzd8JtQDpGS2hSCppOUQQApE3F+ghpET8dFPP7qncn1p98UBbbYyxiR53EM2xo93kByooe7nJiwjLvGVCp7zF9ZGKdp+yUzIb5tvOLnxvXrD2IvGl2Cuyf6bdqXUeM5yEhv0JwuD7SsIydCJZhTY8zCkMl3ITThY8HKV19sU6/zlG6aUsD5QAT58DiKk69icRc03kYCeLjUtuVHq/Nzq1grixc/uIi/KJlKxXd6h1NovAhLAkuuqjpLTKePOVeQdwCBZWQdXWPXUBK80px/ZYauydUqmaxHZq5JAM8hg0DbYICCqVcvro7WcUjCEW+VczO36wNU/qjbSsPehysIlWjt7qvcBfGPoGhlIm098jbXNQh0tM3PYInXiIPl/v1ctGUVWBlUkyppxgV3MYHFM04Pwv9lqovWmWuk+c4a22UE08/sTsHHrmS9T4zPfD6d/5Y1v8l8jMc9HGVa2ro642sRGgWS0QkazuQZ4ySYYpt98uv1NMq33L3ffbvsZo2mVCZ1ZWocCG7SbdWhJeOCysMMU=
 
 before_install:
 - sudo sysctl -w vm.max_map_count=262144
 
 script:
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps && npm run unit && npm run codecov
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 
+before_deploy:
+- echo "Generate and push dist folder"
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
+- git config --global user.email "support@kuzzle.io"
+- git config --global user.name "Travis CI"
+- git checkout ${TRAVIS_BRANCH}
+- git add dist/
+- git commit -am "Travis CI - [ci skip] - automatic dist folder"
+- git remote add ssh-origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
+- git push --set-upstream ssh-origin ${TRAVIS_BRANCH}
+
 deploy:
-  provider: releases
-  api_key: "${GH_TOKEN}"
-  file: kuzzle-backoffice.tar
+  provider: npm
   skip_cleanup: true
-  before_deploy:
-  - npm run build
-  - tar -cvf kuzzle-backoffice.tar dist
-  - chmod 777 kuzzle-backoffice.tar
+  email: support@kuzzle.io
+  api_key:
+    secure: KQ+wabxwwu10o5NXp3ZZe1y+62njVXf/EKl5vKHXQxe5UWAXostrvUDoDPkYcwzx+0B54OKajyeZCwJ/i4nU2SG/0ZtwSNo+7rq4qNPpXaNTaq3qrDzNWx/GN3YIznfwBibj1sSaoduqH10u9gokNMOIu1qlRl0Up4rwCY9tvjiBF4K21kWgFfQUxdv4x9fw1PMfRUKlKMgTUAKg9e0WIiZ9rnlfmjIS2Z2y6eReWu6n364mNqPaKBUNK42F6obGpUKVksW4DlhS/OVkxIQEmMVc+BJEU0Gt4k7tcD5hgvPTE3FqPYxQ8I92BFmiXMTcQRIVL1/eTnPb7aNFUYWmxbCJT9GNxHS6kDaksv7Yz+hGeQ77rqh0fLZxmLkTwQ+gpikwDv7Lo93qodbi9ZVTz68qIAodQNqGZMlGBxY9YSemkXPRh0AJuIsHrMH4JOPvvO8E1TbyrZ7pYcl0guVFRoF/OIeBL+3Ue92n0BaMc+DupfiRcazGcJE/E8bPQc5wt2GM4Hka5cAIzmgtl/SiTYADflPiFdT8NdTYA4f1qconM97r3roMbX73HQlsC7g2GjeZD6VRpTpEAAcWT+6T1VKWf8sQWzWCDY5xDynahzDvpWl9jQjvgNYMl961qwbVQqj9zUAAAtJUMD4AoNruQcHbL29b2WYVfUVWXNNRYyc=
   on:
-    tags: true
+    repo: kuzzleio/kuzzle-backoffice
     branch: master
