@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="confirmDeleteEnvironment">
-    <modal id="delete-env" class="left-align" :close="close" :is-open="isOpen">
+    <modal id="delete-env" additional-class="left-align" :close="close" :is-open="isOpen">
       <div class="row">
         <div class="col s12">
           <h4>Environment <strong>{{environmentName}}</strong> deletion</h4>

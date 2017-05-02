@@ -33,7 +33,7 @@
   import {hasSecurityRights} from '../../services/userAuthorization'
   import {DO_LOGOUT} from '../../vuex/modules/auth/mutation-types'
   import {DEFAULT_COLOR} from '../../services/environment'
-  import EnvironmentSwitch from './Environments/Switch'
+  import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
   export default {
     name: 'MainMenu',
