@@ -97,7 +97,12 @@
         // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
-        this.errors.environmentAlreadyExists = this.$store.state.kuzzle.environments[this.environment.name] !== undefined
+
+        if (!this.environmentId || this.environmentId !== this.environment.name) {
+          this.errors.environmentAlreadyExists = this.$store.state.kuzzle.environments[this.environment.name] !== undefined
+        } else {
+          this.errors.environmentAlreadyExists = false
+        }
 
         if (this.errors.name || this.errors.host || this.errors.environmentAlreadyExists) {
           throw new Error('Name or host invalid')
