@@ -1,6 +1,6 @@
 <template>
   <span>
-    <dropdown :id="collection" :myclass="myclass">
+    <dropdown :id="'collection-' + collection" :myclass="myclass">
       <li><router-link :to="{name: 'DataCollectionEdit', params: {collection: collection, index: index}}">Edit collection</router-link></li>
       <li v-if="isRealtime"><a class="remove" @click="removeRealtimeCollection">Remove collection</a></li>
       <li class="divider"></li>
