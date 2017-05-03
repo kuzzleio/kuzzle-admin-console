@@ -44,7 +44,7 @@ export default {
   },
   [types.SWITCH_LAST_ENVIRONMENT] ({state, dispatch}) {
     if (Object.keys(state.environments).length === 0) {
-      return
+      return Promise.resolve()
     }
 
     let lastConnectedEnv = state.lastConnectedEnv
@@ -58,7 +58,7 @@ export default {
   },
   [types.SWITCH_ENVIRONMENT] ({commit, state, dispatch}, id) {
     if (!id) {
-      return Promise.resolve()
+      return Promise.reject(new Error('No id provided'))
     }
 
     let environment = state.environments[id]
@@ -74,6 +74,10 @@ export default {
     return waitForConnected(1000)
       .then(() => dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token}))
       .then(() => dispatch(authTypes.CHECK_FIRST_ADMIN))
+      .catch((e) => {
+        commit(types.SET_ERROR_FROM_KUZZLE, true)
+        return Promise.reject(e)
+      })
   },
   [types.LOAD_ENVIRONMENTS] ({commit}) {
     let loadedEnv

@@ -98,8 +98,11 @@
         // Host is required and must be something like 'mydomain.com/toto'
         this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
 
-        if (!this.environmentId || this.environmentId !== this.environment.name) {
-          this.errors.environmentAlreadyExists = this.$store.state.kuzzle.environments[this.environment.name] !== undefined
+        let _host = this.environment.host.trim()
+        let _name = this.environment.name.trim()
+
+        if (!this.environmentId || this.environmentId !== _name) {
+          this.errors.environmentAlreadyExists = this.$store.state.kuzzle.environments[_name] !== undefined
         } else {
           this.errors.environmentAlreadyExists = false
         }
@@ -112,20 +115,20 @@
           return this.$store.dispatch(UPDATE_ENVIRONMENT, {
             id: this.environmentId,
             environment: {
-              name: this.environment.name,
+              name: _name,
               color: this.environment.color,
-              host: this.environment.host,
+              host: _host,
               port: this.environment.port,
               ssl: this.environment.ssl
             }
           })
         } else {
           return this.$store.dispatch(CREATE_ENVIRONMENT, {
-            id: this.environment.name,
+            id: _name,
             environment: {
-              name: this.environment.name,
+              name: _name,
               color: this.environment.color,
-              host: this.environment.host,
+              host: _host,
               port: this.environment.port,
               ssl: this.environment.ssl
             }
