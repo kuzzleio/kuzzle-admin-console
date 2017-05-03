@@ -12,7 +12,10 @@
           </div>
           <div class="row">
             <div class="col offset-s4 s2">
-              <environment-switch @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
+              <environment-switch
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment">
+              </environment-switch>
             </div>
           </div>
           <div class="row">
@@ -42,7 +45,7 @@
 
 <script>
   import LoginForm from './Common/Login/Form'
-  import EnvironmentSwitch from './Common/Environments/Switch'
+  import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
   import * as types from '../vuex/modules/common/routing/mutation-types'
 
   export default {

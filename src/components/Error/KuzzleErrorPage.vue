@@ -2,7 +2,10 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <environment-switch @environment::create="editEnvironment"></environment-switch>
+        <environment-switch
+          @environment::create="editEnvironment"
+          @environment::delete="deleteEnvironment">
+        </environment-switch>
       </div>
     </div>
     <div class="col s12">
@@ -24,7 +27,7 @@
 <script>
   import kuzzle from '../../services/kuzzle'
   import Connecting from './Connecting'
-  import EnvironmentSwitch from '../Common/Environments/Switch'
+  import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
   let idConnect
   let idReconnect
@@ -64,6 +67,9 @@
     methods: {
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }

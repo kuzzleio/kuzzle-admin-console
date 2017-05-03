@@ -28,7 +28,7 @@
   export default {
     props: {
       id: String,
-      'class': {
+      'additionalClass': {
         type: String,
         'default': '',
         required: false
@@ -84,10 +84,10 @@
         }
 
         if (this.bottom) {
-          return cssClass + 'bottom-modal bottom-sheet ' + this.class + (this.loading ? ' grey' : '')
+          return cssClass + 'bottom-modal bottom-sheet ' + this.additionalClass + (this.loading ? ' grey' : '')
         }
 
-        return cssClass + 'normal-modal ' + this.class + (this.loading ? ' grey' : '')
+        return cssClass + 'normal-modal ' + this.additionalClass + (this.loading ? ' grey' : '')
       },
       transition () {
         return this.bottom ? 'modal-bottom' : 'modal'

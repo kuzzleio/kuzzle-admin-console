@@ -20,7 +20,7 @@
 <script>
   import kuzzle from '../../services/kuzzle'
   import Connecting from './Connecting'
-  import EnvironmentSwitch from '../Common/Environments/Switch'
+  import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
   let idConnect
   let idReconnect
