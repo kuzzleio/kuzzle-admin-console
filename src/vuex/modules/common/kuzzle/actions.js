@@ -32,9 +32,14 @@ export default {
 
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
   },
-  [types.UPDATE_ENVIRONMENT] ({commit, state}, payload) {
+  [types.UPDATE_ENVIRONMENT] ({commit, state, getters, dispatch}, payload) {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
+
+    if (getters.currentEnvironment && getters.currentEnvironment.name && getters.currentEnvironment.name === payload.id) {
+      return dispatch(types.SWITCH_ENVIRONMENT, payload.id)
+    }
+
     return Promise.resolve()
   },
   [types.SWITCH_LAST_ENVIRONMENT] ({state, dispatch}) {
