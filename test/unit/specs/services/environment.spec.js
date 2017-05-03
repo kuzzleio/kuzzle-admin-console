@@ -1,5 +1,5 @@
 const environmentInjector = require('inject-loader!../../../../src/services/environment')
-import {DELETE_ENVIRONMENT, UPDATE_ENVIRONMENT} from '../../../../src/vuex/modules/common/kuzzle/mutation-types'
+import {DELETE_ENVIRONMENT} from '../../../../src/vuex/modules/common/kuzzle/mutation-types'
 
 let sandbox = sinon.sandbox.create()
 let dummyEnvironments = {

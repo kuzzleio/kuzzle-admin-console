@@ -11,7 +11,8 @@ import {
   LOAD_ENVIRONMENTS,
   SET_LAST_CONNECTED_ENVIRONMENT,
   RESET,
-  SET_ENVIRONMENTS
+  SET_ENVIRONMENTS,
+  UPDATE_TOKEN_CURRENT_ENVIRONMENT
 } from '../../../../../../src/vuex/modules/common/kuzzle/mutation-types'
 
 let sandbox = sinon.sandbox.create()
@@ -79,6 +80,30 @@ describe('Kuzzle actions', () => {
       testAction(actions.default[UPDATE_ENVIRONMENT], {id, environment}, {}, [
         { type: UPDATE_ENVIRONMENT, payload: {id, environment} }
       ], done)
+    })
+  })
+
+  describe('UPDATE_TOKEN_CURRENT_ENVIRONMENT', () => {
+    let setItem
+
+    beforeEach(() => {
+      setItem = sandbox.stub(localStorage, 'setItem')
+    })
+    afterEach(() => {
+      setItem.restore()
+    })
+
+    it('should add token in current environment and save it in localStorage', (done) => {
+      let currentEnvironmentId = 'id'
+      let currentEnvironment = {
+        name: currentEnvironmentId,
+        host: 'toto'
+      }
+
+      testAction(actions.default[UPDATE_TOKEN_CURRENT_ENVIRONMENT], 'a-token', {some: 'environments'}, [
+        { type: UPDATE_ENVIRONMENT, payload: {id: currentEnvironmentId, environment: {...currentEnvironment, token: 'a-token'}} }
+      ], done, {currentEnvironmentId, currentEnvironment})
+      expect(setItem.calledWith('environments', JSON.stringify({some: 'environments'})))
     })
   })
 
