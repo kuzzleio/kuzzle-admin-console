@@ -42,20 +42,6 @@ describe('Environment service', () => {
     sandbox.reset()
   })
 
-  describe('setTokenToCurrentEnvironment', () => {
-    it('should call update environment action and return currentEnvironment', () => {
-      let current = envService.setTokenToCurrentEnvironment('toto')
-      expect(current).be.eql({current: 'environment'})
-      expect(dummyStore.dispatch.calledWith(UPDATE_ENVIRONMENT, {
-        id: 'currentEnvironmentId',
-        environment: {
-          current: 'environment',
-          token: 'toto'
-        }
-      })).to.be.equal(true)
-    })
-  })
-
   describe('deleteEnvironment', () => {
     it('should call deleteEnvironment', () => {
       envService.deleteEnvironment('toto')
