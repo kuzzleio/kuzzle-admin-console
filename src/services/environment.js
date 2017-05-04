@@ -11,14 +11,3 @@ export const deleteEnvironment = (id) => {
 
   store.dispatch(kuzzleTypes.DELETE_ENVIRONMENT, id)
 }
-
-export const setTokenToCurrentEnvironment = (token) => {
-  store.dispatch(kuzzleTypes.UPDATE_ENVIRONMENT, {
-    id: store.getters.currentEnvironmentId,
-    environment: {
-      ...store.getters.currentEnvironment,
-      token: token
-    }
-  })
-  return store.getters.currentEnvironment
-}

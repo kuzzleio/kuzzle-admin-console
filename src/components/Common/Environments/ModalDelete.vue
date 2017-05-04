@@ -88,7 +88,6 @@
           deleteEnvironment(this.environmentId)
 
           this.close()
-          this.$router.push({name: 'Login'})
         }
       }
     },
@@ -97,6 +96,9 @@
         if (this.environmentId && this.environments[this.environmentId]) {
           this.environmentName = this.environments[this.environmentId].name
         }
+      },
+      isOpen () {
+        this.envConfirmation = null
       }
     }
   }
