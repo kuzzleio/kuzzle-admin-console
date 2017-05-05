@@ -9,7 +9,25 @@
       </error-layout>
     </div>
 
-    <div v-if="!$store.state.kuzzle.errorFromKuzzle">
+    <div v-else-if="!$store.getters.hasEnvironment">
+      <create-environment-page></create-environment-page>
+    </div>
+
+    <div v-else-if="$store.getters.currentEnvironmentId && !$store.getters.adminAlreadyExists">
+      <sign-up
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </sign-up>
+    </div>
+
+    <div v-else-if="$store.getters.currentEnvironmentId && $store.getters.adminAlreadyExists && !$store.getters.isAuthenticated">
+      <login
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </login>
+    </div>
+
+    <div v-else="!$store.state.kuzzle.errorFromKuzzle">
       <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
@@ -32,6 +50,9 @@ import {} from './assets/global.scss'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
 import ErrorLayout from './components/Error/Layout'
+import SignUp from './components/Signup'
+import Login from './components/Login'
+import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
 
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
@@ -51,7 +72,10 @@ export default {
     ModalCreate,
     ModalDelete,
     Toaster,
-    KuzzleErrorPage
+    KuzzleErrorPage,
+    SignUp,
+    Login,
+    CreateEnvironmentPage
   },
   data () {
     return {

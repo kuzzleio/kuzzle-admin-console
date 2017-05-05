@@ -32,6 +32,17 @@ export default {
 
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
   },
+  [types.UPDATE_TOKEN_CURRENT_ENVIRONMENT] ({commit, state, getters}, payload) {
+    commit(types.UPDATE_ENVIRONMENT, {
+      id: getters.currentEnvironmentId,
+      environment: {
+        ...getters.currentEnvironment,
+        token: payload
+      }
+    })
+
+    localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
+  },
   [types.UPDATE_ENVIRONMENT] ({commit, state, getters, dispatch}, payload) {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))

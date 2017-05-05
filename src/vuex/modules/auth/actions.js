@@ -1,11 +1,11 @@
 import kuzzle from '../../../services/kuzzle'
 import SessionUser from '../../../models/SessionUser'
-import { setTokenToCurrentEnvironment } from '../../../services/environment'
 import * as types from './mutation-types'
+import * as kuzzleTypes from '../common/kuzzle/mutation-types'
 import Promise from 'bluebird'
 
 export default {
-  [types.DO_LOGIN] ({commit}, data) {
+  [types.DO_LOGIN] ({commit, dispatch}, data) {
     let user = SessionUser()
 
     return new Promise((resolve, reject) => {
@@ -15,8 +15,8 @@ export default {
         .then(loginResult => {
           user.id = loginResult._id
           user.token = loginResult.jwt
-          setTokenToCurrentEnvironment(loginResult.jwt)
 
+          dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, loginResult.jwt)
           return kuzzle.whoAmIPromise()
         })
         .then(KuzzleUser => {
@@ -36,13 +36,13 @@ export default {
         })
     })
   },
-  [types.LOGIN_BY_TOKEN] ({commit}, data) {
+  [types.LOGIN_BY_TOKEN] ({commit, dispatch}, data) {
     let user = SessionUser()
     if (!data.token) {
-      setTokenToCurrentEnvironment(null)
       commit(types.SET_CURRENT_USER, SessionUser())
       commit(types.SET_TOKEN_VALID, false)
       kuzzle.unsetJwtToken()
+      dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
       return Promise.resolve(user)
     }
 
@@ -51,13 +51,13 @@ export default {
         if (!res.valid) {
           commit(types.SET_CURRENT_USER, SessionUser())
           commit(types.SET_TOKEN_VALID, false)
-          setTokenToCurrentEnvironment(null)
+          dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
           kuzzle.unsetJwtToken()
           return Promise.resolve(SessionUser())
         }
 
         kuzzle.setJwtToken(data.token)
-        setTokenToCurrentEnvironment(data.token)
+        dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, data.token)
         return kuzzle.whoAmIPromise()
           .then(KuzzleUser => {
             user.id = KuzzleUser.id
@@ -93,10 +93,10 @@ export default {
         }
       })
   },
-  [types.DO_LOGOUT] ({commit}) {
+  [types.DO_LOGOUT] ({commit, dispatch}) {
     kuzzle.logout()
     kuzzle.unsetJwtToken()
-    setTokenToCurrentEnvironment(null)
+    dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
     commit(types.SET_CURRENT_USER, SessionUser())
     commit(types.SET_TOKEN_VALID, false)
   }
