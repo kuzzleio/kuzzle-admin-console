@@ -79,6 +79,32 @@ let getValueAdditionalAttribute = (content, attributePath) => {
   return content[attribute]
 }
 
+/**
+ * Constructor only used for displaying the constructor name in the list
+  * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+  * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Content {
+  constructor (content) {
+    Object.keys(content).forEach(key => {
+      this[key] = content[key]
+    })
+  }
+}
+
+/**
+ * Constructor only used for displaying the constructor name in the list
+ * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+ * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Meta {
+  constructor (meta) {
+    Object.keys(meta).forEach(key => {
+      this[key] = meta[key]
+    })
+  }
+}
+
 export const performSearchDocuments = (collection, index, filters = {}, pagination = {}, sort = []) => {
   if (!collection || !index) {
     return Promise.reject(new Error('Missing collection or index'))
@@ -98,10 +124,11 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
         }
       }
 
-      let documents = result.documents.map((document) => {
-        let object = {
-          content: document.content,
-          id: document.id
+      const documents = result.documents.map((document) => {
+        const object = {
+          content: new Content(document.content),
+          id: document.id,
+          meta: new Meta(document.meta)
         }
 
         if (additionalAttributeName) {
@@ -114,7 +141,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
         return object
       })
 
-      return {documents: documents, total: result.total}
+      return {documents, total: result.total}
     })
 }
 

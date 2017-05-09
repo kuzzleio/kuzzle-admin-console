@@ -39,7 +39,8 @@
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="document.content"></pre>
+      <pre v-json-formatter="{content: document.content, open: true}"></pre>
+      <pre v-json-formatter="{content: document.meta, open: false}"></pre>
     </div>
   </div>
 </template>
