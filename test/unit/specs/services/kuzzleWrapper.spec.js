@@ -13,14 +13,20 @@ describe('Kuzzle wrapper service', () => {
             first: 'toto'
           }
         },
-        id: 'id'
+        id: 'id',
+        meta: {
+          createdAt: 10101101
+        }
       }]
     }
     let responseWithAdditionalAttr = {
       documents: [{
         content: {name: {first: 'toto'}},
         id: 'id',
-        additionalAttribute: {name: 'name.first', value: 'toto'}
+        additionalAttribute: {name: 'name.first', value: 'toto'},
+        meta: {
+          createdAt: 10101101
+        }
       }],
       total: 42
     }

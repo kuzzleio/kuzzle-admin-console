@@ -5,7 +5,7 @@
       <i class="fa" :class="notificationIcon"></i> {{notification.text}} - {{ago}}
     </div>
     <div class="collapsible-body" v-if="notification.source">
-      <p v-json-formatter="notification.source"></p>
+      <p v-json-formatter="{content: notification.source, open: true}"></p>
     </div>
   </li>
 </template>
