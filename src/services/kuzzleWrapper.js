@@ -112,7 +112,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
 
   return kuzzle
     .collection(collection, index)
-    .searchPromise({...filters}, {...pagination, sort})
+    .searchPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
 
@@ -154,7 +154,7 @@ export const getMappingDocument = (collection, index) => {
 export const performSearchUsers = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security
-    .searchUsersPromise({...filters}, {...pagination, sort})
+    .searchUsersPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
 
@@ -195,7 +195,7 @@ export const getMappingUsers = () => {
 export const performSearchProfiles = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security
-    .searchProfilesPromise({...filters}, {...pagination, sort})
+    .searchProfilesPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
 
@@ -236,7 +236,7 @@ export const getMappingProfiles = () => {
 export const performSearchRoles = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security
-    .searchRolesPromise({...filters}, {...pagination, sort})
+    .searchRolesPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
 
