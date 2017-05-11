@@ -5,7 +5,7 @@ services:
     image: kuzzleio/proxy
 
   kuzzle:
-    image: kuzzleio/kuzzle
+    image: kuzzleio/kuzzle:develop
     depends_on:
       - redis
       - elasticsearch
