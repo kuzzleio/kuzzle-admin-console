@@ -5,6 +5,7 @@
   :error="error"
   @document-create::create="update"
   @document-create::cancel="cancel"
+  @document-create::error="setError"
   v-model="document"
   :hide-id="true">
   </create-or-update>
@@ -56,6 +57,9 @@
         } else {
           this.$router.push({name: 'SecurityRolesList'})
         }
+      },
+      setError (payload) {
+        this.error = payload
       }
     },
     mounted () {

@@ -147,7 +147,11 @@
         this.$emit('document-create::reset-error')
       },
       create () {
-        this.$emit('document-create::create', {...this.value})
+        if (this.$refs.jsoneditor.isValid()) {
+          this.$emit('document-create::create', {...this.value})
+        } else {
+          this.$emit('document-create::error', 'Invalid JSON provided.')
+        }
       },
       cancel () {
         this.$emit('document-create::cancel')

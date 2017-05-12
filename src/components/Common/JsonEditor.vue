@@ -55,6 +55,14 @@
         } catch (e) {
           return null
         }
+      },
+      isValid () {
+        try {
+          JSON.parse(this.editor.getValue())
+          return true
+        } catch (e) {
+          return false
+        }
       }
     },
     watch: {

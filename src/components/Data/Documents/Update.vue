@@ -18,6 +18,7 @@
       @document-create::create="update"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = null"
+      @document-create::error="setError"
       :error="error"
       :index="index"
       :collection="collection"
@@ -116,6 +117,9 @@
           .catch(err => {
             this.$store.commit(SET_TOAST, {text: err.message})
           })
+      },
+      setError (payload) {
+        this.error = payload
       }
     },
     mounted () {

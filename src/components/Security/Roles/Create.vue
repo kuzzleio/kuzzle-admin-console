@@ -6,6 +6,7 @@
   @document-create::reset-error="error = ''"
   @document-create::create="create"
   @document-create::cancel="cancel"
+  @document-create::error="setError"
   @change-id="updateId"
   v-model="document">
   </create-or-update>
@@ -59,6 +60,9 @@
       },
       updateId (id) {
         this.id = id
+      },
+      setError (payload) {
+        this.error = payload
       }
     }
   }

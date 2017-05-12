@@ -8,6 +8,7 @@
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = ''"
+      @document-create::error="setError"
       :mandatory-id="true"
       :error="error"
       collection="users"
@@ -73,6 +74,9 @@
       },
       updateId (id) {
         this.id = id
+      },
+      setError (payload) {
+        this.error = payload
       }
     }
   }
