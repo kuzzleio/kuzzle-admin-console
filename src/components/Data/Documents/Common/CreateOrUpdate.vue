@@ -147,6 +147,10 @@
         this.$emit('document-create::reset-error')
       },
       create () {
+        if (!this.$store.state.collection.defaultViewJson) {
+          return this.$emit('document-create::create', {...this.value})
+        }
+
         if (this.$refs.jsoneditor.isValid()) {
           this.$emit('document-create::create', {...this.value})
         } else {
