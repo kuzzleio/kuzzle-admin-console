@@ -4,6 +4,7 @@
       :headline="headline"
       @collection-create::create="update"
       @collection-create::reset-error="error = ''"
+      @document-create::error="setError"
       :error="error"
       :index="index">
     </create-or-update>
@@ -55,6 +56,9 @@
           .catch(e => {
             this.error = e.message
           })
+      },
+      setError (payload) {
+        this.error = payload
       }
     },
     mounted () {

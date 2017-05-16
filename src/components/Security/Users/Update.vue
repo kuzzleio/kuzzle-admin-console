@@ -7,6 +7,7 @@
     <create-or-update
       @document-create::create="update"
       @document-create::cancel="cancel"
+      @document-create::error="setError"
       index="%kuzzle"
       collection="users"
       :hide-id="true"
@@ -71,6 +72,9 @@
         } else {
           this.$router.push({name: 'SecurityUsersList'})
         }
+      },
+      setError (payload) {
+        this.error = payload
       }
     },
     mounted () {

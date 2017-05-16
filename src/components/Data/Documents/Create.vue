@@ -11,6 +11,7 @@
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = null"
+      @document-create::error="setError"
       :error="error"
       :index="index"
       :collection="collection"
@@ -99,6 +100,9 @@
         } else {
           this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
+      },
+      setError (payload) {
+        this.error = payload
       }
     }
   }
