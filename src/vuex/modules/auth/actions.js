@@ -6,7 +6,7 @@ import Promise from 'bluebird'
 
 export default {
   [types.DO_LOGIN] ({commit, dispatch}, data) {
-    let user = SessionUser()
+    const user = SessionUser()
 
     return new Promise((resolve, reject) => {
       kuzzle
@@ -31,13 +31,12 @@ export default {
 
           resolve()
         })
-        .catch(error => {
-          reject(new Error(error.message))
-        })
+        .catch(error => reject(new Error(error.message)))
     })
   },
   [types.LOGIN_BY_TOKEN] ({commit, dispatch}, data) {
-    let user = SessionUser()
+    const user = SessionUser()
+
     if (!data.token) {
       commit(types.SET_CURRENT_USER, SessionUser())
       commit(types.SET_TOKEN_VALID, false)
@@ -73,7 +72,6 @@ export default {
             return Promise.resolve(user)
           })
       })
-      .catch(error => Promise.reject(new Error(error.message)))
   },
   [types.CHECK_FIRST_ADMIN] ({commit}) {
     return kuzzle
