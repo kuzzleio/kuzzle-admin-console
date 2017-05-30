@@ -285,7 +285,7 @@
         }
       },
       notificationToMessage (notification) {
-        const idText = notification.type === 'doucment' && notification.document.id ? `(${notification.document.id})` : ''
+        const idText = notification.type === 'document' && notification.document.id ? `(${notification.document.id})` : ''
         const messageItem = {
           text: '',
           icon: 'file',
