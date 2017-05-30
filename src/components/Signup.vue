@@ -122,10 +122,22 @@
         this.error = null
         this.waiting = true
 
+        const firstAdminRequest = {
+          _id: this.username,
+          reset: this.reset,
+          body: {
+            content: {},
+            credentials: {
+              local: {
+                username: this.username,
+                password: this.password1
+              }
+            }
+          }
+        }
+
         kuzzle
-          .queryPromise(
-            {controller: 'security', action: 'createFirstAdmin'},
-            {_id: this.username, reset: this.reset, body: {username: this.username, password: this.password1}})
+          .queryPromise({controller: 'security', action: 'createFirstAdmin'}, firstAdminRequest)
           .then(() => {
             this.$store.commit(types.SET_ADMIN_EXISTS, true)
             this.$router.push({name: 'Login'})
