@@ -53,8 +53,8 @@ export const initStoreWithKuzzle = (store) => {
       }
     }
   })
-  kuzzle.removeAllListeners('error')
-  kuzzle.addListener('error', () => {
+  kuzzle.removeAllListeners('networkError')
+  kuzzle.addListener('networkError', () => {
     if (!store.state.kuzzle.errorFromKuzzle) {
       store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, true)
     }

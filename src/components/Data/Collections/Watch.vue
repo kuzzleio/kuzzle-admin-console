@@ -216,7 +216,7 @@
         filters: {},
         availableFilters,
         formatFromBasicSearch,
-        subscribeOptions: {scope: 'all', users: 'all'},
+        subscribeOptions: {scope: 'all', users: 'all', state: 'all'},
         notifications: [],
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
@@ -363,9 +363,6 @@
             messageItem.icon = 'user'
             messageItem.class = 'message-user'
             break
-
-          default: 
-            console.log('UNKNOWN ACTION CATCHED: ' + notification.action)
         }
 
         messageItem.timestamp = notification.timestamp
