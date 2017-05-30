@@ -10,22 +10,6 @@
         </collection-dropdown>
       </headline>
 
-      <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" v-scroll-fix="scrollGlueActive">
-        <div class="row">
-          <subscription-controls
-            @realtime-toggle-subscription="toggleSubscription"
-            @realtime-scroll-glue="setScrollGlue"
-            @realtime-clear-messages="clear"
-            :index="index"
-            :collection="collection"
-            :subscribed="subscribed"
-            :warning="warning">
-          </subscription-controls>
-        </div>
-      </div>
-      <!-- /subscription control bar fixed -->
-
       <collection-tabs></collection-tabs>
 
       <div class="card-panel" v-if="!canSubscribe(index, collection)">
@@ -45,24 +29,24 @@
       </div>
 
       <div v-else>
-          <filters
-            @filters-basic-search="basicSearch"
-            @filters-raw-search="rawSearch"
-            @filters-refresh-search="refreshSearch"
-            label-search-button="Apply filters"
-            label-complex-query="Click to open the filter builder"
-            :available-filters="availableFilters"
-            :quick-filter-enabled="false"
-            :sorting-enabled="false"
-            :raw-filter="$store.getters.rawFilter"
-            :basic-filter="$store.getters.basicFilter"
-            :format-from-basic-search="formatFromBasicSearch"
-            :set-basic-filter="setBasicFilter"
-            :basic-filter-form="$store.getters.basicFilterForm">
-          </filters>
+        <filters
+          @filters-basic-search="basicSearch"
+          @filters-raw-search="rawSearch"
+          @filters-refresh-search="refreshSearch"
+          label-search-button="Apply filters"
+          label-complex-query="Click to open the filter builder"
+          :available-filters="availableFilters"
+          :quick-filter-enabled="false"
+          :sorting-enabled="false"
+          :raw-filter="$store.getters.rawFilter"
+          :basic-filter="$store.getters.basicFilter"
+          :format-from-basic-search="formatFromBasicSearch"
+          :set-basic-filter="setBasicFilter"
+          :basic-filter-form="$store.getters.basicFilterForm">
+        </filters>
 
         <div class="card-panel card-body" v-show="subscribed || notifications.length">
-          <div class="row realtime margin-bottom-0">
+          <div :class="notificationControlClass">
             <!-- subscription controls in page flow -->
             <subscription-controls
               v-scroll-glue="scrollGlueActive"
@@ -142,27 +126,17 @@
       position: relative;
     }
 
-    #notification-controls-fixed {
-      &.closed {
-        padding: 0;
-        height: 0;
-        box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0);
-        border-bottom-left-radius: 100%;
-        border-bottom-right-radius: 100%;
-      }
-
-      z-index: 200;
-      overflow: hidden;
+    .sticky {
       position: fixed;
       top: 50px;
-      left: 240px;
+      left: 260px;
       line-height: 20px;
-      height: 50px;
-      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
       padding: 10px 5px;
-      right: 0;
+      right: 20px;
+      z-index: 200;
       background-color: #FFF;
       transition: all .3s;
+      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
     }
 
     #notification-container {
@@ -186,10 +160,10 @@
 </style>
 
 <script>
+  import {debounce} from 'lodash'
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
 
-  import ScrollFix from '../../../directives/scroll-fix.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
 
   import collapsible from '../../../directives/Materialize/collapsible.directive'
@@ -221,26 +195,22 @@
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
         scrollGlueActive: true,
-        scrollListener: null
+        scrollY: window.scrollY
       }
     },
     mounted () {
       this.notifications = []
     },
     destroyed () {
-      // trigged when user leave watch data page
-      if (this.scrollListener !== null) {
-        clearInterval(this.scrollListener)
-      }
       this.reset()
       if (this.room) {
         this.room.unsubscribe()
       }
+      window.removeEventListener('scroll', this.handleScroll)
     },
     directives: {
       collapsible,
-      ScrollGlue,
-      ScrollFix
+      ScrollGlue
     },
     components: {
       CollectionTabs,
@@ -436,7 +406,10 @@
       },
       setBasicFilter (value) {
         this.$store.commit(SET_BASIC_FILTER, value)
-      }
+      },
+      handleScroll: debounce(function () {
+        this.scrollY = window.scrollY
+      })
     },
     watch: {
       index () {
@@ -456,6 +429,19 @@
 
         this.filters = filters
       }
+    },
+    computed: {
+      notificationControlClass () {
+        return {
+          row: true,
+          realtime: true,
+          'margin-bottom-0': true,
+          sticky: this.scrollY > 230
+        }
+      }
+    },
+    created () {
+      window.addEventListener('scroll', this.handleScroll)
     }
   }
 </script>
