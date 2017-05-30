@@ -15,7 +15,9 @@
     "e2e": "npm run e2e-chrome && npm run e2e-firefox",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-    "install_deps": "npm i && npm i -g bower && bower install --allow-root --no-interactive"
+    "install_deps": "npm i && npm i -g bower && bower install --allow-root --no-interactive",
+    "prepublishOnly": "npm run build",
+    "start": "http-server dist"
   },
   "keywords": [
     "kuzzle",
