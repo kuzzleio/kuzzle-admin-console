@@ -38,7 +38,7 @@
               You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
             </p>
             <p>
-              <em>Learn more about security & permissions on <a href="http://docs.kuzzle.io/guide/#security" target="_blank">Kuzzle guide</a></em>
+              <em>Learn more about security & permissions on <a href="http://docs.kuzzle.io/guide/essentials/security/" target="_blank">Kuzzle guide</a></em>
             </p>
           </div>
         </div>
@@ -50,7 +50,7 @@
             @filters-raw-search="rawSearch"
             @filters-refresh-search="refreshSearch"
             label-search-button="Apply filters"
-            label-complex-query="Quick search disabled, click to open filter builder"
+            label-complex-query="Click to open the filter builder"
             :available-filters="availableFilters"
             :quick-filter-enabled="false"
             :sorting-enabled="false"
@@ -78,7 +78,7 @@
           </div>
         </div>
 
-        <div class="card-panel card-body" v-show="canSubscribe(index, collection) && !subscribed && !notifications.length">
+        <div class="card-panel card-body" v-show="!subscribed && !notifications.length">
           <div class="row valign-bottom empty-set">
             <div class="col s1 offset-s1">
               <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
@@ -86,7 +86,7 @@
             <div class="col s8 m9 l10">
               <p>
                 You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/kuzzle-dsl/" target="_blank">Kuzzle DSL</a></em>
               </p>
               <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
                 <i class="fa left fa-play"></i>
@@ -96,7 +96,7 @@
           </div>
         </div>
 
-        <div class="card-panel" v-show="canSubscribe(index, collection) && subscribed && !notifications.length">
+        <div class="card-panel" v-show="subscribed && !notifications.length">
           <div class="row valign-center empty-set empty-set-condensed">
             <div class="col s1 offset-s1">
               <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/kuzzle-dsl/" target="_blank">Kuzzle DSL</a></em>
               </p>
             </div>
           </div>
@@ -216,7 +216,7 @@
         filters: {},
         availableFilters,
         formatFromBasicSearch,
-        subscribeOptions: {scope: 'all', users: 'all', state: 'all'},
+        subscribeOptions: {scope: 'all', users: 'all'},
         notifications: [],
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
@@ -285,74 +285,87 @@
         }
       },
       notificationToMessage (notification) {
-        var messageItem = {
-          id: notification.document.id,
+        const idText = notification.type === 'doucment' && notification.document.id ? `(${notification.document.id})` : ''
+        const messageItem = {
           text: '',
           icon: 'file',
-          index: notification.index || '',
-          collection: notification.collection || '',
           'class': '',
-          source: {
-            source: notification.document.content,
-            metadata: notification.metadata
-          },
-          expanded: false,
-          canEdit: true
+          source: {},
+          expanded: false
         }
+
+        if (notification.volatile && Object.keys(notification.volatile).length > 0) {
+          messageItem.source.volatile = notification.volatile
+        }
+
+        if (notification.type === 'document') {
+          if (notification.document.id) {
+            messageItem.source.id = notification.document.id
+          }
+
+          if (notification.document.meta && Object.keys(notification.document.meta).length > 0) {
+            messageItem.source.meta = notification.document.meta
+          }
+
+          if (notification.document.content && Object.keys(notification.document.content).length > 0) {
+            messageItem.source.body = notification.document.content
+          }
+        } else {
+          messageItem.source.users = notification.user.count
+        }
+
+        messageItem.empty = Object.keys(messageItem.source).length === 0
 
         switch (notification.action) {
           case 'publish':
             messageItem.text = 'Received volatile message'
             messageItem.icon = 'send'
             messageItem.class = 'message-volatile'
-            messageItem.canEdit = false
             break
           case 'create':
           case 'createOrReplace':
             messageItem.icon = 'file'
 
             if (notification.state === 'done') {
-              messageItem.text = 'Created new document'
+              messageItem.text = `New document created ${idText}`
               messageItem.class = 'message-created-updated-doc'
             } else if (notification.state === 'pending') {
-              messageItem.text = 'Creating new document'
+              messageItem.text = `Pending document creation ${idText}`
               messageItem.class = 'message-pending'
             }
             break
 
           case 'update':
-            messageItem.text = 'Updated document'
+            messageItem.text = `Document updated ${idText}`
             messageItem.icon = 'file'
             messageItem.class = 'message-created-updated-doc'
             break
 
           case 'delete':
             messageItem.icon = 'remove'
-            messageItem.canEdit = false
             if (notification.state === 'done') {
-              messageItem.text = 'Deleted document'
+              messageItem.text = `Document deleted ${idText}`
               messageItem.class = 'message-deleted-doc'
             } else if (notification.state === 'pending') {
-              messageItem.text = 'Deleting document'
+              messageItem.text = `Pending document deletion ${idText}`
               messageItem.class = 'message-pending'
             }
             break
 
-          case 'on':
+          case 'subscribe':
             messageItem.text = 'A new user is listening to this room'
             messageItem.icon = 'user'
             messageItem.class = 'message-user'
-            messageItem.canEdit = false
-            messageItem.source = notification.metadata
             break
 
-          case 'off':
+          case 'unsubscribe':
             messageItem.text = 'A user exited this room'
             messageItem.icon = 'user'
             messageItem.class = 'message-user'
-            messageItem.source = notification.metadata
-            messageItem.canEdit = false
             break
+
+          default: 
+            console.log('UNKNOWN ACTION CATCHED: ' + notification.action)
         }
 
         messageItem.timestamp = notification.timestamp
@@ -378,7 +391,7 @@
 
           if (this.warning.count >= 100) {
             this.warning.info = false
-            this.warning.message = 'You are receiving too many messages, try to specify a filter to reduce the amount of messages'
+            this.warning.message = 'You are receiving too many messages, try to add more filters to reduce the amount of messages'
           }
 
           // two shift instead of one to have a visual effect on items in the view
