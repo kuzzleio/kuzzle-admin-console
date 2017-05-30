@@ -198,6 +198,9 @@
         scrollY: window.scrollY
       }
     },
+    created () {
+      window.addEventListener('scroll', this.handleScroll)
+    },
     mounted () {
       this.notifications = []
     },
@@ -439,9 +442,6 @@
           sticky: this.scrollY > 230
         }
       }
-    },
-    created () {
-      window.addEventListener('scroll', this.handleScroll)
     }
   }
 </script>
