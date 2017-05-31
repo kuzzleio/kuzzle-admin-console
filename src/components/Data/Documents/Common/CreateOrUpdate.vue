@@ -62,7 +62,7 @@
             <a @click.prevent="cancel" class="btn-flat waves-effect">
               Cancel
             </a>
-            <button type="submit" class="btn primary waves-effect waves-light">
+            <button type="submit" class="btn primary waves-effect waves-light" :disabled="submitted">
               <i v-if="!hideId" class="fa fa-plus-circle left"></i>
               <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
@@ -139,7 +139,8 @@
     data () {
       return {
         jsonDocument: {},
-        warningSwitch: false
+        warningSwitch: false,
+        submitted: false
       }
     },
     methods: {
@@ -147,6 +148,8 @@
         this.$emit('document-create::reset-error')
       },
       create () {
+        this.submitted = true
+
         if (!this.$store.state.collection.defaultViewJson) {
           return this.$emit('document-create::create', {...this.value})
         }
