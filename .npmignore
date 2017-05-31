@@ -10,4 +10,3 @@ docker-compose-custom.yml
 bower_components
 phantomjsdriver.log
 *.sublime-*
-dist
