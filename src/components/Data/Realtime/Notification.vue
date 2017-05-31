@@ -4,8 +4,8 @@
       <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
       <i class="fa" :class="notificationIcon"></i> {{notification.text}} - {{ago}}
     </div>
-    <div class="collapsible-body" v-if="notification.source">
-      <p v-json-formatter="{content: notification.source, open: true}"></p>
+    <div class="collapsible-body" v-if="!notification.empty">
+      <p v-json-formatter="{content: notification.source, open: true}"/>
     </div>
   </li>
 </template>

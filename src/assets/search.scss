@@ -1,7 +1,7 @@
 .search-filter {
   .filters {
     .actions-quicksearch {
-      transform: translateY(50%);
+      transform: translateY(25%);
     }
     .search-bar {
       position: relative;
@@ -47,26 +47,22 @@
       }
     }
 
-    .complex-search {
-      button {
-      }
-      .search-bar {
-        border-bottom: solid 1px #e4e1e1;
-        .chip {
-          margin-top: 9px;
-          margin-left: 30px;
+    .search-bar {
+      border-bottom: solid 1px #e4e1e1;
+      .chip {
+        margin-top: 9px;
+        margin-left: 30px;
+        cursor: pointer;
+        .label-chip {
+          display: inline-block;
+          padding-right: 10px;
+        }
+        i {
+          position: relative;
           cursor: pointer;
-          .label-chip {
-            display: inline-block;
-            padding-right: 10px;
-          }
-          i {
-            position: relative;
-            cursor: pointer;
-            float: right;
-            font-size: 13px;
-            line-height: 32px;
-          }
+          float: right;
+          font-size: 13px;
+          line-height: 32px;
         }
       }
     }
