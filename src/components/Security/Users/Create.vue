@@ -22,7 +22,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
-  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
+  import CreateOrUpdate from './CreateOrUpdate'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {

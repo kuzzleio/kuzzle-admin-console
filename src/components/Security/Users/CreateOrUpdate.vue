@@ -1,9 +1,5 @@
 <template>
   <div class="wrapper collection-edit">
-    <headline>
-      {{headline}}
-    </headline>
-
     <stepper
       :current-step="editionStep"
       :steps="['Basic', 'Credentials', 'Custom']"
@@ -13,6 +9,9 @@
 
     <div class="row card-panel card-body">
       <div class="col s12">
+        <basic v-show="editionStep === 0"></basic>
+        <credentials v-show="editionStep === 1"></credentials>
+        <custom v-show="editionStep === 2"></custom>
 
         <div class="col s7 m8 l8" v-if="error">
           <div class="card error red-color white-text">
@@ -26,12 +25,32 @@
 </template>
 
 <script type="text/javascript">
+import Headline from '../../Materialize/Headline'
+import Stepper from '../../Common/Stepper'
+import Basic from './Steps/Basic'
+import Credentials from './Steps/Credentials'
+import Custom from './Steps/Custom'
+
 export default {
-  name: "UserCreateOrUpdate",
+  name: 'UserCreateOrUpdate',
   props: {
-    headline: {
-      type: String,
-      required: true
+    error: String
+  },
+  components: {
+    Headline,
+    Stepper,
+    Basic,
+    Credentials,
+    Custom
+  },
+  data () {
+    return {
+      editionStep: 0
+    }
+  },
+  methods: {
+    setEditionStep (value) {
+      this.editionStep = value
     }
   }
 }

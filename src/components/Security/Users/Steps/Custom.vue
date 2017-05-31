@@ -1,3 +1,3 @@
 <template>
-  <h1>Credentials</h1>
+  <h1>Custom</h1>
 </template>
