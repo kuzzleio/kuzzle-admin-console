@@ -10,22 +10,6 @@
         </collection-dropdown>
       </headline>
 
-      <!-- subscription control bar fixed -->
-      <div id="notification-controls-fixed" v-scroll-fix="scrollGlueActive">
-        <div class="row">
-          <subscription-controls
-            @realtime-toggle-subscription="toggleSubscription"
-            @realtime-scroll-glue="setScrollGlue"
-            @realtime-clear-messages="clear"
-            :index="index"
-            :collection="collection"
-            :subscribed="subscribed"
-            :warning="warning">
-          </subscription-controls>
-        </div>
-      </div>
-      <!-- /subscription control bar fixed -->
-
       <collection-tabs></collection-tabs>
 
       <div class="card-panel" v-if="!canSubscribe(index, collection)">
@@ -38,31 +22,31 @@
               You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
             </p>
             <p>
-              <em>Learn more about security & permissions on <a href="http://docs.kuzzle.io/guide/#security" target="_blank">Kuzzle guide</a></em>
+              <em>Learn more about security &amp; permissions on <a href="http://docs.kuzzle.io/guide/essentials/security/" target="_blank">Kuzzle guide</a></em>
             </p>
           </div>
         </div>
       </div>
 
       <div v-else>
-          <filters
-            @filters-basic-search="basicSearch"
-            @filters-raw-search="rawSearch"
-            @filters-refresh-search="refreshSearch"
-            label-search-button="Apply filters"
-            label-complex-query="Quick search disabled, click to open filter builder"
-            :available-filters="availableFilters"
-            :quick-filter-enabled="false"
-            :sorting-enabled="false"
-            :raw-filter="$store.getters.rawFilter"
-            :basic-filter="$store.getters.basicFilter"
-            :format-from-basic-search="formatFromBasicSearch"
-            :set-basic-filter="setBasicFilter"
-            :basic-filter-form="$store.getters.basicFilterForm">
-          </filters>
+        <filters
+          @filters-basic-search="basicSearch"
+          @filters-raw-search="rawSearch"
+          @filters-refresh-search="refreshSearch"
+          label-search-button="Apply filters"
+          label-complex-query="Click to open the filter builder"
+          :available-filters="availableFilters"
+          :quick-filter-enabled="false"
+          :sorting-enabled="false"
+          :raw-filter="$store.getters.rawFilter"
+          :basic-filter="$store.getters.basicFilter"
+          :format-from-basic-search="formatFromBasicSearch"
+          :set-basic-filter="setBasicFilter"
+          :basic-filter-form="$store.getters.basicFilterForm">
+        </filters>
 
         <div class="card-panel card-body" v-show="subscribed || notifications.length">
-          <div class="row realtime margin-bottom-0">
+          <div :class="notificationControlClass">
             <!-- subscription controls in page flow -->
             <subscription-controls
               v-scroll-glue="scrollGlueActive"
@@ -78,7 +62,7 @@
           </div>
         </div>
 
-        <div class="card-panel card-body" v-show="canSubscribe(index, collection) && !subscribed && !notifications.length">
+        <div class="card-panel card-body" v-show="!subscribed && !notifications.length">
           <div class="row valign-bottom empty-set">
             <div class="col s1 offset-s1">
               <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
@@ -86,7 +70,7 @@
             <div class="col s8 m9 l10">
               <p>
                 You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/kuzzle-dsl/" target="_blank">Kuzzle DSL</a></em>
               </p>
               <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
                 <i class="fa left fa-play"></i>
@@ -96,7 +80,7 @@
           </div>
         </div>
 
-        <div class="card-panel" v-show="canSubscribe(index, collection) && subscribed && !notifications.length">
+        <div class="card-panel" v-show="subscribed && !notifications.length">
           <div class="row valign-center empty-set empty-set-condensed">
             <div class="col s1 offset-s1">
               <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
@@ -106,7 +90,7 @@
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/real-time-filters/" target="_blank">Kuzzle real-time reference</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="http://docs.kuzzle.io/kuzzle-dsl/" target="_blank">Kuzzle DSL</a></em>
               </p>
             </div>
           </div>
@@ -142,27 +126,17 @@
       position: relative;
     }
 
-    #notification-controls-fixed {
-      &.closed {
-        padding: 0;
-        height: 0;
-        box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0);
-        border-bottom-left-radius: 100%;
-        border-bottom-right-radius: 100%;
-      }
-
-      z-index: 200;
-      overflow: hidden;
+    .sticky {
       position: fixed;
       top: 50px;
-      left: 240px;
+      left: 260px;
       line-height: 20px;
-      height: 50px;
-      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
       padding: 10px 5px;
-      right: 0;
+      right: 20px;
+      z-index: 200;
       background-color: #FFF;
       transition: all .3s;
+      box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
     }
 
     #notification-container {
@@ -186,10 +160,10 @@
 </style>
 
 <script>
+  import {debounce} from 'lodash'
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
 
-  import ScrollFix from '../../../directives/scroll-fix.directive'
   import ScrollGlue from '../../../directives/scroll-glue.directive'
 
   import collapsible from '../../../directives/Materialize/collapsible.directive'
@@ -221,26 +195,25 @@
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
         scrollGlueActive: true,
-        scrollListener: null
+        scrollY: window.scrollY
       }
+    },
+    created () {
+      window.addEventListener('scroll', this.handleScroll)
     },
     mounted () {
       this.notifications = []
     },
     destroyed () {
-      // trigged when user leave watch data page
-      if (this.scrollListener !== null) {
-        clearInterval(this.scrollListener)
-      }
       this.reset()
       if (this.room) {
         this.room.unsubscribe()
       }
+      window.removeEventListener('scroll', this.handleScroll)
     },
     directives: {
       collapsible,
-      ScrollGlue,
-      ScrollFix
+      ScrollGlue
     },
     components: {
       CollectionTabs,
@@ -285,73 +258,83 @@
         }
       },
       notificationToMessage (notification) {
-        var messageItem = {
-          id: notification.document.id,
+        const idText = notification.type === 'document' && notification.document.id ? `(${notification.document.id})` : ''
+        const messageItem = {
           text: '',
           icon: 'file',
-          index: notification.index || '',
-          collection: notification.collection || '',
           'class': '',
-          source: {
-            source: notification.document.content,
-            metadata: notification.metadata
-          },
-          expanded: false,
-          canEdit: true
+          source: {},
+          expanded: false
         }
+
+        if (notification.volatile && Object.keys(notification.volatile).length > 0) {
+          messageItem.source.volatile = notification.volatile
+        }
+
+        if (notification.type === 'document') {
+          if (notification.document.id) {
+            messageItem.source.id = notification.document.id
+          }
+
+          if (notification.document.meta && Object.keys(notification.document.meta).length > 0) {
+            messageItem.source.meta = notification.document.meta
+          }
+
+          if (notification.document.content && Object.keys(notification.document.content).length > 0) {
+            messageItem.source.body = notification.document.content
+          }
+        } else {
+          messageItem.source.users = notification.user.count
+        }
+
+        messageItem.empty = Object.keys(messageItem.source).length === 0
 
         switch (notification.action) {
           case 'publish':
             messageItem.text = 'Received volatile message'
             messageItem.icon = 'send'
             messageItem.class = 'message-volatile'
-            messageItem.canEdit = false
             break
           case 'create':
           case 'createOrReplace':
             messageItem.icon = 'file'
 
             if (notification.state === 'done') {
-              messageItem.text = 'Created new document'
+              messageItem.text = `New document created ${idText}`
               messageItem.class = 'message-created-updated-doc'
             } else if (notification.state === 'pending') {
-              messageItem.text = 'Creating new document'
+              messageItem.text = `Pending document creation ${idText}`
               messageItem.class = 'message-pending'
             }
             break
 
           case 'update':
-            messageItem.text = 'Updated document'
+            messageItem.text = `Document updated ${idText}`
             messageItem.icon = 'file'
             messageItem.class = 'message-created-updated-doc'
             break
 
           case 'delete':
             messageItem.icon = 'remove'
-            messageItem.canEdit = false
             if (notification.state === 'done') {
-              messageItem.text = 'Deleted document'
+              messageItem.text = `Document deleted ${idText}`
               messageItem.class = 'message-deleted-doc'
             } else if (notification.state === 'pending') {
-              messageItem.text = 'Deleting document'
+              messageItem.text = `Pending document deletion ${idText}`
               messageItem.class = 'message-pending'
             }
             break
 
-          case 'on':
+          case 'subscribe':
             messageItem.text = 'A new user is listening to this room'
             messageItem.icon = 'user'
             messageItem.class = 'message-user'
-            messageItem.canEdit = false
-            messageItem.source = notification.metadata
             break
 
-          case 'off':
+          case 'unsubscribe':
             messageItem.text = 'A user exited this room'
             messageItem.icon = 'user'
             messageItem.class = 'message-user'
-            messageItem.source = notification.metadata
-            messageItem.canEdit = false
             break
         }
 
@@ -378,7 +361,7 @@
 
           if (this.warning.count >= 100) {
             this.warning.info = false
-            this.warning.message = 'You are receiving too many messages, try to specify a filter to reduce the amount of messages'
+            this.warning.message = 'You are receiving too many messages, try to add more filters to reduce the amount of messages'
           }
 
           // two shift instead of one to have a visual effect on items in the view
@@ -426,7 +409,10 @@
       },
       setBasicFilter (value) {
         this.$store.commit(SET_BASIC_FILTER, value)
-      }
+      },
+      handleScroll: debounce(function () {
+        this.scrollY = window.scrollY
+      })
     },
     watch: {
       index () {
@@ -445,6 +431,16 @@
         }
 
         this.filters = filters
+      }
+    },
+    computed: {
+      notificationControlClass () {
+        return {
+          row: true,
+          realtime: true,
+          'margin-bottom-0': true,
+          sticky: this.scrollY > 230
+        }
       }
     }
   }
