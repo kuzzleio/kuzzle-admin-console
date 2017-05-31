@@ -6,7 +6,7 @@
 
     <stepper
       :current-step="editionStep"
-      :is-realtime="$store.getters.isRealtimeOnly"
+      :disabled-steps="$store.getters.isRealtimeOnly ? [1] : []"
       :steps="['Mapping', 'Form']"
       @changed-step="setEditionStep"
       class="card-panel card-header">
