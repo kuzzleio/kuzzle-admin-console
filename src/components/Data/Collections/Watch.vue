@@ -22,7 +22,7 @@
               You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
             </p>
             <p>
-              <em>Learn more about security & permissions on <a href="http://docs.kuzzle.io/guide/essentials/security/" target="_blank">Kuzzle guide</a></em>
+              <em>Learn more about security &amp; permissions on <a href="http://docs.kuzzle.io/guide/essentials/security/" target="_blank">Kuzzle guide</a></em>
             </p>
           </div>
         </div>
