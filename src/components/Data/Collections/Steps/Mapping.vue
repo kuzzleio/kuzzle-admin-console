@@ -83,7 +83,6 @@
 <script>
   import JsonEditor from '../../../Common/JsonEditor'
   import {
-    SET_EDITION_STEP,
     SET_MAPPING,
     SET_REALTIME_ONLY,
     SET_COLLECTION_NAME
@@ -115,7 +114,7 @@
         if (this.collectionIsRealtimeOnly) {
           this.$emit('collection-create::create')
         } else {
-          this.$store.commit(SET_EDITION_STEP, 2)
+          this.$emit('collection-create::next-step')
         }
       },
       cancel () {
