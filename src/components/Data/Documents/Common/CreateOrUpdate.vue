@@ -148,6 +148,10 @@
         this.$emit('document-create::reset-error')
       },
       create () {
+        if (this.submitted) {
+          return
+        }
+
         this.submitted = true
 
         if (!this.$store.state.collection.defaultViewJson) {
