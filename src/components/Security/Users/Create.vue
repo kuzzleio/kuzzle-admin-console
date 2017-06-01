@@ -4,32 +4,56 @@
       User - Create
     </headline>
 
-    <create-or-update
-      @document-create::create="create"
-      @document-create::cancel="cancel"
-      @document-create::reset-error="error = ''"
-      @document-create::error="setError"
-      :mandatory-id="true"
-      :error="error"
-      collection="users"
-      v-model="document"
-      @change-id="updateId">
-    </create-or-update>
+    <div class="wrapper collection-edit">
+      <stepper
+        :current-step="editionStep"
+        :steps="['Basic', 'Credentials', 'Custom']"
+        :disabled-steps="disabledSteps"
+        @changed-step="setEditionStep"
+        class="card-panel card-header">
+      </stepper>
+
+      <div class="row card-panel card-body">
+        <div class="col s12">
+          <basic
+            v-show="editionStep === 0"
+            @cancel="onCancel"
+            @error="setError"
+            @next="onBasicSubmitted"
+          ></basic>
+          <credentials v-show="editionStep === 1"></credentials>
+          <custom v-show="editionStep === 2"></custom>
+
+          <div class="col s7 m8 l8" v-if="error">
+            <div class="card error red-color white-text">
+              <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+              An error occurred while {{$store.state.route.params.user ? 'updating' : 'creating'}} user: <br>{{error}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 
 <script>
   import Headline from '../../Materialize/Headline'
+  import Stepper from '../../Common/Stepper'
+  import Basic from './Steps/Basic'
+  import Credentials from './Steps/Credentials'
+  import Custom from './Steps/Custom'
   import kuzzle from '../../../services/kuzzle'
-  import CreateOrUpdate from './CreateOrUpdate'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UsersSecurityCreate',
     components: {
       Headline,
-      CreateOrUpdate
+      Stepper,
+      Basic,
+      Credentials,
+      Custom
     },
     props: {
       index: String,
@@ -38,8 +62,19 @@
     data () {
       return {
         error: '',
-        document: {},
-        id: null
+        id: null,
+        editionStep: 0,
+        basicPayload: null,
+        credentialsPayload: null,
+        customPayload: null
+      }
+    },
+    computed: {
+      disabledSteps () {
+        if (!this.basicPayload) {
+          return [1, 2]
+        }
+        return []
       }
     },
     methods: {
@@ -72,11 +107,24 @@
           this.$router.push({name: 'SecurityUsersList'})
         }
       },
-      updateId (id) {
-        this.id = id
+      setEditionStep (value) {
+        this.editionStep = value
       },
-      setError (payload) {
-        this.error = payload
+      onCancel () {
+        this.$router.push({name: 'SecurityUsersList'})
+      },
+      setError (msg) {
+        this.error = msg
+        setTimeout(() => {
+          this.dismissError()
+        }, 5000)
+      },
+      dismissError () {
+        this.error = ''
+      },
+      onBasicSubmitted (payload) {
+        this.basicPayload = payload
+        this.editionStep++
       }
     }
   }
