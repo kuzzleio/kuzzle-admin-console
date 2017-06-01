@@ -24,36 +24,36 @@
       <div class="col s3">
         <strong>Profiles</strong>
       </div>
-
       <div class="col s9">
-        <m-select>
-          <option value="" disabled selected>Select a Profile to add</option>
-          <option value="1">Option 1</option>
-          <option value="2">Option 2</option>
-          <option value="3">Option 3</option>
-        </m-select>
+        <user-profile-list
+          :added-profiles="addedProfiles"
+          @selected-profile="onProfileSelected"
+        ></user-profile-list>
       </div>
     </div>
   </form>
 </template>
 
 <script type="text/javascript">
-import MSelect from '../../../Common/MSelect'
+import UserProfileList from './UserProfileList'
 
 export default {
   name: 'UserBasicData',
   components: {
-    MSelect
+    UserProfileList
   },
   data () {
     return {
       autoGenerateKUID: true,
-      addedProfileIds: []
+      addedProfiles: []
     }
   },
   methods: {
     setAutoGenerateKUID (event) {
       this.autoGenerateKUID = event.target.checked
+    },
+    onProfileSelected (profile) {
+      this.addedProfiles.push(profile)
     }
   }
 }
