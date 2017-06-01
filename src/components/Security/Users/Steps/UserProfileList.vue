@@ -1,7 +1,11 @@
 <template>
 <div>
   <div>
-    <div v-for="profile in addedProfiles" class="chip">
+    <div
+      v-for="profile in addedProfiles"
+      class="chip"
+      title="Click to remove"
+      @click="removeProfile(profile)">
       {{profile}}&nbsp;
       <i class="fa fa-trash"></i>
     </div>
@@ -56,6 +60,9 @@ export default {
     },
     onProfileSelected (profile) {
       this.$emit('selected-profile', profile)
+    },
+    removeProfile (profile) {
+      this.$emit('remove-profile', profile)
     }
   },
   mounted () {
@@ -67,5 +74,6 @@ export default {
 <style type="text/css" scoped>
 .chip {
   margin-right: 5px;
+  cursor: pointer;
 }
 </style>

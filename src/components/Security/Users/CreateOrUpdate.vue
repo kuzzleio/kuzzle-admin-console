@@ -3,13 +3,19 @@
     <stepper
       :current-step="editionStep"
       :steps="['Basic', 'Credentials', 'Custom']"
+      :disabled-steps="disabledSteps"
       @changed-step="setEditionStep"
       class="card-panel card-header">
     </stepper>
 
     <div class="row card-panel card-body">
       <div class="col s12">
-        <basic v-show="editionStep === 0"></basic>
+        <basic
+          v-show="editionStep === 0"
+          @cancel="onCancel"
+          @error="setError"
+          @next="onBasicSubmitted"
+        ></basic>
         <credentials v-show="editionStep === 1"></credentials>
         <custom v-show="editionStep === 2"></custom>
 
@@ -33,9 +39,7 @@ import Custom from './Steps/Custom'
 
 export default {
   name: 'UserCreateOrUpdate',
-  props: {
-    error: String
-  },
+  props: {},
   components: {
     Headline,
     Stepper,
@@ -45,12 +49,40 @@ export default {
   },
   data () {
     return {
-      editionStep: 0
+      editionStep: 0,
+      error: '',
+      basicPayload: null,
+      credentialsPayload: null,
+      customPayload: null
+    }
+  },
+  computed: {
+    disabledSteps () {
+      if (!this.basicPayload) {
+        return [1, 2]
+      }
+      return []
     }
   },
   methods: {
     setEditionStep (value) {
       this.editionStep = value
+    },
+    onCancel () {
+      this.$router.push({name: 'SecurityUsersList'})
+    },
+    setError (msg) {
+      this.error = msg
+      setTimeout(() => {
+        this.dismissError()
+      }, 5000)
+    },
+    dismissError () {
+      this.error = ''
+    },
+    onBasicSubmitted (payload) {
+      this.basicPayload = payload
+      this.editionStep++
     }
   }
 }

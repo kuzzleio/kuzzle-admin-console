@@ -17,7 +17,7 @@
         <label for="user-auto-generate-kuid">
           Auto-generate
         </label>
-        <input v-if="!autoGenerateKUID" placeholder="Custom KUID" id="custom-kuid" type="text" class="validate" required>
+        <input v-if="!autoGenerateKUID" v-model="customKUID" placeholder="Custom KUID" id="custom-kuid" type="text" class="validate" required>
       </div>
     </div class="row">
     <div class="row">
@@ -28,7 +28,23 @@
         <user-profile-list
           :added-profiles="addedProfiles"
           @selected-profile="onProfileSelected"
+          @remove-profile="removeProfile"
         ></user-profile-list>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div class="row">
+      <div class="col s3">
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="$emit('cancel')">Cancel</a>
+        <button type="submit" class="btn primary waves-effect waves-light">
+          Next
+        </button>
+      </div>
+      <div class="col s9">
+        <div v-if="error" class="card error red-color white-text">
+          <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+          {{error}}
+        </div>
       </div>
     </div>
   </form>
@@ -45,7 +61,9 @@ export default {
   data () {
     return {
       autoGenerateKUID: true,
-      addedProfiles: []
+      customKUID: null,
+      addedProfiles: [],
+      error: ''
     }
   },
   methods: {
@@ -54,6 +72,33 @@ export default {
     },
     onProfileSelected (profile) {
       this.addedProfiles.push(profile)
+    },
+    removeProfile (profile) {
+      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+    },
+    next () {
+      if (!this.autoGenerateKUID && !this.customKUID) {
+        this.setError('Please provide a custom KUID or select the auto-generate checkbox.')
+        return
+      }
+      if (!this.addedProfiles.length) {
+        this.setError('Please select at least one profile.')
+        return
+      }
+      this.$emit('next', {
+        autoGenerateKUID: this.autoGenerateKUID,
+        customKUID: this.customKUID,
+        addedProfiles: this.addedProfiles
+      })
+    },
+    setError (msg) {
+      this.error = msg
+      setTimeout(() => {
+        this.dismissError()
+      }, 5000)
+    },
+    dismissError () {
+      this.error = ''
     }
   }
 }
