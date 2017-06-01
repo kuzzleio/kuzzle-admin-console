@@ -71,10 +71,14 @@
     },
     computed: {
       disabledSteps () {
+        let disabled = []
         if (!this.basicPayload) {
-          return [1, 2]
+          disabled.push(1)
         }
-        return []
+        if (!this.credentialsPayload) {
+          disabled.push(2)
+        }
+        return disabled
       }
     },
     methods: {
