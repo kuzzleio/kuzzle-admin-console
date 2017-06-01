@@ -9,12 +9,12 @@
   <div v-if="profileList.length">
     <m-select :options="availableProfiles" @input="onProfileSelected">
       <option v-if="availableProfiles.length" value="" disabled selected>Select a Profile to add</option>
-      <option v-if="profileList.length && availableProfiles.length === 0" value="" disabled selected>You added all the profiles (are you sure?)</option>
+      <option v-if="profileList.length && availableProfiles.length === 0" value="" disabled selected>The user has all the profiles (are you sure?)</option>
       <option v-for="profile in availableProfiles" :value="profile.id">{{profile.id}}</option>
     </m-select>
   </div>
   <div v-else>
-    No profiles found (you should <router-link :to="{name: 'SecurityProfilesCreate'}" class="blue-link">create one</router-link> before creating a user)
+    No profiles found (you should <router-link :to="{name: 'SecurityProfilesCreate'}" class="text-light-blue">create one</router-link> before creating a user)
   </div>
 </div>
 </template>
@@ -59,7 +59,7 @@ export default {
     }
   },
   mounted () {
-    // return this.fetchProfileList()
+    return this.fetchProfileList()
   }
 }
 </script>
@@ -67,8 +67,5 @@ export default {
 <style type="text/css" scoped>
 .chip {
   margin-right: 5px;
-}
-.blue-link {
-  color: #3498db;
 }
 </style>
