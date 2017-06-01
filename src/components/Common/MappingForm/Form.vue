@@ -2,7 +2,7 @@
   <div class="wrapper collection-form">
 
     <div class="row">
-      <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="allowForm"/>
+      <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="allowFormProp"/>
       <label for="allowForm" class="allow-form">Associate mapping to form.</label>
     </div>
 
@@ -64,7 +64,7 @@
     },
     methods: {
       next () {
-        this.$emit('next', this.schema)
+        this.$emit('next', this.gatherData)
       },
       cancel () {
         this.$emit('cancel')
@@ -95,11 +95,17 @@
         })
 
         return schema
+      },
+      gatherData () {
+        return {
+          schema: this.schema,
+          allowForm: this.allowForm
+        }
       }
     },
     watch: {
       currentStep (value) {
-        this.$emit('change-step', this.schema)
+        this.$emit('change-step', this.gatherData)
       }
     },
     mounted () {

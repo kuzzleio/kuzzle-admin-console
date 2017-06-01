@@ -27,7 +27,7 @@
           <div class="col s7 m8 l8" v-if="error">
             <div class="card error red-color white-text">
               <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              An error occurred while {{$store.state.route.params.user ? 'updating' : 'creating'}} user: <br>{{error}}
+              An error occurred while creating user: <br>{{error}}
             </div>
           </div>
         </div>

@@ -63,6 +63,7 @@ export default {
       disabledSteps: [],
       mapping: {},
       formSchema: {},
+      allowForm: false,
       loading: false
     }
   },
@@ -70,13 +71,13 @@ export default {
     setEditionStep (value) {
       this.editionStep = value
     },
-    onFormSchemaChangeStep (schema) {
-      this.onFormSchemaSubmit(schema)
+    onFormSchemaChangeStep (payload) {
+      this.onFormSchemaSubmit(payload)
       this.save()
     },
-    onFormSchemaSubmit (schema) {
-      const newSchema = schema || {}
-      this.formSchema = newSchema
+    onFormSchemaSubmit (payload) {
+      this.formSchema = payload.schema || {}
+      this.allowForm = payload.allowForm
     },
     onMappingChangeStep (mapping) {
       this.onMappingSubmit(mapping)
@@ -98,6 +99,7 @@ export default {
     return getMappingUsers()
     .then(mapping => {
       this.mapping = mapping.content || {}
+      this.schema
       this.loading = false
     })
   }
