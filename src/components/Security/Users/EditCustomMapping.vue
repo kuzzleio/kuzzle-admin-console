@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div class="wrapper collection-edit">
+    <div v-show="!loading" class="wrapper collection-edit">
       <stepper
         :current-step="editionStep"
         :steps="['Mapping', 'Form']"
@@ -47,6 +47,7 @@ import Headline from '../../Materialize/Headline'
 import Stepper from '../../Common/Stepper'
 import Mapping from './Steps/Mapping'
 import FormSchema from '../../Common/MappingForm/Form'
+import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
 export default {
   name: 'UsersCustomMappingWizard',
@@ -61,7 +62,8 @@ export default {
       editionStep: 0,
       disabledSteps: [],
       mapping: {},
-      formSchema: {}
+      formSchema: {},
+      loading: false
     }
   },
   methods: {
@@ -90,6 +92,14 @@ export default {
     save () {
 
     }
+  },
+  mounted () {
+    this.loading = true
+    return getMappingUsers()
+    .then(mapping => {
+      this.mapping = mapping.content || {}
+      this.loading = false
+    })
   }
 }
 </script>
