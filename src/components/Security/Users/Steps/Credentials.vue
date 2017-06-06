@@ -10,7 +10,7 @@
     </m-select>
 
     <create-or-update
-            @credentials-create::create="create"
+            @credentials-create::create="next"
             @credentials-create::cancel="cancel"
             @credentials-create::reset-error="error = null"
             @credentials-create::error="setError"
@@ -36,6 +36,9 @@
       Headline,
       MSelect
     },
+    props: {
+      editionStep: {type: Number, default: 0}
+    },
     mounted () {
       kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
         .then(res => {
@@ -55,23 +58,23 @@
       }
     },
     methods: {
-      create (credentials) {
-        this.error = ''
+      next (credentials) {
+        const finalCredentials = {}
 
-        if (!credentials) {
-          this.error = 'The credentials are invalid, please review it'
-          return
-        }
-        if (!this.id) {
-          this.error = 'You must specify a KUID'
-          return
-        }
-
-        kuzzle.security.createCredentialsPromise(this.strategy, this.id, credentials)
-          .then(() => this.$router.push({name: 'SecurityUsersList'}))
-          .catch(err => {
-            this.error = `An error occured while creating user: <br />${err.message}`
-          })
+        finalCredentials[this.strategy] = credentials
+        this.$emit('submit', finalCredentials)
+//        this.error = ''
+//
+//        if (!credentials) {
+//          this.error = 'The credentials are invalid, please review it'
+//          return
+//        }
+//
+//        kuzzle.security.createCredentialsPromise(this.strategy, this.id, credentials)
+//          .then(() => this.$router.push({name: 'SecurityUsersList'}))
+//          .catch(err => {
+//            this.error = `An error occured while creating user: <br />${err.message}`
+//          })
       },
       selectStrategy (strategy) {
         this.strategy = strategy
@@ -90,6 +93,11 @@
       },
       updateId (id) {
         this.id = id
+      }
+    },
+    watch: {
+      editionStep () {
+        this.$emit('step-change', this.document)
       }
     }
   }

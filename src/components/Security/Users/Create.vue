@@ -23,7 +23,11 @@
             @step-change="saveBasicData"
             @submit="onBasicSubmitted"
           ></basic>
-          <credentials v-show="editionStep === 1"></credentials>
+          <credentials
+            v-show="editionStep === 1"
+            @submit="onCredentialsSubmitted"
+            @step-change="saveCredentialsData"
+            :step="editionStep"></credentials>
           <custom
             v-show="editionStep === 2"
             :step="editionStep"
@@ -76,12 +80,7 @@
         customMapping: {},
         editionStep: 0,
         basicPayload: null,
-        credentialsPayload: {
-          local: {
-            username: 'luca',
-            password: 'test'
-          }
-        },
+        credentialsPayload: null,
         customPayload: null
       }
     },
@@ -148,8 +147,15 @@
         this.saveBasicData(payload)
         this.editionStep++
       },
+      saveCredentialsData (payload) {
+        this.credentialsPayload = payload
+      },
       saveCustomData (payload) {
         this.customPayload = payload || {}
+      },
+      onCredentialsSubmitted (payload) {
+        this.saveCredentialsData(payload)
+        this.editionStep++
       },
       onCustomSubmitted (payload) {
         this.saveCustomData(payload)

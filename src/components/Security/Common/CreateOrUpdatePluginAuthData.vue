@@ -21,15 +21,6 @@
           </div>
         </div>
 
-        <div class="row input-id">
-          <div class="col s6">
-            <div class="input-field">
-              <input id="id" type="text" name="collection" @input="updateId" v-focus required />
-              <label for="id">Kuid</label>
-            </div>
-          </div>
-        </div>
-
         <div class="row" v-if="isFormView">
           <div class="col s12 card">
             <div class="card-content">
@@ -65,7 +56,7 @@
             <button type="submit" class="btn primary waves-effect waves-light">
               <i v-if="!update" class="fa fa-plus-circle left"></i>
               <i v-else class="fa fa-pencil left"></i>
-              {{update ? 'Update' : 'Create'}}
+              {{update ? 'Update' : 'Next'}}
             </button>
           </div>
           <div class="col s7 m8 l9" v-if="error">
