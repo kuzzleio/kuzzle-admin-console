@@ -17,17 +17,27 @@
         <div class="col s12">
           <basic
             v-show="editionStep === 0"
+            :step="editionStep"
             @cancel="onCancel"
             @error="setError"
-            @next="onBasicSubmitted"
+            @step-change="saveBasicData"
+            @submit="onBasicSubmitted"
           ></basic>
           <credentials v-show="editionStep === 1"></credentials>
-          <custom v-show="editionStep === 2"></custom>
+          <custom
+            v-show="editionStep === 2"
+            :step="editionStep"
+            :mapping="customMapping"
+            @cancel="onCancel"
+            @error="setError"
+            @step-change="saveCustomData"
+            @submit="onCustomSubmitted"
+          ></custom>
 
           <div class="col s7 m8 l8" v-if="error">
             <div class="card error red-color white-text">
               <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              An error occurred while {{$store.state.route.params.user ? 'updating' : 'creating'}} user: <br>{{error}}
+              An error occurred while creating user: <br>{{error}}
             </div>
           </div>
         </div>
@@ -63,9 +73,15 @@
       return {
         error: '',
         id: null,
+        customMapping: {},
         editionStep: 0,
         basicPayload: null,
-        credentialsPayload: null,
+        credentialsPayload: {
+          local: {
+            username: 'luca',
+            password: 'test'
+          }
+        },
         customPayload: null
       }
     },
@@ -86,22 +102,21 @@
       create (user) {
         this.error = ''
 
+        let id = user.id
+        delete user.id
+
         if (!user) {
           this.error = 'The document is invalid, please review it'
-          return
-        }
-        if (!this.id) {
-          this.error = 'You must set an ID'
           return
         }
 
         kuzzle
           .security
-          .createUserPromise(this.id, user)
+          .createUserPromise(id, user)
           .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
           .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {
-            this.error = 'An error occurred while creating user: <br />' + err.message
+            this.error = err.message
           })
       },
       cancel () {
@@ -126,10 +141,33 @@
       dismissError () {
         this.error = ''
       },
+      saveBasicData (payload) {
+        this.basicPayload = payload || {}
+      },
       onBasicSubmitted (payload) {
-        this.basicPayload = payload
+        this.saveBasicData(payload)
         this.editionStep++
+      },
+      saveCustomData (payload) {
+        this.customPayload = payload || {}
+      },
+      onCustomSubmitted (payload) {
+        this.saveCustomData(payload)
+        this.create({
+          id: this.basicPayload.autoGenerateKUID ? null : this.basicPayload.customKUID,
+          content: {
+            profileIds: this.basicPayload.addedProfiles,
+            ...this.customPayload
+          },
+          credentials: this.credentialsPayload
+        })
       }
+    },
+    mounted () {
+      return getMappingUsers()
+        .then(result => {
+          this.customMapping = result.mapping.content.properties || {}
+        })
     }
   }
 </script>

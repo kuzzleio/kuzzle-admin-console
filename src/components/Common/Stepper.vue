@@ -47,7 +47,7 @@
     },
     methods: {
       changeStep (number) {
-        if (this.isRealtime) {
+        if (this.disabledSteps.indexOf(number) !== -1) {
           return
         }
 
