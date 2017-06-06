@@ -5,8 +5,11 @@
         <strong>KUID</strong>
       </div>
 
-      <div class="col s9">
-        <input
+      <div class="col s6">
+        <input v-model="customKUID" placeholder="Custom KUID" id="custom-kuid" type="text" class="validate" :disabled="autoGenerateKUID">
+      </div>
+      <div class="col s3">
+      <input
           type="checkbox"
           class="filled-in"
           tabindex="2"
@@ -17,7 +20,6 @@
         <label for="user-auto-generate-kuid">
           Auto-generate
         </label>
-        <input v-if="!autoGenerateKUID" v-model="customKUID" placeholder="Custom KUID" id="custom-kuid" type="text" class="validate" required>
       </div>
     </div class="row">
     <div class="row">
@@ -63,7 +65,7 @@ export default {
   },
   data () {
     return {
-      autoGenerateKUID: true,
+      autoGenerateKUID: false,
       customKUID: null,
       addedProfiles: [],
       error: ''
