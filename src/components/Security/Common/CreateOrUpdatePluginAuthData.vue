@@ -127,7 +127,7 @@
       collection: String,
       update: Boolean,
       value: Object,
-      mapping: Object,
+      mapping: [Object, Array],
       idContent: {
         type: String,
         default: 'content'
