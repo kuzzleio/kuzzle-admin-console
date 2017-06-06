@@ -166,7 +166,11 @@
     mounted () {
       return getMappingUsers()
         .then(result => {
-          this.customMapping = result.mapping.content.properties || {}
+          if (!result.mapping.content || !result.mapping.content.properties) {
+            this.customMapping = {}
+          } else {
+            this.customMapping = result.mapping.content.properties
+          }
         })
     }
   }
