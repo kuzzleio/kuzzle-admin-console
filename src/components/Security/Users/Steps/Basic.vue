@@ -59,7 +59,7 @@ export default {
     UserProfileList
   },
   props: {
-    editionStep: Number
+    step: Number
   },
   data () {
     return {
@@ -110,7 +110,7 @@ export default {
     }
   },
   watch: {
-    editionStep (value) {
+    step (value) {
       this.$emit('step-change', this.dataPayload)
     }
   }

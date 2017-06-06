@@ -60,7 +60,10 @@ export default {
       this.$router.push({name: 'SecurityUsersList'})
     },
     save () {
-      return updateMappingUsers(this.mapping)
+      return updateMappingUsers({
+        content: {
+          properties: this.mapping
+        }})
         .then(() => {
           this.$router.push({name: 'SecurityUsersList'})
         })
@@ -70,7 +73,7 @@ export default {
     this.loading = true
     return getMappingUsers()
       .then(result => {
-        this.mapping = result.mapping || {}
+        this.mapping = result.mapping.content || {}
         this.loading = false
       })
   }
