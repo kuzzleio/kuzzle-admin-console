@@ -105,6 +105,19 @@ class Meta {
   }
 }
 
+/**
+ * Constructor only used for displaying the constructor name in the list
+ * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+ * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Credentials {
+  constructor (credentials) {
+    Object.keys(credentials).forEach(key => {
+      this[key] = credentials[key]
+    })
+  }
+}
+
 export const performSearchDocuments = (collection, index, filters = {}, pagination = {}, sort = []) => {
   if (!collection || !index) {
     return Promise.reject(new Error('Missing collection or index'))
@@ -157,6 +170,7 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
     .searchUsersPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
+      let users = []
 
       if (sort.length > 0) {
         if (typeof sort[0] === 'string') {
@@ -166,10 +180,11 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
         }
       }
 
-      let users = result.users.map((document) => {
+      result.users.forEach(document => {
         let object = {
-          content: document.content,
-          id: document.id
+          content: new Content(document.content),
+          id: document.id,
+          credentials: new Credentials({})
         }
 
         if (additionalAttributeName) {
@@ -179,7 +194,18 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
           }
         }
 
-        return object
+        return kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
+        .then(strategies => {
+          strategies.result.forEach(strategy => {
+            kuzzle.security.getCredentialsPromise(strategy, document.id)
+              .then(res => {
+                object.credentials[strategy] = res
+              })
+              .catch(() => {
+              })
+          })
+          users.push(object)
+        })
       })
 
       return {documents: users, total: result.total}

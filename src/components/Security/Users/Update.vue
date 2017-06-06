@@ -4,15 +4,47 @@
       Edit user - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
     </headline>
 
-    <create-or-update
-      @document-create::create="update"
-      @document-create::cancel="cancel"
-      @document-create::error="setError"
-      index="%kuzzle"
-      collection="users"
-      :hide-id="true"
-      v-model="document">
-    </create-or-update>
+    <div class="col s12">
+      <ul class="tabs">
+        <li class="tab"><a href="#content-tab">Content</a></li>
+        <li class="tab"><a href="#credentials-tab" @click="refreshAce">Credentials</a></li>
+      </ul>
+    </div>
+
+    <div id="content-tab">
+      <update
+              id="content"
+              @document-create::create="update"
+              @document-create::cancel="cancel"
+              @document-create::error="setError"
+              index="%kuzzle"
+              collection="users"
+              :hide-id="true"
+              v-model="content"
+              :mapping="contentMapping"
+              id-mapping="contentMapping"
+              id-content="content"
+              :refresh-ace="refresh">
+      </update>
+    </div>
+
+    <div id="credentials-tab">
+      <update
+              id="credentials"
+              @document-create::create="update"
+              @document-create::cancel="cancel"
+              @document-create::error="setError"
+              index="%kuzzle"
+              collection="users"
+              :hide-id="true"
+              v-model="credentials"
+              :mapping="credentialsMapping"
+              id-mapping="credentialsMapping"
+              id-content="credentialsMapping"
+              :refresh-ace="refresh">
+      </update>
+    </div>
+
   </div>
 </template>
 
@@ -25,15 +57,16 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
-  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
+  import Update from '../Common/UpdatePluginAuthData'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
-  import { getMappingUsers } from '../../../services/kuzzleWrapper'
+  import {getMappingUsers} from '../../../services/kuzzleWrapper'
+  import Vue from 'vue'
 
   export default {
     name: 'UpdateUser',
     components: {
       Headline,
-      CreateOrUpdate
+      Update
     },
     props: {
       index: String,
@@ -41,30 +74,34 @@
     },
     data () {
       return {
-        document: null
+        content: null,
+        credentials: {},
+        credentialsMapping: {},
+        contentMapping: {},
+        refresh: false
       }
     },
     methods: {
-      getMappingUsers,
       update (user) {
-        if (!user) {
-          this.$store.commit(SET_TOAST, {text: 'Invalid document'})
-          return
-        }
-
-        kuzzle
-          .security
-          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), user)
-          .then(() => {
-            setTimeout(() => { // we can't perform refresh index on %kuzzle
-              this.$router.push({name: 'SecurityUsersList'})
-            }, 1000)
-          })
-          .catch((err) => {
-            if (err) {
-              this.$store.commit(SET_TOAST, {text: err.message})
-            }
-          })
+        console.log('##', user)
+//        if (!user) {
+//          this.$store.commit(SET_TOAST, {text: 'Invalid document'})
+//          return
+//        }
+//
+//        kuzzle
+//          .security
+//          .updateUserPromise(decodeURIComponent(this.$store.state.route.params.id), user)
+//          .then(() => {
+//            setTimeout(() => { // we can't perform refresh index on %kuzzle
+//              this.$router.push({name: 'SecurityUsersList'})
+//            }, 1000)
+//          })
+//          .catch((err) => {
+//            if (err) {
+//              this.$store.commit(SET_TOAST, {text: err.message})
+//            }
+//          })
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -75,20 +112,54 @@
       },
       setError (payload) {
         this.error = payload
+      },
+      refreshAce () {
+        this.refresh = !this.refresh
       }
     },
     mounted () {
-      kuzzle
-        .security
-        .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
-        .then((res) => {
-          this.document = res.content
-          this.$emit('document-create::fill', res.content)
-          return null
+      Vue.nextTick(() => {
+        $(document).ready(() => {
+          $('ul.tabs').tabs()
         })
-        .catch(err => {
-          this.$store.commit(SET_TOAST, {text: err.message})
-        })
+
+        kuzzle
+          .security
+          .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
+          .then((res) => {
+            this.content = res.content
+
+            kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
+              .then(strategies => {
+                strategies.result.forEach(strategy => {
+                  kuzzle.security.getCredentialFieldsPromise(strategy)
+                    .then(fields => {
+                      Vue.set(this.credentialsMapping, strategy, fields)
+                    })
+
+                  kuzzle.security.getCredentialsPromise(strategy, this.$store.state.route.params.id)
+                    .then(credential => {
+                      if (credential) {
+                        if (credential.kuid) {
+                          delete credential.kuid
+                        }
+                        Vue.set(this.credentials, strategy, credential)
+                      }
+                    })
+                    .catch(() => {
+                    })
+                })
+
+                getMappingUsers()
+                  .then(mapping => {
+                    this.contentMapping = mapping
+                  })
+              })
+          })
+          .catch(err => {
+            this.$store.commit(SET_TOAST, {text: err.message})
+          })
+      })
     }
   }
 </script>
