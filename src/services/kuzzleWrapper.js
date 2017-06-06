@@ -192,6 +192,16 @@ export const getMappingUsers = () => {
     .then((res) => res.result)
 }
 
+export const updateMappingUsers = (newMapping) => {
+  return kuzzle
+    .queryPromise({controller: 'security', action: 'updateUserMapping'}, {
+      body: {
+        properties: newMapping
+      }
+    })
+    .then(res => res.result)
+}
+
 export const performSearchProfiles = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security

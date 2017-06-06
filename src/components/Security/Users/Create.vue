@@ -19,7 +19,8 @@
             v-show="editionStep === 0"
             @cancel="onCancel"
             @error="setError"
-            @next="onBasicSubmitted"
+            @change-step="onBasicChangedStep"
+            @submit="onBasicSubmitted"
           ></basic>
           <credentials v-show="editionStep === 1"></credentials>
           <custom v-show="editionStep === 2"></custom>
@@ -126,8 +127,11 @@
       dismissError () {
         this.error = ''
       },
+      onBasicChangedStep (payload) {
+        this.basicPayload = payload || {}
+      },
       onBasicSubmitted (payload) {
-        this.basicPayload = payload
+        this.basicPayload = payload || {}
         this.editionStep++
       }
     }

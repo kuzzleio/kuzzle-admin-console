@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper" @submit.prevent="next">
+  <form class="wrapper" @submit.prevent="submit">
     <div class="row">
       <div class="col s3">
         <strong>KUID</strong>
@@ -58,12 +58,24 @@ export default {
   components: {
     UserProfileList
   },
+  props: {
+    editionStep: Number
+  },
   data () {
     return {
       autoGenerateKUID: true,
       customKUID: null,
       addedProfiles: [],
       error: ''
+    }
+  },
+  computed: {
+    dataPayload () {
+      return {
+        autoGenerateKUID: this.autoGenerateKUID,
+        customKUID: this.customKUID,
+        addedProfiles: this.addedProfiles
+      }
     }
   },
   methods: {
@@ -76,7 +88,7 @@ export default {
     removeProfile (profile) {
       this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
     },
-    next () {
+    submit () {
       if (!this.autoGenerateKUID && !this.customKUID) {
         this.setError('Please provide a custom KUID or select the auto-generate checkbox.')
         return
@@ -85,11 +97,7 @@ export default {
         this.setError('Please select at least one profile.')
         return
       }
-      this.$emit('next', {
-        autoGenerateKUID: this.autoGenerateKUID,
-        customKUID: this.customKUID,
-        addedProfiles: this.addedProfiles
-      })
+      this.$emit('submit', this.dataPayload)
     },
     setError (msg) {
       this.error = msg
@@ -99,6 +107,11 @@ export default {
     },
     dismissError () {
       this.error = ''
+    }
+  },
+  watch: {
+    editionStep (value) {
+      this.$emit('step-change', this.dataPayload)
     }
   }
 }
