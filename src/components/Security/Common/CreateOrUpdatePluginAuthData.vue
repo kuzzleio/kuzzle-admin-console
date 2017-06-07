@@ -1,75 +1,34 @@
 <template>
-  <div class="document-create-update">
-    <div class="card-panel">
-      <form class="wrapper" @submit.prevent="create">
-
-        <div class="row" v-if="$store.state.collection.allowForm">
-          <div class="switch right">
-            <label>
-              Form
-              <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
-              <span
-                class="lever"
-                v-title="{
-                active: warningSwitch,
-                position: 'bottom',
-                title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
-                }">
-              </span>
-              JSON
-            </label>
-          </div>
+  <form class="wrapper" @submit.prevent="create">
+    <!-- Json view -->
+    <div class="row json-view">
+      <div class="col s6 card">
+        <div class="card-content">
+          <span class="card-title">Credentials</span>
+          <json-editor
+            :id="idContent"
+            class="document-json"
+            :content="jsonDocument"
+            ref="jsoneditor"
+            @changed="jsonChanged"
+          ></json-editor>
         </div>
+      </div>
 
-        <div class="row" v-if="isFormView">
-          <div class="col s12 card">
-            <div class="card-content">
-              <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="value">
-              </json-form>
-            </div>
-          </div>
+      <!-- Fields -->
+      <div class="col s6 card">
+        <div class="card-content">
+          <span class="card-title">Fields</span>
+          <json-editor
+            :id="idMapping"
+            class="document-json"
+            :content="mapping"
+            :readonly="true"
+          ></json-editor>
         </div>
-
-        <!-- Json view -->
-        <div class="row json-view" v-if="!isFormView">
-          <div class="col s6 card" :class="{s12: $store.state.collection.isRealtimeOnly}">
-            <div class="card-content">
-              <span class="card-title">Credentials</span>
-              <json-editor :id="idContent" class="document-json" :content="jsonDocument" ref="jsoneditor" @changed="jsonChanged"></json-editor>
-            </div>
-          </div>
-
-          <!-- Fields -->
-          <div class="col s6 card" v-if="!$store.state.collection.isRealtimeOnly">
-            <div class="card-content">
-              <span class="card-title">Fields</span>
-              <json-editor :id="idMapping" class="document-json" :content="mapping" :readonly="true"></json-editor>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col s5 m4 l3">
-            <a @click.prevent="cancel" class="btn-flat waves-effect">
-              Cancel
-            </a>
-            <button type="submit" class="btn primary waves-effect waves-light">
-              <i v-if="!update" class="fa fa-plus-circle left"></i>
-              <i v-else class="fa fa-pencil left"></i>
-              {{update ? 'Update' : 'Next'}}
-            </button>
-          </div>
-          <div class="col s7 m8 l9" v-if="error">
-            <div class="card error red-color">
-              <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              <p v-html="error"></p>
-            </div>
-          </div>
-        </div>
-
-      </form>
+      </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <style rel="stylesheet/scss" lang="scss">
@@ -97,14 +56,6 @@
 <script>
   import JsonForm from '../../Common/JsonForm/JsonForm'
   import JsonEditor from '../../Common/JsonEditor'
-  import Focus from '../../../directives/focus.directive'
-  import title from '../../../directives/title.directive'
-  import {SET_COLLECTION_DEFAULT_VIEW_JSON} from '../../../vuex/modules/collection/mutation-types'
-  import {hasSameSchema} from '../../../services/collectionHelper'
-
-  // We have to init the JSON only if the data comes from the server.
-  // This flag allow to not trigger an infinite loop when the doc is updated
-  let jsonAlreadyInit = false
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -113,11 +64,12 @@
       JsonEditor
     },
     props: {
-      error: String,
-      index: String,
-      collection: String,
-      update: Boolean,
-      value: Object,
+      value: {
+        type: Object,
+        default: () => {
+          return {}
+        }
+      },
       mapping: [Object, Array],
       idContent: {
         type: String,
@@ -128,77 +80,18 @@
         default: 'mapping'
       }
     },
-    directives: {
-      Focus,
-      title
-    },
     data () {
       return {
-        jsonDocument: {},
-        warningSwitch: false
+        jsonDocument: {}
       }
     },
     methods: {
-      dismissError () {
-        this.$emit('credentials-create::reset-error')
-      },
-      create () {
-        if (!this.$store.state.collection.defaultViewJson) {
-          return this.$emit('credentials-create::create', {...this.value})
-        }
-
-        if (this.$refs.jsoneditor.isValid()) {
-          this.$emit('credentials-create::create', {...this.value})
-        } else {
-          this.$emit('credentials-create::error', 'Invalid JSON provided.')
-        }
-      },
-      cancel () {
-        this.$emit('credentials-create::cancel')
-      },
-      updateValue (e) {
-        this.$emit('input', {...this.value, [e.name]: e.value})
-      },
-      switchView (e) {
-        this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
-          index: this.$store.state.route.params.index,
-          collection: this.$store.state.route.params.collection,
-          jsonView: e.target.checked
-        })
-        this.jsonDocument = {...this.value}
-      },
-      updateId (e) {
-        this.$emit('change-id', e.target.value)
-      },
       jsonChanged (json) {
-        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
         this.$emit('input', json)
-        jsonAlreadyInit = true
-      },
-      initJsonDocument () {
-        if (!jsonAlreadyInit) {
-          if (this.value) {
-            if (!Object.keys(this.value).length) {
-              this.jsonDocument = {}
-              return
-            }
-
-            this.jsonDocument = {...this.value}
-          }
-        }
-      }
-    },
-    computed: {
-      isFormView () {
-        return !this.$store.state.collection.defaultViewJson && this.$store.state.collection.allowForm
       }
     },
     mounted () {
-      jsonAlreadyInit = false
-      this.initJsonDocument()
-    },
-    watch: {
-      value: 'initJsonDocument'
+      this.jsonDocument = this.value || {}
     }
   }
 </script>

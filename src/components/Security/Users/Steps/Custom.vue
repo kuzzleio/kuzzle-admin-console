@@ -15,8 +15,11 @@
       <div class="row" v-if="isFormView">
         <div class="col s12 card">
           <div class="card-content">
-            <json-form :schema="schema" @update-value="updateValue" :document="newContent">
-            </json-form>
+            <json-form
+              :schema="schema"
+              @update-value="updateValue"
+              :document="newContent"
+            ></json-form>
           </div>
         </div>
       </div>
@@ -26,7 +29,13 @@
         <div class="col s6 card" :class="{s12: $store.state.collection.isRealtimeOnly}">
           <div class="card-content">
             <span class="card-title">Custom content</span>
-            <json-editor id="document" class="document-json" :content="newContent" ref="jsoneditor"></json-editor>
+            <json-editor
+              id="document"
+              class="document-json"
+              :content="newContent"
+              ref="jsoneditor"
+              @changed="jsonChanged"
+            ></json-editor>
           </div>
         </div>
 
@@ -34,24 +43,12 @@
         <div class="col s6 card" v-if="!$store.state.collection.isRealtimeOnly">
           <div class="card-content">
             <span class="card-title">Mapping</span>
-            <json-editor id="mapping" class="document-json" :content="mapping" :readonly="true"></json-editor>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col s5 m4 l3">
-          <a @click.prevent="cancel" class="btn-flat waves-effect">
-            Cancel
-          </a>
-          <button type="submit" class="btn primary waves-effect waves-light">
-            Save
-          </button>
-        </div>
-        <div class="col s7 m8 l9" v-if="error">
-          <div class="card error red-color">
-            <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-            <p v-html="error"></p>
+            <json-editor
+              id="mapping"
+              class="document-json"
+              :content="mapping"
+              :readonly="true"
+            ></json-editor>
           </div>
         </div>
       </div>
@@ -65,17 +62,23 @@ import JsonEditor from '../../../Common/JsonEditor'
 import { mergeSchemaMapping } from '../../../../services/collectionHelper'
 
 export default {
-  name: 'UserCustomDataForm',
+  name: 'CustomData',
   components: {
     JsonForm,
     JsonEditor
   },
   props: {
-    step: Number,
-    error: String,
+    value: {
+      type: Object,
+      default: () => {
+        return {}
+      }
+    },
     mapping: {
       type: Object,
-      default: {}
+      default: () => {
+        return {}
+      }
     }
   },
   data () {
@@ -101,15 +104,14 @@ export default {
     },
     updateValue (payload) {
       this.newContent[payload.name] = payload.value
+      this.$emit('input', this.newContent)
     },
-    submit () {
-      this.$emit('submit', this.newContent)
+    jsonChanged () {
+      this.$emit('input', this.$refs.jsoneditor.getJson())
     }
   },
-  watch: {
-    step (value) {
-      this.$emit('step-change', this.newContent)
-    }
+  mounted () {
+    this.newContent = this.value || {}
   }
 }
 </script>

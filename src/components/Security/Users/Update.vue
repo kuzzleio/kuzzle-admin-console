@@ -6,43 +6,40 @@
 
     <div class="col s12">
       <ul class="tabs">
-        <li class="tab"><a href="#content-tab">Content</a></li>
+        <li class="tab"><a href="#basic-tab">Basic</a></li>
         <li class="tab"><a href="#credentials-tab" @click="refreshAce">Credentials</a></li>
+        <li class="tab"><a href="#content-tab">Content</a></li>
       </ul>
     </div>
 
+    <div id="basic-tab" class="card-panel card-body">
+      <basic
+        @cancel="onCancel"
+        @error="setError"
+        @step-change="saveBasicData"
+        @submit="onBasicSubmitted"
+      ></basic>
+    </div>
+
     <div id="content-tab">
-      <update
-              id="content"
-              @document-create::create="update"
-              @document-create::cancel="cancel"
-              @document-create::error="setError"
-              index="%kuzzle"
-              collection="users"
-              :hide-id="true"
-              v-model="content"
-              :mapping="contentMapping"
-              id-mapping="contentMapping"
-              id-content="content"
-              :refresh-ace="refresh">
-      </update>
+
     </div>
 
     <div id="credentials-tab">
-      <update
-              id="credentials"
-              @document-create::create="update"
-              @document-create::cancel="cancel"
-              @document-create::error="setError"
-              index="%kuzzle"
-              collection="users"
-              :hide-id="true"
-              v-model="credentials"
-              :mapping="credentialsMapping"
-              id-mapping="credentialsMapping"
-              id-content="credentialsMapping"
-              :refresh-ace="refresh">
-      </update>
+      <update-credentials
+        id="credentials"
+        @document-create::create="update"
+        @document-create::cancel="cancel"
+        @document-create::error="setError"
+        index="%kuzzle"
+        collection="users"
+        :hide-id="true"
+        v-model="credentials"
+        :mapping="credentialsMapping"
+        id-mapping="credentialsMapping"
+        id-content="credentialsMapping"
+        :refresh-ace="refresh">
+      </update-credentials>
     </div>
 
   </div>
@@ -57,7 +54,8 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
-  import Update from '../Common/UpdatePluginAuthData'
+  import UpdateCredentials from '../Common/UpdatePluginAuthData'
+  import Basic from './Steps/Basic'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
   import {getMappingUsers} from '../../../services/kuzzleWrapper'
   import Vue from 'vue'
@@ -66,7 +64,8 @@
     name: 'UpdateUser',
     components: {
       Headline,
-      Update
+      UpdateCredentials,
+      Basic
     },
     props: {
       index: String,
