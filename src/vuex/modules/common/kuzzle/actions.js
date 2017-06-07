@@ -47,7 +47,7 @@ export default {
     commit(types.UPDATE_ENVIRONMENT, {id: payload.id, environment: payload.environment})
     localStorage.setItem(ENVIRONMENT_ITEM_NAME, JSON.stringify(state.environments))
 
-    if (getters.currentEnvironment && getters.currentEnvironment.name && getters.currentEnvironment.name === payload.id) {
+    if (getters.currentEnvironment && getters.currentEnvironment.name && getters.currentEnvironment.name !== payload.id) {
       return dispatch(types.SWITCH_ENVIRONMENT, payload.id)
     }
 
