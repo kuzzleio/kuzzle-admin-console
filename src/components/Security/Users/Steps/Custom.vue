@@ -34,6 +34,7 @@
               class="document-json"
               ref="jsoneditor"
               :content="newContent"
+              :height="300"
               @changed="jsonChanged"
             ></json-editor>
           </div>
@@ -48,6 +49,7 @@
               class="document-json"
               :content="mapping"
               :readonly="true"
+              :height="300"
             ></json-editor>
           </div>
         </div>

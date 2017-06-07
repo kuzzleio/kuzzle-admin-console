@@ -6,10 +6,11 @@
         <div class="card-content">
           <span class="card-title">Credentials</span>
           <json-editor
-            :id="idContent"
             class="document-json"
-            :content="jsonDocument"
             ref="jsoneditor"
+            :id="idContent"
+            :content="jsonDocument"
+            :height="300"
             @changed="jsonChanged"
           ></json-editor>
         </div>
@@ -20,10 +21,11 @@
         <div class="card-content">
           <span class="card-title">Fields</span>
           <json-editor
-            :id="idMapping"
             class="document-json"
+            :id="idMapping"
             :content="mapping"
             :readonly="true"
+            :height="300"
           ></json-editor>
         </div>
       </div>

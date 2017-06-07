@@ -22,15 +22,16 @@
         ></basic>
       </div>
       <div id="credentials-tab">
-        <update-credentials
+        <credentials
           v-if="!loading"
           id-mapping="credentialsMapping"
           id-content="credentialsMapping"
+          title="Credentials"
           :value="credentials"
           :refresh-ace="refresh"
           :mapping="credentialsMapping"
           @input="onCredentialsChanged"
-        ></update-credentials>
+        ></credentials>
       </div>
       <div id="content-tab">
         <custom
@@ -75,7 +76,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
-  import UpdateCredentials from '../Common/CreateOrUpdatePluginAuthData'
+  import Credentials from '../Common/JsonWithMapping'
   import Basic from './Steps/Basic'
   import Custom from './Steps/Custom'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -87,7 +88,7 @@
     name: 'UpdateUser',
     components: {
       Headline,
-      UpdateCredentials,
+      Credentials,
       Basic,
       Custom
     },

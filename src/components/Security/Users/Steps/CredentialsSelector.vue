@@ -5,24 +5,24 @@
       <option v-for="strategy in strategies">{{strategy}}</option>
     </m-select>
 
-    <create-or-update
+    <credentials
       :value="document"
       :mapping="mapping"
       @input="onCredentialsChanged"
-    ></create-or-update>
+    ></credentials>
   </div>
 </template>
 
 <script>
   import Headline from '../../../Materialize/Headline'
-  import CreateOrUpdate from '../../Common/CreateOrUpdatePluginAuthData'
+  import Credentials from '../../Common/JsonWithMapping'
   import kuzzle from '../../../../services/kuzzle'
   import MSelect from '../../../Common/MSelect'
 
   export default {
     name: 'Credentials',
     components: {
-      CreateOrUpdate,
+      Credentials,
       Headline,
       MSelect
     },
