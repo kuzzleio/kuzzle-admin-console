@@ -17,9 +17,10 @@
         <div class="col s12">
           <basic
             v-show="editionStep === 0"
+            :edit-kuid="true"
             :added-profiles="addedProfiles"
             :auto-generate-kuid="autoGenerateKuid"
-            :custom-kuid="id"
+            :kuid="id"
             @set-auto-generate-kuid="setAutoGenerateKuid"
             @set-custom-kuid="setCustomKuid"
             @profile-add="onProfileAdded"
@@ -27,6 +28,8 @@
           ></basic>
           <credentials
             v-show="editionStep === 1"
+            id-mapping="credentialsMapping"
+            id-content="credentialsMapping"
             @input="onCredentialsChanged"
           ></credentials>
           <custom
@@ -67,7 +70,7 @@
   import Headline from '../../Materialize/Headline'
   import Stepper from '../../Common/Stepper'
   import Basic from './Steps/Basic'
-  import Credentials from './Steps/Credentials'
+  import Credentials from './Steps/CredentialsSelector'
   import Custom from './Steps/Custom'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'

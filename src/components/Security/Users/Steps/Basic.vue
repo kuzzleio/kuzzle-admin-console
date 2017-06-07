@@ -7,16 +7,20 @@
 
       <div class="col s6">
         <input
+          v-if="editKuid"
           type="text"
           id="custom-kuid"
           class="validate"
           placeholder="Custom KUID"
-          :value="customKuid"
+          :value="kuid"
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
         />
+        <span
+          v-if="!editKuid"
+        >{{kuid}}</span>
       </div>
-      <div class="col s3">
+      <div class="col s3" v-if="editKuid">
         <input
           type="checkbox"
           id="user-auto-generate-kuid"
@@ -63,9 +67,13 @@ export default {
       type: Boolean,
       default: false
     },
-    customKuid: {
+    kuid: {
       type: String,
       default: null
+    },
+    editKuid: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

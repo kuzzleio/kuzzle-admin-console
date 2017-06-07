@@ -32,8 +32,8 @@
             <json-editor
               id="document"
               class="document-json"
-              :content="newContent"
               ref="jsoneditor"
+              :content="newContent"
               @changed="jsonChanged"
             ></json-editor>
           </div>
@@ -111,7 +111,7 @@ export default {
     }
   },
   mounted () {
-    this.newContent = this.value || {}
+    this.newContent = {...this.value}
   }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper" @submit.prevent="create">
+  <form @submit.prevent="create">
     <!-- Json view -->
     <div class="row json-view">
       <div class="col s6 card">
