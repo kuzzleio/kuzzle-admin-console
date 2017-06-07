@@ -70,7 +70,7 @@ nav {
   padding-right: 20px;
 
   li.nav {
-    font-family: "Gobold", Arial, sans-serif;
+    font-family: 'Ubuntu', sans-serif;
   }
 
   li {
