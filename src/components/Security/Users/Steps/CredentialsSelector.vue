@@ -5,24 +5,25 @@
       <option v-for="strategy in strategies">{{strategy}}</option>
     </m-select>
 
-    <credentials
-      :value="document"
+    <credentials-edit
+      id-mapping="credentialsMapping"
+      id-content="credentialsContent"
       :mapping="mapping"
       @input="onCredentialsChanged"
-    ></credentials>
+    ></credentials-edit>
   </div>
 </template>
 
 <script>
   import Headline from '../../../Materialize/Headline'
-  import Credentials from '../../Common/JsonWithMapping'
+  import CredentialsEdit from '../../Common/JsonWithMapping'
   import kuzzle from '../../../../services/kuzzle'
   import MSelect from '../../../Common/MSelect'
 
   export default {
-    name: 'Credentials',
+    name: 'CredentialsSelector',
     components: {
-      Credentials,
+      CredentialsEdit,
       Headline,
       MSelect
     },
