@@ -93,5 +93,19 @@ export default {
 
     localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
     return commit(types.SET_COLLECTION_DEFAULT_VIEW_JSON, {jsonView})
+  },
+  [types.CLEAR_COLLECTION] ({state}, {index, collection}) {
+    return kuzzle
+      .queryPromise({
+        controller: 'collection',
+        action: 'truncate'
+      }, {
+        index,
+        collection: state.name
+      }, {
+        refresh: 'wait_for'
+      })
+      .then(res => Promise.resolve)
+      .catch(error => Promise.reject(new Error(error.message)))
   }
 }

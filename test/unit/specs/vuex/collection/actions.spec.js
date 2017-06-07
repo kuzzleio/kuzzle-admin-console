@@ -1,6 +1,7 @@
 import {
   RECEIVE_COLLECTION_DETAIL,
-  FETCH_COLLECTION_DETAIL
+  FETCH_COLLECTION_DETAIL,
+  CLEAR_COLLECTION
 } from '../../../../../src/vuex/modules/collection/mutation-types'
 import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/collection/actions'
 import {testActionPromise} from '../../helper'
@@ -82,6 +83,40 @@ describe('Collections module', () => {
           return {realtime: ['toto'], stored: ['tutu']}
         }})
       })
+    })
+  })
+
+  describe('Truncate collection', () => {
+    let triggerError = true
+    let actions = actionsInjector({
+      '../../../services/kuzzle': {
+        queryPromise: () => {
+          if (triggerError) {
+            return Promise.reject(new Error('error'))
+          } else {
+            return Promise.resolve({})
+          }
+        }
+      }
+    })
+
+    it('should not dispatch the deleted index if kuzzle reject', (done) => {
+      triggerError = true
+      testActionPromise(actions.default[CLEAR_COLLECTION], ['myindex', 'toto'], {}, [], done)
+        .catch(error => {
+          expect(error.message).to.be.equal('error')
+          done()
+        })
+    })
+
+    it('should dispatch the deleted index if success', (done) => {
+      triggerError = false
+      testActionPromise(actions.default[CLEAR_COLLECTION], ['myindex', 'toto'], {}, [
+        {type: CLEAR_COLLECTION, payload: ['myindex', 'toto']}
+      ], done)
+        .then(() => {
+          done()
+        })
     })
   })
 })
