@@ -7,7 +7,7 @@ const state = {
   environments: {},
   lastConnectedEnv: null,
   connectedTo: null,
-  errorFromKuzzle: false
+  errorFromKuzzle: null
 }
 
 export const mutations = {
@@ -43,8 +43,8 @@ export const mutations = {
     }
     state.connectedTo = id
   },
-  [types.SET_ERROR_FROM_KUZZLE] (state, isOnError) {
-    state.errorFromKuzzle = isOnError
+  [types.SET_ERROR_FROM_KUZZLE] (state, error) {
+    state.errorFromKuzzle = error
   },
   [types.SET_ENVIRONMENTS] (state, payload) {
     state.environments = {...payload}

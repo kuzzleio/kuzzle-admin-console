@@ -40,9 +40,9 @@ export const connectToEnvironment = (environment) => {
 }
 
 export const initStoreWithKuzzle = (store) => {
-  kuzzle.removeAllListeners('jwtTokenExpired')
-  kuzzle.removeAllListeners('queryError')
-  kuzzle.addListener('queryError', (error) => {
+  kuzzle.off('jwtTokenExpired')
+  kuzzle.off('queryError')
+  kuzzle.on('queryError', (error) => {
     if (error && error.message) {
       switch (error.message) {
         case 'Token expired':
@@ -53,17 +53,24 @@ export const initStoreWithKuzzle = (store) => {
       }
     }
   })
-  kuzzle.removeAllListeners('networkError')
-  kuzzle.addListener('networkError', () => {
-    if (!store.state.kuzzle.errorFromKuzzle) {
-      store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, true)
-    }
+  kuzzle.off('networkError')
+  kuzzle.on('networkError', (af) => {
+    console.dir(af)
+    console.log(af.message)
+    console.log(af.internal.status)
+    console.log(af.internal.message)
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, af)
   })
-  kuzzle.addListener('connected', () => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, false)
+  kuzzle.off('connected')
+  kuzzle.on('connected', () => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
   })
-  kuzzle.removeAllListeners('discarded')
-  kuzzle.addListener('discarded', function (data) {
+  kuzzle.off('reconnected')
+  kuzzle.on('reconnected', () => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+  })
+  kuzzle.off('discarded')
+  kuzzle.on('discarded', function (data) {
     store.commit(SET_TOAST, {text: data.message})
   })
 }

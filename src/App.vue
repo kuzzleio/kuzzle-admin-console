@@ -9,7 +9,7 @@
       </error-layout>
     </div>
 
-    <div v-else-if="!$store.getters.hasEnvironment">
+    <div v-else-if="!$store.state.kuzzle.errorFromKuzzle && !$store.getters.hasEnvironment">
       <create-environment-page></create-environment-page>
     </div>
 
@@ -27,7 +27,7 @@
       </login>
     </div>
 
-    <div v-else="!$store.state.kuzzle.errorFromKuzzle">
+    <div v-show="!$store.state.kuzzle.errorFromKuzzle">
       <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
