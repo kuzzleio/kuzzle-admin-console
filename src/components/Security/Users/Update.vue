@@ -6,41 +6,38 @@
 
     <div class="card-panel card-body">
       <div class="col s12">
-        <ul class="tabs">
-          <li class="tab"><a href="#basic-tab">Basic</a></li>
-          <li class="tab"><a href="#credentials-tab" @click="refreshAce">Credentials</a></li>
-          <li class="tab"><a href="#content-tab">Content</a></li>
-        </ul>
+        <tabs v-if="!loading" @tab-changed="switchTab" :active="activeTab" :object-tab-active="activeTabObject">
+          <tab @tabs-on-select="setActiveTabObject" name="basic" tab-select="basic"><a href="">Basic</a></tab>
+          <tab @tabs-on-select="setActiveTabObject" name="credentials" tab-select="basic"><a href="">Credentials</a></tab>
+          <tab @tabs-on-select="setActiveTabObject" name="custom" tab-select="basic"><a href="">Custom</a></tab>
+          <div slot="contents">
+            <basic
+              v-show="activeTab === 'basic'"
+              :added-profiles="addedProfiles"
+              :kuid="id"
+              @profile-add="onProfileAdded"
+              @profile-remove="onProfileRemoved"
+            ></basic>
+            <credentials-edit
+              v-show="activeTab === 'credentials'"
+              id-mapping="credentialsMapping"
+              id-content="credentialsMapping"
+              title="Credentials"
+              :value="credentials"
+              :refresh-ace="refresh"
+              :mapping="credentialsMapping"
+              @input="onCredentialsChanged"
+            ></credentials-edit>
+            <custom
+              v-show="activeTab === 'custom'"
+              :value="content"
+              :mapping="contentMapping"
+              @input="onContentChanged"
+            ></custom>
+          </div>
+        </tabs>
       </div>
-      <div id="basic-tab">
-        <basic
-          v-if="!loading"
-          :added-profiles="addedProfiles"
-          :kuid="id"
-          @profile-add="onProfileAdded"
-          @profile-remove="onProfileRemoved"
-        ></basic>
-      </div>
-      <div id="credentials-tab">
-        <credentials-edit
-          v-if="!loading"
-          id-mapping="credentialsMapping"
-          id-content="credentialsMapping"
-          title="Credentials"
-          :value="credentials"
-          :refresh-ace="refresh"
-          :mapping="credentialsMapping"
-          @input="onCredentialsChanged"
-        ></credentials-edit>
-      </div>
-      <div id="content-tab">
-        <custom
-          v-if="!loading"
-          :value="content"
-          :mapping="contentMapping"
-          @input="onContentChanged"
-        ></custom>
-      </div>
+
 
       <!-- Actions -->
       <div class="row">
@@ -77,6 +74,8 @@
   import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import CredentialsEdit from '../Common/JsonWithMapping'
+  import Tabs from '../../Materialize/Tabs'
+  import Tab from '../../Materialize/Tab'
   import Basic from './Steps/Basic'
   import Custom from './Steps/Custom'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -90,7 +89,9 @@
       Headline,
       CredentialsEdit,
       Basic,
-      Custom
+      Custom,
+      Tabs,
+      Tab
     },
     data () {
       return {
@@ -102,10 +103,18 @@
         content: {},
         credentialsMapping: {},
         contentMapping: {},
-        refresh: false
+        refresh: false,
+        activeTab: 'basic',
+        activeTabObject: null
       }
     },
     methods: {
+      switchTab (name) {
+        this.activeTab = name
+      },
+      setActiveTabObject (tab) {
+        this.activeTabObject = tab
+      },
       validate () {
         if (!this.autoGenerateKuid && !this.id) {
           throw new Error('Please fill the custom KUID or check the auto-generate box')
@@ -185,10 +194,6 @@
     },
     mounted () {
       Vue.nextTick(() => {
-        $(document).ready(() => {
-          $('ul.tabs').tabs()
-        })
-
         this.loading = true
 
         return kuzzle
