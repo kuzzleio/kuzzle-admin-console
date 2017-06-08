@@ -5,7 +5,7 @@
         <div class="switch right">
           <label>
             Form
-            <input type="checkbox" @change="switchView" :checked="isFormView">
+            <input type="checkbox" @change="switchView" :checked="!isFormView">
             <span class="lever"></span>
             JSON
           </label>
