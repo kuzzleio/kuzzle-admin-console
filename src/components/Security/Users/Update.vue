@@ -222,16 +222,15 @@
                         Vue.set(this.credentials, strategy, credential)
                       }
                     })
-                    .catch(() => {
-                    })
                 })
 
                 return getMappingUsers()
                   .then(response => {
-                    if (!response.mapping || !response.mapping.content) {
+                    if (!response.mapping) {
                       this.contentMapping = {}
                     } else {
-                      this.contentMapping = response.mapping.content.properties
+                      this.contentMapping = response.mapping
+                      delete this.contentMapping.profileIds
                     }
                     this.loading = false
                   })

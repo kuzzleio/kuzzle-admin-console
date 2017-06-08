@@ -213,10 +213,11 @@
     mounted () {
       return getMappingUsers()
         .then(result => {
-          if (!result.mapping.content || !result.mapping.content.properties) {
+          if (!result.mapping) {
             this.customMapping = {}
           } else {
-            this.customMapping = result.mapping.content.properties
+            this.customMapping = result.mapping
+            delete this.customMapping.profileIds
           }
         })
     }
