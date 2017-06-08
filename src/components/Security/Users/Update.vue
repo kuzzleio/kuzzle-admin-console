@@ -217,8 +217,6 @@
                         Vue.set(this.credentials, strategy, credential)
                       }
                     })
-                    .catch(() => {
-                    })
                 })
 
                 return getMappingUsers()
