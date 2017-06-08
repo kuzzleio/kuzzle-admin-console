@@ -73,7 +73,7 @@ export default {
     this.loading = true
     return getMappingUsers()
       .then(result => {
-        this.mapping = result.mapping.content || {}
+        this.mapping = result.mapping || {}
         this.loading = false
       })
   }
