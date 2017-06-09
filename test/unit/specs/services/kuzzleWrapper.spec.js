@@ -226,10 +226,11 @@ describe('Kuzzle wrapper service', () => {
 
   describe('initStoreWithKuzzle', () => {
     let kuzzleWrapper
-    let removeAllListeners = sandbox.stub()
+    let off = sandbox.stub()
+    let on = sandbox.stub()
     let setTokenValid = sandbox.stub()
 
-    it('should call removeListeners and addListeners with right params', () => {
+    it('should call off and on with right params', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
           host: 'toto',
@@ -238,17 +239,28 @@ describe('Kuzzle wrapper service', () => {
           addListener (event, cb) {
             cb({message: null})
           },
-          removeAllListeners
+          off,
+          on
         }
       })
 
       let store = {state: {kuzzle: {}}, commit: sandbox.stub()}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      expect(removeAllListeners.calledWith('queryError'))
-      expect(removeAllListeners.calledWith('discarded'))
+      kuzzle.off('jwtTokenExpired')
+      kuzzle.off('queryError')
+      kuzzle.off('networkError')
+      kuzzle.off('connected')
+      kuzzle.off('reconnected')
+      kuzzle.off('discarded')
+
+      expect(off.calledWith('jwtTokenExpired'))
+      expect(off.calledWith('queryError'))
+      expect(off.calledWith('networkError'))
+      expect(off.calledWith('connected'))
+      expect(off.calledWith('reconnected'))
+      expect(off.calledWith('discarded'))
       expect(setTokenValid.calledWithMatch(store, false))
     })
   })
 })
-

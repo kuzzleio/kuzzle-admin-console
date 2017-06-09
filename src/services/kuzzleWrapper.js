@@ -42,6 +42,11 @@ export const connectToEnvironment = (environment) => {
 export const initStoreWithKuzzle = (store) => {
   kuzzle.off('jwtTokenExpired')
   kuzzle.off('queryError')
+  kuzzle.off('networkError')
+  kuzzle.off('connected')
+  kuzzle.off('reconnected')
+  kuzzle.off('discarded')
+
   kuzzle.on('queryError', (error) => {
     if (error && error.message) {
       switch (error.message) {
@@ -53,7 +58,6 @@ export const initStoreWithKuzzle = (store) => {
       }
     }
   })
-  kuzzle.off('networkError')
   kuzzle.on('networkError', (af) => {
     console.dir(af)
     console.log(af.message)
@@ -61,15 +65,12 @@ export const initStoreWithKuzzle = (store) => {
     console.log(af.internal.message)
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, af)
   })
-  kuzzle.off('connected')
   kuzzle.on('connected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
   })
-  kuzzle.off('reconnected')
   kuzzle.on('reconnected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
   })
-  kuzzle.off('discarded')
   kuzzle.on('discarded', function (data) {
     store.commit(SET_TOAST, {text: data.message})
   })
