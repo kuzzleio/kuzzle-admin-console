@@ -247,13 +247,6 @@ describe('Kuzzle wrapper service', () => {
       let store = {state: {kuzzle: {}}, commit: sandbox.stub()}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      kuzzle.off('jwtTokenExpired')
-      kuzzle.off('queryError')
-      kuzzle.off('networkError')
-      kuzzle.off('connected')
-      kuzzle.off('reconnected')
-      kuzzle.off('discarded')
-
       expect(off.calledWith('jwtTokenExpired'))
       expect(off.calledWith('queryError'))
       expect(off.calledWith('networkError'))
