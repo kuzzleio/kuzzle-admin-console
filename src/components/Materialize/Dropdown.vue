@@ -54,7 +54,7 @@
 
         let parsed = this.id
 
-        return parsed.replace(/[!"#$%&'()*_+,./:;<=>?@[\]^`{|}~]/g, '\\$&')
+        return parsed.replace(/[!"#$%&'()*_+,./:;<=>?@[\]^`{|}~ ]/g, '\\$&')
       }
     },
     mounted () {
