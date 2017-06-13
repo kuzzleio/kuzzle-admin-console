@@ -29,11 +29,9 @@
               tabindex="3"
               id="realtime-collection"
               :checked="collectionIsRealtimeOnly"
-              @change="setRealtimeOnly"
-              :disabled="$store.state.route.params.collection && !collectionIsRealtimeOnly"/>
+              @change="setRealtimeOnly"/>
             <label for="realtime-collection">
               Realtime only
-              <span v-if="$store.state.route.params.collection && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
             </label>
           </p>
         </div>
