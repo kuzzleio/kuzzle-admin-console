@@ -37,7 +37,7 @@ var webpackConfig = merge(baseWebpackConfig, {
       },
       sourceMap: true,
       mangle: {
-        except: ['Content', 'Meta']
+        except: ['Content', 'Meta', 'Credentials']
       }
     }),
     // extract css into its own file
