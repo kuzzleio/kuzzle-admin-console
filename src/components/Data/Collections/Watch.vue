@@ -45,21 +45,17 @@
           :basic-filter-form="$store.getters.basicFilterForm">
         </filters>
 
-        <div class="card-panel card-body" v-show="subscribed || notifications.length">
-          <div :class="notificationControlClass">
-            <!-- subscription controls in page flow -->
-            <subscription-controls
-              v-scroll-glue="scrollGlueActive"
-              @realtime-toggle-subscription="toggleSubscription"
-              @realtime-scroll-glue="setScrollGlue"
-              @realtime-clear-messages="clear"
-              :index="index"
-              :collection="collection"
-              :subscribed="subscribed"
-              :warning="warning">
-            </subscription-controls>
-            <!-- /subscription controls in page flow  -->
-          </div>
+        <div class="card-panel card-body" v-show="subscribed || notifications.length" id="subscribe-control">
+          <!-- subscription controls in page flow -->
+          <subscription-controls
+            @realtime-toggle-subscription="toggleSubscription"
+            @realtime-clear-messages="clear"
+            :index="index"
+            :collection="collection"
+            :subscribed="subscribed"
+            :warning="warning">
+          </subscription-controls>
+          <!-- /subscription controls in page flow  -->
         </div>
 
         <div class="card-panel card-body" v-show="!subscribed && !notifications.length">
@@ -80,7 +76,7 @@
           </div>
         </div>
 
-        <div class="card-panel" v-show="subscribed && !notifications.length">
+        <div class="card-panel" v-show="subscribed && !notifications.length" id="wait-for-notif">
           <div class="row valign-center empty-set empty-set-condensed">
             <div class="col s1 offset-s1">
               <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
@@ -96,14 +92,16 @@
           </div>
         </div>
 
-        <div id="notification-container" v-if="notifications.length">
-          <ul class="collapsible" v-collapsible data-collapsible="expandable">
-            <notification
-              v-for="notification in notifications"
-              :key="Math.random()"
-              :notification="notification">
-            </notification>
-          </ul>
+        <div :style="notifStyle" id="notification-container">
+          <div v-if="notifications.length">
+            <ul class="collapsible" v-collapsible data-collapsible="expandable">
+              <notification
+                v-for="notification in notifications"
+                :key="Math.random()"
+                :notification="notification">
+              </notification>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -160,11 +158,8 @@
 </style>
 
 <script>
-  import {debounce} from 'lodash'
   import CollectionTabs from './Tabs'
   import Headline from '../../Materialize/Headline'
-
-  import ScrollGlue from '../../../directives/scroll-glue.directive'
 
   import collapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
@@ -176,6 +171,8 @@
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
+
+  import Vue from 'vue'
 
   export default {
     name: 'CollectionWatch',
@@ -194,8 +191,7 @@
         notifications: [],
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
-        scrollGlueActive: true,
-        scrollY: window.scrollY
+        notifStyle: {}
       }
     },
     created () {
@@ -212,8 +208,7 @@
       window.removeEventListener('scroll', this.handleScroll)
     },
     directives: {
-      collapsible,
-      ScrollGlue
+      collapsible
     },
     components: {
       CollectionTabs,
@@ -370,6 +365,12 @@
         }
 
         this.notifications.push(this.notificationToMessage(result))
+
+        // Auto scroll
+        const div = document.getElementById('notification-container')
+        setTimeout(() => {
+          div.scrollTop = div.scrollHeight
+        }, 0)
       },
       subscribe () {
         return kuzzle
@@ -410,9 +411,16 @@
       setBasicFilter (value) {
         this.$store.commit(SET_BASIC_FILTER, value)
       },
-      handleScroll: debounce(function () {
-        this.scrollY = window.scrollY
-      })
+      computeNotifHeight () {
+        Vue.nextTick(() => {
+          const mainNavHeight = document.getElementById('mainnav').offsetHeight
+          const searchFilter = document.getElementsByClassName('search-filter')[0].offsetHeight
+          const subCtrl = document.getElementById('subscribe-control').offsetHeight
+          const notifHeight = document.body.offsetHeight - (mainNavHeight + searchFilter + subCtrl)
+
+          this.notifStyle = {maxHeight: notifHeight + 'px', overflowY: 'auto'}
+        })
+      }
     },
     watch: {
       index () {
@@ -431,16 +439,9 @@
         }
 
         this.filters = filters
-      }
-    },
-    computed: {
-      notificationControlClass () {
-        return {
-          row: true,
-          realtime: true,
-          'margin-bottom-0': true,
-          sticky: this.scrollY > 230
-        }
+      },
+      subscribed () {
+        this.computeNotifHeight()
       }
     }
   }
