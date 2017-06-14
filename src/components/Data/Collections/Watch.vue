@@ -93,7 +93,7 @@
           </div>
         </div>
 
-        <div :style="notifStyle" id="notification-container">
+        <div :style="notifStyle" id="notification-container" ref="notificationContainer">
           <div v-if="notifications.length">
             <ul class="collapsible" v-collapsible data-collapsible="expandable">
               <notification
@@ -335,6 +335,15 @@
         messageItem.timestamp = notification.timestamp
         return messageItem
       },
+      makeAutoScroll () {
+        // Auto scroll
+        if (this.scrollDown) {
+          const div = this.$refs.notificationContainer
+          setTimeout(() => {
+            div.scrollTop = div.scrollHeight
+          }, 0)
+        }
+      },
       handleMessage (error, result) {
         if (error) {
           this.warning.message = error.message
@@ -364,15 +373,7 @@
         }
 
         this.notifications.push(this.notificationToMessage(result))
-      },
-      makeAutoScroll () {
-        // Auto scroll
-        if (this.scrollDown) {
-          const div = document.getElementById('notification-container')
-          setTimeout(() => {
-            div.scrollTop = div.scrollHeight
-          }, 0)
-        }
+        this.makeAutoScroll()
       },
       subscribe () {
         return kuzzle
