@@ -45,7 +45,7 @@
           :basic-filter-form="$store.getters.basicFilterForm">
         </filters>
 
-        <div class="card-panel card-body" v-show="subscribed || notifications.length" id="subscribe-control">
+        <div class="card-panel card-body" v-show="subscribed || notifications.length" ref="subscribeControl">
           <!-- subscription controls in page flow -->
           <subscription-controls
             @realtime-toggle-subscription="toggleSubscription"
@@ -53,7 +53,8 @@
             :index="index"
             :collection="collection"
             :subscribed="subscribed"
-            :warning="warning">
+            :warning="warning"
+            @scroll-down="setScrollDown">
           </subscription-controls>
           <!-- /subscription controls in page flow  -->
         </div>
@@ -191,7 +192,8 @@
         notifications: [],
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
-        notifStyle: {}
+        notifStyle: {},
+        scrollDown: true
       }
     },
     created () {
@@ -240,9 +242,6 @@
       },
       refreshSearch () {
         this.$router.push({query: {...this.$route.query}})
-      },
-      setScrollGlue (value) {
-        this.scrollGlueActive = value
       },
       toggleSubscription () {
         if (!this.subscribed) {
@@ -365,12 +364,15 @@
         }
 
         this.notifications.push(this.notificationToMessage(result))
-
+      },
+      makeAutoScroll () {
         // Auto scroll
-        const div = document.getElementById('notification-container')
-        setTimeout(() => {
-          div.scrollTop = div.scrollHeight
-        }, 0)
+        if (this.scrollDown) {
+          const div = document.getElementById('notification-container')
+          setTimeout(() => {
+            div.scrollTop = div.scrollHeight
+          }, 0)
+        }
       },
       subscribe () {
         return kuzzle
@@ -415,11 +417,14 @@
         Vue.nextTick(() => {
           const mainNavHeight = document.getElementById('mainnav').offsetHeight
           const searchFilter = document.getElementsByClassName('search-filter')[0].offsetHeight
-          const subCtrl = document.getElementById('subscribe-control').offsetHeight
+          const subCtrl = this.$refs.subscribeControl.offsetHeight
           const notifHeight = document.body.offsetHeight - (mainNavHeight + searchFilter + subCtrl)
 
           this.notifStyle = {maxHeight: notifHeight + 'px', overflowY: 'auto'}
         })
+      },
+      setScrollDown (v) {
+        this.scrollDown = v
       }
     },
     watch: {
