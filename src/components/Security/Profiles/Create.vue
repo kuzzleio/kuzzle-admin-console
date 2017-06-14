@@ -9,6 +9,7 @@
   @change-id="updateId"
   v-model="document"
   :submitted="submitted">
+  :mandatory-id="true">
   </create-or-update>
 </template>
 
