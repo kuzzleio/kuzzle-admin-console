@@ -17,7 +17,8 @@
       :collection="collection"
       v-model="document"
       @change-id="updateId"
-      :get-mapping="getMappingDocument">
+      :get-mapping="getMappingDocument"
+      :submitted="submitted">
     </create-or-update>
   </div>
   <div v-else>
@@ -55,7 +56,8 @@
       return {
         error: '',
         document: {},
-        id: null
+        id: null,
+        submitted: false
       }
     },
     computed: {
@@ -76,6 +78,8 @@
           return
         }
 
+        this.submitted = true
+
         let id = this.id
 
         if (document._id) {
@@ -92,6 +96,7 @@
           })
           .catch(err => {
             this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
+            this.submitted = false
           })
       },
       cancel () {

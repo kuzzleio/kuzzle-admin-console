@@ -24,7 +24,8 @@
       :collection="collection"
       :hide-id="true"
       v-model="document"
-      :get-mapping="getMappingDocument">
+      :get-mapping="getMappingDocument"
+      :submitted="submitted">
     </create-or-update>
   </div>
   <div v-else>
@@ -74,12 +75,14 @@
       return {
         error: '',
         show: false,
-        document: {}
+        document: {},
+        submitted: false
       }
     },
     methods: {
       getMappingDocument,
       update (document) {
+        this.submitted = true
         this.error = ''
 
         if (!document) {
@@ -95,6 +98,7 @@
           })
           .catch((err) => {
             this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
+            this.submitted = false
           })
       },
       cancel () {

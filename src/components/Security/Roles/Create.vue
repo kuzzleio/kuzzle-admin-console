@@ -1,14 +1,14 @@
 <template>
   <create-or-update
   title="Create a role"
-  :content="content"
   :error="error"
   @document-create::reset-error="error = ''"
   @document-create::create="create"
   @document-create::cancel="cancel"
   @document-create::error="setError"
   @change-id="updateId"
-  v-model="document">
+  v-model="document"
+  :submitted="submitted">
   </create-or-update>
 </template>
 
@@ -26,12 +26,14 @@
       return {
         error: '',
         document: {},
-        id: null
+        id: null,
+        submitted: false
       }
     },
     methods: {
       getMappingRoles,
       create (role) {
+        this.submitted = true
         this.error = ''
 
         if (!role) {
@@ -53,6 +55,7 @@
           })
           .catch((e) => {
             this.error = 'An error occurred while creating role: <br />' + e.message
+            this.submitted = false
           })
       },
       cancel () {
