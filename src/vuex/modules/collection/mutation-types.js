@@ -1,7 +1,6 @@
 export const RECEIVE_COLLECTION_DETAIL = 'collection/RECEIVE_COLLECTION_DETAIL'
 export const RESET_COLLECTION_DETAIL = 'collection/RESET_COLLECTION_DETAIL'
 export const FETCH_COLLECTION_DETAIL = 'collection/FETCH_COLLECTION_DETAIL'
-export const SET_EDITION_STEP = 'collection/SET_EDITION_STEP'
 export const SET_MAPPING = 'collection/SET_MAPPING'
 export const SET_SCHEMA = 'collection/SET_SCHEMA'
 export const UPDATE_COLLECTION = 'collection/UPDATE_COLLECTION'

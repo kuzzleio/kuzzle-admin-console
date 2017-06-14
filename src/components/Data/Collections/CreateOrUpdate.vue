@@ -5,23 +5,26 @@
     </headline>
 
     <stepper
-      :current-step="$store.state.collection.editionStep"
-      :is-realtime="$store.getters.isRealtimeOnly"
+      :current-step="editionStep"
+      :disabled-steps="$store.getters.isRealtimeOnly ? [1] : []"
+      :steps="['Mapping', 'Form']"
+      @changed-step="setEditionStep"
       class="card-panel card-header">
     </stepper>
 
     <div class="row card-panel card-body">
       <div class="col s12">
         <mapping
-          v-show="$store.state.collection.editionStep === 1"
-          :step="$store.state.collection.editionStep"
+          v-show="editionStep === 0"
+          :step="editionStep"
           @collection-create::create="create"
+          @collection-create::next-step="setEditionStep(1)"
           @cancel="cancel">
         </mapping>
         <collection-form
-          v-show="$store.state.collection.editionStep === 2"
+          v-show="editionStep === 1"
           :mapping="$store.state.collection.mapping"
-          :step="$store.state.collection.editionStep"
+          :step="editionStep"
           @collection-create::create="create"
           @cancel="cancel">
         </collection-form>
@@ -40,10 +43,9 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import Focus from '../../../directives/focus.directive'
-  import Stepper from './Stepper'
+  import Stepper from '../../Common/Stepper'
   import Mapping from './Steps/Mapping'
   import CollectionForm from './Steps/CollectionForm'
-  import {SET_EDITION_STEP} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'CollectionCreateOrUpdate',
@@ -55,6 +57,11 @@
     },
     directives: {
       Focus
+    },
+    data () {
+      return {
+        editionStep: 0
+      }
     },
     props: {
       error: String,
@@ -79,10 +86,10 @@
         } else {
           this.$router.push({name: 'DataIndexSummary', params: {index: this.index}})
         }
+      },
+      setEditionStep (stepNumber) {
+        this.editionStep = stepNumber
       }
-    },
-    beforeDestroy () {
-      this.$store.commit(SET_EDITION_STEP, 1)
     }
   }
 </script>
