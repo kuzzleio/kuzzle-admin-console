@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="data-layout">
     <treeview
       :route-name="$route.name"
       :index="$store.state.route.params.index"
