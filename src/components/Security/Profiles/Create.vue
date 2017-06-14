@@ -7,7 +7,8 @@
   @document-create::cancel="cancel"
   @document-create::error="setError"
   @change-id="updateId"
-  v-model="document">
+  v-model="document"
+  :mandatory-id="true">
   </create-or-update>
 </template>
 
