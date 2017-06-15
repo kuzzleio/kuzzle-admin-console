@@ -58,12 +58,8 @@ export const initStoreWithKuzzle = (store) => {
       }
     }
   })
-  kuzzle.on('networkError', (af) => {
-    console.dir(af)
-    console.log(af.message)
-    console.log(af.internal.status)
-    console.log(af.internal.message)
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, af)
+  kuzzle.on('networkError', (error) => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
   })
   kuzzle.on('connected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
