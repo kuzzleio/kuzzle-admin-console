@@ -27,7 +27,7 @@
     </div>
 
     <div class="col s3 m3 l2 right-align truncate">
-      <input type="checkbox" v-model="scrollGlueActive" class="filled-in" id="filled-in-box" />
+      <input type="checkbox" v-model="scrollDown" class="filled-in" id="filled-in-box" />
       <label for="filled-in-box">Scroll on new messages</label>
     </div>
   </div>
@@ -48,7 +48,7 @@
     },
     data () {
       return {
-        scrollGlueActive: true
+        scrollDown: true
       }
     },
     directives: {
@@ -64,11 +64,11 @@
       }
     },
     mounted () {
-      this.$emit('realtime-scroll-glue', this.scrollGlueActive)
+      this.$emit('scroll-down', this.scrollDown)
     },
     watch: {
-      scrollGlueActive (value) {
-        this.$emit('realtime-scroll-glue', value)
+      scrollDown (value) {
+        this.$emit('scroll-down', value)
       }
     }
   }

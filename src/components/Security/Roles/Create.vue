@@ -1,14 +1,14 @@
 <template>
   <create-or-update
   title="Create a role"
-  :content="content"
   :error="error"
   @document-create::reset-error="error = ''"
   @document-create::create="create"
   @document-create::cancel="cancel"
   @document-create::error="setError"
   @change-id="updateId"
-  v-model="document">
+  v-model="document"
+  :mandatory-id="true">
   </create-or-update>
 </template>
 

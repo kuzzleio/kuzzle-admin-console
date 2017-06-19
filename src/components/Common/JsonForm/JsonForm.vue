@@ -73,7 +73,13 @@
         this.$emit('update-value', {name: content.name, value: content.value, parent: this.parent})
       },
       updateNested (content) {
-        this.$emit('update-value', {name: content.parent, value: {...this.document[content.parent], [content.name]: content.value}})
+        this.$emit('update-value', {
+          name: content.parent,
+          value: {
+            ...this.document[content.parent],
+            [content.name]: content.value
+          }
+        })
       }
     }
   }

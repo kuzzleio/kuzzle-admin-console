@@ -7,7 +7,6 @@ const state = {
   name: null,
   mapping: {},
   isRealtimeOnly: false,
-  editionStep: 1,
   schema: {},
   allowForm: true,
   defaultViewJson: false
@@ -26,11 +25,7 @@ export const mutations = {
     state.mapping = {}
     state.schema = {}
     state.isRealtimeOnly = false
-    state.editionStep = 1
     state.allowForm = true
-  },
-  [types.SET_EDITION_STEP] (state, payload) {
-    state.editionStep = payload
   },
   [types.SET_MAPPING] (state, payload) {
     state.mapping = payload
