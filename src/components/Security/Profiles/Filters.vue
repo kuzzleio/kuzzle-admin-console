@@ -165,6 +165,14 @@
       Vue.nextTick(() => {
         window.document.addEventListener('keydown', this.handleEsc)
       })
+
+      const filter = JSON.parse(this.$store.state.route.query.basicFilter || '[]')
+
+      if (filter.roles) {
+        this.addedRoles = filter.roles ? filter.roles : []
+
+        this.displayBlockFilter = true
+      }
     },
     destroyed () {
       window.document.removeEventListener('keydown', this.handleEsc)
