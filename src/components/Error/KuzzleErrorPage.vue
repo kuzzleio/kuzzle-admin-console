@@ -18,7 +18,7 @@
     </div>
     <div class="row kuzzle-disconnected">
       <div class="col s12">
-        <p>I'm doing my best to re-connect to the Kuzzle ...</p>
+        <p>I'm doing my best to reconnect to Kuzzle ...</p>
       </div>
 
       <div class="col s1 offset-s5">
