@@ -269,32 +269,15 @@ export const getMappingProfiles = () => {
     .then((res) => res.result)
 }
 
-export const performSearchRoles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+export const performSearchRoles = (controllers = {}, pagination = {}) => {
   return kuzzle
     .security
-    .searchRolesPromise({...filters, sort}, {...pagination})
+    .searchRolesPromise(controllers, {...pagination})
     .then(result => {
-      let additionalAttributeName = null
-
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
-      }
-
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
           id: document.id
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-          }
         }
 
         return object

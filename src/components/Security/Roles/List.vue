@@ -43,7 +43,7 @@
 
 <script>
   import ListNotAllowed from '../../Common/ListNotAllowed'
-  import CommonList from '../../Common/List'
+  import CommonList from './CommonList'
   import { canSearchRole, canCreateRole } from '../../../services/userAuthorization'
   import Headline from '../../Materialize/Headline'
   import { performSearchRoles, performDeleteRoles } from '../../../services/kuzzleWrapper'

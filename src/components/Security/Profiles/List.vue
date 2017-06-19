@@ -43,7 +43,7 @@
 </template>
 
 <script>
-  import CommonList from '../../Common/List'
+  import CommonList from './CommonList'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
   import { canSearchProfile, canCreateProfile } from '../../../services/userAuthorization'
