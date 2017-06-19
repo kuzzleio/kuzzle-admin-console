@@ -29,11 +29,9 @@
               tabindex="3"
               id="realtime-collection"
               :checked="collectionIsRealtimeOnly"
-              @change="setRealtimeOnly"
-              :disabled="$store.state.route.params.collection && !collectionIsRealtimeOnly"/>
+              @change="setRealtimeOnly"/>
             <label for="realtime-collection">
               Realtime only
-              <span v-if="$store.state.route.params.collection && !collectionIsRealtimeOnly">(Your collection is already stored in persistent layer)</span>
             </label>
           </p>
         </div>
@@ -83,7 +81,6 @@
 <script>
   import JsonEditor from '../../../Common/JsonEditor'
   import {
-    SET_EDITION_STEP,
     SET_MAPPING,
     SET_REALTIME_ONLY,
     SET_COLLECTION_NAME
@@ -115,7 +112,7 @@
         if (this.collectionIsRealtimeOnly) {
           this.$emit('collection-create::create')
         } else {
-          this.$store.commit(SET_EDITION_STEP, 2)
+          this.$emit('collection-create::next-step')
         }
       },
       cancel () {

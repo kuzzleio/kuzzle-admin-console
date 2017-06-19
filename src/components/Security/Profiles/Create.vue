@@ -7,7 +7,9 @@
   @document-create::cancel="cancel"
   @document-create::error="setError"
   @change-id="updateId"
-  v-model="document">
+  v-model="document"
+  :submitted="submitted">
+  :mandatory-id="true">
   </create-or-update>
 </template>
 
@@ -25,7 +27,8 @@
       return {
         error: '',
         document: {},
-        id: null
+        id: null,
+        submitted: false
       }
     },
     methods: {
@@ -42,6 +45,8 @@
           return
         }
 
+        this.submitted = true
+
         kuzzle
           .security
           .createProfilePromise(this.id, profile, {replaceIfExist: true})
@@ -52,6 +57,7 @@
           })
           .catch((e) => {
             this.error = 'An error occurred while creating profile: <br />' + e.message
+            this.submitted = false
           })
       },
       cancel () {

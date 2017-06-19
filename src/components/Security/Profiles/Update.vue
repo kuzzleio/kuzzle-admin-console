@@ -7,7 +7,8 @@
   @document-create::cancel="cancel"
   @document-create::error="setError"
   v-model="document"
-  :hide-id="true">
+  :hide-id="true"
+  :submitted="submitted">
   </create-or-update>
 </template>
 
@@ -26,7 +27,8 @@
       return {
         document: {},
         error: '',
-        id: null
+        id: null,
+        submitted: false
       }
     },
     methods: {
@@ -39,6 +41,8 @@
           return
         }
 
+        this.submitted = true
+
         kuzzle
           .security
           .createProfilePromise(this.id, profile, {replaceIfExist: true})
@@ -49,6 +53,7 @@
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
+            this.submitted = false
           })
       },
       cancel () {

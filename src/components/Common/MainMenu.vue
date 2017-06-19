@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="navbar-fixed">
-      <nav :style="{backgroundColor: currentEnvironmentColor}">
+      <nav :style="{backgroundColor: currentEnvironmentColor}" id="mainnav">
         <ul>
           <li class="logo">
             <a href="#" class="">

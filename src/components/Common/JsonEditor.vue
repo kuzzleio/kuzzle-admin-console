@@ -1,13 +1,12 @@
 <template>
-  <div>
-    <pre :id="id" :class="classes" :style="style"></pre>
-  </div>
+    <div :id="id" :class="classes" :style="style" ref="jsoneditor" ></div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
   .ace_text-input {
     position: relative;
   }
+
   .ace-tomorrow.ace_editor.readonly {
     background-color: #d6d6d6;
     .ace_gutter, .ace_active-line {
@@ -26,10 +25,17 @@
     name: 'JsonEditor',
     props: {
       content: [Object, String, Number, Array],
-      myclass: String,
+      myclass: {
+        type: String,
+        default: ''
+      },
       readonly: Boolean,
       id: String,
-      height: {type: Number, 'default': 100}
+      height: {type: Number, 'default': 100},
+      refreshAce: {
+        type: Boolean,
+        default: false
+      }
     },
     computed: {
       classes () {
@@ -39,13 +45,14 @@
         if (this.height === undefined) {
           return {height: '100px'}
         } else {
-          return {height: this.height}
+          return {height: this.height + 'px!important'}
         }
       }
     },
     data () {
       return {
-        editor: {}
+        editor: {},
+        refresh: false
       }
     },
     methods: {
@@ -70,27 +77,34 @@
         if (this.content && this.editor.getSession) {
           this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
         }
+      },
+      refreshAce () {
+        setTimeout(() => {
+          this.editor.resize()
+        }, 500)
       }
     },
     mounted () {
       Vue.nextTick(() => {
         /* eslint no-undef: 0 */
-        if (!this.id) {
+        if (!this.id || this.id === '') {
           return
         }
 
-        this.editor = ace.edit(this.id)
+        this.editor = ace.edit(this.$refs.jsoneditor)
         this.editor.setTheme('ace/theme/tomorrow')
         this.editor.getSession().setMode('ace/mode/json')
         this.editor.setFontSize(13)
         this.editor.getSession().setTabSize(2)
         this.editor.setReadOnly(this.readonly)
         this.editor.$blockScrolling = Infinity
+
         if (this.content !== null) {
           this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
         }
         this.editor.on('change', () => {
           let value = this.getJson()
+          this.editor.resize()
 
           if (value) {
             this.$emit('changed', value)

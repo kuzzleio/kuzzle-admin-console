@@ -20,6 +20,16 @@ export default [
     }
   },
   {
+    path: '/security/users/custom-mapping',
+    name: 'SecurityUsersEditCustomMapping',
+    meta: {
+      section: 'users'
+    },
+    component (resolve) {
+      require(['../../components/Security/Users/EditCustomMapping'], resolve)
+    }
+  },
+  {
     path: '/security/users/create',
     name: 'SecurityUsersCreate',
     meta: {

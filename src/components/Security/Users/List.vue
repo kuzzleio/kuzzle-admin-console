@@ -1,6 +1,9 @@
 <template>
   <div>
-    <headline>Users Management</headline>
+    <headline>
+      Users Management
+      <users-dropdown class="icon-medium icon-black"></users-dropdown>
+    </headline>
 
     <!-- Not allowed -->
     <list-not-allowed v-if="!canSearchUser()"></list-not-allowed>
@@ -46,6 +49,7 @@
   import CommonList from '../../Common/List'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
+  import UsersDropdown from './Dropdown'
   import { canSearchUser, canCreateUser } from '../../../services/userAuthorization'
   import { performSearchUsers, performDeleteUsers } from '../../../services/kuzzleWrapper'
 
@@ -54,7 +58,8 @@
     components: {
       ListNotAllowed,
       CommonList,
-      Headline
+      Headline,
+      UsersDropdown
     },
     methods: {
       createUser () {
