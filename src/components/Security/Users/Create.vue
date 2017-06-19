@@ -97,7 +97,8 @@
         addedProfiles: [],
         autoGenerateKuid: false,
         credentials: null,
-        custom: null
+        custom: null,
+        submitted: false
       }
     },
     computed: {
@@ -139,6 +140,10 @@
     methods: {
       getMappingUsers,
       create () {
+        if (this.submitted) {
+          return
+        }
+
         let userObject = {
           content: {
             profileIds: this.addedProfiles,
@@ -156,6 +161,7 @@
           .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {
             this.error = err.message
+            this.submitted = false
           })
       },
       cancel () {

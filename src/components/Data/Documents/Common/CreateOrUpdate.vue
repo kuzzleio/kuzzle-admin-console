@@ -130,7 +130,11 @@
         'default': false,
         type: Boolean
       },
-      value: Object
+      value: Object,
+      submitted: {
+        type: Boolean,
+        default: false
+      }
     },
     directives: {
       Focus,
@@ -139,8 +143,7 @@
     data () {
       return {
         jsonDocument: {},
-        warningSwitch: false,
-        submitted: false
+        warningSwitch: false
       }
     },
     methods: {
@@ -151,8 +154,6 @@
         if (this.submitted) {
           return
         }
-
-        this.submitted = true
 
         if (!this.$store.state.collection.defaultViewJson) {
           return this.$emit('document-create::create', {...this.value})

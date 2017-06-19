@@ -8,6 +8,7 @@
   @document-create::error="setError"
   @change-id="updateId"
   v-model="document"
+  :submitted="submitted">
   :mandatory-id="true">
   </create-or-update>
 </template>
@@ -26,12 +27,14 @@
       return {
         error: '',
         document: {},
-        id: null
+        id: null,
+        submitted: false
       }
     },
     methods: {
       getMappingRoles,
       create (role) {
+        this.submitted = true
         this.error = ''
 
         if (!role) {
@@ -53,6 +56,7 @@
           })
           .catch((e) => {
             this.error = 'An error occurred while creating role: <br />' + e.message
+            this.submitted = false
           })
       },
       cancel () {
