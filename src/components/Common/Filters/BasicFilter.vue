@@ -9,15 +9,15 @@
           <div v-for="(group, groupIndex) in filters.basic" class="row block-content">
             <div v-for="(filter, filterIndex) in group" class="row dots group">
               <div class="col s4">
-                <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute" @blur="updateFilter">
+                <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute">
               </div>
               <div class="col s2">
-                <m-select model="filter.operator" @on-blur="updateFilter">
-                  <option v-for="(label, identifiers) in availableFilters" :value="label">{{identifiers}}</option>
+                <m-select v-model="filter.operator">
+                  <option v-for="(label, identifiers) in availableFilters" :value="identifiers">{{label}}</option>
                 </m-select>
               </div>
               <div class="col s3">
-                <input placeholder="Value" type="text" class="validate" v-model="filter.value" @blur="updateFilter">
+                <input placeholder="Value" type="text" class="validate" v-model="filter.value">
               </div>
               <div class="col s2">
                 <i class="fa fa-times remove-filter"
@@ -44,10 +44,10 @@
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute" @blur="updateFilter">
+              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
             </div>
             <div class="col s2">
-              <m-select model="filters.sorting.order" @on-blur="updateFilter">
+              <m-select v-model="filters.sorting.order">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
               </m-select>
@@ -102,10 +102,6 @@
       }
     },
     methods: {
-      updateFilter () {
-        // mandatory for not passing the ref but a deep clone. See http://vuejs.org/api/#data
-        this.setBasicFilter(JSON.parse(JSON.stringify(this.filters)))
-      },
       basicSearch () {
         let filters = this.filters.basic
 
@@ -130,11 +126,9 @@
       resetBasicSearch () {
         this.filters.basic = [[{...emptyBasicFilter}]]
         this.filters.sorting = {...emptySorting}
-        this.updateFilter()
       },
       addGroupBasicFilter () {
         this.filters.basic.push([{...emptyBasicFilter}])
-        this.updateFilter()
       },
       addAndBasicFilter (groupIndex) {
         if (!this.filters.basic[groupIndex]) {
@@ -142,7 +136,6 @@
         }
 
         this.filters.basic[groupIndex].push({...emptyBasicFilter})
-        this.updateFilter()
       },
       removeAndBasicFilter (groupIndex, filterIndex) {
         if (!this.filters.basic[groupIndex] || !this.filters.basic[groupIndex][filterIndex]) {
@@ -151,25 +144,20 @@
 
         if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
           this.$set(this.filters.basic[0], 0, {...emptyBasicFilter})
-          this.updateFilter()
           return
         }
 
         if (this.filters.basic[groupIndex].length === 1 && this.filters.basic.length > 1) {
           this.filters.basic.splice(groupIndex, 1)
-          this.updateFilter()
           return
         }
 
         this.filters.basic[groupIndex].splice(filterIndex, 1)
-        this.updateFilter()
       }
     },
     mounted () {
       this.filters.basic = this.basicFilter || [[{...emptyBasicFilter}]]
       this.filters.sorting = this.sorting || {...emptySorting}
-
-      this.updateFilter()
     }
   }
 </script>

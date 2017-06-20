@@ -19,7 +19,7 @@
     watch: {
       isDisplayed () {
         if (this.isDisplayed) {
-          this.$emit('tab-select', this.active)
+          this.select(this.objectTabActive)
         }
       },
       objectTabActive (tab) {
@@ -28,10 +28,7 @@
     },
     data () {
       return {
-        indicator: {
-          left: '0',
-          right: '0'
-        }
+        activeTab: null
       }
     },
     computed: {

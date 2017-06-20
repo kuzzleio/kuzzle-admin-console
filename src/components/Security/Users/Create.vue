@@ -4,32 +4,85 @@
       User - Create
     </headline>
 
-    <create-or-update
-      @document-create::create="create"
-      @document-create::cancel="cancel"
-      @document-create::reset-error="error = ''"
-      :mandatory-id="true"
-      :error="error"
-      index="%kuzzle"
-      collection="users"
-      :document="document"
-      :get-mapping="getMappingUsers">
-    </create-or-update>
+    <div class="wrapper collection-edit">
+      <stepper
+        :current-step="editionStep"
+        :steps="['Basic', 'Credentials', 'Custom']"
+        :disabled-steps="disabledSteps"
+        @changed-step="setEditionStep"
+        class="card-panel card-header">
+      </stepper>
+
+      <div class="row card-panel card-body">
+        <div class="col s12">
+          <basic
+            v-show="editionStep === 0"
+            :edit-kuid="true"
+            :added-profiles="addedProfiles"
+            :auto-generate-kuid="autoGenerateKuid"
+            :kuid="id"
+            @set-auto-generate-kuid="setAutoGenerateKuid"
+            @set-custom-kuid="setCustomKuid"
+            @profile-add="onProfileAdded"
+            @profile-remove="onProfileRemoved"
+          ></basic>
+          <credentials
+            v-show="editionStep === 1"
+            id-mapping="credentialsMapping"
+            id-content="credentialsMapping"
+            @input="onCredentialsChanged"
+          ></credentials>
+          <custom
+            v-show="editionStep === 2"
+            :mapping="customMapping"
+            @input="onCustomChanged"
+          ></custom>
+
+          <!-- Actions -->
+          <div class="row">
+            <div class="col s3">
+              <a
+                tabindex="6"
+                class="btn-flat waves-effect"
+                @click.prevent="cancel"
+              >Cancel</a>
+              <button
+                type="submit"
+                class="btn primary waves-effect waves-light"
+                @click.prevent="submitStep"
+              >{{editionStep < 2 ? 'Next' : 'Save'}}</button>
+            </div>
+            <div class="col s9">
+              <div v-if="error" class="card error red-color white-text">
+                <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
+                {{error}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 
 <script>
   import Headline from '../../Materialize/Headline'
+  import Stepper from '../../Common/Stepper'
+  import Basic from './Steps/Basic'
+  import Credentials from './Steps/CredentialsSelector'
+  import Custom from './Steps/Custom'
   import kuzzle from '../../../services/kuzzle'
-  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
   export default {
-    name: 'UserCreate',
+    name: 'UsersSecurityCreate',
     components: {
       Headline,
-      CreateOrUpdate
+      Stepper,
+      Basic,
+      Credentials,
+      Custom
     },
     props: {
       index: String,
@@ -38,38 +91,77 @@
     data () {
       return {
         error: '',
-        document: {}
+        id: null,
+        customMapping: {},
+        editionStep: 0,
+        addedProfiles: [],
+        autoGenerateKuid: false,
+        credentials: null,
+        custom: null,
+        submitted: false
+      }
+    },
+    computed: {
+      disabledSteps () {
+        let disabled = []
+        if (!this.hasBasicPayload) {
+          disabled.push(1)
+        }
+        if (!this.hasBasicPayload) {
+          disabled.push(2)
+        }
+        return disabled
+      },
+      hasBasicPayload () {
+        return this.addedProfiles.length &&
+              (this.autoGenerateKuid ||
+              (!this.autoGenerateKuid && this.id))
+      },
+      validations () {
+        return [
+          () => {
+            if (!this.autoGenerateKuid && !this.id) {
+              throw new Error('Please fill the custom KUID or check the auto-generate box')
+            }
+            if (!this.addedProfiles.length) {
+              throw new Error('Please add at least one profile to the user')
+            }
+            return true
+          },
+          () => {
+            return true
+          },
+          () => {
+            return true
+          }
+        ]
       }
     },
     methods: {
       getMappingUsers,
-      create (json) {
-        this.error = ''
-
-        if (!json) {
-          this.error = 'The document is invalid, please review it'
-          return
-        }
-        if (!json._id) {
-          this.error = 'The document must have an id'
+      create () {
+        if (this.submitted) {
           return
         }
 
-        let document = {...json}
-        let id = null
-
-        if (document._id) {
-          id = document._id
-          delete document._id
+        let userObject = {
+          content: {
+            profileIds: this.addedProfiles,
+            ...this.custom
+          },
+          credentials: {
+            ...this.credentials
+          }
         }
 
         kuzzle
           .security
-          .createUserPromise(id, document)
+          .createUserPromise(this.id, userObject)
           .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
           .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {
-            this.error = 'An error occurred while creating user: <br />' + err.message
+            this.error = err.message
+            this.submitted = false
           })
       },
       cancel () {
@@ -78,7 +170,62 @@
         } else {
           this.$router.push({name: 'SecurityUsersList'})
         }
+      },
+      setEditionStep (value) {
+        this.editionStep = value
+      },
+      setError (msg) {
+        this.error = msg
+        setTimeout(() => {
+          this.dismissError()
+        }, 5000)
+      },
+      dismissError () {
+        this.error = ''
+      },
+      onProfileAdded (profile) {
+        this.addedProfiles.push(profile)
+      },
+      onProfileRemoved (profile) {
+        this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+      },
+      setAutoGenerateKuid (value) {
+        this.autoGenerateKuid = value
+      },
+      setCustomKuid (value) {
+        this.id = value
+      },
+      submitStep () {
+        if (this.editionStep < 2) {
+          try {
+            this.validations[this.editionStep]()
+            this.editionStep++
+          } catch (e) {
+            this.setError(e.message)
+          }
+        } else {
+          this.create({
+            // TODO
+          })
+        }
+      },
+      onCredentialsChanged (payload) {
+        this.credentials = payload
+      },
+      onCustomChanged (payload) {
+        this.custom = payload
       }
+    },
+    mounted () {
+      return getMappingUsers()
+        .then(result => {
+          if (!result.mapping) {
+            this.customMapping = {}
+          } else {
+            this.customMapping = result.mapping
+            delete this.customMapping.profileIds
+          }
+        })
     }
   }
 </script>

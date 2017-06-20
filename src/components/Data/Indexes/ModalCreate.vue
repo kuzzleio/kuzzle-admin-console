@@ -81,7 +81,7 @@
 <script>
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
-  import * as types from '../../../vuex/modules/data/mutation-types'
+  import {CREATE_INDEX} from '../../../vuex/modules/index/mutation-types'
 
   export default {
     name: 'CreateModal',
@@ -101,7 +101,7 @@
           return
         }
 
-        this.$store.dispatch(types.CREATE_INDEX, index)
+        this.$store.dispatch(CREATE_INDEX, index)
           .then(() => {
             this.index = ''
             this.error = ''

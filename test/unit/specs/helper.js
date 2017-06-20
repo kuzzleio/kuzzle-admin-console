@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 // helper for testing action with expected mutations
-export const testAction = (action, payload, state, expectedMutations, done) => {
+export const testAction = (action, payload, state, expectedMutations, done, getters) => {
   let count = 0
 
   // mock commit
@@ -18,7 +18,7 @@ export const testAction = (action, payload, state, expectedMutations, done) => {
   }
 
   // call the action with mocked store and arguments
-  action({ commit, state }, payload)
+  action({ commit, state, getters, dispatch: () => {} }, payload)
 
   // check if no mutations should have been dispatched
   if (expectedMutations.length === 0) {
@@ -33,7 +33,7 @@ export const mockedDirective = function (id) {
   return {id}
 }
 
-export const testActionPromise = (action, payload, state, expectedMutations, done, expectedResultFromPromise) => {
+export const testActionPromise = (action, payload, state, expectedMutations, done, expectedResultFromPromise, getters) => {
   let count = 0
 
   // mock commit
@@ -50,7 +50,7 @@ export const testActionPromise = (action, payload, state, expectedMutations, don
   }
 
   // call the action with mocked store and arguments
-  return action({ commit, state }, payload).then((res) => {
+  return action({ commit, state, getters, dispatch: () => {} }, payload).then((res) => {
     if (expectedResultFromPromise) {
       expect(res).to.deep.equals(expectedResultFromPromise)
     }

@@ -2,12 +2,11 @@
 /* eslint-disable no-extend-native */
 Function.prototype.bind = require('function-bind')
 
-// require all test files (files that ends with .spec.js)
-var testsContext = require.context('./specs', true, /\.spec$/)
-testsContext.keys().forEach(testsContext)
+// Require the store since it is needed by the tests on the mutations.
+require('../../src/vuex/store')
 
-// require all src files except main.js for coverage.
-// you can also change this to match only the subset of files that
-// you want coverage for.
-var srcContext = require.context('../../src', true, /^\.\/(?!main\.js$).+\.(js|vue)$/i)
-srcContext.keys().forEach(srcContext)
+// Require test files (files that ends with .spec.js)
+const testsServicesContext = require.context('./specs/services', true, /\.spec$/)
+testsServicesContext.keys().forEach(testsServicesContext)
+const testsVuexContext = require.context('./specs/vuex', true, /\.spec$/)
+testsVuexContext.keys().forEach(testsVuexContext)

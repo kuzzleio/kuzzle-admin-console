@@ -7,8 +7,6 @@
     <common-list
       v-if="canSearchRole()"
       item-name="RoleItem"
-      collection="roles"
-      index="%kuzzle"
       @create-clicked="createRole"
       :display-create="canCreateRole()"
       :perform-search="performSearchRoles"
@@ -43,7 +41,7 @@
 
 <script>
   import ListNotAllowed from '../../Common/ListNotAllowed'
-  import CommonList from '../../Common/List'
+  import CommonList from './CommonList'
   import { canSearchRole, canCreateRole } from '../../../services/userAuthorization'
   import Headline from '../../Materialize/Headline'
   import { performSearchRoles, performDeleteRoles } from '../../../services/kuzzleWrapper'

@@ -1,24 +1,95 @@
 <template>
-  <div class="json-form">
-    <!-- For nested objects -->
-    <fieldset v-if="isNested(content)">
-      <legend>
-        {{name}}
-        <i @click="addAttribute" class="fa fa-plus-circle primary"></i>
-      </legend>
-      <div v-for="(nestedContent, nestedName) in content.properties">
-        <json-form :name="nestedName" :full-name-input="path" :content="nestedContent"></json-form>
-      </div>
-    </fieldset>
+  <div>
+    <div class="json-form" v-for="(content, name) in schema">
+      <!-- For nested objects -->
+      <fieldset v-if="isNested(content)">
+        <legend>
+          {{name}}
+        </legend>
+        <json-form :schema="content.properties" :parent="name" :document="document" @update-value="updateNested"></json-form>
+      </fieldset>
 
-    <!-- Root attributes -->
-    <div v-if="!isNested(content)" class="input-field">
-      <component :is="componentItem" :name="name" :full-name="path" :content="content.val" :type="content.type"></component>
+      <!-- Root attributes -->
+      <div class="input-field" v-else>
+        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document" :parent="parent" :type="content.type" :step="content.step" :schema="content" @update-value="update" :mapping="$store.state.collection.mapping"></component>
+      </div>
     </div>
   </div>
 </template>
 
+<script>
+  import JsonFormItemInput from './JsonFormItemInput'
+  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
+  import JsonFormItemJson from './JsonFormItemJson'
+  import JsonFormItemGeopoint from './JsonFormItemGeopoint'
+  import JsonFormItemTextarea from './JsonFormItemTextarea'
+  import JsonFormItemRichEditor from './JsonFormItemRichEditor'
+  import JsonFormItemSelect from './JsonFormItemSelect'
+  import JsonFormItemMultiSelect from './JsonFormItemMultiSelect'
+
+  export default {
+    name: 'JsonForm',
+    components: {
+      JsonFormItemInput,
+      JsonFormItemCheckbox,
+      JsonFormItemJson,
+      JsonFormItemGeopoint,
+      JsonFormItemTextarea,
+      JsonFormItemSelect,
+      JsonFormItemMultiSelect,
+      JsonFormItemRichEditor
+    },
+    props: {
+      schema: [Object, Array],
+      document: Object,
+      parent: String
+    },
+    methods: {
+      isNested (content) {
+        return (content.properties && Object.keys(content.properties).length)
+      },
+      componentItem (content) {
+        switch (content.tag) {
+          case 'input':
+            return 'JsonFormItemInput'
+          case 'checkbox':
+          case 'boolean':
+            return 'JsonFormItemCheckbox'
+          case 'geo-point':
+            return 'JsonFormItemGeopoint'
+          case 'textarea':
+            return 'JsonFormItemTextarea'
+          case 'select':
+            return 'JsonFormItemSelect'
+          case 'mselect':
+            return 'JsonFormItemMultiSelect'
+          case 'rich-text':
+            return 'JsonFormItemRichEditor'
+          default:
+            return 'JsonFormItemJson'
+        }
+      },
+      update (content) {
+        this.$emit('update-value', {name: content.name, value: content.value, parent: this.parent})
+      },
+      updateNested (content) {
+        this.$emit('update-value', {
+          name: content.parent,
+          value: {
+            ...this.document[content.parent],
+            [content.name]: content.value
+          }
+        })
+      }
+    }
+  }
+</script>
+
+
 <style lang="scss" rel="stylesheet/scss">
+  .pre_ace, .ace_editor {
+    height: 100px;
+  }
   .json-form {
     legend {
       border: 0;
@@ -53,7 +124,6 @@
     .input-field {
       padding-right: 80px;
       input {
-        height: 2rem;
         margin-bottom: 10px;
       }
       .select-wrapper + label {
@@ -87,68 +157,3 @@
     }
   }
 </style>
-
-<script>
-  import JsonFormItemCheckbox from './JsonFormItemCheckbox'
-  import JsonFormItemNumber from './JsonFormItemNumber'
-  import JsonFormItemText from './JsonFormItemText'
-  import JsonFormItemArray from './JsonFormItemArray/JsonFormItemArray'
-  import JsonFormItemProfileIds from './JsonFormItemProfileIds'
-  import JsonFormItemGeoPoint from './JsonFormItemGeoPoint'
-
-  export default {
-    name: 'JsonForm',
-    components: {
-      JsonFormItemCheckbox,
-      JsonFormItemNumber,
-      JsonFormItemText,
-      JsonFormItemArray,
-      JsonFormItemProfileIds,
-      JsonFormItemGeoPoint
-    },
-    computed: {
-      path () {
-        if (this.fullNameInput) {
-          return this.fullNameInput + '.' + this.name
-        }
-        return this.name
-      },
-      componentItem () {
-        switch (this.content.type) {
-          case 'boolean':
-            return 'JsonFormItemCheckbox'
-          case 'integer':
-          case 'long':
-          case 'short':
-          case 'byte':
-          case 'double':
-          case 'float':
-          case 'number':
-          case 'numeric':
-            return 'JsonFormItemNumber'
-          case 'array':
-            return 'JsonFormItemArray'
-          case 'profileIds':
-            return 'JsonFormItemProfileIds'
-          case 'geo_point':
-            return 'JsonFormItemGeoPoint'
-          default:
-            return 'JsonFormItemText'
-        }
-      }
-    },
-    props: {
-      name: String,
-      content: Object,
-      fullNameInput: String
-    },
-    methods: {
-      isNested (content) {
-        return !!content.properties
-      },
-      addAttribute () {
-        this.$emit('document-create::add-attribute', this.path)
-      }
-    }
-  }
-</script>

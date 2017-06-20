@@ -29,6 +29,7 @@
 
     &.loading {
       opacity: 0.3;
+      z-index: 10;
 
       &:before {
         content: "loading ...";

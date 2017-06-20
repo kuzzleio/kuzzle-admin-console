@@ -11,7 +11,7 @@
             You are not allowed to access this page<br>
           </p>
           <p>
-            <em>Learn more about security &amp; permissions on <a href="http://docs.kuzzle.io/guide/#security" target="_blank">Kuzzle guide</a></em>
+            <em>Learn more about security &amp; permissions on <a href="http://docs.kuzzle.io/guide/essentials/security/#permissions" target="_blank">Kuzzle guide</a></em>
           </p>
         </div>
       </div>

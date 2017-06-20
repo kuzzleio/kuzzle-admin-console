@@ -2,19 +2,41 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <environment-switch @environment::create="editEnvironment"></environment-switch>
+        <environment-switch
+          @environment::create="editEnvironment"
+          @environment::delete="deleteEnvironment">
+        </environment-switch>
       </div>
     </div>
-    <div class="col s12">
-      <h4><i class="fa fa-plug"></i> Error with Kuzzle</h4>
+    <div class="row message-warning">
+      <h5>{{$store.state.kuzzle.errorFromKuzzle.message}}</h5>
+      <div class="divider"></div>
+      <div class="message">
+        <i class="fa fa-plug"></i>
+        [{{$store.state.kuzzle.errorFromKuzzle.internal.status}}] {{$store.state.kuzzle.errorFromKuzzle.internal.message}}
+      </div>
     </div>
-    <div class="row">
+    <div class="row kuzzle-disconnected">
       <div class="col s12">
-        <div class="row kuzzle-disconnected">
-          <div class="col s12">
-            <p>Seems to have an error with the Kuzzle hosted at <span class="host primary">{{host}}:{{port}}</span></p></p>
+        <p>I'm doing my best to reconnect to Kuzzle ...</p>
+      </div>
+
+      <div class="col s1 offset-s5">
+        <p>
+          <div class="preloader-wrapper active valign-wrapper">
+            <div class="spinner-layer">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
           </div>
-        </div>
+        </p>
       </div>
     </div>
 
@@ -22,12 +44,8 @@
 </template>
 
 <script>
-  import kuzzle from '../../services/kuzzle'
   import Connecting from './Connecting'
-  import EnvironmentSwitch from '../Common/Environments/Switch'
-
-  let idConnect
-  let idReconnect
+  import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
   export default {
     name: 'KuzzleErrorPage',
@@ -41,35 +59,23 @@
       Connecting,
       EnvironmentSwitch
     },
-    mounted () {
-      this.host = kuzzle.host
-      this.port = kuzzle.port
-
-      idReconnect = kuzzle.addListener('reconnected', () => {
-        this.$router.push({name: 'Home'})
-      })
-
-      idConnect = kuzzle.addListener('connected', () => {
-        this.$router.push({name: 'Home'})
-      })
-
-      if (kuzzle.state === 'connected' || kuzzle.state === 'reconnected') {
-        this.$router.push({name: 'Login'})
-      }
-    },
-    destroyed () {
-      kuzzle.removeListener('reconnected', idReconnect)
-      kuzzle.removeListener('connected', idConnect)
-    },
     methods: {
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+  .message-warning {
+    h5 {
+      font-size: 1.2rem;
+    }
+  }
   .kuzzle-disconnected {
     margin-top: 30px;
 

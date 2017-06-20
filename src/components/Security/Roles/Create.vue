@@ -1,48 +1,55 @@
 <template>
-  <create
+  <create-or-update
   title="Create a role"
-  :content="content"
   :error="error"
-  @security-create::reset-error="error = ''"
-  @security-create::create="create"
-  @security-create::cancel="cancel"
-  :document="document"
-  :get-mapping="getMappingRoles">
-  </create>
+  @document-create::reset-error="error = ''"
+  @document-create::create="create"
+  @document-create::cancel="cancel"
+  @document-create::error="setError"
+  @change-id="updateId"
+  v-model="document"
+  :submitted="submitted"
+  :mandatory-id="true">
+  </create-or-update>
 </template>
 
 <script>
-  import Create from '../Common/CreateOrUpdate'
+  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingRoles } from '../../../services/kuzzleWrapper'
 
   export default {
+    name: 'RolesSecurityCreate',
     components: {
-      Create
+      CreateOrUpdate
     },
     data () {
       return {
         error: '',
-        document: {}
+        document: {},
+        id: null,
+        submitted: false
       }
     },
     methods: {
       getMappingRoles,
-      create (id, json) {
+      create (role) {
         this.error = ''
 
-        if (!json) {
+        if (!role) {
           this.error = 'The document is invalid, please review it'
           return
         }
-        if (!id) {
-          this.error = 'The document must have an id'
+        if (!this.id) {
+          this.error = 'You must set an ID'
           return
         }
 
+        this.submitted = true
+
         kuzzle
           .security
-          .createRolePromise(id, json, {replaceIfExist: true})
+          .createRolePromise(this.id, role, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityRolesList'})
@@ -50,10 +57,17 @@
           })
           .catch((e) => {
             this.error = 'An error occurred while creating role: <br />' + e.message
+            this.submitted = false
           })
       },
       cancel () {
         this.$router.push({name: 'SecurityRolesList'})
+      },
+      updateId (id) {
+        this.id = id
+      },
+      setError (payload) {
+        this.error = payload
       }
     }
   }

@@ -32,7 +32,7 @@
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="document.content"></pre>
+      <pre v-json-formatter="{content: document.content, open: true}"></pre>
     </div>
   </div>
 </template>

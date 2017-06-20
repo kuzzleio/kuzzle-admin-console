@@ -1,6 +1,5 @@
 .DS_Store
 node_modules/
-dist/
 npm-debug.log
 selenium-debug.log
 test/unit/coverage
@@ -11,3 +10,4 @@ docker-compose-custom.yml
 bower_components
 phantomjsdriver.log
 *.sublime-*
+dist
