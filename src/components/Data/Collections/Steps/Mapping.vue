@@ -106,7 +106,7 @@
     },
     methods: {
       setName (e) {
-        this.$store.commit(SET_COLLECTION_NAME, e.target.value)
+        this.$store.commit(SET_COLLECTION_NAME, e.target.value.trim())
       },
       next () {
         if (this.collectionIsRealtimeOnly) {
