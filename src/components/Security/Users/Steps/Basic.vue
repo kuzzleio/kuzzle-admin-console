@@ -32,7 +32,7 @@
           Auto-generate
         </label>
       </div>
-    </div class="row">
+    </div>
     <div class="row">
       <div class="col s3">
         <strong>Profiles</strong>

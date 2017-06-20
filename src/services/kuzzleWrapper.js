@@ -232,32 +232,15 @@ export const updateMappingUsers = (newMapping) => {
     .then(res => res.result)
 }
 
-export const performSearchProfiles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+export const performSearchProfiles = (filters = {}, pagination = {}) => {
   return kuzzle
     .security
-    .searchProfilesPromise({...filters, sort}, {...pagination})
+    .searchProfilesPromise({...filters}, {...pagination})
     .then(result => {
-      let additionalAttributeName = null
-
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
-      }
-
       let profiles = result.profiles.map((document) => {
         let object = {
           content: document.content,
           id: document.id
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-          }
         }
 
         return object
@@ -273,32 +256,15 @@ export const getMappingProfiles = () => {
     .then((res) => res.result)
 }
 
-export const performSearchRoles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+export const performSearchRoles = (controllers = {}, pagination = {}) => {
   return kuzzle
     .security
-    .searchRolesPromise({...filters, sort}, {...pagination})
+    .searchRolesPromise(controllers, {...pagination})
     .then(result => {
-      let additionalAttributeName = null
-
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
-      }
-
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
           id: document.id
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-          }
         }
 
         return object
@@ -333,7 +299,7 @@ export const performDeleteUsers = (index, collection, ids) => {
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
-export const performDeleteRoles = (index, collection, ids) => {
+export const performDeleteRoles = (ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }

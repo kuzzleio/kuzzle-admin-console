@@ -44,9 +44,6 @@ export const mutations = {
   },
   [types.SET_COLLECTION_DEFAULT_VIEW_JSON] (state, {jsonView}) {
     state.defaultViewJson = jsonView
-  },
-  [types.INIT_SCHEMA_FROM_MAPPING] (state) {
-    console.log(state.schema)
   }
 }
 

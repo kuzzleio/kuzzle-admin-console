@@ -8,7 +8,7 @@
   @document-create::error="setError"
   @change-id="updateId"
   v-model="document"
-  :submitted="submitted">
+  :submitted="submitted"
   :mandatory-id="true">
   </create-or-update>
 </template>
@@ -34,7 +34,6 @@
     methods: {
       getMappingRoles,
       create (role) {
-        this.submitted = true
         this.error = ''
 
         if (!role) {
@@ -45,6 +44,8 @@
           this.error = 'You must set an ID'
           return
         }
+
+        this.submitted = true
 
         kuzzle
           .security

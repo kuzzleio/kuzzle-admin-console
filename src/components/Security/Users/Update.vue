@@ -194,6 +194,13 @@
       },
       onContentChanged (value) {
         this.content = value
+      },
+      cancel () {
+        if (this.$router._prevTransition && this.$router._prevTransition.to) {
+          this.$router.push(this.$router._prevTransition.to)
+        } else {
+          this.$router.push({name: 'SecurityUsersList'})
+        }
       }
     },
     mounted () {
