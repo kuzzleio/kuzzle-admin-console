@@ -86,7 +86,7 @@ export default {
       .then(() => dispatch(authTypes.LOGIN_BY_TOKEN, {token: environment.token}))
       .then(() => dispatch(authTypes.CHECK_FIRST_ADMIN))
       .catch((e) => {
-        commit(types.SET_ERROR_FROM_KUZZLE, true)
+        commit(types.SET_ERROR_FROM_KUZZLE, e)
         return Promise.reject(e)
       })
   },
