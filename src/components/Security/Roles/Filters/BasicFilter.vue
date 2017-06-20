@@ -20,7 +20,7 @@
                   <i class="fa fa-plus left"></i>Add
                 </a>
               </div>
-              <div class="card-action">
+              <div class="card-action" v-if="filterIndex === controllers.length - 1">
                 <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
                 <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
               </div>
