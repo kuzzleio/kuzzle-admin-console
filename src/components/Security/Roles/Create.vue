@@ -34,7 +34,6 @@
     methods: {
       getMappingRoles,
       create (role) {
-        this.submitted = true
         this.error = ''
 
         if (!role) {
@@ -45,6 +44,8 @@
           this.error = 'You must set an ID'
           return
         }
+
+        this.submitted = true
 
         kuzzle
           .security
