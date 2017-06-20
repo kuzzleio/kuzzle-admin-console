@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="navbar-fixed">
-      <nav :style="{backgroundColor: currentEnvironmentColor}">
+      <nav :style="{backgroundColor: currentEnvironmentColor}" id="mainnav">
         <ul>
           <li class="logo">
             <a href="#" class="">
@@ -18,9 +18,6 @@
 
         <ul class="right">
           <li>
-            Welcome <strong>{{$store.getters.user}}</strong>
-          </li>
-          <li>
             <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>
@@ -36,7 +33,7 @@
   import {hasSecurityRights} from '../../services/userAuthorization'
   import {DO_LOGOUT} from '../../vuex/modules/auth/mutation-types'
   import {DEFAULT_COLOR} from '../../services/environment'
-  import EnvironmentSwitch from './Environments/Switch'
+  import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
   export default {
     name: 'MainMenu',
@@ -73,7 +70,7 @@ nav {
   padding-right: 20px;
 
   li.nav {
-    font-family: "Gobold", Arial, sans-serif;
+    font-family: 'Ubuntu', sans-serif;
   }
 
   li {

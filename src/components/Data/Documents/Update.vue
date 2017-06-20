@@ -18,12 +18,14 @@
       @document-create::create="update"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = null"
+      @document-create::error="setError"
       :error="error"
       :index="index"
       :collection="collection"
       :hide-id="true"
-      :document="document"
-      :get-mapping="getMappingDocument">
+      v-model="document"
+      :get-mapping="getMappingDocument"
+      :submitted="submitted">
     </create-or-update>
   </div>
   <div v-else>
@@ -73,36 +75,30 @@
       return {
         error: '',
         show: false,
-        document: {}
+        document: {},
+        submitted: false
       }
     },
     methods: {
       getMappingDocument,
-      update (json, mapping) {
+      update (document) {
+        this.submitted = true
         this.error = ''
 
-        if (!json) {
+        if (!document) {
           this.error = 'The document is invalid, please review it'
           return
         }
 
         return kuzzle
           .collection(this.collection, this.index)
-          .collectionMapping(mapping || {})
-          .applyPromise()
+          .replaceDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), document, {refresh: 'wait_for'})
           .then(() => {
-            return kuzzle
-              .collection(this.collection, this.index)
-              .updateDocumentPromise(decodeURIComponent(this.$store.state.route.params.id), json, {refresh: 'wait_for'})
-              .then(() => {
-                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-              })
-              .catch((err) => {
-                this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
-              })
+            this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
           })
           .catch((err) => {
             this.error = 'An error occurred while trying to update the document: <br/> ' + err.message
+            this.submitted = false
           })
       },
       cancel () {
@@ -125,6 +121,9 @@
           .catch(err => {
             this.$store.commit(SET_TOAST, {text: err.message})
           })
+      },
+      setError (payload) {
+        this.error = payload
       }
     },
     mounted () {

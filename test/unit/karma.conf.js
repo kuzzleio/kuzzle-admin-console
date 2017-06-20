@@ -3,53 +3,7 @@
 // we are also using it with karma-webpack
 //   https://github.com/webpack/karma-webpack
 
-var path = require('path')
-var merge = require('webpack-merge')
-var baseConfig = require('../../build/webpack.base.conf')
-var utils = require('../../build/utils')
-var webpack = require('webpack')
-var projectRoot = path.resolve(__dirname, '../../')
-
-var webpackConfig = merge(baseConfig, {
-  // use inline sourcemap for karma-sourcemap-loader
-  module: {
-    loaders: utils.styleLoaders()
-  },
-  devtool: '#inline-source-map',
-  vue: {
-    loaders: {
-      js: 'isparta'
-    }
-  },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env': require('../../config/test.env')
-    })
-  ]
-})
-
-// no need for app entry during tests
-delete webpackConfig.entry
-
-// make sure isparta loader is applied before eslint
-webpackConfig.module.preLoaders = webpackConfig.module.preLoaders || []
-webpackConfig.module.preLoaders.unshift({
-  test: /\.js$/,
-  loader: 'isparta',
-  include: path.resolve(projectRoot, 'src'),
-  exclude: [
-    /bower_components/
-  ]
-})
-
-// only apply babel for test files when using isparta
-webpackConfig.module.loaders.some(function (loader, i) {
-  if (loader.loader === 'babel') {
-    loader.include = path.resolve(projectRoot, 'test/unit')
-    loader.exclude = /bower_components/
-    return true
-  }
-})
+var webpackConfig = require('../../build/webpack.test.conf')
 
 module.exports = function (config) {
   config.set({
@@ -60,7 +14,10 @@ module.exports = function (config) {
     browsers: ['PhantomJS'],
     frameworks: ['mocha', 'sinon-chai'],
     reporters: ['spec', 'coverage'],
-    files: ['../../node_modules/babel-polyfill/dist/polyfill.js', './index.js'],
+    files: [
+      '../../node_modules/babel-polyfill/dist/polyfill.js',
+      './index.js'
+    ],
     preprocessors: {
       './index.js': ['webpack', 'sourcemap']
     },

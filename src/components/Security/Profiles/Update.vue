@@ -1,18 +1,19 @@
 <template>
-  <create
+  <create-or-update
   title="Update profile"
-  :content="content"
   :update-id="id"
   :error="error"
-  @security-create::create="update"
-  @security-create::cancel="cancel"
-  :document="document"
-  :get-mapping="getMappingProfiles">
-  </create>
+  @document-create::create="update"
+  @document-create::cancel="cancel"
+  @document-create::error="setError"
+  v-model="document"
+  :hide-id="true"
+  :submitted="submitted">
+  </create-or-update>
 </template>
 
 <script>
-  import Create from '../Common/CreateOrUpdate'
+  import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingProfiles } from '../../../services/kuzzleWrapper'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -20,28 +21,31 @@
   export default {
     name: 'SecurityUpdate',
     components: {
-      Create
+      CreateOrUpdate
     },
     data () {
       return {
         document: {},
         error: '',
-        id: null
+        id: null,
+        submitted: false
       }
     },
     methods: {
       getMappingProfiles,
-      update (id, json) {
+      update (profile) {
         this.error = ''
 
-        if (!json) {
+        if (!profile) {
           this.error = 'The document is invalid, please review it'
           return
         }
 
+        this.submitted = true
+
         kuzzle
           .security
-          .updateProfilePromise(this.id, json, {replaceIfExist: true})
+          .createProfilePromise(this.id, profile, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityProfilesList'})
@@ -49,6 +53,7 @@
           })
           .catch((e) => {
             this.$store.commit(SET_TOAST, {text: e.message})
+            this.submitted = false
           })
       },
       cancel () {
@@ -57,6 +62,9 @@
         } else {
           this.$router.push({name: 'SecurityProfilesList'})
         }
+      },
+      setError (payload) {
+        this.error = payload
       }
     },
     mounted () {

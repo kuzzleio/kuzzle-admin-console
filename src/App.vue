@@ -1,14 +1,5 @@
 <template>
   <div>
-    <div v-if="!$store.state.kuzzle.connectedTo && !$store.state.kuzzle.errorFromKuzzle">
-      <error-layout>
-        <kuzzle-disconnected-page
-          @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment">
-        </kuzzle-disconnected-page>
-      </error-layout>
-    </div>
-
     <div v-if="$store.state.kuzzle.errorFromKuzzle">
       <error-layout>
         <kuzzle-error-page
@@ -18,7 +9,25 @@
       </error-layout>
     </div>
 
-    <div v-if="$store.state.kuzzle.connectedTo && !$store.state.kuzzle.errorFromKuzzle">
+    <div v-else-if="!$store.state.kuzzle.errorFromKuzzle && !$store.getters.hasEnvironment">
+      <create-environment-page></create-environment-page>
+    </div>
+
+    <div v-else-if="$store.getters.currentEnvironmentId && !$store.getters.adminAlreadyExists">
+      <sign-up
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </sign-up>
+    </div>
+
+    <div v-else-if="$store.getters.currentEnvironmentId && $store.getters.adminAlreadyExists && !$store.getters.isAuthenticated">
+      <login
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </login>
+    </div>
+
+    <div v-show="!$store.state.kuzzle.errorFromKuzzle && $store.getters.hasEnvironment && $store.getters.adminAlreadyExists && $store.getters.isAuthenticated">
       <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
@@ -41,6 +50,9 @@ import {} from './assets/global.scss'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
 import ErrorLayout from './components/Error/Layout'
+import SignUp from './components/Signup'
+import Login from './components/Login'
+import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
 
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
@@ -48,7 +60,7 @@ import ModalDelete from './components/Common/Environments/ModalDelete'
 import Toaster from './components/Materialize/Toaster.vue'
 
 window.jQuery = window.$ = require('jquery')
-require('imports?$=jquery!materialize-css/dist/js/materialize')
+require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
 
 import 'font-awesome/css/font-awesome.css'
 
@@ -60,7 +72,10 @@ export default {
     ModalCreate,
     ModalDelete,
     Toaster,
-    KuzzleErrorPage
+    KuzzleErrorPage,
+    SignUp,
+    Login,
+    CreateEnvironmentPage
   },
   data () {
     return {

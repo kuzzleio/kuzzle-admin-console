@@ -11,11 +11,14 @@
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = null"
+      @document-create::error="setError"
       :error="error"
       :index="index"
       :collection="collection"
-      :document="document"
-      :get-mapping="getMappingDocument">
+      v-model="document"
+      @change-id="updateId"
+      :get-mapping="getMappingDocument"
+      :submitted="submitted">
     </create-or-update>
   </div>
   <div v-else>
@@ -34,6 +37,7 @@
   import { getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
   import CollectionTabs from '../Collections/Tabs'
+  import {FETCH_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'
 
   export default {
     name: 'DocumentCreateOrUpdate',
@@ -51,7 +55,9 @@
     data () {
       return {
         error: '',
-        document: {}
+        document: {},
+        id: null,
+        submitted: false
       }
     },
     computed: {
@@ -61,39 +67,36 @@
     },
     methods: {
       getMappingDocument,
-      create (json, mapping) {
+      updateId (id) {
+        this.id = id
+      },
+      create (document) {
         this.error = ''
 
-        if (!json) {
+        if (!document) {
           this.error = 'The document is invalid, please review it'
           return
         }
 
+        this.submitted = true
+
+        let id = this.id
+
+        if (document._id) {
+          id = document._id
+          delete document._id
+        }
+
         return kuzzle
           .collection(this.collection, this.index)
-          .collectionMapping(mapping || {})
-          .applyPromise()
+          .createDocumentPromise(id, document, {refresh: 'wait_for'})
+          .then(() => this.$store.dispatch(FETCH_COLLECTION_DETAIL, {index: this.index, collection: this.collection}))
           .then(() => {
-            let document = {...json}
-            let id = null
-
-            if (document._id) {
-              id = document._id
-              delete document._id
-            }
-
-            return kuzzle
-              .collection(this.collection, this.index)
-              .createDocumentPromise(id, document, {refresh: 'wait_for'})
-              .then(() => {
-                this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
-              })
-              .catch(err => {
-                this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
-              })
+            this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
           })
           .catch(err => {
-            this.error = 'An error occurred while trying to update collection mapping according to the document: <br/> ' + err.message
+            this.error = 'An error occurred while trying to create the document: <br/> ' + err.message
+            this.submitted = false
           })
       },
       cancel () {
@@ -102,6 +105,9 @@
         } else {
           this.$router.push({name: 'DataDocumentsList', params: {index: this.index, collection: this.collection}})
         }
+      },
+      setError (payload) {
+        this.error = payload
       }
     }
   }

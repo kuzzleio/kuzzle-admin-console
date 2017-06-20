@@ -1,6 +1,6 @@
 <template>
   <span>
-    <dropdown :id="index" :myclass="myclass">
+    <dropdown :id="'index-' + index" :myclass="myclass">
       <li v-if="!isList"><router-link :to="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</router-link></li>
       <li class="divider"></li>
       <li><a @click.prevent="openModal" class="red-text">Delete</a></li>

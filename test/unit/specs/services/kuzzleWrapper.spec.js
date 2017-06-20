@@ -1,4 +1,4 @@
-const kuzzleWrapperInjector = require('inject!../../../../src/services/kuzzleWrapper')
+const kuzzleWrapperInjector = require('inject-loader!../../../../src/services/kuzzleWrapper')
 
 let sandbox = sinon.sandbox.create()
 
@@ -13,14 +13,20 @@ describe('Kuzzle wrapper service', () => {
             first: 'toto'
           }
         },
-        id: 'id'
+        id: 'id',
+        meta: {
+          createdAt: 10101101
+        }
       }]
     }
     let responseWithAdditionalAttr = {
       documents: [{
         content: {name: {first: 'toto'}},
         id: 'id',
-        additionalAttribute: {name: 'name.first', value: 'toto'}
+        additionalAttribute: {name: 'name.first', value: 'toto'},
+        meta: {
+          createdAt: 10101101
+        }
       }],
       total: 42
     }
@@ -29,7 +35,7 @@ describe('Kuzzle wrapper service', () => {
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
-          dataCollectionFactory () {
+          collection () {
             return {
               search (filters, cb) {
                 if (triggerError) {
@@ -37,6 +43,15 @@ describe('Kuzzle wrapper service', () => {
                 } else {
                   cb(null, fakeResponse)
                 }
+              },
+              searchPromise () {
+                return new Promise((resolve, reject) => {
+                  if (triggerError) {
+                    reject(new Error('error'))
+                  } else {
+                    resolve(fakeResponse)
+                  }
+                })
               }
             }
           }
@@ -45,7 +60,7 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject a promise as there is no collection nor index', (done) => {
-      kuzzleWrapper.performSearch()
+      kuzzleWrapper.performSearchDocuments()
         .then(() => {})
         .catch(err => {
           expect(err.message).to.equals('Missing collection or index')
@@ -54,7 +69,7 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject a promise', (done) => {
-      kuzzleWrapper.performSearch('collection', 'index')
+      kuzzleWrapper.performSearchDocuments('collection', 'index')
         .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
@@ -64,7 +79,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should receive documents', (done) => {
       triggerError = false
-      kuzzleWrapper.performSearch('collection', 'index')
+      kuzzleWrapper.performSearchDocuments('collection', 'index')
         .then(res => {
           expect(res).to.deep.equals(fakeResponse)
           done()
@@ -74,7 +89,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should receive sorted documents with additional attributes for the sort array', (done) => {
       triggerError = false
-      kuzzleWrapper.performSearch('collection', 'index', {}, {}, [{'name.first': 'asc'}])
+      kuzzleWrapper.performSearchDocuments('collection', 'index', {}, {}, [{'name.first': 'asc'}])
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
@@ -83,7 +98,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should treat a String sort argument as the field to sort by', (done) => {
       triggerError = false
-      kuzzleWrapper.performSearch('collection', 'index', {}, {}, ['name.first'])
+      kuzzleWrapper.performSearchDocuments('collection', 'index', {}, {}, ['name.first'])
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
@@ -121,30 +136,26 @@ describe('Kuzzle wrapper service', () => {
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
-          dataCollectionFactory () {
-            return {
-              deleteDocument (filters, cb) {
-                if (triggerError) {
-                  cb(new Error('error'))
-                } else {
-                  cb(null)
-                }
-              }
+          queryPromise () {
+            if (triggerError) {
+              return Promise.reject(new Error('error'))
+            } else {
+              return Promise.resolve()
             }
           },
-          refreshIndex (index, cb) {
-            cb()
+          refreshIndex (index) {
+            return Promise.resolve()
           }
         }
       })
     })
 
     it('should do nothing if there is no ids nor index and collection', () => {
-      kuzzleWrapper.deleteDocuments()
+      kuzzleWrapper.performDeleteDocuments()
     })
 
     it('should reject a promise', (done) => {
-      kuzzleWrapper.deleteDocuments('index', 'collection', [42])
+      kuzzleWrapper.performDeleteDocuments('index', 'collection', [42])
         .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
@@ -154,7 +165,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should delete a document and refresh the index, then resolve a promise', (done) => {
       triggerError = false
-      kuzzleWrapper.deleteDocuments('index', 'collection', [42])
+      kuzzleWrapper.performDeleteDocuments('index', 'collection', [42])
         .then(() => {
           done()
         })
@@ -215,28 +226,34 @@ describe('Kuzzle wrapper service', () => {
 
   describe('initStoreWithKuzzle', () => {
     let kuzzleWrapper
-    let removeAllListeners = sandbox.stub()
+    let off = sandbox.stub()
+    let on = sandbox.stub()
     let setTokenValid = sandbox.stub()
 
-    it('should call removeListeners and addListeners with right params', () => {
+    it('should call off and on with right params', () => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
           host: 'toto',
           port: 8888,
           state: 'connecting',
           addListener (event, cb) {
-            cb()
+            cb({message: null})
           },
-          removeAllListeners
+          off,
+          on
         }
       })
 
-      let store = { store: 'mystore' }
+      let store = {state: {kuzzle: {}}, commit: sandbox.stub()}
       kuzzleWrapper.initStoreWithKuzzle(store)
 
-      expect(removeAllListeners.calledWith('queryError'))
+      expect(off.calledWith('tokenExpired'))
+      expect(off.calledWith('queryError'))
+      expect(off.calledWith('networkError'))
+      expect(off.calledWith('connected'))
+      expect(off.calledWith('reconnected'))
+      expect(off.calledWith('discarded'))
       expect(setTokenValid.calledWithMatch(store, false))
     })
   })
 })
-

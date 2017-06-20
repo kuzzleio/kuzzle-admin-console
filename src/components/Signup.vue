@@ -12,7 +12,10 @@
           </div>
           <div class="row">
             <div class="col offset-s4 s2">
-              <environment-switch @environment::create="editEnvironment"></environment-switch>
+              <environment-switch
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment">
+              </environment-switch>
             </div>
           </div>
           <div class="row message-warning">
@@ -84,53 +87,10 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  .signup {
-    position: fixed;
-    top:0;
-    left:0;
-    bottom: 0;
-    right: 0;
-    padding-top: 50px;
-    height: 100%;
-    overflow: auto;
-  }
-  .logo {
-    margin-top: 60px;
-  }
-
-  .message-warning {
-    padding: 25px;
-    background-color: #e4e4e4;
-
-    .divider {
-      background-color: #CCC;
-      margin-bottom: 10px;
-    }
-  }
-
-  [type="checkbox"] + label {
-    line-height: 19px;
-  }
-
-  .reset.input-field {
-    margin-top: 0;
-  }
-
-  .message.error {
-    margin-top: 25px;
-  }
-
-  .preloader-wrapper {
-    width: 35px;
-    height: 35px;
-  }
-</style>
-
 <script>
   import kuzzle from '../services/kuzzle'
   import * as types from '../vuex/modules/auth/mutation-types'
-  import EnvironmentSwitch from './Common/Environments/Switch'
+  import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 
   export default {
     name: 'Signup',
@@ -162,10 +122,22 @@
         this.error = null
         this.waiting = true
 
+        const firstAdminRequest = {
+          _id: this.username,
+          reset: this.reset,
+          body: {
+            content: {},
+            credentials: {
+              local: {
+                username: this.username,
+                password: this.password1
+              }
+            }
+          }
+        }
+
         kuzzle
-          .queryPromise(
-            {controller: 'security', action: 'createFirstAdmin'},
-            {_id: this.username, body: {username: this.username, password: this.password1, reset: this.reset}})
+          .queryPromise({controller: 'security', action: 'createFirstAdmin'}, firstAdminRequest)
           .then(() => {
             this.$store.commit(types.SET_ADMIN_EXISTS, true)
             this.$router.push({name: 'Login'})
@@ -178,6 +150,9 @@
       },
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }

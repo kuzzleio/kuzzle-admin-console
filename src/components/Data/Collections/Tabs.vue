@@ -1,7 +1,7 @@
 <template>
   <div class="nav">
     <ul>
-      <li :class="{active: isRouteActive('DataDocumentsList')}">
+      <li :class="{active: isRouteActive('DataDocumentsList')}" v-if="!$store.state.collection.isRealtimeOnly">
         <router-link :to="{name: 'DataDocumentsList', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
           Browse
         </router-link>
@@ -12,11 +12,11 @@
         </router-link>
       </li>
       <li :class="{active: isRouteActive('DataCreateDocument')}">
-        <router-link v-if="canCreateDocument($store.state.route.params.index, $store.state.route.params.collection)"
+        <router-link v-if="canCreateDocument($store.state.route.params.index, $store.state.route.params.collection) && !$store.state.collection.isRealtimeOnly"
           :to="{name: 'DataCreateDocument', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
           Create a document
         </router-link>
-        <a v-if="!canCreateDocument($store.state.route.params.index, $store.state.route.params.collection)"
+        <a v-if="!canCreateDocument($store.state.route.params.index, $store.state.route.params.collection) && !$store.state.collection.isRealtimeOnly"
            class="disabled"
            title="You are not allowed to create a document in this collection">
           Create a document
