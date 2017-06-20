@@ -1,10 +1,12 @@
 <template>
-  <div class="search-filter">
-    <div class="row margin-bottom-0 filters">
-      <basic-filter @filters-basic-search="broadcastFilterBasicSearch">
-      </basic-filter>
+    <div class="search-filter">
+        <div v-if="!basicFilter" class="card-panel card-header">
+            <div class="row margin-bottom-0 filters">
+                <basic-filter @filters-basic-search="broadcastFilterBasicSearch">
+                </basic-filter>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>

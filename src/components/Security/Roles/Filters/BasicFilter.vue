@@ -20,14 +20,13 @@
                   <i class="fa fa-plus left"></i>Add
                 </a>
               </div>
+              <div class="row card-action">
+                <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
+                <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
+              </div>
             </div>
         </div>
-
       </div>
-    </div>
-    <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light primary">Search</button>
-      <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
     </div>
   </form>
 </template>
@@ -69,6 +68,11 @@
       remove (filterIndex) {
         if (!this.controllers[filterIndex]) {
           return false
+        }
+
+        if (this.controllers.length === 1) {
+          this.resetSearch()
+          return
         }
 
         if (this.controllers.length === 1 && this.controllers[0].length === 1) {
