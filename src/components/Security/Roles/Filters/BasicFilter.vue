@@ -1,9 +1,9 @@
 <template>
   <form @submit.prevent="search">
-    <div class="row filter-content">
+    <div class="row filter-content margin-bottom-0">
       <div class="col s12">
 
-        <div class="row block-and">
+        <div class="row block-and margin-bottom-0">
           <p><i class="fa fa-search"></i> Search by controllers</p>
 
             <div v-for="(filter, filterIndex) in controllers" class="row dots group">
@@ -20,7 +20,7 @@
                   <i class="fa fa-plus left"></i>Add
                 </a>
               </div>
-              <div class="row card-action">
+              <div class="card-action">
                 <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
                 <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
               </div>

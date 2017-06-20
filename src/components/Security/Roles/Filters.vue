@@ -1,7 +1,7 @@
 <template>
     <div class="search-filter">
         <div v-if="!basicFilter" class="card-panel card-header">
-            <div class="row margin-bottom-0 filters">
+            <div class="row filters margin-bottom-0">
                 <basic-filter @filters-basic-search="broadcastFilterBasicSearch">
                 </basic-filter>
             </div>
