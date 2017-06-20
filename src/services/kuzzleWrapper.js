@@ -40,7 +40,7 @@ export const connectToEnvironment = (environment) => {
 }
 
 export const initStoreWithKuzzle = (store) => {
-  kuzzle.off('jwtTokenExpired')
+  kuzzle.off('tokenExpired')
   kuzzle.off('queryError')
   kuzzle.off('networkError')
   kuzzle.off('connected')
