@@ -109,6 +109,9 @@
         this.$store.commit(SET_COLLECTION_NAME, e.target.value.trim())
       },
       next () {
+        if (!this.$store.state.collection.name) {
+          return this.$emit('collection-create::error', 'Invalid collection name')
+        }
         if (this.collectionIsRealtimeOnly) {
           this.$emit('collection-create::create')
         } else {
