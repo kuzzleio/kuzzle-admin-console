@@ -19,6 +19,7 @@
           :step="editionStep"
           @collection-create::create="create"
           @collection-create::next-step="setEditionStep(1)"
+          @collection-create::error="showError"
           @cancel="cancel">
         </mapping>
         <collection-form
@@ -29,10 +30,10 @@
           @cancel="cancel">
         </collection-form>
 
-        <div class="col s7 m8 l8" v-if="error">
+        <div class="col s7 m8 l8" v-if="error || mappingError">
           <div class="card error red-color white-text">
             <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-            An error occurred while {{$store.state.route.params.collection ? 'updating' : 'creating'}} collection: <br>{{error}}
+            An error occurred while {{$store.state.route.params.collection ? 'updating' : 'creating'}} collection: <br>{{error ? error : mappingError}}
           </div>
         </div>
       </div>
@@ -60,7 +61,8 @@
     },
     data () {
       return {
-        editionStep: 0
+        editionStep: 0,
+        mappingError: null
       }
     },
     props: {
@@ -88,7 +90,11 @@
         }
       },
       setEditionStep (stepNumber) {
+        this.mappingError = false
         this.editionStep = stepNumber
+      },
+      showError (e) {
+        this.mappingError = e
       }
     }
   }
