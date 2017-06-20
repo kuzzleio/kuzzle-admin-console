@@ -146,7 +146,7 @@
         }
         return kuzzle
           .security
-          .updateUserPromise(this.id, userObject)
+          .replaceUserPromise(this.id, userObject)
           .then(() => {
             let promises = []
             Object.keys(this.credentials).forEach(strategy => {
