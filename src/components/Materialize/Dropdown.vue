@@ -1,8 +1,9 @@
 <template>
   <span :cmylass="myclass">
+
     <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
 
-    <ul :id="id" class='dropdown-content'>
+    <ul :id="parsedId" class='dropdown-content'>
       <slot></slot>
     </ul>
   </span>
@@ -52,7 +53,7 @@
           return null
         }
 
-        let parsed = this.id
+        let parsed = this.id + this._uid
 
         return parsed.replace(/[!"#$%&'()*_+,./:;<=>?@[\]^`{|}~ ]/g, '\\$&')
       }

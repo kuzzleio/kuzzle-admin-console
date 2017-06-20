@@ -1,7 +1,7 @@
 <template>
   <span ref="dropdown">
     <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
-       data-activates='environment-dropdown'>
+       :data-activates='"environment-dropdown-" + _uid'>
         <span v-if="$store.getters.currentEnvironment" class="current-environment-name truncate">
           {{currentEnvironmentName}}
         </span>
@@ -11,7 +11,7 @@
         <i class="fa fa-caret-down"></i>
     </a>
 
-    <ul id='environment-dropdown' class='dropdown-content'>
+    <ul :id='"environment-dropdown-" + _uid' class='dropdown-content environment-dropdown'>
       <li v-for="(env, index) in $store.state.kuzzle.environments" class="environment">
         <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
@@ -105,7 +105,7 @@
     }
   }
 
-  #environment-dropdown {
+  .environment-dropdown {
     top: 50px;
     width: 280px;
     .environment {
