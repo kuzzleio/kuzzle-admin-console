@@ -105,7 +105,8 @@
         contentMapping: {},
         refresh: false,
         activeTab: 'basic',
-        activeTabObject: null
+        activeTabObject: null,
+        submitted: false
       }
     },
     methods: {
@@ -137,6 +138,8 @@
           this.setError(e.message)
           return
         }
+        this.submitted = true
+
         let userObject = {
           profileIds: this.addedProfiles,
           ...this.content
@@ -170,6 +173,7 @@
           .catch((err) => {
             if (err) {
               this.setError(err.message)
+              this.submitted = false
             }
           })
       },
