@@ -7,9 +7,7 @@
       @filters-refresh-search="refreshSearch"
       :available-filters="availableFilters"
       :search-term="searchTerm"
-      :raw-filter="rawFilter"
       :basic-filter="basicFilter"
-      :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
       :set-basic-filter="setBasicFilter">
     </filters>

@@ -1,17 +1,8 @@
 <template>
   <div>
     <filters
-      @filters-quick-search="quickSearch"
       @filters-basic-search="basicSearch"
-      @filters-raw-search="rawSearch"
-      @filters-refresh-search="refreshSearch"
-      :available-filters="availableFilters"
-      :search-term="searchTerm"
-      :raw-filter="rawFilter"
-      :basic-filter="basicFilter"
-      :sorting="sorting"
-      :format-from-basic-search="formatFromBasicSearch"
-      :set-basic-filter="setBasicFilter">
+      :basic-filter="basicFilter">
     </filters>
 
     <div class="card-panel card-body">
@@ -132,8 +123,6 @@
       Filters
     },
     props: {
-      index: String,
-      collection: String,
       documents: Array,
       displayBulkDelete: Boolean,
       displayCreate: {
@@ -149,11 +138,7 @@
       selectedDocuments: Array,
       paginationFrom: Number,
       paginationSize: Number,
-      searchTerm: String,
-      rawFilter: Object,
       basicFilter: [Array, Object],
-      sorting: Object,
-      availableFilters: Object,
       documentToDelete: String,
       performDelete: Function
     },
@@ -176,7 +161,7 @@
       },
       confirmBulkDelete () {
         this.isLoading = true
-        this.performDelete(this.index, this.collection, this.selectedDocuments)
+        this.performDelete(this.selectedDocuments)
           .then(() => {
             this.close()
             this.refreshSearch()
@@ -188,7 +173,7 @@
           })
       },
       confirmSingleDelete (id) {
-        this.performDelete(this.index, this.collection, [id])
+        this.performDelete([id])
           .then(() => {
             this.close()
             this.refreshSearch()
@@ -198,26 +183,14 @@
             this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
-      quickSearch (searchTerm) {
-        this.$router.push({query: {searchTerm, from: 0}})
-      },
-      basicSearch (filters, sorting) {
-        if (!filters && !sorting) {
+      basicSearch (filters) {
+        if (!filters) {
           this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
           return
         }
 
         let basicFilter = JSON.stringify(filters)
-        this.$router.push({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
-      },
-      rawSearch (filters) {
-        if (!filters || Object.keys(filters).length === 0) {
-          this.$router.push({query: {rawFilter: null, from: 0}})
-          return
-        }
-
-        let rawFilter = JSON.stringify(filters)
-        this.$router.push({query: {rawFilter, from: 0}})
+        this.$router.push({query: {basicFilter, sorting: null, from: 0}})
       },
       refreshSearch () {
         // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...

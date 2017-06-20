@@ -7,8 +7,6 @@
     <common-list
       v-if="canSearchRole()"
       item-name="RoleItem"
-      collection="roles"
-      index="%kuzzle"
       @create-clicked="createRole"
       :display-create="canCreateRole()"
       :perform-search="performSearchRoles"

@@ -8,8 +8,6 @@
     <common-list
       v-if="canSearchProfile()"
       item-name="ProfileItem"
-      collection="profiles"
-      index="%kuzzle"
       @create-clicked="createProfile"
       :display-create="canCreateProfile()"
       :perform-search="performSearchProfiles"

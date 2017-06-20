@@ -1,6 +1,6 @@
 <template>
   <div class="search-filter">
-    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header">
+    <div v-if="!basicFilter && quickFilterEnabled" class="card-panel card-header">
       <div class="row margin-bottom-0 filters">
         <quick-filter
           :search-term="searchTerm"
@@ -10,28 +10,6 @@
         </quick-filter>
       </div>
     </div>
-
-    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header filters">
-      <div class="row margin-bottom-0">
-        <div class="col s8 m6 l4" style="min-width: 520px">
-          <div class="search-bar">
-            <i class="fa fa-search search"></i>
-            <div class="chip">
-              <span class="label-chip" @click.prevent="displayBlockFilter = true">{{labelComplexQuery}}</span>
-              <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
-            </div>
-            <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
-            <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
-          </div>
-        </div>
-        <div class="col s4 m3 l3 actions-quicksearch">
-          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
-          <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
-        </div>
-      </div>
-    </div>
-
-
 
     <div class="row card-panel open-search" v-show="displayBlockFilter">
       <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
@@ -59,10 +37,7 @@
 </style>
 
 <script>
-  import Tabs from '../../Materialize/Tabs'
-  import Tab from '../../Materialize/Tab'
   import QuickFilter from '../Common/Filters/QuickFilter'
-  import BasicFilter from '../Common/Filters/BasicFilter'
   import RoleList from './RoleList'
   import MSelect from '../../Common/MSelect'
   import Vue from 'vue'
@@ -79,32 +54,17 @@
         required: false,
         'default': true
       },
-      sortingEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
-      },
       labelSearchButton: {
         type: String,
         required: false,
         'default': 'search'
       },
-      labelComplexQuery: {
-        type: String,
-        required: false,
-        'default': 'Complex query here'
-      },
-      rawFilter: Object,
       basicFilter: [Array, Object],
       setBasicFilter: Function,
-      searchTerm: String,
-      sorting: Object
+      searchTerm: String
     },
     components: {
-      Tabs,
-      Tab,
       QuickFilter,
-      BasicFilter,
       RoleList,
       MSelect
     },
@@ -119,9 +79,6 @@
     data () {
       return {
         displayBlockFilter: false,
-        tabActive: 'basic',
-        jsonInvalid: false,
-        objectTabActive: null,
         addedRoles: []
       }
     },
@@ -129,24 +86,8 @@
       broadcastFilterQuickSearch (term) {
         this.$emit('filters-quick-search', term)
       },
-      switchFilter (name) {
-        this.tabActive = name
-      },
-      resetComplexSearch () {
-        this.$emit('filters-raw-search', {})
-      },
       refreshSearch () {
         this.$emit('filters-refresh-search')
-      },
-      broadcastFilterBasicSearch (filters, sorting) {
-        this.displayBlockFilter = false
-        this.$emit('filters-basic-search', filters, sorting)
-      },
-      setObjectTabActive (tab) {
-        this.objectTabActive = tab
-      },
-      broadcastRawSearch (filter) {
-        this.$emit('filters-raw-search', filter)
       },
       selectedRole (role) {
         this.addedRoles.push(role)

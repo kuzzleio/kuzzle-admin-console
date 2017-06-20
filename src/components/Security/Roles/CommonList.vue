@@ -1,15 +1,10 @@
-.<template>
+<template>
   <div>
-    <slot name="emptySet" v-if="!(basicFilter || rawFilter || $store.state.route.query.searchTerm) && totalDocuments === 0"></slot>
+    <slot name="emptySet" v-if="!basicFilter && totalDocuments === 0"></slot>
     <crudl-document v-else
-      :available-filters="availableFilters"
       :pagination-from="paginationFrom"
       :basic-filter="basicFilter"
-      :raw-filter="rawFilter"
-      :search-term="$store.state.route.query.searchTerm"
       :pagination-size="paginationSize"
-      :index="index"
-      :collection="collection"
       :documents="documents"
       :total-documents="totalDocuments"
       :display-bulk-delete="displayBulkDelete"
@@ -29,8 +24,6 @@
                        @checkbox-click="toggleSelectDocuments"
                        :document="document"
                        :is-checked="isChecked(document.id)"
-                       :index="index"
-                       :collection="collection"
                        @common-list::edit-document="editDocument"
                        @delete-document="deleteDocument">
             </component>
@@ -59,8 +52,6 @@
   export default {
     name: 'SecurityCommonList',
     props: {
-      index: String,
-      collection: String,
       itemName: String,
       displayCreate: {
         type: Boolean,

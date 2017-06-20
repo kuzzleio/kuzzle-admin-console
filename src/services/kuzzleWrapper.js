@@ -295,7 +295,7 @@ export const performDeleteUsers = (index, collection, ids) => {
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
-export const performDeleteRoles = (index, collection, ids) => {
+export const performDeleteRoles = (ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
