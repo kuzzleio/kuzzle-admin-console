@@ -101,11 +101,11 @@
     methods: {
       canSearchIndex,
       isCollectionRealtime () {
-        if (!this.$store.state.data.indexesAndCollections[this.$store.state.route.params.index]) {
+        if (!this.$store.state.index.indexesAndCollections[this.$store.state.route.params.index]) {
           return false
         }
 
-        return this.$store.state.data.indexesAndCollections[this.$store.state.route.params.index].realtime.indexOf(this.$store.state.route.params.collection) !== -1
+        return this.$store.state.index.indexesAndCollections[this.$store.state.route.params.index].realtime.indexOf(this.$store.state.route.params.collection) !== -1
       },
       isRouteActive (routeName) {
         if (Array.isArray(routeName)) {

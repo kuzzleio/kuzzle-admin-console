@@ -42,7 +42,8 @@
     </div>
 
     <div class="item-content">
-      <pre v-json-formatter="document.content"></pre>
+      <pre v-json-formatter="{content: document.content, open: true}"></pre>
+      <pre v-json-formatter="{content: document.credentials, open: true}"></pre>
     </div>
   </div>
 </template>
@@ -88,6 +89,10 @@ export default {
   },
   computed: {
     profileList () {
+      if (!this.document.content.profileIds) {
+        return []
+      }
+
       return this.document.content.profileIds.filter((item, idx) => {
         return idx < MAX_PROFILES
       })

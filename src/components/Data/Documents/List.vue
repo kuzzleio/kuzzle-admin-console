@@ -97,14 +97,14 @@
     },
     computed: {
       isRealtimeCollection () {
-        if (this.$store.state.data.indexesAndCollections) {
-          if (!this.$store.state.data.indexesAndCollections[this.index]) {
+        if (this.$store.state.index.indexesAndCollections) {
+          if (!this.$store.state.index.indexesAndCollections[this.index]) {
             return false
           }
-          if (!this.$store.state.data.indexesAndCollections[this.index].realtime) {
+          if (!this.$store.state.index.indexesAndCollections[this.index].realtime) {
             return false
           }
-          return this.$store.state.data.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
+          return this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
         }
       }
     },

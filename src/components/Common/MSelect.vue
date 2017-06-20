@@ -1,5 +1,5 @@
 <template>
-  <select ref="mselect" v-model="value" @blur="triggerBlur">
+  <select ref="mselect" v-model="content" @blur="triggerBlur">
     <slot></slot>
   </select>
 </template>
@@ -10,12 +10,13 @@
   export default {
     name: 'MSelect',
     props: {
-      model: String,
-      onBlur: Function
+      value: String,
+      onBlur: Function,
+      options: [Array, Object]
     },
     data () {
       return {
-        value: 'string'
+        content: this.value
       }
     },
     methods: {
@@ -25,10 +26,27 @@
         }
       }
     },
+    watch: {
+      options () {
+        setTimeout(() => {
+          let $el = $(this.$refs.mselect)
+          $el.material_select('destroy')
+          $el.material_select()
+        }, 100)
+      },
+      value () {
+        this.content = this.value
+        setTimeout(() => {
+          let $el = $(this.$refs.mselect)
+          $el.material_select('destroy')
+          $el.material_select()
+        }, 100)
+      }
+    },
     mounted () {
       Vue.nextTick(() => {
         let $el = $(this.$refs.mselect)
-        this.value = this.model
+        this.content = this.value
         /* eslint no-undef: 0 */
         $el.material_select()
         $el.on('change', (e) => {

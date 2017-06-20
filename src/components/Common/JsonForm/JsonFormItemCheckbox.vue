@@ -1,40 +1,46 @@
 <template>
   <div class="row input-field">
-    <input class="filled-in" :id="fullName" type="checkbox" v-model="value" :value="content" :checked="value" />
-    <label :for="fullName">{{name}}</label>
+    <input :id="name" type="checkbox" name="name" @change="update" :checked="value" />
+    <label :for="name">{{name}}</label>
   </div>
 </template>
 
 <script>
-  import {SET_PARTIAL_TO_DOCUMENT} from '../../../vuex/modules/data/mutation-types'
-
-  export default{
+  export default {
     name: 'JsonFormItemCheckbox',
     props: {
-      content: {type: Boolean, default: false},
+      content: Object,
       name: String,
       type: String,
-      fullName: String
+      parent: String
     },
     data () {
       return {
         value: false
       }
     },
-    mounted () {
-      if (!this.content) {
-        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: false})
-      } else {
-        this.value = this.content
+    methods: {
+      initValue () {
+        if (!this.content) {
+          return
+        }
+
+        if (this.parent) {
+          this.value = this.content[this.parent][this.name] || false
+        } else {
+          this.value = this.content[this.name] || false
+        }
+      },
+      update (e) {
+        this.$emit('update-value', {name: this.name, value: e.target.checked})
       }
     },
+    mounted () {
+      this.initValue()
+      this.$emit('update-value', {name: this.name, value: this.value})
+    },
     watch: {
-      value (v) {
-        this.$store.commit(SET_PARTIAL_TO_DOCUMENT, {path: this.fullName, value: v})
-      },
-      content (v) {
-        this.value = v
-      }
+      content: 'initValue'
     }
   }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="tryDeleteIndex(index)">
-    <modal :id="id" class="left-align" :is-open="isOpen" :close="close">
+    <modal :id="id" additional-class="left-align" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>Index <strong>{{index}}</strong> deletion</h4>
@@ -71,11 +71,10 @@
 
 
 <script>
-  import {DELETE_INDEX} from '../../../vuex/modules/data/mutation-types'
+  import {DELETE_INDEX} from '../../../vuex/modules/index/mutation-types'
   import Modal from '../../Materialize/Modal'
   import Focus from '../../../directives/focus.directive'
   import Title from '../../../directives/title.directive'
-  import { removeIndex } from '../../../services/localStore'
 
   export default {
     name: 'IndexDeleteModal',
@@ -105,8 +104,8 @@
           .then(() => {
             this.indexConfirmation = ''
             this.error = ''
-            removeIndex(index)
             this.close()
+            this.$router.push({name: 'Data'})
           })
           .catch(err => {
             this.error = err.message

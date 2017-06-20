@@ -1,15 +1,15 @@
 export const isAuthenticated = state => {
-  return state.auth.user.id !== undefined
+  return state.user.id !== undefined
 }
 
 export const user = state => {
-  return state.auth.user
+  return state.user
 }
 
 export const tokenValid = state => {
-  return state.auth.tokenValid
+  return state.tokenValid
 }
 
 export const adminAlreadyExists = state => {
-  return state.auth.adminAlreadyExists
+  return state.adminAlreadyExists
 }

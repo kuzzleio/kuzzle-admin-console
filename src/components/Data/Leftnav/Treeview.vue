@@ -26,7 +26,7 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="indexName in orderedFilteredIndices(filter)">
+            v-for="indexName in orderedFilteredIndices">
             <index-branch
               :force-open="indexCount === 1"
               :index-name="indexName"
@@ -47,7 +47,6 @@
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
   import {filterIndexesByKeyword} from '../../../services/data'
-  import orderBy from 'lodash/orderBy'
 
   export default {
     name: 'Treeview',
@@ -65,20 +64,17 @@
       }
     },
     methods: {
-      canSearchIndex,
-      orderedFilteredIndices (order) {
-        if (order) {
-          return orderBy(this.filteredIndices, order)
-        }
-        return this.filteredIndices
-      }
+      canSearchIndex
     },
     computed: {
       filteredIndices () {
-        return filterIndexesByKeyword(this.$store.getters.indexes, this.$store.state.data.indexesAndCollections, this.filter)
+        return [...filterIndexesByKeyword(this.$store.state.index.indexes, this.$store.state.index.indexesAndCollections, this.filter)]
+      },
+      orderedFilteredIndices () {
+        return this.filteredIndices.sort()
       },
       indexesAndCollections () {
-        return Object.keys(this.$store.state.data.indexesAndCollections).length ? this.$store.state.data.indexesAndCollections : {}
+        return Object.keys(this.$store.state.index.indexesAndCollections).length ? this.$store.state.index.indexesAndCollections : {}
       },
       indexCount () {
         return Object.keys(this.indexesAndCollections).length

@@ -20,6 +20,7 @@ module.exports = {
   globals: {
     'window': false,
     'localStorage': false,
-    '$': false
+    '$': false,
+    'JSON': false
   }
 }

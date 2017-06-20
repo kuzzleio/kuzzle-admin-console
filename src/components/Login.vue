@@ -2,7 +2,7 @@
   <div class="login">
     <div class="container">
       <div class="row">
-        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l4 offset-l4">
+        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
           <div class="row">
             <div class="col s12">
               <h2 class="center-align logo">
@@ -11,8 +11,11 @@
             </div>
           </div>
           <div class="row">
-            <div class="col offset-s1 s2">
-              <environment-switch @environment::create="editEnvironment"></environment-switch>
+            <div class="col offset-s4 s2">
+              <environment-switch
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment">
+              </environment-switch>
             </div>
           </div>
           <div class="row">
@@ -42,7 +45,7 @@
 
 <script>
   import LoginForm from './Common/Login/Form'
-  import EnvironmentSwitch from './Common/Environments/Switch'
+  import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
   import * as types from '../vuex/modules/common/routing/mutation-types'
 
   export default {
@@ -68,6 +71,9 @@
       },
       editEnvironment (id) {
         this.$emit('environment::create', id)
+      },
+      deleteEnvironment (id) {
+        this.$emit('environment::delete', id)
       }
     }
   }

@@ -20,7 +20,7 @@ describe('filterFormatRealtime tests', () => {
       expect(formatFromBasicSearch([[{operator: 'match', attribute: 'foo', value: 'bar'}]])).to.deep.equals({
         or: [{
           and: [{
-            term: {foo: 'bar'}
+            equals: {foo: 'bar'}
           }]
         }]
       })
@@ -30,7 +30,7 @@ describe('filterFormatRealtime tests', () => {
       expect(formatFromBasicSearch([[{operator: 'not_match', attribute: 'foo', value: 'bar'}]])).to.deep.equals({
         or: [{
           and: [{
-            not: {term: {foo: 'bar'}}
+            not: {equals: {foo: 'bar'}}
           }]
         }]
       })

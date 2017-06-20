@@ -2,6 +2,7 @@ import kuzzle from './kuzzle'
 import Promise from 'bluebird'
 import * as types from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
+import {SET_TOAST} from '../vuex/modules/common/toaster/mutation-types'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -26,6 +27,7 @@ export const waitForConnected = (timeout = 1000) => {
 export const connectToEnvironment = (environment) => {
   // fix default port for users that have an old environment settings in their localStorage:
   if (environment.port === undefined) environment.port = 7512
+  if (typeof environment.ssl !== 'boolean') environment.ssl = false
 
   if (kuzzle.state === 'connected') {
     kuzzle.disconnect()
@@ -33,13 +35,19 @@ export const connectToEnvironment = (environment) => {
 
   kuzzle.host = environment.host
   kuzzle.port = environment.port
+  kuzzle.sslConnection = environment.ssl
   kuzzle.connect()
 }
 
 export const initStoreWithKuzzle = (store) => {
-  kuzzle.removeAllListeners('jwtTokenExpired')
-  kuzzle.removeAllListeners('queryError')
-  kuzzle.addListener('queryError', (error) => {
+  kuzzle.off('tokenExpired')
+  kuzzle.off('queryError')
+  kuzzle.off('networkError')
+  kuzzle.off('connected')
+  kuzzle.off('reconnected')
+  kuzzle.off('discarded')
+
+  kuzzle.on('queryError', (error) => {
     if (error && error.message) {
       switch (error.message) {
         case 'Token expired':
@@ -50,14 +58,17 @@ export const initStoreWithKuzzle = (store) => {
       }
     }
   })
-  kuzzle.removeAllListeners('error')
-  kuzzle.addListener('error', () => {
-    if (!store.state.kuzzle.errorFromKuzzle) {
-      store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, true)
-    }
+  kuzzle.on('networkError', (error) => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
   })
-  kuzzle.addListener('connected', () => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, false)
+  kuzzle.on('connected', () => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+  })
+  kuzzle.on('reconnected', () => {
+    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+  })
+  kuzzle.on('discarded', function (data) {
+    store.commit(SET_TOAST, {text: data.message})
   })
 }
 
@@ -72,6 +83,45 @@ let getValueAdditionalAttribute = (content, attributePath) => {
   return content[attribute]
 }
 
+/**
+ * Constructor only used for displaying the constructor name in the list
+  * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+  * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Content {
+  constructor (content) {
+    Object.keys(content).forEach(key => {
+      this[key] = content[key]
+    })
+  }
+}
+
+/**
+ * Constructor only used for displaying the constructor name in the list
+ * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+ * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Meta {
+  constructor (meta) {
+    Object.keys(meta).forEach(key => {
+      this[key] = meta[key]
+    })
+  }
+}
+
+/**
+ * Constructor only used for displaying the constructor name in the list
+ * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+ * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Credentials {
+  constructor (credentials) {
+    Object.keys(credentials).forEach(key => {
+      this[key] = credentials[key]
+    })
+  }
+}
+
 export const performSearchDocuments = (collection, index, filters = {}, pagination = {}, sort = []) => {
   if (!collection || !index) {
     return Promise.reject(new Error('Missing collection or index'))
@@ -79,7 +129,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
 
   return kuzzle
     .collection(collection, index)
-    .searchPromise({...filters, ...pagination, sort})
+    .searchPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
 
@@ -91,10 +141,11 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
         }
       }
 
-      let documents = result.documents.map((document) => {
-        let object = {
-          content: document.content,
-          id: document.id
+      const documents = result.documents.map((document) => {
+        const object = {
+          content: new Content(document.content),
+          id: document.id,
+          meta: new Meta(document.meta)
         }
 
         if (additionalAttributeName) {
@@ -107,7 +158,7 @@ export const performSearchDocuments = (collection, index, filters = {}, paginati
         return object
       })
 
-      return {documents: documents, total: result.total}
+      return {documents, total: result.total}
     })
 }
 
@@ -120,9 +171,10 @@ export const getMappingDocument = (collection, index) => {
 export const performSearchUsers = (collection, index, filters = {}, pagination = {}, sort = []) => {
   return kuzzle
     .security
-    .searchUsersPromise({...filters, ...pagination, sort})
+    .searchUsersPromise({...filters, sort}, {...pagination})
     .then(result => {
       let additionalAttributeName = null
+      let users = []
 
       if (sort.length > 0) {
         if (typeof sort[0] === 'string') {
@@ -132,10 +184,11 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
         }
       }
 
-      let users = result.users.map((document) => {
+      result.users.forEach(document => {
         let object = {
-          content: document.content,
-          id: document.id
+          content: new Content(document.content),
+          id: document.id,
+          credentials: new Credentials({})
         }
 
         if (additionalAttributeName) {
@@ -145,7 +198,18 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
           }
         }
 
-        return object
+        return kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
+        .then(strategies => {
+          strategies.result.forEach(strategy => {
+            kuzzle.security.getCredentialsPromise(strategy, document.id)
+              .then(res => {
+                object.credentials[strategy] = res
+              })
+              .catch(() => {
+              })
+          })
+          users.push(object)
+        })
       })
 
       return {documents: users, total: result.total}
@@ -158,32 +222,25 @@ export const getMappingUsers = () => {
     .then((res) => res.result)
 }
 
-export const performSearchProfiles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+export const updateMappingUsers = (newMapping) => {
+  return kuzzle
+    .queryPromise({controller: 'security', action: 'updateUserMapping'}, {
+      body: {
+        properties: newMapping
+      }
+    })
+    .then(res => res.result)
+}
+
+export const performSearchProfiles = (filters = {}, pagination = {}) => {
   return kuzzle
     .security
-    .searchProfilesPromise({...filters, ...pagination, sort})
+    .searchProfilesPromise({...filters}, {...pagination})
     .then(result => {
-      let additionalAttributeName = null
-
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
-      }
-
       let profiles = result.profiles.map((document) => {
         let object = {
           content: document.content,
           id: document.id
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-          }
         }
 
         return object
@@ -199,32 +256,15 @@ export const getMappingProfiles = () => {
     .then((res) => res.result)
 }
 
-export const performSearchRoles = (collection, index, filters = {}, pagination = {}, sort = []) => {
+export const performSearchRoles = (controllers = {}, pagination = {}) => {
   return kuzzle
     .security
-    .searchRolesPromise({...filters, ...pagination, sort})
+    .searchRolesPromise(controllers, {...pagination})
     .then(result => {
-      let additionalAttributeName = null
-
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
-      }
-
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
           id: document.id
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
-          }
         }
 
         return object
@@ -246,8 +286,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
   }
 
   return kuzzle
-      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}})
-      .then(() => kuzzle.refreshIndex(index))
+      .queryPromise({controller: 'document', action: 'mDelete', collection, index}, {body: {ids}}, {refresh: 'wait_for'})
 }
 
 export const performDeleteUsers = (index, collection, ids) => {
@@ -260,7 +299,7 @@ export const performDeleteUsers = (index, collection, ids) => {
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
 
-export const performDeleteRoles = (index, collection, ids) => {
+export const performDeleteRoles = (ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
