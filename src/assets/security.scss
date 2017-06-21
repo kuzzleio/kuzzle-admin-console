@@ -1,0 +1,16 @@
+.roles {
+  .search-filter {
+    .search-bar {
+      .multiselect__tags {
+        border: none;
+        background: none;
+      }
+      input {
+        border: none;
+      }
+      ul.multiselect__content {
+        border: none;
+      }
+    }
+  }
+}

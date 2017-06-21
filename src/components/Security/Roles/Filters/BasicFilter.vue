@@ -47,6 +47,7 @@
 <script>
   import MSelect from '../../../Common/MSelect'
   import Multiselect from 'vue-multiselect'
+  import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 
   export default {
     components: {
