@@ -1,86 +1,81 @@
 <template>
-  <form @submit.prevent="search">
-    <div class="row filter-content margin-bottom-0">
-      <div class="col s12">
+  <!--<form @submit.prevent="search">-->
+    <!--<div class="row filter-content margin-bottom-0">-->
+      <!--<div class="col s12">-->
 
-        <div class="row block-and margin-bottom-0">
-          <p><i class="fa fa-search"></i> Search by controllers</p>
+        <!--<div class="row block-and margin-bottom-0">-->
+          <!--<p><i class="fa fa-search"></i> Search by controllers</p>-->
 
-            <div v-for="(filter, filterIndex) in controllers" class="row dots group">
-              <div class="col s4">
-                <input placeholder="controller" type="text" class="validate" v-model="filter.value">
-              </div>
-              <div class="col s2">
-                <i class="fa fa-times remove-filter"
-                   @click="remove(filterIndex)"></i>
-                <a
-                    v-if="filterIndex === controllers.length - 1"
-                    class="inline btn btn-small waves-effect waves-light"
-                    @click="add()">
-                  <i class="fa fa-plus left"></i>Add
-                </a>
-              </div>
-              <div class="card-action" v-if="filterIndex === controllers.length - 1">
-                <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
-                <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
-              </div>
-            </div>
+            <!--<div v-for="(filter, filterIndex) in controllers" class="row dots group">-->
+              <!--<div class="col s4">-->
+                <!--<input placeholder="controller" type="text" class="validate" v-model="filter.value">-->
+              <!--</div>-->
+              <!--<div class="card-action" v-if="filterIndex === controllers.length - 1">-->
+                <!--<button type="submit" class="btn btn-small waves-effect waves-light">Search</button>-->
+                <!--<button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>-->
+              <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</form>-->
+  <div class="row" >
+    <form class="" @submit.prevent="search">
+      <div class="col s7">
+        <div class="search-bar">
+          <i class="fa fa-search search"></i>
+          <multiselect
+            :options="[]"
+            :taggable="true"
+            tag-placeholder="Add filter on this controller"
+            @tag="addController"
+            @remove="removeController"
+            :value="controllers"
+            placeholder="Search by controller"
+            :multiple="true">
+          </multiselect>
         </div>
       </div>
-    </div>
-  </form>
+      <div class="col s3 actions-quicksearch">
+        <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
+        <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
   import MSelect from '../../../Common/MSelect'
+  import Multiselect from 'vue-multiselect'
 
   export default {
     components: {
-      MSelect
+      MSelect,
+      Multiselect
     },
     data () {
       return {
-        controllers: [{value: null}]
+        controllers: []
       }
     },
     methods: {
       search () {
-        let controllersFilter = []
-
-        this.controllers.forEach(controller => {
-          if (controller.value !== null) {
-            controllersFilter.push(controller.value)
-          }
-        })
-        if (controllersFilter.length === 0) {
+        if (this.controllers.length === 0) {
           this.$emit('filters-basic-search', {})
           return
         }
 
-        this.$emit('filters-basic-search', {controllers: controllersFilter})
+        this.$emit('filters-basic-search', {controllers: this.controllers})
       },
       resetSearch () {
-        this.controllers = [{value: null}]
+        this.controllers = []
       },
-      add () {
-        this.controllers.push({value: null})
+      addController (value) {
+        this.controllers.push(value)
       },
-      remove (filterIndex) {
-        if (!this.controllers[filterIndex]) {
-          return false
-        }
-
-        if (this.controllers.length === 1) {
-          this.resetSearch()
-          return
-        }
-
-        if (this.controllers.length === 1 && this.controllers[0].length === 1) {
-          this.$set(this.controllers[0], 0, {})
-          return
-        }
-
-        this.controllers.splice(filterIndex, 1)
+      removeController (removedValue) {
+        this.controllers = this.controllers
+          .filter((value) => value !== removedValue)
       }
     },
     mounted () {
@@ -90,7 +85,7 @@
         this.controllers = []
 
         controllersInQuery.controllers.forEach(controller => {
-          this.controllers.push({value: controller})
+          this.controllers.push(controller)
         })
       }
     }
