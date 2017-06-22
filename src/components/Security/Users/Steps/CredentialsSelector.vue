@@ -5,12 +5,22 @@
       <option v-for="strategy in strategies">{{strategy}}</option>
     </m-select>
 
-    <credentials-edit
-      id-mapping="credentialsMapping"
-      id-content="credentialsContent"
-      :mapping="mapping"
-      @input="onCredentialsChanged"
-    ></credentials-edit>
+    <!--<credentials-edit-->
+      <!--id-mapping="credentialsMapping"-->
+      <!--id-content="credentialsContent"-->
+      <!--:mapping="mapping"-->
+      <!--@input="onCredentialsChanged"-->
+    <!--&gt;</credentials-edit>-->
+    <div class="row">
+      <div class="col s8">
+        <div class="row" v-for="fieldName in fields">
+          <div class="input-field col s12">
+            <input v-model="credentials[fieldName]" type="text" :name="fieldName" :id="fieldName"/>
+            <label :for="fieldName">{{ fieldName }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,11 +48,12 @@
     data () {
       return {
         error: '',
-        mapping: null,
+        fields: null,
         document: null,
         id: null,
         strategies: [],
-        strategy: null
+        strategy: null,
+        credentials: {}
       }
     },
     methods: {
@@ -56,7 +67,10 @@
         if (strategy) {
           kuzzle.security.getCredentialFieldsPromise(strategy)
             .then(fields => {
-              this.mapping = fields
+              this.fields = fields
+              this.fields.forEach(fieldName => {
+                this.$set(this.credentials, fieldName, null)
+              })
             })
         }
       }
