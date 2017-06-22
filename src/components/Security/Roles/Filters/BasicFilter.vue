@@ -1,47 +1,25 @@
 <template>
-  <!--<form @submit.prevent="search">-->
-    <!--<div class="row filter-content margin-bottom-0">-->
-      <!--<div class="col s12">-->
-
-        <!--<div class="row block-and margin-bottom-0">-->
-          <!--<p><i class="fa fa-search"></i> Search by controllers</p>-->
-
-            <!--<div v-for="(filter, filterIndex) in controllers" class="row dots group">-->
-              <!--<div class="col s4">-->
-                <!--<input placeholder="controller" type="text" class="validate" v-model="filter.value">-->
-              <!--</div>-->
-              <!--<div class="card-action" v-if="filterIndex === controllers.length - 1">-->
-                <!--<button type="submit" class="btn btn-small waves-effect waves-light">Search</button>-->
-                <!--<button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>-->
-              <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</form>-->
-  <div class="row" >
-    <form class="" @submit.prevent="search">
-      <div class="col s7">
-        <div class="search-bar">
-          <i class="fa fa-search search"></i>
-          <multiselect
-            :options="[]"
-            :taggable="true"
-            tag-placeholder="Add filter on this controller"
-            @tag="addController"
-            @remove="removeController"
-            :value="controllers"
-            placeholder="Search by controller"
-            :multiple="true">
-          </multiselect>
-        </div>
+  <form @submit.prevent="search">
+    <div class="col s7">
+      <div class="search-bar">
+        <i class="fa fa-search search"></i>
+        <multiselect
+          :options="[]"
+          :taggable="true"
+          tag-placeholder="Add filter on this controller"
+          @tag="addController"
+          @remove="removeController"
+          :value="controllers"
+          placeholder="Search by controller"
+          :multiple="true">
+        </multiselect>
       </div>
-      <div class="col s3 actions-quicksearch">
-        <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
-        <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
-      </div>
-    </form>
-  </div>
+    </div>
+    <div class="col s3 actions-quicksearch">
+      <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
+      <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
+    </div>
+  </form>
 </template>
 
 <script>
@@ -72,6 +50,10 @@
         this.controllers = []
       },
       addController (value) {
+        if (this.controllers.indexOf(value) !== -1) {
+          return
+        }
+
         this.controllers.push(value)
       },
       removeController (removedValue) {
