@@ -18,13 +18,6 @@ script:
 before_deploy:
 - echo "Generate and push dist folder"
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
-- git config --global user.email "support@kuzzle.io"
-- git config --global user.name "Travis CI"
-- git checkout ${TRAVIS_BRANCH}
-- git add dist/
-- git commit -am "Travis CI - [ci skip] - automatic dist folder"
-- git remote add ssh-origin https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}
-- git push --set-upstream ssh-origin ${TRAVIS_BRANCH}
 
 deploy:
   provider: npm
