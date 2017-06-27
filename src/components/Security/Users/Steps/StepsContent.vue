@@ -61,7 +61,7 @@
     computed: {
       kuid () {
         if (this.$store.state.route && this.$store.state.route.params && this.$store.state.route.params.id) {
-          return this.$store.state.route.params.id
+          return decodeURIComponent(this.$store.state.route.params.id)
         }
 
         return null
@@ -85,6 +85,15 @@
       },
       onCustomContentChanged (value) {
         this.customContent = value
+      },
+      validate () {
+        if (!this.isUpdate || (!this.autoGenerateKuid && !this.id)) {
+          throw new Error('Please fill the custom KUID or check the auto-generate box')
+        }
+        if (!this.addedProfiles.length) {
+          throw new Error('Please add at least one profile to the user')
+        }
+        return true
       }
     },
     mounted () {
@@ -118,54 +127,18 @@
 
               this.$set(this.credentials, strategy, strategyCredentials)
             }))
+
+            let {id, content} = await kuzzle.security.fetchUserPromise(this.kuid)
+            this.id = id
+            this.addedProfiles = content.profileIds
+            delete content.profileIds
+            this.customContent = {...content}
           }
 
           this.loading = false
         } catch (e) {
           this.$store.commit(SET_TOAST, {text: e.message})
         }
-
-//        return kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
-//          .then(res => {
-//            this.strategies = res.result
-//
-//            let promises = this.strategies.map(strategy => {
-//              return kuzzle.security.getCredentialFieldsPromise(strategy)
-//                .then(fields => {
-//                  this.$set(this.credentialsMapping, strategy, fields)
-//                  return kuzzle.security.getCredentialsPromise(strategy, this.id)
-//                })
-//                .then(credential => {
-//                  if (credential) {
-//                    if (credential.kuid) {
-//                      delete credential.kuid
-//                    }
-//                    this.$set(this.credentials, strategy, credential)
-//                  }
-//
-//                })
-//            })
-//
-//            return Promise.all(promises)
-//          })
-//          .then(() => {
-//            if (this.isUpdate) {
-//              return kuzzle
-//                .security
-//                .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
-//                .then((res) => {
-//                  this.id = res.id
-//                  this.addedProfiles = res.content.profileIds
-//                  delete res.content.profileIds
-//                  this.customContent = {...res.content}
-//                })
-//            }
-//
-//            return Promise.resolve()
-//          })
-//          .catch(err => {
-//            this.$store.commit(SET_TOAST, {text: err.message})
-//          })
       })
     }
   }
