@@ -1,22 +1,16 @@
 <template>
   <div>
     <label></label>
-    <m-select v-model="strategy" @input="selectStrategy">
+    <m-select v-model="currentStrategy">
       <option v-for="strategy in strategies">{{strategy}}</option>
     </m-select>
 
-    <!--<credentials-edit-->
-      <!--id-mapping="credentialsMapping"-->
-      <!--id-content="credentialsContent"-->
-      <!--:mapping="mapping"-->
-      <!--@input="onCredentialsChanged"-->
-    <!--&gt;</credentials-edit>-->
     <div class="row">
       <div class="col s8">
-        <div class="row" v-for="fieldName in fields">
+        <div class="row" v-for="fieldName in fieldsForStrategy">
           <div class="input-field col s12">
-            <input v-model="credentials[fieldName]" type="text" :name="fieldName" :id="fieldName"/>
-            <label :for="fieldName">{{ fieldName }}</label>
+            <input @input="onFieldChange" :value="credentialsForStrategy[fieldName]" :type="fieldType(fieldName)" :name="fieldName" :id="fieldName"/>
+            <label :for="fieldName" :class="{'active': credentialsForStrategy[fieldName]}">{{ fieldName }}</label>
           </div>
         </div>
       </div>
@@ -27,7 +21,6 @@
 <script>
   import Headline from '../../../Materialize/Headline'
   import CredentialsEdit from '../../Common/JsonWithMapping'
-  import kuzzle from '../../../../services/kuzzle'
   import MSelect from '../../../Common/MSelect'
 
   export default {
@@ -37,42 +30,55 @@
       Headline,
       MSelect
     },
-    mounted () {
-      kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
-        .then(res => {
-          this.strategies = res.result
-          this.strategy = this.strategies[0]
-          this.selectStrategy(this.strategy)
-        })
-    },
+    props: ['fields', 'strategies', 'credentials', 'credentialsMapping'],
     data () {
       return {
         error: '',
-        fields: null,
         document: null,
         id: null,
-        strategies: [],
-        strategy: null,
-        credentials: {}
+        currentStrategy: null
+      }
+    },
+    computed: {
+      fieldsForStrategy () {
+        if (!this.credentialsMapping || !this.credentialsMapping[this.currentStrategy]) {
+          return []
+        }
+
+        return this.credentialsMapping[this.currentStrategy]
+      },
+      credentialsForStrategy () {
+        if (!this.credentials || !this.credentials[this.currentStrategy]) {
+          return []
+        }
+
+        return this.credentials[this.currentStrategy]
       }
     },
     methods: {
-      onCredentialsChanged (json) {
-        this.$emit('input', {
-          [this.strategy]: json
-        })
-      },
-      selectStrategy (strategy) {
-        this.strategy = strategy
-        if (strategy) {
-          kuzzle.security.getCredentialFieldsPromise(strategy)
-            .then(fields => {
-              this.fields = fields
-              this.fields.forEach(fieldName => {
-                this.$set(this.credentials, fieldName, null)
-              })
-            })
+      fieldType (fieldName) {
+        if (fieldName === 'password') {
+          return 'password'
         }
+
+        return 'text'
+      },
+      onFieldChange (input) {
+        this.$emit('input', {
+          strategy: this.currentStrategy,
+          credentials: {
+            ...this.credentials[this.currentStrategy],
+            [input.target.name]: input.target.value
+          }
+        })
+      }
+    },
+    watch: {
+      strategies () {
+        if (!this.strategies.length) {
+          return
+        }
+        this.currentStrategy = this.strategies[0]
       }
     }
   }

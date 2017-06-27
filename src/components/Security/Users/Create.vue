@@ -26,12 +26,12 @@
             @profile-add="onProfileAdded"
             @profile-remove="onProfileRemoved"
           ></basic>
-          <credentials
+
+          <credentials-selector
             v-show="editionStep === 1"
-            id-mapping="credentialsMapping"
-            id-content="credentialsMapping"
             @input="onCredentialsChanged"
-          ></credentials>
+          ></credentials-selector>
+
           <custom
             v-show="editionStep === 2"
             :mapping="customMapping"
@@ -70,7 +70,7 @@
   import Headline from '../../Materialize/Headline'
   import Stepper from '../../Common/Stepper'
   import Basic from './Steps/Basic'
-  import Credentials from './Steps/CredentialsSelector'
+  import CredentialsSelector from './Steps/CredentialsSelector'
   import Custom from './Steps/Custom'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
@@ -81,7 +81,7 @@
       Headline,
       Stepper,
       Basic,
-      Credentials,
+      CredentialsSelector,
       Custom
     },
     props: {
@@ -96,7 +96,7 @@
         editionStep: 0,
         addedProfiles: [],
         autoGenerateKuid: false,
-        credentials: null,
+        credentials: {},
         custom: null,
         submitted: false
       }
@@ -189,12 +189,6 @@
       onProfileRemoved (profile) {
         this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
       },
-      setAutoGenerateKuid (value) {
-        this.autoGenerateKuid = value
-      },
-      setCustomKuid (value) {
-        this.id = value
-      },
       submitStep () {
         if (this.editionStep < 2) {
           try {
@@ -210,7 +204,11 @@
         }
       },
       onCredentialsChanged (payload) {
-        this.credentials = payload
+        if (!this.credentials[payload.strategy]) {
+          this.credentials[payload.strategy] = {}
+        }
+
+        this.credentials[payload.strategy] = payload.credentials
       },
       onCustomChanged (payload) {
         this.custom = payload
