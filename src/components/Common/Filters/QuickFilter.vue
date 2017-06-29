@@ -9,7 +9,7 @@
           <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>
       </div>
-      <div class="col s3 actions-quicksearch">
+      <div class="col s5 actions-quicksearch">
         <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="quickSearch">Search</button>
         <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">reset</button>
       </div>
