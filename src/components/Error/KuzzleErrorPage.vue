@@ -11,9 +11,9 @@
     <div class="row message-warning">
       <h5>{{$store.state.kuzzle.errorFromKuzzle.message}}</h5>
       <div class="divider"></div>
-      <div class="message">
+      <div class="message" v-if="errorStatus">
         <i class="fa fa-plug"></i>
-        [{{$store.state.kuzzle.errorFromKuzzle.internal.status}}] {{$store.state.kuzzle.errorFromKuzzle.internal.message}}
+        [{{ errorStatus }}]
       </div>
     </div>
     <div class="row kuzzle-disconnected">
@@ -58,6 +58,15 @@
     components: {
       Connecting,
       EnvironmentSwitch
+    },
+    computed: {
+      errorStatus () {
+        if (!this.$store.state.kuzzle.errorFromKuzzle ||
+            !this.$store.state.kuzzle.errorFromKuzzle.internal) {
+          return null
+        }
+        return this.$store.state.kuzzle.errorFromKuzzle.internal.status
+      }
     },
     methods: {
       editEnvironment (id) {
