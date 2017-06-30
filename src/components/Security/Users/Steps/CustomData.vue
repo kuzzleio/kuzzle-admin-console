@@ -18,7 +18,7 @@
             <json-form
               :schema="schema"
               @update-value="updateValue"
-              :document="newContent"
+              :document="value"
             ></json-form>
           </div>
         </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <basic
-      v-show="step === 0"
+      v-if="step === 0"
       :edit-kuid="!isUpdate"
       :added-profiles="addedProfiles"
       :auto-generate-kuid="autoGenerateKuid"
@@ -20,23 +20,22 @@
       :credentials-mapping="credentialsMapping"
     ></credentials-selector>
 
-    <custom
+    <custom-data
       v-show="step === 2"
       :mapping="customContentMapping"
       :value="customContent"
       @input="onCustomContentChanged"
-    ></custom>
+    ></custom-data>
   </div>
 </template>
 
 <script>
-  import Vue from 'vue'
   import kuzzle from '../../../../services/kuzzle'
   import {SET_TOAST} from '../../../../vuex/modules/common/toaster/mutation-types'
   import {getMappingUsers} from '../../../../services/kuzzleWrapper'
   import Basic from './Basic'
   import CredentialsSelector from './CredentialsSelector'
-  import Custom from './Custom'
+  import CustomData from './CustomData'
 
   export default {
     name: 'StepsContent',
@@ -44,11 +43,11 @@
     components: {
       Basic,
       CredentialsSelector,
-      Custom
+      CustomData
     },
     data () {
       return {
-        id: null,
+        kuid: null,
         addedProfiles: [],
         autoGenerateKuid: false,
         credentials: {},
@@ -58,88 +57,94 @@
         customContentMapping: {}
       }
     },
-    computed: {
-      kuid () {
-        if (this.$store.state.route && this.$store.state.route.params && this.$store.state.route.params.id) {
-          return decodeURIComponent(this.$store.state.route.params.id)
-        }
-
-        return null
-      }
-    },
     methods: {
+      updateUser () {
+        this.$emit('input', {
+          kuid: this.kuid,
+          autoGenerateKuid: this.autoGenerateKuid,
+          addedProfiles: this.addedProfiles,
+          credentials: this.credentials,
+          customContent: this.customContent
+        })
+      },
       onProfileAdded (profile) {
         this.addedProfiles.push(profile)
+        this.updateUser()
       },
       onProfileRemoved (profile) {
         this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+        this.updateUser()
       },
       setAutoGenerateKuid (value) {
         this.autoGenerateKuid = value
       },
       setCustomKuid (value) {
-        this.id = value
+        this.kuid = value
+        this.updateUser()
       },
       onCredentialsChanged (payload) {
         this.credentials[payload.strategy] = {...payload.credentials}
+        this.updateUser()
       },
       onCustomContentChanged (value) {
         this.customContent = value
-      },
-      validate () {
-        if (!this.isUpdate || (!this.autoGenerateKuid && !this.id)) {
-          throw new Error('Please fill the custom KUID or check the auto-generate box')
-        }
-        if (!this.addedProfiles.length) {
-          throw new Error('Please add at least one profile to the user')
-        }
-        return true
+        this.updateUser()
       }
+//      getData () {
+//        return {
+//          kuid: this.kuid,
+//          addedProfiles: this.addedProfiles,
+//          customContent: this.customContent,
+//          credentials: this.credentials,
+//          autoGenerateKuid: this.autoGenerateKuid
+//        }
+//      }
     },
-    mounted () {
-      Vue.nextTick(async () => {
-        this.loading = true
+    async mounted () {
+      this.loading = true
 
-        try {
-          let credentialsMapping = await kuzzle.security.getAllCredentialFieldsPromise()
-          this.strategies = Object.keys(credentialsMapping)
+      try {
+        let credentialsMapping = await kuzzle.security.getAllCredentialFieldsPromise()
+        this.strategies = Object.keys(credentialsMapping)
 
-          // Clean "kuid" from credentialsMapping
-          this.strategies.forEach(strategy => {
-            if (credentialsMapping[strategy].kuid) {
-              delete credentialsMapping[strategy].kuid
-            }
-          })
-          this.credentialsMapping = credentialsMapping
-
-          let {mapping} = await getMappingUsers()
-          if (mapping) {
-            this.customContentMapping = mapping
-            delete this.customContentMapping.profileIds
+        // Clean "kuid" from credentialsMapping
+        this.strategies.forEach(strategy => {
+          if (credentialsMapping[strategy].kuid) {
+            delete credentialsMapping[strategy].kuid
           }
+        })
+        this.credentialsMapping = credentialsMapping
 
-          if (this.isUpdate) {
-            await Promise.all(this.strategies.map(async (strategy) => {
-              let strategyCredentials = await kuzzle.security.getCredentialsPromise(strategy, this.kuid)
-              if (strategyCredentials.kuid) {
-                delete strategyCredentials.kuid
-              }
-
-              this.$set(this.credentials, strategy, strategyCredentials)
-            }))
-
-            let {id, content} = await kuzzle.security.fetchUserPromise(this.kuid)
-            this.id = id
-            this.addedProfiles = content.profileIds
-            delete content.profileIds
-            this.customContent = {...content}
-          }
-
-          this.loading = false
-        } catch (e) {
-          this.$store.commit(SET_TOAST, {text: e.message})
+        let {mapping} = await getMappingUsers()
+        if (mapping) {
+          this.customContentMapping = mapping
+          delete this.customContentMapping.profileIds
         }
-      })
+
+        if (this.isUpdate) {
+          this.kuid = decodeURIComponent(this.$store.state.route.params.id)
+
+          await Promise.all(this.strategies.map(async (strategy) => {
+            let strategyCredentials = await kuzzle.security.getCredentialsPromise(strategy, this.kuid)
+            if (strategyCredentials.kuid) {
+              delete strategyCredentials.kuid
+            }
+
+            this.$set(this.credentials, strategy, strategyCredentials)
+          }))
+
+          let {id, content} = await kuzzle.security.fetchUserPromise(this.kuid)
+          this.id = id
+          this.addedProfiles = content.profileIds
+          delete content.profileIds
+          this.customContent = {...content}
+        }
+
+        this.loading = false
+        this.updateUser()
+      } catch (e) {
+        this.$store.commit(SET_TOAST, {text: e.message})
+      }
     }
   }
 </script>

@@ -15,28 +15,12 @@
 
       <div class="row card-panel card-body">
         <div class="col s12">
-          <basic
-            v-show="editionStep === 0"
-            :edit-kuid="true"
-            :added-profiles="addedProfiles"
-            :auto-generate-kuid="autoGenerateKuid"
-            :kuid="id"
-            @set-auto-generate-kuid="setAutoGenerateKuid"
-            @set-custom-kuid="setCustomKuid"
-            @profile-add="onProfileAdded"
-            @profile-remove="onProfileRemoved"
-          ></basic>
-
-          <credentials-selector
-            v-show="editionStep === 1"
-            @input="onCredentialsChanged"
-          ></credentials-selector>
-
-          <custom
-            v-show="editionStep === 2"
-            :mapping="customMapping"
-            @input="onCustomChanged"
-          ></custom>
+          <steps-content
+            :step="editionStep"
+            :is-update="false"
+            ref="stepsContent"
+            v-model="user"
+          ></steps-content>
 
           <!-- Actions -->
           <div class="row">
@@ -69,9 +53,7 @@
 <script>
   import Headline from '../../Materialize/Headline'
   import Stepper from '../../Common/Stepper'
-  import Basic from './Steps/Basic'
-  import CredentialsSelector from './Steps/CredentialsSelector'
-  import Custom from './Steps/Custom'
+  import StepsContent from './Steps/StepsContent'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingUsers } from '../../../services/kuzzleWrapper'
 
@@ -80,9 +62,7 @@
     components: {
       Headline,
       Stepper,
-      Basic,
-      CredentialsSelector,
-      Custom
+      StepsContent
     },
     props: {
       index: String,
@@ -91,14 +71,14 @@
     data () {
       return {
         error: '',
-        id: null,
-        customMapping: {},
         editionStep: 0,
-        addedProfiles: [],
-        autoGenerateKuid: false,
-        credentials: {},
-        custom: null,
-        submitted: false
+        submitted: false,
+        user: {
+          kuid: null,
+          addedProfiles: [],
+          credentials: {},
+          customContent: {}
+        }
       }
     },
     computed: {
@@ -113,17 +93,16 @@
         return disabled
       },
       hasBasicPayload () {
-        return this.addedProfiles.length &&
-              (this.autoGenerateKuid ||
-              (!this.autoGenerateKuid && this.id))
+        return this.user.addedProfiles.length &&
+              (this.user.autoGenerateKuid || (!this.user.autoGenerateKuid && this.user.kuid))
       },
       validations () {
         return [
           () => {
-            if (!this.autoGenerateKuid && !this.id) {
+            if (!this.user.autoGenerateKuid && !this.user.kuid) {
               throw new Error('Please fill the custom KUID or check the auto-generate box')
             }
-            if (!this.addedProfiles.length) {
+            if (!this.user.addedProfiles.length) {
               throw new Error('Please add at least one profile to the user')
             }
             return true
@@ -146,17 +125,17 @@
 
         let userObject = {
           content: {
-            profileIds: this.addedProfiles,
-            ...this.custom
+            profileIds: this.user.addedProfiles,
+            ...this.user.customContent
           },
           credentials: {
-            ...this.credentials
+            ...this.user.credentials
           }
         }
 
         kuzzle
           .security
-          .createUserPromise(this.id, userObject)
+          .createUserPromise(this.user.kuid, userObject)
           .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
           .then(() => this.$router.push({name: 'SecurityUsersList'}))
           .catch(err => {
@@ -184,10 +163,10 @@
         this.error = ''
       },
       onProfileAdded (profile) {
-        this.addedProfiles.push(profile)
+        this.user.addedProfiles.push(profile)
       },
       onProfileRemoved (profile) {
-        this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+        this.user.addedProfiles.splice(this.user.addedProfiles.indexOf(profile), 1)
       },
       submitStep () {
         if (this.editionStep < 2) {
@@ -202,28 +181,7 @@
             // TODO
           })
         }
-      },
-      onCredentialsChanged (payload) {
-        if (!this.credentials[payload.strategy]) {
-          this.credentials[payload.strategy] = {}
-        }
-
-        this.credentials[payload.strategy] = payload.credentials
-      },
-      onCustomChanged (payload) {
-        this.custom = payload
       }
-    },
-    mounted () {
-      return getMappingUsers()
-        .then(result => {
-          if (!result.mapping) {
-            this.customMapping = {}
-          } else {
-            this.customMapping = result.mapping
-            delete this.customMapping.profileIds
-          }
-        })
     }
   }
 </script>

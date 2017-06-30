@@ -14,27 +14,9 @@
             <steps-content
               :step="stepNumber"
               :is-update="true"
+              ref="stepsContent"
+              v-model="user"
             ></steps-content>
-              <!--<basic-->
-                <!--v-show="activeTab === 'basic'"-->
-                <!--:added-profiles="addedProfiles"-->
-                <!--:kuid="id"-->
-                <!--@profile-add="onProfileAdded"-->
-                <!--@profile-remove="onProfileRemoved"-->
-              <!--&gt;</basic>-->
-              <!--<credentials-selector-->
-                <!--v-show="activeTab === 'credentials'"-->
-                <!--:credentials="credentials"-->
-                <!--:strategies="strategies"-->
-                <!--:credentials-mapping="credentialsMapping"-->
-                <!--@input="onCredentialsChanged"-->
-              <!--&gt;</credentials-selector>-->
-              <!--<custom-->
-                <!--v-show="activeTab === 'custom'"-->
-                <!--:value="content"-->
-                <!--:mapping="contentMapping"-->
-                <!--@input="onContentChanged"-->
-              <!--&gt;</custom>-->
           </div>
         </tabs>
       </div>
@@ -73,11 +55,11 @@
 
 <script>
   import Headline from '../../Materialize/Headline'
-//  import kuzzle from '../../../services/kuzzle'
+  import kuzzle from '../../../services/kuzzle'
   import CredentialsEdit from '../Common/JsonWithMapping'
   import Tabs from '../../Materialize/Tabs'
   import Tab from '../../Materialize/Tab'
-//  import Promise from 'bluebird'
+  import Promise from 'bluebird'
   import StepsContent from './Steps/StepsContent'
 
   export default {
@@ -93,11 +75,16 @@
       return {
         error: '',
         loading: false,
-        id: null,
         refresh: false,
         activeTab: 'basic',
         activeTabObject: null,
-        submitted: false
+        submitted: false,
+        user: {
+          kuid: null,
+          addedProfiles: [],
+          credentials: {},
+          customContent: {}
+        }
       }
     },
     computed: {
@@ -119,61 +106,41 @@
       setActiveTabObject (tab) {
         this.activeTabObject = tab
       },
-//      validate () {
-//        if (!this.autoGenerateKuid && !this.id) {
-//          throw new Error('Please fill the custom KUID or check the auto-generate box')
-//        }
-//        if (!this.addedProfiles.length) {
-//          throw new Error('Please add at least one profile to the user')
-//        }
-//        return true
-//      },
-//      save () {
-//        try {
-//          this.validate()
-//        } catch (e) {
-//          this.setError(e.message)
-//          return
-//        }
-//        this.submitted = true
-//
-//        let userObject = {
-//          profileIds: this.addedProfiles,
-//          ...this.content
-//        }
-//        return kuzzle
-//          .security
-//          .replaceUserPromise(this.id, userObject)
-//          .then(() => {
-//            let promises = []
-//            Object.keys(this.credentials).forEach(strategy => {
-//              promises.push(
-//                kuzzle
-//                  .security
-//                  .updateCredentialsPromise(
-//                    strategy,
-//                    this.id,
-//                    this.credentials[strategy]
-//                  )
-//              )
-//            })
-//            return Promise.all(promises)
-//          })
-//          .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
-//          .then(() => {
-//            // The index refresh doesn't seem to work at the moment
-//            return new Promise((resolve, reject) => {
-//              setTimeout(() => { resolve() }, 1000)
-//            })
-//          })
-//          .then(() => this.$router.push({name: 'SecurityUsersList'}))
-//          .catch((err) => {
-//            if (err) {
-//              this.setError(err.message)
-//              this.submitted = false
-//            }
-//          })
-//      },
+      validate () {
+        if (!this.user.addedProfiles.length) {
+          throw new Error('Please add at least one profile to the user')
+        }
+
+        return true
+      },
+      async save () {
+        try {
+          this.validate()
+        } catch (e) {
+          this.setError(e.message)
+          return
+        }
+        this.submitted = true
+
+        let userObject = {
+          profileIds: this.user.addedProfiles,
+          ...this.user.customContent
+        }
+
+        try {
+          await kuzzle.security.replaceUserPromise(this.user.kuid, userObject)
+          await Promise.all(Object.keys(this.user.credentials).map(async (strategy) => {
+            await kuzzle.security.updateCredentialsPromise(strategy, this.user.kuid, this.user.credentials[strategy])
+          }))
+          await kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {})
+          this.$router.push({name: 'SecurityUsersList'})
+        } catch (err) {
+          if (err) {
+            this.setError(err.message)
+            this.submitted = false
+          }
+        }
+      },
       setError (msg) {
         this.error = msg
         setTimeout(() => {
@@ -182,12 +149,6 @@
       },
       dismissError () {
         this.error = ''
-      },
-      refreshAce () {
-        this.refresh = !this.refresh
-      },
-      onContentChanged (value) {
-        this.content = value
       },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
