@@ -90,15 +90,6 @@
         this.customContent = value
         this.updateUser()
       }
-//      getData () {
-//        return {
-//          kuid: this.kuid,
-//          addedProfiles: this.addedProfiles,
-//          customContent: this.customContent,
-//          credentials: this.credentials,
-//          autoGenerateKuid: this.autoGenerateKuid
-//        }
-//      }
     },
     async mounted () {
       this.loading = true
