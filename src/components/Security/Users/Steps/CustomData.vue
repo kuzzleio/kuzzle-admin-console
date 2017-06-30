@@ -103,6 +103,7 @@ export default {
         Object.assign(this.newContent, this.$refs.jsoneditor.getJson())
       }
       this.viewType = this.isFormView ? 'json' : 'form'
+      this.newContent = {...this.value}
     },
     updateValue (payload) {
       this.newContent[payload.name] = payload.value
