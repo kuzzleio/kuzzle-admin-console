@@ -21,7 +21,7 @@
   import Focus from '../../../directives/focus.directive'
 
   export default {
-    name: 'QuickSearch',
+    name: 'QuickFilter',
     props: ['searchTerm', 'displayBlockFilter'],
     directives: {
       Focus
