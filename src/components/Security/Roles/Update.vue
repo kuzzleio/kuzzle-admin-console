@@ -8,7 +8,7 @@
   @document-create::error="setError"
   v-model="document"
   :hide-id="true"
-  :submitted="true">
+  :submitted="submitted">
   </create-or-update>
 </template>
 
