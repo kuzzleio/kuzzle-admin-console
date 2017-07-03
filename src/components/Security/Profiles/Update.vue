@@ -33,10 +33,10 @@
     },
     methods: {
       getMappingProfiles,
-      update (profile) {
+      update () {
         this.error = ''
 
-        if (!profile) {
+        if (!this.document || !this.document.policies) {
           this.error = 'The document is invalid, please review it'
           return
         }
@@ -45,7 +45,7 @@
 
         kuzzle
           .security
-          .createProfilePromise(this.id, profile, {replaceIfExist: true})
+          .createProfilePromise(this.id, this.document.policies, {replaceIfExist: true})
           .then(() => {
             setTimeout(() => { // we can't perform refresh index on %kuzzle
               this.$router.push({name: 'SecurityProfilesList'})
