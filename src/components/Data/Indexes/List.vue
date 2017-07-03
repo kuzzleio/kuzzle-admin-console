@@ -77,7 +77,7 @@
           <div v-if="canSearchIndex()">
             <index-boxed
               :index="indexName"
-              v-for="(indexName, key) in orderedFilteredIndices()"
+              v-for="(indexName, key) in orderedFilteredIndices"
               :key="key">
             </index-boxed>
           </div>
@@ -116,7 +116,6 @@
   import IndexBoxed from './Boxed'
   import Title from '../../../directives/title.directive'
   import {canCreateIndex, canSearchIndex} from '../../../services/userAuthorization'
-  import _ from 'lodash'
 
   export default {
     name: 'IndexesList',
@@ -131,9 +130,6 @@
     methods: {
       canSearchIndex,
       canCreateIndex,
-      orderedFilteredIndices () {
-        return _.orderBy(this.filteredIndices)
-      },
       openModal () {
         this.isOpen = true
       },
@@ -150,6 +146,9 @@
     computed: {
       filteredIndices () {
         return this.$store.state.index.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
+      },
+      orderedFilteredIndices () {
+        return this.filteredIndices.sort()
       }
     }
   }
