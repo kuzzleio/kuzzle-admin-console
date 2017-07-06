@@ -11,14 +11,14 @@
     <div class="row message-warning">
       <h5>{{$store.state.kuzzle.errorFromKuzzle.message}}</h5>
       <div class="divider"></div>
-      <div class="message" v-if="errorStatus">
+      <div class="message" v-if="errorInternalStatus || errorInternalMessage">
         <i class="fa fa-plug"></i>
-        [{{ errorStatus }}]
+        [{{ errorInternalStatus }}] {{ errorInternalMessage }}
       </div>
     </div>
     <div class="row kuzzle-disconnected">
       <div class="col s12">
-        <p>I'm doing my best to reconnect to Kuzzle ...</p>
+        <p>Trying to connect to Kuzzle...</p>
       </div>
 
       <div class="col s1 offset-s5">
@@ -60,12 +60,19 @@
       EnvironmentSwitch
     },
     computed: {
-      errorStatus () {
+      errorInternalStatus () {
         if (!this.$store.state.kuzzle.errorFromKuzzle ||
             !this.$store.state.kuzzle.errorFromKuzzle.internal) {
           return null
         }
         return this.$store.state.kuzzle.errorFromKuzzle.internal.status
+      },
+      errorInternalMessage () {
+        if (!this.$store.state.kuzzle.errorFromKuzzle ||
+            !this.$store.state.kuzzle.errorFromKuzzle.internal) {
+          return null
+        }
+        return this.$store.state.kuzzle.errorFromKuzzle.internal.message
       }
     },
     methods: {
