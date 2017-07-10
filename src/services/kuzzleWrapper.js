@@ -66,6 +66,7 @@ export const initStoreWithKuzzle = (store) => {
   })
   kuzzle.on('reconnected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+    store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
   })
   kuzzle.on('discarded', function (data) {
     store.commit(SET_TOAST, {text: data.message})
