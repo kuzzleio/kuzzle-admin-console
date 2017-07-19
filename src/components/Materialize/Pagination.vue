@@ -31,6 +31,10 @@
       </li>
     </ul>
     <p class="pagination-info">{{ from + numberInPage }} / {{ total }}</p>
+    <p class="pagination-info" v-if="lastPageLimitation">
+      <span class="fa fa-info-circle"></span>
+      Due to a limitation, we can't display more than 1000 pages. Please, filter your search.
+    </p>
   </div>
 </template>
 
@@ -109,6 +113,9 @@
         }
 
         return (this.from / this.size) + 1
+      },
+      lastPageLimitation () {
+        return this.currentPage === this.maxPage
       }
     },
     methods: {

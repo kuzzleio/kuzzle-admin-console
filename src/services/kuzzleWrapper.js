@@ -66,6 +66,7 @@ export const initStoreWithKuzzle = (store) => {
   })
   kuzzle.on('reconnected', () => {
     store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+    store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
   })
   kuzzle.on('discarded', function (data) {
     store.commit(SET_TOAST, {text: data.message})
@@ -188,7 +189,8 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
         let object = {
           content: new Content(document.content),
           id: document.id,
-          credentials: new Credentials({})
+          credentials: new Credentials({}),
+          meta: document.meta ? new Meta(document.meta) : null
         }
 
         if (additionalAttributeName) {
@@ -240,6 +242,7 @@ export const performSearchProfiles = (filters = {}, pagination = {}) => {
       let profiles = result.profiles.map((document) => {
         let object = {
           content: document.content,
+          meta: document.meta ? new Meta(document.meta) : null,
           id: document.id
         }
 
@@ -264,6 +267,7 @@ export const performSearchRoles = (controllers = {}, pagination = {}) => {
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
+          meta: document.meta ? new Meta(document.meta) : null,
           id: document.id
         }
 

@@ -1,7 +1,8 @@
 .search-filter {
   .filters {
     .actions-quicksearch {
-      transform: translateY(25%);
+      height: 48px;
+      line-height: 48px;
     }
     .search-bar {
       position: relative;
@@ -14,7 +15,7 @@
         transform: translateY(-50%);
         text-decoration: underline;
       }
-      i {
+      i.search {
         position: absolute;
         font-size: 1.3rem;
         margin-left: 4px;

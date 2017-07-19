@@ -70,7 +70,7 @@
 
           <div v-if="canSearchCollection(index)">
             <collection-boxed
-              v-for="collection in orderedFilteredStoredCollections(1)"
+              v-for="collection in orderedFilteredStoredCollections"
               :key="Math.random()"
               :index="index"
               :collection="collection"
@@ -78,7 +78,7 @@
             </collection-boxed>
 
             <collection-boxed
-                v-for="collection in orderedFilteredRealtimeCollections(1)"
+                v-for="collection in orderedFilteredRealtimeCollections"
                 :key="Math.random()"
                 :index="index"
                 :collection="collection"
@@ -126,7 +126,6 @@
   import CollectionBoxed from '../Collections/Boxed'
   import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
   import Title from '../../../directives/title.directive'
-  import _ from 'lodash'
 
   export default {
     name: 'CollectionsList',
@@ -142,13 +141,7 @@
     methods: {
       canSearchIndex,
       canSearchCollection,
-      canCreateCollection,
-      orderedFilteredStoredCollections (order) {
-        return _.orderBy(this.filteredStoredCollections, order)
-      },
-      orderedFilteredRealtimeCollections (order) {
-        return _.orderBy(this.filteredRealtimeCollections, order)
-      }
+      canCreateCollection
     },
     directives: {
       Title
@@ -194,6 +187,12 @@
       },
       filteredRealtimeCollections () {
         return this.realtimeCollections.filter(col => col.indexOf(this.filter) !== -1)
+      },
+      orderedFilteredStoredCollections () {
+        return this.filteredStoredCollections.sort()
+      },
+      orderedFilteredRealtimeCollections () {
+        return this.filteredRealtimeCollections.sort()
       }
     }
   }

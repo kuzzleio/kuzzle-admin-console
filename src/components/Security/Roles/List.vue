@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="roles">
     <headline title="Roles Management"></headline>
 
     <list-not-allowed v-if="!canSearchRole()"></list-not-allowed>

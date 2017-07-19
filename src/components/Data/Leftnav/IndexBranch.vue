@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import orderBy from 'lodash/orderBy'
 import {REMOVE_REALTIME_COLLECTION} from '../../../vuex/modules/index/mutation-types'
 
 export default {
@@ -71,16 +70,18 @@ export default {
       return []
     },
     orderedFilteredStoredCollections () {
-      this.filteredStoredCollections.map(obj => {
-        return this.highlight(obj, this.filter)
-      })
-      return orderBy(this.filteredStoredCollections, 1)
+      return this.filteredStoredCollections
+        .map(obj => {
+          return this.highlight(obj, this.filter)
+        })
+        .sort()
     },
     orderedFilteredRealtimeCollections () {
-      this.filteredRealtimeCollections.map(obj => {
-        return this.highlight(obj, this.filter)
-      })
-      return orderBy(this.filteredRealtimeCollections, 1)
+      return this.filteredRealtimeCollections
+        .map(obj => {
+          return this.highlight(obj, this.filter)
+        })
+        .sort()
     }
   },
   methods: {
