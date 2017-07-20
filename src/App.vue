@@ -13,6 +13,13 @@
       <create-environment-page></create-environment-page>
     </div>
 
+    <div v-else-if="$store.getters.currentEnvironmentId && !$store.getters.isAuthenticated && !$store.getters.adminAlreadyExists">
+      <sign-up
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment">
+      </sign-up>
+    </div>
+
     <div v-else-if="$store.getters.currentEnvironmentId && !$store.getters.isAuthenticated">
       <login
         @environment::create="editEnvironment"

@@ -89,5 +89,6 @@ export default {
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
     commit(types.SET_CURRENT_USER, SessionUser())
     commit(types.SET_TOKEN_VALID, false)
+    return dispatch(types.CHECK_FIRST_ADMIN)
   }
 }

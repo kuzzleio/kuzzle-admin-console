@@ -64,8 +64,10 @@
     },
     methods: {
       doLogout () {
-        this.$store.dispatch(DO_LOGOUT)
-        this.$router.push({name: 'Login'})
+        return this.$store.dispatch(DO_LOGOUT)
+          .then(() => {
+            this.$router.push({name: 'Login'})
+          })
       },
       hasSecurityRights,
       editEnvironment (id) {
