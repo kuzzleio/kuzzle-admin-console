@@ -6,33 +6,36 @@ import Promise from 'bluebird'
 
 export default {
   [types.DO_LOGIN] ({commit, dispatch}, data) {
-    const user = SessionUser()
-
     return new Promise((resolve, reject) => {
       kuzzle
         .unsetJwtToken()
         .loginPromise('local', {username: data.username, password: data.password}, '4h')
         .then(loginResult => {
-          user.id = loginResult._id
-          user.token = loginResult.jwt
-
           dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, loginResult.jwt)
-          return kuzzle.whoAmIPromise()
+          return dispatch(types.PREPARE_SESSION)
         })
-        .then(KuzzleUser => {
-          user.params = KuzzleUser.content
-
-          return kuzzle.getMyRightsPromise()
-        })
-        .then(rights => {
-          user.rights = rights
-          commit(types.SET_CURRENT_USER, user)
-          commit(types.SET_TOKEN_VALID, true)
-
+        .then(() => {
           resolve()
         })
         .catch(error => reject(new Error(error.message)))
     })
+  },
+  [types.PREPARE_SESSION] ({commit}) {
+    const sessionUser = SessionUser()
+
+    return kuzzle
+      .whoAmIPromise()
+      .then(user => {
+        sessionUser.id = user.id
+        sessionUser.token = user.jwt
+        sessionUser.params = user.content
+        return kuzzle.getMyRightsPromise()
+      })
+      .then(rights => {
+        sessionUser.rights = rights
+        commit(types.SET_CURRENT_USER, sessionUser)
+        commit(types.SET_TOKEN_VALID, true)
+      })
   },
   [types.LOGIN_BY_TOKEN] ({commit, dispatch}, data) {
     const user = SessionUser()

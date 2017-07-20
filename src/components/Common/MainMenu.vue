@@ -18,10 +18,13 @@
 
         <ul class="right">
           <li>
+            <b>{{currentUserName}}</b> on
+          </li>
+          <li>
             <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>
-            <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
+            <a @click="doLogout" title="Logout"><i class="logout fa fa-power-off"></i></a>
           </li>
         </ul>
       </nav>
@@ -47,6 +50,14 @@
         }
 
         return this.$store.getters.currentEnvironment.color
+      },
+      currentUserName () {
+        if (this.$store.state.auth.user) {
+          if (this.$store.state.auth.user.params && this.$store.state.auth.user.params.name) {
+            return this.$store.state.auth.user.params.name
+          }
+          return this.$store.state.auth.user.id
+        }
       }
     },
     methods: {
