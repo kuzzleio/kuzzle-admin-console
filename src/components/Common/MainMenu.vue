@@ -37,11 +37,13 @@
   import {DO_LOGOUT} from '../../vuex/modules/auth/mutation-types'
   import {DEFAULT_COLOR} from '../../services/environment'
   import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
+  import CreateFirstAdminHeader from './CreateFirstAdminHeader'
 
   export default {
     name: 'MainMenu',
     components: {
-      EnvironmentSwitch
+      EnvironmentSwitch,
+      CreateFirstAdminHeader
     },
     computed: {
       currentEnvironmentColor () {

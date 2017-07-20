@@ -11,8 +11,7 @@ export default {
         .unsetJwtToken()
         .loginPromise('local', {username: data.username, password: data.password}, '4h')
         .then(loginResult => {
-          dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, loginResult.jwt)
-          return dispatch(types.PREPARE_SESSION)
+          return dispatch(types.PREPARE_SESSION, loginResult.jwt)
         })
         .then(() => {
           resolve()
@@ -20,9 +19,9 @@ export default {
         .catch(error => reject(new Error(error.message)))
     })
   },
-  [types.PREPARE_SESSION] ({commit}) {
+  [types.PREPARE_SESSION] ({commit, dispatch}, token) {
     const sessionUser = SessionUser()
-
+    dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, token)
     return kuzzle
       .whoAmIPromise()
       .then(user => {
@@ -39,6 +38,10 @@ export default {
   },
   [types.LOGIN_BY_TOKEN] ({commit, dispatch}, data) {
     const user = SessionUser()
+
+    if (data.token === 'anonymous') {
+      return dispatch(types.PREPARE_SESSION, data.token)
+    }
 
     if (!data.token) {
       commit(types.SET_CURRENT_USER, SessionUser())
@@ -59,21 +62,7 @@ export default {
         }
 
         kuzzle.setJwtToken(data.token)
-        dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, data.token)
-        return kuzzle.whoAmIPromise()
-          .then(KuzzleUser => {
-            user.id = KuzzleUser.id
-            user.params = KuzzleUser.content
-            return kuzzle.getMyRightsPromise()
-          })
-          .then(rights => {
-            user.rights = rights
-
-            commit(types.SET_CURRENT_USER, user)
-            commit(types.SET_TOKEN_VALID, true)
-
-            return Promise.resolve(user)
-          })
+        return dispatch(types.PREPARE_SESSION, data.token)
       })
   },
   [types.CHECK_FIRST_ADMIN] ({commit}) {
