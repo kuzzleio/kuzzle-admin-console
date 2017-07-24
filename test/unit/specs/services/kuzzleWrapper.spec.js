@@ -256,4 +256,69 @@ describe('Kuzzle wrapper service', () => {
       expect(setTokenValid.calledWithMatch(store, false))
     })
   })
+
+  describe('performSearchUsers', () => {
+    let kuzzleWrapper
+    const userExample = {
+      content: {
+        aField: 'aValue'
+      },
+      id: 'toto',
+      meta: {}
+    }
+    const credentialExample = {
+      credential: 'something',
+      otherCredential: 'item'
+    }
+    beforeEach(() => {
+      kuzzleWrapper = kuzzleWrapperInjector({
+        './kuzzle': {
+          security: {
+            searchUsersPromise: () => {
+              return Promise.resolve({
+                users: [userExample],
+                total: 1
+              })
+            },
+            getCredentialsPromise: () => {
+              return Promise.resolve(credentialExample)
+            }
+          },
+          queryPromise: () => {
+            return Promise.resolve({
+              result: ['strategy-1']
+            })
+          }
+        }
+      })
+    })
+
+    it('should return a well-formed result', () => {
+      return kuzzleWrapper
+        .performSearchUsers('collection', 'index', {}, {})
+        .then(res => {
+          expect(res).to.have.property('documents')
+          expect(res).to.have.property('total')
+          expect(res.total).to.be.equal(1)
+          expect(res.documents).to.be.an('array')
+          expect(res.documents.length).to.be.equal(1)
+          expect(res.documents[0].id).to.be.equal(userExample.id)
+          expect(res.documents[0].meta).to.eql(userExample.meta)
+          expect(res.documents[0].content).to.eql(userExample.content)
+          expect(res.documents[0].credentials).to.eql({
+            'strategy-1': credentialExample
+          })
+        })
+    })
+
+    it('should properly add additionalAttribute when sort is specified as string', () => {
+      return kuzzleWrapper
+        .performSearchUsers('collection', 'index', {}, {}, ['aField'])
+        .then(res => {
+          expect(res.documents[0]).to.have.property('additionalAttribute')
+          expect(res.documents[0].additionalAttribute).to.have.property('name')
+          expect(res.documents[0].additionalAttribute.name).to.be.equal('aField')
+        })
+    })
+  })
 })
