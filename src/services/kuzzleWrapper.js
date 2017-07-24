@@ -250,7 +250,7 @@ export const performSearchProfiles = (filters = {}, pagination = {}) => {
       let profiles = result.profiles.map((document) => {
         let object = {
           content: document.content,
-          meta: document.meta ? new Meta(document.meta) : null,
+          meta: document.meta ? new Meta(document.meta) : new Meta({}),
           id: document.id
         }
 
@@ -275,7 +275,7 @@ export const performSearchRoles = (controllers = {}, pagination = {}) => {
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
-          meta: document.meta ? new Meta(document.meta) : null,
+          meta: document.meta ? new Meta(document.meta) : new Meta({}),
           id: document.id
         }
 

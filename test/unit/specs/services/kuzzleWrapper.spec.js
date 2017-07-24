@@ -321,4 +321,82 @@ describe('Kuzzle wrapper service', () => {
         })
     })
   })
+
+  describe('performSearchProfiles', () => {
+    let kuzzleWrapper
+    const profileExample = {
+      content: {
+        aField: 'aValue'
+      },
+      meta: {},
+      id: 'toto'
+    }
+    beforeEach(() => {
+      kuzzleWrapper = kuzzleWrapperInjector({
+        './kuzzle': {
+          security: {
+            searchProfilesPromise: () => {
+              return Promise.resolve({
+                profiles: [profileExample],
+                total: 1
+              })
+            }
+          }
+        }
+      })
+    })
+    it('should return a well-formed result', () => {
+      return kuzzleWrapper
+        .performSearchProfiles()
+        .then(res => {
+          expect(res).to.have.property('documents')
+          expect(res).to.have.property('total')
+          expect(res.total).to.be.equal(1)
+          expect(res.documents).to.be.an('array')
+          expect(res.documents.length).to.be.equal(1)
+          expect(res.documents[0].id).to.be.equal(profileExample.id)
+          expect(res.documents[0].meta).to.eql(profileExample.meta)
+          expect(res.documents[0].content).to.eql(profileExample.content)
+        })
+    })
+  })
+
+  describe('performSearchRoles', () => {
+    let kuzzleWrapper
+    const roleExample = {
+      content: {
+        aField: 'aValue'
+      },
+      meta: {},
+      id: 'toto'
+    }
+    beforeEach(() => {
+      kuzzleWrapper = kuzzleWrapperInjector({
+        './kuzzle': {
+          security: {
+            searchRolesPromise: () => {
+              return Promise.resolve({
+                roles: [roleExample],
+                total: 1
+              })
+            }
+          }
+        }
+      })
+    })
+    it('should return a well-formed result', () => {
+      return kuzzleWrapper
+        .performSearchRoles()
+        .then(res => {
+          expect(res).to.have.property('documents')
+          expect(res).to.have.property('total')
+          expect(res.total).to.be.equal(1)
+          expect(res.documents).to.be.an('array')
+          expect(res.documents.length).to.be.equal(1)
+          expect(res.documents[0].id).to.be.equal(roleExample.id)
+          expect(res.documents[0].meta).to.eql(roleExample.meta)
+          expect(res.documents[0].content).to.eql(roleExample.content)
+        })
+    })
+  })
 })
