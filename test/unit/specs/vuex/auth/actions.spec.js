@@ -6,58 +6,57 @@ import {
   DO_LOGIN,
   LOGIN_BY_TOKEN,
   CHECK_FIRST_ADMIN,
+  PREPARE_SESSION,
   DO_LOGOUT
 } from '../../../../../src/vuex/modules/auth/mutation-types'
 import SessionUser from '../../../../../src/models/SessionUser'
 
+let triggerError
 const actionsInjector = require('inject-loader!../../../../../src/vuex/modules/auth/actions')
+const actions = actionsInjector({
+  '../../../services/kuzzle': {
+    unsetJwtToken () {
+      return this
+    },
+    loginPromise () {
+      return new Promise((resolve, reject) => {
+        if (triggerError.login) {
+          reject(new Error('login error'))
+        } else {
+          resolve({_id: 'foo', jwt: 'jwt'})
+        }
+      })
+    },
+    whoAmIPromise () {
+      return new Promise((resolve, reject) => {
+        if (triggerError.whoAmI) {
+          reject(new Error('whoAmI error'))
+        } else {
+          resolve({id: 'foo', jwt: 'jwt', content: {foo: 'bar'}})
+        }
+      })
+    },
+    getMyRightsPromise () {
+      return new Promise((resolve, reject) => {
+        if (triggerError.getMyRights) {
+          reject(new Error('getMyRights error'))
+        } else {
+          resolve([{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}])
+        }
+      })
+    }
+  },
+  '../../../services/userCookies': {
+    set: sinon.spy(),
+    get: sinon.spy(),
+    delete: sinon.spy()
+  },
+  '../../../services/environment': {
+    setTokenToCurrentEnvironment: sinon.spy()
+  }
+})
 
 describe('doLogin action', () => {
-  let triggerError
-
-  const actions = actionsInjector({
-    '../../../services/kuzzle': {
-      unsetJwtToken () {
-        return this
-      },
-      loginPromise () {
-        return new Promise((resolve, reject) => {
-          if (triggerError.login) {
-            reject(new Error('login error'))
-          } else {
-            resolve({_id: 'foo', jwt: 'jwt'})
-          }
-        })
-      },
-      whoAmIPromise () {
-        return new Promise((resolve, reject) => {
-          if (triggerError.whoAmI) {
-            reject(new Error('whoAmI error'))
-          } else {
-            resolve({content: {foo: 'bar'}})
-          }
-        })
-      },
-      getMyRightsPromise () {
-        return new Promise((resolve, reject) => {
-          if (triggerError.getMyRights) {
-            reject(new Error('getMyRights error'))
-          } else {
-            resolve([{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}])
-          }
-        })
-      }
-    },
-    '../../../services/userCookies': {
-      set: sinon.spy(),
-      get: sinon.spy(),
-      delete: sinon.spy()
-    },
-    '../../../services/environment': {
-      setTokenToCurrentEnvironment: sinon.spy()
-    }
-  })
-
   beforeEach(() => {
     triggerError = {
       login: false,
@@ -89,9 +88,19 @@ describe('doLogin action', () => {
       done()
     })
   })
+})
+
+describe('prepareSession action', () => {
+  beforeEach(() => {
+    triggerError = {
+      login: false,
+      whoAmI: false,
+      getMyRights: false
+    }
+  })
 
   it('should store the user, dispatch user and token-valid mutation', (done) => {
-    testActionPromise(actions.default[DO_LOGIN], {username: 'user', password: 'pwd'}, {}, [
+    testActionPromise(actions.default[PREPARE_SESSION], 'jwt', {}, [
       {
         type: SET_CURRENT_USER,
         payload: {
@@ -116,6 +125,7 @@ describe('loginByToken action', () => {
     params: {foo: 'bar'},
     rights: [{controller: '*', action: '*', index: '*', collection: '*', value: 'allowed'}]
   }
+  const setJwtTokenStub = sinon.stub()
   const injectMock = (
     userIsValid = true,
     checkTokenError = false,
@@ -151,7 +161,7 @@ describe('loginByToken action', () => {
             return Promise.resolve(loggedUser.rights)
           }
         },
-        setJwtToken: sinon.stub(),
+        setJwtToken: setJwtTokenStub,
         unsetJwtToken: sinon.stub(),
         addListener (type, cb) {
           this.state = 'connected'
@@ -165,12 +175,20 @@ describe('loginByToken action', () => {
     })
   }
 
-  it('should login user from token', (done) => {
+  it('should call setJwtToken with given token', (done) => {
     let actions = injectMock()
-    testActionPromise(actions.default[LOGIN_BY_TOKEN], {token: 'a-token'}, {}, [
-      { type: SET_CURRENT_USER, payload: loggedUser },
-      { type: SET_TOKEN_VALID, payload: true }
-    ], done)
+    const state = {
+      commit: () => {},
+      dispatch: () => {}
+    }
+    actions
+      .default[LOGIN_BY_TOKEN](
+        state,
+        {token: 'a-token'})
+      .then(() => {
+        expect(setJwtTokenStub.calledWith('a-token')).to.be.equal(true)
+        done()
+      })
   })
 
   it('should not log the user if no token is provided', (done) => {
