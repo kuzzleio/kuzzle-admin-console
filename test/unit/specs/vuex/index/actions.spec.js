@@ -1,11 +1,14 @@
 import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/index/actions'
 import {
-  // ADD_LOCAL_REALTIME_COLLECTION,
   LIST_INDEXES_AND_COLLECTION,
   CREATE_INDEX,
   DELETE_INDEX,
   ADD_INDEX,
-  RECEIVE_INDEXES_COLLECTIONS
+  RECEIVE_INDEXES_COLLECTIONS,
+  CREATE_COLLECTION_IN_INDEX,
+  ADD_REALTIME_COLLECTION,
+  ADD_STORED_COLLECTION,
+  REMOVE_REALTIME_COLLECTION
 } from '../../../../../src/vuex/modules/index/mutation-types'
 import {testAction, testActionPromise} from '../../helper'
 
@@ -124,6 +127,138 @@ describe('Index module', () => {
           }
         }
       ], done)
+    })
+  })
+
+  describe('createCollectionInIndex action', () => {
+    let actions = actionsInjector({})
+
+    it('should reject if no collection name is provided', () => {
+      return actions
+        .default[CREATE_COLLECTION_IN_INDEX]({}, {})
+        .catch(e => {
+          expect(e).to.be.an('error')
+        })
+    })
+
+    it('should reject if collection already exists in stored', () => {
+      const collectionName = 'trololol'
+      return actions
+        .default[CREATE_COLLECTION_IN_INDEX]({
+          getters: {
+            indexCollections: () => {
+              return {
+                stored: [collectionName]
+              }
+            }
+          }
+        }, {collection: collectionName})
+        .catch((e) => {
+          expect(e).to.be.an('error')
+        })
+    })
+
+    it('should reject if collection already exists in realtime', () => {
+      const collectionName = 'trololol'
+      return actions
+        .default[CREATE_COLLECTION_IN_INDEX]({
+          getters: {
+            indexCollections: () => {
+              return {
+                stored: [],
+                realtime: [collectionName]
+              }
+            }
+          }
+        }, {collection: collectionName})
+        .catch((e) => {
+          expect(e).to.be.an('error')
+        })
+    })
+
+    it('should add collection to realtime if declared so', (done) => {
+      const collection = 'trololol'
+      const index = 'tralala'
+      const getters = {
+        indexCollections: () => {
+          return {
+            stored: [],
+            realtime: []
+          }
+        }
+      }
+      testActionPromise(
+        actions.default[CREATE_COLLECTION_IN_INDEX],
+        { index, collection, isRealtimeOnly: true },
+        {}, [{
+          type: ADD_REALTIME_COLLECTION,
+          payload: { index, name: collection }
+        }],
+        done, null, getters)
+    })
+
+    it('should add collection to stored if declared so and creation succeeds', (done) => {
+      const collection = 'trololol'
+      const index = 'tralala'
+      const getters = {
+        indexCollections: () => {
+          return {
+            stored: [],
+            realtime: []
+          }
+        }
+      }
+      const dispatch = () => {
+        return Promise.resolve()
+      }
+      testActionPromise(
+        actions.default[CREATE_COLLECTION_IN_INDEX],
+        { index, collection },
+        {}, [{
+          type: ADD_STORED_COLLECTION,
+          payload: { index, name: collection }
+        }],
+        done, null, getters, dispatch)
+    })
+
+    it('should reject if collection creation fails', () => {
+      const collection = 'trololol'
+      const index = 'tralala'
+      const getters = {
+        indexCollections: () => {
+          return {
+            stored: [],
+            realtime: []
+          }
+        }
+      }
+      const dispatch = () => {
+        return Promise.reject(new Error('Houston, we have a problem'))
+      }
+      return actions.default[CREATE_COLLECTION_IN_INDEX](
+        { dispatch, getters },
+        { index, collection })
+        .catch((e) => {
+          expect(e).to.be.an('error')
+        })
+    })
+  })
+
+  describe('removeRealtimeCollection action', () => {
+    let actions = actionsInjector({})
+
+    it('should trigger mutation', (done) => {
+      const collection = 'trololol'
+      const index = 'tralala'
+      testAction(
+        actions.default[REMOVE_REALTIME_COLLECTION],
+        { index, collection },
+        {}, [{
+          type: REMOVE_REALTIME_COLLECTION,
+          payload: { index, collection }
+        }],
+        done
+      )
     })
   })
 })

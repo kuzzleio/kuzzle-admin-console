@@ -33,7 +33,7 @@ export const mockedDirective = function (id) {
   return {id}
 }
 
-export const testActionPromise = (action, payload, state, expectedMutations, done, expectedResultFromPromise, getters) => {
+export const testActionPromise = (action, payload, state, expectedMutations, done, expectedResultFromPromise, getters, dispatch) => {
   let count = 0
 
   // mock commit
@@ -49,8 +49,12 @@ export const testActionPromise = (action, payload, state, expectedMutations, don
     }
   }
 
+  if (!dispatch) {
+    dispatch = () => {}
+  }
+
   // call the action with mocked store and arguments
-  return action({ commit, state, getters, dispatch: () => {} }, payload).then((res) => {
+  return action({ commit, state, getters, dispatch }, payload).then((res) => {
     if (expectedResultFromPromise) {
       expect(res).to.deep.equals(expectedResultFromPromise)
     }
