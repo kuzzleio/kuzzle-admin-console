@@ -399,4 +399,88 @@ describe('Kuzzle wrapper service', () => {
         })
     })
   })
+
+  describe('performDeleteUsers', () => {
+    const queryStub = sinon.stub().returns(Promise.resolve())
+    let kuzzleWrapper = kuzzleWrapper = kuzzleWrapperInjector({
+      './kuzzle': {
+        queryPromise: queryStub
+      }
+    })
+
+    beforeEach(() => {
+      queryStub.resetHistory()
+    })
+
+    it('should reject if no ids are provided', () => {
+      return kuzzleWrapper
+        .performDeleteUsers()
+        .catch(e => {
+          expect(e).to.be.an('error')
+        })
+    })
+    it('should not reject if ids are provided', () => {
+      return kuzzleWrapper
+        .performDeleteUsers('myIndex', 'myCollection', [2])
+        .then(() => {
+          expect(queryStub.callCount).to.be.equal(2)
+        })
+    })
+  })
+
+  describe('performDeleteProfiles', () => {
+    const queryStub = sinon.stub().returns(Promise.resolve())
+    let kuzzleWrapper = kuzzleWrapper = kuzzleWrapperInjector({
+      './kuzzle': {
+        queryPromise: queryStub
+      }
+    })
+
+    beforeEach(() => {
+      queryStub.resetHistory()
+    })
+
+    it('should reject if no ids are provided', () => {
+      return kuzzleWrapper
+        .performDeleteProfiles()
+        .catch(e => {
+          expect(e).to.be.an('error')
+        })
+    })
+    it('should not reject if ids are provided', () => {
+      return kuzzleWrapper
+        .performDeleteProfiles('myIndex', 'myCollection', [2])
+        .then(() => {
+          expect(queryStub.callCount).to.be.equal(2)
+        })
+    })
+  })
+
+  describe('performDeleteRoles', () => {
+    const queryStub = sinon.stub().returns(Promise.resolve())
+    let kuzzleWrapper = kuzzleWrapper = kuzzleWrapperInjector({
+      './kuzzle': {
+        queryPromise: queryStub
+      }
+    })
+
+    beforeEach(() => {
+      queryStub.resetHistory()
+    })
+
+    it('should reject if no ids are provided', () => {
+      return kuzzleWrapper
+        .performDeleteRoles()
+        .catch(e => {
+          expect(e).to.be.an('error')
+        })
+    })
+    it('should not reject if ids are provided', () => {
+      return kuzzleWrapper
+        .performDeleteRoles([2])
+        .then(() => {
+          expect(queryStub.callCount).to.be.equal(2)
+        })
+    })
+  })
 })
