@@ -197,7 +197,7 @@ export const performSearchUsers = (collection, index, filters = {}, pagination =
               content: new Content(document.content),
               id: document.id,
               credentials: new Credentials({}),
-              meta: document.meta ? new Meta(document.meta) : new Meta({})
+              meta: new Meta(document.meta || {})
             }
 
             if (additionalAttributeName) {
@@ -250,7 +250,7 @@ export const performSearchProfiles = (filters = {}, pagination = {}) => {
       let profiles = result.profiles.map((document) => {
         let object = {
           content: document.content,
-          meta: document.meta ? new Meta(document.meta) : new Meta({}),
+          meta: new Meta(document.meta || {}),
           id: document.id
         }
 
@@ -275,7 +275,7 @@ export const performSearchRoles = (controllers = {}, pagination = {}) => {
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
-          meta: document.meta ? new Meta(document.meta) : new Meta({}),
+          meta: new Meta(document.meta || {}),
           id: document.id
         }
 
