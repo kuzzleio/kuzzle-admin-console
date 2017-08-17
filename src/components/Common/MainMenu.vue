@@ -18,10 +18,13 @@
 
         <ul class="right">
           <li>
+            <b>{{currentUserName}}</b> on
+          </li>
+          <li>
             <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>
-            <a @click="doLogout"><i class="logout fa fa-power-off"></i></a>
+            <a @click="doLogout" title="Logout"><i class="logout fa fa-power-off"></i></a>
           </li>
         </ul>
       </nav>
@@ -34,11 +37,13 @@
   import {DO_LOGOUT} from '../../vuex/modules/auth/mutation-types'
   import {DEFAULT_COLOR} from '../../services/environment'
   import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
+  import CreateFirstAdminHeader from './CreateFirstAdminHeader'
 
   export default {
     name: 'MainMenu',
     components: {
-      EnvironmentSwitch
+      EnvironmentSwitch,
+      CreateFirstAdminHeader
     },
     computed: {
       currentEnvironmentColor () {
@@ -47,12 +52,22 @@
         }
 
         return this.$store.getters.currentEnvironment.color
+      },
+      currentUserName () {
+        if (this.$store.state.auth.user) {
+          if (this.$store.state.auth.user.params && this.$store.state.auth.user.params.name) {
+            return this.$store.state.auth.user.params.name
+          }
+          return this.$store.state.auth.user.id
+        }
       }
     },
     methods: {
       doLogout () {
-        this.$store.dispatch(DO_LOGOUT)
-        this.$router.push({name: 'Login'})
+        return this.$store.dispatch(DO_LOGOUT)
+          .then(() => {
+            this.$router.push({name: 'Login'})
+          })
       },
       hasSecurityRights,
       editEnvironment (id) {

@@ -1,8 +1,14 @@
 <template>
   <div>
-    <main-menu @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></main-menu>
+    <main-menu
+      @environment::create="editEnvironment"
+      @environment::delete="deleteEnvironment">
+    </main-menu>
 
     <main class="loader">
+      <create-first-admin-header
+        v-if="!$store.getters.adminAlreadyExists">
+      </create-first-admin-header>
       <router-view></router-view>
     </main>
 
@@ -45,6 +51,7 @@
 
 <script>
   import MainMenu from './Common/MainMenu'
+  import CreateFirstAdminHeader from './Common/CreateFirstAdminHeader'
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
   import KuzzleDisconnected from './Error/KuzzleDisconnected'
@@ -55,7 +62,8 @@
       LoginForm,
       MainMenu,
       Modal,
-      KuzzleDisconnected
+      KuzzleDisconnected,
+      CreateFirstAdminHeader
     },
     data () {
       return {
