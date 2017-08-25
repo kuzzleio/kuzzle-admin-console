@@ -18,7 +18,7 @@
             <json-form
               :schema="schema"
               @update-value="updateValue"
-              :document="newContent"
+              :document="value"
             ></json-form>
           </div>
         </div>
@@ -103,6 +103,7 @@ export default {
         Object.assign(this.newContent, this.$refs.jsoneditor.getJson())
       }
       this.viewType = this.isFormView ? 'json' : 'form'
+      this.newContent = {...this.value}
     },
     updateValue (payload) {
       this.newContent[payload.name] = payload.value

@@ -11,29 +11,12 @@
           <tab @tabs-on-select="setActiveTabObject" name="credentials" tab-select="basic"><a href="">Credentials</a></tab>
           <tab @tabs-on-select="setActiveTabObject" name="custom" tab-select="basic"><a href="">Custom</a></tab>
           <div slot="contents">
-            <basic
-              v-show="activeTab === 'basic'"
-              :added-profiles="addedProfiles"
-              :kuid="id"
-              @profile-add="onProfileAdded"
-              @profile-remove="onProfileRemoved"
-            ></basic>
-            <credentials-edit
-              v-show="activeTab === 'credentials'"
-              id-mapping="credentialsMapping"
-              id-content="credentialsMapping"
-              title="Credentials"
-              :value="credentials"
-              :refresh-ace="refresh"
-              :mapping="credentialsMapping"
-              @input="onCredentialsChanged"
-            ></credentials-edit>
-            <custom
-              v-show="activeTab === 'custom'"
-              :value="content"
-              :mapping="contentMapping"
-              @input="onContentChanged"
-            ></custom>
+            <steps-content
+              :step="stepNumber"
+              :is-update="true"
+              ref="stepsContent"
+              v-model="user"
+            ></steps-content>
           </div>
         </tabs>
       </div>
@@ -76,37 +59,44 @@
   import CredentialsEdit from '../Common/JsonWithMapping'
   import Tabs from '../../Materialize/Tabs'
   import Tab from '../../Materialize/Tab'
-  import Basic from './Steps/Basic'
-  import Custom from './Steps/Custom'
-  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
-  import {getMappingUsers} from '../../../services/kuzzleWrapper'
-  import Vue from 'vue'
   import Promise from 'bluebird'
+  import StepsContent from './Steps/StepsContent'
 
   export default {
     name: 'UpdateUser',
     components: {
       Headline,
       CredentialsEdit,
-      Basic,
-      Custom,
       Tabs,
-      Tab
+      Tab,
+      StepsContent
     },
     data () {
       return {
         error: '',
         loading: false,
-        id: null,
-        addedProfiles: [],
-        credentials: {},
-        content: {},
-        credentialsMapping: {},
-        contentMapping: {},
         refresh: false,
         activeTab: 'basic',
         activeTabObject: null,
-        submitted: false
+        submitted: false,
+        user: {
+          kuid: null,
+          addedProfiles: [],
+          credentials: {},
+          customContent: {}
+        }
+      }
+    },
+    computed: {
+      stepNumber () {
+        switch (this.activeTab) {
+          case 'basic':
+            return 0
+          case 'credentials':
+            return 1
+          default:
+            return 2
+        }
       }
     },
     methods: {
@@ -117,21 +107,13 @@
         this.activeTabObject = tab
       },
       validate () {
-        if (!this.autoGenerateKuid && !this.id) {
-          throw new Error('Please fill the custom KUID or check the auto-generate box')
-        }
-        if (!this.addedProfiles.length) {
+        if (!this.user.addedProfiles.length) {
           throw new Error('Please add at least one profile to the user')
         }
+
         return true
       },
-      onProfileAdded (profile) {
-        this.addedProfiles.push(profile)
-      },
-      onProfileRemoved (profile) {
-        this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
-      },
-      save () {
+      async save () {
         try {
           this.validate()
         } catch (e) {
@@ -141,41 +123,23 @@
         this.submitted = true
 
         let userObject = {
-          profileIds: this.addedProfiles,
-          ...this.content
+          profileIds: this.user.addedProfiles,
+          ...this.user.customContent
         }
-        return kuzzle
-          .security
-          .replaceUserPromise(this.id, userObject)
-          .then(() => {
-            let promises = []
-            Object.keys(this.credentials).forEach(strategy => {
-              promises.push(
-                kuzzle
-                  .security
-                  .updateCredentialsPromise(
-                    strategy,
-                    this.id,
-                    this.credentials[strategy]
-                  )
-              )
-            })
-            return Promise.all(promises)
-          })
-          .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
-          .then(() => {
-            // The index refresh doesn't seem to work at the moment
-            return new Promise((resolve, reject) => {
-              setTimeout(() => { resolve() }, 1000)
-            })
-          })
-          .then(() => this.$router.push({name: 'SecurityUsersList'}))
-          .catch((err) => {
-            if (err) {
-              this.setError(err.message)
-              this.submitted = false
-            }
-          })
+
+        try {
+          await kuzzle.security.replaceUserPromise(this.user.kuid, userObject)
+          await Promise.all(Object.keys(this.user.credentials).map(async (strategy) => {
+            await kuzzle.security.updateCredentialsPromise(strategy, this.user.kuid, this.user.credentials[strategy])
+          }))
+          await kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {})
+          this.$router.push({name: 'SecurityUsersList'})
+        } catch (err) {
+          if (err) {
+            this.setError(err.message)
+            this.submitted = false
+          }
+        }
       },
       setError (msg) {
         this.error = msg
@@ -186,15 +150,6 @@
       dismissError () {
         this.error = ''
       },
-      refreshAce () {
-        this.refresh = !this.refresh
-      },
-      onCredentialsChanged (value) {
-        this.credentials = value
-      },
-      onContentChanged (value) {
-        this.content = value
-      },
       cancel () {
         if (this.$router._prevTransition && this.$router._prevTransition.to) {
           this.$router.push(this.$router._prevTransition.to)
@@ -202,55 +157,6 @@
           this.$router.push({name: 'SecurityUsersList'})
         }
       }
-    },
-    mounted () {
-      Vue.nextTick(() => {
-        this.loading = true
-
-        return kuzzle
-          .security
-          .fetchUserPromise(decodeURIComponent(this.$store.state.route.params.id))
-          .then((res) => {
-            this.id = res.id
-            this.addedProfiles = res.content.profileIds
-            delete res.content.profileIds
-            this.content = {...res.content}
-
-            return kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
-              .then(strategies => {
-                strategies.result.forEach(strategy => {
-                  kuzzle.security.getCredentialFieldsPromise(strategy)
-                    .then(fields => {
-                      Vue.set(this.credentialsMapping, strategy, fields)
-                    })
-
-                  return kuzzle.security.getCredentialsPromise(strategy, this.id)
-                    .then(credential => {
-                      if (credential) {
-                        if (credential.kuid) {
-                          delete credential.kuid
-                        }
-                        Vue.set(this.credentials, strategy, credential)
-                      }
-                    })
-                })
-
-                return getMappingUsers()
-                  .then(response => {
-                    if (!response.mapping) {
-                      this.contentMapping = {}
-                    } else {
-                      this.contentMapping = response.mapping
-                      delete this.contentMapping.profileIds
-                    }
-                    this.loading = false
-                  })
-              })
-          })
-          .catch(err => {
-            this.$store.commit(SET_TOAST, {text: err.message})
-          })
-      })
     }
   }
 </script>
