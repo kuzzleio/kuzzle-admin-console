@@ -15,15 +15,16 @@
       </div>
     </div>
     <div class="row">
-      <div class="col s8">
+      <div class="col s4">
         <p class="error card red-color white-text" v-if="error">
           <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
           Login failed: <br />{{error}}
         </p>
         <p v-if="!error">&nbsp;</p>
       </div>
-      <div class="col s4">
+      <div class="col s8">
         <p class="right">
+          <a class="btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
           <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
         </p>
       </div>
@@ -59,7 +60,11 @@
 
 <script>
   import Focus from '../../../directives/focus.directive'
-  import {DO_LOGIN} from '../../../vuex/modules/auth/mutation-types'
+  import {
+    DO_LOGIN,
+    PREPARE_SESSION
+  } from '../../../vuex/modules/auth/mutation-types'
+  import kuzzle from '../../../services/kuzzle'
 
   export default {
     name: 'LoginForm',
@@ -83,6 +88,16 @@
       login () {
         this.error = ''
         this.$store.dispatch(DO_LOGIN, {username: this.username, password: this.password})
+          .then(() => {
+            this.onLogin()
+          }).catch((err) => {
+            this.error = err.message
+          })
+      },
+      loginAsGuest () {
+        this.error = ''
+        kuzzle.unsetJwtToken()
+        this.$store.dispatch(PREPARE_SESSION, 'anonymous')
           .then(() => {
             this.onLogin()
           }).catch((err) => {
