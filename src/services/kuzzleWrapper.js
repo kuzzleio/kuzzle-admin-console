@@ -170,51 +170,59 @@ export const getMappingDocument = (collection, index) => {
 }
 
 export const performSearchUsers = (collection, index, filters = {}, pagination = {}, sort = []) => {
+  let strategies
   return kuzzle
-    .security
-    .searchUsersPromise({...filters, sort}, {...pagination})
-    .then(result => {
-      let additionalAttributeName = null
-      let users = []
+    .queryPromise({controller: 'auth', action: 'getStrategies'}, {})
+    .then(res => {
+      strategies = res.result
 
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
-      }
+      return kuzzle
+        .security
+        .searchUsersPromise({...filters, sort}, {...pagination})
+        .then(result => {
+          let additionalAttributeName = null
+          let users = []
+          const promises = []
 
-      result.users.forEach(document => {
-        let object = {
-          content: new Content(document.content),
-          id: document.id,
-          credentials: new Credentials({}),
-          meta: document.meta ? new Meta(document.meta) : null
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+          if (sort.length > 0) {
+            if (typeof sort[0] === 'string') {
+              additionalAttributeName = sort[0]
+            } else {
+              additionalAttributeName = Object.keys(sort[0])[0]
+            }
           }
-        }
 
-        return kuzzle.queryPromise({controller: 'auth', action: 'getStrategies'}, {})
-        .then(strategies => {
-          strategies.result.forEach(strategy => {
-            kuzzle.security.getCredentialsPromise(strategy, document.id)
-              .then(res => {
-                object.credentials[strategy] = res
-              })
-              .catch(() => {
-              })
+          result.users.forEach(document => {
+            let object = {
+              content: new Content(document.content),
+              id: document.id,
+              credentials: new Credentials({}),
+              meta: new Meta(document.meta || {})
+            }
+
+            if (additionalAttributeName) {
+              object.additionalAttribute = {
+                name: additionalAttributeName,
+                value: getValueAdditionalAttribute(document.content, additionalAttributeName.split('.'))
+              }
+            }
+
+            strategies.forEach(strategy => {
+              promises.push(kuzzle.security.getCredentialsPromise(strategy, document.id)
+                .then(res => {
+                  object.credentials[strategy] = res
+                })
+                .catch(() => {
+                })
+              )
+            })
+            users.push(object)
           })
-          users.push(object)
-        })
-      })
 
-      return {documents: users, total: result.total}
+          return Promise.all(promises).then(() => {
+            return {documents: users, total: result.total}
+          })
+        })
     })
 }
 
@@ -242,7 +250,7 @@ export const performSearchProfiles = (filters = {}, pagination = {}) => {
       let profiles = result.profiles.map((document) => {
         let object = {
           content: document.content,
-          meta: document.meta ? new Meta(document.meta) : null,
+          meta: new Meta(document.meta || {}),
           id: document.id
         }
 
@@ -267,7 +275,7 @@ export const performSearchRoles = (controllers = {}, pagination = {}) => {
       let roles = result.roles.map((document) => {
         let object = {
           content: document.content,
-          meta: document.meta ? new Meta(document.meta) : null,
+          meta: new Meta(document.meta || {}),
           id: document.id
         }
 
