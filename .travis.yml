@@ -6,25 +6,24 @@ env:
   global:
   - DOCKER_COMPOSE_VERSION=1.9.0
   - secure: gfJ1/G69s0pOJhqoOB3bMAClvPPj3i++ckCCP/Yz2OMBFoAF3YCb2k2p5fRNX46s/hqkddHZnuSzaPRXHW5tToS7OhpN1HB6EDIfBS80zD1ZH5n5B8s/jKwzQLWv85bZATKc+R8Ir2ukBd/BQFurzd8JtQDpGS2hSCppOUQQApE3F+ghpET8dFPP7qncn1p98UBbbYyxiR53EM2xo93kByooe7nJiwjLvGVCp7zF9ZGKdp+yUzIb5tvOLnxvXrD2IvGl2Cuyf6bdqXUeM5yEhv0JwuD7SsIydCJZhTY8zCkMl3ITThY8HKV19sU6/zlG6aUsD5QAT58DiKk69icRc03kYCeLjUtuVHq/Nzq1grixc/uIi/KJlKxXd6h1NovAhLAkuuqjpLTKePOVeQdwCBZWQdXWPXUBK80px/ZYauydUqmaxHZq5JAM8hg0DbYICCqVcvro7WcUjCEW+VczO36wNU/qjbSsPehysIlWjt7qvcBfGPoGhlIm098jbXNQh0tM3PYInXiIPl/v1ctGUVWBlUkyppxgV3MYHFM04Pwv9lqovWmWuk+c4a22UE08/sTsHHrmS9T4zPfD6d/5Y1v8l8jMc9HGVa2ro642sRGgWS0QkazuQZ4ySYYpt98uv1NMq33L3ffbvsZo2mVCZ1ZWocCG7SbdWhJeOCysMMU=
-
 before_install:
 - sudo sysctl -w vm.max_map_count=262144
-
 script:
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run
+  install_deps
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run
+  unit && npm run codecov
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
-
 before_deploy:
 - echo "Generate and push dist folder"
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
-
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run
+  build
 deploy:
   provider: npm
   skip_cleanup: true
   email: support@kuzzle.io
   api_key:
-    secure: KQ+wabxwwu10o5NXp3ZZe1y+62njVXf/EKl5vKHXQxe5UWAXostrvUDoDPkYcwzx+0B54OKajyeZCwJ/i4nU2SG/0ZtwSNo+7rq4qNPpXaNTaq3qrDzNWx/GN3YIznfwBibj1sSaoduqH10u9gokNMOIu1qlRl0Up4rwCY9tvjiBF4K21kWgFfQUxdv4x9fw1PMfRUKlKMgTUAKg9e0WIiZ9rnlfmjIS2Z2y6eReWu6n364mNqPaKBUNK42F6obGpUKVksW4DlhS/OVkxIQEmMVc+BJEU0Gt4k7tcD5hgvPTE3FqPYxQ8I92BFmiXMTcQRIVL1/eTnPb7aNFUYWmxbCJT9GNxHS6kDaksv7Yz+hGeQ77rqh0fLZxmLkTwQ+gpikwDv7Lo93qodbi9ZVTz68qIAodQNqGZMlGBxY9YSemkXPRh0AJuIsHrMH4JOPvvO8E1TbyrZ7pYcl0guVFRoF/OIeBL+3Ue92n0BaMc+DupfiRcazGcJE/E8bPQc5wt2GM4Hka5cAIzmgtl/SiTYADflPiFdT8NdTYA4f1qconM97r3roMbX73HQlsC7g2GjeZD6VRpTpEAAcWT+6T1VKWf8sQWzWCDY5xDynahzDvpWl9jQjvgNYMl961qwbVQqj9zUAAAtJUMD4AoNruQcHbL29b2WYVfUVWXNNRYyc=
+    secure: lTrQLDjzUwRU7ZiUHev0BSERAEcH4UjqRbRBVbiELk6/apqLOWaqmccOjS64ujewsuLbqU0ETPEktyAgzSJAZPVHNRNMWqkTIIVjh+PO0nfK3aDJByYg2uWqqFrscL1hlvERCOcUp4HHc7ysLohifWw25oa0XKArr+M6U7VvfSxR0CPtzzyazxJHK2so5VNtkYCRiYhpy/a1JwArMjfmgAqTVguS6edGlOO3LTe7jTJk+B7nYkAADoUpn6bQRD2b/0FJlWqf5gfbXGtOJVo/jmGK5LVAd5Qmqq16lh3AjHHo1U8BEQZ/cQR9IRG7r2Oe1W9gxQr2IHDe/wvaHMHctUh6heFkOr1E1zEIyY7ZGE7CZUX7Mo4d4/cT2gsr3Mq8v7OQojEIuBLV5dqTB4uN0pLjYX2Sl8AC3L4Y0qDQtqLd506E1XX6oU0lT+A1sORGaVTM6dIbvFQL5c6P7evMatPWV5VPOLn8s/2OSud38kGsUAJpPMENU+iFS2iLLVoTP25h+BfEkRL6sKk8fxEH7/QqTwlix2/QLWph53Y+Ah40dLsL2B7eDujOY/bH2z5ge6haKGKGnSRJx5GxgoIXxz699VXI4lZYicWDiywmX6cjwYweFO46/SwRJl7ANzOzGXVXsWQzlicjoAjmm2bq+fWd41s8gA54fiD/r3py4BI=
   on:
     repo: kuzzleio/kuzzle-backoffice
     branch: master
