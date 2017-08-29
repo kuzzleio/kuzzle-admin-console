@@ -57,10 +57,10 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col m6">
+                <div class="col s2">
                   <p class="message error">{{error}}</p>
                 </div>
-                <div class="col m6">
+                <div class="col s10">
                   <div class="preloader-wrapper active right" v-if="waiting" >
                     <div class="spinner-layer">
                       <div class="circle-clipper left">
@@ -74,6 +74,7 @@
                       </div>
                     </div>
                   </div>
+                  <a class="btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
                   <button v-show="!waiting" class="btn waves-effect waves-light right" type="submit" name="action">
                     Create my first admin
                   </button>
@@ -90,6 +91,7 @@
 <script>
   import kuzzle from '../services/kuzzle'
   import * as types from '../vuex/modules/auth/mutation-types'
+  import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
   import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 
   export default {
@@ -139,6 +141,7 @@
         kuzzle
           .queryPromise({controller: 'security', action: 'createFirstAdmin'}, firstAdminRequest)
           .then(() => {
+            this.$store.dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
             this.$store.commit(types.SET_ADMIN_EXISTS, true)
             this.$router.push({name: 'Login'})
           })
@@ -146,6 +149,15 @@
             // TODO manage this on the UI
             console.error('An error occurred while creating the first admin', err)
             this.$router.push({name: 'Login'})
+          })
+      },
+      loginAsGuest () {
+        this.error = ''
+        this.$store.dispatch(types.PREPARE_SESSION, 'anonymous')
+          .then(() => {
+            this.$router.push({name: 'Data'})
+          }).catch((err) => {
+            this.error = err.message
           })
       },
       editEnvironment (id) {
