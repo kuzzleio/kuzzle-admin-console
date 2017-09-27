@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-backoffice",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "A handy back-office for Kuzzle.io",
   "author": "The Kuzzle team <support@kuzzle.io>",
   "private": false,
@@ -15,7 +15,7 @@
     "e2e": "npm run e2e-chrome && npm run e2e-firefox",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-    "install_deps": "npm i && npm i -g bower && bower install --allow-root --no-interactive",
+    "install_deps": "npm i && bower install --allow-root --no-interactive",
     "prepublishOnly": "npm run build",
     "start": "http-server dist"
   },
@@ -47,6 +47,7 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-2": "^6.22.0",
     "babel-register": "^6.22.0",
+    "bower": "^1.7.10",
     "chai": "^3.5.0",
     "chalk": "^1.1.3",
     "codecov": "1.0.1",
