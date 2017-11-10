@@ -29,7 +29,7 @@ export const connectToEnvironment = (environment) => {
 }
 
 export const waitForConnected = (timeout = 1000) => {
-  if (kuzzle.state !== 'connected') {
+  if (kuzzle.network.state !== 'connected') {
     return new Promise((resolve, reject) => {
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
       let timeoutId = setTimeout(() => {
