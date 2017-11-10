@@ -54,7 +54,7 @@
   import Headline from '../../Materialize/Headline'
   import Stepper from '../../Common/Stepper'
   import StepsContent from './Steps/StepsContent'
-  import kuzzle from '../../../services/kuzzle'
+  import {kuzzle} from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'UsersSecurityCreate',

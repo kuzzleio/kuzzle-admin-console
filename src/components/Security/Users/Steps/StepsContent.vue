@@ -30,9 +30,8 @@
 </template>
 
 <script>
-  import kuzzle from '../../../../services/kuzzle'
   import {SET_TOAST} from '../../../../vuex/modules/common/toaster/mutation-types'
-  import {getMappingUsers} from '../../../../services/kuzzleWrapper'
+  import {kuzzle, getMappingUsers} from '../../../../services/kuzzleWrapper'
   import Basic from './Basic'
   import CredentialsSelector from './CredentialsSelector'
   import CustomData from './CustomData'

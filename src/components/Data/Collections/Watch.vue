@@ -167,7 +167,7 @@
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
   import Filters from '../../Common/Filters/Filters'
-  import kuzzle from '../../../services/kuzzle'
+  import {kuzzle} from '../../../services/kuzzleWrapper'
   import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'

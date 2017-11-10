@@ -1,4 +1,4 @@
-import kuzzle from '../../../services/kuzzle'
+import {kuzzle} from '../../../services/kuzzleWrapper'
 import SessionUser from '../../../models/SessionUser'
 import * as types from './mutation-types'
 import * as kuzzleTypes from '../common/kuzzle/mutation-types'

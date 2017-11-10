@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import kuzzle from '../../services/kuzzle'
+  import {kuzzle} from '../../services/kuzzleWrapper'
   import Connecting from './Connecting'
   import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 

@@ -15,8 +15,7 @@
 
 <script>
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import kuzzle from '../../../services/kuzzle'
-  import { getMappingProfiles } from '../../../services/kuzzleWrapper'
+  import { kuzzle, getMappingProfiles } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'ProfilesSecurityCreate',

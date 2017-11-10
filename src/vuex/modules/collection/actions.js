@@ -1,4 +1,4 @@
-import kuzzle from '../../../services/kuzzle'
+import {kuzzle} from '../../../services/kuzzleWrapper'
 import * as types from './mutation-types'
 import Promise from 'bluebird'
 import {mergeMetaAttributes} from '../../../services/collectionHelper'

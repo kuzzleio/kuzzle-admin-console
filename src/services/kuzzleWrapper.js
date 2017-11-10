@@ -1,8 +1,32 @@
-import kuzzle from './kuzzle'
 import Promise from 'bluebird'
 import * as types from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import {SET_TOAST} from '../vuex/modules/common/toaster/mutation-types'
+
+import Kuzzle from 'kuzzle-sdk/dist/kuzzle'
+Kuzzle.prototype.bluebird = Promise
+
+let kuzzle = new Kuzzle('localhost', {connect: 'manual'})
+window.kuzzle = kuzzle
+
+export const connectToEnvironment = (environment) => {
+  // fix default port for users that have an old environment settings in their localStorage:
+  if (environment.port === undefined) environment.port = 7512
+  if (typeof environment.ssl !== 'boolean') environment.ssl = false
+
+  if (kuzzle.network.state === 'connected') {
+    kuzzle.disconnect()
+  }
+
+  kuzzle = new Kuzzle(environment.host, {
+    port: environment.port,
+    sslConnection: environment.ssl,
+    connect: 'manual'
+  })
+  window.kuzzle = kuzzle
+
+  kuzzle.connect()
+}
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -22,21 +46,6 @@ export const waitForConnected = (timeout = 1000) => {
   }
 
   return Promise.resolve()
-}
-
-export const connectToEnvironment = (environment) => {
-  // fix default port for users that have an old environment settings in their localStorage:
-  if (environment.port === undefined) environment.port = 7512
-  if (typeof environment.ssl !== 'boolean') environment.ssl = false
-
-  if (kuzzle.state === 'connected') {
-    kuzzle.disconnect()
-  }
-
-  kuzzle.host = environment.host
-  kuzzle.port = environment.port
-  kuzzle.sslConnection = environment.ssl
-  kuzzle.connect()
 }
 
 export const initStoreWithKuzzle = (store) => {
@@ -330,3 +339,5 @@ export const performDeleteProfiles = (index, collection, ids) => {
     .queryPromise({controller: 'security', action: 'mDeleteProfiles'}, {body: {ids}})
     .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
 }
+
+export {kuzzle}

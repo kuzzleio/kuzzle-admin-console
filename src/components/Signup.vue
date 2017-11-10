@@ -89,7 +89,7 @@
 </template>
 
 <script>
-  import kuzzle from '../services/kuzzle'
+  import {kuzzle} from '../services/kuzzleWrapper'
   import * as types from '../vuex/modules/auth/mutation-types'
   import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
   import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'

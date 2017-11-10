@@ -14,8 +14,7 @@
 
 <script>
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import kuzzle from '../../../services/kuzzle'
-  import { getMappingProfiles } from '../../../services/kuzzleWrapper'
+  import { kuzzle, getMappingProfiles } from '../../../services/kuzzleWrapper'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {
