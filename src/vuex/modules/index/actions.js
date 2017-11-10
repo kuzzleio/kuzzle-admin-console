@@ -1,4 +1,4 @@
-import kuzzle from '../../../services/kuzzle'
+import {kuzzle} from '../../../services/kuzzleWrapper'
 import { dedupeRealtimeCollections, splitRealtimeStoredCollections, getRealtimeCollectionFromStorage } from '../../../services/data'
 import { removeIndex } from 'services/localStore'
 import Promise from 'bluebird'

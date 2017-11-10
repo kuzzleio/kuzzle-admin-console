@@ -1,6 +1,6 @@
 import * as types from './mutation-types'
 import * as authTypes from '../../auth/mutation-types'
-import { waitForConnected, connectToEnvironment } from '../../../../services/kuzzleWrapper'
+import { connectToEnvironment, waitForConnected } from '../../../../services/kuzzleWrapper'
 
 const ENVIRONMENT_ITEM_NAME = 'environments'
 const LAST_CONNECTED_NAME = 'lastConnectedEnv'

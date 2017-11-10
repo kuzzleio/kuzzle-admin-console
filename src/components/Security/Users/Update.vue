@@ -55,7 +55,7 @@
 
 <script>
   import Headline from '../../Materialize/Headline'
-  import kuzzle from '../../../services/kuzzle'
+  import {kuzzle} from '../../../services/kuzzleWrapper'
   import CredentialsEdit from '../Common/JsonWithMapping'
   import Tabs from '../../Materialize/Tabs'
   import Tab from '../../Materialize/Tab'

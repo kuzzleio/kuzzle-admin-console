@@ -1,4 +1,4 @@
-import kuzzle from '../../../services/kuzzle'
+import {kuzzle} from '../../../services/kuzzleWrapper'
 import * as types from './mutation-types'
 import { RECEIVE_COLLECTION_DETAIL } from '../collection/mutation-types'
 import Promise from 'bluebird'

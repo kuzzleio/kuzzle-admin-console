@@ -33,8 +33,7 @@
 
   import CollectionDropdown from '../Collections/Dropdown'
   import Headline from '../../Materialize/Headline'
-  import kuzzle from '../../../services/kuzzle'
-  import { getMappingDocument } from '../../../services/kuzzleWrapper'
+  import { kuzzle, getMappingDocument } from '../../../services/kuzzleWrapper'
   import CreateOrUpdate from './Common/CreateOrUpdate'
   import CollectionTabs from '../Collections/Tabs'
   import {FETCH_COLLECTION_DETAIL} from '../../../vuex/modules/collection/mutation-types'

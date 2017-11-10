@@ -167,7 +167,7 @@
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
   import Filters from '../../Common/Filters/Filters'
-  import kuzzle from '../../../services/kuzzle'
+  import {kuzzle} from '../../../services/kuzzleWrapper'
   import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
   import { availableFilters, formatFromBasicSearch } from '../../../services/filterFormatRealtime'
   import { canSubscribe } from '../../../services/userAuthorization'
@@ -344,12 +344,7 @@
           }, 0)
         }
       },
-      handleMessage (error, result) {
-        if (error) {
-          this.warning.message = error.message
-          return
-        }
-
+      handleMessage (result) {
         if (this.notifications.length > this.notificationsLengthLimit) {
           if (this.warning.message === '') {
             this.warning.info = true
@@ -378,8 +373,10 @@
       subscribe () {
         return kuzzle
           .collection(this.collection, this.index)
-          .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
-          .onDone((err, room) => {
+          .room(this.filters, this.subscribeOptions)
+          .on('document', this.handleMessage)
+          .on('user', this.handleMessage)
+          .subscribe((err, room) => {
             if (err) {
               this.room = null
               this.subscribed = false

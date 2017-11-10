@@ -1,4 +1,4 @@
-import kuzzle from '../services/kuzzle'
+import {kuzzle} from '../services/kuzzleWrapper'
 import store from '../vuex/modules/auth/store'
 
 function isActionAllowed (sessionUser, controller, action, index = '*', collection = '*') {

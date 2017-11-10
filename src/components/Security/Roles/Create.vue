@@ -15,8 +15,7 @@
 
 <script>
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-  import kuzzle from '../../../services/kuzzle'
-  import { getMappingRoles } from '../../../services/kuzzleWrapper'
+  import { kuzzle, getMappingRoles } from '../../../services/kuzzleWrapper'
 
   export default {
     name: 'RolesSecurityCreate',

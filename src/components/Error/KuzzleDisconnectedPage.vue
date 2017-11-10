@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import kuzzle from '../../services/kuzzle'
+  import {kuzzle} from '../../services/kuzzleWrapper'
   import Connecting from './Connecting'
   import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
@@ -38,8 +38,8 @@
       EnvironmentSwitch
     },
     mounted () {
-      this.host = kuzzle.host
-      this.port = kuzzle.port
+      this.host = kuzzle.network.host
+      this.port = kuzzle.network.port
 
       idReconnect = kuzzle.addListener('reconnected', () => {
         this.$router.push({name: 'Home'})
@@ -49,7 +49,7 @@
         this.$router.push({name: 'Home'})
       })
 
-      if (kuzzle.state === 'connected' || kuzzle.state === 'reconnected') {
+      if (kuzzle.network.state === 'connected' || kuzzle.network.state === 'reconnected') {
         this.$router.push({name: 'Login'})
       }
     },
