@@ -8,7 +8,7 @@ export default {
   [types.DO_LOGIN] ({commit, dispatch}, data) {
     return new Promise((resolve, reject) => {
       kuzzle
-        .unsetJwtToken()
+        .unsetJwt()
         .loginPromise('local', {username: data.username, password: data.password}, '4h')
         .then(loginResult => {
           return dispatch(types.PREPARE_SESSION, loginResult.jwt)
@@ -46,7 +46,7 @@ export default {
     if (!data.token) {
       commit(types.SET_CURRENT_USER, SessionUser())
       commit(types.SET_TOKEN_VALID, false)
-      kuzzle.unsetJwtToken()
+      kuzzle.unsetJwt()
       dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
       return Promise.resolve(user)
     }
@@ -57,11 +57,11 @@ export default {
           commit(types.SET_CURRENT_USER, SessionUser())
           commit(types.SET_TOKEN_VALID, false)
           dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
-          kuzzle.unsetJwtToken()
+          kuzzle.unsetJwt()
           return Promise.resolve(SessionUser())
         }
 
-        kuzzle.setJwtToken(data.token)
+        kuzzle.setJwt(data.token)
         return dispatch(types.PREPARE_SESSION, data.token)
       })
   },
@@ -85,7 +85,7 @@ export default {
   },
   [types.DO_LOGOUT] ({commit, dispatch}) {
     kuzzle.logout()
-    kuzzle.unsetJwtToken()
+    kuzzle.unsetJwt()
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
     commit(types.SET_CURRENT_USER, SessionUser())
     commit(types.SET_TOKEN_VALID, false)

@@ -96,7 +96,7 @@
       },
       loginAsGuest () {
         this.error = ''
-        kuzzle.unsetJwtToken()
+        kuzzle.unsetJwt()
         this.$store.dispatch(PREPARE_SESSION, 'anonymous')
           .then(() => {
             this.onLogin()
