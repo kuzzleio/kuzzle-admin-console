@@ -1,19 +1,24 @@
 <template>
-  <create-or-update
-  title="Create a profile"
-  :error="error"
-  @document-create::reset-error="error = ''"
-  @document-create::create="create"
-  @document-create::cancel="cancel"
-  @document-create::error="setError"
-  @change-id="updateId"
-  v-model="document"
-  :submitted="submitted"
-  :mandatory-id="true">
-  </create-or-update>
+  <div>
+    <Headline>Profile - Create</Headline>
+    <create-or-update
+      title="Create a profile"
+      :error="error"
+      @document-create::reset-error="error = ''"
+      @document-create::create="create"
+      @document-create::cancel="cancel"
+      @document-create::error="setError"
+      @change-id="updateId"
+      v-model="document"
+      :submitted="submitted"
+      :mandatory-id="true"
+    >
+    </create-or-update>
+  </div>
 </template>
 
 <script>
+  import Headline from '../../Materialize/Headline'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingProfiles } from '../../../services/kuzzleWrapper'
@@ -21,6 +26,7 @@
   export default {
     name: 'ProfilesSecurityCreate',
     components: {
+      Headline,
       CreateOrUpdate
     },
     data () {
