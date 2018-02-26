@@ -113,7 +113,7 @@ export default {
       this.$emit('input', this.$refs.jsoneditor.getJson())
     }
   },
-  mounted () {
+  updated () {
     this.newContent = {...this.value}
   }
 }
