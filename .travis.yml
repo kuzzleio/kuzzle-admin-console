@@ -9,15 +9,12 @@ env:
 before_install:
 - sudo sysctl -w vm.max_map_count=262144
 script:
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run
-  install_deps
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run
-  unit && npm run codecov
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 before_deploy:
 - echo "Generate and push dist folder"
-- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run
-  build
+- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
 deploy:
   provider: npm
   skip_cleanup: true
