@@ -1,6 +1,6 @@
 import kuzzle from './kuzzle'
 import Promise from 'bluebird'
-import * as types from '../vuex/modules/auth/mutation-types'
+import * as actions from '../vuex/modules/auth/actions'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import {SET_TOAST} from '../vuex/modules/common/toaster/mutation-types'
 
@@ -53,7 +53,7 @@ export const initStoreWithKuzzle = (store) => {
         case 'Token expired':
         case 'Invalid token':
         case 'Json Web Token Error':
-          store.commit(types.SET_TOKEN_VALID, false)
+          store.dispatch(actions.DO_LOGOUT)
           break
       }
     }
