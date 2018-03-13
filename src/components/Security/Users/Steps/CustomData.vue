@@ -97,6 +97,13 @@ export default {
       return mergeSchemaMapping({}, this.mapping)
     }
   },
+  watch: {
+    value: function (val) {
+      if (this.viewType === 'form') {
+        this.newContent = {...val}
+      }
+    }
+  },
   methods: {
     switchView () {
       if (this.viewType === 'json') {
@@ -112,9 +119,6 @@ export default {
     jsonChanged () {
       this.$emit('input', this.$refs.jsoneditor.getJson())
     }
-  },
-  updated () {
-    this.newContent = {...this.value}
   }
 }
 </script>
