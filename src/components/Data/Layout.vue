@@ -28,19 +28,7 @@
     components: {
       Treeview
     },
-    mounted () {
-      if (canSearchIndex()) {
-        this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
-          .then(() => {
-            return this.$store.dispatch(FETCH_COLLECTION_DETAIL,
-              {
-                index: this.$store.state.route.params.index,
-                collection: this.$store.state.route.params.collection
-              })
-          })
-          .catch(err => console.error(err))
-      }
-    },
+
     watch: {
       '$route' () {
         if (canSearchIndex()) {

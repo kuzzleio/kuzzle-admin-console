@@ -2,6 +2,8 @@ import kuzzle from '../../../services/kuzzle'
 import SessionUser from '../../../models/SessionUser'
 import * as types from './mutation-types'
 import * as kuzzleTypes from '../common/kuzzle/mutation-types'
+import { LIST_INDEXES_AND_COLLECTION } from '../index/mutation-types'
+import { canSearchIndex } from '../../../services/userAuthorization'
 import Promise from 'bluebird'
 
 export default {
@@ -22,6 +24,7 @@ export default {
   [types.PREPARE_SESSION] ({commit, dispatch}, token) {
     const sessionUser = SessionUser()
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, token)
+
     return kuzzle
       .whoAmIPromise()
       .then(user => {
@@ -34,6 +37,9 @@ export default {
         sessionUser.rights = rights
         commit(types.SET_CURRENT_USER, sessionUser)
         commit(types.SET_TOKEN_VALID, true)
+        if (canSearchIndex()) {
+          dispatch(LIST_INDEXES_AND_COLLECTION)
+        }
       })
   },
   [types.LOGIN_BY_TOKEN] ({commit, dispatch}, data) {
