@@ -1,6 +1,6 @@
 <template>
   <div id="lastNotification-container" class="card-panel col s4">
-    <h5>Latest document :</h5>
+    <h5>Latest notification :</h5>
     <div class="lastNotification-body">
       <p
         v-json-formatter="{
