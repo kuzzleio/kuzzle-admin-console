@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper collection-edit">
     <headline>
-      {{index}} - {{headline}}
+      {{headline}} {{index}}
     </headline>
 
     <stepper
