@@ -47,6 +47,7 @@
   import {canSearchIndex} from '../../../services/userAuthorization'
   import IndexBranch from './IndexBranch'
   import {filterIndexesByKeyword} from '../../../services/data'
+  import {LIST_INDEXES_AND_COLLECTION} from '../../../vuex/modules/index/mutation-types'
 
   export default {
     name: 'Treeview',
@@ -65,6 +66,9 @@
     },
     methods: {
       canSearchIndex
+    },
+    mounted () {
+      this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
     },
     computed: {
       filteredIndices () {
