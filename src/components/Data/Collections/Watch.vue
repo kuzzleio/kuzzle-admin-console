@@ -260,6 +260,7 @@
       },
       toggleSubscription () {
         if (!this.subscribed) {
+          this.$notification.requestPermission()
           this.subscribe(this.filters, this.index, this.collection)
         } else {
           this.subscribed = false
@@ -388,6 +389,7 @@
         }
 
         this.notifications.push(this.notificationToMessage(result))
+        this.webNotification(this.notifications[this.notifications.length - 1].text)
         this.lastNotification = this.notifications[this.notifications.length - 1]
 
         this.makeAutoScroll()
@@ -443,6 +445,12 @@
       },
       setScrollDown (v) {
         this.scrollDown = v
+      },
+      webNotification (text) {
+        this.$notification.show('Kuzzle Admin Console', {
+          body: text + ' in ' + this.index + ' ' + this.collection,
+          icon: '/static/favicon/favicon-32x32.png'
+        }, {})
       }
     },
     watch: {
