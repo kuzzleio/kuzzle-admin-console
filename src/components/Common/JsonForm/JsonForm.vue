@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div  v-if="Object.keys(schema).length">
     <div class="json-form" v-for="(content, name) in schema">
       <!-- For nested objects -->
       <fieldset v-if="isNested(content)">
@@ -15,6 +15,9 @@
       </div>
     </div>
   </div>
+  <p v-else>
+    No collection mapping detected. You need to configure your collection to enable this form.
+  </p>
 </template>
 
 <script>
