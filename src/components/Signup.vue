@@ -19,12 +19,13 @@
             </div>
           </div>
           <div class="row message-warning">
-            <h5>First admin creation</h5>
+            <h5>Create an Admin Account</h5>
             <div class="divider"></div>
             <div class="message">
               <i class="fa fa-warning"></i>
-              If you want to secure your Kuzzle, you have to check the <em>"reset"</em> checkbox.
-              If you do so, be sure to configure default and anonymous roles afterward.
+                To secure your Kuzzle Backend, select the “remove anonymous user credentials” checkbox below.<br>
+                To continue using an insecure installation and skip the Admin Account creation, click the “LOGIN AS ANONYMOUS” button below.
+
             </div>
           </div>
           <div class="row">
@@ -47,13 +48,13 @@
                 <div class="input-field col s12">
                   <input v-model="password2" type="password" name="password2" id="pass2" required
                          class="validate"/>
-                  <label for="pass2">Password (confirmation)</label>
+                  <label for="pass2">Confirm password</label>
                 </div>
               </div>
               <div class="row">
                 <div class="input-field col s12 reset">
                   <input v-model="reset" type="checkbox" class="filled-in" id="reset"/>
-                  <label for="reset">Reset default and anonymous rights?</label>
+                  <label for="reset">Remove anonymous user credentials.</label>
                 </div>
               </div>
               <div class="row">
@@ -76,7 +77,7 @@
                   </div>
                   <a class="btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
                   <button v-show="!waiting" class="btn waves-effect waves-light right" type="submit" name="action">
-                    Create my first admin
+                    CREATE ADMIN ACCOUNT
                   </button>
                 </div>
               </div>

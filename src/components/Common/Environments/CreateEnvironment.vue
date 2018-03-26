@@ -41,7 +41,7 @@
     <div class="row color-picker">
       <div class="col s12">
         <div class="input-field left-align">
-          <p>Header color</p>
+          <p>Color</p>
         </div>
       </div>
       <div class="col s12">
