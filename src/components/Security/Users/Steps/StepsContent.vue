@@ -77,6 +77,7 @@
       },
       setAutoGenerateKuid (value) {
         this.autoGenerateKuid = value
+        this.updateUser()
       },
       setCustomKuid (value) {
         this.kuid = value
