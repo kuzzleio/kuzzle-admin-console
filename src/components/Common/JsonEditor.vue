@@ -31,7 +31,7 @@
       },
       readonly: Boolean,
       id: String,
-      height: {type: Number, 'default': 100},
+      height: {type: Number, 'default': 250},
       refreshAce: {
         type: Boolean,
         default: false
@@ -43,9 +43,9 @@
       },
       style () {
         if (this.height === undefined) {
-          return {height: '100px'}
+          return {'min-height': '250px'}
         } else {
-          return {height: this.height + 'px!important'}
+          return {'min-height': this.height + 'px!important'}
         }
       }
     },
