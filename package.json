@@ -34,7 +34,6 @@
     "http-server": "0.9.0",
     "lodash": "^4.17.2",
     "serve-static": "^1.12.1",
-    "vue-native-notification": "^1.0.2",
     "vue-quill-editor": "^1.1.1"
   },
   "devDependencies": {
