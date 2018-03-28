@@ -17,7 +17,8 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
     "install_deps": "npm i && bower install --allow-root --no-interactive",
     "prepublishOnly": "npm run build",
-    "start": "http-server dist"
+    "start": "http-server dist",
+    "tar_dist": "tar -cf kuzzle-admin-console.tar dist && chmod +r kuzzle-admin-console.tar"
   },
   "keywords": [
     "kuzzle",
@@ -34,7 +35,6 @@
     "http-server": "0.9.0",
     "lodash": "^4.17.2",
     "serve-static": "^1.12.1",
-    "vue-native-notification": "^1.0.2",
     "vue-quill-editor": "^1.1.1"
   },
   "devDependencies": {

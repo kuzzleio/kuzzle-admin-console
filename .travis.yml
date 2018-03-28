@@ -25,3 +25,11 @@ deploy:
   on:
     repo: kuzzleio/kuzzle-backoffice
     branch: master
+    
+  provider: releases
+  api_key:
+    secure: "f1wF2fVe00UL1CPWCN9xkJc8z+heBBNSQ3+jO1XVHOMOvUwjbHHz7pg50alHqqBbq0COHkd71GdFOK602EOWf0B5m3iBhP43X46Kc9qilYkAXrCBQ4R4p8WkTfuhVa2smojFa1vnE4DGsxQbOOWeGkMWo82/Jk/eFQmKSUfn++ETe+YGQRDGMJua+fi84p6ofjkedjS0UQTPf9Oz6KKV5EQVDV7Vjvb6p4zc3bsUWtkPD3AfuIOzkbKNoKq5yAyAFkmyY6YsDTB0CDsCZlHipTQLkVDGQe64DxRxMHk+dKseV4+UVtNE1vdw8sT7KjHGKRhtyV3GtiSFVKulRNBQcD1bm9S7vHkkExED30iAv/NFTgdGZE1bvvBNhnfla9kfeHqwO2riX5zZA8RBYdNHWobnVdQrS4auaUBEFUgy8DkIHsQLUFSIzVY4CrcQkZFhbDYlGNI+AQxIU+HtqyISoULrahAsDK0UTeOd4bmzFA9OIYurmPe1NSakcdPtN8rR11ZyTcf2/2YyuekIvcpi/wv4BRTvBNWHPoV+YhbeJMu5C27NETWMQwR91fT64VwhzDsNqDIEaHQ6Pcr0YSeG4QSvlfNT3d1dSPg5EvA90AnPG9+6VD6s+Sa9CLkAINAj09exaTouI/xZSfgz8gnBe2f8zFspltbwBU5PnWSr7pc="
+  file: "kuzzle-admin-console.tar"
+  skip_cleanup: true
+  on:
+    branch: master
