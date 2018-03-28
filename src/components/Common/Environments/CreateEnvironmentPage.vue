@@ -12,10 +12,10 @@
           </div>
 
           <div class="row message-warning">
-            <h5>Environment creation</h5>
+            <h5>Create a Connection</h5>
             <div class="divider"></div>
             <p class="message">
-              In order to access to your Kuzzle instance, you must provide several information about where it is hosted.
+              Please provide the details below to connect to your Kuzzle Backend installation.
             </p>
           </div>
 
@@ -26,8 +26,8 @@
           </create-environment>
 
           <div class="row">
-            <div class="col s2 right">
-              <button type="submit" class="waves-effect btn">Create</button>
+            <div class="col s4 right">
+              <button type="submit" class="waves-effect btn">Create connection</button>
             </div>
           </div>
         </div>
