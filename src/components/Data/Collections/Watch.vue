@@ -260,11 +260,7 @@
       },
       toggleSubscription () {
         if (!this.subscribed) {
-          window.Notification.requestPermission((status) => {
-            if (status !== 'granted') {
-              console.error('Web notifications disabled')
-            }
-          })
+          window.Notification.requestPermission()
           this.subscribe(this.filters, this.index, this.collection)
         } else {
           this.subscribed = false
@@ -455,9 +451,7 @@
           body: text + ' in ' + this.index + ' ' + this.collection,
           icon: '/static/favicon/favicon-32x32.png'
         })
-        notif.onerror = () => {
-          console.error('Error when displaying web notification')
-        }
+        setTimeout(notif.close.bind(notif), 5000)
       }
     },
     watch: {
