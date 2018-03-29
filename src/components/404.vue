@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <main-menu></main-menu>
-
+  <div class="wrapper">
     <div class="row center">
       <h1>404 not found</h1>
       <a href="#">Go back to the main page</a>
@@ -10,12 +8,7 @@
 </template>
 
 <script>
-  import MainMenu from './Common/MainMenu'
-
   export default {
-    name: 'Home',
-    components: {
-      MainMenu
-    }
+    name: 'NotFound'
   }
 </script>
