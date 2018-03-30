@@ -6,16 +6,27 @@ env:
   global:
   - DOCKER_COMPOSE_VERSION=1.9.0
   - secure: gfJ1/G69s0pOJhqoOB3bMAClvPPj3i++ckCCP/Yz2OMBFoAF3YCb2k2p5fRNX46s/hqkddHZnuSzaPRXHW5tToS7OhpN1HB6EDIfBS80zD1ZH5n5B8s/jKwzQLWv85bZATKc+R8Ir2ukBd/BQFurzd8JtQDpGS2hSCppOUQQApE3F+ghpET8dFPP7qncn1p98UBbbYyxiR53EM2xo93kByooe7nJiwjLvGVCp7zF9ZGKdp+yUzIb5tvOLnxvXrD2IvGl2Cuyf6bdqXUeM5yEhv0JwuD7SsIydCJZhTY8zCkMl3ITThY8HKV19sU6/zlG6aUsD5QAT58DiKk69icRc03kYCeLjUtuVHq/Nzq1grixc/uIi/KJlKxXd6h1NovAhLAkuuqjpLTKePOVeQdwCBZWQdXWPXUBK80px/ZYauydUqmaxHZq5JAM8hg0DbYICCqVcvro7WcUjCEW+VczO36wNU/qjbSsPehysIlWjt7qvcBfGPoGhlIm098jbXNQh0tM3PYInXiIPl/v1ctGUVWBlUkyppxgV3MYHFM04Pwv9lqovWmWuk+c4a22UE08/sTsHHrmS9T4zPfD6d/5Y1v8l8jMc9HGVa2ro642sRGgWS0QkazuQZ4ySYYpt98uv1NMq33L3ffbvsZo2mVCZ1ZWocCG7SbdWhJeOCysMMU=
+  - CLOUDFRONT_DISTRIBUTION_ID=E12YL8EZVABYR0
+  - BUCKET_NAME=dl.kuzzle.io
+  - secure: MJlvmEbSYf5q7tQ/DtPTMGLpN5SgudJ03bpI9zqIjq5p55YosaRz4egXArTJeZsfNsA6Z9Wx2yV9/zqp1Iaq0O7AqoWuB08X5DJ0I3WsEHTgly2a94W+nC8QnESbMVuo7kkNlykq2Xo9w2oBmuSgMsPL+6Qlcbb9+h09hUgENISldnv9Hw7dSstfUIAXSGVp4D/RjwaEfoOEfORdSAxO5sr9PuxV8P8RSwKuu/M82dG582w/pY9MOq6goIaIWTbNQDTT2FS7hzCAZuvhLxPqMAkcNYt8v/BA0AVpnPcDCduC5T9LM1EkV61pizV2C6PSEf5x28HP4eK7flU8A82KBGwXUZjc93v0cuYAsYh3CDQcHm8spljgVakVmhs+rogOu6roHexEQR4Y6pkVH9s80Q7ZmANqKIShWheYIBScBS1dl4Nq8O9z7GRUtEwNjarDi7GzPJDumAsl53/qeDw+B5UN746QFqdIJDpvZw1lf92dAlKjbMtvwpxBoFjqBCACFDhIZFLZz+c+uC4SItgirLXSRjJMglzromo0MRQ0Ga4JNPcJVXamzwMT7U8d9b44CsesBhLx498xP8S3pr+LAHIeEuGnoaxFS6ACjDO92ffKPjYvQW2pubWILEYyIuUk/MfUIBIVNAzUWnLzRETKw8bD3B/mmikDlvwAvN2XdL8=
+  - secure: epbUm0zRQdQmnZMazfI4B8wclxxN61Dfp45z9mhlNlZYfprTdMP/+cKvLrTzi4FbfRRkH9WwK3Ic1Wm5CQAvAHOVyVg9EYaMKVOhymd8bVsFWStChXmvBKw2ghV4/MsbhUAnP2mNA7YWDMnCsANV/g4JBNgSZaeWSw8hen2w5zugHRnUz9vzwLzSOa7vLsId8ctmjwwFAObvuc6U9Vy755FrmX86uDmZGE8oRQtiwbkmQpj15+AqhYLN/LUnyapxqFyT3bgKoc+TAzR1nrEDtZ3Yg4kkgvmlks7jXEvXhwSAvASQvGhvYNpBpDVsL9LP3oTvvzZIvAYpVXwUY9gjlbGw+oa2ysurDxZoguAK2Ni5ZhXF0KoGha1GfY4YeNguBkbainVuFbTXkiis/veGRPfYGYh1uStbn2WRDSeY7eeGfoVqLfWHuMUZIFZMXaTq41UEYLJwKFuNeNtxs6eJyfVybWaO52ZtZYb5heetk62joZZtZ1ph9hnsBdnAY9duKB2NE7QXXLpA2VPqqndKcm47/z3mHOadg4PlR/pOJno/TxPaxTRYVotPzt9k2DcGiAcu/kUpwsl4uXJ4xmYCnm18lsfJ2Sq/6mj0+bguZLVTyt3j3uL3IVV+9sPFYwNod4fPEeH5xGvk0Vqk/k+IX4db5Tz/UK+7EV+Ii19XUEY=
 before_install:
 - sudo sysctl -w vm.max_map_count=262144
+addons:
+  apt:
+    packages:
+    - python
+    - python-pip
+install:
+- pip install awscli --upgrade --user
 script:
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
-#- docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run testim
 before_deploy:
 - echo "Generate and push dist folder"
 - rm -rf dist/*
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
+- npm run tar_dist
 deploy:
   provider: npm
   skip_cleanup: true
@@ -25,11 +36,17 @@ deploy:
   on:
     repo: kuzzleio/kuzzle-backoffice
     branch: master
-    
+
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: "f1wF2fVe00UL1CPWCN9xkJc8z+heBBNSQ3+jO1XVHOMOvUwjbHHz7pg50alHqqBbq0COHkd71GdFOK602EOWf0B5m3iBhP43X46Kc9qilYkAXrCBQ4R4p8WkTfuhVa2smojFa1vnE4DGsxQbOOWeGkMWo82/Jk/eFQmKSUfn++ETe+YGQRDGMJua+fi84p6ofjkedjS0UQTPf9Oz6KKV5EQVDV7Vjvb6p4zc3bsUWtkPD3AfuIOzkbKNoKq5yAyAFkmyY6YsDTB0CDsCZlHipTQLkVDGQe64DxRxMHk+dKseV4+UVtNE1vdw8sT7KjHGKRhtyV3GtiSFVKulRNBQcD1bm9S7vHkkExED30iAv/NFTgdGZE1bvvBNhnfla9kfeHqwO2riX5zZA8RBYdNHWobnVdQrS4auaUBEFUgy8DkIHsQLUFSIzVY4CrcQkZFhbDYlGNI+AQxIU+HtqyISoULrahAsDK0UTeOd4bmzFA9OIYurmPe1NSakcdPtN8rR11ZyTcf2/2YyuekIvcpi/wv4BRTvBNWHPoV+YhbeJMu5C27NETWMQwR91fT64VwhzDsNqDIEaHQ6Pcr0YSeG4QSvlfNT3d1dSPg5EvA90AnPG9+6VD6s+Sa9CLkAINAj09exaTouI/xZSfgz8gnBe2f8zFspltbwBU5PnWSr7pc="
   file: "kuzzle-admin-console.tar.gz"
-  skip_cleanup: true
   on:
     branch: master
+
+after_deploy:
+- aws s3 cp kuzzle-admin-console.tar.gz s3://$BUCKET_NAME/kuzzle-admin-console.tar.gz
+- aws configure set preview.cloudfront true
+- aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID
+  --paths "/*"
