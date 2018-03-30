@@ -18,7 +18,7 @@
     "install_deps": "npm i && bower install --allow-root --no-interactive",
     "prepublishOnly": "npm run build",
     "start": "http-server dist",
-    "tar_dist": "tar -cf kuzzle-admin-console.tar dist && chmod +r kuzzle-admin-console.tar"
+    "tar_dist": "tar -cf kuzzle-admin-console.tar dist && gzip kuzzle-admin-console.tar && chmod +r kuzzle-admin-console.tar.gz"
   },
   "keywords": [
     "kuzzle",
