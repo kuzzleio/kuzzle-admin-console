@@ -447,7 +447,7 @@
         this.scrollDown = v
       },
       handleWebNotification (text) {
-        let notif = new window.Notification('Kuzzle Admin Console', {
+        const notif = new window.Notification('Kuzzle Admin Console', {
           body: text + ' in ' + this.index + ' ' + this.collection,
           icon: '/static/favicon/favicon-32x32.png'
         })
