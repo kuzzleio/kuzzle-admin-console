@@ -3,7 +3,7 @@
   "version": "2.1.3",
   "description": "A handy back-office for Kuzzle.io",
   "author": "The Kuzzle team <support@kuzzle.io>",
-  "private": false,
+  "private": false, 
   "bin": "./bin/kuzzle-backoffice",
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -17,7 +17,8 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
     "install_deps": "npm i && bower install --allow-root --no-interactive",
     "prepublishOnly": "npm run build",
-    "start": "http-server dist"
+    "start": "http-server dist",
+    "tar_dist": "tar cfz kuzzle-admin-console.tar.gz dist && chmod +r kuzzle-admin-console.tar.gz"
   },
   "keywords": [
     "kuzzle",
