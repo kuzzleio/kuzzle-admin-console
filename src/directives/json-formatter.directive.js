@@ -7,7 +7,8 @@ export default {
     if (!el.innerHTML) {
       el.appendChild(html)
     } else {
-      el.innerHTML = html.innerHTML
+      el.innerHTML = ''
+      el.appendChild(html)
     }
   }
 }
