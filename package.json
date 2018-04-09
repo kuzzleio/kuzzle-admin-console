@@ -3,7 +3,7 @@
   "version": "2.1.3",
   "description": "A handy back-office for Kuzzle.io",
   "author": "The Kuzzle team <support@kuzzle.io>",
-  "private": false, 
+  "private": false,
   "bin": "./bin/kuzzle-backoffice",
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -80,7 +80,7 @@
     "karma": "^1.4.1",
     "karma-coverage": "^1.1.1",
     "karma-mocha": "^1.3.0",
-    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.4",
     "karma-sinon-chai": "^1.2.4",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.26",
