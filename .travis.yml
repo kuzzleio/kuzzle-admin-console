@@ -20,6 +20,8 @@ addons:
 install:
 - pip install awscli --upgrade --user
 script:
+- ls -l /var/app/node_modules/phantomjs-prebuilt/lib/phantom
+- ls -l /var/app/node_modules/phantomjs-prebuilt/lib/phantom/bin/phantomjs
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
 before_deploy:
