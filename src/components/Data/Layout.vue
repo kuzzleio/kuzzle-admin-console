@@ -40,11 +40,10 @@
     methods: {
       setRouteExist () {
         this.routeExist = true
-        let index = this.$store.state.route.params.index
+        const {index, collection} = this.$store.state.route.params
         if (typeof index !== 'undefined' && this.$store.state.index.indexes.indexOf(index) === -1) {
           this.routeExist = false
         } else {
-          let collection = this.$store.state.route.params.collection
           if (typeof collection !== 'undefined' && this.$store.getters.indexCollections(index).stored.indexOf(collection) === -1) {
             this.routeExist = false
           }
