@@ -8,9 +8,11 @@
     <section>
       <section class="view">
         <router-view
+          v-if="routeExist"
           :index="$store.state.route.params.index"
           :collection="$store.state.route.params.collection">
         </router-view>
+        <notFound v-else></notFound>
       </section>
     </section>
   </div>
@@ -21,17 +23,38 @@
   import {LIST_INDEXES_AND_COLLECTION} from '../../vuex/modules/index/mutation-types'
   import {FETCH_COLLECTION_DETAIL} from '../../vuex/modules/collection/mutation-types'
   import Treeview from './Leftnav/Treeview'
+  import NotFound from '../404'
   import {SET_TOAST} from '../../vuex/modules/common/toaster/mutation-types'
 
   export default {
     name: 'DataLayout',
     components: {
-      Treeview
+      Treeview,
+      NotFound
+    },
+    data () {
+      return {
+        routeExist: true
+      }
+    },
+    methods: {
+      setRouteExist () {
+        this.routeExist = true
+        const {index, collection} = this.$store.state.route.params
+        if (typeof index !== 'undefined' && this.$store.state.index.indexes.indexOf(index) === -1) {
+          this.routeExist = false
+        } else {
+          if (typeof collection !== 'undefined' && this.$store.getters.indexCollections(index).stored.indexOf(collection) === -1) {
+            this.routeExist = false
+          }
+        }
+      }
     },
     mounted () {
       if (canSearchIndex()) {
         this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
           .then(() => {
+            this.setRouteExist()
             return this.$store.dispatch(FETCH_COLLECTION_DETAIL,
               {
                 index: this.$store.state.route.params.index,
@@ -46,6 +69,7 @@
         if (canSearchIndex()) {
           this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
             .then(() => {
+              this.setRouteExist()
               return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
                 index: this.$store.state.route.params.index,
                 collection: this.$store.state.route.params.collection
