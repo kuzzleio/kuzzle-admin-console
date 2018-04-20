@@ -39,6 +39,8 @@
 
 ### Boyscout
 
+### Screenshots (if appropriate)
+
 <!--
   Describe here minor improvements in the code base and not directly linked to the main changes:
   typos fixes, better/new comments, small code simplification, new debug messages, and so on.
