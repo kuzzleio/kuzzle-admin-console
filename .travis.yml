@@ -47,6 +47,3 @@ deploy:
 
 after_deploy:
 - aws s3 cp kuzzle-admin-console.tar.gz s3://$BUCKET_NAME/kuzzle-admin-console.tar.gz
-- aws configure set preview.cloudfront true
-- aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID
-  --paths "/*"
