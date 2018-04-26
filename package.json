@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-backoffice",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "A handy back-office for Kuzzle.io",
   "author": "The Kuzzle team <support@kuzzle.io>",
   "private": false,
