@@ -93,16 +93,24 @@
           </div>
         </div>
 
-        <div :style="notifStyle" id="notification-container" ref="notificationContainer">
-          <div v-if="notifications.length">
-            <ul class="collapsible" v-collapsible data-collapsible="expandable">
-              <notification
-                v-for="notification in notifications"
-                :key="Math.random()"
-                :notification="notification">
-              </notification>
-            </ul>
+        <div class="row">
+          <div :style="notifStyle" id="notification-container" ref="notificationContainer" class="col s8">
+            <div v-if="notifications.length">
+              <ul class="collapsible" v-collapsible data-collapsible="expandable">
+                <notification
+                  v-for="notification in notifications"
+                  :key="Math.random()"
+                  :notification="notification">
+                </notification>
+              </ul>
+            </div>
           </div>
+
+          <LastNotification
+            v-if="notifications.length"
+            :lastNotification="lastNotification">
+          </LastNotification>
+
         </div>
       </div>
     </div>
@@ -139,15 +147,19 @@
     }
 
     #notification-container {
-      li {
-        font-family: monospace;
-        font-size: 0.8rem;
-      }
-      li:nth-child(odd) {
-        background-color: #F5F5F5;
-
-        .collapsible-header {
+      margin-left: -10px;
+      ul {
+        margin: 0;
+        li {
+          font-family: monospace;
+          font-size: 0.8rem;
+        }
+        li:nth-child(odd) {
           background-color: #F5F5F5;
+
+          .collapsible-header {
+            background-color: #F5F5F5;
+          }
         }
       }
     }
@@ -164,6 +176,7 @@
 
   import collapsible from '../../../directives/Materialize/collapsible.directive'
   import Notification from '../Realtime/Notification'
+  import LastNotification from '../Realtime/LastNotification'
   import SubscriptionControls from '../Realtime/SubscriptionControls'
   import CollectionDropdown from '../Collections/Dropdown'
   import Filters from '../../Common/Filters/Filters'
@@ -193,7 +206,8 @@
         notificationsLengthLimit: 50,
         warning: {message: '', count: 0, lastTime: null, info: false},
         notifStyle: {},
-        scrollDown: true
+        scrollDown: true,
+        lastNotification: {}
       }
     },
     created () {
@@ -215,6 +229,7 @@
     components: {
       CollectionTabs,
       Notification,
+      LastNotification,
       CollectionDropdown,
       SubscriptionControls,
       Filters,
@@ -245,6 +260,7 @@
       },
       toggleSubscription () {
         if (!this.subscribed) {
+          window.Notification.requestPermission()
           this.subscribe(this.filters, this.index, this.collection)
         } else {
           this.subscribed = false
@@ -373,6 +389,9 @@
         }
 
         this.notifications.push(this.notificationToMessage(result))
+        this.handleWebNotification(this.notifications[this.notifications.length - 1].text)
+        this.lastNotification = this.notifications[this.notifications.length - 1]
+
         this.makeAutoScroll()
       },
       subscribe () {
@@ -426,6 +445,13 @@
       },
       setScrollDown (v) {
         this.scrollDown = v
+      },
+      handleWebNotification (text) {
+        const notif = new window.Notification('Kuzzle Admin Console', {
+          body: text + ' in ' + this.index + ' ' + this.collection,
+          icon: '/static/favicon/favicon-32x32.png'
+        })
+        setTimeout(notif.close.bind(notif), 5000)
       }
     },
     watch: {

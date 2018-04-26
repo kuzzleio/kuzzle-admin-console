@@ -58,7 +58,12 @@
   .input-field {
     label {
       left: 0;
+      &.active {
+        transform: translateY(-50%);
+        font-size: 0.85rem;
+      }
     }
+
   }
   button {
     &.btn-flat {

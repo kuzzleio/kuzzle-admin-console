@@ -1,7 +1,7 @@
 <template>
   <div v-if="hasRights">
     <create-or-update
-      headline="Create collection"
+      headline="Create a new collection in"
       @collection-create::create="create"
       @collection-create::reset-error="error = ''"
       @document-create::error="setError"

@@ -1,18 +1,24 @@
 <template>
-  <create-or-update
-  title="Update role"
-  :update-id="id"
-  :error="error"
-  @document-create::create="update"
-  @document-create::cancel="cancel"
-  @document-create::error="setError"
-  v-model="document"
-  :hide-id="true"
-  :submitted="submitted">
-  </create-or-update>
+  <div>
+    <Headline>
+       Edit role - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
+    </Headline>
+    <create-or-update
+      title="Update role"
+      :update-id="id"
+      :error="error"
+      @document-create::create="update"
+      @document-create::cancel="cancel"
+      @document-create::error="setError"
+      v-model="document"
+      :hide-id="true"
+      :submitted="submitted">
+    </create-or-update>
+  </div>
 </template>
 
 <script>
+  import Headline from '../../Materialize/Headline'
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingRoles } from '../../../services/kuzzleWrapper'
@@ -21,6 +27,7 @@
   export default {
     name: 'RolesUpdate',
     components: {
+      Headline,
       CreateOrUpdate
     },
     data () {

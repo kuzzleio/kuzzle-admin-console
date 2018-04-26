@@ -1,19 +1,26 @@
 <template>
-  <create-or-update
-  title="Update profile"
-  :update-id="id"
-  :error="error"
-  @document-create::create="update"
-  @document-create::cancel="cancel"
-  @document-create::error="setError"
-  v-model="document"
-  :hide-id="true"
-  :submitted="submitted">
-  </create-or-update>
+  <div>
+    <Headline>
+       Edit profile - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
+    </Headline>
+    <create-or-update
+      title="Update profile"
+      :update-id="id"
+      :error="error"
+      @document-create::create="update"
+      @document-create::cancel="cancel"
+      @document-create::error="setError"
+      v-model="document"
+      :hide-id="true"
+      :submitted="submitted"
+    >
+    </create-or-update>
+  </div>
 </template>
 
 <script>
   import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
+  import Headline from '../../Materialize/Headline'
   import kuzzle from '../../../services/kuzzle'
   import { getMappingProfiles } from '../../../services/kuzzleWrapper'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
@@ -21,6 +28,7 @@
   export default {
     name: 'SecurityUpdate',
     components: {
+      Headline,
       CreateOrUpdate
     },
     data () {

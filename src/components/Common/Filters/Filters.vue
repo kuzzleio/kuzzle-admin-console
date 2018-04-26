@@ -16,7 +16,7 @@
         <div class="col s8 m6 l4" style="min-width: 520px">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
-            <div class="chip">
+            <div v-if="!displayBlockFilter" class="chip">
               <span class="label-chip" @click.prevent="displayBlockFilter = true">{{labelComplexQuery}}</span>
               <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
             </div>
