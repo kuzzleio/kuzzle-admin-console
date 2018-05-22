@@ -1,5 +1,6 @@
 import kuzzle from './kuzzle'
 import Promise from 'bluebird'
+// import * as actions from '../vuex/modules/auth/actions'
 import * as types from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import {SET_TOAST} from '../vuex/modules/common/toaster/mutation-types'
@@ -54,6 +55,7 @@ export const initStoreWithKuzzle = (store) => {
         case 'Invalid token':
         case 'Json Web Token Error':
           store.commit(types.SET_TOKEN_VALID, false)
+          kuzzle.connect()
           break
       }
     }
