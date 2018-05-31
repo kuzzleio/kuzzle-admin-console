@@ -68,7 +68,7 @@
       CreateFirstAdminHeader
     },
     mounted () {
-      kuzzle.addListener('tokenExpired', () => this.onTokenExpired('tr'))
+      kuzzle.addListener('tokenExpired', () => this.onTokenExpired())
     },
     data () {
       return {
@@ -89,9 +89,7 @@
       deleteEnvironment (id) {
         this.$emit('environment::delete', id)
       },
-      onTokenExpired (ll) {
-        console.log(ll)
-        console.log(this)
+      onTokenExpired () {
         this.$store.commit(types.SET_TOKEN_VALID, false)
       },
       noop () {}
