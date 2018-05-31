@@ -14,5 +14,5 @@ module.exports = function start (port, options) {
   const _port = options ? port : defaultPort
 
   server.listen(_port || defaultPort)
-  console.log(`Back-Office available at http://localhost:${_port || defaultPort}`)
+  console.log(`Admin Console available at http://localhost:${_port || defaultPort}`)
 }
