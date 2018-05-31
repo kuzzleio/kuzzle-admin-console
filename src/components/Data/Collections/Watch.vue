@@ -307,6 +307,7 @@
             break
           case 'create':
           case 'createOrReplace':
+          case 'replace':
             messageItem.icon = 'file'
 
             if (notification.state === 'done') {
@@ -315,6 +316,7 @@
             } else if (notification.state === 'pending') {
               messageItem.text = `Pending document creation ${idText}`
               messageItem.class = 'message-pending'
+            } else {
             }
             break
 
