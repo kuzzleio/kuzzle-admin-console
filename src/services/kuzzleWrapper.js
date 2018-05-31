@@ -247,7 +247,7 @@ export const updateMappingUsers = (newMapping) => {
 export const performSearchProfiles = (filters = {}, pagination = {}) => {
   return kuzzle
     .security
-    .searchProfilesPromise({...filters}, {...pagination})
+    .searchProfilesPromise({...filters}, {size: 100, ...pagination})
     .then(result => {
       let profiles = result.profiles.map((document) => {
         let object = {
