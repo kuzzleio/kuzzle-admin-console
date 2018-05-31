@@ -27,8 +27,11 @@ You can check the last version of Admin Console here: [Admin Console](http://con
 
 For installing the Admin Console on your own host, follow next steps.
 
-## Use the BO on your server
+## Install the Admin Console 
 
+Download the latest version of the Admin Console : `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz`     
+Extract it : `tar xf kuzzle-admin-console.tar.gz`   
+Open the file `dist/index.html` in your favorite web browser, you're done !
 
 ## Contributing to this project
 This project includes a development-mode, with hot-reload. To start the Admin Console in development-mode:
@@ -37,4 +40,4 @@ $ npm run install_deps
 $ npm run dev
 ```
 
-The BO is now accessible at the following URL: [http://localhost:3000](http://localhost:3000)
+The Admin Console is now accessible at the following URL: [http://localhost:3000](http://localhost:3000)
