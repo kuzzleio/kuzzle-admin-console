@@ -55,7 +55,7 @@
 
         let parsed = this.id + this._uid
 
-        return parsed.replace(/[!"#$%&'()*_+,./:;<=>?@[\]^`{|}~ ]/g, '\\$&')
+        return parsed.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '\\$&')
       }
     },
     mounted () {

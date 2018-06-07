@@ -307,6 +307,7 @@
             break
           case 'create':
           case 'createOrReplace':
+          case 'replace':
             messageItem.icon = 'file'
 
             if (notification.state === 'done') {
