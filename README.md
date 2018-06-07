@@ -1,9 +1,9 @@
 [![codecov](https://codecov.io/gh/kuzzleio/kuzzle-backoffice/branch/master/graph/badge.svg)](https://codecov.io/gh/kuzzleio/kuzzle-backoffice)
 
 
-# kuzzle Back-office
+# kuzzle Admin Console
 
-> This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration.
+> This Kuzzle Admin Console allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration.
 
 # About Kuzzle
 For UI and connected objects developers, Kuzzle is an open-source solution that handles all the data management
