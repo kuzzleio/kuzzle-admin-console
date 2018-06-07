@@ -55,6 +55,8 @@
   import LoginForm from './Common/Login/Form'
   import Modal from './Materialize/Modal'
   import KuzzleDisconnected from './Error/KuzzleDisconnected'
+  import kuzzle from '../services/kuzzle'
+  import * as types from '../vuex/modules/auth/mutation-types'
 
   export default {
     name: 'Home',
@@ -64,6 +66,9 @@
       Modal,
       KuzzleDisconnected,
       CreateFirstAdminHeader
+    },
+    mounted () {
+      kuzzle.addListener('tokenExpired', () => this.onTokenExpired())
     },
     data () {
       return {
@@ -83,6 +88,9 @@
       },
       deleteEnvironment (id) {
         this.$emit('environment::delete', id)
+      },
+      onTokenExpired () {
+        this.$store.commit(types.SET_TOKEN_VALID, false)
       },
       noop () {}
     },

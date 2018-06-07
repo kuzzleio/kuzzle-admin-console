@@ -1,12 +1,12 @@
 [![codecov](https://codecov.io/gh/kuzzleio/kuzzle-backoffice/branch/master/graph/badge.svg)](https://codecov.io/gh/kuzzleio/kuzzle-backoffice)
 
 
-# kuzzle Back-office
+# kuzzle Admin Console
 
-> This Kuzzle back office allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration.
+> This Kuzzle Admin Console allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration.
 
 # Releases mapping
-| Back-office  | Kuzzle |
+| Admin Console  | Kuzzle |
 |---|---|
 | 2.0.0 | 1.0.0-RC9 |
 | 1.1.0 | 1.0.0-RC7 |
@@ -21,31 +21,23 @@ Kuzzle features are accessible through a secured API. It can be used through a l
 
 # How to use it
 
-This Back-office is a static front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7512) must be accessible from everywhere if you want to use this Back-office.**
+This Admin Console is a static front-end application. All calls to Kuzzle are made directly in the browser. **This is why your Kuzzle Proxy IP and Websocket port (default 7512) must be accessible from everywhere if you want to use this Admin Console.**
 
-You can check the last version of Back-office here: [kuzzle-backoffice](http://kuzzle-backoffice.netlify.com) (or if you're using Kuzzle through SSL, you can use the version [https](https://kuzzle-backoffice.netlify.com/))
+You can check the last version of Admin Console here: [Admin Console](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version)
 
-For installing the Back-office on your own host, follow next steps.
+For installing the Admin Console on your own host, follow next steps.
 
-## Use the BO on your server
-You can run the Back-Office with:
-```
-$ npm install -g kuzzle-backoffice
-$ kuzzle-backoffice start
-Back-Office available at http://localhost:3000
-```
+## Install the Admin Console 
 
-You can start the BO on a different port
-```
-$ kuzzle-backoffice start -p 8080
-Back-Office available at http://localhost:8080
-```
+Download the latest version of the Admin Console : `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz`     
+Extract it : `tar xf kuzzle-admin-console.tar.gz`   
+Open the file `dist/index.html` in your favorite web browser, you're done !
 
 ## Contributing to this project
-This project includes a development-mode, with hot-reload. To start the back-office in development-mode:
+This project includes a development-mode, with hot-reload. To start the Admin Console in development-mode:
 ```
 $ npm run install_deps
 $ npm run dev
 ```
 
-The BO is now accessible at the following URL: [http://localhost:3000](http://localhost:3000)
+The Admin Console is now accessible at the following URL: [http://localhost:3000](http://localhost:3000)

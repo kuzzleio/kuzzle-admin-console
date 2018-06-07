@@ -20,6 +20,14 @@
             Mapping is the process of defining how a document,
             and the fields it contains, are stored and indexed.
             <a href="http://docs.kuzzle.io/v/edge/api-documentation/controller-collection/update-mapping/" target="_blank">Read more about mapping</a>
+          </br>
+            You should omit the root "properties" field in this form.
+            <pre>
+{
+  "age": { "type": "integer" },
+  "name": { "type": "string" }
+}
+            </pre>
           </p>
         </div>
       </div>
