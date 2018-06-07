@@ -1,6 +1,6 @@
 {
-  "short_name": "Back-office",
-  "name": "Kuzzle back-office",
+  "short_name": "Admin Console",
+  "name": "Kuzzle Admin Console",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",

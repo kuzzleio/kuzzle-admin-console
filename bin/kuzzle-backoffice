@@ -6,7 +6,7 @@ program
 
 program
   .command('start')
-  .description('Start Back-office server')
+  .description('Start Admin Console server')
   .option('-p, --port', 'Server port')
   .action(require('./commands/start'))
 

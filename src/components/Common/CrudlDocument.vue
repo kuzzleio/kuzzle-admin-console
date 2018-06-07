@@ -199,7 +199,11 @@
           })
       },
       quickSearch (searchTerm) {
-        this.$router.push({query: {searchTerm, from: 0}})
+        this.$router.push({query: {searchTerm, from: 0}}, () => {
+          this.$emit('crudl-refresh-search')
+        }, () => {
+          this.$emit('crudl-refresh-search')
+        })
       },
       basicSearch (filters, sorting) {
         if (!filters && !sorting) {
