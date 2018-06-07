@@ -1,7 +1,11 @@
 {
   "name": "kuzzle-backoffice",
   "version": "2.1.5",
+<<<<<<< HEAD
   "description": "A handy back-office for Kuzzle.io",
+=======
+  "description": "A handy administrative console for Kuzzle.io",
+>>>>>>> cf5e08a... Update for pr #409
   "author": "The Kuzzle team <support@kuzzle.io>",
   "private": false,
   "bin": "./bin/kuzzle-backoffice",

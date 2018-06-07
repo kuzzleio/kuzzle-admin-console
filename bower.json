@@ -1,6 +1,10 @@
 {
   "name": "kuzzle-backoffice",
+<<<<<<< HEAD
   "description": "A handy back-office for Kuzzle.io",
+=======
+  "description": "A handy administrative console for Kuzzle.io",
+>>>>>>> cf5e08a... Update for pr #409
   "main": "",
   "authors": [
     "The Kuzzle team <support@kuzzle.io>"
