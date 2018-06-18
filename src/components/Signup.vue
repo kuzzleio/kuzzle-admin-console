@@ -23,7 +23,7 @@
             <div class="divider"></div>
             <div class="message">
               <i class="fa fa-warning"></i>
-                To secure your Kuzzle Backend, select the “remove anonymous user credentials” checkbox below.<br>
+                To secure your Kuzzle installation we recommend you select the “Remove anonymous user credentials” checkbox below.<br>
                 To continue using an insecure installation and skip the Admin Account creation, click the “LOGIN AS ANONYMOUS” button below.
 
             </div>

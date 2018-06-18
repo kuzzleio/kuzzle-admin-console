@@ -29,7 +29,7 @@
         </div>
 
         <div class="col s7">
-          <span class="helper-text">The index name should contains only lowercase characters and can not begin with an underscore (_)</span>
+          <span class="helper-text">The index name should contain only lowercase characters and cannot begin with an underscore (_)</span>
         </div>
 
       </div>

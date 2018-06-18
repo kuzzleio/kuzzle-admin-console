@@ -31,7 +31,7 @@
               :checked="collectionIsRealtimeOnly"
               @change="setRealtimeOnly"/>
             <label for="realtime-collection">
-              Realtime only
+              Real-time only
             </label>
           </p>
         </div>
@@ -54,10 +54,10 @@
       <div class="col s4" v-show="!collectionIsRealtimeOnly">
         <div class="row">
           <p class="help">
-            Mapping is the process of defining how a document,
-            and the fields it contains, are stored and indexed.
-            <a href="http://docs.kuzzle.io/api-documentation/controller-collection/update-mapping/" target="_blank">Read more about mapping</a>
-          </br>
+             A mapping defines how a document and its properties
+             are stored and indexed.
+             <a href="http://docs.kuzzle.io/api-documentation/controller-collection/update-mapping/" target="_blank">Read more about mapping</a>.
+           </br>           </br>
             You should omit the root "properties" field in this form.
             <pre>
 {

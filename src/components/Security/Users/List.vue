@@ -1,7 +1,7 @@
 <template>
   <div>
     <headline>
-      Users Management
+      User Management
       <users-dropdown class="icon-medium icon-black"></users-dropdown>
     </headline>
 

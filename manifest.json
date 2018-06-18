@@ -1,6 +1,6 @@
 {
-  "short_name": "Admin Console",
-  "name": "Kuzzle Admin Console",
+  "short_name": "Kuzzle Admin Console",
+  "name": "kuzzle-admin-console",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",

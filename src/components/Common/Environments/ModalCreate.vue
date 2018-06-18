@@ -3,7 +3,7 @@
     <modal id="create-env" :footer-fixed="true" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
-          <h4>{{environmentId ? 'Update' : 'Create'}} environment</h4>
+          <h4>{{environmentId ? 'Update' : 'Create'}} Connection</h4>
           <div class="divider"></div>
         </div>
       </div>

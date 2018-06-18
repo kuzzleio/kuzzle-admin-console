@@ -1,5 +1,5 @@
 {
-  "name": "kuzzle-backoffice",
+  "name": "kuzzle admin console",
   "description": "A handy administrative console for Kuzzle.io",
   "main": "",
   "authors": [
