@@ -1,6 +1,6 @@
 {
   "name": "kuzzle admin console",
-  "description": "A handy administrative console for Kuzzle.io",
+  "description": "A handy administrative console for Kuzzle",
   "main": "",
   "authors": [
     "The Kuzzle team <support@kuzzle.io>"
