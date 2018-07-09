@@ -1,7 +1,7 @@
 <template>
   <span>
     <dropdown id="users-dropdown" :myclass="myclass">
-      <li><router-link :to="{name: 'SecurityUsersEditCustomMapping'}">Edit custom data mapping</router-link></li>
+      <li><router-link :to="{name: 'SecurityUsersEditCustomMapping'}">Edit data mapping</router-link></li>
     </dropdown>
   </span>
 </template>

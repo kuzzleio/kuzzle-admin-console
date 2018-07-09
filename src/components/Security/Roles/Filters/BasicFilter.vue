@@ -10,7 +10,7 @@
           @tag="addController"
           @remove="removeController"
           :value="controllers"
-          placeholder="Search by controller"
+          placeholder="Search by controller..."
           :multiple="true">
         </multiselect>
       </div>

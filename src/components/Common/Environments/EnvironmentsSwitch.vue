@@ -21,7 +21,7 @@
         <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
       </li>
       <li class="divider"></li>
-      <li><a href="" @click.prevent="$emit('environment::create')"><i class="fa fa-plus-circle"></i> Create new</a></li>
+      <li><a href="" @click.prevent="$emit('environment::create')"><i class="fa fa-plus-circle"></i> Create new connection</a></li>
     </ul>
   </span>
 </template>

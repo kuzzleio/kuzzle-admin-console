@@ -3,7 +3,7 @@
 
     <div class="row">
       <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="$store.state.collection.allowForm"/>
-      <label for="allowForm" class="allow-form">Allow this collection to display a form during document edition.</label>
+      <label for="allowForm" class="allow-form">Allow this collection to display a form during document editing.</label>
     </div>
 
     <!--<collection-form-name :attributes="flattenMapping"></collection-form-name>-->

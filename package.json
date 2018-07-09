@@ -1,10 +1,10 @@
 {
-  "name": "kuzzle-backoffice",
+  "name": "kuzzle-admin-console",
   "version": "2.1.5",
-  "description": "A handy administrative console for Kuzzle.io",
+  "description": "A handy administrative console for Kuzzle",
   "author": "The Kuzzle team <support@kuzzle.io>",
   "private": false,
-  "bin": "./bin/kuzzle-backoffice",
+  "bin": "./bin/kuzzle-admin-console",
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
@@ -22,7 +22,10 @@
   },
   "keywords": [
     "kuzzle",
-    "backoffice"
+    "backoffice",
+    "console",
+    "admin",
+    "admin console"
   ],
   "repository": {
     "type": "git",
