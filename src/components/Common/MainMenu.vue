@@ -5,7 +5,7 @@
         <ul>
           <li class="logo">
             <div class="logo-container">
-              <div class="version-container right-align" :style="{color: versionColor}">{{adminConsoleVersion}}3</div>
+              <div class="version-container right-align" :style="{color: versionColor}">{{adminConsoleVersion}}</div>
               <div>
                 <a href="#" class="">
                   <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
