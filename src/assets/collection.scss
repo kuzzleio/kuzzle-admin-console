@@ -23,7 +23,7 @@
     border-radius: 2px;
 
     &:hover {
-      background-color: rgba(255, 255, 255, .2);
+      background-color: rgba(255, 255, 255, 0.2);
     }
   }
 
@@ -32,7 +32,7 @@
       margin-left: 5px;
       cursor: pointer;
       font-size: 1.1em;
-      color: $lavandia-color
+      color: $lavandia-color;
     }
     .select-wrapper {
       margin-top: 5px;
@@ -53,7 +53,8 @@
       .multiselect__select {
         display: none;
       }
-      .multiselect__input, .multiselect__input:focus {
+      .multiselect__input,
+      .multiselect__input:focus {
         border-bottom: 0;
       }
     }
@@ -79,7 +80,8 @@
           }
         }
       }
-      .attribute-title, .attribute-type {
+      .attribute-title,
+      .attribute-type {
         margin-left: 0;
       }
     }
@@ -129,13 +131,12 @@
           }
         }
       }
-
     }
   }
 }
 
 .collection-boxed {
-  .dropdown-content > li{
+  .dropdown-content > li {
     a.remove {
       color: $red-color;
     }

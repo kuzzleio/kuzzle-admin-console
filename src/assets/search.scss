@@ -90,7 +90,7 @@
 
       &:hover {
         color: #555;
-        background: #EEE;
+        background: #eee;
         border-radius: 3px;
       }
     }
@@ -117,7 +117,6 @@
           color: grey;
           cursor: pointer;
         }
-
       }
       .block-sort {
         margin-top: 15px;
@@ -148,7 +147,7 @@
     }
 
     .select-wrapper span.caret {
-      top: 10px
+      top: 10px;
     }
   }
 }

@@ -5,10 +5,10 @@ const state = {
 }
 
 export const mutations = {
-  [types.ADD_NOTIFICATION] (state, notification) {
+  [types.ADD_NOTIFICATION](state, notification) {
     state.notifications.push(notification)
   },
-  [types.EMPTY_NOTIFICATION] (state) {
+  [types.EMPTY_NOTIFICATION](state) {
     state.notifications = []
   }
 }

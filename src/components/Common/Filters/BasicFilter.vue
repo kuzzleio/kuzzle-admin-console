@@ -65,10 +65,10 @@
 </template>
 
 <script>
+  import MSelect from '../../Common/MSelect'
+
   const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
   const emptySorting = {attribute: null, order: 'asc'}
-
-  import MSelect from '../../Common/MSelect'
 
   export default {
     props: {

@@ -1,6 +1,6 @@
 export default {
   id: 'title',
-  update (el, binding) {
+  update(el, binding) {
     if (binding.value.active === true) {
       el.classList.add('tooltipped')
       el.setAttribute('data-position', binding.value.position || 'right')

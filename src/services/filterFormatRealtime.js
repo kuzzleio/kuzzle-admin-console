@@ -9,32 +9,32 @@ export const availableFilters = {
 export const formatFromBasicSearch = (groups = [[]]) => {
   let or = []
 
-  groups.forEach(function (filters) {
+  groups.forEach(function(filters) {
     let and = filters
-      .filter((filter) => {
+      .filter(filter => {
         return filter.attribute !== null
       })
-      .map(function (filter) {
+      .map(function(filter) {
         switch (filter.operator) {
           case 'match':
-            return {equals: {[filter.attribute]: filter.value}}
+            return { equals: { [filter.attribute]: filter.value } }
           case 'not_match':
-            return {not: {equals: {[filter.attribute]: filter.value}}}
+            return { not: { equals: { [filter.attribute]: filter.value } } }
           case 'regexp':
-            return {regexp: {[filter.attribute]: filter.value}}
+            return { regexp: { [filter.attribute]: filter.value } }
           case 'exists':
-            return {exists: {field: filter.attribute}}
+            return { exists: { field: filter.attribute } }
           case 'missing':
-            return {missing: {field: filter.attribute}}
+            return { missing: { field: filter.attribute } }
         }
       })
 
-    or.push({and})
+    or.push({ and })
   })
 
   if (or.length === 0) {
     return {}
   }
 
-  return {or}
+  return { or }
 }

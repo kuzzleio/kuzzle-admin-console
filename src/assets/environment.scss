@@ -13,7 +13,7 @@
   button {
     &.btn-flat {
       &:focus {
-        background-color: #EEE;
+        background-color: #eee;
       }
     }
   }
@@ -34,7 +34,8 @@
       height: 60px;
 
       &:hover {
-        box-shadow: 5px 10px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+        box-shadow: 5px 10px 5px 0 rgba(0, 0, 0, 0.16),
+          0 2px 10px 0 rgba(0, 0, 0, 0.12);
       }
       .selected {
         margin-top: 15px;

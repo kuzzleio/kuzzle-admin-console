@@ -8,12 +8,14 @@
       padding-top: 0;
     }
     .document-json {
-      .pre_ace, .ace_editor {
+      .pre_ace,
+      .ace_editor {
         height: 500px;
       }
 
       .field-json {
-        .pre_ace, .ace_editor {
+        .pre_ace,
+        .ace_editor {
           height: 500px;
         }
       }

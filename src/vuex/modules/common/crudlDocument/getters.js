@@ -1,5 +1,9 @@
 export const searchTerm = (state, getters, rootState) => {
-  if (!rootState.route || !rootState.route.query || !rootState.route.query.searchTerm) {
+  if (
+    !rootState.route ||
+    !rootState.route.query ||
+    !rootState.route.query.searchTerm
+  ) {
     return null
   }
 
@@ -11,7 +15,11 @@ export const searchTerm = (state, getters, rootState) => {
  * @returns return the basic filter filled with the route
  */
 export const basicFilter = (state, getters, rootState) => {
-  if (!rootState.route || !rootState.route.query || !rootState.route.query.basicFilter) {
+  if (
+    !rootState.route ||
+    !rootState.route.query ||
+    !rootState.route.query.basicFilter
+  ) {
     return null
   }
 
@@ -31,7 +39,11 @@ export const basicFilterForm = state => {
 }
 
 export const rawFilter = (state, getters, rootState) => {
-  if (!rootState.route || !rootState.route.query || !rootState.route.query.rawFilter) {
+  if (
+    !rootState.route ||
+    !rootState.route.query ||
+    !rootState.route.query.rawFilter
+  ) {
     return null
   }
 
@@ -43,7 +55,11 @@ export const rawFilter = (state, getters, rootState) => {
 }
 
 export const sorting = (state, getters, rootState) => {
-  if (!rootState.route || !rootState.route.query || !rootState.route.query.sorting) {
+  if (
+    !rootState.route ||
+    !rootState.route.query ||
+    !rootState.route.query.sorting
+  ) {
     return null
   }
 
@@ -55,7 +71,11 @@ export const sorting = (state, getters, rootState) => {
 }
 
 export const paginationFrom = (state, getters, rootState) => {
-  if (!rootState.route || !rootState.route.query || !rootState.route.query.from) {
+  if (
+    !rootState.route ||
+    !rootState.route.query ||
+    !rootState.route.query.from
+  ) {
     return 0
   }
 
@@ -63,7 +83,11 @@ export const paginationFrom = (state, getters, rootState) => {
 }
 
 export const paginationSize = (state, getters, rootState) => {
-  if (!rootState.route || !rootState.route.query || !rootState.route.query.size) {
+  if (
+    !rootState.route ||
+    !rootState.route.query ||
+    !rootState.route.query.size
+  ) {
     return 0
   }
 
