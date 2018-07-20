@@ -11,7 +11,7 @@
               <div class="col s4">
                 <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute">
               </div>
-              <div class="col s2">
+              <div class="col s3">
                 <m-select v-model="filter.operator">
                   <option v-for="(label, identifiers) in availableFilters" :value="identifiers">{{label}}</option>
                 </m-select>
