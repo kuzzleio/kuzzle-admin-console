@@ -35,14 +35,14 @@
     },
     methods: {
       quickSearch () {
-        this.$emit('filters-quick-search', this.filters.searchTerm)
+        this.$emit('quick-search', this.filters.searchTerm)
       },
       resetQuickSearch () {
         this.filters.searchTerm = null
-        this.$emit('filters-quick-search', null)
+        this.$emit('quick-search', null)
       },
       displayComplexSearch () {
-        this.$emit('filters-display-block-filter')
+        this.$emit('display-advanced-filter')
       }
     },
     mounted () {

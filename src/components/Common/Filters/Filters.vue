@@ -1,40 +1,40 @@
 <template>
   <div class="search-filter">
-    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header">
+    <div v-if="(!basicFilter && !rawFilter && !sorting) && simpleFilterEnabled" class="card-panel card-header">
       <div class="row margin-bottom-0 filters">
         <quick-filter
-          :search-term="searchTerm"
-          :display-block-filter="displayBlockFilter"
-          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter"
-          @filters-quick-search="broadcastFilterQuickSearch">
+          :simple-filter-term="simpleFilterTerm"
+          :display-advanced-filter="displayAdvancedFilter"
+          @display-advanced-filter="displayAdvancedFilter = !displayAdvancedFilter"
+          @quick-search="broadcastFilterQuickSearch">
         </quick-filter>
       </div>
     </div>
 
-    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header filters">
+    <div v-if="(basicFilter || rawFilter || sorting) || !simpleFilterEnabled" class="complex-search card-panel card-header filters">
       <div class="row margin-bottom-0">
         <div class="col s8 m6 l4" style="min-width: 520px">
           <div class="search-bar">
             <i class="fa fa-search search"></i>
-            <div v-if="!displayBlockFilter" class="chip">
-              <span class="label-chip" @click.prevent="displayBlockFilter = true">{{labelComplexQuery}}</span>
-              <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
+            <div v-if="!displayAdvancedFilter" class="chip">
+              <span class="label-chip" @click.prevent="displayAdvancedFilter = true">{{advancedQueryLabel}}</span>
+              <i class="close fa fa-close" v-if="simpleFilterEnabled" @click.prevent="resetComplexSearch"></i>
             </div>
-            <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
-            <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
+            <a v-if="!displayAdvancedFilter" href="#" class="fluid-hover" @click.prevent="displayAdvancedFilter = true">More query options</a>
+            <a v-else href="#" class="fluid-hover" @click.prevent="displayAdvancedFilter = false">Less query options</a>
           </div>
         </div>
         <div class="col s4 m3 l3 actions-quicksearch">
-          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
+          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{searchButtonText}}</button>
           <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
         </div>
       </div>
     </div>
 
-    <div class="row card-panel open-search" v-show="displayBlockFilter">
-      <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
+    <div class="row card-panel open-search" v-show="displayAdvancedFilter">
+      <i class="fa fa-times close" @click="displayAdvancedFilter = false"></i>
       <div class="col s12">
-        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter" :object-tab-active="objectTabActive">
+        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayAdvancedFilter" :object-tab-active="objectTabActive">
           <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
           <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
@@ -45,9 +45,8 @@
                   :basic-filter="basicFilter"
                   :sorting-enabled="sortingEnabled"
                   :available-filters="availableFilters"
-                  :label-search-button="labelSearchButton"
+                  :search-button-text="searchButtonText"
                   :sorting="sorting"
-                  :set-basic-filter="setBasicFilter"
                   @filters-basic-search="broadcastFilterBasicSearch">
                 </basic-filter>
               </div>
@@ -57,7 +56,7 @@
                   :raw-filter="rawFilter"
                   :format-from-basic-search="formatFromBasicSearch"
                   :sorting-enabled="sortingEnabled"
-                  :label-search-button="labelSearchButton"
+                  :search-button-text="searchButtonText"
                   @filters-raw-search="broadcastRawSearch">
                 </raw-filter>
               </div>
@@ -84,7 +83,7 @@
         type: Object,
         required: true
       },
-      quickFilterEnabled: {
+      simpleFilterEnabled: {
         type: Boolean,
         required: false,
         'default': true
@@ -94,20 +93,19 @@
         required: false,
         'default': true
       },
-      labelSearchButton: {
+      searchButtonText: {
         type: String,
         required: false,
         'default': 'search'
       },
-      labelComplexQuery: {
+      advancedQueryLabel: {
         type: String,
         required: false,
-        'default': 'Complex query here'
+        'default': 'Advanced query...'
       },
       rawFilter: Object,
       basicFilter: Array,
-      setBasicFilter: Function,
-      searchTerm: String,
+      simpleFilterTerm: String,
       sorting: Object,
       formatFromBasicSearch: Function
     },
@@ -119,7 +117,7 @@
       RawFilter
     },
     watch: {
-      'displayBlockFilter' () {
+      'displayAdvancedFilter' () {
         this.$emit('json-editor-refresh')
       },
       'tabActive' () {
@@ -128,7 +126,7 @@
     },
     data () {
       return {
-        displayBlockFilter: false,
+        displayAdvancedFilter: false,
         tabActive: 'basic',
         jsonInvalid: false,
         objectTabActive: null
@@ -136,26 +134,28 @@
     },
     methods: {
       broadcastFilterQuickSearch (term) {
-        this.$emit('filters-quick-search', term)
+        console.log('broadcastFilterQuickSearch')
+        this.$emit('quick-search', term)
       },
       switchFilter (name) {
         this.tabActive = name
       },
       resetComplexSearch () {
-        this.$emit('filters-raw-search', {})
+        this.$emit('raw-search', {})
       },
       refreshSearch () {
-        this.$emit('filters-refresh-search')
+        console.log('refreshSearch')
+        this.$emit('refresh-search')
       },
       broadcastFilterBasicSearch (filters, sorting) {
-        this.displayBlockFilter = false
-        this.$emit('filters-basic-search', filters, sorting)
+        this.displayAdvancedFilter = false
+        this.$emit('basic-search', filters, sorting)
       },
       setObjectTabActive (tab) {
         this.objectTabActive = tab
       },
       broadcastRawSearch (filter) {
-        this.$emit('filters-raw-search', filter)
+        this.$emit('raw-search', filter)
       }
     },
     mounted () {

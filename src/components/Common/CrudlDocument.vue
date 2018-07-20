@@ -1,17 +1,17 @@
 <template>
   <div>
     <filters
-      @filters-quick-search="quickSearch"
-      @filters-basic-search="basicSearch"
-      @filters-raw-search="rawSearch"
-      @filters-refresh-search="refreshSearch"
+      @quick-search="quickSearch"
+      @basic-search="basicSearch"
+      @raw-search="rawSearch"
+      @refresh-search="refreshSearch"
       :available-filters="availableFilters"
-      :search-term="searchTerm"
+      :simple-filter-term="searchTerm"
       :raw-filter="rawFilter"
       :basic-filter="basicFilter"
       :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
-      :set-basic-filter="setBasicFilter">
+      >
     </filters>
 
     <div class="card-panel card-body">
@@ -120,7 +120,6 @@
   import Pagination from '../Materialize/Pagination'
   import Modal from '../Materialize/Modal'
   import Filters from './Filters/Filters'
-  import {SET_BASIC_FILTER} from '../../vuex/modules/common/crudlDocument/mutation-types'
   import {formatFromBasicSearch, formatSort} from '../../services/filterFormat'
   import {SET_TOAST} from '../../vuex/modules/common/toaster/mutation-types'
 
@@ -199,6 +198,7 @@
           })
       },
       quickSearch (searchTerm) {
+        console.log('quickSearch')
         this.$router.push({query: {searchTerm, from: 0}}, () => {
           this.$emit('crudl-refresh-search')
         }, () => {
@@ -206,6 +206,7 @@
         })
       },
       basicSearch (filters, sorting) {
+        console.log('basicSearch')
         if (!filters && !sorting) {
           this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
           return
@@ -215,6 +216,7 @@
         this.$router.push({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
       },
       rawSearch (filters) {
+        console.log('rawSearch')
         if (!filters || Object.keys(filters).length === 0) {
           this.$router.push({query: {rawFilter: null, from: 0}})
           return
@@ -236,7 +238,7 @@
         this.$emit('toggle-all')
       },
       setBasicFilter (value) {
-        this.$store.commit(SET_BASIC_FILTER, value)
+        console.log('setBasicFilter')
       },
       deleteBulk () {
         this.bulkDeleteIsOpen = true

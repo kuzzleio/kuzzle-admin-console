@@ -30,13 +30,13 @@
 
       <div v-else>
         <filters
-          @filters-basic-search="basicSearch"
-          @filters-raw-search="rawSearch"
-          @filters-refresh-search="refreshSearch"
-          label-search-button="Apply filters"
-          label-complex-query="Click to open the filter builder"
+          @basic-search="basicSearch"
+          @raw-search="rawSearch"
+          @refresh-search="refreshSearch"
+          search-button-text="Apply filters"
+          advanced-query-label="Click to open the filter builder"
           :available-filters="availableFilters"
-          :quick-filter-enabled="false"
+          :simple-filter-enabled="false"
           :sorting-enabled="false"
           :raw-filter="$store.getters.rawFilter"
           :basic-filter="$store.getters.basicFilter"
