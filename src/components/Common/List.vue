@@ -1,6 +1,6 @@
-.<template>
+<template>
   <div>
-    <slot name="emptySet" v-if="!(basicFilter || rawFilter || sorting || $store.state.route.query.searchTerm) && totalDocuments === 0"></slot>
+    <slot name="emptySet" v-if="isCollectionEmpty"></slot>
     <crudl-document v-else
       :available-filters="availableFilters"
       :pagination-from="paginationFrom"
@@ -89,6 +89,12 @@
       }
     },
     computed: {
+      isDocumentListFiltered () {
+        return this.basicFilter || this.rawFilter || this.sorting || this.$store.state.route.query.searchTerm
+      },
+      isCollectionEmpty () {
+        return !(this.isDocumentListFiltered) && this.totalDocuments === 0
+      },
       displayBulkDelete () {
         return this.selectedDocuments.length > 0
       },
