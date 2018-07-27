@@ -1,10 +1,11 @@
 <template>
   <div>
     <filters
-      @quick-search="quickSearch"
-      @basic-search="basicSearch"
-      @raw-search="rawSearch"
-      @refresh-search="refreshSearch"
+      @quick-search="onQuickSearch"
+      @basic-search="onBasicSearch"
+      @raw-search="onRawSearch"
+      @refresh-search="onRefreshSearch"
+      @reset-search="onResetSearch"
       :available-filters="availableFilters"
       :simple-filter-term="searchTerm"
       :raw-filter="rawFilter"
@@ -42,7 +43,7 @@
           </button>
 
           <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
-                  @click.prevent="create"
+                  @click.prevent="onCreateClicked"
                   :class="!displayCreate ? 'disabled' : ''"
                   :disabled="!displayCreate"
                   :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'">
@@ -130,6 +131,7 @@
       Modal,
       Filters
     },
+
     props: {
       index: String,
       collection: String,
@@ -167,9 +169,11 @@
       }
     },
     methods: {
-      create () {
+
+      onCreateClicked () {
         this.$emit('create-clicked')
       },
+
       changePage (from) {
         this.$router.push({query: {...this.$route.query, from}})
       },
@@ -197,7 +201,7 @@
             this.$store.commit(SET_TOAST, {text: e.message})
           })
       },
-      quickSearch (searchTerm) {
+      onQuickSearch (searchTerm) {
         console.log('quickSearch')
         this.$router.push({query: {searchTerm, from: 0}}, () => {
           this.$emit('crudl-refresh-search')
@@ -205,27 +209,32 @@
           this.$emit('crudl-refresh-search')
         })
       },
-      basicSearch (filters, sorting) {
+      onBasicSearch (filter, sorting) {
         console.log('basicSearch')
-        if (!filters && !sorting) {
+        if (!filter && !sorting) {
           this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
-          return
+        } else {
+          let basicFilter = JSON.stringify(filter)
+          this.$router.push({
+            query: {
+              basicFilter,
+              sorting: JSON.stringify(sorting),
+              from: 0}
+          })
         }
-
-        let basicFilter = JSON.stringify(filters)
-        this.$router.push({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
       },
-      rawSearch (filters) {
+      onRawSearch (filter) {
         console.log('rawSearch')
-        if (!filters || Object.keys(filters).length === 0) {
+        this.storeCurrentFilter('rawFilter', filter)
+        if (!filter || Object.keys(filter).length === 0) {
           this.$router.push({query: {rawFilter: null, from: 0}})
           return
         }
 
-        let rawFilter = JSON.stringify(filters)
+        let rawFilter = JSON.stringify(filter)
         this.$router.push({query: {rawFilter, from: 0}})
       },
-      refreshSearch () {
+      onRefreshSearch () {
         // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
         // https://github.com/vuejs/vue-router/issues/296
         if (parseInt(this.$route.query.from) === 0) {
@@ -233,6 +242,9 @@
         } else {
           this.$router.push({query: {...this.$route.query, from: 0}})
         }
+      },
+      onResetSearch () {
+        this.$emit('reset-search')
       },
       dispatchToggle () {
         this.$emit('toggle-all')

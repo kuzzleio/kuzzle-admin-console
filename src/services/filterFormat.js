@@ -1,4 +1,4 @@
-export const availableFilters = {
+export const availableFilters = { // FIXME: rename to available operands 
   match: 'Match',
   not_match: 'Not Match',
   equal: 'Equal',

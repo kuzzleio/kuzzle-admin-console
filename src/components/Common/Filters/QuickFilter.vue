@@ -4,7 +4,7 @@
       <div class="col s7">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
-          <input type="text" placeholder="Search..." v-model="filters.searchTerm" v-focus />
+          <input type="text" placeholder="Search..." v-model="filters.searchTerm" v-focus>
           <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
           <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>
@@ -22,7 +22,7 @@
 
   export default {
     name: 'QuickFilter',
-    props: ['searchTerm', 'displayBlockFilter'],
+    props: ['simpleFilterTerm', 'displayBlockFilter'],
     directives: {
       Focus
     },
@@ -39,14 +39,14 @@
       },
       resetQuickSearch () {
         this.filters.searchTerm = null
-        this.$emit('quick-search', null)
+        this.$emit('reset-search', null)
       },
       displayComplexSearch () {
         this.$emit('display-advanced-filter')
       }
     },
     mounted () {
-      this.filters.searchTerm = this.searchTerm
+      this.filters.searchTerm = this.simpleFilterTerm
     }
   }
 </script>

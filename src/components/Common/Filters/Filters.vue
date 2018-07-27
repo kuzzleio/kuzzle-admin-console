@@ -6,7 +6,8 @@
           :simple-filter-term="simpleFilterTerm"
           :display-advanced-filter="displayAdvancedFilter"
           @display-advanced-filter="displayAdvancedFilter = !displayAdvancedFilter"
-          @quick-search="broadcastFilterQuickSearch">
+          @quick-search="broadcastFilterQuickSearch"
+          @reset-search="onResetSearch">
         </quick-filter>
       </div>
     </div>
@@ -156,6 +157,10 @@
       },
       broadcastRawSearch (filter) {
         this.$emit('raw-search', filter)
+      },
+      onResetSearch () {
+        console.log('aaaa')
+        this.$emit('reset-search')
       }
     },
     mounted () {
