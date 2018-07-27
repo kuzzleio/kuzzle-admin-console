@@ -12,7 +12,7 @@
   </div>
   <div>
     <m-select :options="availableRoles" @input="onRoleSelected">
-      <option v-if="availableRoles.length" value="" disabled selected>Select roles you want to search</option>
+      <option v-if="availableRoles.length" value="" disabled selected>Select the roles you want to search</option>
       <option v-for="role in availableRoles" :value="role.id">{{role.id}}</option>
     </m-select>
   </div>

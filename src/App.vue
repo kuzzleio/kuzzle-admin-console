@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import {} from '../bower_components/ace-builds/src-min-noconflict/ace.js'
-import {} from '../bower_components/ace-builds/src-min-noconflict/theme-tomorrow.js'
-import {} from '../bower_components/ace-builds/src-min-noconflict/mode-json.js'
+import {} from '../node_modules/ace-builds/src-min-noconflict/ace.js'
+import {} from '../node_modules/ace-builds/src-min-noconflict/theme-tomorrow.js'
+import {} from '../node_modules/ace-builds/src-min-noconflict/mode-json.js'
 
 import {} from './assets/global.scss'
 import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'

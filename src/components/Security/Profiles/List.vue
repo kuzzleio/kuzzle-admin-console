@@ -1,6 +1,6 @@
 <template>
   <div>
-    <headline title="Profiles Management"></headline>
+    <headline title="Profile Management"></headline>
 
     <!-- Not allowed -->
     <list-not-allowed v-if="!canSearchProfile()"></list-not-allowed>

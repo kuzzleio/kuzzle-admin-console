@@ -4,9 +4,14 @@
       <nav :style="{backgroundColor: currentEnvironmentColor}" id="mainnav">
         <ul>
           <li class="logo">
-            <a href="#" class="">
-              <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
-            </a>
+            <div class="logo-container">
+              <div class="version-container right-align" :style="{color: versionColor}">{{adminConsoleVersion}}</div>
+              <div>
+                <a href="#" class="">
+                  <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
+                </a>
+              </div>
+            </div>
           </li>
           <router-link tag="li" class="nav" :to="{name: 'Data'}" active-class="active">
             <a>Data</a>
@@ -53,6 +58,11 @@
 
         return this.$store.getters.currentEnvironment.color
       },
+
+      versionColor () {
+        return shadeColor2(this.currentEnvironmentColor, 0.5)
+      },
+
       currentUserName () {
         if (this.$store.state.auth.user) {
           if (this.$store.state.auth.user.params && this.$store.state.auth.user.params.name) {
@@ -60,8 +70,13 @@
           }
           return this.$store.state.auth.user.id
         }
+      },
+
+      adminConsoleVersion () {
+        return require('../../../package.json').version
       }
     },
+
     methods: {
       doLogout () {
         return this.$store.dispatch(DO_LOGOUT)
@@ -78,6 +93,19 @@
       }
     }
   }
+  
+  function shadeColor2 (color, percent) {
+    // https://stackoverflow.com/questions/41173998/is-it-possible-to-use-the-computed-properties-to-compute-another-properties-in-v
+    var f, t, p, R, G, B
+    f = parseInt(color.slice(1), 16)
+    t = percent < 0 ? 0 : 255
+    p = percent < 0 ? percent * -1 : percent
+    R = f >> 16
+    G = f >> 8 & 0x00FF
+    B = f & 0x0000FF
+    return '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1)
+  }
+
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
@@ -110,6 +138,21 @@ nav {
   height: 50px;
 }
 
+.logo-container {
+  position: relative;
+}
+
+.version-container {
+  position: absolute;
+  top:12px;
+  left: 0;
+  color: white;
+  width: 100%;
+  height: 100%;
+  padding-right: 5px;
+  z-index: -1;
+  font-size: 0.8em; 
+}
 .logo img {
   height: 50px;
   padding: 4px 50px 6px 39px;

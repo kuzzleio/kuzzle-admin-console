@@ -4,7 +4,7 @@
       <div class="col s7">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
-          <input type="text" placeholder="Search something..." v-model="filters.searchTerm" v-focus />
+          <input type="text" placeholder="Search..." v-model="filters.searchTerm" v-focus />
           <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
           <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
         </div>

@@ -13,11 +13,9 @@ RUN apt-get update && apt-get install -y \
       rbenv \
       python \
     && npm install -g \
-      bower \
       http-server \
     && npm install \
     && gem install sass --version 3.2.10 \
-    && bower install --allow-root \
     && npm run build \
     && mv dist /tmp/dist && rm -rf /var/app/* && mv /tmp/dist /var/app \
     && chmod 755 /run.sh \

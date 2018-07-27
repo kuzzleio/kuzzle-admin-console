@@ -39,8 +39,8 @@
               </div>
               <div class="col s9">
                 <p>
-                  Here, you'll see the collections in <strong>{{index}}</strong>. <br/>
-                  <em>There are currently no collection here.</em>
+                  Here you can view collections in <strong>{{index}}</strong>. <br/>
+                  <em>There are currently no collections in this index.</em>
                 </p>
                 <router-link :to="{name: 'DataCreateCollection', params: {index: index}}"
                         v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
