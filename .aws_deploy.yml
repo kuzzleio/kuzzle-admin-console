@@ -1,0 +1,15 @@
+version: 0.1
+
+phases:
+  install:
+    commands:
+      - npm install --unsafe-perm
+      - npm install --unsafe-perm --dev
+      - ./node_modules/.bin/bower install --allow-root --no-interactive
+  build:
+    commands:
+      - node build/build.js
+  post_build:
+    commands:
+      - aws s3 sync dist/ s3://$AWS_S3_BUCKET/ --delete
+      - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
