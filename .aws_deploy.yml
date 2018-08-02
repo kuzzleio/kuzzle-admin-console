@@ -5,7 +5,6 @@ phases:
     commands:
       - npm install --unsafe-perm
       - npm install --unsafe-perm --dev
-      - ./node_modules/.bin/bower install --allow-root --no-interactive
   build:
     commands:
       - node build/build.js
