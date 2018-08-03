@@ -29,7 +29,7 @@
     data () {
       return {
         filters: {
-          searchTerm: null
+          searchTerm: this.simpleFilterTerm
         }
       }
     },

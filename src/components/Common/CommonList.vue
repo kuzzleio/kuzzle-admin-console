@@ -119,20 +119,22 @@
       quickFilter () {     
         this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
         if (this.$store.state.route.query.searchTerm) {
-          console.log('using quickFilter from router...')
+          console.log('using quickFilter from router... ' + this.$store.state.route.query.searchTerm)
           return this.$store.state.route.query.searchTerm
         } else {
-          console.log('using quickFilter from currentfilter...')
+          console.log('using quickFilter from current filter...')
           return this.getCurrentFilter(this.currentfilterKey, 'quickFilter')
         }
       },
       basicFilter () {
         this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
-        try {
-          return JSON.parse(this.$store.state.route.query.basicFilter)
-        } catch (e) {
-          return this.getCurrentFilter(this.currentfilterKey, 'basicFilter')
+        if (this.$store.state.route.query.basicFilter) {
+          try {
+            return JSON.parse(this.$store.state.route.query.basicFilter)
+          } catch (e) {
+          }
         }
+        return this.getCurrentFilter(this.currentfilterKey, 'basicFilter')
       },
       rawFilter () {
         this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
@@ -223,6 +225,7 @@
         if (currentFilterStr) {
           Object.assign(this.currentFilter, JSON.parse(currentFilterStr))
           console.log(this.currentFilter)
+          this.forceRecomputeFilters++
         }
       },
 
