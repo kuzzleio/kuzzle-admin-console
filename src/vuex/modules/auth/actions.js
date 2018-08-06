@@ -6,11 +6,15 @@ import { LIST_INDEXES_AND_COLLECTION } from '../index/mutation-types'
 import Promise from 'bluebird'
 
 export default {
-  [types.DO_LOGIN] ({commit, dispatch}, data) {
+  [types.DO_LOGIN]({ commit, dispatch }, data) {
     return new Promise((resolve, reject) => {
       kuzzle
         .unsetJwtToken()
-        .loginPromise('local', {username: data.username, password: data.password}, '2h')
+        .loginPromise(
+          'local',
+          { username: data.username, password: data.password },
+          '2h'
+        )
         .then(loginResult => {
           return dispatch(types.PREPARE_SESSION, loginResult.jwt)
         })
@@ -20,7 +24,7 @@ export default {
         .catch(error => reject(new Error(error.message)))
     })
   },
-  [types.PREPARE_SESSION] ({commit, dispatch}, token) {
+  [types.PREPARE_SESSION]({ commit, dispatch }, token) {
     const sessionUser = SessionUser()
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, token)
     dispatch(LIST_INDEXES_AND_COLLECTION)
@@ -38,7 +42,7 @@ export default {
         commit(types.SET_TOKEN_VALID, true)
       })
   },
-  [types.LOGIN_BY_TOKEN] ({commit, dispatch}, data) {
+  [types.LOGIN_BY_TOKEN]({ commit, dispatch }, data) {
     const user = SessionUser()
 
     if (data.token === 'anonymous') {
@@ -53,23 +57,22 @@ export default {
       return Promise.resolve(user)
     }
 
-    return kuzzle.checkTokenPromise(data.token)
-      .then(res => {
-        if (!res.valid) {
-          commit(types.SET_CURRENT_USER, SessionUser())
-          commit(types.SET_TOKEN_VALID, false)
-          dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
-          kuzzle.unsetJwtToken()
-          return Promise.resolve(SessionUser())
-        }
+    return kuzzle.checkTokenPromise(data.token).then(res => {
+      if (!res.valid) {
+        commit(types.SET_CURRENT_USER, SessionUser())
+        commit(types.SET_TOKEN_VALID, false)
+        dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
+        kuzzle.unsetJwtToken()
+        return Promise.resolve(SessionUser())
+      }
 
-        kuzzle.setJwtToken(data.token)
-        return dispatch(types.PREPARE_SESSION, data.token)
-      })
+      kuzzle.setJwtToken(data.token)
+      return dispatch(types.PREPARE_SESSION, data.token)
+    })
   },
-  [types.CHECK_FIRST_ADMIN] ({commit}) {
+  [types.CHECK_FIRST_ADMIN]({ commit }) {
     return kuzzle
-      .queryPromise({controller: 'server', action: 'adminExists'}, {})
+      .queryPromise({ controller: 'server', action: 'adminExists' }, {})
       .then(res => {
         if (!res.result.exists) {
           return commit(types.SET_ADMIN_EXISTS, false)
@@ -85,7 +88,7 @@ export default {
         }
       })
   },
-  [types.DO_LOGOUT] ({commit, dispatch}) {
+  [types.DO_LOGOUT]({ commit, dispatch }) {
     kuzzle.logout()
     kuzzle.unsetJwtToken()
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)

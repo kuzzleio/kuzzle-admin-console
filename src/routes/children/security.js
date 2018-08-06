@@ -15,7 +15,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Security/Users/List'], resolve)
     }
   },
@@ -25,7 +25,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Security/Users/EditCustomMapping'], resolve)
     }
   },
@@ -35,7 +35,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component (resolve) {
+    component(resolve) {
       if (!canCreateUser()) {
         require(['../../components/Common/PageNotAllowed'], resolve)
       } else {
@@ -49,7 +49,7 @@ export default [
     meta: {
       section: 'users'
     },
-    component (resolve) {
+    component(resolve) {
       if (!canEditUser()) {
         require(['../../components/Common/PageNotAllowed'], resolve)
       } else {
@@ -63,7 +63,7 @@ export default [
     meta: {
       section: 'profiles'
     },
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Security/Profiles/List'], resolve)
     }
   },
@@ -73,7 +73,7 @@ export default [
     meta: {
       section: 'profiles'
     },
-    component (resolve) {
+    component(resolve) {
       if (!canCreateProfile()) {
         require(['../../components/Common/PageNotAllowed'], resolve)
       } else {
@@ -87,7 +87,7 @@ export default [
     meta: {
       section: 'profiles'
     },
-    component (resolve) {
+    component(resolve) {
       if (!canEditProfile()) {
         require(['../../components/Common/PageNotAllowed'], resolve)
       } else {
@@ -101,7 +101,7 @@ export default [
     meta: {
       section: 'roles'
     },
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Security/Roles/List'], resolve)
     }
   },
@@ -111,7 +111,7 @@ export default [
     meta: {
       section: 'roles'
     },
-    component (resolve) {
+    component(resolve) {
       if (!canCreateRole()) {
         require(['../../components/Common/PageNotAllowed'], resolve)
       } else {
@@ -125,7 +125,7 @@ export default [
     meta: {
       section: 'roles'
     },
-    component (resolve) {
+    component(resolve) {
       if (!canEditRole()) {
         require(['../../components/Common/PageNotAllowed'], resolve)
       } else {

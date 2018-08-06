@@ -26,11 +26,12 @@ nav {
 
   &.unauthorized {
     cursor: not-allowed;
-    background-color: #CCC;
+    background-color: #ccc;
     box-shadow: 0 0 0 0;
 
-    &:hover, &:focus {
-      background-color: #DDD;
+    &:hover,
+    &:focus {
+      background-color: #ddd;
       box-shadow: 0 0 0 0;
     }
   }
@@ -38,7 +39,7 @@ nav {
 
 .btn-flat {
   &:focus {
-    background-color: #EEE;
+    background-color: #eee;
   }
 }
 
@@ -47,7 +48,7 @@ nav {
   line-height: 24px;
   font-size: 0.77rem;
   padding: 0 0.6rem;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
 
   i {
     font-size: 1.1rem;
@@ -59,14 +60,15 @@ nav {
   line-height: 30px;
   font-size: 0.9rem;
   padding: 0 0.8rem;
-  letter-spacing: .1px;
+  letter-spacing: 0.1px;
 
   i {
     font-size: 1.2rem;
   }
 }
 
-.card-panel, .inline-alert {
+.card-panel,
+.inline-alert {
   &.unauthorized {
     .fa-lock {
       &.left {
@@ -78,7 +80,7 @@ nav {
 
 a {
   &.fluid-hover {
-    transition: color .3s ease-out;
+    transition: color 0.3s ease-out;
 
     &:hover {
       color: #444;
@@ -86,16 +88,20 @@ a {
   }
 }
 
-
 strong {
   &.highlight {
-    text-decoration: underline
+    text-decoration: underline;
   }
 
   font-weight: 600;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: $header-font-family;
   font-weight: 300;
   color: #555;
@@ -105,11 +111,16 @@ h5 {
   font-weight: 400;
 }
 
-i, span {
-  &.primary, &.secondary, &.tertiary, &.red-color {
+i,
+span {
+  &.primary,
+  &.secondary,
+  &.tertiary,
+  &.red-color {
     background: none;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       background: none;
     }
   }
@@ -129,9 +140,10 @@ i, span {
 }
 
 .primary {
-  color: #FFF;
+  color: #fff;
   background-color: $primary-color;
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: lighten($primary-color, 5%);
   }
 }
@@ -139,23 +151,26 @@ i, span {
 .secondary {
   color: $primary-color;
   background-color: $secondary-color;
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: lighten($secondary-color, 5%);
   }
 }
 
 .tertiary {
-  color: #FFF;
+  color: #fff;
   background-color: $tertiary-color;
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: lighten($tertiary-color, 5%);
   }
 }
 
 .red-color {
-  color: #FFF;
+  color: #fff;
   background-color: $red-color;
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: lighten($red-color, 5%);
   }
 }
@@ -190,7 +205,6 @@ i, span {
   }
 }
 
-
 .margin-bottom-0 {
   margin-bottom: 0;
 }
@@ -198,7 +212,7 @@ i, span {
 .card-panel {
   &.card-header {
     margin-bottom: 0;
-    background: #FBFBFB;
+    background: #fbfbfb;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
@@ -209,14 +223,23 @@ i, span {
   }
 }
 
-input:not([type]), input[type=text], input[type=password],
-input[type=email], input[type=url], input[type=time],
-input[type=date], input[type=datetime], input[type=datetime-local],
-input[type=tel], input[type=number], input[type=search], textarea.materialize-textarea {
+input:not([type]),
+input[type='text'],
+input[type='password'],
+input[type='email'],
+input[type='url'],
+input[type='time'],
+input[type='date'],
+input[type='datetime'],
+input[type='datetime-local'],
+input[type='tel'],
+input[type='number'],
+input[type='search'],
+textarea.materialize-textarea {
   border-bottom: 1px solid #e4e1e1;
 }
-input[type=checkbox] + label {
-  color: #444
+input[type='checkbox'] + label {
+  color: #444;
 }
 
 .disabled,
@@ -224,13 +247,15 @@ input[type=checkbox] + label {
   color: $disabled-color;
 }
 
-.json-formatter-row, .json-formatter-row a, .json-formatter-row a:hover {
+.json-formatter-row,
+.json-formatter-row a,
+.json-formatter-row a:hover {
   font-weight: bold;
-  font-family: "AnonymousPro";
+  font-family: 'AnonymousPro';
   font-size: 1rem;
 }
 
-.switch label input[type=checkbox]:checked + .lever {
+.switch label input[type='checkbox']:checked + .lever {
   background-color: #e4e1e1;
 }
 
@@ -247,5 +272,5 @@ input[type=checkbox] + label {
 }
 
 .text-light-blue {
-  color: $secondary-color
+  color: $secondary-color;
 }

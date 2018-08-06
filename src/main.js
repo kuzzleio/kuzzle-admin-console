@@ -12,7 +12,8 @@ initStoreWithKuzzle(store)
 Vue.use(VueRouter)
 
 store.dispatch(types.LOAD_ENVIRONMENTS)
-store.dispatch(types.SWITCH_LAST_ENVIRONMENT)
+store
+  .dispatch(types.SWITCH_LAST_ENVIRONMENT)
   .then(() => {
     let router = require('./services/router').default
     sync(store, router)

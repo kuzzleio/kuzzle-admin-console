@@ -132,8 +132,8 @@
 @-webkit-keyframes zoomIn {
   from {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 
   50% {
@@ -144,8 +144,8 @@
 @keyframes zoomIn {
   from {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 
   50% {
@@ -160,8 +160,8 @@
 
   50% {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 }
 
@@ -172,8 +172,8 @@
 
   50% {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 }
 

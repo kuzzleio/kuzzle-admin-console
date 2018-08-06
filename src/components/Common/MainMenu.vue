@@ -93,7 +93,7 @@
       }
     }
   }
-  
+
   function shadeColor2 (color, percent) {
     // https://stackoverflow.com/questions/41173998/is-it-possible-to-use-the-computed-properties-to-compute-another-properties-in-v
     var f, t, p, R, G, B
@@ -105,7 +105,6 @@
     B = f & 0x0000FF
     return '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1)
   }
-
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
@@ -151,7 +150,7 @@ nav {
   height: 100%;
   padding-right: 5px;
   z-index: -1;
-  font-size: 0.8em; 
+  font-size: 0.8em;
 }
 .logo img {
   height: 50px;

@@ -48,11 +48,11 @@ export default {
   methods: {
     fetchRoleList () {
       return performSearchRoles()
-      .then(result => {
-        result.documents.forEach(role => {
-          this.roleList.push(role)
+        .then(result => {
+          result.documents.forEach(role => {
+            this.roleList.push(role)
+          })
         })
-      })
     },
     onRoleSelected (role) {
       this.$emit('selected-role', role)
