@@ -1,8 +1,20 @@
 import kuzzle from '../services/kuzzle'
 import store from '../vuex/modules/auth/store'
 
-function isActionAllowed (sessionUser, controller, action, index = '*', collection = '*') {
-  let allowed = kuzzle.security.isActionAllowed(sessionUser.rights, controller, action, index, collection)
+function isActionAllowed(
+  sessionUser,
+  controller,
+  action,
+  index = '*',
+  collection = '*'
+) {
+  let allowed = kuzzle.security.isActionAllowed(
+    sessionUser.rights,
+    controller,
+    action,
+    index,
+    collection
+  )
 
   return allowed !== 'denied'
 }
@@ -28,10 +40,22 @@ export const canCreateCollection = index => {
   return isActionAllowed(store.state.user, 'collection', 'create', index)
 }
 export const canEditCollection = (index, collection) => {
-  return isActionAllowed(store.state.user, 'collection', 'updateMapping', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'collection',
+    'updateMapping',
+    index,
+    collection
+  )
 }
 export const canTruncateCollection = (index, collection) => {
-  return isActionAllowed(store.state.user, 'collection', 'truncate', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'collection',
+    'truncate',
+    index,
+    collection
+  )
 }
 
 // Documents CRUDL
@@ -40,26 +64,70 @@ export const canReadDocument = (index, collection) => {
   return isActionAllowed(store.state.user, 'document', 'get', index, collection)
 }
 export const canSearchDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'document', 'search', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'document',
+    'search',
+    index,
+    collection
+  )
 }
 export const canCreateDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'document', 'create', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'document',
+    'create',
+    index,
+    collection
+  )
 }
 export const canEditDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'document', 'createOrReplace', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'document',
+    'createOrReplace',
+    index,
+    collection
+  )
 }
 export const canDeleteDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'document', 'delete', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'document',
+    'delete',
+    index,
+    collection
+  )
 }
 
 // Realtime
 
 export const canSubscribe = (index, collection) => {
-  return isActionAllowed(store.state.user, 'realtime', 'subscribe', index, collection) &&
-    isActionAllowed(store.state.user, 'realtime', 'unsubscribe', index, collection)
+  return (
+    isActionAllowed(
+      store.state.user,
+      'realtime',
+      'subscribe',
+      index,
+      collection
+    ) &&
+    isActionAllowed(
+      store.state.user,
+      'realtime',
+      'unsubscribe',
+      index,
+      collection
+    )
+  )
 }
 export const canPublish = (index, collection) => {
-  return isActionAllowed(store.state.user, 'realtime', 'publish', index, collection)
+  return isActionAllowed(
+    store.state.user,
+    'realtime',
+    'publish',
+    index,
+    collection
+  )
 }
 
 // Security roles CRUDL
@@ -119,41 +187,46 @@ export const canDeleteUser = () => {
 // Security access
 
 export const canManageRealtime = (index, collection) => {
-  return canSubscribe(index, collection) ||
-    canPublish(index, collection)
+  return canSubscribe(index, collection) || canPublish(index, collection)
 }
 
 export const canManageDocuments = (index, collection) => {
-  return canReadDocument(index, collection) ||
+  return (
+    canReadDocument(index, collection) ||
     canSearchDocument(index, collection) ||
     canEditDocument(index, collection) ||
     canCreateDocument(index, collection) ||
     canDeleteDocument(index, collection)
+  )
 }
 
 export const canManageRoles = () => {
-  return canReadRole() ||
+  return (
+    canReadRole() ||
     canSearchRole() ||
     canEditRole() ||
     canCreateRole() ||
     canDeleteRole()
+  )
 }
 export const canManageProfiles = () => {
-  return canReadProfile() ||
+  return (
+    canReadProfile() ||
     canSearchProfile() ||
     canEditProfile() ||
     canCreateProfile() ||
     canDeleteProfile()
+  )
 }
 export const canManageUsers = () => {
-  return canReadUser() ||
+  return (
+    canReadUser() ||
     canSearchUser() ||
     canEditUser() ||
     canCreateUser() ||
     canDeleteUser()
+  )
 }
 export const hasSecurityRights = () => {
-  return canManageRoles() ||
-    canManageProfiles() ||
-    canManageUsers()
+  return canManageRoles() || canManageProfiles() || canManageUsers()
 }

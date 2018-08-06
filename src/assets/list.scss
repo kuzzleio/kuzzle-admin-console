@@ -36,7 +36,7 @@
     padding: 0 10px;
     margin-left: -10px;
     cursor: pointer;
-    transition-duration: .2s;
+    transition-duration: 0.2s;
   }
 
   /* HACK enabling to click on the title without checking the checkbox */
@@ -50,13 +50,13 @@
   }
 
   /* HACK for centring the checkbox between the caret and the title */
-  [type="checkbox"] + label {
+  [type='checkbox'] + label {
     height: 15px;
     padding-left: 30px;
   }
 
   .item-content {
-    transition-duration: .2s;
+    transition-duration: 0.2s;
     max-height: 300px;
     overflow-x: hidden;
     overflow-y: auto;

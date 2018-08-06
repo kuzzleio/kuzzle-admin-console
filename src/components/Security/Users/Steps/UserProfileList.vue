@@ -52,11 +52,11 @@ export default {
   methods: {
     fetchProfileList () {
       return performSearchProfiles()
-      .then(result => {
-        result.documents.forEach(profile => {
-          this.profileList.push(profile)
+        .then(result => {
+          result.documents.forEach(profile => {
+            this.profileList.push(profile)
+          })
         })
-      })
     },
     onProfileSelected (profile) {
       this.$emit('selected-profile', profile)

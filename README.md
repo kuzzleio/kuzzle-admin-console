@@ -1,35 +1,35 @@
 [![codecov](https://codecov.io/gh/kuzzleio/kuzzle-backoffice/branch/master/graph/badge.svg)](https://codecov.io/gh/kuzzleio/kuzzle-backoffice)
 
 
-# kuzzle Admin Console
+# Kuzzle Admin Console
 
-> This Kuzzle Admin Console allow to manage your Kuzzle. You can manage in real-time your data, subscriptions and configuration.
+> The Kuzzle Admin Console allows you to manage your Kuzzle instance. Use it to administer your data, subscriptions and Kuzzle configuration.
 
 # About Kuzzle
-For UI and connected objects developers, Kuzzle is an open-source solution that handles all the data management
-(CRUD, real-time, search, high-level features, etc).
 
-Kuzzle features are accessible through a secured API. It can be used through a large choice of protocols such as REST, Websocket or Message Queuing protocols.
+Kuzzle is an open-source backend solution that comes equipped with out-of-the-box features to enable real-time collaboration, geofencing, security, and other advanced functionality.
 
-# How to use it
+Kuzzle provides a secure API which can be accessed through a large selection of protocols such as REST, Websocket or Message Queuing.
 
-The Admin Console is a static front-end client, executed by your web browser, and using the Kuzzle Backend API. This means that your Kuzzle Backend IP address and network port (default: 7512) must be reachable from the computer executing the Admin Console.
+# Using Kuzzle Admin Console
 
-You can get the latest version of Admin Console here: [Admin Console](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version)
+The Kuzzle Admin Console is a static front-end client which runs in your web browser and connects to Kuzzle. This means that your Kuzzle installation must be accessible from the computer running the Kuzzle Admin Console. To connect to Kuzzle you will need to provide your Kuzzle installation host (name or IP) and the port (default: 7512).
 
-To get a working copy of the Admin Console on your computer, follow these steps:
+You can get the latest version of the Kuzzle Admin Console [here](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version)
 
- - `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz` : Download and extract the latest version of the Admin Console
+To get a working copy of the Kuzzle Admin Console on your computer, follow these instructions:
+
+ - `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz` : Download and extract the latest version of the Kuzzle Admin Console
  - `tar xf kuzzle-admin-console.tar.gz` : Extract it
- - Open the file `dist/index.html` in your favorite web browser, you're done !
+ - Open the file `dist/index.html` in your favorite web browser, you're done!
 
 ## Contributing to this project
 
-To start the Admin Console in development-mode with hot-reload:
+To start the Kuzzle Admin Console in development-mode with hot-reload run the following commands:
 
 ```
 $ npm run install_deps
 $ npm run dev
 ```
 
-The Admin Console is now accessible at the following URL: http://localhost:3000
+The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:3000
