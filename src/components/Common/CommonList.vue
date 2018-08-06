@@ -28,14 +28,15 @@
 
         <div class="collection">
           <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-            <component :is="itemName"
-                       @checkbox-click="toggleSelectDocuments"
-                       :document="document"
-                       :is-checked="isChecked(document.id)"
-                       :index="index"
-                       :collection="collection"
-                       @common-list::edit-document="editDocument"
-                       @delete-document="deleteDocument">
+            <component
+              :is="itemName"
+              @checkbox-click="toggleSelectDocuments"
+              :document="document"
+              :is-checked="isChecked(document.id)"
+              :index="index"
+              :collection="collection"
+              @common-list::edit-document="editDocument"
+              @delete-document="deleteDocument">
             </component>
           </div>
         </div>
@@ -116,8 +117,8 @@
       currentfilterKey () {
         return this.index + '/' + this.collection
       },
-      quickFilter () {     
-        this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
+      quickFilter () {
+        this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters
         if (this.$store.state.route.query.searchTerm) {
           console.log('using quickFilter from router... ' + this.$store.state.route.query.searchTerm)
           return this.$store.state.route.query.searchTerm
@@ -127,7 +128,7 @@
         }
       },
       basicFilter () {
-        this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
+        this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters
         if (this.$store.state.route.query.basicFilter) {
           try {
             return JSON.parse(this.$store.state.route.query.basicFilter)
@@ -137,7 +138,7 @@
         return this.getCurrentFilter(this.currentfilterKey, 'basicFilter')
       },
       rawFilter () {
-        this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
+        this.forceRecomputeFilters // Hack to force recompute filters dans changing active index/collection, or reseting the filters
         try {
           return JSON.parse(this.$store.state.route.query.rawFilter)
         } catch (e) {
@@ -178,6 +179,10 @@
         set (value) {
           let currentFilterKey = this.index + '/' + this.collection
           Object.assign(this.currentFilters[currentFilterKey], value)
+          const params = {
+            searchTerm: this.currentFilter.quickFilter
+          }
+          this.$router.push({query: params})
         }
       }
     },
@@ -205,8 +210,8 @@
       },
       hasSearchFilters () {
         return (this.$store.state.route.query.searchTerm !== '' ||
-         this.basicFilter.length > 0 ||
-         this.rawFilter.length > 0
+          this.basicFilter.length > 0 ||
+          this.rawFilter.length > 0
         )
       },
 
@@ -224,18 +229,19 @@
         let currentFilterStr = localStorage.getItem(`search-filter-current:${this.index}/${this.collection}`)
         if (currentFilterStr) {
           Object.assign(this.currentFilter, JSON.parse(currentFilterStr))
-          console.log(this.currentFilter)
+          console.log('yalaaaa', this.currentFilter)
+
           this.forceRecomputeFilters++
         }
       },
 
       getCurrentFilter (filterKey, activeFilter) {
-        console.log('getCurrentFilter(' + activeFilter + ')') 
+        console.log('getCurrentFilter(' + activeFilter + ')')
         if (this.currentFilter.activeFilter === activeFilter) {
-          console.log(' ->: ' + this.currentFilter[activeFilter]) 
+          console.log(' ->: ' + this.currentFilter[activeFilter])
           return this.currentFilter[activeFilter]
         } else {
-          console.log(' ->: null') 
+          console.log(' ->: null')
           return null
         }
       },
@@ -244,7 +250,7 @@
         console.log('reset search')
         this.currentFilter.activeFilter = 'None'
         this.storeCurrentFilter('None')
-        this.forceRecomputeFilters++ // Hack to force recompute filters dans changing active index/collection, or reseting the filters   
+        this.forceRecomputeFilters++ // Hack to force recompute filters dans changing active index/collection, or reseting the filters
 
         this.$router.push({query: {}})
         this.fetchData()
@@ -304,6 +310,8 @@
         if (!filters) {
           filters = {}
         }
+
+        this.updateSearchRouteParams(filters)
 
         console.log('fetchData: filter = ' + JSON.stringify(filters))
         // TODO: refactor how search is done
