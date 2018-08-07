@@ -1,4 +1,4 @@
-// import * as types from './mutation-types'
+import * as types from './mutation-types'
 // import * as getters from './getters'
 
 const state = {
