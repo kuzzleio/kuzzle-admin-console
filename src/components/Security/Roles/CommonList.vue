@@ -46,7 +46,7 @@
   import RoleItem from '../Roles/RoleItem'
   import ProfileItem from '../Profiles/ProfileItem'
   import DocumentItem from '../../Data/Documents/DocumentItem'
-  import { availableFilters } from '../../../services/filterFormat'
+  import { availableFilters } from '../../../services/filterManager'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {

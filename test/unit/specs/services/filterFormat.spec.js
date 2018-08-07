@@ -3,22 +3,32 @@ import {
   formatFromBasicSearch,
   formatPagination,
   formatSort
-} from '../../../../src/services/filterFormat'
+} from '../../../../src/services/filterManager'
 
 describe('filterFormat tests', () => {
   describe('formatFromQuickSearch tests', () => {
     it('should return an empty object if there is no searchTerm or wrong operator', () => {
       expect(formatFromQuickSearch()).to.deep.equals({})
       expect(formatFromQuickSearch('')).to.deep.equals({})
-      expect(formatFromBasicSearch([[{
-        operator: 'wrong',
-        attribute: 'foo',
-        value: 'bar'
-      }]])).to.deep.equals({query: {bool: {should: [{bool: {must: [], must_not: []}}]}}})
+      expect(
+        formatFromBasicSearch([
+          [
+            {
+              operator: 'wrong',
+              attribute: 'foo',
+              value: 'bar'
+            }
+          ]
+        ])
+      ).to.deep.equals({
+        query: { bool: { should: [{ bool: { must: [], must_not: [] } }] } }
+      })
     })
 
     it('should return formatted object', () => {
-      expect(formatFromQuickSearch({fake: 'fake'})).to.deep.equals(formatFromQuickSearch({fake: 'fake'}))
+      expect(formatFromQuickSearch({ fake: 'fake' })).to.deep.equals(
+        formatFromQuickSearch({ fake: 'fake' })
+      )
     })
   })
 
@@ -28,87 +38,115 @@ describe('filterFormat tests', () => {
     })
 
     it('should return standard object if attribute is null', () => {
-      expect(formatFromBasicSearch([[{attribute: null}]])).to.deep.equals({
+      expect(formatFromBasicSearch([[{ attribute: null }]])).to.deep.equals({
         query: {
           bool: {
-            should: [{
-              bool: {
-                must: [],
-                must_not: []
+            should: [
+              {
+                bool: {
+                  must: [],
+                  must_not: []
+                }
               }
-            }]
+            ]
           }
         }
       })
       expect(formatFromBasicSearch()).to.deep.equals({
         query: {
           bool: {
-            should: [{
-              bool: {
-                must: [],
-                must_not: []
+            should: [
+              {
+                bool: {
+                  must: [],
+                  must_not: []
+                }
               }
-            }]
+            ]
           }
         }
       })
     })
 
     it('should return object with match operator', () => {
-      expect(formatFromBasicSearch([[{operator: 'match', attribute: 'foo', value: 'bar'}]])).to.deep.equals({
+      expect(
+        formatFromBasicSearch([
+          [{ operator: 'match', attribute: 'foo', value: 'bar' }]
+        ])
+      ).to.deep.equals({
         query: {
           bool: {
-            should: [{
-              bool: {
-                must: [{match_phrase_prefix: {foo: 'bar'}}],
-                must_not: []
+            should: [
+              {
+                bool: {
+                  must: [{ match_phrase_prefix: { foo: 'bar' } }],
+                  must_not: []
+                }
               }
-            }]
+            ]
           }
         }
       })
     })
 
     it('should return object with not_match operator', () => {
-      expect(formatFromBasicSearch([[{operator: 'not_match', attribute: 'foo', value: 'bar'}]])).to.deep.equals({
+      expect(
+        formatFromBasicSearch([
+          [{ operator: 'not_match', attribute: 'foo', value: 'bar' }]
+        ])
+      ).to.deep.equals({
         query: {
           bool: {
-            should: [{
-              bool: {
-                must: [],
-                must_not: [{match_phrase_prefix: {foo: 'bar'}}]
+            should: [
+              {
+                bool: {
+                  must: [],
+                  must_not: [{ match_phrase_prefix: { foo: 'bar' } }]
+                }
               }
-            }]
+            ]
           }
         }
       })
     })
 
     it('should return object with equal operator', () => {
-      expect(formatFromBasicSearch([[{operator: 'equal', attribute: 'foo', value: 'bar'}]])).to.deep.equals({
+      expect(
+        formatFromBasicSearch([
+          [{ operator: 'equal', attribute: 'foo', value: 'bar' }]
+        ])
+      ).to.deep.equals({
         query: {
           bool: {
-            should: [{
-              bool: {
-                must: [{range: {foo: {gte: 'bar', lte: 'bar'}}}],
-                must_not: []
+            should: [
+              {
+                bool: {
+                  must: [{ range: { foo: { gte: 'bar', lte: 'bar' } } }],
+                  must_not: []
+                }
               }
-            }]
+            ]
           }
         }
       })
     })
 
     it('should return object with not_equal operator', () => {
-      expect(formatFromBasicSearch([[{operator: 'not_equal', attribute: 'foo', value: 'bar'}]])).to.deep.equals({
+      expect(
+        formatFromBasicSearch([
+          [{ operator: 'not_equal', attribute: 'foo', value: 'bar' }]
+        ])
+      ).to.deep.equals({
         query: {
           bool: {
-            should: [{
-              bool: {
-                must: [],
-                must_not: [{range: {foo: {gte: 'bar', lte: 'bar'}}}]
+            should: [
+              {
+                bool: {
+                  must: [],
+                  must_not: [{ range: { foo: { gte: 'bar', lte: 'bar' } } }]
+                }
               }
-            }]
+            ]
           }
         }
       })
@@ -122,7 +160,7 @@ describe('filterFormat tests', () => {
     })
 
     it('should return an object with a from and a size', () => {
-      expect(formatPagination(2, 42)).to.deep.equals({from: 42, size: 42})
+      expect(formatPagination(2, 42)).to.deep.equals({ from: 42, size: 42 })
     })
   })
 
@@ -132,7 +170,9 @@ describe('filterFormat tests', () => {
     })
 
     it('should return a formated object', () => {
-      expect(formatSort({attribute: 'foo', order: 'bar'})).to.deep.equals([{foo: {order: 'bar'}}])
+      expect(formatSort({ attribute: 'foo', order: 'bar' })).to.deep.equals([
+        { foo: { order: 'bar' } }
+      ])
     })
   })
 })

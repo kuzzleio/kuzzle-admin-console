@@ -119,7 +119,7 @@
   import Modal from '../../Materialize/Modal'
   import Filters from './Filters'
   import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
-  import {formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
+  import {formatFromBasicSearch, formatSort} from '../../../services/filterManager'
   import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
 
   export default {

@@ -55,11 +55,12 @@ import RoleItem from '../Security/Roles/RoleItem'
 import ProfileItem from '../Security/Profiles/ProfileItem'
 import DocumentItem from '../Data/Documents/DocumentItem'
 import {
-  formatFromQuickSearch,
-  formatFromBasicSearch,
+  filterManager,
+  NO_ACTIVE,
+  Filter,
   formatSort,
   availableFilters
-} from '../../services/filterFormat'
+} from '../../services/filterManager'
 import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
@@ -159,16 +160,6 @@ export default {
       console.log('CommonList::onFiltersUpdated')
       filterManager.save(newFilters, this.$router, this.index, this.collection)
     },
-    // onResetSearch() {
-    //   console.log('reset search')
-    //   this.currentFilter.activeFilter = 'None'
-    //   this.storeCurrentFilter('None')
-    //   this.forceRecomputeFilters++ // Hack to force recompute filters dans changing active index/collection, or reseting the filters
-
-    //   this.$router.push({ query: {} })
-    //   this.fetchDocuments()
-    // },
-
     fetchDocuments() {
       this.$forceUpdate()
       console.log('fetch data...')
@@ -183,50 +174,15 @@ export default {
         size: this.paginationSize
       }
 
-      // Manage query quickSearch/basicSearch/rawSearch
-      if (this.quickFilter) {
-        console.log('use quickFilter')
-        filters = formatFromQuickSearch(this.quickFilter)
-        this.storeCurrentFilter('quickFilter', this.quickFilter)
-      } else if (this.basicFilter) {
-        console.log('use basicFilter')
-        filters = formatFromBasicSearch(this.basicFilter)
-        this.storeCurrentFilter('basicFilter', this.basicFilter)
-      } else if (this.rawFilter) {
-        console.log('use rawFilter')
-        filters = this.rawFilter
-        this.storeCurrentFilter('rawFilter', this.rawFilter)
-        if (filters.sort) {
-          sorting = filters.sort
-        }
-      }
+      filters = filterManager.toSearchQuery(this.currentFilter)
 
       if (this.sorting) {
         sorting = formatSort(this.sorting)
       }
 
-      // if (!filters) {
-      //   console.log(
-      //     "No active filter, it's time to restore the one from local storage!!!"
-      //   )
-      //   this.restoreCurrentFilter()
-      //   if (this.currentFilter.activeFilter === 'quickFilter') {
-      //     filters = formatFromQuickSearch(this.currentFilter.quickFilter)
-      //   } else if (this.currentFilter.activeFilter === 'basicFilter') {
-      //     filters = formatFromQuickSearch(this.currentFilter.basicFilter)
-      //   } else if (this.currentFilter.activeFilter === 'rawFilter') {
-      //     filters = this.currentFilter.rawFilter
-      //     if (filters.sort) {
-      //       sorting = filters.sort
-      //     }
-      //   }
-      // }
-
       if (!filters) {
         filters = {}
       }
-
-      // this.updateSearchRouteParams(filters)
 
       console.log('fetchDocuments: filter = ' + JSON.stringify(filters))
       // TODO: refactor how search is done
@@ -293,110 +249,4 @@ export default {
     }
   }
 }
-
-class FilterManager {
-  load(index, collection, store) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot load filters if no index or collection are specfied'
-      )
-    }
-    console.log('Loading filters...')
-    let loadedFilter = this.loadFromRoute(store)
-
-    if (loadedFilter.active === NO_ACTIVE) {
-      console.log('nothing found in URL, looking in LocalStorage')
-      loadedFilter = this.loadFromLocalStorage(index, collection)
-    }
-
-    return loadedFilter
-  }
-
-  loadFromRoute(store) {
-    let filter = new Filter()
-
-    if (store.state.route.query.searchTerm) {
-      console.log('found searchTerm in route')
-      filter.quick = store.state.route.query.searchTerm
-      filter.active = ACTIVE_QUICK
-    } else if (store.state.route.query.basicFilter) {
-      filter.quick = store.state.route.query.basicFilter
-      filter.active = ACTIVE_BASIC
-    } else if (store.state.route.query.rawFilter) {
-      filter.quick = store.state.route.query.rawFilter
-      filter.active = ACTIVE_RAW
-    }
-
-    console.log('filters found in route')
-    console.log(filter)
-
-    return filter
-  }
-
-  loadFromLocalStorage(index, collection) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot load filters from localstorage if no index or collection are specfied'
-      )
-    }
-    const filterStr = localStorage.getItem(
-      `search-filter-current:${index}/${collection}`
-    )
-    if (filterStr) {
-      return JSON.parse(filterStr)
-    }
-
-    return new Filter()
-  }
-
-  save(filter, router, index, collection) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot save filters if no index or collection are specfied'
-      )
-    }
-    this.saveToRouter(filter, router)
-    this.saveToLocalStorage(filter, index, collection)
-  }
-
-  saveToRouter(filter, router) {
-    switch (filter.active) {
-      case ACTIVE_QUICK:
-        router.push({ query: { searchTerm: filter.quick, from: 0 } })
-        break
-      case NO_ACTIVE:
-      default:
-        router.push({ query: {} })
-        break
-
-      // TODO other cases...
-    }
-  }
-
-  saveToLocalStorage(filter, index, collection) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot save filters to localstorage if no index or collection are specfied'
-      )
-    }
-    localStorage.setItem(
-      `search-filter-current:${index}/${collection}`,
-      JSON.stringify(filter)
-    )
-  }
-}
-
-const NO_ACTIVE = null
-const ACTIVE_QUICK = 'quick'
-const ACTIVE_BASIC = 'basic'
-const ACTIVE_RAW = 'raw'
-
-function Filter() {
-  this.active = NO_ACTIVE
-  this.quick = ''
-  this.basic = []
-  this.raw = {}
-}
-
-const filterManager = new FilterManager()
 </script>

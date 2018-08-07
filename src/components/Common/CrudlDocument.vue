@@ -116,7 +116,7 @@
 import Pagination from '../Materialize/Pagination'
 import Modal from '../Materialize/Modal'
 import Filters from './Filters/Filters'
-import { formatFromBasicSearch, formatSort } from '../../services/filterFormat'
+import { formatFromBasicSearch, formatSort } from '../../services/filterManager'
 import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
@@ -146,9 +146,6 @@ export default {
     paginationFrom: Number,
     paginationSize: Number,
     currentFilter: Object,
-    // searchTerm: String,
-    // rawFilter: Object,
-    // basicFilter: Array,
     sorting: Object,
     availableFilters: Object,
     documentToDelete: String,
@@ -236,9 +233,6 @@ export default {
         this.$router.push({ query: { ...this.$route.query, from: 0 } })
       }
     },
-    // onResetSearch() {
-    //   this.$emit('reset-search')
-    // },
     dispatchToggle() {
       this.$emit('toggle-all')
     },
