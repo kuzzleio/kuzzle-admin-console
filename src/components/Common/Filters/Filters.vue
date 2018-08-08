@@ -140,7 +140,8 @@ export default {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: term ? ACTIVE_QUICK : NO_ACTIVE,
-          quick: term
+          quick: term,
+          from: 0
         })
       )
     },
@@ -151,7 +152,8 @@ export default {
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_BASIC : NO_ACTIVE,
           basic: filter,
-          sorting
+          sorting,
+          from: 0
         })
       )
     },
@@ -161,7 +163,8 @@ export default {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
-          raw: filter
+          raw: filter,
+          from: 0
         })
       )
     },
