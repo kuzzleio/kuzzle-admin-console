@@ -5,8 +5,7 @@
         <div class="search-bar">
           <i class="fa fa-search search"></i>
           <div v-if="complexFilterActive" class="chip">
-              <span class="label-chip" @click.prevent="advancedFiltersVisible = true">Advanced query...</span>
-              <i class="close fa fa-close" v-if="simpleFilterEnabled" @click.prevent="resetComplexSearch"></i>
+              <span class="label-chip" @click.prevent="displayAdvancedFilters">Advanced query...</span>
             </div>
           <input v-if="!complexFilterActive" type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus>
           <a v-if="!advancedFiltersVisible" href="#" class="fluid-hover" @click.prevent="displayAdvancedFilters">More query options</a>

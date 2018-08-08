@@ -15,13 +15,13 @@
     <div class="row card-panel open-search" v-show="advancedFiltersVisible">
       <i class="fa fa-times close" @click="advancedFiltersVisible = false"></i>
       <div class="col s12">
-        <tabs @tab-changed="switchFilter" :active="advancedFilterActiveTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
+        <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
           <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
           <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
           <div slot="contents" class="card">
             <div class="col s12">
-              <div v-show="advancedFilterActiveTab === 'basic'">
+              <div v-show="complexFiltersSelectedTab === 'basic'">
                 <basic-filter
                   :basic-filter="basicFilter"
                   :sorting-enabled="sortingEnabled"
@@ -32,13 +32,13 @@
                 </basic-filter>
               </div>
 
-              <div v-show="advancedFilterActiveTab === 'raw'">
+              <div v-show="complexFiltersSelectedTab === 'raw'">
                 <raw-filter
                   :raw-filter="rawFilter"
                   :format-from-basic-search="formatFromBasicSearch"
                   :sorting-enabled="sortingEnabled"
                   :search-button-text="searchButtonText"
-                  @filters-raw-search="broadcastRawSearch">
+                  @update-filter="onRawFilterUpdated">
                 </raw-filter>
               </div>
             </div>
@@ -61,7 +61,6 @@ import {
   ACTIVE_QUICK,
   ACTIVE_BASIC,
   ACTIVE_RAW
-  // ACTIVE_RAW
 } from '../../../services/filterManager'
 
 export default {
@@ -99,7 +98,7 @@ export default {
   data() {
     return {
       advancedFiltersVisible: false,
-      advancedFilterActiveTab: 'basic',
+      complexFiltersSelectedTab: null,
       jsonInvalid: false,
       objectTabActive: null
     }
@@ -156,25 +155,26 @@ export default {
         })
       )
     },
-    onRawFilterUpdated(filter) {},
-    switchFilter(name) {
-      this.advancedFilterActiveTab = name
+    onRawFilterUpdated(filter) {
+      console.log('onRawFilterUpdated')
+      this.advancedFiltersVisible = false
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          active: filter ? ACTIVE_RAW : NO_ACTIVE,
+          raw: filter
+        })
+      )
     },
-    // TODO
-    resetComplexSearch() {
-      this.$emit('raw-search', {})
+    switchComplexFilterTab(name) {
+      this.complexFiltersSelectedTab = name
     },
-    // ??
+    // TODO ??
     refreshSearch() {
       console.log('refreshSearch')
       this.$emit('refresh-search')
     },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
-    },
-    // TODO
-    broadcastRawSearch(filter) {
-      this.$emit('raw-search', filter)
     },
     onFiltersUpdated(newFilters, sorting) {
       console.log('Filters::onFiltersUpdated')
@@ -190,10 +190,11 @@ export default {
     window.document.removeEventListener('keydown', this.handleEsc)
   },
   watch: {
+    // FIXME these events do nothing.
     advancedFiltersVisible() {
       this.$emit('json-editor-refresh')
     },
-    advancedFilterActiveTab() {
+    complexFiltersSelectedTab() {
       this.$emit('json-editor-refresh')
     }
   }

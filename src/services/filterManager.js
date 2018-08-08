@@ -104,28 +104,34 @@ class FilterManager {
       case ACTIVE_BASIC:
         return this.basicFilterToSearchQuery(filter.basic)
       case ACTIVE_RAW:
-        return this.rawFilterToSearchQuery()
+        return this.rawFilterToSearchQuery(filter.raw)
       case NO_ACTIVE:
       default:
         return this.emptyFilterToSearchQuery()
     }
   }
 
-  quickFilterToSearchQuery(quickFilter) {
-    if (!quickFilter) {
+  quickFilterToSearchQuery(filter) {
+    if (!filter) {
       return this.emptyFilterToSearchQuery()
     }
 
-    return formatFromQuickSearch(quickFilter)
+    return formatFromQuickSearch(filter)
   }
-  basicFilterToSearchQuery(basicFilter) {
-    if (!basicFilter) {
+  basicFilterToSearchQuery(filter) {
+    if (!filter) {
       return this.emptyFilterToSearchQuery()
     }
 
-    return formatFromBasicSearch(basicFilter)
+    return formatFromBasicSearch(filter)
   }
-  rawFilterToSearchQuery() {}
+  rawFilterToSearchQuery(filter) {
+    if (!filter) {
+      return this.emptyFilterToSearchQuery()
+    }
+
+    return filter
+  }
   emptyFilterToSearchQuery() {
     return {}
   }

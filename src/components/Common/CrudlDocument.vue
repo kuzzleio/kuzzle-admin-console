@@ -195,34 +195,6 @@ export default {
       console.log('Crudl::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     },
-    // onBasicSearch(filter, sorting) {
-    //   console.log('basicSearch')
-    //   if (!filter && !sorting) {
-    //     this.$router.push({
-    //       query: { basicFilter: null, sorting: null, from: 0 }
-    //     })
-    //   } else {
-    //     let basicFilter = JSON.stringify(filter)
-    //     this.$router.push({
-    //       query: {
-    //         basicFilter,
-    //         sorting: JSON.stringify(sorting),
-    //         from: 0
-    //       }
-    //     })
-    //   }
-    // },
-    // onRawSearch(filter) {
-    //   console.log('rawSearch')
-    //   this.storeCurrentFilter('rawFilter', filter)
-    //   if (!filter || Object.keys(filter).length === 0) {
-    //     this.$router.push({ query: { rawFilter: null, from: 0 } })
-    //     return
-    //   }
-
-    //   let rawFilter = JSON.stringify(filter)
-    //   this.$router.push({ query: { rawFilter, from: 0 } })
-    // },
     onRefreshSearch() {
       // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
       // https://github.com/vuejs/vue-router/issues/296
