@@ -171,11 +171,6 @@ export default {
     switchComplexFilterTab(name) {
       this.complexFiltersSelectedTab = name
     },
-    // TODO ??
-    refreshSearch() {
-      console.log('refreshSearch')
-      this.$emit('refresh-search')
-    },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
     },

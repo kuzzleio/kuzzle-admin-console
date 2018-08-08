@@ -115,13 +115,11 @@ export default {
     currentfilterKey() {
       return this.index + '/' + this.collection
     },
-    // TODO
     paginationFrom() {
-      return parseInt(this.$store.state.route.query.from) || 0
+      return parseInt(this.currentFilter.from) || 0
     },
-    // TODO
     paginationSize() {
-      return parseInt(this.$store.state.route.query.size) || 10
+      return parseInt(this.currentFilter.size) || 10
     }
   },
   methods: {
@@ -157,7 +155,6 @@ export default {
 
       this.selectedDocuments = []
 
-      // TODO
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
