@@ -4,7 +4,6 @@
     <crudl-document v-else
       :available-filters="availableFilters"
       :pagination-from="paginationFrom"
-      :sorting="sorting"
       :current-filter="currentFilter"
       :pagination-size="paginationSize"
       :index="index"
@@ -116,20 +115,11 @@ export default {
     currentfilterKey() {
       return this.index + '/' + this.collection
     },
-    sorting() {
-      if (!this.$store.state.route.query.sorting) {
-        return null
-      }
-
-      try {
-        return JSON.parse(this.$store.state.route.query.sorting)
-      } catch (e) {
-        return []
-      }
-    },
+    // TODO
     paginationFrom() {
       return parseInt(this.$store.state.route.query.from) || 0
     },
+    // TODO
     paginationSize() {
       return parseInt(this.$store.state.route.query.size) || 10
     }
@@ -167,30 +157,34 @@ export default {
 
       this.selectedDocuments = []
 
-      let filters = null
-      let sorting = ['_uid'] // by default, sort on uid: prevent random order
+      // TODO
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
       }
 
-      filters = filterManager.toSearchQuery(this.currentFilter)
-
-      if (this.sorting) {
-        sorting = formatSort(this.sorting)
+      let searchQuery = null
+      searchQuery = filterManager.toSearchQuery(this.currentFilter)
+      if (!searchQuery) {
+        searchQuery = {}
       }
 
-      if (!filters) {
-        filters = {}
+      let sorting = ['_uid'] // by default, sort on uid: prevent random order
+      if (this.currentFilter.sorting) {
+        sorting = formatSort(this.currentFilter.sorting)
       }
 
-      console.log('fetchDocuments: filter = ' + JSON.stringify(filters))
+      console.log(
+        `fetchDocuments: filter = ${JSON.stringify(
+          searchQuery
+        )} - sorting = ${JSON.stringify(sorting)}`
+      )
       // TODO: refactor how search is done
-      // Execute search with corresponding filters
+      // Execute search with corresponding searchQuery
       this.performSearch(
         this.collection,
         this.index,
-        filters,
+        searchQuery,
         pagination,
         sorting
       )
@@ -236,9 +230,14 @@ export default {
       immediate: false,
       handler(newValue, oldValue) {
         console.log('CommonList:: detected route change')
-        this.currentFilter = filterManager.loadFromRoute(this.$store)
-        filterManager.saveToLocalStorage(
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          this.$store
+        )
+        filterManager.save(
           this.currentFilter,
+          this.$router,
           this.index,
           this.collection
         )

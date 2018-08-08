@@ -5,7 +5,6 @@
       @refresh-search="onRefreshSearch"
       :available-filters="availableFilters"
       :current-filter="currentFilter"
-      :sorting="sorting"
       :format-from-basic-search="formatFromBasicSearch"
       >
     </filters>

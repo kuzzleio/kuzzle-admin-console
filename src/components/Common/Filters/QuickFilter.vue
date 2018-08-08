@@ -4,7 +4,11 @@
       <div class="col s7">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
-          <input type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus>
+          <div v-if="complexFilterActive" class="chip">
+              <span class="label-chip" @click.prevent="advancedFiltersVisible = true">Advanced query...</span>
+              <i class="close fa fa-close" v-if="simpleFilterEnabled" @click.prevent="resetComplexSearch"></i>
+            </div>
+          <input v-if="!complexFilterActive" type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus>
           <a v-if="!advancedFiltersVisible" href="#" class="fluid-hover" @click.prevent="displayAdvancedFilters">More query options</a>
           <a v-else href="#" class="fluid-hover" @click.prevent="displayAdvancedFilters">Less query options</a>
         </div>
@@ -19,10 +23,12 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
+import { DEFAULT_QUICK } from '../../../services/filterManager'
 
 export default {
   name: 'QuickFilter',
   props: {
+    complexFilterActive: Boolean,
     searchTerm: String,
     advancedFiltersVisible: Boolean
   },
@@ -39,7 +45,7 @@ export default {
       this.$emit('update-filter', this.inputSearchTerm)
     },
     resetSearch() {
-      this.inputSearchTerm = null
+      this.inputSearchTerm = DEFAULT_QUICK
       this.submitSearch()
     },
     displayAdvancedFilters() {

@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 class FilterManager {
   load(index, collection, store) {
     if (!index || !collection) {
@@ -6,29 +8,32 @@ class FilterManager {
       )
     }
     console.log('Loading filters...')
-    let loadedFilter = this.loadFromRoute(store)
 
-    if (loadedFilter.active === NO_ACTIVE) {
-      console.log('nothing found in URL, looking in LocalStorage')
-      loadedFilter = this.loadFromLocalStorage(index, collection)
-    }
+    let loadedFilterRoute = this.loadFromRoute(store)
+    let loadedFilterLS = this.loadFromLocalStorage(index, collection)
+
+    // We merge the two filters giving priority to the ones read from
+    // the route.
+    let loadedFilter = Object.assign(
+      new Filter(),
+      loadedFilterLS,
+      loadedFilterRoute
+    )
 
     return loadedFilter
   }
 
   loadFromRoute(store) {
-    let filter = new Filter()
+    let filter = Object.assign({}, store.state.route.query)
 
-    if (store.state.route.query.searchTerm) {
-      console.log('found searchTerm in route')
-      filter.quick = store.state.route.query.searchTerm
-      filter.active = ACTIVE_QUICK
-    } else if (store.state.route.query.basicFilter) {
-      filter.quick = store.state.route.query.basicFilter
-      filter.active = ACTIVE_BASIC
-    } else if (store.state.route.query.rawFilter) {
-      filter.quick = store.state.route.query.rawFilter
-      filter.active = ACTIVE_RAW
+    if (filter.raw && typeof filter.raw === 'string') {
+      filter.raw = JSON.parse(filter.raw)
+    }
+    if (filter.sorting && typeof filter.sorting === 'string') {
+      filter.sorting = JSON.parse(filter.sorting)
+    }
+    if (filter.basic && typeof filter.basic === 'string') {
+      filter.basic = JSON.parse(filter.basic)
     }
 
     console.log('filters found in route')
@@ -59,22 +64,25 @@ class FilterManager {
         'Cannot save filters if no index or collection are specfied'
       )
     }
-    this.saveToRouter(filter, router)
-    this.saveToLocalStorage(filter, index, collection)
+    const strippedFilter = stripDefaultValuesFromFilter(filter)
+    console.log('stripped filter to be saved...')
+    console.log(strippedFilter)
+    this.saveToRouter(strippedFilter, router)
+    this.saveToLocalStorage(strippedFilter, index, collection)
   }
 
   saveToRouter(filter, router) {
-    switch (filter.active) {
-      case ACTIVE_QUICK:
-        router.push({ query: { searchTerm: filter.quick, from: 0 } })
-        break
-      case NO_ACTIVE:
-      default:
-        router.push({ query: {} })
-        break
-
-      // TODO other cases...
+    const formattedFilter = Object.assign({}, filter)
+    if (filter.basic) {
+      formattedFilter.basic = JSON.stringify(filter.basic)
     }
+    if (filter.raw) {
+      formattedFilter.raw = JSON.stringify(filter.raw)
+    }
+    if (filter.sorting) {
+      formattedFilter.sorting = JSON.stringify(filter.sorting)
+    }
+    router.push({ query: formattedFilter })
   }
 
   saveToLocalStorage(filter, index, collection) {
@@ -123,17 +131,39 @@ class FilterManager {
   }
 }
 
+function isDefaultFilterValue(key, value) {
+  return _.isEqual(defaultFilter[key], value)
+}
+
+function stripDefaultValuesFromFilter(filter) {
+  let strippedFilter = {}
+  Object.keys(filter).forEach(key => {
+    if (isDefaultFilterValue(key, filter[key])) {
+      return
+    }
+    strippedFilter[key] = filter[key]
+  })
+  return strippedFilter
+}
+
 export const NO_ACTIVE = null
 export const ACTIVE_QUICK = 'quick'
 export const ACTIVE_BASIC = 'basic'
 export const ACTIVE_RAW = 'raw'
+export const SORT_ASC = 'asc'
+export const SORT_DESC = 'desc'
+export const DEFAULT_QUICK = ''
 
 export function Filter() {
   this.active = NO_ACTIVE
-  this.quick = ''
-  this.basic = []
-  this.raw = {}
+  this.quick = DEFAULT_QUICK
+  this.basic = null
+  this.raw = null
+  this.sorting = null
+  this.from = 0
 }
+
+const defaultFilter = new Filter()
 
 export const filterManager = new FilterManager()
 

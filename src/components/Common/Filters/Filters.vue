@@ -3,6 +3,7 @@
     <div class="card-panel card-header">
       <div class="row margin-bottom-0 filters">
         <quick-filter
+          :complex-filter-active="complexFilterActive"
           :search-term="quickFilter"
           :advanced-filters-visible="advancedFiltersVisible"
           @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
@@ -10,28 +11,6 @@
         </quick-filter>
       </div>
     </div>
-
-    <!-- TODO move this into quick-filter!!!
-
-      <div v-if="(basicFilter || rawFilter || sorting) || !simpleFilterEnabled" class="complex-search card-panel card-header filters">
-      <div class="row margin-bottom-0">
-        <div class="col s8 m6 l4" style="min-width: 520px">
-          <div class="search-bar">
-            <i class="fa fa-search search"></i>
-            <div v-if="!advancedFiltersVisible" class="chip">
-              <span class="label-chip" @click.prevent="advancedFiltersVisible = true">{{advancedQueryLabel}}</span>
-              <i class="close fa fa-close" v-if="simpleFilterEnabled" @click.prevent="resetComplexSearch"></i>
-            </div>
-            <a v-if="!advancedFiltersVisible" href="#" class="fluid-hover" @click.prevent="advancedFiltersVisible = true">More query options</a>
-            <a v-else href="#" class="fluid-hover" @click.prevent="advancedFiltersVisible = false">Less query options</a>
-          </div>
-        </div>
-        <div class="col s4 m3 l3 actions-quicksearch">
-          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{searchButtonText}}</button>
-          <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
-        </div>
-      </div>
-    </div> -->
 
     <div class="row card-panel open-search" v-show="advancedFiltersVisible">
       <i class="fa fa-times close" @click="advancedFiltersVisible = false"></i>
@@ -49,7 +28,7 @@
                   :available-filters="availableFilters"
                   :search-button-text="searchButtonText"
                   :sorting="sorting"
-                  @filters-basic-search="broadcastFilterBasicSearch">
+                  @update-filter="onBasicFilterUpdated">
                 </basic-filter>
               </div>
 
@@ -77,6 +56,13 @@ import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
 import Vue from 'vue'
+import {
+  NO_ACTIVE,
+  ACTIVE_QUICK,
+  ACTIVE_BASIC,
+  ACTIVE_RAW
+  // ACTIVE_RAW
+} from '../../../services/filterManager'
 
 export default {
   name: 'Filters',
@@ -107,13 +93,7 @@ export default {
       required: false,
       default: 'search'
     },
-    advancedQueryLabel: {
-      type: String,
-      required: false,
-      default: 'Advanced query...'
-    },
     currentFilter: Object,
-    sorting: Object,
     formatFromBasicSearch: Function
   },
   data() {
@@ -125,8 +105,13 @@ export default {
     }
   },
   computed: {
-    quickFilterActive() {
-      return this.currentFilter.active === 'quick'
+    complexFilterActive() {
+      return (
+        (this.currentFilter.active === ACTIVE_BASIC &&
+          this.currentFilter.basic !== null) ||
+        (this.currentFilter.active === ACTIVE_RAW &&
+          this.currentFilter.raw !== null)
+      )
     },
     quickFilter() {
       if (!this.currentFilter) {
@@ -145,6 +130,9 @@ export default {
         return null
       }
       return this.currentFilter.raw
+    },
+    sorting() {
+      return this.currentFilter.sorting
     }
   },
   methods: {
@@ -152,12 +140,22 @@ export default {
       console.log('onQuickFilterUpdated')
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
-          active: term ? 'quick' : null,
+          active: term ? ACTIVE_QUICK : NO_ACTIVE,
           quick: term
         })
       )
     },
-    onBasicFilterUpdated(filter) {},
+    onBasicFilterUpdated(filter, sorting) {
+      console.log('onBasicFilterUpdated')
+      this.advancedFiltersVisible = false
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          active: filter ? ACTIVE_BASIC : NO_ACTIVE,
+          basic: filter,
+          sorting
+        })
+      )
+    },
     onRawFilterUpdated(filter) {},
     switchFilter(name) {
       this.advancedFilterActiveTab = name
@@ -171,11 +169,6 @@ export default {
       console.log('refreshSearch')
       this.$emit('refresh-search')
     },
-    // TODO
-    broadcastFilterBasicSearch(filters, sorting) {
-      this.advancedFiltersVisible = false
-      this.$emit('basic-search', filters, sorting)
-    },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
     },
@@ -183,11 +176,7 @@ export default {
     broadcastRawSearch(filter) {
       this.$emit('raw-search', filter)
     },
-    // TODO
-    // onResetSearch() {
-    //   this.$emit('reset-search')
-    // },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(newFilters, sorting) {
       console.log('Filters::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     }
