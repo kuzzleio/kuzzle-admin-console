@@ -126,12 +126,7 @@ import CollectionDropdown from '../Collections/Dropdown'
 import Filters from '../../Common/Filters/Filters'
 import kuzzle from '../../../services/kuzzle'
 // import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
-import {
-  realtimeFilterOperands,
-  Filter,
-  filterManager,
-  stripDefaultValuesFromFilter
-} from '../../../services/filterManager'
+import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
@@ -148,8 +143,8 @@ export default {
       subscribed: false,
       room: null,
       filters: {},
-      currentFilter: new Filter(),
-      realtimeFilterOperands,
+      currentFilter: new filterManager.Filter(),
+      realtimeFilterOperands: filterManager.realtimeFilterOperands,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       notifications: [],
       notificationsLengthLimit: 50,
@@ -188,7 +183,7 @@ export default {
     canSubscribe,
     onFiltersUpdated(newFilters) {
       filterManager.saveToRouter(
-        stripDefaultValuesFromFilter(newFilters),
+        filterManager.stripDefaultValuesFromFilter(newFilters),
         this.$router
       )
       this.toggleSubscription()
@@ -394,7 +389,7 @@ export default {
     },
     onReset(newFilters) {
       filterManager.saveToRouter(
-        stripDefaultValuesFromFilter(newFilters),
+        filterManager.stripDefaultValuesFromFilter(newFilters),
         this.$router
       )
       this.reset()
@@ -446,7 +441,7 @@ export default {
     },
     $route() {
       this.reset()
-      this.currentFilter = filterManager.loadFromRoute(this.$store)
+      this.currentFilter = filterManager.loadFromRoute(this.$store.state.route)
     },
     subscribed() {
       this.computeNotifHeight()

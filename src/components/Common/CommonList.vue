@@ -53,13 +53,7 @@ import UserItem from '../Security/Users/UserItem'
 import RoleItem from '../Security/Roles/RoleItem'
 import ProfileItem from '../Security/Profiles/ProfileItem'
 import DocumentItem from '../Data/Documents/DocumentItem'
-import {
-  filterManager,
-  NO_ACTIVE,
-  Filter,
-  formatSort,
-  searchFilterOperands
-} from '../../services/filterManager'
+import * as filterManager from '../../services/filterManager'
 import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
@@ -87,17 +81,17 @@ export default {
 
   data() {
     return {
-      searchFilterOperands,
+      searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
       totalDocuments: 0,
       documentToDelete: null,
-      currentFilter: new Filter()
+      currentFilter: new filterManager.Filter()
     }
   },
   computed: {
     isDocumentListFiltered() {
-      return this.currentFilter.active !== NO_ACTIVE
+      return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
     isCollectionEmpty() {
       return !this.isDocumentListFiltered && this.totalDocuments === 0
@@ -162,7 +156,7 @@ export default {
 
       let sorting = ['_uid'] // by default, sort on uid: prevent random order
       if (this.currentFilter.sorting) {
-        sorting = formatSort(this.currentFilter.sorting)
+        sorting = filterManager.formatSort(this.currentFilter.sorting)
       }
 
       // TODO: refactor how search is done
@@ -202,7 +196,7 @@ export default {
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
-      this.$store
+      this.$store.state.route
     )
     filterManager.save(
       this.currentFilter,
@@ -218,7 +212,7 @@ export default {
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
-          this.$store
+          this.$store.state.route
         )
         filterManager.save(
           this.currentFilter,

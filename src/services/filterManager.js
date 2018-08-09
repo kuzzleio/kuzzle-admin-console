@@ -1,146 +1,139 @@
 import _ from 'lodash'
-// TODO take everything out of the class
-class FilterManager {
-  load(index, collection, store) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot load filters if no index or collection are specfied'
-      )
-    }
 
-    let loadedFilterRoute = this.loadFromRoute(store)
-    let loadedFilterLS = this.loadFromLocalStorage(index, collection)
-
-    // We merge the two filters giving priority to the ones read from
-    // the route.
-    let loadedFilter = Object.assign(
-      new Filter(),
-      loadedFilterLS,
-      loadedFilterRoute
-    )
-
-    return loadedFilter
-  }
-
-  // TODO store -> route
-  loadFromRoute(store) {
-    if (!store) {
-      throw new Error('No store specified')
-    }
-
-    let filter = Object.assign({}, store.state.route.query)
-
-    if (filter.raw && typeof filter.raw === 'string') {
-      filter.raw = JSON.parse(filter.raw)
-    }
-    if (filter.sorting && typeof filter.sorting === 'string') {
-      filter.sorting = JSON.parse(filter.sorting)
-    }
-    if (filter.basic && typeof filter.basic === 'string') {
-      filter.basic = JSON.parse(filter.basic)
-    }
-
-    return filter
-  }
-
-  loadFromLocalStorage(index, collection) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot load filters from localstorage if no index or collection are specfied'
-      )
-    }
-    const filterStr = localStorage.getItem(
-      `search-filter-current:${index}/${collection}`
-    )
-    if (filterStr) {
-      return JSON.parse(filterStr)
-    }
-
-    return {}
-  }
-
-  save(filter, router, index, collection) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot save filters if no index or collection are specfied'
-      )
-    }
-    const strippedFilter = stripDefaultValuesFromFilter(filter)
-    this.saveToRouter(strippedFilter, router)
-    this.saveToLocalStorage(strippedFilter, index, collection)
-  }
-
-  saveToRouter(filter, router) {
-    const formattedFilter = Object.assign({}, filter)
-    if (filter.basic) {
-      formattedFilter.basic = JSON.stringify(filter.basic)
-    }
-    if (filter.raw) {
-      formattedFilter.raw = JSON.stringify(filter.raw)
-    }
-    if (filter.sorting) {
-      formattedFilter.sorting = JSON.stringify(filter.sorting)
-    }
-    router.push({ query: formattedFilter })
-  }
-
-  saveToLocalStorage(filter, index, collection) {
-    if (!index || !collection) {
-      throw new Error(
-        'Cannot save filters to localstorage if no index or collection are specfied'
-      )
-    }
-    localStorage.setItem(
-      `search-filter-current:${index}/${collection}`,
-      JSON.stringify(filter)
+export const load = (index, collection, route) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters if no index or collection are specfied'
     )
   }
 
-  toSearchQuery(filter) {
-    if (!filter) {
-      throw new Error('No filter specified')
-    }
+  let loadedFilterRoute = loadFromRoute(route)
+  let loadedFilterLS = loadFromLocalStorage(index, collection)
 
-    switch (filter.active) {
-      case ACTIVE_QUICK:
-        return filter.quick ? formatFromQuickSearch(filter.quick) : {}
-      case ACTIVE_BASIC:
-        return filter.basic ? formatFromBasicSearch(filter.basic) : {}
-      case ACTIVE_RAW:
-        return filter.raw || {}
-      case NO_ACTIVE:
-      default:
-        return {}
-    }
+  // We merge the two filters giving priority to the ones read from
+  // the route.
+  let loadedFilter = Object.assign(
+    new Filter(),
+    loadedFilterLS,
+    loadedFilterRoute
+  )
+
+  return loadedFilter
+}
+
+export const loadFromRoute = route => {
+  if (!route) {
+    throw new Error('No store specified')
   }
 
-  toRealtimeQuery(filter) {
-    if (!filter) {
-      throw new Error('No filter specified')
-    }
+  let filter = Object.assign({}, route.query)
 
-    switch (filter.active) {
-      case ACTIVE_BASIC:
-        return filter.basic ? basicFilterToRealtimeQuery(filter.basic) : {}
-      case ACTIVE_RAW:
-        return filter.raw || {}
-      case ACTIVE_QUICK:
-      case NO_ACTIVE:
-      default:
-        return {}
-    }
+  if (filter.raw && typeof filter.raw === 'string') {
+    filter.raw = JSON.parse(filter.raw)
+  }
+  if (filter.sorting && typeof filter.sorting === 'string') {
+    filter.sorting = JSON.parse(filter.sorting)
+  }
+  if (filter.basic && typeof filter.basic === 'string') {
+    filter.basic = JSON.parse(filter.basic)
+  }
+
+  return filter
+}
+
+export const loadFromLocalStorage = (index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters from localstorage if no index or collection are specfied'
+    )
+  }
+  const filterStr = localStorage.getItem(
+    `search-filter-current:${index}/${collection}`
+  )
+  if (filterStr) {
+    return JSON.parse(filterStr)
+  }
+
+  return {}
+}
+
+export const save = (filter, router, index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot save filters if no index or collection are specfied'
+    )
+  }
+  const strippedFilter = stripDefaultValuesFromFilter(filter)
+  saveToRouter(strippedFilter, router)
+  saveToLocalStorage(strippedFilter, index, collection)
+}
+
+export const saveToRouter = (filter, router) => {
+  const formattedFilter = Object.assign({}, filter)
+  if (filter.basic) {
+    formattedFilter.basic = JSON.stringify(filter.basic)
+  }
+  if (filter.raw) {
+    formattedFilter.raw = JSON.stringify(filter.raw)
+  }
+  if (filter.sorting) {
+    formattedFilter.sorting = JSON.stringify(filter.sorting)
+  }
+  router.push({ query: formattedFilter })
+}
+
+export const saveToLocalStorage = (filter, index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot save filters to localstorage if no index or collection are specfied'
+    )
+  }
+  localStorage.setItem(
+    `search-filter-current:${index}/${collection}`,
+    JSON.stringify(filter)
+  )
+}
+
+export const toSearchQuery = filter => {
+  if (!filter) {
+    throw new Error('No filter specified')
+  }
+
+  switch (filter.active) {
+    case ACTIVE_QUICK:
+      return filter.quick ? formatFromQuickSearch(filter.quick) : {}
+    case ACTIVE_BASIC:
+      return filter.basic ? formatFromBasicSearch(filter.basic) : {}
+    case ACTIVE_RAW:
+      return filter.raw || {}
+    case NO_ACTIVE:
+    default:
+      return {}
   }
 }
 
-// TODO avoid dependency on global defaultFilter
-export function isDefaultFilterValue(key, value) {
-  return _.isEqual(defaultFilter[key], value)
+export const toRealtimeQuery = filter => {
+  if (!filter) {
+    throw new Error('No filter specified')
+  }
+
+  switch (filter.active) {
+    case ACTIVE_BASIC:
+      return filter.basic ? basicFilterToRealtimeQuery(filter.basic) : {}
+    case ACTIVE_RAW:
+      return filter.raw || {}
+    case ACTIVE_QUICK:
+    case NO_ACTIVE:
+    default:
+      return {}
+  }
 }
 
 export const stripDefaultValuesFromFilter = filter => {
+  const defaultFilter = new Filter()
   let strippedFilter = {}
   Object.keys(filter).forEach(key => {
-    if (isDefaultFilterValue(key, filter[key])) {
+    if (_.isEqual(defaultFilter[key], filter[key])) {
       return
     }
     strippedFilter[key] = filter[key]
@@ -164,12 +157,6 @@ export function Filter() {
   this.sorting = null
   this.from = 0
 }
-
-// TODO no this
-const defaultFilter = new Filter()
-
-// TODO no this
-export const filterManager = new FilterManager()
 
 export const searchFilterOperands = {
   match: 'Match',
