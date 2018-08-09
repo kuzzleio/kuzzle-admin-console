@@ -2,10 +2,8 @@
   <div>
     <filters
       @filters-updated="onFiltersUpdated"
-      @refresh-search="onRefreshSearch"
-      :available-filters="availableFilters"
+      :available-operands="searchFilterOperands"
       :current-filter="currentFilter"
-      :format-from-basic-search="formatFromBasicSearch"
       >
     </filters>
 
@@ -115,7 +113,6 @@
 import Pagination from '../Materialize/Pagination'
 import Modal from '../Materialize/Modal'
 import Filters from './Filters/Filters'
-import { formatFromBasicSearch, formatSort } from '../../services/filterManager'
 import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
@@ -146,14 +143,12 @@ export default {
     paginationSize: Number,
     currentFilter: Object,
     sorting: Object,
-    availableFilters: Object,
+    searchFilterOperands: Object,
     documentToDelete: String,
     performDelete: Function
   },
   data() {
     return {
-      formatFromBasicSearch,
-      formatSort,
       documentIdToDelete: '',
       singleDeleteIsOpen: false,
       bulkDeleteIsOpen: false,
@@ -199,15 +194,16 @@ export default {
       console.log('Crudl::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     },
-    onRefreshSearch() {
-      // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
-      // https://github.com/vuejs/vue-router/issues/296
-      if (parseInt(this.$route.query.from) === 0) {
-        this.$emit('crudl-refresh-search')
-      } else {
-        this.$router.push({ query: { ...this.$route.query, from: 0 } })
-      }
-    },
+    // TODO ??
+    // onRefreshSearch() {
+    //   // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
+    //   // https://github.com/vuejs/vue-router/issues/296
+    //   if (parseInt(this.$route.query.from) === 0) {
+    //     this.$emit('crudl-refresh-search')
+    //   } else {
+    //     this.$router.push({ query: { ...this.$route.query, from: 0 } })
+    //   }
+    // },
     dispatchToggle() {
       this.$emit('toggle-all')
     },

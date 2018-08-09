@@ -135,13 +135,26 @@ class FilterManager {
   emptyFilterToSearchQuery() {
     return {}
   }
+
+  toRealtimeQuery(filter) {
+    switch (filter.active) {
+      case ACTIVE_BASIC:
+        return basicFilterToRealtimeQuery(filter.basic)
+      case ACTIVE_RAW:
+        return filter.raw
+      case ACTIVE_QUICK:
+      case NO_ACTIVE:
+      default:
+        return {}
+    }
+  }
 }
 
 function isDefaultFilterValue(key, value) {
   return _.isEqual(defaultFilter[key], value)
 }
 
-function stripDefaultValuesFromFilter(filter) {
+export const stripDefaultValuesFromFilter = filter => {
   let strippedFilter = {}
   Object.keys(filter).forEach(key => {
     if (isDefaultFilterValue(key, filter[key])) {
@@ -173,12 +186,52 @@ const defaultFilter = new Filter()
 
 export const filterManager = new FilterManager()
 
-export const availableFilters = {
-  // FIXME: rename to available operands
+export const searchFilterOperands = {
   match: 'Match',
   not_match: 'Not Match',
   equal: 'Equal',
   not_equal: 'Not equal'
+}
+
+export const realtimeFilterOperands = {
+  match: 'Match',
+  not_match: 'Not Match',
+  regexp: 'Regexp',
+  exists: 'Exists',
+  missing: 'Missing'
+}
+
+const basicFilterToRealtimeQuery = (groups = [[]]) => {
+  let or = []
+
+  groups.forEach(function(filters) {
+    let and = filters
+      .filter(filter => {
+        return filter.attribute !== null
+      })
+      .map(function(filter) {
+        switch (filter.operator) {
+          case 'match':
+            return { equals: { [filter.attribute]: filter.value } }
+          case 'not_match':
+            return { not: { equals: { [filter.attribute]: filter.value } } }
+          case 'regexp':
+            return { regexp: { [filter.attribute]: filter.value } }
+          case 'exists':
+            return { exists: { field: filter.attribute } }
+          case 'missing':
+            return { missing: { field: filter.attribute } }
+        }
+      })
+
+    or.push({ and })
+  })
+
+  if (or.length === 0) {
+    return {}
+  }
+
+  return { or }
 }
 
 export const formatFromQuickSearch = searchTerm => {
@@ -208,6 +261,7 @@ export const formatFromQuickSearch = searchTerm => {
   }
 }
 
+// TODO rename to basicFilterToSearchQuery
 export const formatFromBasicSearch = (groups = [[]]) => {
   let bool = {}
 

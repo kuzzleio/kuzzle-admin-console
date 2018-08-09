@@ -3,11 +3,17 @@
     <div class="card-panel card-header">
       <div class="row margin-bottom-0 filters">
         <quick-filter
+          :advanced-query-label="advancedQueryLabel"
+          :submit-button-label="submitButtonLabel"
           :complex-filter-active="complexFilterActive"
           :search-term="quickFilter"
           :advanced-filters-visible="advancedFiltersVisible"
+          :enabled="quickFilterEnabled"
+          :action-buttons-visible="actionButtonsVisible"
           @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
-          @update-filter="onQuickFilterUpdated">
+          @update-filter="onQuickFilterUpdated"
+          @refresh="onRefresh"
+          @reset="onReset">
         </quick-filter>
       </div>
     </div>
@@ -25,8 +31,9 @@
                 <basic-filter
                   :basic-filter="basicFilter"
                   :sorting-enabled="sortingEnabled"
-                  :available-filters="availableFilters"
-                  :search-button-text="searchButtonText"
+                  :available-operands="availableOperands"
+                  :submit-button-label="submitButtonLabel"
+                  :action-buttons-visible="actionButtonsVisible"
                   :sorting="sorting"
                   @update-filter="onBasicFilterUpdated">
                 </basic-filter>
@@ -37,7 +44,8 @@
                   :raw-filter="rawFilter"
                   :format-from-basic-search="formatFromBasicSearch"
                   :sorting-enabled="sortingEnabled"
-                  :search-button-text="searchButtonText"
+                  :action-buttons-visible="actionButtonsVisible"
+                  :submit-button-label="submitButtonLabel"
                   @update-filter="onRawFilterUpdated">
                 </raw-filter>
               </div>
@@ -60,7 +68,8 @@ import {
   NO_ACTIVE,
   ACTIVE_QUICK,
   ACTIVE_BASIC,
-  ACTIVE_RAW
+  ACTIVE_RAW,
+  Filter
 } from '../../../services/filterManager'
 
 export default {
@@ -73,11 +82,26 @@ export default {
     RawFilter
   },
   props: {
-    availableFilters: {
+    advancedQueryLabel: {
+      type: String,
+      required: false,
+      default: 'Advanced query...'
+    },
+    submitButtonLabel: {
+      type: String,
+      required: false,
+      default: 'search'
+    },
+    actionButtonsVisible: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    availableOperands: {
       type: Object,
       required: true
     },
-    simpleFilterEnabled: {
+    quickFilterEnabled: {
       type: Boolean,
       required: false,
       default: true
@@ -86,11 +110,6 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
-    searchButtonText: {
-      type: String,
-      required: false,
-      default: 'search'
     },
     currentFilter: Object,
     formatFromBasicSearch: Function
@@ -168,13 +187,25 @@ export default {
         })
       )
     },
+    onRefresh() {
+      console.log('Filters::onRefresh')
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          from: 0
+        })
+      )
+    },
+    onReset() {
+      console.log('Filters::onReset')
+      this.onFiltersUpdated(new Filter())
+    },
     switchComplexFilterTab(name) {
       this.complexFiltersSelectedTab = name
     },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
     },
-    onFiltersUpdated(newFilters, sorting) {
+    onFiltersUpdated(newFilters) {
       console.log('Filters::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     }

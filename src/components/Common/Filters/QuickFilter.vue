@@ -4,16 +4,16 @@
       <div class="col s7">
         <div class="search-bar">
           <i class="fa fa-search search"></i>
-          <div v-if="complexFilterActive" class="chip">
-              <span class="label-chip" @click.prevent="displayAdvancedFilters">Advanced query...</span>
-            </div>
-          <input v-if="!complexFilterActive" type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus>
+          <div v-if="complexFilterActive || !enabled" class="chip">
+            <span class="label-chip" @click.prevent="displayAdvancedFilters">{{advancedQueryLabel}}</span>
+          </div>
+          <input v-else type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus>
           <a v-if="!advancedFiltersVisible" href="#" class="fluid-hover" @click.prevent="displayAdvancedFilters">More query options</a>
           <a v-else href="#" class="fluid-hover" @click.prevent="displayAdvancedFilters">Less query options</a>
         </div>
       </div>
-      <div class="col s5 actions-quicksearch">
-        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">Search</button>
+      <div v-if="actionButtonsVisible" class="col s5 actions-quicksearch">
+        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
         <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
       </div>
     </form>
@@ -22,14 +22,29 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
-import { DEFAULT_QUICK } from '../../../services/filterManager'
 
 export default {
   name: 'QuickFilter',
   props: {
-    complexFilterActive: Boolean,
     searchTerm: String,
-    advancedFiltersVisible: Boolean
+    advancedQueryLabel: {
+      type: String,
+      required: false,
+      default: 'Advanced query...'
+    },
+    submitButtonLabel: {
+      type: String,
+      required: false,
+      default: 'search'
+    },
+    actionButtonsVisible: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    complexFilterActive: Boolean,
+    advancedFiltersVisible: Boolean,
+    enabled: Boolean
   },
   directives: {
     Focus
@@ -41,11 +56,14 @@ export default {
   },
   methods: {
     submitSearch() {
-      this.$emit('update-filter', this.inputSearchTerm)
+      if (this.complexFilterActive) {
+        this.$emit('refresh')
+      } else {
+        this.$emit('update-filter', this.inputSearchTerm)
+      }
     },
     resetSearch() {
-      this.inputSearchTerm = DEFAULT_QUICK
-      this.submitSearch()
+      this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')

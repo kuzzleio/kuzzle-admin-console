@@ -8,8 +8,19 @@
     >
     </json-editor>
     <div class="row card-action">
-      <button type="submit" class="btn primary waves-effect waves-light" @click.prevent="submitSearch">{{labelSearchButton}}</button>
-      <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
+      <button
+        v-if="actionButtonsVisible"
+        type="submit"
+        class="btn primary waves-effect waves-light"
+        @click.prevent="submitSearch">
+        {{submitButtonLabel}}
+      </button>
+      <button
+        v-if="actionButtonsVisible"
+        class="btn-flat waves-effect waves-light"
+        @click="resetSearch">
+        Reset
+      </button>
       <span class="error" v-if="jsonInvalid">Your JSON is not valid</span>
     </div>
   </form>
@@ -26,11 +37,17 @@ export default {
         return {}
       }
     },
+    // TODO
     formatFromBasicSearch: Function,
-    labelSearchButton: {
+    submitButtonLabel: {
       type: String,
       required: false,
       default: 'search'
+    },
+    actionButtonsVisible: {
+      type: Boolean,
+      required: false,
+      default: true
     },
     sortingEnabled: {
       type: Boolean,

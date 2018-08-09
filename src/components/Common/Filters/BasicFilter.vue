@@ -13,7 +13,7 @@
               </div>
               <div class="col s3">
                 <m-select v-model="filter.operator">
-                  <option v-for="(label, identifiers) in availableFilters" :value="identifiers" v-bind:key="label">{{label}}</option>
+                  <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
                 </m-select>
               </div>
               <div class="col s3">
@@ -57,8 +57,8 @@
 
       </div>
     </div>
-    <div class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light primary" @click.prevent="submitSearch">{{labelSearchButton}}</button>
+    <div v-if="actionButtonsVisible" class="row card-action">
+      <button type="submit" class="btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
       <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
     </div>
   </form>
@@ -75,14 +75,19 @@ export default {
     basicFilter: Array,
     sorting: Object,
     setBasicFilter: Function,
-    availableFilters: {
+    availableOperands: {
       type: Object,
       required: true
     },
-    labelSearchButton: {
+    submitButtonLabel: {
       type: String,
       required: false,
       default: 'search'
+    },
+    actionButtonsVisible: {
+      type: Boolean,
+      required: false,
+      default: true
     },
     sortingEnabled: {
       type: Boolean,

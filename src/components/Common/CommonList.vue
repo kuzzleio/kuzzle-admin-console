@@ -2,7 +2,7 @@
   <div>
     <slot name="emptySet" v-if="isCollectionEmpty"></slot>
     <crudl-document v-else
-      :available-filters="availableFilters"
+      :search-filter-operands="searchFilterOperands"
       :pagination-from="paginationFrom"
       :current-filter="currentFilter"
       :pagination-size="paginationSize"
@@ -58,7 +58,7 @@ import {
   NO_ACTIVE,
   Filter,
   formatSort,
-  availableFilters
+  searchFilterOperands
 } from '../../services/filterManager'
 import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
@@ -87,7 +87,7 @@ export default {
 
   data() {
     return {
-      availableFilters,
+      searchFilterOperands,
       selectedDocuments: [],
       documents: [],
       totalDocuments: 0,

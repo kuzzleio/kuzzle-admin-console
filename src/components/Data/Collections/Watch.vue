@@ -30,19 +30,15 @@
 
       <div v-else>
         <filters
-          @basic-search="basicSearch"
-          @raw-search="rawSearch"
-          @refresh-search="refreshSearch"
-          search-button-text="Apply filters"
+          submit-button-label="Subscribe"
           advanced-query-label="Click to open the filter builder"
-          :available-filters="availableFilters"
-          :simple-filter-enabled="false"
+          :action-buttons-visible="!subscribed"
+          :current-filter="currentFilter"
+          :available-operands="realtimeFilterOperands"
+          :quick-filter-enabled="false"
           :sorting-enabled="false"
-          :raw-filter="$store.getters.rawFilter"
-          :basic-filter="$store.getters.basicFilter"
-          :format-from-basic-search="formatFromBasicSearch"
-          :set-basic-filter="setBasicFilter"
-          :basic-filter-form="$store.getters.basicFilterForm">
+          @filters-updated="onFiltersUpdated"
+          >
         </filters>
 
         <div class="card-panel card-body" v-show="subscribed || notifications.length" ref="subscribeControl">
@@ -117,59 +113,6 @@
   </div>
 </template>
 
-<style rel="stylesheet/scss" lang="scss">
-.watch {
-  .head {
-    float: left;
-    font-size: 2rem;
-    margin-top: 0;
-  }
-
-  .fixed {
-    position: fixed;
-  }
-
-  .wrapper {
-    position: relative;
-  }
-
-  .sticky {
-    position: fixed;
-    top: 50px;
-    left: 260px;
-    line-height: 20px;
-    padding: 10px 5px;
-    right: 20px;
-    z-index: 200;
-    background-color: #fff;
-    transition: all 0.3s;
-    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  #notification-container {
-    margin-left: -10px;
-    ul {
-      margin: 0;
-      li {
-        font-family: monospace;
-        font-size: 0.8rem;
-      }
-      li:nth-child(odd) {
-        background-color: #f5f5f5;
-
-        .collapsible-header {
-          background-color: #f5f5f5;
-        }
-      }
-    }
-  }
-
-  .collapsible {
-    border-width: 0;
-  }
-}
-</style>
-
 <script>
 import CollectionTabs from './Tabs'
 import Headline from '../../Materialize/Headline'
@@ -181,11 +124,13 @@ import SubscriptionControls from '../Realtime/SubscriptionControls'
 import CollectionDropdown from '../Collections/Dropdown'
 import Filters from '../../Common/Filters/Filters'
 import kuzzle from '../../../services/kuzzle'
-import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
+// import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
 import {
-  availableFilters,
-  formatFromBasicSearch
-} from '../../../services/filterFormatRealtime'
+  realtimeFilterOperands,
+  Filter,
+  filterManager,
+  stripDefaultValuesFromFilter
+} from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
@@ -202,8 +147,8 @@ export default {
       subscribed: false,
       room: null,
       filters: {},
-      availableFilters,
-      formatFromBasicSearch,
+      currentFilter: new Filter(),
+      realtimeFilterOperands,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       notifications: [],
       notificationsLengthLimit: 50,
@@ -240,31 +185,38 @@ export default {
   },
   methods: {
     canSubscribe,
-    basicSearch(filters) {
-      if (!filters) {
-        this.$router.push({ query: { basicFilter: '' } })
-        return
-      }
+    onFiltersUpdated(newFilters) {
+      filterManager.saveToRouter(
+        stripDefaultValuesFromFilter(newFilters),
+        this.$router
+      )
+      this.toggleSubscription()
+    },
+    // basicSearch(filters) {
+    //   if (!filters) {
+    //     this.$router.push({ query: { basicFilter: '' } })
+    //     return
+    //   }
 
-      let basicFilter = JSON.stringify(filters)
-      this.$router.push({ query: { basicFilter } })
-    },
-    rawSearch(filters) {
-      if (!filters) {
-        this.$router.push({ query: { rawFilter: '' } })
-        return
-      }
+    //   let basicFilter = JSON.stringify(filters)
+    //   this.$router.push({ query: { basicFilter } })
+    // },
+    // rawSearch(filters) {
+    //   if (!filters) {
+    //     this.$router.push({ query: { rawFilter: '' } })
+    //     return
+    //   }
 
-      let rawFilter = JSON.stringify(filters)
-      this.$router.push({ query: { rawFilter } })
-    },
-    refreshSearch() {
-      this.$router.push({ query: { ...this.$route.query } })
-    },
+    //   let rawFilter = JSON.stringify(filters)
+    //   this.$router.push({ query: { rawFilter } })
+    // },
+    // refreshSearch() {
+    //   this.$router.push({ query: { ...this.$route.query } })
+    // },
     toggleSubscription() {
       if (!this.subscribed) {
         window.Notification.requestPermission()
-        this.subscribe(this.filters, this.index, this.collection)
+        this.subscribe()
       } else {
         this.subscribed = false
         this.unsubscribe(this.room)
@@ -417,7 +369,11 @@ export default {
     subscribe() {
       return kuzzle
         .collection(this.collection, this.index)
-        .subscribe(this.filters, this.subscribeOptions, this.handleMessage)
+        .subscribe(
+          filterManager.toRealtimeQuery(this.filters),
+          this.subscribeOptions,
+          this.handleMessage
+        )
         .onDone((err, room) => {
           if (err) {
             this.room = null
@@ -450,9 +406,6 @@ export default {
       this.warning.message = ''
       this.notifications = []
     },
-    setBasicFilter(value) {
-      this.$store.commit(SET_BASIC_FILTER, value)
-    },
     computeNotifHeight() {
       Vue.nextTick(() => {
         const mainNavHeight = document.getElementById('mainnav').offsetHeight
@@ -484,15 +437,8 @@ export default {
       this.reset()
     },
     $route() {
-      let filters = {}
-
-      if (this.$store.getters.basicFilter) {
-        filters = formatFromBasicSearch(this.$store.getters.basicFilter)
-      } else if (this.$store.getters.rawFilter) {
-        filters = this.$store.getters.rawFilter
-      }
-
-      this.filters = filters
+      this.reset()
+      this.currentFilter = filterManager.loadFromRoute(this.$store)
     },
     subscribed() {
       this.computeNotifHeight()
@@ -500,3 +446,56 @@ export default {
   }
 }
 </script>
+
+<style rel="stylesheet/scss" lang="scss">
+.watch {
+  .head {
+    float: left;
+    font-size: 2rem;
+    margin-top: 0;
+  }
+
+  .fixed {
+    position: fixed;
+  }
+
+  .wrapper {
+    position: relative;
+  }
+
+  .sticky {
+    position: fixed;
+    top: 50px;
+    left: 260px;
+    line-height: 20px;
+    padding: 10px 5px;
+    right: 20px;
+    z-index: 200;
+    background-color: #fff;
+    transition: all 0.3s;
+    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  #notification-container {
+    margin-left: -10px;
+    ul {
+      margin: 0;
+      li {
+        font-family: monospace;
+        font-size: 0.8rem;
+      }
+      li:nth-child(odd) {
+        background-color: #f5f5f5;
+
+        .collapsible-header {
+          background-color: #f5f5f5;
+        }
+      }
+    }
+  }
+
+  .collapsible {
+    border-width: 0;
+  }
+}
+</style>
