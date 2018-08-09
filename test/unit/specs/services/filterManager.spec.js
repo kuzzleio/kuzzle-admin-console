@@ -1,14 +1,4 @@
-import {
-  formatFromQuickSearch,
-  formatFromBasicSearch,
-  formatPagination,
-  formatSort,
-  basicFilterToRealtimeQuery,
-  filterManager,
-  ACTIVE_BASIC,
-  ACTIVE_QUICK,
-  ACTIVE_RAW
-} from '../../../../src/services/filterManager'
+import * as filterManager from '../../../../src/services/filterManager'
 
 describe('filterManager tests', () => {
   describe('toSearchQuery tests', () => {
@@ -28,17 +18,17 @@ describe('filterManager tests', () => {
       ).to.eql({})
       expect(
         filterManager.toSearchQuery({
-          active: ACTIVE_BASIC
+          active: filterManager.ACTIVE_BASIC
         })
       ).to.eql({})
       expect(
         filterManager.toSearchQuery({
-          active: ACTIVE_QUICK
+          active: filterManager.ACTIVE_QUICK
         })
       ).to.eql({})
       expect(
         filterManager.toSearchQuery({
-          active: ACTIVE_RAW
+          active: filterManager.ACTIVE_RAW
         })
       ).to.eql({})
     })
@@ -60,17 +50,17 @@ describe('filterManager tests', () => {
       ).to.eql({})
       expect(
         filterManager.toRealtimeQuery({
-          active: ACTIVE_BASIC
+          active: filterManager.ACTIVE_BASIC
         })
       ).to.eql({})
       expect(
         filterManager.toRealtimeQuery({
-          active: ACTIVE_QUICK
+          active: filterManager.ACTIVE_QUICK
         })
       ).to.eql({})
       expect(
         filterManager.toRealtimeQuery({
-          active: ACTIVE_RAW
+          active: filterManager.ACTIVE_RAW
         })
       ).to.eql({})
     })
@@ -110,14 +100,10 @@ describe('filterManager tests', () => {
     it('returns an object if called with store', () => {
       expect(
         filterManager.loadFromRoute({
-          state: {
-            route: {
-              query: {
-                raw: '{}',
-                basic: '{}',
-                sorting: '{}'
-              }
-            }
+          query: {
+            raw: '{}',
+            basic: '{}',
+            sorting: '{}'
           }
         })
       ).to.be.eql({ raw: {}, basic: {}, sorting: {} })
@@ -126,12 +112,12 @@ describe('filterManager tests', () => {
 
   describe('basicFilterToRealtimeQuery tests', () => {
     it('should return empty object if group is empty', () => {
-      expect(basicFilterToRealtimeQuery([])).to.deep.equals({})
+      expect(filterManager.basicFilterToRealtimeQuery([])).to.deep.equals({})
     })
 
     it('should return standard object if attribute is null', () => {
       expect(
-        basicFilterToRealtimeQuery([[{ attribute: null }]])
+        filterManager.basicFilterToRealtimeQuery([[{ attribute: null }]])
       ).to.deep.equals({
         or: [
           {
@@ -143,7 +129,7 @@ describe('filterManager tests', () => {
 
     it('should return object with match operator', () => {
       expect(
-        basicFilterToRealtimeQuery([
+        filterManager.basicFilterToRealtimeQuery([
           [{ operator: 'match', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -161,7 +147,7 @@ describe('filterManager tests', () => {
 
     it('should return object with not_match operator', () => {
       expect(
-        basicFilterToRealtimeQuery([
+        filterManager.basicFilterToRealtimeQuery([
           [{ operator: 'not_match', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -179,7 +165,7 @@ describe('filterManager tests', () => {
 
     it('should return object with regexp operator', () => {
       expect(
-        basicFilterToRealtimeQuery([
+        filterManager.basicFilterToRealtimeQuery([
           [{ operator: 'regexp', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -197,7 +183,7 @@ describe('filterManager tests', () => {
 
     it('should return object with exists operator', () => {
       expect(
-        basicFilterToRealtimeQuery([
+        filterManager.basicFilterToRealtimeQuery([
           [{ operator: 'exists', attribute: 'foo', value: '' }]
         ])
       ).to.deep.equals({
@@ -215,7 +201,7 @@ describe('filterManager tests', () => {
 
     it('should return object with missing operator', () => {
       expect(
-        basicFilterToRealtimeQuery([
+        filterManager.basicFilterToRealtimeQuery([
           [{ operator: 'missing', attribute: 'foo', value: '' }]
         ])
       ).to.deep.equals({
@@ -234,10 +220,10 @@ describe('filterManager tests', () => {
 
   describe('formatFromQuickSearch tests', () => {
     it('should return an empty object if there is no searchTerm or wrong operator', () => {
-      expect(formatFromQuickSearch()).to.deep.equals({})
-      expect(formatFromQuickSearch('')).to.deep.equals({})
+      expect(filterManager.formatFromQuickSearch()).to.deep.equals({})
+      expect(filterManager.formatFromQuickSearch('')).to.deep.equals({})
       expect(
-        formatFromBasicSearch([
+        filterManager.formatFromBasicSearch([
           [
             {
               operator: 'wrong',
@@ -252,19 +238,21 @@ describe('filterManager tests', () => {
     })
 
     it('should return formatted object', () => {
-      expect(formatFromQuickSearch({ fake: 'fake' })).to.deep.equals(
-        formatFromQuickSearch({ fake: 'fake' })
-      )
+      expect(
+        filterManager.formatFromQuickSearch({ fake: 'fake' })
+      ).to.deep.equals(filterManager.formatFromQuickSearch({ fake: 'fake' }))
     })
   })
 
-  describe('formatFromBasicSearch tests', () => {
+  describe('filterManager.formatFromBasicSearch tests', () => {
     it('should return empty object if group is empty', () => {
-      expect(formatFromBasicSearch([])).to.deep.equals({})
+      expect(filterManager.formatFromBasicSearch([])).to.deep.equals({})
     })
 
     it('should return standard object if attribute is null', () => {
-      expect(formatFromBasicSearch([[{ attribute: null }]])).to.deep.equals({
+      expect(
+        filterManager.formatFromBasicSearch([[{ attribute: null }]])
+      ).to.deep.equals({
         query: {
           bool: {
             should: [
@@ -278,7 +266,7 @@ describe('filterManager tests', () => {
           }
         }
       })
-      expect(formatFromBasicSearch()).to.deep.equals({
+      expect(filterManager.formatFromBasicSearch()).to.deep.equals({
         query: {
           bool: {
             should: [
@@ -296,7 +284,7 @@ describe('filterManager tests', () => {
 
     it('should return object with match operator', () => {
       expect(
-        formatFromBasicSearch([
+        filterManager.formatFromBasicSearch([
           [{ operator: 'match', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -317,7 +305,7 @@ describe('filterManager tests', () => {
 
     it('should return object with not_match operator', () => {
       expect(
-        formatFromBasicSearch([
+        filterManager.formatFromBasicSearch([
           [{ operator: 'not_match', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -338,7 +326,7 @@ describe('filterManager tests', () => {
 
     it('should return object with equal operator', () => {
       expect(
-        formatFromBasicSearch([
+        filterManager.formatFromBasicSearch([
           [{ operator: 'equal', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -359,7 +347,7 @@ describe('filterManager tests', () => {
 
     it('should return object with not_equal operator', () => {
       expect(
-        formatFromBasicSearch([
+        filterManager.formatFromBasicSearch([
           [{ operator: 'not_equal', attribute: 'foo', value: 'bar' }]
         ])
       ).to.deep.equals({
@@ -381,24 +369,27 @@ describe('filterManager tests', () => {
 
   describe('formatPagination tests', () => {
     it('should return empty object if there is no currentPage or limit', () => {
-      expect(formatPagination()).to.deep.equals({})
-      expect(formatPagination(1)).to.deep.equals({})
+      expect(filterManager.formatPagination()).to.deep.equals({})
+      expect(filterManager.formatPagination(1)).to.deep.equals({})
     })
 
     it('should return an object with a from and a size', () => {
-      expect(formatPagination(2, 42)).to.deep.equals({ from: 42, size: 42 })
+      expect(filterManager.formatPagination(2, 42)).to.deep.equals({
+        from: 42,
+        size: 42
+      })
     })
   })
 
   describe('formatSort tests', () => {
     it('should return an empty array if no attribute is in sorting', () => {
-      expect(formatSort({})).to.deep.equals([])
+      expect(filterManager.formatSort({})).to.deep.equals([])
     })
 
     it('should return a formated object', () => {
-      expect(formatSort({ attribute: 'foo', order: 'bar' })).to.deep.equals([
-        { foo: { order: 'bar' } }
-      ])
+      expect(
+        filterManager.formatSort({ attribute: 'foo', order: 'bar' })
+      ).to.deep.equals([{ foo: { order: 'bar' } }])
     })
   })
 })
