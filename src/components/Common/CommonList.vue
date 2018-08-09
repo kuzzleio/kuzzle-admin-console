@@ -112,9 +112,6 @@ export default {
 
       return this.selectedDocuments.length === this.documents.length
     },
-    currentfilterKey() {
-      return this.index + '/' + this.collection
-    },
     paginationFrom() {
       return parseInt(this.currentFilter.from) || 0
     },
@@ -145,13 +142,10 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(newFilters) {
-      console.log('CommonList::onFiltersUpdated')
       filterManager.save(newFilters, this.$router, this.index, this.collection)
     },
     fetchDocuments() {
       this.$forceUpdate()
-      console.log('fetch data...')
-      console.log(this.$store.state.route.query)
 
       this.selectedDocuments = []
 
@@ -171,11 +165,6 @@ export default {
         sorting = formatSort(this.currentFilter.sorting)
       }
 
-      console.log(
-        `fetchDocuments: filter = ${JSON.stringify(
-          searchQuery
-        )} - sorting = ${JSON.stringify(sorting)}`
-      )
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       this.performSearch(
@@ -226,7 +215,6 @@ export default {
     $route: {
       immediate: false,
       handler(newValue, oldValue) {
-        console.log('CommonList:: detected route change')
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,

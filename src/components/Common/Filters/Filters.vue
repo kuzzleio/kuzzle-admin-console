@@ -157,7 +157,6 @@ export default {
   },
   methods: {
     onQuickFilterUpdated(term) {
-      console.log('onQuickFilterUpdated')
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: term ? ACTIVE_QUICK : NO_ACTIVE,
@@ -167,7 +166,6 @@ export default {
       )
     },
     onBasicFilterUpdated(filter, sorting) {
-      console.log('onBasicFilterUpdated')
       this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
@@ -179,7 +177,6 @@ export default {
       )
     },
     onRawFilterUpdated(filter) {
-      console.log('onRawFilterUpdated')
       this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
@@ -190,7 +187,6 @@ export default {
       )
     },
     onRefresh() {
-      console.log('Filters::onRefresh')
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           from: 0
@@ -198,7 +194,6 @@ export default {
       )
     },
     onReset() {
-      console.log('Filters::onReset')
       this.$emit('reset', new Filter())
     },
     switchComplexFilterTab(name) {
@@ -208,7 +203,6 @@ export default {
       this.objectTabActive = tab
     },
     onFiltersUpdated(newFilters) {
-      console.log('Filters::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     }
   },

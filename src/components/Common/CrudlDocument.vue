@@ -192,15 +192,12 @@ export default {
         })
     },
     onFiltersUpdated(newFilters) {
-      console.log('Crudl::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     },
     dispatchToggle() {
       this.$emit('toggle-all')
     },
-    setBasicFilter(value) {
-      console.log('setBasicFilter')
-    },
+    setBasicFilter(value) {},
     deleteBulk() {
       this.bulkDeleteIsOpen = true
     },

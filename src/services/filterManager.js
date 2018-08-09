@@ -7,7 +7,6 @@ class FilterManager {
         'Cannot load filters if no index or collection are specfied'
       )
     }
-    console.log('Loading filters...')
 
     let loadedFilterRoute = this.loadFromRoute(store)
     let loadedFilterLS = this.loadFromLocalStorage(index, collection)
@@ -24,6 +23,10 @@ class FilterManager {
   }
 
   loadFromRoute(store) {
+    if (!store) {
+      throw new Error('No store specified')
+    }
+
     let filter = Object.assign({}, store.state.route.query)
 
     if (filter.raw && typeof filter.raw === 'string') {
@@ -35,9 +38,6 @@ class FilterManager {
     if (filter.basic && typeof filter.basic === 'string') {
       filter.basic = JSON.parse(filter.basic)
     }
-
-    console.log('filters found in route')
-    console.log(filter)
 
     return filter
   }
@@ -55,7 +55,7 @@ class FilterManager {
       return JSON.parse(filterStr)
     }
 
-    return new Filter()
+    return {}
   }
 
   save(filter, router, index, collection) {
@@ -65,8 +65,6 @@ class FilterManager {
       )
     }
     const strippedFilter = stripDefaultValuesFromFilter(filter)
-    console.log('stripped filter to be saved...')
-    console.log(strippedFilter)
     this.saveToRouter(strippedFilter, router)
     this.saveToLocalStorage(strippedFilter, index, collection)
   }
@@ -98,50 +96,33 @@ class FilterManager {
   }
 
   toSearchQuery(filter) {
+    if (!filter) {
+      throw new Error('No filter specified')
+    }
+
     switch (filter.active) {
       case ACTIVE_QUICK:
-        return this.quickFilterToSearchQuery(filter.quick)
+        return filter.quick ? formatFromQuickSearch(filter.quick) : {}
       case ACTIVE_BASIC:
-        return this.basicFilterToSearchQuery(filter.basic)
+        return filter.basic ? formatFromBasicSearch(filter.basic) : {}
       case ACTIVE_RAW:
-        return this.rawFilterToSearchQuery(filter.raw)
+        return filter.raw || {}
       case NO_ACTIVE:
       default:
-        return this.emptyFilterToSearchQuery()
+        return {}
     }
-  }
-
-  quickFilterToSearchQuery(filter) {
-    if (!filter) {
-      return this.emptyFilterToSearchQuery()
-    }
-
-    return formatFromQuickSearch(filter)
-  }
-  basicFilterToSearchQuery(filter) {
-    if (!filter) {
-      return this.emptyFilterToSearchQuery()
-    }
-
-    return formatFromBasicSearch(filter)
-  }
-  rawFilterToSearchQuery(filter) {
-    if (!filter) {
-      return this.emptyFilterToSearchQuery()
-    }
-
-    return filter
-  }
-  emptyFilterToSearchQuery() {
-    return {}
   }
 
   toRealtimeQuery(filter) {
+    if (!filter) {
+      throw new Error('No filter specified')
+    }
+
     switch (filter.active) {
       case ACTIVE_BASIC:
-        return basicFilterToRealtimeQuery(filter.basic)
+        return filter.basic ? basicFilterToRealtimeQuery(filter.basic) : {}
       case ACTIVE_RAW:
-        return filter.raw
+        return filter.raw || {}
       case ACTIVE_QUICK:
       case NO_ACTIVE:
       default:
@@ -150,7 +131,7 @@ class FilterManager {
   }
 }
 
-function isDefaultFilterValue(key, value) {
+export function isDefaultFilterValue(key, value) {
   return _.isEqual(defaultFilter[key], value)
 }
 
@@ -201,7 +182,7 @@ export const realtimeFilterOperands = {
   missing: 'Missing'
 }
 
-const basicFilterToRealtimeQuery = (groups = [[]]) => {
+export const basicFilterToRealtimeQuery = (groups = [[]]) => {
   let or = []
 
   groups.forEach(function(filters) {
