@@ -195,16 +195,6 @@ export default {
       console.log('Crudl::onFiltersUpdated')
       this.$emit('filters-updated', newFilters)
     },
-    // TODO ??
-    // onRefreshSearch() {
-    //   // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
-    //   // https://github.com/vuejs/vue-router/issues/296
-    //   if (parseInt(this.$route.query.from) === 0) {
-    //     this.$emit('crudl-refresh-search')
-    //   } else {
-    //     this.$router.push({ query: { ...this.$route.query, from: 0 } })
-    //   }
-    // },
     dispatchToggle() {
       this.$emit('toggle-all')
     },
