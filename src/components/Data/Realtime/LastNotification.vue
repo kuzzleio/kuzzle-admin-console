@@ -37,8 +37,9 @@
     margin-left: 10px;
     margin-top: 0px;
     height: 412px;
+
     .lastNotification-body {
-      height:348px;
+      height: 348px;
       overflow-y: auto;
     }
   }
