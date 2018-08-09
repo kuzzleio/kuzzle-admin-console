@@ -35,7 +35,8 @@
                   :submit-button-label="submitButtonLabel"
                   :action-buttons-visible="actionButtonsVisible"
                   :sorting="sorting"
-                  @update-filter="onBasicFilterUpdated">
+                  @update-filter="onBasicFilterUpdated"
+                  @reset="onReset">
                 </basic-filter>
               </div>
 
@@ -46,7 +47,8 @@
                   :sorting-enabled="sortingEnabled"
                   :action-buttons-visible="actionButtonsVisible"
                   :submit-button-label="submitButtonLabel"
-                  @update-filter="onRawFilterUpdated">
+                  @update-filter="onRawFilterUpdated"
+                  @reset="onReset">
                 </raw-filter>
               </div>
             </div>
@@ -197,7 +199,7 @@ export default {
     },
     onReset() {
       console.log('Filters::onReset')
-      this.onFiltersUpdated(new Filter())
+      this.$emit('reset', new Filter())
     },
     switchComplexFilterTab(name) {
       this.complexFiltersSelectedTab = name

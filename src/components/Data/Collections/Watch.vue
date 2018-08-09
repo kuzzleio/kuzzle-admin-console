@@ -38,6 +38,7 @@
           :quick-filter-enabled="false"
           :sorting-enabled="false"
           @filters-updated="onFiltersUpdated"
+          @reset="onReset"
           >
         </filters>
 
@@ -390,6 +391,13 @@ export default {
       this.warning.count = 0
 
       room.unsubscribe()
+    },
+    onReset(newFilters) {
+      filterManager.saveToRouter(
+        stripDefaultValuesFromFilter(newFilters),
+        this.$router
+      )
+      this.reset()
     },
     reset() {
       // trigged when user changed the collection of watch data page

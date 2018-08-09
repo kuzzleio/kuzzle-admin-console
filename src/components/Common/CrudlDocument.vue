@@ -2,6 +2,7 @@
   <div>
     <filters
       @filters-updated="onFiltersUpdated"
+      @reset="onFiltersUpdated"
       :available-operands="searchFilterOperands"
       :current-filter="currentFilter"
       >
