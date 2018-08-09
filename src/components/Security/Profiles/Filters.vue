@@ -18,60 +18,56 @@
 </template>
 
 <script>
-  import QuickFilter from '../Common/Filters/QuickFilter'
-  import RoleList from './RoleList'
-  import MSelect from '../../Common/MSelect'
+import QuickFilter from '../Common/Filters/QuickFilter'
+import RoleList from './RoleList'
+import MSelect from '../../Common/MSelect'
 
-  export default {
-    name: 'Filters',
-    props: {
-      availableFilters: {
-        type: Object,
-        required: true
-      },
-      quickFilterEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
-      },
-      labelSearchButton: {
-        type: String,
-        required: false,
-        'default': 'search'
-      },
-      basicFilter: [Array, Object],
-      setBasicFilter: Function,
-      searchTerm: String
+export default {
+  name: 'Filters',
+  props: {
+    quickFilterEnabled: {
+      type: Boolean,
+      required: false,
+      default: true
     },
-    components: {
-      QuickFilter,
-      RoleList,
-      MSelect
+    labelSearchButton: {
+      type: String,
+      required: false,
+      default: 'search'
     },
-    data () {
-      return {
-        addedRoles: []
-      }
+    basicFilter: [Array, Object],
+    setBasicFilter: Function,
+    searchTerm: String
+  },
+  components: {
+    QuickFilter,
+    RoleList,
+    MSelect
+  },
+  data() {
+    return {
+      addedRoles: []
+    }
+  },
+  methods: {
+    broadcastFilterQuickSearch(term) {
+      this.$emit('filters-quick-search', term)
     },
-    methods: {
-      broadcastFilterQuickSearch (term) {
-        this.$emit('filters-quick-search', term)
-      },
-      refreshSearch () {
-        this.$emit('filters-refresh-search')
-      },
-      selectedRole (role) {
-        this.addedRoles.push(role)
-      },
-      removeRole (role) {
-        this.addedRoles.splice(this.addedRoles.indexOf(role), 1)
-      },
-      basicSearch () {
-        this.$emit('filters-basic-search', {roles: this.addedRoles})
-      },
-      resetBasicSearch () {
-        this.addedRoles = []
-      }
+    refreshSearch() {
+      this.$emit('filters-refresh-search')
+    },
+    selectedRole(role) {
+      this.addedRoles.push(role)
+    },
+    removeRole(role) {
+      this.addedRoles.splice(this.addedRoles.indexOf(role), 1)
+    },
+    basicSearch() {
+      this.$emit('filters-basic-search', { roles: this.addedRoles })
+    },
+    resetBasicSearch() {
+      this.addedRoles = []
     }
   }
+}
 </script>
