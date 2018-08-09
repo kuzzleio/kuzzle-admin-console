@@ -61,8 +61,12 @@
     },
     methods: {
       onLogin () {
+        // Set the body overflow to visible because the login modal set it to 'hidden'.
+        // After login, the index route is pushed to view router and the body overflow is
+        // not set to his original state
+        // see src/components/Materialize/Modale.vue#62
         window.document.body.style.overflow = 'visible'
-        
+
         if (this.$store.getters.routeBeforeRedirect) {
           this.$router.push({name: this.$store.getters.routeBeforeRedirect})
         } else {
