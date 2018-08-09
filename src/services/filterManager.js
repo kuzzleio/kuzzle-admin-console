@@ -1,5 +1,5 @@
 import _ from 'lodash'
-
+// TODO take everything out of the class
 class FilterManager {
   load(index, collection, store) {
     if (!index || !collection) {
@@ -22,6 +22,7 @@ class FilterManager {
     return loadedFilter
   }
 
+  // TODO store -> route
   loadFromRoute(store) {
     if (!store) {
       throw new Error('No store specified')
@@ -131,6 +132,7 @@ class FilterManager {
   }
 }
 
+// TODO avoid dependency on global defaultFilter
 export function isDefaultFilterValue(key, value) {
   return _.isEqual(defaultFilter[key], value)
 }
@@ -163,8 +165,10 @@ export function Filter() {
   this.from = 0
 }
 
+// TODO no this
 const defaultFilter = new Filter()
 
+// TODO no this
 export const filterManager = new FilterManager()
 
 export const searchFilterOperands = {
