@@ -20,6 +20,57 @@
   </div>
 </template>
 
+<style lang="scss" scoped>
+.search-bar {
+  position: relative;
+  height: 48px;
+  border-bottom: solid 1px #e4e1e1;
+
+  .chip {
+    margin-top: 9px;
+    margin-left: 30px;
+    cursor: pointer;
+
+    .label-chip {
+      display: inline-block;
+      padding-right: 10px;
+    }
+  }
+
+  a {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-decoration: underline;
+  }
+
+  i.search {
+    position: absolute;
+    font-size: 1.3rem;
+    margin-left: 4px;
+    color: grey;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  input {
+    height: 48px;
+    padding-left: 34px;
+    margin-bottom: 0;
+    width: 100%;
+    padding-right: 215px;
+    box-sizing: border-box;
+    border-bottom: solid 1px #e4e1e1;
+  }
+}
+
+.actions-quicksearch {
+  height: 48px;
+  line-height: 48px;
+}
+</style>
+
 <script>
 import Focus from '../../../directives/focus.directive'
 

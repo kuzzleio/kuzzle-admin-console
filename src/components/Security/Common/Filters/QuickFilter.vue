@@ -17,36 +17,76 @@
   </div>
 </template>
 
-<script>
-  import Focus from '../../../../directives/focus.directive'
+<style lang="scss" scoped>
+.search-bar {
+  position: relative;
+  height: 48px;
+  border-bottom: solid 1px #e4e1e1;
 
-  export default {
-    name: 'QuickSearch',
-    props: ['searchTerm', 'displayBlockFilter'],
-    directives: {
-      Focus
-    },
-    data () {
-      return {
-        filters: {
-          searchTerm: null
-        }
-      }
-    },
-    methods: {
-      quickSearch () {
-        this.$emit('filters-quick-search', this.filters.searchTerm)
-      },
-      resetQuickSearch () {
-        this.filters.searchTerm = null
-        this.$emit('filters-quick-search', null)
-      },
-      displayComplexSearch () {
-        this.$emit('filters-display-block-filter')
-      }
-    },
-    mounted () {
-      this.filters.searchTerm = this.searchTerm
-    }
+  a {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-decoration: underline;
   }
+
+  i.search {
+    position: absolute;
+    font-size: 1.3rem;
+    margin-left: 4px;
+    color: grey;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  input {
+    height: 48px;
+    padding-left: 34px;
+    margin-bottom: 0;
+    width: 100%;
+    padding-right: 215px;
+    box-sizing: border-box;
+    border-bottom: solid 1px #e4e1e1;
+  }
+}
+
+.actions-quicksearch {
+  height: 48px;
+  line-height: 48px;
+}
+</style>
+
+<script>
+import Focus from '../../../../directives/focus.directive'
+
+export default {
+  name: 'QuickSearch',
+  props: ['searchTerm', 'displayBlockFilter'],
+  directives: {
+    Focus
+  },
+  data() {
+    return {
+      filters: {
+        searchTerm: null
+      }
+    }
+  },
+  methods: {
+    quickSearch() {
+      this.$emit('filters-quick-search', this.filters.searchTerm)
+    },
+    resetQuickSearch() {
+      this.filters.searchTerm = null
+      this.$emit('filters-quick-search', null)
+    },
+    displayComplexSearch() {
+      this.$emit('filters-display-block-filter')
+    }
+  },
+  mounted() {
+    this.filters.searchTerm = this.searchTerm
+  }
+}
 </script>

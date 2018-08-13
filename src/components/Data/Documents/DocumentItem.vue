@@ -108,14 +108,14 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
-i.item-toggle {
+.item-toggle {
   padding: 0 10px;
   margin-left: -10px;
   cursor: pointer;
   transition-duration: 0.2s;
 }
 
-.collapsed i.item-toggle {
+.collapsed .item-toggle {
   transform: rotate(-90deg);
 }
 

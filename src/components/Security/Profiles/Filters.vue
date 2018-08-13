@@ -17,6 +17,13 @@
   </div>
 </template>
 
+<style lang="scss" scoped>
+.actions-quicksearch {
+  height: 48px;
+  line-height: 48px;
+}
+</style>
+
 <script>
 import QuickFilter from '../Common/Filters/QuickFilter'
 import RoleList from './RoleList'

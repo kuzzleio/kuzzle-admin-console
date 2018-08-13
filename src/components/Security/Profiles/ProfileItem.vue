@@ -97,14 +97,64 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.item-toggle {
+  padding: 0 10px;
+  margin-left: -10px;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+
+/* HACK enabling to click on the title without checking the checkbox */
+label.item-title {
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.item-title a {
+  color: #272727;
+}
+
+/* HACK for centring the checkbox between the caret and the title */
+[type='checkbox'] + label {
+  height: 15px;
+  padding-left: 30px;
+}
+
+.item-content {
+  transition-duration: 0.2s;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 10px 0 0;
+
+  pre {
+    margin: 0;
+    width: 70%;
+    display: inline-block;
+  }
+}
+
+.collapsed {
+  .item-toggle {
+    transform: rotate(-90deg);
+  }
+  .item-content {
+    max-height: 0;
+    transition-duration: 0;
+    padding: 0 10px 0 0;
+  }
+}
+
 label {
   color: black;
   line-height: 21px;
 }
+
 .additional-attribute {
   color: grey;
   font-style: italic;
 }
+
 .actions {
   margin-top: 1px;
   font-size: 1em;
