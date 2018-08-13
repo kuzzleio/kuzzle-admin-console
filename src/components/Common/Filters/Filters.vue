@@ -59,6 +59,91 @@
   </div>
 </template>
 
+<style lang="scss" scoped>
+.open-search {
+  background-color: #fff;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  position: relative;
+
+  #rawsearch.pre_ace {
+    height: 100px;
+  }
+
+  i.close {
+    float: right;
+    font-size: 1.3em;
+    cursor: pointer;
+    color: grey;
+    position: absolute;
+    top: 10px;
+    right: 16px;
+
+    &:hover {
+      color: #555;
+      background: #eee;
+      border-radius: 3px;
+    }
+  }
+
+  .filter-content {
+    .dots {
+      border-left: 1px dotted rgba(0, 0, 0, 0.26);
+      padding-bottom: 5px;
+    }
+    a.btn {
+      i.left {
+        margin-right: 8px;
+      }
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-left: 10px;
+    }
+    .button-or {
+      margin-bottom: 10px;
+    }
+    .block-and {
+      i.remove-filter {
+        margin-top: 25px;
+        color: grey;
+        cursor: pointer;
+      }
+    }
+    .block-sort {
+      margin-top: 15px;
+      margin-bottom: 0;
+    }
+    .block-content {
+      margin-left: 5px;
+      margin-bottom: 5px;
+      .group {
+        margin-bottom: 0;
+      }
+    }
+    p {
+      margin-bottom: 10px;
+      margin-top: 10px;
+      i {
+        font-size: 1.1em;
+        margin-right: 10px;
+      }
+    }
+  }
+  .card-action {
+    padding: 15px;
+    margin-bottom: 0;
+    button {
+      margin-right: 10px;
+    }
+  }
+
+  .select-wrapper span.caret {
+    top: 10px;
+  }
+}
+</style>
+
 <script>
 import Tabs from '../../Materialize/Tabs'
 import Tab from '../../Materialize/Tab'
