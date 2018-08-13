@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div>
     <headline>
       {{collection}}
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
@@ -131,9 +131,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.wrapper {
-  padding: 20px;
-}
-</style>

@@ -9,7 +9,9 @@
       <create-first-admin-header
         v-if="!$store.getters.adminAlreadyExists">
       </create-first-admin-header>
-      <router-view></router-view>
+      <div class="wrapper">
+        <router-view></router-view>
+      </div>
     </main>
 
     <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="tokenExpiredIsOpen" :close="noop">
@@ -94,6 +96,9 @@ h6 {
 
 main {
   padding-left: $sidebar-width;
+  .wrapper {
+    padding: 20px;
+  }
 }
 
 .loader {

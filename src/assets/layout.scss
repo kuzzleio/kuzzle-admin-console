@@ -14,23 +14,6 @@ html {
   color: #333;
 }
 
-.side-nav {
-  z-index: 900;
-  top: $navbar-height - 10;
-  height: 95%;
-}
-@media #{$medium-and-up} {
-  .side-nav {
-    top: $navbar-height;
-  }
-}
-
-@media #{$medium-and-down} {
-  .side-nav.fixed {
-    transform: translateX(0);
-  }
-}
-
 nav .nav-wrapper form,
 nav .nav-wrapper form .input-field {
   height: 100%;

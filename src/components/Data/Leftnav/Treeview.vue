@@ -44,81 +44,96 @@
 </template>
 
 <script>
-  import {canSearchIndex} from '../../../services/userAuthorization'
-  import IndexBranch from './IndexBranch'
-  import {filterIndexesByKeyword} from '../../../services/data'
+import { canSearchIndex } from '../../../services/userAuthorization'
+import IndexBranch from './IndexBranch'
+import { filterIndexesByKeyword } from '../../../services/data'
 
-  export default {
-    name: 'Treeview',
-    props: {
-      index: String,
-      collection: String,
-      routeName: String
+export default {
+  name: 'Treeview',
+  props: {
+    index: String,
+    collection: String,
+    routeName: String
+  },
+  components: {
+    IndexBranch
+  },
+  data() {
+    return {
+      filter: ''
+    }
+  },
+  methods: {
+    canSearchIndex
+  },
+  computed: {
+    filteredIndices() {
+      return [
+        ...filterIndexesByKeyword(
+          this.$store.state.index.indexes,
+          this.$store.state.index.indexesAndCollections,
+          this.filter
+        )
+      ]
     },
-    components: {
-      IndexBranch
+    orderedFilteredIndices() {
+      return this.filteredIndices.sort()
     },
-    data () {
-      return {
-        filter: ''
-      }
+    indexesAndCollections() {
+      return Object.keys(this.$store.state.index.indexesAndCollections).length
+        ? this.$store.state.index.indexesAndCollections
+        : {}
     },
-    methods: {
-      canSearchIndex
-    },
-    computed: {
-      filteredIndices () {
-        return [...filterIndexesByKeyword(this.$store.state.index.indexes, this.$store.state.index.indexesAndCollections, this.filter)]
-      },
-      orderedFilteredIndices () {
-        return this.filteredIndices.sort()
-      },
-      indexesAndCollections () {
-        return Object.keys(this.$store.state.index.indexesAndCollections).length ? this.$store.state.index.indexesAndCollections : {}
-      },
-      indexCount () {
-        return Object.keys(this.indexesAndCollections).length
-      }
+    indexCount() {
+      return Object.keys(this.indexesAndCollections).length
     }
   }
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .input-field {
-    label {
-      &.active i {
-        color: #444
-      }
-    }
-    input {
-      padding-left: 3rem;
+.side-nav {
+  z-index: 900;
+  top: $navbar-height;
+  height: 95%;
+  width: $sidebar-width;
+}
 
-      &::-webkit-input-placeholder {
-        font-size: 1rem;
-      }
-      &::-moz-placeholder {
-        font-size: 1rem;
-      }
-      &:-ms-input-placeholder,
-      &:-moz-placeholder {
-        font-size: 1rem;
-      }
+.input-field {
+  label {
+    &.active i {
+      color: #444;
     }
   }
+  input {
+    padding-left: 3rem;
 
-  .unauthorized {
-    li {
-      line-height: 24px;
+    &::-webkit-input-placeholder {
+      font-size: 1rem;
+    }
+    &::-moz-placeholder {
+      font-size: 1rem;
+    }
+    &:-ms-input-placeholder,
+    &:-moz-placeholder {
+      font-size: 1rem;
     }
   }
+}
 
-  .indexes {
-    margin-top: 16px;
-    padding-left: 15px;
-    list-style: none;
-  }
-
+.unauthorized {
   li {
-    position: relative;
+    line-height: 24px;
   }
+}
+
+.indexes {
+  margin-top: 16px;
+  padding-left: 15px;
+  list-style: none;
+}
+
+li {
+  position: relative;
+}
 </style>
