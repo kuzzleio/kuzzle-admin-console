@@ -2,6 +2,15 @@ html {
   font-family: $body-font-family;
 }
 
+#toast-container {
+  .toast {
+    &.error {
+      color: #fff;
+      background-color: $error-color;
+    }
+  }
+}
+
 nav {
   height: 50px;
   line-height: 50px;
