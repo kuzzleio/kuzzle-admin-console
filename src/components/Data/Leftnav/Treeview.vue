@@ -16,8 +16,8 @@
           <div class="nav-wrapper">
             <form>
               <div class="input-field">
-                <input id="search" type="search" v-model="filter" placeholder="Search index &amp; collection">
-                <label for="search"><i class="fa fa-search"></i></label>
+                <input type="search" v-model="filter" placeholder="Search index &amp; collection">
+                <div class="search-icon"><i class="fa fa-search"></i></div>
               </div>
             </form>
           </div>
@@ -26,7 +26,7 @@
       <li>
         <ul class="indexes">
           <li
-            v-for="indexName in orderedFilteredIndices">
+            v-for="indexName in orderedFilteredIndices" :key="indexName">
             <index-branch
               :force-open="indexCount === 1"
               :index-name="indexName"
@@ -100,10 +100,14 @@ export default {
 }
 
 .input-field {
-  label {
-    &.active i {
-      color: #444;
-    }
+  height: 100%;
+  background-color: #ffffff;
+  color: #000000;
+
+  .search-icon {
+    position: absolute;
+    top: 0;
+    left: 20px;
   }
   input {
     padding-left: 3rem;
