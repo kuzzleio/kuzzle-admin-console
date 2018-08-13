@@ -138,13 +138,6 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    hasSearchFilters() {
-      return (
-        this.$store.state.route.query.searchTerm !== '' ||
-        this.basicFilter.length > 0 ||
-        this.rawFilter.length > 0
-      )
-    },
     fetchData() {
       let pagination = {
         from: this.paginationFrom,

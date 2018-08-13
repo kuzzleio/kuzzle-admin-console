@@ -136,7 +136,19 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(newFilters) {
-      filterManager.save(newFilters, this.$router, this.index, this.collection)
+      try {
+        filterManager.save(
+          newFilters,
+          this.$router,
+          this.index,
+          this.collection
+        )
+      } catch (error) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while updating filters: <br />' + error.message
+        })
+      }
     },
     fetchDocuments() {
       this.$forceUpdate()

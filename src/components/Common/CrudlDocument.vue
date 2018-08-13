@@ -197,7 +197,6 @@ export default {
     dispatchToggle() {
       this.$emit('toggle-all')
     },
-    setBasicFilter(value) {},
     deleteBulk() {
       this.bulkDeleteIsOpen = true
     },
