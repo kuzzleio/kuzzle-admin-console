@@ -14,7 +14,7 @@
     <label class="item-title">
       <a @click="toggleCollapse">{{document.id}}</a>
       <div class="profile-list">
-        <div class="profile-chip chip" v-for="profile in profileList">
+        <div class="profile-chip chip" v-for="profile in profileList" :key="profile">
           <router-link :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</router-link>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
@@ -49,19 +49,6 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  .profile-list {
-    display: inline-flex;
-  }
-  .profile-chip {
-    opacity: 0.7;
-    &:hover,
-    &:focus {
-      opacity: 1;
-    }
-  }
-</style>
-
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
@@ -83,13 +70,13 @@ export default {
     jsonFormatter,
     title
   },
-  data () {
+  data() {
     return {
       collapsed: true
     }
   },
   computed: {
-    profileList () {
+    profileList() {
       if (!this.document.content.profileIds) {
         return []
       }
@@ -98,28 +85,32 @@ export default {
         return idx < MAX_PROFILES
       })
     },
-    showAllProfiles () {
+    showAllProfiles() {
       return this.document.content.profileIds > MAX_PROFILES
     },
-    checkboxId () {
+    checkboxId() {
       return `checkbox-${this.document.id}`
     }
   },
   methods: {
-    toggleCollapse () {
+    toggleCollapse() {
       this.collapsed = !this.collapsed
     },
-    notifyCheckboxClick () {
+    notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
     },
-    deleteDocument () {
+    deleteDocument() {
       if (this.canDeleteUser()) {
         this.$emit('delete-document', this.document.id)
       }
     },
-    update () {
+    update() {
       if (this.canEditUser()) {
-        this.$emit('common-list::edit-document', 'SecurityUsersUpdate', this.document.id)
+        this.$emit(
+          'common-list::edit-document',
+          'SecurityUsersUpdate',
+          this.document.id
+        )
       }
     },
     canEditUser,
@@ -127,3 +118,28 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+label {
+  color: black;
+  line-height: 21px;
+}
+.additional-attribute {
+  color: grey;
+  font-style: italic;
+}
+.profile-list {
+  display: inline-flex;
+}
+.profile-chip {
+  opacity: 0.7;
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}
+.actions {
+  margin-top: 1px;
+  font-size: 1em;
+}
+</style>

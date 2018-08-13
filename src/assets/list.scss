@@ -1,32 +1,3 @@
-.collection-wrapper {
-  min-height: 453px;
-
-  .collection {
-    overflow: inherit;
-
-    .collection-item {
-      label {
-        color: black;
-        line-height: 21px;
-      }
-      .additional-attribute {
-        color: grey;
-        font-style: italic;
-      }
-      .actions {
-        margin-top: 1px;
-        font-size: 1em;
-
-        .action {
-          cursor: pointer;
-          padding: 0 5px 0 5px;
-          margin-left: 5px;
-        }
-      }
-    }
-  }
-}
-
 .item-document {
   &.collapsed i.item-toggle {
     transform: rotate(-90deg);

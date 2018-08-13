@@ -45,119 +45,124 @@
   </div>
 </template>
 
-<style type="text/css" media="screen" scoped>
-  i.item-toggle {
-    padding: 0 10px;
-    margin-left: -10px;
-    cursor: pointer;
-    transition-duration: .2s;
-  }
+<script>
+import JsonFormatter from '../../../directives/json-formatter.directive'
+import Dropdown from '../../Materialize/Dropdown'
+import {
+  canEditDocument,
+  canDeleteDocument
+} from '../../../services/userAuthorization'
+import title from '../../../directives/title.directive'
 
-  .collapsed i.item-toggle {
-    transform: rotate(-90deg);
+export default {
+  name: 'DocumentItem',
+  props: {
+    index: String,
+    collection: String,
+    document: Object,
+    isChecked: Boolean
+  },
+  directives: {
+    JsonFormatter,
+    title
+  },
+  components: {
+    Dropdown
+  },
+  data() {
+    return {
+      collapsed: true
+    }
+  },
+  methods: {
+    toggleCollapse() {
+      this.collapsed = !this.collapsed
+    },
+    notifyCheckboxClick() {
+      this.$emit('checkbox-click', this.document.id)
+    },
+    deleteDocument() {
+      if (this.canDelete) {
+        this.$emit('delete-document', this.document.id)
+      }
+    }
+  },
+  computed: {
+    canEdit() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canEditDocument(this.index, this.collection)
+    },
+    canDelete() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canDeleteDocument(this.index, this.collection)
+    },
+    checkboxId() {
+      return `checkbox-${this.document.id}`
+    }
   }
+}
+</script>
+
+<style type="scss" rel="stylesheet/scss" scoped>
+i.item-toggle {
+  padding: 0 10px;
+  margin-left: -10px;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+
+.collapsed i.item-toggle {
+  transform: rotate(-90deg);
+}
+
+label {
+  color: black;
+  line-height: 21px;
 
   /* HACK enabling to click on the title without checking the checkbox */
-  label.item-title {
+  .item-title {
     cursor: pointer;
     font-size: 1rem;
-    font-family: "AnonymousPro";
+    font-family: 'AnonymousPro';
+
+    a {
+      color: #272727;
+    }
   }
+}
 
+/* HACK for centring the checkbox between the caret and the title */
+[type='checkbox'] + label {
+  height: 15px;
+  padding-left: 30px;
+}
 
-  .item-title a {
-    color: #272727;
-  }
+.collapsed .item-content {
+  max-height: 0;
+  transition-duration: 0;
+  padding: 0 10px 0 0;
+}
 
-  /* HACK for centring the checkbox between the caret and the title */
-  [type="checkbox"] + label {
-    height: 15px;
-    padding-left: 30px;
-  }
+.item-content {
+  transition-duration: 0.2s;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 10px 0 0;
 
-  .item-content {
-    transition-duration: .2s;
-    max-height: 300px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 10px 10px 0 0;
-  }
-
-  .collapsed .item-content {
-    max-height: 0;
-    transition-duration: 0;
-    padding: 0 10px 0 0;
-  }
-
-  .item-content pre {
+  pre {
     margin: 0;
     width: 70%;
     display: inline-block;
   }
+}
 
-  .item-content .profile-list {
-    display: inline-block;
-    width: 30%;
-    vertical-align: top;
-    text-align: right;
-  }
+.actions {
+  margin-top: 1px;
+  font-size: 1em;
+}
 </style>
-
-<script>
-  import JsonFormatter from '../../../directives/json-formatter.directive'
-  import Dropdown from '../../Materialize/Dropdown'
-  import { canEditDocument, canDeleteDocument } from '../../../services/userAuthorization'
-  import title from '../../../directives/title.directive'
-
-  export default {
-    name: 'DocumentItem',
-    props: {
-      index: String,
-      collection: String,
-      document: Object,
-      isChecked: Boolean
-    },
-    directives: {
-      JsonFormatter,
-      title
-    },
-    components: {
-      Dropdown
-    },
-    data () {
-      return {
-        collapsed: true
-      }
-    },
-    methods: {
-      toggleCollapse () {
-        this.collapsed = !this.collapsed
-      },
-      notifyCheckboxClick () {
-        this.$emit('checkbox-click', this.document.id)
-      },
-      deleteDocument () {
-        if (this.canDelete) {
-          this.$emit('delete-document', this.document.id)
-        }
-      }
-    },
-    computed: {
-      canEdit () {
-        if (!this.index || !this.collection) {
-          return false
-        }
-        return canEditDocument(this.index, this.collection)
-      },
-      canDelete () {
-        if (!this.index || !this.collection) {
-          return false
-        }
-        return canDeleteDocument(this.index, this.collection)
-      },
-      checkboxId () {
-        return `checkbox-${this.document.id}`
-      }
-    }
-  }
-</script>

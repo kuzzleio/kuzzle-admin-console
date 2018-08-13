@@ -41,12 +41,6 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.collection {
-  overflow: visible;
-}
-</style>
-
 <script>
 import CrudlDocument from './CrudlDocument'
 import UserItem from '../Security/Users/UserItem'
@@ -240,3 +234,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+.collection {
+  overflow: visible;
+}
+</style>

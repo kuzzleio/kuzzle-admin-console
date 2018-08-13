@@ -57,31 +57,35 @@ export default {
     jsonFormatter,
     title
   },
-  data () {
+  data() {
     return {
       collapsed: true
     }
   },
   computed: {
-    checkboxId () {
+    checkboxId() {
       return `checkbox-${this.document.id}`
     }
   },
   methods: {
-    toggleCollapse () {
+    toggleCollapse() {
       this.collapsed = !this.collapsed
     },
-    notifyCheckboxClick () {
+    notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
     },
-    deleteDocument () {
+    deleteDocument() {
       if (this.canDeleteRole()) {
         this.$emit('delete-document', this.document.id)
       }
     },
-    update () {
+    update() {
       if (this.canEditRole()) {
-        this.$emit('common-list::edit-document', 'SecurityRolesUpdate', this.document.id)
+        this.$emit(
+          'common-list::edit-document',
+          'SecurityRolesUpdate',
+          this.document.id
+        )
       }
     },
     canEditRole,
@@ -89,3 +93,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+label {
+  color: black;
+  line-height: 21px;
+}
+.additional-attribute {
+  color: grey;
+  font-style: italic;
+}
+.actions {
+  margin-top: 1px;
+  font-size: 1em;
+}
+</style>
