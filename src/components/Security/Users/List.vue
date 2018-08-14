@@ -46,7 +46,7 @@
 </template>
 
 <script>
-  import CommonList from '../../Common/List'
+  import CommonList from '../../Common/CommonList'
   import ListNotAllowed from '../../Common/ListNotAllowed'
   import Headline from '../../Materialize/Headline'
   import UsersDropdown from './Dropdown'

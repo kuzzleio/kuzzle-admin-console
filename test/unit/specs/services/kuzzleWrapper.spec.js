@@ -7,27 +7,31 @@ describe('Kuzzle wrapper service', () => {
     let triggerError = true
     let fakeResponse = {
       total: 42,
-      documents: [{
-        content: {
-          name: {
-            first: 'toto'
+      documents: [
+        {
+          content: {
+            name: {
+              first: 'toto'
+            }
+          },
+          id: 'id',
+          meta: {
+            createdAt: 10101101
           }
-        },
-        id: 'id',
-        meta: {
-          createdAt: 10101101
         }
-      }]
+      ]
     }
     let responseWithAdditionalAttr = {
-      documents: [{
-        content: {name: {first: 'toto'}},
-        id: 'id',
-        additionalAttribute: {name: 'name.first', value: 'toto'},
-        meta: {
-          createdAt: 10101101
+      documents: [
+        {
+          content: { name: { first: 'toto' } },
+          id: 'id',
+          additionalAttribute: { name: 'name.first', value: 'toto' },
+          meta: {
+            createdAt: 10101101
+          }
         }
-      }],
+      ],
       total: 42
     }
     let kuzzleWrapper
@@ -35,16 +39,16 @@ describe('Kuzzle wrapper service', () => {
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
-          collection () {
+          collection() {
             return {
-              search (filters, cb) {
+              search(filters, cb) {
                 if (triggerError) {
                   cb(new Error('error'))
                 } else {
                   cb(null, fakeResponse)
                 }
               },
-              searchPromise () {
+              searchPromise() {
                 return new Promise((resolve, reject) => {
                   if (triggerError) {
                     reject(new Error('error'))
@@ -59,8 +63,9 @@ describe('Kuzzle wrapper service', () => {
       })
     })
 
-    it('should reject a promise as there is no collection nor index', (done) => {
-      kuzzleWrapper.performSearchDocuments()
+    it('should reject a promise as there is no collection nor index', done => {
+      kuzzleWrapper
+        .performSearchDocuments()
         .then(() => {})
         .catch(err => {
           expect(err.message).to.equals('Missing collection or index')
@@ -68,8 +73,9 @@ describe('Kuzzle wrapper service', () => {
         })
     })
 
-    it('should reject a promise', (done) => {
-      kuzzleWrapper.performSearchDocuments('collection', 'index')
+    it('should reject a promise', done => {
+      kuzzleWrapper
+        .performSearchDocuments('collection', 'index')
         .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
@@ -77,32 +83,39 @@ describe('Kuzzle wrapper service', () => {
         })
     })
 
-    it('should receive documents', (done) => {
+    it('should receive documents', done => {
       triggerError = false
-      kuzzleWrapper.performSearchDocuments('collection', 'index')
+      kuzzleWrapper
+        .performSearchDocuments('collection', 'index')
         .then(res => {
           expect(res).to.deep.equals(fakeResponse)
           done()
         })
-        .catch((e) => done(e))
+        .catch(e => done(e))
     })
 
-    it('should receive sorted documents with additional attributes for the sort array', (done) => {
+    it('should receive sorted documents with additional attributes for the sort array', done => {
       triggerError = false
-      kuzzleWrapper.performSearchDocuments('collection', 'index', {}, {}, [{'name.first': 'asc'}])
+      kuzzleWrapper
+        .performSearchDocuments('collection', 'index', {}, {}, [
+          { 'name.first': 'asc' }
+        ])
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
-        }).catch(() => {})
+        })
+        .catch(() => {})
     })
 
-    it('should treat a String sort argument as the field to sort by', (done) => {
+    it('should treat a String sort argument as the field to sort by', done => {
       triggerError = false
-      kuzzleWrapper.performSearchDocuments('collection', 'index', {}, {}, ['name.first'])
+      kuzzleWrapper
+        .performSearchDocuments('collection', 'index', {}, {}, ['name.first'])
         .then(res => {
           expect(res).to.deep.equals(responseWithAdditionalAttr)
           done()
-        }).catch(() => {})
+        })
+        .catch(() => {})
     })
   })
 
@@ -122,7 +135,7 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should disconnect and reconnect kuzzle after setting the environment params', () => {
-      kuzzleWrapper.connectToEnvironment({host: 'toto.toto', port: 7512})
+      kuzzleWrapper.connectToEnvironment({ host: 'toto.toto', port: 7512 })
 
       expect(disconnectMock.called).to.equals(true)
       expect(connectMock.called).to.equals(true)
@@ -136,14 +149,14 @@ describe('Kuzzle wrapper service', () => {
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
-          queryPromise () {
+          queryPromise() {
             if (triggerError) {
               return Promise.reject(new Error('error'))
             } else {
               return Promise.resolve()
             }
           },
-          refreshIndex (index) {
+          refreshIndex(index) {
             return Promise.resolve()
           }
         }
@@ -154,8 +167,9 @@ describe('Kuzzle wrapper service', () => {
       kuzzleWrapper.performDeleteDocuments()
     })
 
-    it('should reject a promise', (done) => {
-      kuzzleWrapper.performDeleteDocuments('index', 'collection', [42])
+    it('should reject a promise', done => {
+      kuzzleWrapper
+        .performDeleteDocuments('index', 'collection', [42])
         .then(() => {})
         .catch(e => {
           expect(e.message).to.equals('error')
@@ -163,9 +177,10 @@ describe('Kuzzle wrapper service', () => {
         })
     })
 
-    it('should delete a document and refresh the index, then resolve a promise', (done) => {
+    it('should delete a document and refresh the index, then resolve a promise', done => {
       triggerError = false
-      kuzzleWrapper.performDeleteDocuments('index', 'collection', [42])
+      kuzzleWrapper
+        .performDeleteDocuments('index', 'collection', [42])
         .then(() => {
           done()
         })
@@ -176,30 +191,32 @@ describe('Kuzzle wrapper service', () => {
     let kuzzleWrapper
     let removeListener = sandbox.stub()
 
-    it('should resolve if kuzzle is connected', (done) => {
+    it('should resolve if kuzzle is connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
           state: 'connected'
         }
       })
 
-      kuzzleWrapper.waitForConnected()
+      kuzzleWrapper
+        .waitForConnected()
         .then(() => done())
         .catch(e => done(e))
     })
 
-    it('should resolve if kuzzle trigger event connected', (done) => {
+    it('should resolve if kuzzle trigger event connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
           state: 'connecting',
-          addListener (event, cb) {
+          addListener(event, cb) {
             cb()
           },
           removeListener
         }
       })
 
-      kuzzleWrapper.waitForConnected()
+      kuzzleWrapper
+        .waitForConnected()
         .then(() => {
           expect(removeListener.called).to.be.equal(true)
           done()
@@ -207,7 +224,7 @@ describe('Kuzzle wrapper service', () => {
         .catch(e => done(e))
     })
 
-    it('should reject if kuzzle never trigger event connected', (done) => {
+    it('should reject if kuzzle never trigger event connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
         './kuzzle': {
           state: 'connecting',
@@ -216,7 +233,8 @@ describe('Kuzzle wrapper service', () => {
         }
       })
 
-      kuzzleWrapper.waitForConnected(10)
+      kuzzleWrapper
+        .waitForConnected(10)
         .then(() => {
           done(new Error('Promise was resolved'))
         })
@@ -236,15 +254,15 @@ describe('Kuzzle wrapper service', () => {
           host: 'toto',
           port: 8888,
           state: 'connecting',
-          addListener (event, cb) {
-            cb({message: null})
+          addListener(event, cb) {
+            cb({ message: null })
           },
           off,
           on
         }
       })
 
-      let store = {state: {kuzzle: {}}, commit: sandbox.stub()}
+      let store = { state: { kuzzle: {} }, commit: sandbox.stub() }
       kuzzleWrapper.initStoreWithKuzzle(store)
 
       expect(off.calledWith('tokenExpired'))
@@ -317,7 +335,9 @@ describe('Kuzzle wrapper service', () => {
         .then(res => {
           expect(res.documents[0]).to.have.property('additionalAttribute')
           expect(res.documents[0].additionalAttribute).to.have.property('name')
-          expect(res.documents[0].additionalAttribute.name).to.be.equal('aField')
+          expect(res.documents[0].additionalAttribute.name).to.be.equal(
+            'aField'
+          )
         })
     })
   })
@@ -346,18 +366,16 @@ describe('Kuzzle wrapper service', () => {
       })
     })
     it('should return a well-formed result', () => {
-      return kuzzleWrapper
-        .performSearchProfiles()
-        .then(res => {
-          expect(res).to.have.property('documents')
-          expect(res).to.have.property('total')
-          expect(res.total).to.be.equal(1)
-          expect(res.documents).to.be.an('array')
-          expect(res.documents.length).to.be.equal(1)
-          expect(res.documents[0].id).to.be.equal(profileExample.id)
-          expect(res.documents[0].meta).to.eql(profileExample.meta)
-          expect(res.documents[0].content).to.eql(profileExample.content)
-        })
+      return kuzzleWrapper.performSearchProfiles().then(res => {
+        expect(res).to.have.property('documents')
+        expect(res).to.have.property('total')
+        expect(res.total).to.be.equal(1)
+        expect(res.documents).to.be.an('array')
+        expect(res.documents.length).to.be.equal(1)
+        expect(res.documents[0].id).to.be.equal(profileExample.id)
+        expect(res.documents[0].meta).to.eql(profileExample.meta)
+        expect(res.documents[0].content).to.eql(profileExample.content)
+      })
     })
   })
 
@@ -385,24 +403,22 @@ describe('Kuzzle wrapper service', () => {
       })
     })
     it('should return a well-formed result', () => {
-      return kuzzleWrapper
-        .performSearchRoles()
-        .then(res => {
-          expect(res).to.have.property('documents')
-          expect(res).to.have.property('total')
-          expect(res.total).to.be.equal(1)
-          expect(res.documents).to.be.an('array')
-          expect(res.documents.length).to.be.equal(1)
-          expect(res.documents[0].id).to.be.equal(roleExample.id)
-          expect(res.documents[0].meta).to.eql(roleExample.meta)
-          expect(res.documents[0].content).to.eql(roleExample.content)
-        })
+      return kuzzleWrapper.performSearchRoles().then(res => {
+        expect(res).to.have.property('documents')
+        expect(res).to.have.property('total')
+        expect(res.total).to.be.equal(1)
+        expect(res.documents).to.be.an('array')
+        expect(res.documents.length).to.be.equal(1)
+        expect(res.documents[0].id).to.be.equal(roleExample.id)
+        expect(res.documents[0].meta).to.eql(roleExample.meta)
+        expect(res.documents[0].content).to.eql(roleExample.content)
+      })
     })
   })
 
   describe('performDeleteUsers', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
-    let kuzzleWrapper = kuzzleWrapper = kuzzleWrapperInjector({
+    let kuzzleWrapper = kuzzleWrapperInjector({
       './kuzzle': {
         queryPromise: queryStub
       }
@@ -413,11 +429,9 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject if no ids are provided', () => {
-      return kuzzleWrapper
-        .performDeleteUsers()
-        .catch(e => {
-          expect(e).to.be.an('error')
-        })
+      return kuzzleWrapper.performDeleteUsers().catch(e => {
+        expect(e).to.be.an('error')
+      })
     })
     it('should not reject if ids are provided', () => {
       return kuzzleWrapper
@@ -430,7 +444,7 @@ describe('Kuzzle wrapper service', () => {
 
   describe('performDeleteProfiles', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
-    let kuzzleWrapper = kuzzleWrapper = kuzzleWrapperInjector({
+    let kuzzleWrapper = kuzzleWrapperInjector({
       './kuzzle': {
         queryPromise: queryStub
       }
@@ -441,11 +455,9 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject if no ids are provided', () => {
-      return kuzzleWrapper
-        .performDeleteProfiles()
-        .catch(e => {
-          expect(e).to.be.an('error')
-        })
+      return kuzzleWrapper.performDeleteProfiles().catch(e => {
+        expect(e).to.be.an('error')
+      })
     })
     it('should not reject if ids are provided', () => {
       return kuzzleWrapper
@@ -458,7 +470,7 @@ describe('Kuzzle wrapper service', () => {
 
   describe('performDeleteRoles', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
-    let kuzzleWrapper = kuzzleWrapper = kuzzleWrapperInjector({
+    let kuzzleWrapper = kuzzleWrapperInjector({
       './kuzzle': {
         queryPromise: queryStub
       }
@@ -469,18 +481,14 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject if no ids are provided', () => {
-      return kuzzleWrapper
-        .performDeleteRoles()
-        .catch(e => {
-          expect(e).to.be.an('error')
-        })
+      return kuzzleWrapper.performDeleteRoles().catch(e => {
+        expect(e).to.be.an('error')
+      })
     })
     it('should not reject if ids are provided', () => {
-      return kuzzleWrapper
-        .performDeleteRoles([2])
-        .then(() => {
-          expect(queryStub.callCount).to.be.equal(2)
-        })
+      return kuzzleWrapper.performDeleteRoles([2]).then(() => {
+        expect(queryStub.callCount).to.be.equal(2)
+      })
     })
   })
 })

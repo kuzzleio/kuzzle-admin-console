@@ -5,7 +5,6 @@
       @filters-basic-search="basicSearch"
       @filters-raw-search="rawSearch"
       @filters-refresh-search="refreshSearch"
-      :available-filters="availableFilters"
       :search-term="searchTerm"
       :basic-filter="basicFilter"
       :format-from-basic-search="formatFromBasicSearch"
@@ -115,137 +114,144 @@
 </template>
 
 <script>
-  import Pagination from '../../Materialize/Pagination'
-  import Modal from '../../Materialize/Modal'
-  import Filters from './Filters'
-  import {SET_BASIC_FILTER} from '../../../vuex/modules/common/crudlDocument/mutation-types'
-  import {formatFromBasicSearch, formatSort} from '../../../services/filterFormat'
-  import {SET_TOAST} from '../../../vuex/modules/common/toaster/mutation-types'
+import Pagination from '../../Materialize/Pagination'
+import Modal from '../../Materialize/Modal'
+import Filters from './Filters'
+import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
+import {
+  formatFromBasicSearch,
+  formatSort
+} from '../../../services/filterManager'
+import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
-  export default {
-    name: 'CrudlDocument',
-    components: {
-      Pagination,
-      Modal,
-      Filters
+export default {
+  name: 'CrudlDocument',
+  components: {
+    Pagination,
+    Modal,
+    Filters
+  },
+  props: {
+    index: String,
+    collection: String,
+    documents: Array,
+    displayBulkDelete: Boolean,
+    displayCreate: {
+      type: Boolean,
+      default: false
     },
-    props: {
-      index: String,
-      collection: String,
-      documents: Array,
-      displayBulkDelete: Boolean,
-      displayCreate: {
-        type: Boolean,
-        default: false
-      },
-      allChecked: Boolean,
-      totalDocuments: Number,
-      lengthDocument: {
-        type: Number,
-        default: 0
-      },
-      selectedDocuments: Array,
-      paginationFrom: Number,
-      paginationSize: Number,
-      searchTerm: String,
-      rawFilter: Object,
-      basicFilter: [Array, Object],
-      sorting: Object,
-      availableFilters: Object,
-      documentToDelete: String,
-      performDelete: Function
+    allChecked: Boolean,
+    totalDocuments: Number,
+    lengthDocument: {
+      type: Number,
+      default: 0
     },
-    data () {
-      return {
-        formatFromBasicSearch,
-        formatSort,
-        documentIdToDelete: '',
-        singleDeleteIsOpen: false,
-        bulkDeleteIsOpen: false,
-        isLoading: false
+    selectedDocuments: Array,
+    paginationFrom: Number,
+    paginationSize: Number,
+    searchTerm: String,
+    rawFilter: Object,
+    basicFilter: [Array, Object],
+    sorting: Object,
+    availableFilters: Object,
+    documentToDelete: String,
+    performDelete: Function
+  },
+  data() {
+    return {
+      formatFromBasicSearch,
+      formatSort,
+      documentIdToDelete: '',
+      singleDeleteIsOpen: false,
+      bulkDeleteIsOpen: false,
+      isLoading: false
+    }
+  },
+  methods: {
+    create() {
+      this.$emit('create-clicked')
+    },
+    changePage(from) {
+      this.$router.push({ query: { ...this.$route.query, from } })
+    },
+    confirmBulkDelete() {
+      this.isLoading = true
+      this.performDelete(this.index, this.collection, this.selectedDocuments)
+        .then(() => {
+          this.close()
+          this.refreshSearch()
+          this.isLoading = false
+          return null
+        })
+        .catch(e => {
+          this.$store.commit(SET_TOAST, { text: e.message })
+        })
+    },
+    confirmSingleDelete(id) {
+      this.performDelete(this.index, this.collection, [id])
+        .then(() => {
+          this.close()
+          this.refreshSearch()
+          return null
+        })
+        .catch(e => {
+          this.$store.commit(SET_TOAST, { text: e.message })
+        })
+    },
+    quickSearch(searchTerm) {
+      this.$router.push({ query: { searchTerm, from: 0 } })
+    },
+    basicSearch(filters, sorting) {
+      if (!filters && !sorting) {
+        this.$router.push({
+          query: { basicFilter: null, sorting: null, from: 0 }
+        })
+        return
+      }
+
+      let basicFilter = JSON.stringify(filters)
+      this.$router.push({
+        query: { basicFilter, sorting: JSON.stringify(sorting), from: 0 }
+      })
+    },
+    rawSearch(filters) {
+      if (!filters || Object.keys(filters).length === 0) {
+        this.$router.push({ query: { rawFilter: null, from: 0 } })
+        return
+      }
+
+      let rawFilter = JSON.stringify(filters)
+      this.$router.push({ query: { rawFilter, from: 0 } })
+    },
+    refreshSearch() {
+      // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
+      // https://github.com/vuejs/vue-router/issues/296
+      if (parseInt(this.$route.query.from) === 0) {
+        this.$emit('crudl-refresh-search')
+      } else {
+        this.$router.push({ query: { ...this.$route.query, from: 0 } })
       }
     },
-    methods: {
-      create () {
-        this.$emit('create-clicked')
-      },
-      changePage (from) {
-        this.$router.push({query: {...this.$route.query, from}})
-      },
-      confirmBulkDelete () {
-        this.isLoading = true
-        this.performDelete(this.index, this.collection, this.selectedDocuments)
-          .then(() => {
-            this.close()
-            this.refreshSearch()
-            this.isLoading = false
-            return null
-          })
-          .catch((e) => {
-            this.$store.commit(SET_TOAST, {text: e.message})
-          })
-      },
-      confirmSingleDelete (id) {
-        this.performDelete(this.index, this.collection, [id])
-          .then(() => {
-            this.close()
-            this.refreshSearch()
-            return null
-          })
-          .catch((e) => {
-            this.$store.commit(SET_TOAST, {text: e.message})
-          })
-      },
-      quickSearch (searchTerm) {
-        this.$router.push({query: {searchTerm, from: 0}})
-      },
-      basicSearch (filters, sorting) {
-        if (!filters && !sorting) {
-          this.$router.push({query: {basicFilter: null, sorting: null, from: 0}})
-          return
-        }
-
-        let basicFilter = JSON.stringify(filters)
-        this.$router.push({query: {basicFilter, sorting: JSON.stringify(sorting), from: 0}})
-      },
-      rawSearch (filters) {
-        if (!filters || Object.keys(filters).length === 0) {
-          this.$router.push({query: {rawFilter: null, from: 0}})
-          return
-        }
-
-        let rawFilter = JSON.stringify(filters)
-        this.$router.push({query: {rawFilter, from: 0}})
-      },
-      refreshSearch () {
-        // If we are already on the page, the $router.go function doesn't trigger the route.meta.data() function of top level components...
-        // https://github.com/vuejs/vue-router/issues/296
-        if (parseInt(this.$route.query.from) === 0) {
-          this.$emit('crudl-refresh-search')
-        } else {
-          this.$router.push({query: {...this.$route.query, from: 0}})
-        }
-      },
-      dispatchToggle () {
-        this.$emit('toggle-all')
-      },
-      setBasicFilter (value) {
-        this.$store.commit(SET_BASIC_FILTER, value)
-      },
-      deleteBulk () {
-        this.bulkDeleteIsOpen = true
-      },
-      close () {
-        this.singleDeleteIsOpen = false
-        this.bulkDeleteIsOpen = false
-        this.documentIdToDelete = []
-      }
+    dispatchToggle() {
+      this.$emit('toggle-all')
     },
-    watch: {
-      documentToDelete (val) {
-        this.documentIdToDelete = val
-        this.singleDeleteIsOpen = true
-      }
+    setBasicFilter(value) {
+      this.$store.commit(SET_BASIC_FILTER, value)
+    },
+    deleteBulk() {
+      this.bulkDeleteIsOpen = true
+    },
+    close() {
+      this.singleDeleteIsOpen = false
+      this.bulkDeleteIsOpen = false
+      this.documentIdToDelete = []
+    }
+  },
+  watch: {
+    documentToDelete(val) {
+      this.documentIdToDelete = val
+      this.singleDeleteIsOpen = true
     }
   }
+}
 </script>
