@@ -1,8 +1,8 @@
 <template>
-  <form @submit.prevent="search">
+  <form class="BasicFilter" @submit.prevent="search">
     <div class="col s7">
-      <div class="search-bar">
-        <i class="fa fa-search search"></i>
+      <div class="BasicFilter-searchBar">
+        <i class="BasicFilter-searchIcon fa fa-search"></i>
         <multiselect
           :options="[]"
           :taggable="true"
@@ -15,55 +15,12 @@
         </multiselect>
       </div>
     </div>
-    <div class="col s3 actions-quicksearch">
+    <div class="col s3 BasicFilter-actions">
       <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
       <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
     </div>
   </form>
 </template>
-
-<style lang="scss" scoped>
-.search-bar {
-  border: none;
-  height: auto;
-
-  i.search {
-    margin-left: 10px;
-  }
-  .multiselect__select {
-    display: none;
-  }
-  input:focus {
-    border: none;
-    box-shadow: none;
-  }
-  .multiselect__tags {
-    background: none;
-    padding-top: 0;
-    padding-left: 40px;
-
-    .multiselect__tag {
-      margin-top: 13px;
-      background-color: #3498db;
-    }
-  }
-  input {
-    width: auto;
-    padding: 0;
-    border: none;
-  }
-  ul.multiselect__content {
-    z-index: 99;
-    li.multiselect__element {
-      z-index: 99;
-    }
-  }
-}
-.actions-quicksearch {
-  height: 48px;
-  line-height: 48px;
-}
-</style>
 
 <script>
 import MSelect from '../../../Common/MSelect'
@@ -124,3 +81,48 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.BasicFilter-searchBar {
+  border: none;
+  height: auto;
+  display: flex;
+  align-items: center;
+
+  .BasicFilter-searchIcon {
+    margin-right: 10px;
+  }
+
+  // vue-multiselect overrides
+  .multiselect {
+    flex-grow: 1;
+  }
+  .multiselect__tags {
+    display: flex;
+    align-items: center;
+    background: none;
+    padding: 0 0 0 0;
+    border: none;
+
+    .multiselect__tag {
+      margin-top: 13px;
+      background-color: $secondary-color;
+    }
+  }
+
+  .multiselect__select {
+    display: none;
+  }
+
+  ul.multiselect__content {
+    z-index: 99;
+    li.multiselect__element {
+      z-index: 99;
+    }
+  }
+}
+.BasicFilter-actions {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

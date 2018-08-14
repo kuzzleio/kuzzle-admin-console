@@ -17,7 +17,7 @@
             <form>
               <div class="Treeview-searchField input-field">
                 <input type="search" v-model="filter" placeholder="Search index &amp; collection">
-                <div class="searchIcon"><i class="fa fa-search"></i></div>
+                <div class="Treeview-searchIcon"><i class="fa fa-search"></i></div>
               </div>
             </form>
           </div>
@@ -108,7 +108,7 @@ li {
   background-color: #ffffff;
   color: #000000;
 
-  .searchIcon {
+  .Treeview-searchIcon {
     position: absolute;
     top: 0;
     left: 20px;

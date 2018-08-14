@@ -1,9 +1,9 @@
 <template>
   <div class="CrudlDocument">
-    <!-- <filters
+    <filters
       @filters-basic-search="basicSearch"
       :basic-filter="basicFilter">
-    </filters> -->
+    </filters>
 
     <div class="card-panel card-body">
       <div class="row valign-center empty-set" v-show="!documents.length">
