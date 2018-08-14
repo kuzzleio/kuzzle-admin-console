@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="CommonList">
     <slot name="emptySet" v-if="isCollectionEmpty"></slot>
     <crudl-document v-else
       :search-filter-operands="searchFilterOperands"
@@ -22,7 +22,7 @@
       @toggle-all="toggleAll"
       @crudl-refresh-search="fetchDocuments">
 
-        <div class="collection">
+        <div class="CommonList-list collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
           <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
             <component
               :is="itemName"
@@ -236,7 +236,7 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.collection {
+.CommonList-list {
   overflow: visible;
 }
 </style>

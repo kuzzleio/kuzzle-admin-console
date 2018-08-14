@@ -1,5 +1,5 @@
 <template>
-  <div class="search-filter">
+  <div class="Filters">
     <div class="card-panel card-header">
       <div class="row margin-bottom-0 filters">
         <quick-filter
@@ -18,8 +18,8 @@
       </div>
     </div>
 
-    <div class="row card-panel open-search" v-show="advancedFiltersVisible">
-      <i class="fa fa-times close" @click="advancedFiltersVisible = false"></i>
+    <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
+      <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
       <div class="col s12">
         <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
           <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
@@ -60,18 +60,14 @@
 </template>
 
 <style lang="scss" scoped>
-.open-search {
+.Filters-advanced {
   background-color: #fff;
   padding-top: 0;
   padding-bottom: 0;
   margin-top: 0;
   position: relative;
 
-  #rawsearch.pre_ace {
-    height: 100px;
-  }
-
-  i.close {
+  .Filters-btnClose {
     float: right;
     font-size: 1.3em;
     cursor: pointer;
@@ -87,49 +83,6 @@
     }
   }
 
-  .filter-content {
-    .dots {
-      border-left: 1px dotted rgba(0, 0, 0, 0.26);
-      padding-bottom: 5px;
-    }
-    a.btn {
-      i.left {
-        margin-right: 8px;
-      }
-      padding-left: 10px;
-      padding-right: 10px;
-      margin-left: 10px;
-    }
-    .button-or {
-      margin-bottom: 10px;
-    }
-    .block-and {
-      i.remove-filter {
-        margin-top: 25px;
-        color: grey;
-        cursor: pointer;
-      }
-    }
-    .block-sort {
-      margin-top: 15px;
-      margin-bottom: 0;
-    }
-    .block-content {
-      margin-left: 5px;
-      margin-bottom: 5px;
-      .group {
-        margin-bottom: 0;
-      }
-    }
-    p {
-      margin-bottom: 10px;
-      margin-top: 10px;
-      i {
-        font-size: 1.1em;
-        margin-right: 10px;
-      }
-    }
-  }
   .card-action {
     padding: 15px;
     margin-bottom: 0;

@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }" class="item-document">
-    <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div  class="RoleItem" :class="{ 'collapsed': collapsed }">
+    <i class="RoleItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,13 +11,13 @@
 
     <label :for="checkboxId" ></label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="RoleItem-title item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
-    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
+    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="RoleItem-additionalAttribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
-    <div class="right actions">
+    <div class="RoleItem-actions right">
       <a href="#" @click.prevent="update"
           v-title="{active: !canEditRole(), title: 'You are not allowed to edit this role'}">
           <i class="fa fa-pencil" :class="{'disabled': !canEditRole()}"></i>
@@ -31,7 +31,7 @@
       </dropdown>
     </div>
 
-    <div class="item-content">
+    <div class="RoleItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: true}"></pre>
     </div>
@@ -95,21 +95,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.item-toggle {
+.RoleItem-toggle {
   padding: 0 10px;
   margin-left: -10px;
   cursor: pointer;
   transition-duration: 0.2s;
-}
-
-/* HACK enabling to click on the title without checking the checkbox */
-.item-title {
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.item-title a {
-  color: #272727;
 }
 
 /* HACK for centring the checkbox between the caret and the title */
@@ -118,7 +108,13 @@ export default {
   padding-left: 30px;
 }
 
-.item-content {
+.RoleItem-title {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #272727;
+}
+
+.RoleItem-content {
   transition-duration: 0.2s;
   max-height: 300px;
   overflow-x: hidden;
@@ -133,22 +129,22 @@ export default {
 }
 
 .collapsed {
-  .item-toggle {
+  .RoleItem-toggle {
     transform: rotate(-90deg);
   }
-  .item-content {
+  .RoleItem-content {
     max-height: 0;
     transition-duration: 0;
     padding: 0 10px 0 0;
   }
 }
 
-.additional-attribute {
+.RoleItem-additionalAttribute {
   color: grey;
   font-style: italic;
 }
 
-.actions {
+.RoleItem-actions {
   margin-top: 1px;
   font-size: 1em;
 }

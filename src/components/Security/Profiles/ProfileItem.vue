@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }" class="item-document">
-    <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div class="ProfileItem" :class="{ 'collapsed': collapsed }">
+    <i class="ProfileItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,13 +11,13 @@
 
     <label :for="checkboxId" ></label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="ProfileItem-title item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
-    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
+    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="ProfileItem-additionalAttribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
-    <div class="right actions">
+    <div class="ProfileItem-actions right">
       <a href="#" @click.prevent="update"
          v-title="{active: !canEditProfile(), title: 'You are not allowed to edit this profile'}">
         <i class="fa fa-pencil" :class="{'disabled': !canEditProfile()}"></i>
@@ -30,7 +30,7 @@
       </dropdown>
     </div>
 
-    <div class="item-content">
+    <div class="ProfileItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: true}"></pre>
     </div>
@@ -97,21 +97,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.item-toggle {
+.ProfileItem-toggle {
   padding: 0 10px;
   margin-left: -10px;
   cursor: pointer;
   transition-duration: 0.2s;
-}
-
-/* HACK enabling to click on the title without checking the checkbox */
-label.item-title {
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.item-title a {
-  color: #272727;
 }
 
 /* HACK for centring the checkbox between the caret and the title */
@@ -120,7 +110,13 @@ label.item-title {
   padding-left: 30px;
 }
 
-.item-content {
+.ProfileItem-title {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #272727;
+}
+
+.ProfileItem-content {
   transition-duration: 0.2s;
   max-height: 300px;
   overflow-x: hidden;
@@ -135,27 +131,24 @@ label.item-title {
 }
 
 .collapsed {
-  .item-toggle {
+  .ProfileItem-toggle {
     transform: rotate(-90deg);
   }
-  .item-content {
+  .ProfileItem-content {
     max-height: 0;
     transition-duration: 0;
     padding: 0 10px 0 0;
   }
 }
 
-label {
+.ProfileItem-additionalAttribute {
+  color: grey;
+  font-style: italic;
   color: black;
   line-height: 21px;
 }
 
-.additional-attribute {
-  color: grey;
-  font-style: italic;
-}
-
-.actions {
+.ProfileItem-actions {
   margin-top: 1px;
   font-size: 1em;
 }

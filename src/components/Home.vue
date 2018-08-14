@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="Main">
     <main-menu
       @environment::create="editEnvironment"
       @environment::delete="deleteEnvironment">

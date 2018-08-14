@@ -1,5 +1,5 @@
 <template>
-  <div class="headline">
+  <div class="Headline">
     <h1>
       <slot>{{title}}</slot>
     </h1>
@@ -12,7 +12,7 @@
 import Breadcrumb from '../Common/Breadcrumb'
 
 export default {
-  name: 'headline',
+  name: 'eadline',
   props: {
     title: String
   },
@@ -23,18 +23,13 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.headline {
+.Headline {
+  margin-bottom: 30px;
+
   h1 {
     margin-top: 0;
-    font-size: 3rem;
-  }
-  margin-bottom: 30px;
-  a.btn {
-    margin-top: 5px;
-    margin-left: 15px;
-  }
-  h1 {
     margin-bottom: 0;
+    font-size: 3rem;
   }
 }
 </style>

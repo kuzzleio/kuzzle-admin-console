@@ -1,7 +1,7 @@
 <template>
-  <aside>
+  <aside class="Treeview">
     <ul v-if="!canSearchIndex()" class="side-nav fixed leftside-navigation ps-container ps-active-y">
-      <li class="unauthorized">
+      <li class="Treeview-unauthorized">
         <ul class="indexes">
           <li>
             <i class="fa fa-lock" aria-hidden="true"></i>
@@ -15,16 +15,16 @@
         <nav>
           <div class="nav-wrapper">
             <form>
-              <div class="input-field">
+              <div class="Treeview-searchField input-field">
                 <input type="search" v-model="filter" placeholder="Search index &amp; collection">
-                <div class="search-icon"><i class="fa fa-search"></i></div>
+                <div class="searchIcon"><i class="fa fa-search"></i></div>
               </div>
             </form>
           </div>
         </nav>
       </li>
       <li>
-        <ul class="indexes">
+        <ul class="Treeview-root">
           <li
             v-for="indexName in orderedFilteredIndices" :key="indexName">
             <index-branch
@@ -99,12 +99,16 @@ export default {
   width: $sidebar-width;
 }
 
-.input-field {
+li {
+  position: relative;
+}
+
+.Treeview-searchField {
   height: 100%;
   background-color: #ffffff;
   color: #000000;
 
-  .search-icon {
+  .searchIcon {
     position: absolute;
     top: 0;
     left: 20px;
@@ -125,19 +129,15 @@ export default {
   }
 }
 
-.unauthorized {
+.Treeview-unauthorized {
   li {
     line-height: 24px;
   }
 }
 
-.indexes {
+.Treeview-root {
   margin-top: 16px;
   padding-left: 15px;
   list-style: none;
-}
-
-li {
-  position: relative;
 }
 </style>

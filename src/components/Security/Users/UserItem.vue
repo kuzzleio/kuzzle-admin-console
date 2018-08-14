@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }" class="item-document">
-    <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div class="UserItem" :class="{ 'collapsed': collapsed }">
+    <i class="UserItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,10 +11,10 @@
 
     <label :for="checkboxId"></label>
     <!-- The following anchor will go to the user details page -->
-    <label class="item-title">
+    <label class="UserItem-title item-title">
       <a @click="toggleCollapse">{{document.id}}</a>
-      <div class="profile-list">
-        <div class="profile-chip chip" v-for="profile in profileList" :key="profile">
+      <div class="UserItem-profileList">
+        <div class="profileChip chip" v-for="profile in profileList" :key="profile">
           <router-link :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</router-link>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
@@ -23,11 +23,11 @@
       </div>
     </label>
 
-    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
+    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="UserItem-additionalAttribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
-    <div class="right actions">
+    <div class="UserItem-actions right">
       <a href="#" @click.prevent="update"
          v-title="{active: !canEditUser(), title: 'You are not allowed to edit this user'}">
         <i class="fa fa-pencil" :class="{'disabled': !canEditUser()}"></i>
@@ -41,7 +41,7 @@
       </dropdown>
     </div>
 
-    <div class="item-content">
+    <div class="UserItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: true}"></pre>
       <pre v-json-formatter="{content: document.credentials, open: true}"></pre>
@@ -120,21 +120,11 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.item-toggle {
+.UserItem-toggle {
   padding: 0 10px;
   margin-left: -10px;
   cursor: pointer;
   transition-duration: 0.2s;
-}
-
-/* HACK enabling to click on the title without checking the checkbox */
-.item-title {
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.item-title a {
-  color: #272727;
 }
 
 /* HACK for centring the checkbox between the caret and the title */
@@ -143,7 +133,14 @@ export default {
   padding-left: 30px;
 }
 
-.item-content {
+/* HACK enabling to click on the title without checking the checkbox */
+.UserItem-title {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #272727;
+}
+
+.UserItem-content {
   transition-duration: 0.2s;
   max-height: 300px;
   overflow-x: hidden;
@@ -158,35 +155,36 @@ export default {
 }
 
 .collapsed {
-  .item-toggle {
+  .UserItem-toggle {
     transform: rotate(-90deg);
   }
-  .item-content {
+  .UserItem-content {
     max-height: 0;
     transition-duration: 0;
     padding: 0 10px 0 0;
   }
 }
 
-label {
+.UserItem-additionalAttribute {
+  color: grey;
+  font-style: italic;
   color: black;
   line-height: 21px;
 }
-.additional-attribute {
-  color: grey;
-  font-style: italic;
-}
-.profile-list {
+
+.UserItem-profileList {
   display: inline-flex;
-}
-.profile-chip {
-  opacity: 0.7;
-  &:hover,
-  &:focus {
-    opacity: 1;
+
+  .profileChip {
+    opacity: 0.7;
+    &:hover,
+    &:focus {
+      opacity: 1;
+    }
   }
 }
-.actions {
+
+.UserItem-actions {
   margin-top: 1px;
   font-size: 1em;
 }

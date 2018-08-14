@@ -71,6 +71,7 @@ import Multiselect from 'vue-multiselect'
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 
 export default {
+  name: 'BasicFilter',
   components: {
     MSelect,
     Multiselect

@@ -99,3 +99,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+#rawsearch.pre_ace {
+  height: 100px;
+}
+</style>

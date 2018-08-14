@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }">
-    <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div class="DocumentItem" :class="{ 'collapsed': collapsed }">
+    <i class="DocumentItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,9 +11,9 @@
 
     <label :for="checkboxId"></label>
 
-    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="DocumentItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
 
-    <div class="right actions">
+    <div class="DocumentItem-actions right">
       <a
         v-if="canEdit"
         href=""
@@ -38,7 +38,7 @@
       </dropdown>
     </div>
 
-    <div class="item-content">
+    <div class="DocumentItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: false}"></pre>
     </div>
@@ -108,46 +108,26 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
-.item-toggle {
+.DocumentItem-toggle {
   padding: 0 10px;
   margin-left: -10px;
   cursor: pointer;
   transition-duration: 0.2s;
 }
 
-.collapsed .item-toggle {
+.collapsed .DocumentItem-toggle {
   transform: rotate(-90deg);
 }
 
-label {
+.DocumentItem-title {
   color: black;
   line-height: 21px;
-
-  /* HACK enabling to click on the title without checking the checkbox */
-  .item-title {
-    cursor: pointer;
-    font-size: 1rem;
-    font-family: 'AnonymousPro';
-
-    a {
-      color: #272727;
-    }
-  }
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'AnonymousPro';
 }
 
-/* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + label {
-  height: 15px;
-  padding-left: 30px;
-}
-
-.collapsed .item-content {
-  max-height: 0;
-  transition-duration: 0;
-  padding: 0 10px 0 0;
-}
-
-.item-content {
+.DocumentItem-content {
   transition-duration: 0.2s;
   max-height: 300px;
   overflow-x: hidden;
@@ -161,8 +141,20 @@ label {
   }
 }
 
-.actions {
+.collapsed .DocumentItem-content {
+  max-height: 0;
+  transition-duration: 0;
+  padding: 0 10px 0 0;
+}
+
+.DocumentItem-actions {
   margin-top: 1px;
   font-size: 1em;
+}
+
+/* HACK for centring the checkbox between the caret and the title */
+[type='checkbox'] + label {
+  height: 15px;
+  padding-left: 30px;
 }
 </style>

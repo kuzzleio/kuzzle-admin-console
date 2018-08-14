@@ -1,30 +1,30 @@
 <template>
-  <form @submit.prevent="submitSearch">
-    <div class="row filter-content">
+  <form class="BasicFilter" @submit.prevent="submitSearch">
+    <div class="row">
       <div class="col s12">
 
-        <div class="row block-and">
+        <div class="BasicFilter-query row">
           <p><i class="fa fa-search"></i>Query</p>
 
-          <div v-for="(group, groupIndex) in filters.basic" v-bind:key="`group-${groupIndex}`" class="row block-content">
-            <div v-for="(filter, filterIndex) in group" v-bind:key="`filter-${filterIndex}`" class="row dots group">
+          <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
+            <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
-                <input placeholder="Attribute" type="text" class="validate" v-model="filter.attribute">
+                <input placeholder="Attribute" type="text" class="validate" v-model="andBlock.attribute">
               </div>
               <div class="col s3">
-                <m-select v-model="filter.operator">
+                <m-select v-model="andBlock.operator">
                   <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
                 </m-select>
               </div>
               <div class="col s3">
-                <input placeholder="Value" type="text" class="validate" v-model="filter.value">
+                <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
               </div>
               <div class="col s2">
-                <i class="fa fa-times remove-filter"
+                <i class="BasicFilter-removeBtn fa fa-times"
                    @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
                 <a
-                  v-if="filterIndex === group.length - 1"
-                  class="inline btn btn-small waves-effect waves-light"
+                  v-if="filterIndex === orBlock.length - 1"
+                  class="BasicFilter-andBtn inline btn btn-small waves-effect waves-light"
                   @click="addAndBasicFilter(groupIndex)">
                   <i class="fa fa-plus left"></i>And
                 </a>
@@ -34,13 +34,13 @@
           </div>
         </div>
 
-        <div class="row button-or">
+        <div class="BasicFilter-orBtn row">
           <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
             <i class="fa fa-plus left"></i>Or
           </a>
         </div>
 
-        <div class="row block-sort" v-if="sortingEnabled">
+        <div class="BasicFilter-sortBlock row" v-if="sortingEnabled">
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
@@ -71,6 +71,7 @@ const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
 
 export default {
+  name: 'BasicFilter',
   props: {
     basicFilter: Array,
     sorting: Object,
@@ -196,3 +197,54 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+a.btn {
+  i.left {
+    margin-right: 8px;
+  }
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-left: 10px;
+}
+
+p {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  i {
+    font-size: 1.1em;
+    margin-right: 10px;
+  }
+}
+
+.BasicFilter-orBtn {
+  margin-bottom: 10px;
+}
+
+.BasicFilter-removeBtn {
+  margin-top: 25px;
+  color: grey;
+  cursor: pointer;
+}
+
+.BasicFilter-orBlock {
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+
+.BasicFilter-andBlock {
+  margin-bottom: 0;
+  border-left: 1px dotted rgba(0, 0, 0, 0.26);
+  padding-bottom: 5px;
+}
+
+.BasicFilter-sortBlock {
+  margin-top: 15px;
+  margin-bottom: 0;
+
+  .block-content {
+    margin-left: 5px;
+    margin-bottom: 5px;
+  }
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="CrudlDocument">
     <!-- <filters
       @filters-basic-search="basicSearch"
       :basic-filter="basicFilter">
@@ -52,7 +52,7 @@
         </div>
       </div>
 
-      <div class="row collection-wrapper" v-show="documents.length">
+      <div class="row CrudlDocument-collection" v-show="documents.length">
         <div class="col s12">
           <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
         </div>
@@ -231,7 +231,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.collection-wrapper {
+.CrudlDocument-collection {
   min-height: 453px;
 }
 </style>

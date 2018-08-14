@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="CrudlDocument">
     <filters
       @filters-updated="onFiltersUpdated"
       @reset="onFiltersUpdated"
@@ -55,7 +55,7 @@
         </div>
       </div>
 
-      <div class="row collection-wrapper" v-show="documents.length">
+      <div class="row CrudlDocument-collection" v-show="documents.length">
         <div class="col s12">
           <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
         </div>
@@ -216,7 +216,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.collection-wrapper {
-  min-height: 453px;
+.CrudlDocument-collection {
+  min-height: 453px; // @todo put this value into a variable
 }
 </style>
