@@ -9,15 +9,15 @@
           <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
             <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
-                <input placeholder="Attribute" type="text" class="validate" v-model="andBlock.attribute">
+                <input placeholder="Attribute" type="text" class="validate" v-model="andBlock.attribute" @input="submitInstantSearch(andBlock)">
               </div>
               <div class="col s3">
-                <m-select v-model="andBlock.operator">
+                <m-select v-model="andBlock.operator" @input="submitInstantSearch(andBlock)">
                   <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
                 </m-select>
               </div>
               <div class="col s3">
-                <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
+                <input placeholder="Value" type="text" class="validate" v-model="andBlock.value" @input="submitInstantSearch(andBlock)">
               </div>
               <div class="col s2">
                 <i class="BasicFilter-removeBtn fa fa-times"
@@ -44,10 +44,10 @@
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
+              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute" @input="submitInstantSearch()">
             </div>
             <div class="col s2">
-              <m-select v-model="filters.sorting.order">
+              <m-select v-model="filters.sorting.order" @input="submitInstantSearch()">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
               </m-select>
@@ -108,6 +108,11 @@ export default {
     }
   },
   methods: {
+    submitInstantSearch() {
+      if (this.isFilterValid) {
+        this.submitSearch()
+      }
+    },
     submitSearch() {
       let filters = this.filters.basic
 
@@ -171,6 +176,21 @@ export default {
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
+    }
+  },
+  computed: {
+    isFilterValid: function () {
+      // For each andBlocks in orBlocks, check if attribute and value field are filled
+      for (const orBlock of this.filters.basic) {
+        for (const andBlock of orBlock) {
+          if (andBlock.attribute === null || andBlock.attribute === '' ||
+            andBlock.value === null || andBlock.value === '') {
+            return false
+          }
+        }
+      }
+
+      return true
     }
   },
   watch: {
