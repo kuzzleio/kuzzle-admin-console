@@ -16,7 +16,7 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      require(['../../components/Security/Users/List'], resolve)
+      require(['../../components/Security/Users/Page'], resolve)
     }
   },
   {
@@ -102,7 +102,7 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      require(['../../components/Security/Roles/List'], resolve)
+      require(['../../components/Security/Roles/Page'], resolve)
     }
   },
   {

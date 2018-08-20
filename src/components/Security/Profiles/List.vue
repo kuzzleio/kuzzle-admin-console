@@ -4,7 +4,7 @@
 
     <!-- Not allowed -->
     <list-not-allowed v-if="!canSearchProfile()"></list-not-allowed>
-    
+
     <common-list
       v-if="canSearchProfile()"
       item-name="ProfileItem"
@@ -22,8 +22,9 @@
           </div>
           <div class="col s10">
             <p>
-              Here you'll see the kuzzle's profiles<br/>
-              <em>Currently there is no profile.</em>
+              In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/essentials/security">Security Profiles</a>
+              defined in your Kuzzle server.<br/>
+              <em>Currently, no Profile is defined. You can create one by pushing the "Create" button above.</em>
             </p>
             <router-link :disabled="!canCreateProfile()"
                     :class="!canCreateProfile() ? 'disabled' : ''"
@@ -41,32 +42,38 @@
 </template>
 
 <script>
-  import CommonList from './CommonList'
-  import ListNotAllowed from '../../Common/ListNotAllowed'
-  import Headline from '../../Materialize/Headline'
-  import { canSearchProfile, canCreateProfile } from '../../../services/userAuthorization'
-  import { performSearchProfiles, performDeleteProfiles } from '../../../services/kuzzleWrapper'
+import CommonList from './CommonList'
+import ListNotAllowed from '../../Common/ListNotAllowed'
+import Headline from '../../Materialize/Headline'
+import {
+  canSearchProfile,
+  canCreateProfile
+} from '../../../services/userAuthorization'
+import {
+  performSearchProfiles,
+  performDeleteProfiles
+} from '../../../services/kuzzleWrapper'
 
-  export default {
-    name: 'ProfilesList',
-    components: {
-      CommonList,
-      ListNotAllowed,
-      Headline
+export default {
+  name: 'ProfilesList',
+  components: {
+    CommonList,
+    ListNotAllowed,
+    Headline
+  },
+  methods: {
+    createProfile() {
+      this.$router.push({ name: 'SecurityProfilesCreate' })
     },
-    methods: {
-      createProfile () {
-        this.$router.push({name: 'SecurityProfilesCreate'})
-      },
-      canSearchProfile,
-      canCreateProfile,
-      performSearchProfiles,
-      performDeleteProfiles
-    },
-    route: {
-      data () {
-        this.$emit('crudl-refresh-search')
-      }
+    canSearchProfile,
+    canCreateProfile,
+    performSearchProfiles,
+    performDeleteProfiles
+  },
+  route: {
+    data() {
+      this.$emit('crudl-refresh-search')
     }
   }
+}
 </script>
