@@ -16,7 +16,7 @@
         <div class="col s12">
           <p>
             There is no result matching your query<br />
-            Please try with another filters.
+            Please try with another filter.
           </p>
           <p>
             <em>Learn more about filtering syntax on <a href="http://docs.kuzzle.io/elasticsearch-cookbook/" target="_blank">Kuzzle Elasticsearch Cookbook</a></em>

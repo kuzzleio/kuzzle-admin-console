@@ -1,10 +1,10 @@
 <template>
   <div class="RoleList">
-    <slot name="emptySet" v-if="!basicFilter && totalDocuments === 0"></slot>
+    <slot name="emptySet" v-if="!currentFilter.basic && totalDocuments === 0"></slot>
     <crudl-document v-else
       :pagination-from="paginationFrom"
-      :basic-filter="basicFilter"
       :pagination-size="paginationSize"
+      :current-filter="currentFilter"
       :documents="documents"
       :total-documents="totalDocuments"
       :display-bulk-delete="displayBulkDelete"
@@ -14,22 +14,22 @@
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
       :perform-delete="performDelete"
+      @filters-updated="onFiltersUpdated"
       @create-clicked="create"
-      @toggle-all="toggleAll"
-      @crudl-refresh-search="fetchData">
+      @toggle-all="toggleAll">
 
-        <div class="RoleList-list collection">
-          <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-            <component
-              :is="itemName"
-              @checkbox-click="toggleSelectDocuments"
-              :document="document"
-              :is-checked="isChecked(document.id)"
-              @common-list::edit-document="editDocument"
-              @delete-document="deleteDocument">
-            </component>
-          </div>
+      <div class="RoleList-list collection">
+        <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+          <component
+            :is="itemName"
+            @checkbox-click="toggleSelectDocuments"
+            :document="document"
+            :is-checked="isChecked(document.id)"
+            @common-list::edit-document="editDocument"
+            @delete-document="deleteDocument">
+          </component>
         </div>
+      </div>
 
     </crudl-document>
   </div>
@@ -41,7 +41,7 @@ import UserItem from '../Users/UserItem'
 import RoleItem from '../Roles/RoleItem'
 import ProfileItem from '../Profiles/ProfileItem'
 import DocumentItem from '../../Data/Documents/DocumentItem'
-import { availableFilters } from '../../../services/filterManager'
+import * as filterManager from '../../../services/filterManager'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
@@ -66,11 +66,11 @@ export default {
   },
   data() {
     return {
-      availableFilters,
       selectedDocuments: [],
       documents: [],
       totalDocuments: 0,
-      documentToDelete: null
+      documentToDelete: null,
+      currentFilter: new filterManager.Filter()
     }
   },
   computed: {
@@ -84,25 +84,11 @@ export default {
 
       return this.selectedDocuments.length === this.documents.length
     },
-    basicFilter() {
-      try {
-        return JSON.parse(this.$store.state.route.query.basicFilter)
-      } catch (e) {
-        return null
-      }
-    },
-    rawFilter() {
-      try {
-        return JSON.parse(this.$store.state.route.query.rawFilter)
-      } catch (e) {
-        return null
-      }
-    },
     paginationFrom() {
-      return parseInt(this.$store.state.route.query.from) || 0
+      return parseInt(this.currentFilter.from) || 0
     },
     paginationSize() {
-      return parseInt(this.$store.state.route.query.size) || 10
+      return parseInt(this.currentFilter.size) || 10
     }
   },
   methods: {
@@ -127,24 +113,26 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    hasSearchFilters() {
-      return (
-        this.$store.state.route.query.searchTerm !== '' ||
-        this.basicFilter.length > 0 ||
-        this.rawFilter.length > 0
-      )
+    onFiltersUpdated(newFilters) {
+      try {
+        filterManager.saveToRouter(
+          filterManager.stripDefaultValuesFromFilter(newFilters),
+          this.$router
+        )
+      } catch (error) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while updating filters: <br />' + error.message
+        })
+      }
     },
-    fetchData() {
+    fetchRoles() {
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
       }
 
-      // Execute search with corresponding filters
-      this.performSearch(
-        JSON.parse(this.$store.state.route.query.basicFilter || '{}'),
-        pagination
-      )
+      this.performSearch(this.currentFilter.basic || {}, pagination)
         .then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total
@@ -165,19 +153,28 @@ export default {
     deleteDocument(id) {
       this.documentToDelete = id
     },
-    refreshSearch() {
-      this.fetchData()
-    },
     create(route) {
       this.$router.push({ name: this.routeCreate })
     }
   },
   mounted() {
-    this.fetchData()
+    this.currentFilter = Object.assign(
+      new filterManager.Filter(),
+      filterManager.loadFromRoute(this.$store.state.route)
+    )
   },
   watch: {
-    $route() {
-      this.refreshSearch()
+    $route: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.currentFilter = Object.assign(
+          new filterManager.Filter(),
+          filterManager.loadFromRoute(this.$store.state.route)
+        )
+      }
+    },
+    currentFilter() {
+      this.fetchRoles()
     }
   }
 }

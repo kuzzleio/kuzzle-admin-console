@@ -4,8 +4,8 @@
     <crudl-document v-else
       :search-filter-operands="searchFilterOperands"
       :pagination-from="paginationFrom"
-      :current-filter="currentFilter"
       :pagination-size="paginationSize"
+      :current-filter="currentFilter"
       :index="index"
       :collection="collection"
       :documents="documents"
@@ -202,6 +202,7 @@ export default {
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
+      // TODO
       this.$store.state.route
     )
     filterManager.save(
@@ -218,7 +219,7 @@ export default {
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
-          this.$store.state.route
+          newValue
         )
         filterManager.save(
           this.currentFilter,
