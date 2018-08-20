@@ -72,8 +72,14 @@ export default {
   watch: {
     searchTerm: {
       immediate: true,
-      handler(newValue, oldValue) {
-        this.inputSearchTerm = newValue
+      handler(value) {
+        this.inputSearchTerm = value
+      }
+    },
+    inputSearchTerm: {
+      immediate: true,
+      handler() {
+        this.$emit('update-filter', this.inputSearchTerm)
       }
     }
   }
