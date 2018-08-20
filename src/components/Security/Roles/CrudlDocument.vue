@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <div class="row CrudlDocument-collection" v-show="documents.length">
+      <div class="CrudlDocument-collection row" v-show="documents.length">
         <div class="col s12">
           <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
         </div>
@@ -95,10 +95,10 @@
         <button
           class="waves-effect waves-green btn red-color"
           @click="confirmSingleDelete(documentIdToDelete)">
-            I'm sure!
+          I'm sure!
         </button>
         <button class="btn-flat" @click.prevent="close">
-            Cancel
+          Cancel
         </button>
       </span>
     </modal>

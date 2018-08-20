@@ -22,20 +22,20 @@
       @toggle-all="toggleAll"
       @crudl-refresh-search="fetchDocuments">
 
-        <div class="CommonList-list collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
-          <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-            <component
-              :is="itemName"
-              @checkbox-click="toggleSelectDocuments"
-              :document="document"
-              :is-checked="isChecked(document.id)"
-              :index="index"
-              :collection="collection"
-              @common-list::edit-document="editDocument"
-              @delete-document="deleteDocument">
-            </component>
-          </div>
+      <div class="CommonList-list collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
+        <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+          <component
+            :is="itemName"
+            @checkbox-click="toggleSelectDocuments"
+            :document="document"
+            :is-checked="isChecked(document.id)"
+            :index="index"
+            :collection="collection"
+            @common-list::edit-document="editDocument"
+            @delete-document="deleteDocument">
+          </component>
         </div>
+      </div>
 
     </crudl-document>
   </div>

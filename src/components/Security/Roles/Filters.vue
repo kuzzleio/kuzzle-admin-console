@@ -2,7 +2,7 @@
   <div class="RolesFilters">
     <div class="card-panel card-header">
       <div class="row filters margin-bottom-0">
-        <form @submit.prevent="search">
+        <form @submit.prevent="submitSearch">
           <div class="col s7">
             <div class="RolesFilters-searchBar">
               <i class="RolesFilters-searchIcon fa fa-search"></i>
@@ -48,7 +48,7 @@ export default {
     }
   },
   methods: {
-    search() {
+    submitSearch() {
       if (this.controllers.length === 0) {
         this.$emit('filters-updated', null)
         return

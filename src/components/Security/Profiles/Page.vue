@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="ProfileManagement">
     <headline title="Profile Management"></headline>
 
     <!-- Not allowed -->
@@ -26,11 +26,12 @@
               defined in your Kuzzle server.<br/>
               <em>Currently, no Profile is defined. You can create one by pushing the "Create" button above.</em>
             </p>
-            <router-link :disabled="!canCreateProfile()"
-                    :class="!canCreateProfile() ? 'disabled' : ''"
-                    :title="!canCreateProfile() ? 'You are not allowed to create new profiles' : ''"
-                    :to="{name: 'SecurityProfilesCreate'}"
-                    class="btn primary waves-effect waves-light">
+            <router-link
+              :disabled="!canCreateProfile()"
+              :class="!canCreateProfile() ? 'disabled' : ''"
+              :title="!canCreateProfile() ? 'You are not allowed to create new profiles' : ''"
+              :to="{name: 'SecurityProfilesCreate'}"
+              class="btn primary waves-effect waves-light">
               <i class="fa fa-plus-circle left"></i>
               Create a profile
             </router-link>
@@ -55,7 +56,7 @@ import {
 } from '../../../services/kuzzleWrapper'
 
 export default {
-  name: 'ProfilesList',
+  name: 'ProfileManagement',
   components: {
     CommonList,
     ListNotAllowed,

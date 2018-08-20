@@ -64,7 +64,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      require(['../../components/Security/Profiles/List'], resolve)
+      require(['../../components/Security/Profiles/Page'], resolve)
     }
   },
   {
