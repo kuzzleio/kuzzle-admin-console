@@ -1,7 +1,7 @@
 <template>
   <form class="wrapper" @submit.prevent="next">
     <!-- Required fields -->
-    <div v-if="!$store.state.route.params.collection">
+    <div v-if="!$route.params.collection">
       <div class="row">
         <!-- Collection name -->
         <div class="col s6">

@@ -202,8 +202,7 @@ export default {
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
-      // TODO
-      this.$store.state.route
+      this.$route
     )
     filterManager.save(
       this.currentFilter,

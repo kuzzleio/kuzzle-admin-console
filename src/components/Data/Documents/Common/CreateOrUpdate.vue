@@ -173,8 +173,8 @@
       },
       switchView (e) {
         this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
-          index: this.$store.state.route.params.index,
-          collection: this.$store.state.route.params.collection,
+          index: this.$route.params.index,
+          collection: this.$route.params.collection,
           jsonView: e.target.checked
         })
         this.jsonDocument = {...this.value}

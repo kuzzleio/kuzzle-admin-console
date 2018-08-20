@@ -2,15 +2,15 @@
   <div id="data-layout">
     <treeview
       :route-name="$route.name"
-      :index="$store.state.route.params.index"
-      :collection="$store.state.route.params.collection">
+      :index="$route.params.index"
+      :collection="$route.params.collection">
     </treeview>
     <section>
       <section class="view">
         <router-view
           v-if="routeExist"
-          :index="$store.state.route.params.index"
-          :collection="$store.state.route.params.collection">
+          :index="$route.params.index"
+          :collection="$route.params.collection">
         </router-view>
         <notFound v-else></notFound>
       </section>
@@ -40,7 +40,7 @@ export default {
   methods: {
     setRouteExist() {
       this.routeExist = true
-      const { index, collection } = this.$store.state.route.params
+      const { index, collection } = this.$route.params
       if (
         typeof index !== 'undefined' &&
         this.$store.state.index.indexes.indexOf(index) === -1
@@ -65,8 +65,8 @@ export default {
         .then(() => {
           this.setRouteExist()
           return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-            index: this.$store.state.route.params.index,
-            collection: this.$store.state.route.params.collection
+            index: this.$route.params.index,
+            collection: this.$route.params.collection
           })
         })
         .catch(err => console.error(err))
@@ -80,8 +80,8 @@ export default {
           .then(() => {
             this.setRouteExist()
             return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-              index: this.$store.state.route.params.index,
-              collection: this.$store.state.route.params.collection
+              index: this.$route.params.index,
+              collection: this.$route.params.collection
             })
           })
           .catch(err => this.$store.commit(SET_TOAST, { text: err.message }))

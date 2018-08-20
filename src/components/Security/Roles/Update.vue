@@ -1,7 +1,7 @@
 <template>
   <div>
     <Headline>
-       Edit role - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
+       Edit role - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
     </Headline>
     <create-or-update
       title="Update role"

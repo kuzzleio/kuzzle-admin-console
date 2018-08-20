@@ -114,7 +114,7 @@
         }
 
         if (this.isUpdate) {
-          this.kuid = decodeURIComponent(this.$store.state.route.params.id)
+          this.kuid = decodeURIComponent(this.$route.params.id)
 
           await Promise.all(this.strategies.map(async (strategy) => {
             let strategyCredentials = await kuzzle.security.getCredentialsPromise(strategy, this.kuid)

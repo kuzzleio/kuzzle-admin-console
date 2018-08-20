@@ -168,7 +168,7 @@ export default {
   mounted() {
     this.currentFilter = Object.assign(
       new filterManager.Filter(),
-      filterManager.loadFromRoute(this.$store.state.route)
+      filterManager.loadFromRoute(this.$route)
     )
   },
   watch: {
@@ -177,7 +177,7 @@ export default {
       handler(newValue, oldValue) {
         this.currentFilter = Object.assign(
           new filterManager.Filter(),
-          filterManager.loadFromRoute(this.$store.state.route)
+          filterManager.loadFromRoute(this.$route)
         )
       }
     },
