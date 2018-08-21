@@ -1,6 +1,6 @@
 <template>
   <aside class="Treeview">
-    <ul v-if="!canSearchIndex()" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+    <ul v-if="!canSearchIndex()" class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
       <li class="Treeview-unauthorized">
         <ul class="indexes">
           <li>
@@ -10,7 +10,7 @@
         </ul>
       </li>
     </ul>
-    <ul v-if="canSearchIndex()" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+    <ul v-if="canSearchIndex()" class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
       <li>
         <nav>
           <div class="nav-wrapper">
@@ -92,15 +92,18 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.side-nav {
+.Treeview-container {
   z-index: 900;
   top: $navbar-height;
   height: 95%;
   width: $sidebar-width;
-}
 
-li {
-  position: relative;
+  @media (max-width: $medium-screen) {
+    // @HACK this is nasty, but we need it to override the default
+    // MaterializeCSS behavior, hiding the side menu whenever the
+    // screen is less than medium-width.
+    transform: translateX(0);
+  }
 }
 
 .Treeview-searchField {
@@ -139,5 +142,9 @@ li {
   margin-top: 16px;
   padding-left: 15px;
   list-style: none;
+}
+
+li {
+  position: relative;
 }
 </style>
