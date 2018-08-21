@@ -104,12 +104,18 @@ export default {
       filters: {
         basic: null,
         sorting: { ...emptySorting }
-      }
+      },
+      throttleSearch: false
     }
   },
   methods: {
     submitInstantSearch() {
-      if (this.isFilterValid) {
+      if (!this.throttleSearch && this.isFilterValid) {
+        this.throttleSearch = true
+        setTimeout(() => {
+          this.throttleSearch = false
+        }, 200)
+
         this.submitSearch()
       }
     },

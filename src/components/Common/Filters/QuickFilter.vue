@@ -7,7 +7,7 @@
           <div v-if="complexFilterActive || !enabled" class="QuickFilter-chip chip">
             <span class="QuickFilter-chipLabel" @click.prevent="displayAdvancedFilters">{{advancedQueryLabel}}</span>
           </div>
-          <input v-else type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus>
+          <input v-else type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus @input="submitSearch">
           <a class="QuickFilter-optionBtn fluid-hover" v-if="!advancedFiltersVisible" href="#" @click.prevent="displayAdvancedFilters">More query options</a>
           <a class="QuickFilter-optionBtn fluid-hover" v-else href="#" @click.prevent="displayAdvancedFilters">Less query options</a>
         </div>
@@ -51,11 +51,21 @@ export default {
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm
+      inputSearchTerm: this.searchTerm,
+      throttleSearch: false
     }
   },
   methods: {
     submitSearch() {
+      if (this.throttleSearch) {
+        return
+      }
+
+      this.throttleSearch = true
+      setTimeout(() => {
+        this.throttleSearch = false
+      }, 200)
+
       if (this.complexFilterActive) {
         this.$emit('refresh')
       } else {
@@ -74,12 +84,6 @@ export default {
       immediate: true,
       handler(value) {
         this.inputSearchTerm = value
-      }
-    },
-    inputSearchTerm: {
-      immediate: true,
-      handler() {
-        this.$emit('update-filter', this.inputSearchTerm)
       }
     }
   }
