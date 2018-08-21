@@ -9,7 +9,7 @@
           <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
             <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
-                <input placeholder="Attribute" type="text" class="validate" v-model="andBlock.attribute">
+                <autocomplete :items="attributeItems" v-model="andBlock.attribute" :get-label="getLabel" :component-item='template' :input-attrs="{ placeholder: 'Attribute' }" :min-len="2"/>
               </div>
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
@@ -66,6 +66,8 @@
 
 <script>
 import MSelect from '../../Common/MSelect'
+import Autocomplete from 'v-autocomplete'
+import ItemTemplate from './ItemTemplate'
 
 const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
@@ -94,20 +96,39 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    collectionMapping: {
+      type: Object,
+      required: true
     }
   },
   components: {
-    MSelect
+    MSelect,
+    Autocomplete
   },
   data() {
     return {
       filters: {
         basic: null,
         sorting: { ...emptySorting }
-      }
+      },
+      template: ItemTemplate
+    }
+  },
+  computed: {
+    attributeItems () {
+      return this.buildAttributeList(this.collectionMapping).map(name => ({ name }))
     }
   },
   methods: {
+    getLabel (item) {
+      if (item === null) {
+        return ''
+      }
+      return item.name
+    },
+    updateItems (text) {
+    },
     submitSearch() {
       let filters = this.filters.basic
 
@@ -171,6 +192,19 @@ export default {
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
+    },
+    buildAttributeList(mapping, path = []) {
+      let attributes = []
+
+      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
+        if (attributeValue.hasOwnProperty('properties')) {
+          attributes = attributes.concat(this.buildAttributeList(attributeValue.properties, path.concat(attributeName)))
+        } else if (attributeValue.hasOwnProperty('type')) {
+          attributes = attributes.concat(path.concat(attributeName).join('.'))
+        }
+      }
+
+      return attributes
     }
   },
   watch: {
@@ -194,6 +228,8 @@ export default {
         }
       }
     }
+  },
+  mounted() {
   }
 }
 </script>
