@@ -38,7 +38,7 @@
     "http-server": "^0.11.1",
     "lodash": "^4.17.10",
     "serve-static": "^1.13.2",
-    "v-autocomplete": "^1.8.2",
+    "vue-autosuggest": "^1.5.0",
     "vue-quill-editor": "^1.1.1"
   },
   "devDependencies": {

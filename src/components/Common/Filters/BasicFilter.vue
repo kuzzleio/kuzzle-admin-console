@@ -9,7 +9,12 @@
           <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
             <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
-                <autocomplete :items="attributeItems" v-model="andBlock.attribute" :get-label="getLabel" :component-item='template' :input-attrs="{ placeholder: 'Attribute' }" :min-len="2"/>
+                <autocomplete
+                  :items="attributeItems"
+                  input-class="validate"
+                  placeholder="Attribute"
+                  @change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
+                />
               </div>
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
@@ -66,8 +71,7 @@
 
 <script>
 import MSelect from '../../Common/MSelect'
-import Autocomplete from 'v-autocomplete'
-import ItemTemplate from './ItemTemplate'
+import Autocomplete from '../Autocomplete'
 
 const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
@@ -111,23 +115,17 @@ export default {
       filters: {
         basic: null,
         sorting: { ...emptySorting }
-      },
-      template: ItemTemplate
+      }
     }
   },
   computed: {
     attributeItems () {
-      return this.buildAttributeList(this.collectionMapping).map(name => ({ name }))
+      return this.buildAttributeList(this.collectionMapping)
     }
   },
   methods: {
-    getLabel (item) {
-      if (item === null) {
-        return ''
-      }
-      return item.name
-    },
-    updateItems (text) {
+    selectAttribute(attribute, groupIndex, filterIndex) {
+      this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {
       let filters = this.filters.basic
