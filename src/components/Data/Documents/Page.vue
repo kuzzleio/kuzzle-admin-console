@@ -83,6 +83,19 @@
                 </document-item>
               </div>
             </div>
+
+            <div class="row" v-show="documents.length">
+              <div class="col s12">
+                <pagination
+                  :from="paginationFrom"
+                  :max-page="1000"
+                  :number-in-page="documents.length"
+                  :size="paginationSize"
+                  :total="totalDocuments"
+                  @change-page="changePage"
+                ></pagination>
+              </div>
+            </div>
           </div>
 
           <div class="DocumentList-boxes col s12" v-show="listViewType === 'boxes'">
@@ -99,18 +112,6 @@
           </div>
         </div>
 
-        <div class="row" v-show="documents.length">
-          <div class="col s12">
-            <pagination
-              :from="paginationFrom"
-              :max-page="1000"
-              :number-in-page="documents.length"
-              :size="paginationSize"
-              :total="totalDocuments"
-              @change-page="changePage"
-            ></pagination>
-          </div>
-        </div>
       </div>
     </div>
 
