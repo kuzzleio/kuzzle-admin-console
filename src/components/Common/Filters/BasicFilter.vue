@@ -9,15 +9,15 @@
           <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
             <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
-                <input placeholder="Attribute" type="text" class="validate" v-model="andBlock.attribute" @input="submitInstantSearch(andBlock)">
+                <input placeholder="Attribute" type="text" class="validate" v-model="andBlock.attribute">
               </div>
               <div class="col s3">
-                <m-select v-model="andBlock.operator" @input="submitInstantSearch(andBlock)">
+                <m-select v-model="andBlock.operator">
                   <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
                 </m-select>
               </div>
               <div class="col s3">
-                <input placeholder="Value" type="text" class="validate" v-model="andBlock.value" @input="submitInstantSearch(andBlock)">
+                <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
               </div>
               <div class="col s2">
                 <i class="BasicFilter-removeBtn fa fa-times"
@@ -44,10 +44,10 @@
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute" @input="submitInstantSearch()">
+              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
             </div>
             <div class="col s2">
-              <m-select v-model="filters.sorting.order" @input="submitInstantSearch()">
+              <m-select v-model="filters.sorting.order">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
               </m-select>
@@ -109,17 +109,11 @@ export default {
     }
   },
   methods: {
-    submitInstantSearch() {
-      if (!this.throttleSearch && this.isFilterValid) {
-        this.throttleSearch = true
-        setTimeout(() => {
-          this.throttleSearch = false
-        }, 200)
-
-        this.submitSearch()
-      }
-    },
     submitSearch() {
+      if (this.isFilterValid) {
+        return
+      }
+
       let filters = this.filters.basic
 
       if (
