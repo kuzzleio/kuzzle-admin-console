@@ -1,0 +1,389 @@
+<template>
+  <div class="DocumentsPage">
+    <headline>
+      {{collection}}
+      <collection-dropdown
+        class="icon-medium icon-black"
+        :index="index"
+        :collection="collection"
+        >
+      </collection-dropdown>
+    </headline>
+
+    <collection-tabs></collection-tabs>
+
+    <list-not-allowed v-if="!canSearchDocument(index, collection)"></list-not-allowed>
+
+    <div v-if="isCollectionEmpty" class="card-panel">
+      <realtime-only-empty-state
+        v-if="isRealtimeCollection"
+        :index="index"
+        :collection="collection">
+      </realtime-only-empty-state>
+      <empty-state
+        v-else
+        :index="index"
+        :collection="collection">
+      </empty-state>
+    </div>
+
+    <div v-if="!isCollectionEmpty" >
+      <filters
+        :available-operands="searchFilterOperands"
+        :current-filter="currentFilter"
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
+        >
+      </filters>
+
+      <div class="card-panel card-body">
+        <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
+
+        <list-actions
+          v-if="documents.length"
+          :all-checked="allChecked"
+          :display-create="true"
+          :display-bulk-delete="hasSelectedDocuments"
+          @create="onCreateClicked"
+          @bulk-delete="onBulkDeleteClicked"
+          @toggle-all="onToggleAllClicked"
+          >
+        </list-actions>
+
+        <div class="row" v-show="documents.length">
+          <div class="col s12">
+            <div class="collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
+              <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+                <document-item
+                  :document="document"
+                  :is-checked="isChecked(document.id)"
+                  :index="index"
+                  :collection="collection"
+                  @checkbox-click="toggleSelectDocuments"
+                  @edit="onEditDocumentClicked"
+                  @delete="onDeleteClicked">
+                </document-item>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" v-show="documents.length">
+          <div class="col s12">
+            <pagination
+              @change-page="changePage"
+              :total="totalDocuments"
+              :from="paginationFrom"
+              :size="paginationSize"
+              :max-page="1000"
+              :number-in-page="documents.length"
+            ></pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+    <delete-modal
+      :is-open="deleteModalIsOpen"
+      :candidates-for-deletion="candidatesForDeletion"
+      :is-loading="deleteModalIsLoading"
+      @close="closeDeleteModal"
+      @confirm="onDeleteConfirmed"
+      >
+    </delete-modal>
+  </div>
+</template>
+
+<script>
+import DocumentItem from './DocumentItem'
+import DeleteModal from './DeleteModal'
+import EmptyState from './EmptyState'
+import ListActions from './ListActions'
+import NoResultsEmptyState from './NoResultsEmptyState'
+import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
+import CollectionTabs from '../Collections/Tabs'
+import CommonList from '../../Common/CommonList'
+import Filters from '../../Common/Filters/Filters'
+import ListNotAllowed from '../../Common/ListNotAllowed'
+import CollectionDropdown from '../Collections/Dropdown'
+import Headline from '../../Materialize/Headline'
+import Pagination from '../../Materialize/Pagination'
+import * as filterManager from '../../../services/filterManager'
+import {
+  canSearchIndex,
+  canSearchDocument,
+  canCreateDocument,
+  canDeleteDocument,
+  canEditDocument
+} from '../../../services/userAuthorization'
+import {
+  performSearchDocuments,
+  performDeleteDocuments
+} from '../../../services/kuzzleWrapper'
+import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
+
+export default {
+  name: 'DocumentsPage',
+  props: {
+    index: String,
+    collection: String
+  },
+  components: {
+    CollectionTabs,
+    CollectionDropdown,
+    CommonList,
+    DeleteModal,
+    DocumentItem,
+    EmptyState,
+    Headline,
+    Filters,
+    ListActions,
+    ListNotAllowed,
+    NoResultsEmptyState,
+    Pagination,
+    RealtimeOnlyEmptyState
+  },
+  data() {
+    return {
+      searchFilterOperands: filterManager.searchFilterOperands,
+      selectedDocuments: [],
+      documents: [],
+      totalDocuments: 0,
+      documentToDelete: null,
+      currentFilter: new filterManager.Filter(),
+      deleteModalIsOpen: false,
+      deleteModalIsLoading: false,
+      candidatesForDeletion: []
+    }
+  },
+  computed: {
+    isDocumentListFiltered() {
+      return this.currentFilter.active !== filterManager.NO_ACTIVE
+    },
+    isCollectionEmpty() {
+      return !this.isDocumentListFiltered && this.totalDocuments === 0
+    },
+    hasSelectedDocuments() {
+      return this.selectedDocuments.length > 0
+    },
+    allChecked() {
+      if (!this.selectedDocuments || !this.documents) {
+        return false
+      }
+
+      return this.selectedDocuments.length === this.documents.length
+    },
+    paginationFrom() {
+      return parseInt(this.currentFilter.from) || 0
+    },
+    paginationSize() {
+      return parseInt(this.currentFilter.size) || 10
+    },
+    isRealtimeCollection() {
+      if (this.$store.state.index.indexesAndCollections) {
+        if (!this.$store.state.index.indexesAndCollections[this.index]) {
+          return false
+        }
+        if (
+          !this.$store.state.index.indexesAndCollections[this.index].realtime
+        ) {
+          return false
+        }
+        return (
+          // prettier-ignore
+          this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
+        )
+      }
+    }
+  },
+  methods: {
+    // CREATE
+    // =====================================================
+    onCreateClicked() {
+      this.$router.push({ name: 'DataCreateDocument' })
+    },
+
+    // UPDATE
+    // =====================================================
+    onEditDocumentClicked(id) {
+      this.$router.push({
+        name: 'DataUpdateDocument',
+        params: { id: encodeURIComponent(id) }
+      })
+    },
+
+    // DELETE
+    // =====================================================
+    performDeleteDocuments,
+    onDeleteConfirmed(documentsToDelete) {
+      this.deleteModalIsLoading = true
+      this.performDeleteDocuments(
+        this.index,
+        this.collection,
+        documentsToDelete
+      )
+        .then(() => {
+          this.closeDeleteModal()
+          this.fetchDocuments()
+          this.deleteModalIsLoading = false
+          return null
+        })
+        .catch(e => {
+          this.$store.commit(SET_TOAST, { text: e.message })
+        })
+    },
+    closeDeleteModal() {
+      this.deleteModalIsOpen = false
+      this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
+    },
+    onBulkDeleteClicked() {
+      this.candidatesForDeletion = this.candidatesForDeletion.concat(
+        this.selectedDocuments
+      )
+      this.deleteModalIsOpen = true
+    },
+    onDeleteClicked(id) {
+      this.candidatesForDeletion.push(id)
+      this.deleteModalIsOpen = true
+    },
+
+    // LIST (FETCH & SEARCH)
+    // =====================================================
+    performSearchDocuments,
+    onFiltersUpdated(newFilters) {
+      try {
+        filterManager.save(
+          newFilters,
+          this.$router,
+          this.index,
+          this.collection
+        )
+      } catch (error) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while updating filters: <br />' + error.message
+        })
+      }
+    },
+    fetchDocuments() {
+      this.$forceUpdate()
+
+      this.selectedDocuments = []
+
+      let pagination = {
+        from: this.paginationFrom,
+        size: this.paginationSize
+      }
+
+      let searchQuery = null
+      searchQuery = filterManager.toSearchQuery(this.currentFilter)
+      if (!searchQuery) {
+        searchQuery = {}
+      }
+
+      let sorting = ['_uid'] // by default, sort on uid: prevent random order
+      if (this.currentFilter.sorting) {
+        sorting = filterManager.formatSort(this.currentFilter.sorting)
+      }
+
+      // TODO: refactor how search is done
+      // Execute search with corresponding searchQuery
+      this.performSearchDocuments(
+        this.collection,
+        this.index,
+        searchQuery,
+        pagination,
+        sorting
+      )
+        .then(res => {
+          this.documents = res.documents
+          this.totalDocuments = res.total
+        })
+        .catch(e => {
+          this.$store.commit(SET_TOAST, {
+            text:
+              'An error occurred while performing search: <br />' + e.message
+          })
+        })
+    },
+
+    // PAGINATION
+    // =====================================================
+    changePage(from) {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          from
+        })
+      )
+    },
+
+    // PERMISSIONS
+    // =====================================================
+    canSearchIndex,
+    canSearchDocument,
+    canCreateDocument,
+    canDeleteDocument,
+    canEditDocument,
+
+    // SELECT
+    // =====================================================
+    onToggleAllClicked() {
+      if (this.allChecked) {
+        this.selectedDocuments = []
+        return
+      }
+      this.selectedDocuments = []
+      this.selectedDocuments = this.documents.map(document => document.id)
+    },
+    toggleSelectDocuments(id) {
+      let index = this.selectedDocuments.indexOf(id)
+
+      if (index === -1) {
+        this.selectedDocuments.push(id)
+        return
+      }
+
+      this.selectedDocuments.splice(index, 1)
+    },
+    isChecked(id) {
+      return this.selectedDocuments.indexOf(id) > -1
+    }
+  },
+  mounted() {
+    this.currentFilter = filterManager.load(
+      this.index,
+      this.collection,
+      this.$route
+    )
+    filterManager.save(
+      this.currentFilter,
+      this.$router,
+      this.index,
+      this.collection
+    )
+  },
+  watch: {
+    $route: {
+      immediate: false,
+      handler(newValue, oldValue) {
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          newValue
+        )
+        filterManager.save(
+          this.currentFilter,
+          this.$router,
+          this.index,
+          this.collection
+        )
+      }
+    },
+    currentFilter() {
+      this.fetchDocuments()
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+</style>
