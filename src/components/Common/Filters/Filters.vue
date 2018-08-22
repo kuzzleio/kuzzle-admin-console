@@ -1,7 +1,7 @@
 <template>
   <div class="Filters">
-    <div class="card-panel card-header">
-      <div class="row margin-bottom-0 filters">
+
+      <!-- <div class="row margin-bottom-0 filters"> -->
         <quick-filter
           :advanced-query-label="advancedQueryLabel"
           :submit-button-label="submitButtonLabel"
@@ -15,12 +15,12 @@
           @refresh="onRefresh"
           @reset="onReset">
         </quick-filter>
-      </div>
-    </div>
+      <!-- </div> -->
+
 
     <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
       <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
-      <div class="col s12">
+      <!-- <div class="col s12"> -->
         <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
           <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
           <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
@@ -63,6 +63,7 @@
 .Filters-advanced {
   background-color: #fff;
   padding-top: 0;
+  padding-right: 30px;
   padding-bottom: 0;
   margin-top: 0;
   position: relative;

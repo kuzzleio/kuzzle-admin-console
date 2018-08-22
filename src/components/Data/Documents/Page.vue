@@ -27,14 +27,31 @@
       </empty-state>
     </div>
 
-    <div v-if="!isCollectionEmpty" >
-      <filters
-        :available-operands="searchFilterOperands"
-        :current-filter="currentFilter"
-        @filters-updated="onFiltersUpdated"
-        @reset="onFiltersUpdated"
-        >
-      </filters>
+    <div v-if="!isCollectionEmpty">
+      <div class="card-panel card-header">
+        <div class="DocumentsPage-filtersAndButtons row">
+          <div class="col s10">
+            <filters
+              :available-operands="searchFilterOperands"
+              :current-filter="currentFilter"
+              @filters-updated="onFiltersUpdated"
+              @reset="onFiltersUpdated"
+              >
+            </filters>
+          </div>
+          <div class="col s2">
+            <list-view-buttons
+              :active-view="listViewType"
+              :boxes-enabled="true"
+              :map-enabled="isCollectionGeo"
+              @list="onListViewClicked"
+              @boxes="onBoxesViewClicked"
+              @map="onMapViewClicked"
+              >
+            </list-view-buttons>
+          </div>
+        </div>
+      </div>
 
       <div class="card-panel card-body">
         <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
@@ -51,14 +68,15 @@
         </list-actions>
 
         <div class="row" v-show="documents.length">
-          <div class="col s12">
-            <div class="collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
+
+          <div class="col s12" v-show="listViewType === 'list'">
+            <div class="collection">
               <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
                 <document-item
-                  :document="document"
-                  :is-checked="isChecked(document.id)"
-                  :index="index"
                   :collection="collection"
+                  :document="document"
+                  :index="index"
+                  :is-checked="isChecked(document.id)"
                   @checkbox-click="toggleSelectDocuments"
                   @edit="onEditDocumentClicked"
                   @delete="onDeleteClicked">
@@ -66,26 +84,40 @@
               </div>
             </div>
           </div>
+
+          <div class="DocumentList-boxes col s12" v-show="listViewType === 'boxes'">
+            <i class="fa fa-th fa-5x"></i>
+            <h2>Boxes List view</h2>
+            <p>This feature is not yet implemented.</p>
+            <p>Hold on, we'll ship it soon!</p>
+          </div>
+          <div class="DocumentList-map col s12" v-show="listViewType === 'map'">
+            <i class="fa fa-map-marked fa-5x"></i>
+            <h2>Map List view</h2>
+            <p>This feature is not yet implemented.</p>
+            <p>Hold on, we'll ship it soon!</p>
+          </div>
         </div>
 
         <div class="row" v-show="documents.length">
           <div class="col s12">
             <pagination
-              @change-page="changePage"
-              :total="totalDocuments"
               :from="paginationFrom"
-              :size="paginationSize"
               :max-page="1000"
               :number-in-page="documents.length"
+              :size="paginationSize"
+              :total="totalDocuments"
+              @change-page="changePage"
             ></pagination>
           </div>
         </div>
       </div>
     </div>
+
     <delete-modal
-      :is-open="deleteModalIsOpen"
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
+      :is-open="deleteModalIsOpen"
       @close="closeDeleteModal"
       @confirm="onDeleteConfirmed"
       >
@@ -96,6 +128,7 @@
 <script>
 import DocumentItem from './DocumentItem'
 import DeleteModal from './DeleteModal'
+import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
 import ListActions from './ListActions'
 import NoResultsEmptyState from './NoResultsEmptyState'
@@ -138,12 +171,14 @@ export default {
     Filters,
     ListActions,
     ListNotAllowed,
+    ListViewButtons,
     NoResultsEmptyState,
     Pagination,
     RealtimeOnlyEmptyState
   },
   data() {
     return {
+      listViewType: 'list',
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -156,6 +191,10 @@ export default {
     }
   },
   computed: {
+    isCollectionGeo() {
+      // @TODO
+      return true
+    },
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
@@ -324,7 +363,7 @@ export default {
     canDeleteDocument,
     canEditDocument,
 
-    // SELECT
+    // SELECT ITEMS
     // =====================================================
     onToggleAllClicked() {
       if (this.allChecked) {
@@ -346,6 +385,18 @@ export default {
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
+    },
+
+    // LIST VIEW TYPES
+    // =====================================================
+    onListViewClicked() {
+      this.listViewType = 'list'
+    },
+    onBoxesViewClicked() {
+      this.listViewType = 'boxes'
+    },
+    onMapViewClicked() {
+      this.listViewType = 'map'
     }
   },
   mounted() {
@@ -386,4 +437,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.DocumentsPage-filtersAndButtons {
+  margin-bottom: 0;
+}
+
+.DocumentList-boxes,
+.DocumentList-map {
+  text-align: center;
+  padding: 30px;
+
+  i {
+    color: $lavandia-color;
+  }
+}
 </style>
