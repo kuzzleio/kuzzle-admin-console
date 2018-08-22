@@ -1,0 +1,21 @@
+.error {
+  color: $error-color;
+  font-weight: bold;
+}
+
+.empty-set {
+  margin: 50px auto;
+  justify-content: flex-start;
+
+  &.empty-set-condensed {
+    margin: 20px auto;
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 26px;
+    font-weight: 300;
+  }
+  em {
+    color: #777;
+  }
+}

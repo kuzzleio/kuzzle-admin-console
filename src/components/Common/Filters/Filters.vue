@@ -1,5 +1,5 @@
 <template>
-  <div class="search-filter">
+  <div class="Filters">
     <div class="card-panel card-header">
       <div class="row margin-bottom-0 filters">
         <quick-filter
@@ -18,8 +18,8 @@
       </div>
     </div>
 
-    <div class="row card-panel open-search" v-show="advancedFiltersVisible">
-      <i class="fa fa-times close" @click="advancedFiltersVisible = false"></i>
+    <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
+      <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
       <div class="col s12">
         <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
           <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
@@ -58,6 +58,44 @@
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.Filters-advanced {
+  background-color: #fff;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  position: relative;
+
+  .Filters-btnClose {
+    float: right;
+    font-size: 1.3em;
+    cursor: pointer;
+    color: grey;
+    position: absolute;
+    top: 10px;
+    right: 16px;
+
+    &:hover {
+      color: #555;
+      background: #eee;
+      border-radius: 3px;
+    }
+  }
+
+  .card-action {
+    padding: 15px;
+    margin-bottom: 0;
+    button {
+      margin-right: 10px;
+    }
+  }
+
+  .select-wrapper span.caret {
+    top: 10px;
+  }
+}
+</style>
 
 <script>
 import Tabs from '../../Materialize/Tabs'

@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div>
     <headline>
       {{collection}}
       <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
@@ -67,59 +67,67 @@
 </template>
 
 <script>
-  import CollectionTabs from '../Collections/Tabs'
-  import CommonList from '../../Common/CommonList'
-  import ListNotAllowed from '../../Common/ListNotAllowed'
-  import Headline from '../../Materialize/Headline'
-  import CollectionDropdown from '../Collections/Dropdown'
-  import {
+import CollectionTabs from '../Collections/Tabs'
+import CommonList from '../../Common/CommonList'
+import ListNotAllowed from '../../Common/ListNotAllowed'
+import Headline from '../../Materialize/Headline'
+import CollectionDropdown from '../Collections/Dropdown'
+import {
+  canSearchIndex,
+  canSearchDocument,
+  canCreateDocument,
+  canDeleteDocument,
+  canEditDocument,
+  canEditCollection
+} from '../../../services/userAuthorization'
+import {
+  performSearchDocuments,
+  performDeleteDocuments
+} from '../../../services/kuzzleWrapper'
+
+export default {
+  name: 'DocumentsList',
+  props: {
+    index: String,
+    collection: String
+  },
+  components: {
+    CollectionTabs,
+    CommonList,
+    ListNotAllowed,
+    Headline,
+    CollectionDropdown
+  },
+  computed: {
+    isRealtimeCollection() {
+      if (this.$store.state.index.indexesAndCollections) {
+        if (!this.$store.state.index.indexesAndCollections[this.index]) {
+          return false
+        }
+        if (
+          !this.$store.state.index.indexesAndCollections[this.index].realtime
+        ) {
+          return false
+        }
+        return (
+          // prettier-ignore
+          this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
+        )
+      }
+    }
+  },
+  methods: {
+    createDocument() {
+      this.$router.push({ name: 'DataCreateDocument' })
+    },
     canSearchIndex,
     canSearchDocument,
     canCreateDocument,
     canDeleteDocument,
     canEditDocument,
-    canEditCollection
-  } from '../../../services/userAuthorization'
-  import { performSearchDocuments, performDeleteDocuments } from '../../../services/kuzzleWrapper'
-
-  export default {
-    name: 'DocumentsList',
-    props: {
-      index: String,
-      collection: String
-    },
-    components: {
-      CollectionTabs,
-      CommonList,
-      ListNotAllowed,
-      Headline,
-      CollectionDropdown
-    },
-    computed: {
-      isRealtimeCollection () {
-        if (this.$store.state.index.indexesAndCollections) {
-          if (!this.$store.state.index.indexesAndCollections[this.index]) {
-            return false
-          }
-          if (!this.$store.state.index.indexesAndCollections[this.index].realtime) {
-            return false
-          }
-          return this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-        }
-      }
-    },
-    methods: {
-      createDocument () {
-        this.$router.push({name: 'DataCreateDocument'})
-      },
-      canSearchIndex,
-      canSearchDocument,
-      canCreateDocument,
-      canDeleteDocument,
-      canEditDocument,
-      canEditCollection,
-      performSearchDocuments,
-      performDeleteDocuments
-    }
+    canEditCollection,
+    performSearchDocuments,
+    performDeleteDocuments
   }
+}
 </script>

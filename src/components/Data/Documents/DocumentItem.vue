@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }">
-    <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div class="DocumentItem" :class="{ 'collapsed': collapsed }">
+    <i class="DocumentItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,9 +11,9 @@
 
     <label :for="checkboxId"></label>
 
-    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="DocumentItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
 
-    <div class="right actions">
+    <div class="DocumentItem-actions right">
       <a
         v-if="canEdit"
         href=""
@@ -38,126 +38,123 @@
       </dropdown>
     </div>
 
-    <div class="item-content">
+    <div class="DocumentItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: false}"></pre>
     </div>
   </div>
 </template>
 
-<style type="text/css" media="screen" scoped>
-  i.item-toggle {
-    padding: 0 10px;
-    margin-left: -10px;
-    cursor: pointer;
-    transition-duration: .2s;
+<script>
+import JsonFormatter from '../../../directives/json-formatter.directive'
+import Dropdown from '../../Materialize/Dropdown'
+import {
+  canEditDocument,
+  canDeleteDocument
+} from '../../../services/userAuthorization'
+import title from '../../../directives/title.directive'
+
+export default {
+  name: 'DocumentItem',
+  props: {
+    index: String,
+    collection: String,
+    document: Object,
+    isChecked: Boolean
+  },
+  directives: {
+    JsonFormatter,
+    title
+  },
+  components: {
+    Dropdown
+  },
+  data() {
+    return {
+      collapsed: true
+    }
+  },
+  methods: {
+    toggleCollapse() {
+      this.collapsed = !this.collapsed
+    },
+    notifyCheckboxClick() {
+      this.$emit('checkbox-click', this.document.id)
+    },
+    deleteDocument() {
+      if (this.canDelete) {
+        this.$emit('delete-document', this.document.id)
+      }
+    }
+  },
+  computed: {
+    canEdit() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canEditDocument(this.index, this.collection)
+    },
+    canDelete() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canDeleteDocument(this.index, this.collection)
+    },
+    checkboxId() {
+      return `checkbox-${this.document.id}`
+    }
   }
+}
+</script>
 
-  .collapsed i.item-toggle {
-    transform: rotate(-90deg);
-  }
+<style type="scss" rel="stylesheet/scss" scoped>
+.DocumentItem-toggle {
+  padding: 0 10px;
+  margin-left: -10px;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
 
-  /* HACK enabling to click on the title without checking the checkbox */
-  label.item-title {
-    cursor: pointer;
-    font-size: 1rem;
-    font-family: "AnonymousPro";
-  }
+.collapsed .DocumentItem-toggle {
+  transform: rotate(-90deg);
+}
 
+.DocumentItem-title {
+  color: black;
+  line-height: 21px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: 'AnonymousPro';
+}
 
-  .item-title a {
-    color: #272727;
-  }
+.DocumentItem-content {
+  transition-duration: 0.2s;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 10px 0 0;
 
-  /* HACK for centring the checkbox between the caret and the title */
-  [type="checkbox"] + label {
-    height: 15px;
-    padding-left: 30px;
-  }
-
-  .item-content {
-    transition-duration: .2s;
-    max-height: 300px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding: 10px 10px 0 0;
-  }
-
-  .collapsed .item-content {
-    max-height: 0;
-    transition-duration: 0;
-    padding: 0 10px 0 0;
-  }
-
-  .item-content pre {
+  pre {
     margin: 0;
     width: 70%;
     display: inline-block;
   }
+}
 
-  .item-content .profile-list {
-    display: inline-block;
-    width: 30%;
-    vertical-align: top;
-    text-align: right;
-  }
+.collapsed .DocumentItem-content {
+  max-height: 0;
+  transition-duration: 0;
+  padding: 0 10px 0 0;
+}
+
+.DocumentItem-actions {
+  margin-top: 1px;
+  font-size: 1em;
+}
+
+/* HACK for centring the checkbox between the caret and the title */
+[type='checkbox'] + label {
+  height: 15px;
+  padding-left: 30px;
+}
 </style>
-
-<script>
-  import JsonFormatter from '../../../directives/json-formatter.directive'
-  import Dropdown from '../../Materialize/Dropdown'
-  import { canEditDocument, canDeleteDocument } from '../../../services/userAuthorization'
-  import title from '../../../directives/title.directive'
-
-  export default {
-    name: 'DocumentItem',
-    props: {
-      index: String,
-      collection: String,
-      document: Object,
-      isChecked: Boolean
-    },
-    directives: {
-      JsonFormatter,
-      title
-    },
-    components: {
-      Dropdown
-    },
-    data () {
-      return {
-        collapsed: true
-      }
-    },
-    methods: {
-      toggleCollapse () {
-        this.collapsed = !this.collapsed
-      },
-      notifyCheckboxClick () {
-        this.$emit('checkbox-click', this.document.id)
-      },
-      deleteDocument () {
-        if (this.canDelete) {
-          this.$emit('delete-document', this.document.id)
-        }
-      }
-    },
-    computed: {
-      canEdit () {
-        if (!this.index || !this.collection) {
-          return false
-        }
-        return canEditDocument(this.index, this.collection)
-      },
-      canDelete () {
-        if (!this.index || !this.collection) {
-          return false
-        }
-        return canDeleteDocument(this.index, this.collection)
-      },
-      checkboxId () {
-        return `checkbox-${this.document.id}`
-      }
-    }
-  }
-</script>

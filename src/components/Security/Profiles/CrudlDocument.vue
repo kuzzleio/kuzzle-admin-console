@@ -255,3 +255,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.collection-wrapper {
+  min-height: 453px;
+}
+</style>

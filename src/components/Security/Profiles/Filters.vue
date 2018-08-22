@@ -1,16 +1,15 @@
 <template>
-  <div class="search-filter">
+  <div class="Filters">
     <div class="row card-panel card-header">
       <div class="col s7">
         <role-list
-                class="role-list"
-                :added-roles="addedRoles"
-                @selected-role="selectedRole"
-                @remove-role="removeRole"
+          :added-roles="addedRoles"
+          @selected-role="selectedRole"
+          @remove-role="removeRole"
         ></role-list>
       </div>
-      <div class="col s3 actions-quicksearch">
-        <button type="submit" class="btn btn-small waves-effect waves-light"@click.prevent="basicSearch">{{labelSearchButton}}</button>
+      <div class="Filters-actions col s3">
+        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="basicSearch">{{labelSearchButton}}</button>
         <button class="btn-flat btn-small waves-effect waves-light" @click="resetBasicSearch">Reset</button>
       </div>
     </div>
@@ -71,3 +70,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.Filters-actions {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

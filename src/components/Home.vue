@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="Main">
     <main-menu
       @environment::create="editEnvironment"
       @environment::delete="deleteEnvironment">
@@ -9,7 +9,9 @@
       <create-first-admin-header
         v-if="!$store.getters.adminAlreadyExists">
       </create-first-admin-header>
-      <router-view></router-view>
+      <div class="wrapper">
+        <router-view></router-view>
+      </div>
     </main>
 
     <modal class="small-modal" id="tokenExpired" :has-footer="false" :can-close="false" :is-open="tokenExpiredIsOpen" :close="noop">
@@ -25,88 +27,96 @@
   </div>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-  h6 {
-    margin-bottom: 40px;
-  }
-  .loader {
-    transition: opacity .5s ease-out;
-    opacity: 1;
-
-    &.loading {
-      opacity: 0.3;
-      z-index: 10;
-
-      &:before {
-        content: "loading ...";
-        position: fixed;
-        text-align: center;
-        left: 0;
-        right: 0;
-        bottom: 10px;
-      }
-    }
-  }
-</style>
-
 <script>
-  import MainMenu from './Common/MainMenu'
-  import CreateFirstAdminHeader from './Common/CreateFirstAdminHeader'
-  import LoginForm from './Common/Login/Form'
-  import Modal from './Materialize/Modal'
-  import KuzzleDisconnected from './Error/KuzzleDisconnected'
-  import kuzzle from '../services/kuzzle'
-  import * as types from '../vuex/modules/auth/mutation-types'
+import MainMenu from './Common/MainMenu'
+import CreateFirstAdminHeader from './Common/CreateFirstAdminHeader'
+import LoginForm from './Common/Login/Form'
+import Modal from './Materialize/Modal'
+import KuzzleDisconnected from './Error/KuzzleDisconnected'
+import kuzzle from '../services/kuzzle'
+import * as types from '../vuex/modules/auth/mutation-types'
 
-  export default {
-    name: 'Home',
-    components: {
-      LoginForm,
-      MainMenu,
-      Modal,
-      KuzzleDisconnected,
-      CreateFirstAdminHeader
+export default {
+  name: 'Home',
+  components: {
+    LoginForm,
+    MainMenu,
+    Modal,
+    KuzzleDisconnected,
+    CreateFirstAdminHeader
+  },
+  mounted() {
+    kuzzle.addListener('tokenExpired', () => this.onTokenExpired())
+  },
+  data() {
+    return {
+      host: null,
+      port: null,
+      tokenExpiredIsOpen: false,
+      kuzzleDisconnectedIsOpen: false
+    }
+  },
+  methods: {
+    onLogin() {
+      this.tokenExpiredIsOpen = false
+      this.$emit('modal-close', 'tokenExpired')
     },
-    mounted () {
-      kuzzle.addListener('tokenExpired', () => this.onTokenExpired())
+    editEnvironment(id) {
+      this.$emit('environment::create', id)
     },
-    data () {
-      return {
-        host: null,
-        port: null,
-        tokenExpiredIsOpen: false,
-        kuzzleDisconnectedIsOpen: false
+    deleteEnvironment(id) {
+      this.$emit('environment::delete', id)
+    },
+    onTokenExpired() {
+      this.$store.commit(types.SET_TOKEN_VALID, false)
+    },
+    noop() {}
+  },
+  watch: {
+    '$store.state.auth.tokenValid'(valid) {
+      if (!valid) {
+        this.tokenExpiredIsOpen = true
       }
     },
-    methods: {
-      onLogin () {
-        this.tokenExpiredIsOpen = false
-        this.$emit('modal-close', 'tokenExpired')
-      },
-      editEnvironment (id) {
-        this.$emit('environment::create', id)
-      },
-      deleteEnvironment (id) {
-        this.$emit('environment::delete', id)
-      },
-      onTokenExpired () {
-        this.$store.commit(types.SET_TOKEN_VALID, false)
-      },
-      noop () {}
-    },
-    watch: {
-      '$store.state.auth.tokenValid' (valid) {
-        if (!valid) {
-          this.tokenExpiredIsOpen = true
-        }
-      },
-      '$store.state.kuzzle.connectedTo' (isConnected) {
-        if (!isConnected) {
-          this.kuzzleDisconnectedIsOpen = true
-          return
-        }
-        this.kuzzleDisconnectedIsOpen = false
+    '$store.state.kuzzle.connectedTo'(isConnected) {
+      if (!isConnected) {
+        this.kuzzleDisconnectedIsOpen = true
+        return
       }
+      this.kuzzleDisconnectedIsOpen = false
     }
   }
+}
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+h6 {
+  margin-bottom: 40px;
+}
+
+main {
+  padding-left: $sidebar-width;
+  .wrapper {
+    padding: 20px;
+  }
+}
+
+.loader {
+  transition: opacity 0.5s ease-out;
+  opacity: 1;
+
+  &.loading {
+    opacity: 0.3;
+    z-index: 10;
+
+    &:before {
+      content: 'loading ...';
+      position: fixed;
+      text-align: center;
+      left: 0;
+      right: 0;
+      bottom: 10px;
+    }
+  }
+}
+</style>
