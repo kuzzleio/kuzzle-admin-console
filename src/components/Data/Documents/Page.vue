@@ -438,6 +438,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.DocumentsPage {
+  max-width: 1080px;
+  margin: auto;
+}
 .DocumentsPage-filtersAndButtons {
   margin-bottom: 0;
 }
