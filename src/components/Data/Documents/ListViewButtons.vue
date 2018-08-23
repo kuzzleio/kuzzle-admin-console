@@ -1,18 +1,18 @@
 <template>
   <div class="ListViewButtons">
     <a
-      class="fa fa-2x fa-list"
+      class="ListViewButtons-btn fa fa-list"
       :class="{active: activeView === 'list'}"
       @click="$emit('list')"></a>
     <a
-      class="fa fa-2x fa-th"
+      class="ListViewButtons-btn fa fa-th"
       :class="{disabled: !boxesEnabled, active: activeView === 'boxes'}"
       :title="boxesEnabled ? 'Display this list as boxes' : ''"
       @click="$emit('boxes')"
       >
     </a>
     <a
-      class="fa fa-2x fa-map-marked"
+      class="ListViewButtons-btn fa fa-map-marked"
       :class="{disabled: !mapEnabled, active: activeView === 'map'}"
       @click="$emit('map')"
       >
@@ -45,20 +45,20 @@ export default {
 
 <style lang="scss" scoped>
 .ListViewButtons {
-  padding-top: 15px;
+  padding-top: 17px;
   text-align: right;
+}
+.ListViewButtons-btn {
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 1.4em;
 
-  a {
-    margin-right: 10px;
-    cursor: pointer;
+  &.active {
+    color: $blue-color;
+  }
 
-    &.active {
-      color: $blue-color;
-    }
-
-    &.disabled {
-      color: $disabled-color;
-    }
+  &.disabled {
+    color: $disabled-color;
   }
 }
 </style>
