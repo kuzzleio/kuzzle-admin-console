@@ -10,9 +10,9 @@
             <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
                 <autocomplete
-                  :items="attributeItems"
                   input-class="validate"
                   placeholder="Attribute"
+                  :items="attributeItems"
                   @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
                 />
               </div>
