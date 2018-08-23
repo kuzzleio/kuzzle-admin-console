@@ -16,7 +16,7 @@
       <li
         v-for="(result, i) in results"
         class="Autocomplete-result"
-        :key="i"
+        :key="result"
         :class="{ 'is-active': i === arrowCounter }"
         @click="setResult(result)"
       >
