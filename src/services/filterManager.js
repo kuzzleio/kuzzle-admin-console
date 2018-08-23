@@ -3,7 +3,7 @@ import _ from 'lodash'
 export const load = (index, collection, route) => {
   if (!index || !collection) {
     throw new Error(
-      'Cannot load filters if no index or collection are specfied'
+      'Cannot load filters if no index or collection are specified'
     )
   }
 
@@ -44,7 +44,7 @@ export const loadFromRoute = route => {
 export const loadFromLocalStorage = (index, collection) => {
   if (!index || !collection) {
     throw new Error(
-      'Cannot load filters from localstorage if no index or collection are specfied'
+      'Cannot load filters from localstorage if no index or collection are specified'
     )
   }
   const filterStr = localStorage.getItem(
@@ -60,7 +60,7 @@ export const loadFromLocalStorage = (index, collection) => {
 export const save = (filter, router, index, collection) => {
   if (!index || !collection) {
     throw new Error(
-      'Cannot save filters if no index or collection are specfied'
+      'Cannot save filters if no index or collection are specified'
     )
   }
   const strippedFilter = stripDefaultValuesFromFilter(filter)
@@ -85,7 +85,7 @@ export const saveToRouter = (filter, router) => {
 export const saveToLocalStorage = (filter, index, collection) => {
   if (!index || !collection) {
     throw new Error(
-      'Cannot save filters to localstorage if no index or collection are specfied'
+      'Cannot save filters to localstorage if no index or collection are specified'
     )
   }
   localStorage.setItem(

@@ -115,7 +115,8 @@ export default {
       filters: {
         basic: null,
         sorting: { ...emptySorting }
-      }
+      },
+      throttleSearch: false
     }
   },
   computed: {
@@ -128,6 +129,10 @@ export default {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {
+      if (this.isFilterValid) {
+        return
+      }
+
       let filters = this.filters.basic
 
       if (
@@ -203,6 +208,21 @@ export default {
       }
 
       return attributes
+    }
+  },
+  computed: {
+    isFilterValid: function () {
+      // For each andBlocks in orBlocks, check if attribute and value field are filled
+      for (const orBlock of this.filters.basic) {
+        for (const andBlock of orBlock) {
+          if (andBlock.attribute === null || andBlock.attribute === '' ||
+            andBlock.value === null || andBlock.value === '') {
+            return false
+          }
+        }
+      }
+
+      return true
     }
   },
   watch: {
