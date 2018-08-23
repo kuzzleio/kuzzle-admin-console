@@ -112,7 +112,7 @@
   }
 
   .autocomplete-result.is-active {
-    background-color: #4AAE9B;
+    background-color: #0397ef;
     color: white;
   }
 
@@ -124,7 +124,7 @@
   }
 
   .autocomplete-result:hover {
-    background-color: #4AAE9B;
+    background-color: #0397ef;
     color: white;
   }
 </style>
