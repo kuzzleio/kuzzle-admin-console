@@ -102,17 +102,17 @@
   }
 </script>
 
-<style>
+<style scoped lang="scss">
   .autocomplete-results {
     padding: 0;
     margin: 0;
-    border: 1px solid #eeeeee;
+    border: 1px solid $dropdown-border-color;
     height: 120px;
     overflow: auto;
   }
 
   .autocomplete-result.is-active {
-    background-color: #0397ef;
+    background-color: $blue-color;
     color: white;
   }
 
@@ -124,7 +124,7 @@
   }
 
   .autocomplete-result:hover {
-    background-color: #0397ef;
+    background-color: $blue-color;
     color: white;
   }
 </style>
