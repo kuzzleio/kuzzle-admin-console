@@ -122,6 +122,19 @@ export default {
   computed: {
     attributeItems () {
       return this.buildAttributeList(this.collectionMapping)
+    },
+    isFilterValid: function () {
+      // For each andBlocks in orBlocks, check if attribute and value field are filled
+      for (const orBlock of this.filters.basic) {
+        for (const andBlock of orBlock) {
+          if (andBlock.attribute === null || andBlock.attribute === '' ||
+            andBlock.value === null || andBlock.value === '') {
+            return false
+          }
+        }
+      }
+
+      return true
     }
   },
   methods: {
@@ -208,21 +221,6 @@ export default {
       }
 
       return attributes
-    }
-  },
-  computed: {
-    isFilterValid: function () {
-      // For each andBlocks in orBlocks, check if attribute and value field are filled
-      for (const orBlock of this.filters.basic) {
-        for (const andBlock of orBlock) {
-          if (andBlock.attribute === null || andBlock.attribute === '' ||
-            andBlock.value === null || andBlock.value === '') {
-            return false
-          }
-        }
-      }
-
-      return true
     }
   },
   watch: {

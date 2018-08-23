@@ -1,23 +1,24 @@
 <template>
-  <div>
+  <div class="Autocomplete">
     <input
       type="text"
       v-model="search"
       :class="inputClass"
       :placeholder="placeholder"
       @input="onInput"
+      @change="(evt) => setResult(evt.target.value)"
       @keydown.down="onArrowDown"
       @keydown.up="onArrowUp"
       @keydown.enter.prevent="onEnter"
     />
 
-    <ul class="autocomplete-results" v-show="isOpen">
+    <ul class="Autocomplete-results" v-show="isOpen">
       <li
         v-for="(result, i) in results"
+        class="Autocomplete-result"
         :key="i"
-        @click="setResult(result)"
-        class="autocomplete-result"
         :class="{ 'is-active': i === arrowCounter }"
+        @click="setResult(result)"
       >
         {{ result }}
       </li>
@@ -33,22 +34,22 @@
       item: {
         type: String,
         required: false,
-        default: () => ''
+        default: ''
       },
       items: {
         type: Array,
         required: false,
-        default: () => []
+        default: []
       },
       inputClass: {
         type: String,
         required: false,
-        default: () => ''
+        default: ''
       },
       placeholder: {
         type: String,
         required: false,
-        default: () => ''
+        default: ''
       }
     },
     data() {
@@ -62,7 +63,7 @@
     methods: {
       onInput() {
         if (this.results.length > 0) {
-          this.isOpen = true          
+          this.isOpen = true
         }
         this.filterResults()
       },
@@ -105,7 +106,7 @@
 </script>
 
 <style scoped lang="scss">
-  .autocomplete-results {
+  .Autocomplete-results {
     padding: 0;
     margin: 0;
     border: 1px solid $dropdown-border-color;
@@ -113,19 +114,19 @@
     overflow: auto;
   }
 
-  .autocomplete-result.is-active {
+  .Autocomplete-result.is-active {
     background-color: $blue-color;
     color: white;
   }
 
-  .autocomplete-result {
+  .Autocomplete-result {
     list-style: none;
     text-align: left;
     padding: 4px 2px;
     cursor: pointer;
   }
 
-  .autocomplete-result:hover {
+  .Autocomplete-result:hover {
     background-color: $blue-color;
     color: white;
   }
