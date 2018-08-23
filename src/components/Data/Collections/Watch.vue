@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="wrapper watch">
+  <div class="Watch">
+    <div class="wrapper">
       <headline>
         {{collection}}
         <collection-dropdown
@@ -451,7 +451,10 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-.watch {
+.Watch {
+  max-width: 1080px;
+  margin: auto;
+
   .head {
     float: left;
     font-size: 2rem;
