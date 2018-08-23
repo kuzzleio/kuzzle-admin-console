@@ -17,7 +17,7 @@
         v-for="(result, i) in results"
         class="Autocomplete-result"
         :key="result"
-        :class="{ 'is-active': i === arrowCounter }"
+        :class="{ 'is-active': i === selectionCursor }"
         @click="setResult(result)"
       >
         {{ result }}
@@ -57,7 +57,7 @@
         search: '',
         results: [],
         isOpen: false,
-        arrowCounter: -1
+        selectionCursor: -1
       }
     },
     methods: {
@@ -76,23 +76,23 @@
         this.$emit('autocomplete::change', result)
       },
       onArrowDown() {
-        if (this.arrowCounter + 1 < this.results.length) {
-          this.arrowCounter = this.arrowCounter + 1
+        if (this.selectionCursor + 1 < this.results.length) {
+          this.selectionCursor = this.selectionCursor + 1
         }
       },
       onArrowUp() {
-        if (this.arrowCounter > 0) {
-          this.arrowCounter = this.arrowCounter - 1
+        if (this.selectionCursor > 0) {
+          this.selectionCursor = this.selectionCursor - 1
         }
       },
       onEnter() {
-        this.setResult(this.results[this.arrowCounter])
-        this.arrowCounter = -1
+        this.setResult(this.results[this.selectionCursor])
+        this.selectionCursor = -1
       },
       handleClickOutside(evt) {
         if (!this.$el.contains(evt.target)) {
           this.isOpen = false
-          this.arrowCounter = -1
+          this.selectionCursor = -1
         }
       }
     },
