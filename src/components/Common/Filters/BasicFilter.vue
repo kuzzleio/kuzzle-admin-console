@@ -13,7 +13,7 @@
                   :items="attributeItems"
                   input-class="validate"
                   placeholder="Attribute"
-                  @change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
+                  @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
                 />
               </div>
               <div class="col s3">

@@ -70,7 +70,7 @@
       setResult(result) {
         this.search = result
         this.isOpen = false
-        this.$emit('change', result)
+        this.$emit('autocomplete::change', result)
       },
       onArrowDown() {
         if (this.arrowCounter + 1 < this.results.length) {
