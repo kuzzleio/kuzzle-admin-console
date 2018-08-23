@@ -96,8 +96,11 @@ h6 {
 
 main {
   padding-left: $sidebar-width;
+
   .wrapper {
     padding: 20px;
+    max-width: 1080px;
+    margin: auto;
   }
 }
 
