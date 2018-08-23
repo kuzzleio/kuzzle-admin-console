@@ -72,14 +72,14 @@ describe('filterManager tests', () => {
         filterManager.loadFromLocalStorage()
       } catch (error) {
         expect(error.message).to.equals(
-          'Cannot load filters from localstorage if no index or collection are specfied'
+          'Cannot load filters from localstorage if no index or collection are specified'
         )
       }
       try {
         filterManager.loadFromLocalStorage('toto')
       } catch (error) {
         expect(error.message).to.equals(
-          'Cannot load filters from localstorage if no index or collection are specfied'
+          'Cannot load filters from localstorage if no index or collection are specified'
         )
       }
     })

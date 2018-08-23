@@ -35,6 +35,7 @@
                   :submit-button-label="submitButtonLabel"
                   :action-buttons-visible="actionButtonsVisible"
                   :sorting="sorting"
+                  :collection-mapping="collectionMapping"
                   @update-filter="onBasicFilterUpdated"
                   @reset="onReset">
                 </basic-filter>
@@ -152,7 +153,11 @@ export default {
       default: true
     },
     currentFilter: Object,
-    formatFromBasicSearch: Function
+    formatFromBasicSearch: Function,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -204,7 +209,6 @@ export default {
       )
     },
     onBasicFilterUpdated(filter, sorting) {
-      this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_BASIC : NO_ACTIVE,
@@ -251,15 +255,6 @@ export default {
   },
   destroyed() {
     window.document.removeEventListener('keydown', this.handleEsc)
-  },
-  watch: {
-    // FIXME these events do nothing.
-    advancedFiltersVisible() {
-      this.$emit('json-editor-refresh')
-    },
-    complexFiltersSelectedTab() {
-      this.$emit('json-editor-refresh')
-    }
   }
 }
 </script>

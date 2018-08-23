@@ -5,6 +5,7 @@
       @reset="onFiltersUpdated"
       :available-operands="searchFilterOperands"
       :current-filter="currentFilter"
+      :collection-mapping="collectionMapping"
       >
     </filters>
 
@@ -146,7 +147,11 @@ export default {
     sorting: Object,
     searchFilterOperands: Object,
     documentToDelete: String,
-    performDelete: Function
+    performDelete: Function,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {

@@ -37,6 +37,7 @@
           :available-operands="realtimeFilterOperands"
           :quick-filter-enabled="false"
           :sorting-enabled="false"
+          :collection-mapping="collectionMapping"
           @filters-updated="onFiltersUpdated"
           @reset="onReset"
           >
@@ -117,7 +118,6 @@
 <script>
 import CollectionTabs from './Tabs'
 import Headline from '../../Materialize/Headline'
-
 import collapsible from '../../../directives/Materialize/collapsible.directive'
 import Notification from '../Realtime/Notification'
 import LastNotification from '../Realtime/LastNotification'
@@ -125,10 +125,10 @@ import SubscriptionControls from '../Realtime/SubscriptionControls'
 import CollectionDropdown from '../Collections/Dropdown'
 import Filters from '../../Common/Filters/Filters'
 import kuzzle from '../../../services/kuzzle'
-// import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
+import { getMappingDocument } from '../../../services/kuzzleWrapper'
 
 import Vue from 'vue'
 
@@ -151,7 +151,8 @@ export default {
       warning: { message: '', count: 0, lastTime: null, info: false },
       notifStyle: {},
       scrollDown: true,
-      lastNotification: {}
+      lastNotification: {},
+      collectionMapping: {}
     }
   },
   created() {
@@ -159,6 +160,10 @@ export default {
   },
   mounted() {
     this.notifications = []
+    getMappingDocument(this.collection, this.index)
+      .then(response => {
+        this.collectionMapping = response.mapping
+      })
   },
   destroyed() {
     this.reset()
