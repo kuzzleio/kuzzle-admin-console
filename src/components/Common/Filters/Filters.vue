@@ -35,6 +35,7 @@
                   :submit-button-label="submitButtonLabel"
                   :action-buttons-visible="actionButtonsVisible"
                   :sorting="sorting"
+                  :collection-mapping="collectionMapping"
                   @update-filter="onBasicFilterUpdated"
                   @reset="onReset">
                 </basic-filter>
@@ -152,7 +153,11 @@ export default {
       default: true
     },
     currentFilter: Object,
-    formatFromBasicSearch: Function
+    formatFromBasicSearch: Function,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {

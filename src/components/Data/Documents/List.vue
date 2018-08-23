@@ -18,6 +18,7 @@
       :display-create="canCreateDocument(index, collection)"
       :perform-search="performSearchDocuments"
       :perform-delete="performDeleteDocuments"
+      :collection-mapping="collectionMapping"
       route-create="DataCreateDocument"
       route-update="DataUpdateDocument">
 
@@ -82,11 +83,17 @@ import {
 } from '../../../services/userAuthorization'
 import {
   performSearchDocuments,
-  performDeleteDocuments
+  performDeleteDocuments,
+  getMappingDocument
 } from '../../../services/kuzzleWrapper'
 
 export default {
   name: 'DocumentsList',
+  data () {
+    return {
+      collectionMapping: {}
+    }
+  },
   props: {
     index: String,
     collection: String
@@ -128,6 +135,12 @@ export default {
     canEditCollection,
     performSearchDocuments,
     performDeleteDocuments
+  },
+  mounted() {
+    getMappingDocument(this.collection, this.index)
+      .then(response => {
+        this.collectionMapping = response.mapping
+      })
   }
 }
 </script>

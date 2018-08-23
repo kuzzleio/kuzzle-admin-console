@@ -17,6 +17,7 @@
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
       :perform-delete="performDelete"
+      :collection-mapping="collectionMapping"
       @filters-updated="onFiltersUpdated"
       @create-clicked="create"
       @toggle-all="toggleAll"
@@ -70,7 +71,11 @@ export default {
     performSearch: Function,
     performDelete: Function,
     routeCreate: String,
-    routeUpdate: String
+    routeUpdate: String,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
   },
 
   data() {
