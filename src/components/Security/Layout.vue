@@ -1,7 +1,7 @@
 <template>
   <div>
     <aside>
-      <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
+      <ul class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
         <router-link v-if="canManageUsers()" class="bold" tag="li" :to="{name: 'SecurityUsersList'}" active-class="active">
           <a class="waves-effect">
             <i class="fa fa-user" aria-hidden="true"></i>
@@ -32,6 +32,14 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+.Treeview-container {
+  @media (max-width: $medium-screen) {
+    // @HACK this is nasty, but we need it to override the default
+    // MaterializeCSS behavior, hiding the side menu whenever the
+    // screen is less than medium-width.
+    transform: translateX(0);
+  }
+}
 .side-nav {
   top: 50px;
   width: $sidebar-width;

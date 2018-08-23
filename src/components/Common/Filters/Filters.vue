@@ -1,60 +1,57 @@
 <template>
   <div class="Filters">
 
-      <!-- <div class="row margin-bottom-0 filters"> -->
-        <quick-filter
-          :advanced-query-label="advancedQueryLabel"
-          :submit-button-label="submitButtonLabel"
-          :complex-filter-active="complexFilterActive"
-          :search-term="quickFilter"
-          :advanced-filters-visible="advancedFiltersVisible"
-          :enabled="quickFilterEnabled"
-          :action-buttons-visible="actionButtonsVisible"
-          @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
-          @update-filter="onQuickFilterUpdated"
-          @refresh="onRefresh"
-          @reset="onReset">
-        </quick-filter>
-      <!-- </div> -->
+    <quick-filter
+      :advanced-query-label="advancedQueryLabel"
+      :submit-button-label="submitButtonLabel"
+      :complex-filter-active="complexFilterActive"
+      :search-term="quickFilter"
+      :advanced-filters-visible="advancedFiltersVisible"
+      :enabled="quickFilterEnabled"
+      :action-buttons-visible="actionButtonsVisible"
+      @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
+      @update-filter="onQuickFilterUpdated"
+      @refresh="onRefresh"
+      @reset="onReset">
+    </quick-filter>
 
 
     <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
       <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
-      <!-- <div class="col s12"> -->
-        <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
-          <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
-          <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
+      <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
+        <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
+        <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
-          <div slot="contents" class="card">
-            <div class="col s12">
-              <div v-show="complexFiltersSelectedTab === 'basic'">
-                <basic-filter
-                  :basic-filter="basicFilter"
-                  :sorting-enabled="sortingEnabled"
-                  :available-operands="availableOperands"
-                  :submit-button-label="submitButtonLabel"
-                  :action-buttons-visible="actionButtonsVisible"
-                  :sorting="sorting"
-                  @update-filter="onBasicFilterUpdated"
-                  @reset="onReset">
-                </basic-filter>
-              </div>
+        <div slot="contents" class="card">
+          <div class="col s12">
+            <div v-show="complexFiltersSelectedTab === 'basic'">
+              <basic-filter
+                :basic-filter="basicFilter"
+                :sorting-enabled="sortingEnabled"
+                :available-operands="availableOperands"
+                :submit-button-label="submitButtonLabel"
+                :action-buttons-visible="actionButtonsVisible"
+                :sorting="sorting"
+                :collection-mapping="collectionMapping"
+                @update-filter="onBasicFilterUpdated"
+                @reset="onReset">
+              </basic-filter>
+            </div>
 
-              <div v-show="complexFiltersSelectedTab === 'raw'">
-                <raw-filter
-                  :raw-filter="rawFilter"
-                  :format-from-basic-search="formatFromBasicSearch"
-                  :sorting-enabled="sortingEnabled"
-                  :action-buttons-visible="actionButtonsVisible"
-                  :submit-button-label="submitButtonLabel"
-                  @update-filter="onRawFilterUpdated"
-                  @reset="onReset">
-                </raw-filter>
-              </div>
+            <div v-show="complexFiltersSelectedTab === 'raw'">
+              <raw-filter
+                :raw-filter="rawFilter"
+                :format-from-basic-search="formatFromBasicSearch"
+                :sorting-enabled="sortingEnabled"
+                :action-buttons-visible="actionButtonsVisible"
+                :submit-button-label="submitButtonLabel"
+                @update-filter="onRawFilterUpdated"
+                @reset="onReset">
+              </raw-filter>
             </div>
           </div>
-        </tabs>
-      </div>
+        </div>
+      </tabs>
     </div>
   </div>
 </template>
@@ -153,7 +150,11 @@ export default {
       default: true
     },
     currentFilter: Object,
-    formatFromBasicSearch: Function
+    formatFromBasicSearch: Function,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -205,7 +206,6 @@ export default {
       )
     },
     onBasicFilterUpdated(filter, sorting) {
-      this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_BASIC : NO_ACTIVE,
@@ -252,15 +252,6 @@ export default {
   },
   destroyed() {
     window.document.removeEventListener('keydown', this.handleEsc)
-  },
-  watch: {
-    // FIXME these events do nothing.
-    advancedFiltersVisible() {
-      this.$emit('json-editor-refresh')
-    },
-    complexFiltersSelectedTab() {
-      this.$emit('json-editor-refresh')
-    }
   }
 }
 </script>

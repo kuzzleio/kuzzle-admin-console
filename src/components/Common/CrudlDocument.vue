@@ -147,7 +147,11 @@ export default {
     sorting: Object,
     searchFilterOperands: Object,
     documentToDelete: String,
-    performDelete: Function
+    performDelete: Function,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {

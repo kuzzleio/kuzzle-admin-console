@@ -34,6 +34,7 @@
             <filters
               :available-operands="searchFilterOperands"
               :current-filter="currentFilter"
+              :collection-mapping="collectionMapping"
               @filters-updated="onFiltersUpdated"
               @reset="onFiltersUpdated"
               >
@@ -151,7 +152,8 @@ import {
 } from '../../../services/userAuthorization'
 import {
   performSearchDocuments,
-  performDeleteDocuments
+  performDeleteDocuments,
+  getMappingDocument
 } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
@@ -188,7 +190,8 @@ export default {
       currentFilter: new filterManager.Filter(),
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
-      candidatesForDeletion: []
+      candidatesForDeletion: [],
+      collectionMapping: {}
     }
   },
   computed: {
@@ -401,6 +404,9 @@ export default {
     }
   },
   mounted() {
+    getMappingDocument(this.collection, this.index).then(response => {
+      this.collectionMapping = response.mapping
+    })
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
@@ -439,8 +445,9 @@ export default {
 
 <style lang="scss" scoped>
 .DocumentsPage {
-  max-width: 1080px;
-  margin: auto;
+  // @TODO Temporarily reverted
+  // max-width: 1080px;
+  // margin: auto;
 }
 .DocumentsPage-filtersAndButtons {
   margin-bottom: 0;

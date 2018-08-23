@@ -96,6 +96,7 @@ h6 {
 
 main {
   padding-left: $sidebar-width;
+
   .wrapper {
     padding: 20px;
   }

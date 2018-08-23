@@ -62,7 +62,7 @@
             <pre>
 {
   "age": { "type": "integer" },
-  "name": { "type": "string" }
+  "name": { "type": "text" }
 }
             </pre>
           </p>
