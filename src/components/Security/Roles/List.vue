@@ -1,71 +1,187 @@
 <template>
-  <div class="roles">
-    <headline title="Role Management"></headline>
+  <div class="RoleList">
+    <slot name="emptySet" v-if="!currentFilter.basic && totalDocuments === 0"></slot>
+    <crudl-document v-else
+      :pagination-from="paginationFrom"
+      :pagination-size="paginationSize"
+      :current-filter="currentFilter"
+      :documents="documents"
+      :total-documents="totalDocuments"
+      :display-bulk-delete="displayBulkDelete"
+      :display-create="displayCreate"
+      :all-checked="allChecked"
+      :selected-documents="selectedDocuments"
+      :length-document="selectedDocuments.length"
+      :document-to-delete="documentToDelete"
+      :perform-delete="performDelete"
+      @filters-updated="onFiltersUpdated"
+      @create-clicked="create"
+      @toggle-all="toggleAll">
 
-    <list-not-allowed v-if="!canSearchRole()"></list-not-allowed>
-
-    <common-list
-      v-if="canSearchRole()"
-      item-name="RoleItem"
-      @create-clicked="createRole"
-      :display-create="canCreateRole()"
-      :perform-search="performSearchRoles"
-      :perform-delete="performDeleteRoles"
-      route-create="SecurityRolesCreate"
-      route-update="SecurityRolesUpdate">
-
-      <div slot="emptySet" class="card-panel">
-        <div class="row valign-bottom empty-set">
-          <div class="col s1 offset-s1">
-            <i class="fa fa-6x fa-unlock-alt grey-text text-lighten-1" aria-hidden="true"></i>
-          </div>
-          <div class="col s10">
-            <p>
-              Here you'll see the kuzzle's roles<br/>
-              <em>Currently there is no role.</em>
-            </p>
-            <router-link :disabled="!canCreateRole()"
-                    :class="!canCreateRole() ? 'disabled' : ''"
-                    :title="!canCreateRole() ? 'You are not allowed to create new roles' : ''"
-                    :to="{name: 'SecurityRolesCreate'}"
-                    class="btn primary waves-effect waves-light">
-              <i class="fa fa-plus-circle left"></i>
-              Create a role
-            </router-link>
-          </div>
+      <div class="RoleList-list collection">
+        <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+          <component
+            :is="itemName"
+            @checkbox-click="toggleSelectDocuments"
+            :document="document"
+            :is-checked="isChecked(document.id)"
+            @common-list::edit-document="editDocument"
+            @delete-document="deleteDocument">
+          </component>
         </div>
       </div>
-    </common-list>
+
+    </crudl-document>
   </div>
 </template>
 
 <script>
-  import ListNotAllowed from '../../Common/ListNotAllowed'
-  import CommonList from './CommonList'
-  import { canSearchRole, canCreateRole } from '../../../services/userAuthorization'
-  import Headline from '../../Materialize/Headline'
-  import { performSearchRoles, performDeleteRoles } from '../../../services/kuzzleWrapper'
+import CrudlDocument from './CrudlDocument'
+import UserItem from '../Users/UserItem'
+import RoleItem from '../Roles/RoleItem'
+import ProfileItem from '../Profiles/ProfileItem'
+import DocumentItem from '../../Data/Documents/DocumentItem'
+import * as filterManager from '../../../services/filterManager'
+import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
-  export default {
-    name: 'RolesList',
-    components: {
-      ListNotAllowed,
-      CommonList,
-      Headline
+export default {
+  name: 'RoleList',
+  props: {
+    itemName: String,
+    displayCreate: {
+      type: Boolean,
+      default: false
     },
-    methods: {
-      createRole () {
-        this.$router.push({name: 'SecurityRolesCreate'})
-      },
-      canSearchRole,
-      canCreateRole,
-      performSearchRoles,
-      performDeleteRoles
+    performSearch: Function,
+    performDelete: Function,
+    routeCreate: String,
+    routeUpdate: String
+  },
+  components: {
+    CrudlDocument,
+    UserItem,
+    RoleItem,
+    ProfileItem,
+    DocumentItem
+  },
+  data() {
+    return {
+      selectedDocuments: [],
+      documents: [],
+      totalDocuments: 0,
+      documentToDelete: null,
+      currentFilter: new filterManager.Filter()
+    }
+  },
+  computed: {
+    displayBulkDelete() {
+      return this.selectedDocuments.length > 0
     },
-    route: {
-      data () {
-        this.$emit('crudl-refresh-search')
+    allChecked() {
+      if (!this.selectedDocuments || !this.documents) {
+        return false
       }
+
+      return this.selectedDocuments.length === this.documents.length
+    },
+    paginationFrom() {
+      return parseInt(this.currentFilter.from) || 0
+    },
+    paginationSize() {
+      return parseInt(this.currentFilter.size) || 10
+    }
+  },
+  methods: {
+    isChecked(id) {
+      return this.selectedDocuments.indexOf(id) > -1
+    },
+    toggleAll() {
+      if (this.allChecked) {
+        this.selectedDocuments = []
+        return
+      }
+      this.selectedDocuments = []
+      this.selectedDocuments = this.documents.map(document => document.id)
+    },
+    toggleSelectDocuments(id) {
+      let index = this.selectedDocuments.indexOf(id)
+
+      if (index === -1) {
+        this.selectedDocuments.push(id)
+        return
+      }
+
+      this.selectedDocuments.splice(index, 1)
+    },
+    onFiltersUpdated(newFilters) {
+      try {
+        filterManager.saveToRouter(
+          filterManager.stripDefaultValuesFromFilter(newFilters),
+          this.$router
+        )
+      } catch (error) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while updating filters: <br />' + error.message
+        })
+      }
+    },
+    fetchRoles() {
+      let pagination = {
+        from: this.paginationFrom,
+        size: this.paginationSize
+      }
+
+      this.performSearch(this.currentFilter.basic || {}, pagination)
+        .then(res => {
+          this.documents = res.documents
+          this.totalDocuments = res.total
+        })
+        .catch(e => {
+          this.$store.commit(SET_TOAST, {
+            text:
+              'An error occurred while performing search: <br />' + e.message
+          })
+        })
+    },
+    editDocument(route, id) {
+      this.$router.push({
+        name: this.routeUpdate,
+        params: { id: encodeURIComponent(id) }
+      })
+    },
+    deleteDocument(id) {
+      this.documentToDelete = id
+    },
+    create(route) {
+      this.$router.push({ name: this.routeCreate })
+    }
+  },
+  mounted() {
+    this.currentFilter = Object.assign(
+      new filterManager.Filter(),
+      filterManager.loadFromRoute(this.$route)
+    )
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.currentFilter = Object.assign(
+          new filterManager.Filter(),
+          filterManager.loadFromRoute(this.$route)
+        )
+      }
+    },
+    currentFilter() {
+      this.fetchRoles()
     }
   }
+}
 </script>
+
+<style lang="scss" rel="stylesheet/scss" scoped>
+.RoleList-list {
+  overflow: visible;
+}
+</style>

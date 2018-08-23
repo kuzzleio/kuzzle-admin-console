@@ -117,7 +117,6 @@
     "vue-style-loader": "^2.0.0",
     "vue-template-compiler": "^2.5.16",
     "vuex": "^2.5.0",
-    "vuex-router-sync": "^4.3.2",
     "webpack": "^2.7.0",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-dev-middleware": "^1.12.2",

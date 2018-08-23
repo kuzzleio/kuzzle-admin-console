@@ -446,7 +446,7 @@ export default {
     },
     $route() {
       this.reset()
-      this.currentFilter = filterManager.loadFromRoute(this.$store.state.route)
+      this.currentFilter = filterManager.loadFromRoute(this.$route)
     },
     subscribed() {
       this.computeNotifHeight()

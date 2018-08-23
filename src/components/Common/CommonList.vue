@@ -4,8 +4,8 @@
     <crudl-document v-else
       :search-filter-operands="searchFilterOperands"
       :pagination-from="paginationFrom"
-      :current-filter="currentFilter"
       :pagination-size="paginationSize"
+      :current-filter="currentFilter"
       :index="index"
       :collection="collection"
       :documents="documents"
@@ -23,20 +23,20 @@
       @toggle-all="toggleAll"
       @crudl-refresh-search="fetchDocuments">
 
-        <div class="CommonList-list collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
-          <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-            <component
-              :is="itemName"
-              @checkbox-click="toggleSelectDocuments"
-              :document="document"
-              :is-checked="isChecked(document.id)"
-              :index="index"
-              :collection="collection"
-              @common-list::edit-document="editDocument"
-              @delete-document="deleteDocument">
-            </component>
-          </div>
+      <div class="CommonList-list collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
+        <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+          <component
+            :is="itemName"
+            @checkbox-click="toggleSelectDocuments"
+            :document="document"
+            :is-checked="isChecked(document.id)"
+            :index="index"
+            :collection="collection"
+            @common-list::edit-document="editDocument"
+            @delete-document="deleteDocument">
+          </component>
         </div>
+      </div>
 
     </crudl-document>
   </div>
@@ -207,7 +207,7 @@ export default {
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
-      this.$store.state.route
+      this.$route
     )
     filterManager.save(
       this.currentFilter,
@@ -223,7 +223,7 @@ export default {
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
-          this.$store.state.route
+          newValue
         )
         filterManager.save(
           this.currentFilter,
