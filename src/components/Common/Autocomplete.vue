@@ -61,7 +61,9 @@
     },
     methods: {
       onInput() {
-        this.isOpen = true
+        if (this.results.length > 0) {
+          this.isOpen = true          
+        }
         this.filterResults()
       },
       filterResults() {
