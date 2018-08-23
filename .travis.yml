@@ -17,16 +17,27 @@ addons:
     packages:
     - python
     - python-pip
+    - wine
+    - zip
 install:
 - pip install awscli --upgrade --user
 script:
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
+
 before_deploy:
 - echo "Generate and push dist folder"
 - rm -rf dist/*
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
 - npm run tar_dist
+- echo "Electron packaging:"
+- cp -fr dist/* .electron/
+- cd ./.electron && npm install --only=dev
+- echo "Linux" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console --electron-version 2.0.8 --platform linux && zip -r kuzzle-admin-console-linux.zip Kuzzle-Admin-Console-linux-x64/*
+- echo "MacOs" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console --electron-version 2.0.8 --platform darwin && zip -r kuzzle-admin-console-macos.zip Kuzzle-Admin-Console-darwin-x64/*
+- echo "Windows" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console --electron-version 2.0.8 --platform win32 && zip -r kuzzle-admin-console-windows.zip Kuzzle-Admin-Console-win32-x64/*
+- cd ..
+
 deploy:
   provider: npm
   skip_cleanup: true
@@ -47,3 +58,6 @@ deploy:
 
 after_deploy:
 - aws s3 cp kuzzle-admin-console.tar.gz s3://$BUCKET_NAME/kuzzle-admin-console.tar.gz
+- aws s3 cp kuzzle-admin-console-linux.zip s3://$BUCKET_NAME/kuzzle-admin-console-linux.zip
+- aws s3 cp kuzzle-admin-console-macos.zip s3://$BUCKET_NAME/kuzzle-admin-console-macos.zip
+- aws s3 cp kuzzle-admin-console-windows.zip s3://$BUCKET_NAME/kuzzle-admin-console-windows.zip

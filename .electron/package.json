@@ -1,0 +1,22 @@
+{
+  "name": "kuzzle-admin-console",
+  "version": "1.0.0",
+  "description": "Kuzzle Admin Console as an Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/kuzzleio/kuzzle-admin-console",
+  "keywords": [
+    "Kuzzle",
+    "dashboard",
+    "console",
+    "electron"
+  ],
+  "author": "Kuzzle.io",
+  "license": "Apache2",
+  "devDependencies": {
+    "electron": "^2.0.0",
+    "electron-packager": "^12.0.0"
+  }
+}
