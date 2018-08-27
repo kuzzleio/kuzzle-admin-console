@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="wrapper watch">
+  <div class="Watch">
+    <div class="wrapper">
       <headline>
         {{collection}}
         <collection-dropdown
@@ -160,10 +160,9 @@ export default {
   },
   mounted() {
     this.notifications = []
-    getMappingDocument(this.collection, this.index)
-      .then(response => {
-        this.collectionMapping = response.mapping
-      })
+    getMappingDocument(this.collection, this.index).then(response => {
+      this.collectionMapping = response.mapping
+    })
   },
   destroyed() {
     this.reset()
@@ -456,7 +455,11 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-.watch {
+.Watch {
+  // @TODO temoirarily reverted
+  // max-width: 1080px;
+  // margin: auto;
+
   .head {
     float: left;
     font-size: 2rem;

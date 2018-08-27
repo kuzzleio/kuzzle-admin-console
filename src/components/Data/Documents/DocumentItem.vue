@@ -17,7 +17,7 @@
       <a
         v-if="canEdit"
         href=""
-        @click.prevent="$emit('common-list::edit-document', 'DataUpdateDocument', document.id)">
+        @click.prevent="editDocument">
         <i class="fa fa-pencil"></i>
       </a>
       <a
@@ -30,7 +30,7 @@
         <li>
           <a
             v-bind:class="{'disabled': !canDelete}"
-            @click="deleteDocument(document.id)"
+            @click="deleteDocument"
             v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
             Delete
           </a>
@@ -83,7 +83,12 @@ export default {
     },
     deleteDocument() {
       if (this.canDelete) {
-        this.$emit('delete-document', this.document.id)
+        this.$emit('delete', this.document.id)
+      }
+    },
+    editDocument() {
+      if (this.canEdit) {
+        this.$emit('edit', this.document.id)
       }
     }
   },
