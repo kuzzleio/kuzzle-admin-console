@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-admin-console",
-  "version": "1.0.0",
+  "version": "2.1.7",
   "description": "Kuzzle Admin Console as an Electron application",
   "main": "main.js",
   "scripts": {

@@ -24,18 +24,19 @@ install:
 script:
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run install_deps
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run unit && npm run codecov
-
-before_deploy:
 - echo "Generate and push dist folder"
 - rm -rf dist/*
 - docker-compose -f test/e2e/docker-compose.yml -p e2e-chrome run backoffice npm run build
+
+before_deploy:
 - npm run tar_dist
 - echo "Electron packaging:"
+- PACKAGING_VERSION=$(node -p -e "require('./package.json').version")
 - cp -fr dist/* .electron/
 - cd ./.electron && npm install --only=dev
-- echo "Linux" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console --electron-version 2.0.8 --platform linux && zip -r kuzzle-admin-console-linux.zip Kuzzle-Admin-Console-linux-x64/*
-- echo "MacOs" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console --electron-version 2.0.8 --platform darwin && zip -r kuzzle-admin-console-macos.zip Kuzzle-Admin-Console-darwin-x64/*
-- echo "Windows" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console --electron-version 2.0.8 --platform win32 && zip -r kuzzle-admin-console-windows.zip Kuzzle-Admin-Console-win32-x64/*
+- echo "Linux" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console-v$PACKAGING_VERSION --electron-version 2.0.8 --platform linux && zip -r kuzzle-admin-console-v$PACKAGING_VERSION-linux.zip Kuzzle-Admin-Console-v$PACKAGING_VERSION-linux-x64/*
+- echo "MacOs" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console-v$PACKAGING_VERSION --electron-version 2.0.8 --platform darwin && zip -r kuzzle-admin-console-v$PACKAGING_VERSION-macos.zip Kuzzle-Admin-Console-v$PACKAGING_VERSION-darwin-x64/*
+- echo "Windows" && ./node_modules/.bin/electron-packager . Kuzzle-Admin-Console-v$PACKAGING_VERSION --electron-version 2.0.8 --platform win32 && zip -r kuzzle-admin-console-v$PACKAGING_VERSION-windows.zip Kuzzle-Admin-Console-v$PACKAGING_VERSION-win32-x64/*
 - cd ..
 
 deploy:
@@ -58,6 +59,6 @@ deploy:
 
 after_deploy:
 - aws s3 cp kuzzle-admin-console.tar.gz s3://$BUCKET_NAME/kuzzle-admin-console.tar.gz
-- aws s3 cp kuzzle-admin-console-linux.zip s3://$BUCKET_NAME/kuzzle-admin-console-linux.zip
-- aws s3 cp kuzzle-admin-console-macos.zip s3://$BUCKET_NAME/kuzzle-admin-console-macos.zip
-- aws s3 cp kuzzle-admin-console-windows.zip s3://$BUCKET_NAME/kuzzle-admin-console-windows.zip
+- aws s3 cp ./.electron/kuzzle-admin-console-v$PACKAGING_VERSION-linux.zip s3://$BUCKET_NAME/kuzzle-admin-console-v$PACKAGING_VERSION-linux.zip
+- aws s3 cp ./.electron/kuzzle-admin-console-v$PACKAGING_VERSION-macos.zip s3://$BUCKET_NAME/kuzzle-admin-console-v$PACKAGING_VERSION-macos.zip
+- aws s3 cp ./.electron/kuzzle-admin-console-v$PACKAGING_VERSION-windows.zip s3://$BUCKET_NAME/kuzzle-admin-console-v$PACKAGING_VERSION-windows.zip
