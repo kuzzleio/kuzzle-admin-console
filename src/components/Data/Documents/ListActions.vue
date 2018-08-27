@@ -1,7 +1,7 @@
 <template>
   <div class="ListActions row actions">
     <div class="col s8">
-      <button
+      <button v-if="viewType !== 'map'"
         class="btn btn-small waves-effect waves-light tertiary"
         @click="$emit('toggle-all')">
         <i class="fa left"
@@ -12,14 +12,12 @@
 
       <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
         @click.prevent="$emit('create')"
-        :class="!displayCreate ? 'disabled' : ''"
-        :disabled="!displayCreate"
-        :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'">
+      >
         <i class="fa fa-plus-circle left"></i>
         Create
       </button>
 
-      <button class="btn btn-small waves-effect waves-light"
+      <button v-if="viewType !== 'map'" class="btn btn-small waves-effect waves-light"
         :class="displayBulkDelete ? 'red-color' : 'disabled'"
         :disabled="!displayBulkDelete"
         @click="$emit('bulk-delete')"
@@ -28,10 +26,10 @@
         Delete
       </button>
     </div>
-    <div v-if="displayGeopointChooser" class="col s2">
+    <div v-if="viewType === 'map'" class="col s2">
       Selected geopoint
     </div>
-    <div v-if="displayGeopointChooser" class="col s2 dropdown-geopoint">
+    <div v-if="viewType === 'map'" class="col s2 dropdown-geopoint">
       <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
         <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
       </m-select>
@@ -49,9 +47,8 @@ export default {
   },
   props: {
     allChecked: Boolean,
-    displayCreate: Boolean,
     displayBulkDelete: Boolean,
-    displayGeopointChooser: Boolean,
+    viewType: String,
     geopointList: Array
   },
   data() {

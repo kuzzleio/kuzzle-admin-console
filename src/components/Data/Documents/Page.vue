@@ -43,7 +43,7 @@
     </div>
     <div class="col s2">
       <list-view-buttons
-      :active-view="listViewType"
+      :active-view="viewType"
       :boxes-enabled="true"
       :map-enabled="isCollectionGeo"
       @list="onListViewClicked"
@@ -61,10 +61,9 @@
   <list-actions
   v-if="documents.length"
   :all-checked="allChecked"
-  :display-create="true"
   :display-bulk-delete="hasSelectedDocuments"
   :geopointList="geopointList"
-  :displayGeopointChooser="listViewType === 'map'"
+  :viewType="viewType"
   @create="onCreateClicked"
   @bulk-delete="onBulkDeleteClicked"
   @toggle-all="onToggleAllClicked"
@@ -74,7 +73,7 @@
 
 <div class="row" v-show="documents.length">
 
-  <div class="col s12" v-if="listViewType === 'list'">
+  <div class="col s12" v-if="viewType === 'list'">
     <div class="collection">
       <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
         <document-item
@@ -103,7 +102,7 @@
   </div>
 </div>
 
-<div class="DocumentList-boxes col s12" v-if="listViewType === 'boxes'">
+<div class="DocumentList-boxes col s12" v-if="viewType === 'boxes'">
   <i class="fa fa-th fa-5x"></i>
   <h2>Boxes List view</h2>
   <p>This feature is not yet implemented.</p>
@@ -111,7 +110,7 @@
 </div>
 
 
-<div class="DocumentList-map col s12" v-if="listViewType === 'map'">
+<div class="DocumentList-map col s12" v-if="viewType === 'map'">
   <view-map
   :documents="geoDocuments"
   :getCoordinates="this.getCoordinates"
@@ -191,7 +190,7 @@ export default {
   },
   data() {
     return {
-      listViewType: 'list',
+      viewType: 'list',
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -441,13 +440,13 @@ export default {
     // LIST VIEW TYPES
     // =====================================================
     onListViewClicked() {
-      this.listViewType = 'list'
+      this.viewType = 'list'
     },
     onBoxesViewClicked() {
-      this.listViewType = 'boxes'
+      this.viewType = 'boxes'
     },
     onMapViewClicked() {
-      this.listViewType = 'map'
+      this.viewType = 'map'
     },
     listGeopoints(mapping, path = []) {
       let attributes = []
