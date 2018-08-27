@@ -99,8 +99,9 @@
             </div>
           </div>
 
-          <div class="DocumentList-boxes col s12" v-show="listViewType === 'boxes'">
-            <document-box-item
+          <div class="col s12" v-show="listViewType === 'boxes'">
+            <div class="DocumentList-boxes">
+              <document-box-item
               v-for="document in documents"
               :collection="collection"
               :index="index"
@@ -110,6 +111,20 @@
               @delete="onDeleteClicked"
               >
             </document-box-item>
+            </div>
+
+            <div class="row" v-show="documents.length">
+              <div class="col s12">
+                <pagination
+                  :from="paginationFrom"
+                  :max-page="1000"
+                  :number-in-page="documents.length"
+                  :size="paginationSize"
+                  :total="totalDocuments"
+                  @change-page="changePage"
+                ></pagination>
+              </div>
+            </div>
           </div>
           <div class="DocumentList-map col s12" v-show="listViewType === 'map'">
             <i class="fa fa-map-marked fa-5x"></i>
