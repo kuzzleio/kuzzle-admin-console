@@ -59,7 +59,8 @@ import ModalDelete from './components/Common/Environments/ModalDelete'
 
 import Toaster from './components/Materialize/Toaster.vue'
 
-import 'font-awesome/css/font-awesome.css'
+// @TODO we'll have to import FA from global.scss one day...
+import '@fortawesome/fontawesome-free/css/all.css'
 
 window.jQuery = window.$ = require('jquery')
 // eslint-disable-next-line

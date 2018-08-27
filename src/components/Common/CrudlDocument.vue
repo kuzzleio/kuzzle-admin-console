@@ -1,14 +1,14 @@
 <template>
   <div class="CrudlDocument">
-    <filters
-      @filters-updated="onFiltersUpdated"
-      @reset="onFiltersUpdated"
-      :available-operands="searchFilterOperands"
-      :current-filter="currentFilter"
-      :collection-mapping="collectionMapping"
-      >
-    </filters>
-
+    <div class="card-panel card-header">
+      <filters
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
+        :available-operands="searchFilterOperands"
+        :current-filter="currentFilter"
+        >
+      </filters>
+    </div>
     <div class="card-panel card-body">
       <div class="row valign-center empty-set" v-show="!documents.length">
         <div class="col s2 offset-s1">

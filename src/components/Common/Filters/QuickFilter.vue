@@ -1,7 +1,7 @@
 <template>
   <div class="QuickFilter row">
     <form>
-      <div class="col s7">
+      <div class="col s9 l10 xl11">
         <div class="QuickFilter-searchBar">
           <i class="QuickFilter-searchIcon fa fa-search search"></i>
           <div v-if="complexFilterActive || !enabled" class="QuickFilter-chip chip">
@@ -12,7 +12,7 @@
           <a class="QuickFilter-optionBtn fluid-hover" v-else href="#" @click.prevent="displayAdvancedFilters">Less query options</a>
         </div>
       </div>
-      <div v-if="actionButtonsVisible" class="QuickFilter-actions col s5">
+      <div v-if="actionButtonsVisible" class="QuickFilter-actions col s3 l2 xl1">
         <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
         <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
       </div>
@@ -91,6 +91,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.QuickFilter {
+  margin-bottom: 0;
+}
 .QuickFilter-searchBar {
   position: relative;
   height: 48px;
@@ -136,6 +139,7 @@ export default {
 }
 
 .QuickFilter-actions {
+  text-align: right;
   height: 48px;
   line-height: 48px;
 }

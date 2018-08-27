@@ -42,7 +42,7 @@ export default [
     path: '/data/:index/:collection',
     name: 'DataDocumentsList',
     component(resolve) {
-      require(['../../components/Data/Documents/List'], resolve)
+      require(['../../components/Data/Documents/Page'], resolve)
     }
   },
   {
