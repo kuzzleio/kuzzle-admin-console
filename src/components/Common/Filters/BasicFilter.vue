@@ -120,15 +120,19 @@ export default {
     }
   },
   computed: {
-    attributeItems () {
+    attributeItems() {
       return this.buildAttributeList(this.collectionMapping)
     },
-    isFilterValid: function () {
+    isFilterValid: function() {
       // For each andBlocks in orBlocks, check if attribute and value field are filled
       for (const orBlock of this.filters.basic) {
         for (const andBlock of orBlock) {
-          if (andBlock.attribute === null || andBlock.attribute === '' ||
-            andBlock.value === null || andBlock.value === '') {
+          if (
+            andBlock.attribute === null ||
+            andBlock.attribute === '' ||
+            andBlock.value === null ||
+            andBlock.value === ''
+          ) {
             return false
           }
         }
@@ -142,7 +146,7 @@ export default {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {
-      if (this.isFilterValid) {
+      if (!this.isFilterValid) {
         return
       }
 
@@ -214,7 +218,12 @@ export default {
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
         if (attributeValue.hasOwnProperty('properties')) {
-          attributes = attributes.concat(this.buildAttributeList(attributeValue.properties, path.concat(attributeName)))
+          attributes = attributes.concat(
+            this.buildAttributeList(
+              attributeValue.properties,
+              path.concat(attributeName)
+            )
+          )
         } else if (attributeValue.hasOwnProperty('type')) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
@@ -245,8 +254,7 @@ export default {
       }
     }
   },
-  mounted() {
-  }
+  mounted() {}
 }
 </script>
 
