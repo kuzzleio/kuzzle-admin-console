@@ -1,6 +1,6 @@
 <template>
   <div class="ListActions row actions">
-    <div class="col s10">
+    <div class="col s8">
       <button
         class="btn btn-small waves-effect waves-light tertiary"
         @click="$emit('toggle-all')">
@@ -31,7 +31,7 @@
     <div v-if="displayGeopointChooser" class="col s2">
       Selected geopoint
     </div>
-    <div v-if="displayGeopointChooser" class="col s2">
+    <div v-if="displayGeopointChooser" class="col s2 dropdown-geopoint">
       <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
         <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
       </m-select>
@@ -61,3 +61,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.ListActions {
+  .select-wrapper {
+    input {
+      line-height: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+}
+</style>
