@@ -1,5 +1,10 @@
 <template>
   <div class="environment">
+    <warning-header
+      v-if="useHttps"
+      :text="warningHeaderText"
+    />
+
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
@@ -60,12 +65,19 @@
 </template>
 
 <script>
+  import WarningHeader from '../WarningHeader'
+
   import Focus from '../../../directives/focus.directive'
   import { DEFAULT_COLOR } from '../../../services/environment'
   import { UPDATE_ENVIRONMENT, CREATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 
+  const useHttps = window.location.protocol === 'http:'
+
   export default {
     name: 'CreateEnvironment',
+    components: {
+      WarningHeader
+    },
     props: ['environmentId'],
     directives: {
       Focus
@@ -73,6 +85,9 @@
     computed: {
       environments () {
         return this.$store.state.kuzzle.environments
+      },
+      useHttps() {
+        return useHttps
       }
     },
     data () {
@@ -86,9 +101,11 @@
           name: null,
           host: null,
           port: 7512,
-          color: DEFAULT_COLOR
+          color: DEFAULT_COLOR,
+          ssl: useHttps
         },
-        colors: [DEFAULT_COLOR, '#0277bd', '#8e24aa', '#689f38', '#f57c00', '#e53935', '#546e7a', '#d81b60']
+        colors: [DEFAULT_COLOR, '#0277bd', '#8e24aa', '#689f38', '#f57c00', '#e53935', '#546e7a', '#d81b60'],
+        warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please check that your Kuzzle supports HTTPS/SSL connections.`
       }
     },
     methods: {
@@ -151,7 +168,7 @@
         this.environment.host = null
         this.environment.port = 7512
         this.environment.color = DEFAULT_COLOR
-        this.environment.ssl = false
+        this.environment.ssl = this.useHttps()
       }
     }
   }

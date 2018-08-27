@@ -6,9 +6,10 @@
     </main-menu>
 
     <main class="loader">
-      <create-first-admin-header
-        v-if="!$store.getters.adminAlreadyExists">
-      </create-first-admin-header>
+      <warning-header
+        v-if="!$store.getters.adminAlreadyExists"
+        :text="warningHeaderText">
+      </warning-header>
       <div class="wrapper">
         <router-view></router-view>
       </div>
@@ -29,7 +30,7 @@
 
 <script>
 import MainMenu from './Common/MainMenu'
-import CreateFirstAdminHeader from './Common/CreateFirstAdminHeader'
+import WarningHeader from './Common/WarningHeader'
 import LoginForm from './Common/Login/Form'
 import Modal from './Materialize/Modal'
 import KuzzleDisconnected from './Error/KuzzleDisconnected'
@@ -43,7 +44,7 @@ export default {
     MainMenu,
     Modal,
     KuzzleDisconnected,
-    CreateFirstAdminHeader
+    WarningHeader
   },
   mounted() {
     kuzzle.addListener('tokenExpired', () => this.onTokenExpired())
@@ -53,7 +54,8 @@ export default {
       host: null,
       port: null,
       tokenExpiredIsOpen: false,
-      kuzzleDisconnectedIsOpen: false
+      kuzzleDisconnectedIsOpen: false,
+      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended <a href="#/signup"> that you create one.</a><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
     }
   },
   methods: {
