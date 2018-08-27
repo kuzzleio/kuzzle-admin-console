@@ -1,130 +1,136 @@
+
 <template>
   <div class="DocumentsPage">
     <headline>
       {{collection}}
       <collection-dropdown
-        class="icon-medium icon-black"
-        :index="index"
-        :collection="collection"
-        >
-      </collection-dropdown>
-    </headline>
-
-    <collection-tabs></collection-tabs>
-
-    <list-not-allowed v-if="!canSearchDocument(index, collection)"></list-not-allowed>
-
-    <div v-if="isCollectionEmpty" class="card-panel">
-      <realtime-only-empty-state
-        v-if="isRealtimeCollection"
-        :index="index"
-        :collection="collection">
-      </realtime-only-empty-state>
-      <empty-state
-        v-else
-        :index="index"
-        :collection="collection">
-      </empty-state>
-    </div>
-
-    <div v-if="!isCollectionEmpty">
-      <div class="card-panel card-header">
-        <div class="DocumentsPage-filtersAndButtons row">
-          <div class="col s10">
-            <filters
-              :available-operands="searchFilterOperands"
-              :current-filter="currentFilter"
-              :collection-mapping="collectionMapping"
-              @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
-              >
-            </filters>
-          </div>
-          <div class="col s2">
-            <list-view-buttons
-              :active-view="listViewType"
-              :boxes-enabled="true"
-              :map-enabled="isCollectionGeo"
-              @list="onListViewClicked"
-              @boxes="onBoxesViewClicked"
-              @map="onMapViewClicked"
-              >
-            </list-view-buttons>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-panel card-body">
-        <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
-
-        <list-actions
-          v-if="documents.length"
-          :all-checked="allChecked"
-          :display-create="true"
-          :display-bulk-delete="hasSelectedDocuments"
-          @create="onCreateClicked"
-          @bulk-delete="onBulkDeleteClicked"
-          @toggle-all="onToggleAllClicked"
-          >
-        </list-actions>
-
-        <div class="row" v-show="documents.length">
-
-          <div class="col s12" v-show="listViewType === 'list'">
-            <div class="collection">
-              <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-                <document-item
-                  :collection="collection"
-                  :document="document"
-                  :index="index"
-                  :is-checked="isChecked(document.id)"
-                  @checkbox-click="toggleSelectDocuments"
-                  @edit="onEditDocumentClicked"
-                  @delete="onDeleteClicked">
-                </document-item>
-              </div>
-            </div>
-
-            <div class="row" v-show="documents.length">
-              <div class="col s12">
-                <pagination
-                  :from="paginationFrom"
-                  :max-page="1000"
-                  :number-in-page="documents.length"
-                  :size="paginationSize"
-                  :total="totalDocuments"
-                  @change-page="changePage"
-                ></pagination>
-              </div>
-            </div>
-          </div>
-
-          <div class="DocumentList-boxes col s12" v-show="listViewType === 'boxes'">
-            <i class="fa fa-th fa-5x"></i>
-            <h2>Boxes List view</h2>
-            <p>This feature is not yet implemented.</p>
-            <p>Hold on, we'll ship it soon!</p>
-          </div>
-          <div class="DocumentList-map col s12" v-show="listViewType === 'map'">
-            <i class="fa fa-map-marked fa-5x"></i>
-            <h2>Map List view</h2>
-            <p>This feature is not yet implemented.</p>
-            <p>Hold on, we'll ship it soon!</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <delete-modal
-      :candidates-for-deletion="candidatesForDeletion"
-      :is-loading="deleteModalIsLoading"
-      :is-open="deleteModalIsOpen"
-      @close="closeDeleteModal"
-      @confirm="onDeleteConfirmed"
+      class="icon-medium icon-black"
+      :index="index"
+      :collection="collection"
       >
-    </delete-modal>
+    </collection-dropdown>
+  </headline>
+
+  <collection-tabs></collection-tabs>
+
+  <list-not-allowed v-if="!canSearchDocument(index, collection)"></list-not-allowed>
+
+  <div v-if="isCollectionEmpty" class="card-panel">
+    <realtime-only-empty-state
+    v-if="isRealtimeCollection"
+    :index="index"
+    :collection="collection">
+  </realtime-only-empty-state>
+  <empty-state
+  v-else
+  :index="index"
+  :collection="collection">
+</empty-state>
+</div>
+
+<div v-if="!isCollectionEmpty">
+  <div class="card-panel card-header">
+    <div class="DocumentsPage-filtersAndButtons row">
+      <div class="col s10">
+        <filters
+        :available-operands="searchFilterOperands"
+        :current-filter="currentFilter"
+        :collection-mapping="collectionMapping"
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
+        >
+      </filters>
+    </div>
+    <div class="col s2">
+      <list-view-buttons
+      :active-view="listViewType"
+      :boxes-enabled="true"
+      :map-enabled="isCollectionGeo"
+      @list="onListViewClicked"
+      @boxes="onBoxesViewClicked"
+      @map="onMapViewClicked"
+      >
+    </list-view-buttons>
   </div>
+</div>
+</div>
+
+<div class="card-panel card-body">
+  <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
+
+  <list-actions
+  v-if="documents.length"
+  :all-checked="allChecked"
+  :display-create="true"
+  :display-bulk-delete="hasSelectedDocuments"
+  :geopointList="geopointList"
+  :displayGeopointChooser="listViewType === 'map'"
+  @create="onCreateClicked"
+  @bulk-delete="onBulkDeleteClicked"
+  @toggle-all="onToggleAllClicked"
+  @select-geopoint="onSelectGeopoint"
+  >
+</list-actions>
+
+<div class="row" v-show="documents.length">
+
+  <div class="col s12" v-if="listViewType === 'list'">
+    <div class="collection">
+      <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+        <document-item
+        :collection="collection"
+        :document="document"
+        :index="index"
+        :is-checked="isChecked(document.id)"
+        @checkbox-click="toggleSelectDocuments"
+        @edit="onEditDocumentClicked"
+        @delete="onDeleteClicked">
+      </document-item>
+    </div>
+  </div>
+
+  <div class="row" v-show="documents.length">
+    <div class="col s12">
+      <pagination
+      :from="paginationFrom"
+      :max-page="1000"
+      :number-in-page="documents.length"
+      :size="paginationSize"
+      :total="totalDocuments"
+      @change-page="changePage"
+      ></pagination>
+    </div>
+  </div>
+</div>
+
+<div class="DocumentList-boxes col s12" v-if="listViewType === 'boxes'">
+  <i class="fa fa-th fa-5x"></i>
+  <h2>Boxes List view</h2>
+  <p>This feature is not yet implemented.</p>
+  <p>Hold on, we'll ship it soon!</p>
+</div>
+
+
+<div class="DocumentList-map col s12" v-if="listViewType === 'map'">
+  <view-map
+  :documents="geoDocuments"
+  :getCoordinates="this.getCoordinates"
+  :selectedGeopoint="selectedGeopoint"
+  />
+</div>
+</div>
+</div>
+</div>
+
+<delete-modal
+:candidates-for-deletion="candidatesForDeletion"
+:is-loading="deleteModalIsLoading"
+:is-open="deleteModalIsOpen"
+@close="closeDeleteModal"
+@confirm="onDeleteConfirmed"
+>
+</delete-modal>
+</div>
 </template>
 
 <script>
@@ -142,6 +148,8 @@ import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
 import Pagination from '../../Materialize/Pagination'
+import ViewMap from './ViewMap'
+import MSelect from '../../Common/MSelect'
 import * as filterManager from '../../../services/filterManager'
 import {
   canSearchIndex,
@@ -177,7 +185,9 @@ export default {
     ListViewButtons,
     NoResultsEmptyState,
     Pagination,
-    RealtimeOnlyEmptyState
+    RealtimeOnlyEmptyState,
+    ViewMap,
+    MSelect
   },
   data() {
     return {
@@ -191,13 +201,27 @@ export default {
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
-      collectionMapping: {}
+      collectionMapping: {},
+      geopointList: [],
+      selectedGeopoint: null
     }
   },
   computed: {
+    geoDocuments() {
+      return this.documents.filter(document => {
+        const [lat, lng] = this.getCoordinates(document)
+
+        return lat && typeof lat === 'number' && lng && typeof lng === 'number'
+      })
+    },
+    latFieldPath() {
+      return `content.${this.selectedGeopoint}.lat`
+    },
+    lngFieldPath() {
+      return `content.${this.selectedGeopoint}.lon`
+    },
     isCollectionGeo() {
-      // @TODO
-      return true
+      return this.geopointList.length > 0
     },
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
@@ -239,6 +263,29 @@ export default {
     }
   },
   methods: {
+    getCoordinates(document) {
+      return [
+        this.getProperty(document, this.latFieldPath),
+        this.getProperty(document, this.lngFieldPath)
+      ]
+    },
+    getProperty(object, path) {
+      if (!object) {
+        return object
+      }
+
+      const names = path.split('.')
+
+      if (names.length === 1) {
+        return object[names[0]]
+      }
+
+      return this.getProperty(object[names[0]], names.slice(1).join('.'))
+    },
+    onSelectGeopoint(selectedGeopoint) {
+      this.selectedGeopoint = selectedGeopoint
+    },
+
     // CREATE
     // =====================================================
     onCreateClicked() {
@@ -401,12 +448,33 @@ export default {
     },
     onMapViewClicked() {
       this.listViewType = 'map'
+    },
+    listGeopoints(mapping, path = []) {
+      let attributes = []
+
+      for (const [attributeName, { properties }] of Object.entries(mapping)) {
+        if (properties) {
+          if (properties.lat && properties.lon) {
+            attributes = attributes.concat(path.concat(attributeName).join('.'))
+          }
+
+          attributes = attributes.concat(
+            this.listGeopoints(properties, path.concat(attributeName))
+          )
+        }
+      }
+
+      return attributes
     }
   },
   mounted() {
     getMappingDocument(this.collection, this.index).then(response => {
       this.collectionMapping = response.mapping
+
+      this.geopointList = this.listGeopoints(this.collectionMapping)
+      this.selectedGeopoint = this.geopointList[0]
     })
+
     this.currentFilter = filterManager.load(
       this.index,
       this.collection,
@@ -448,13 +516,15 @@ export default {
   // @TODO Temporarily reverted
   // max-width: 1080px;
   // margin: auto;
+  .ViewMap {
+    height: 500px;
+  }
 }
 .DocumentsPage-filtersAndButtons {
   margin-bottom: 0;
 }
 
-.DocumentList-boxes,
-.DocumentList-map {
+.DocumentList-boxes {
   text-align: center;
   padding: 30px;
 

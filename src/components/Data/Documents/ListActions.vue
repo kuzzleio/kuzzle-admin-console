@@ -1,6 +1,6 @@
 <template>
   <div class="ListActions row actions">
-    <div class="col s8">
+    <div class="col s10">
       <button
         class="btn btn-small waves-effect waves-light tertiary"
         @click="$emit('toggle-all')">
@@ -28,16 +28,36 @@
         Delete
       </button>
     </div>
+    <div v-if="displayGeopointChooser" class="col s2">
+      Selected geopoint
+    </div>
+    <div v-if="displayGeopointChooser" class="col s2">
+      <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
+        <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
+      </m-select>
+    </div>
   </div>
 </template>
 
 <script>
+import MSelect from '../../Common/MSelect'
+
 export default {
   name: 'ListActions',
+  components: {
+    MSelect
+  },
   props: {
     allChecked: Boolean,
     displayCreate: Boolean,
-    displayBulkDelete: Boolean
+    displayBulkDelete: Boolean,
+    displayGeopointChooser: Boolean,
+    geopointList: Array
+  },
+  data() {
+    return {
+      selectedGeopoint: null
+    }
   }
 }
 </script>
