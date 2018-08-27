@@ -13,12 +13,14 @@
       item-name="UserItem"
       collection="users"
       index="%kuzzle"
-      @create-clicked="createUser"
+      route-create="SecurityUsersCreate"
+      route-update="SecurityUsersUpdate"
       :display-create="canCreateUser()"
       :perform-search="performSearchUsers"
       :perform-delete="performDeleteUsers"
-      route-create="SecurityUsersCreate"
-      route-update="SecurityUsersUpdate">
+      :collection-mapping="userMapping"
+      @create-clicked="createUser"
+      >
 
       <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
@@ -58,7 +60,8 @@ import {
 } from '../../../services/userAuthorization'
 import {
   performSearchUsers,
-  performDeleteUsers
+  performDeleteUsers,
+  getMappingUsers
 } from '../../../services/kuzzleWrapper'
 
 export default {
@@ -69,6 +72,11 @@ export default {
     Headline,
     UsersDropdown
   },
+  data() {
+    return {
+      userMapping: {}
+    }
+  },
   methods: {
     createUser() {
       this.$router.push({ name: 'SecurityUsersCreate' })
@@ -77,6 +85,11 @@ export default {
     canCreateUser,
     performSearchUsers,
     performDeleteUsers
+  },
+  mounted() {
+    getMappingUsers().then(response => {
+      this.userMapping = response.mapping
+    })
   }
 }
 </script>
