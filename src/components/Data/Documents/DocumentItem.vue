@@ -17,13 +17,9 @@
       <a
         v-if="canEdit"
         href=""
+        :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
         @click.prevent="editDocument">
-        <i class="fa fa-pencil"></i>
-      </a>
-      <a
-        v-if="!canEdit"
-        v-title="{active: !canEdit, title: 'You are not allowed to edit this document'}">
-        <i class="fa fa-pencil disabled"></i>
+        <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
       </a>
 
       <dropdown :id="document.id" myclass="icon-black">

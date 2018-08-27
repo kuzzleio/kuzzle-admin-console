@@ -2,10 +2,11 @@
   <div class="CrudlDocument">
     <div class="card-panel card-header">
       <filters
-        @filters-updated="onFiltersUpdated"
-        @reset="onFiltersUpdated"
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
+        :collection-mapping="collectionMapping"
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
         >
       </filters>
     </div>

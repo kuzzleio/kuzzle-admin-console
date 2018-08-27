@@ -28,9 +28,11 @@
     </label>
 
     <div class="UserItem-actions right">
-      <a href="#" @click.prevent="update"
-         v-title="{active: !canEditUser(), title: 'You are not allowed to edit this user'}">
-        <i class="fa fa-pencil" :class="{'disabled': !canEditUser()}"></i>
+      <a
+        href="#" @click.prevent="update"
+        :title="canEditUser ? 'Edit User' : 'You are not allowed to edit this user'"
+        >
+        <i class="fa fa-pencil-alt" :class="{'disabled': !canEditUser()}"></i>
       </a>
       <dropdown :id="document.id" myclass="icon-black">
         <li><a @click="deleteDocument(document.id)"
