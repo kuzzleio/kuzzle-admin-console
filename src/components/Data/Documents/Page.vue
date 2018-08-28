@@ -4,137 +4,137 @@
     <headline>
       {{collection}}
       <collection-dropdown
-      class="icon-medium icon-black"
-      :index="index"
-      :collection="collection"
-      >
-    </collection-dropdown>
-  </headline>
-
-  <collection-tabs></collection-tabs>
-
-  <list-not-allowed v-if="!canSearchDocument(index, collection)"></list-not-allowed>
-
-  <div v-if="isCollectionEmpty" class="card-panel">
-    <realtime-only-empty-state
-    v-if="isRealtimeCollection"
-    :index="index"
-    :collection="collection">
-  </realtime-only-empty-state>
-  <empty-state
-  v-else
-  :index="index"
-  :collection="collection">
-</empty-state>
-</div>
-
-<div v-if="!isCollectionEmpty">
-  <div class="card-panel card-header">
-    <div class="DocumentsPage-filtersAndButtons row">
-      <div class="col s10">
-        <filters
-        :available-operands="searchFilterOperands"
-        :current-filter="currentFilter"
-        :collection-mapping="collectionMapping"
-        @filters-updated="onFiltersUpdated"
-        @reset="onFiltersUpdated"
-        >
-      </filters>
-    </div>
-    <div class="col s2">
-      <list-view-buttons
-      :active-view="currentFilter.listViewType"
-      :boxes-enabled="true"
-      :map-enabled="isCollectionGeo"
-      @list="onListViewClicked"
-      @boxes="onBoxesViewClicked"
-      @map="onMapViewClicked"
-      >
-    </list-view-buttons>
-  </div>
-</div>
-</div>
-
-<div class="card-panel card-body">
-  <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
-
-  <list-actions
-    v-if="documents.length"
-    :all-checked="allChecked"
-    :display-bulk-delete="hasSelectedDocuments"
-    :geopointList="geopointList"
-    :viewType="currentFilter.listViewType"
-    @create="onCreateClicked"
-    @bulk-delete="onBulkDeleteClicked"
-    @toggle-all="onToggleAllClicked"
-    @select-geopoint="onSelectGeopoint"
-  >
-  </list-actions>
-
-<div class="row" v-show="documents.length">
-
-  <div class="col s12" v-if="currentFilter.listViewType === 'list'">
-    <div class="collection">
-      <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-        <document-item
-        :collection="collection"
-        :document="document"
+        class="icon-medium icon-black"
         :index="index"
-        :is-checked="isChecked(document.id)"
-        @checkbox-click="toggleSelectDocuments"
-        @edit="onEditDocumentClicked"
-        @delete="onDeleteClicked">
-      </document-item>
+        :collection="collection"
+      >
+      </collection-dropdown>
+    </headline>
+
+    <collection-tabs></collection-tabs>
+
+    <list-not-allowed v-if="!canSearchDocument(index, collection)"></list-not-allowed>
+
+    <div v-if="isCollectionEmpty" class="card-panel">
+      <realtime-only-empty-state
+        v-if="isRealtimeCollection"
+        :index="index"
+        :collection="collection"
+      >
+      </realtime-only-empty-state>
+      <empty-state
+        v-else
+        :index="index"
+        :collection="collection"
+      >
+      </empty-state>
     </div>
-  </div>
 
-  <div class="row" v-show="documents.length">
-    <div class="col s12">
-      <pagination
-      :from="paginationFrom"
-      :max-page="1000"
-      :number-in-page="documents.length"
-      :size="paginationSize"
-      :total="totalDocuments"
-      @change-page="changePage"
-      ></pagination>
+    <div v-if="!isCollectionEmpty">
+
+      <div class="card-panel card-header">
+        <div class="DocumentsPage-filtersAndButtons row">
+          <div class="col s10">
+            <filters
+              :available-operands="searchFilterOperands"
+              :current-filter="currentFilter"
+              :collection-mapping="collectionMapping"
+              @filters-updated="onFiltersUpdated"
+              @reset="onFiltersUpdated"
+            >
+            </filters>
+          </div>
+          <div class="col s2">
+            <list-view-buttons
+              :active-view="currentFilter.listViewType"
+              :boxes-enabled="true"
+              :map-enabled="isCollectionGeo"
+              @list="onListViewClicked"
+              @boxes="onBoxesViewClicked"
+              @map="onMapViewClicked"
+            >
+            </list-view-buttons>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-panel card-body">
+        <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
+
+        <list-actions
+          v-if="documents.length"
+          :all-checked="allChecked"
+          :display-bulk-delete="hasSelectedDocuments"
+          :geopointList="geopointList"
+          :viewType="currentFilter.listViewType"
+          @create="onCreateClicked"
+          @bulk-delete="onBulkDeleteClicked"
+          @toggle-all="onToggleAllClicked"
+          @select-geopoint="onSelectGeopoint"
+        >
+        </list-actions>
+
+        <div class="row" v-show="documents.length">
+
+          <div class="col s12" v-if="currentFilter.listViewType === 'list'">
+            <div class="collection">
+              <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+                <document-item
+                :collection="collection"
+                :document="document"
+                :index="index"
+                :is-checked="isChecked(document.id)"
+                @checkbox-click="toggleSelectDocuments"
+                @edit="onEditDocumentClicked"
+                @delete="onDeleteClicked">
+                </document-item>
+              </div>
+            </div>
+
+            <div class="row" v-show="documents.length">
+              <div class="col s12">
+                <pagination
+                :from="paginationFrom"
+                :max-page="1000"
+                :number-in-page="documents.length"
+                :size="paginationSize"
+                :total="totalDocuments"
+                @change-page="changePage"
+                ></pagination>
+              </div>
+            </div>
+          </div>
+
+          <div class="DocumentList-boxes col s12" v-if="currentFilter.listViewType === 'boxes'">
+            <i class="fa fa-th fa-5x"></i>
+            <h2>Boxes List view</h2>
+            <p>This feature is not yet implemented.</p>
+            <p>Hold on, we'll ship it soon!</p>
+          </div>
+
+          <div class="DocumentList-map col s12" v-if="currentFilter.listViewType === 'map'">
+            <view-map
+            :documents="geoDocuments"
+            :getCoordinates="this.getCoordinates"
+            :selectedGeopoint="selectedGeopoint"
+            :index="index"
+            :collection="collection"
+            @edit="onEditDocumentClicked"
+            @delete="onDeleteClicked"
+            />
+          </div>
+        </div>
+      </div>
     </div>
+    <delete-modal
+      :candidates-for-deletion="candidatesForDeletion"
+      :is-loading="deleteModalIsLoading"
+      :is-open="deleteModalIsOpen"
+      @close="closeDeleteModal"
+      @confirm="onDeleteConfirmed"
+    >
+    </delete-modal>
   </div>
-</div>
-
-<div class="DocumentList-boxes col s12" v-if="currentFilter.listViewType === 'boxes'">
-  <i class="fa fa-th fa-5x"></i>
-  <h2>Boxes List view</h2>
-  <p>This feature is not yet implemented.</p>
-  <p>Hold on, we'll ship it soon!</p>
-</div>
-
-
-<div class="DocumentList-map col s12" v-if="currentFilter.listViewType === 'map'">
-  <view-map
-  :documents="geoDocuments"
-  :getCoordinates="this.getCoordinates"
-  :selectedGeopoint="selectedGeopoint"
-  :index="index"
-  :collection="collection"
-  @edit="onEditDocumentClicked"
-  @delete="onDeleteClicked"
-  />
-</div>
-
-<delete-modal
-:candidates-for-deletion="candidatesForDeletion"
-:is-loading="deleteModalIsLoading"
-:is-open="deleteModalIsOpen"
-@close="closeDeleteModal"
-@confirm="onDeleteConfirmed"
->
-</delete-modal>
-
-</div>
-</div>
-</div>
-</div>
 </template>
 
 <script>

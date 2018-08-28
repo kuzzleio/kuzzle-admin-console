@@ -148,6 +148,9 @@ export const ACTIVE_RAW = 'raw'
 export const SORT_ASC = 'asc'
 export const SORT_DESC = 'desc'
 export const DEFAULT_QUICK = ''
+export const LIST_VIEW_LIST = 'list'
+export const LIST_VIEW_BOXES = 'boxes'
+export const LIST_VIEW_MAP = 'map'
 
 export function Filter() {
   this.active = NO_ACTIVE
@@ -156,6 +159,7 @@ export function Filter() {
   this.raw = null
   this.sorting = null
   this.from = 0
+  this.listViewType = LIST_VIEW_LIST
 }
 
 export const searchFilterOperands = {

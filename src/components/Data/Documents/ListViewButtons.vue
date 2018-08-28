@@ -8,13 +8,13 @@
       class="ListViewButtons-btn fa fa-th"
       :class="{disabled: !boxesEnabled, active: activeView === 'boxes'}"
       :title="boxesEnabled ? 'Display this list as boxes' : ''"
-      @click="$emit('boxes')"
+      @click="onBoxesClicked"
       >
     </a>
     <a
       class="ListViewButtons-btn fa fa-map-marked"
       :class="{disabled: !mapEnabled, active: activeView === 'map'}"
-      @click="$emit('map')"
+      @click="onMapClicked"
       >
     </a>
   </div>
@@ -22,6 +22,7 @@
 
 <script>
 export default {
+  name: 'ListViewButtons',
   props: {
     activeView: {
       type: String,
@@ -37,6 +38,20 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    }
+  },
+  methods: {
+    onBoxesClicked() {
+      if (!this.boxesEnabled) {
+        return
+      }
+      this.$emit('boxes')
+    },
+    onMapClicked() {
+      if (!this.mapEnabled) {
+        return
+      }
+      this.$emit('map')
     }
   }
 }
