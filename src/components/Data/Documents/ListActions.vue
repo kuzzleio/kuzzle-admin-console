@@ -29,7 +29,7 @@
     <div v-if="viewType === 'map'" class="col s2">
       Selected geopoint
     </div>
-    <div v-if="viewType === 'map'" class="col s2 dropdown-geopoint">
+    <div v-if="viewType === 'map'" class="col s2">
       <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
         <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
       </m-select>

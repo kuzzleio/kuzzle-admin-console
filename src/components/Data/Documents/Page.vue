@@ -59,17 +59,17 @@
   <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
 
   <list-actions
-  v-if="documents.length"
-  :all-checked="allChecked"
-  :display-bulk-delete="hasSelectedDocuments"
-  :geopointList="geopointList"
-  :viewType="viewType"
-  @create="onCreateClicked"
-  @bulk-delete="onBulkDeleteClicked"
-  @toggle-all="onToggleAllClicked"
-  @select-geopoint="onSelectGeopoint"
+    v-if="documents.length"
+    :all-checked="allChecked"
+    :display-bulk-delete="hasSelectedDocuments"
+    :geopointList="geopointList"
+    :viewType="viewType"
+    @create="onCreateClicked"
+    @bulk-delete="onBulkDeleteClicked"
+    @toggle-all="onToggleAllClicked"
+    @select-geopoint="onSelectGeopoint"
   >
-</list-actions>
+  </list-actions>
 
 <div class="row" v-show="documents.length">
 
@@ -115,10 +115,11 @@
   :documents="geoDocuments"
   :getCoordinates="this.getCoordinates"
   :selectedGeopoint="selectedGeopoint"
+  :index="index"
+  :collection="collection"
+  @edit="onEditDocumentClicked"
+  @delete="onDeleteClicked"
   />
-</div>
-</div>
-</div>
 </div>
 
 <delete-modal
@@ -129,6 +130,9 @@
 @confirm="onDeleteConfirmed"
 >
 </delete-modal>
+</div>
+</div>
+</div>
 </div>
 </template>
 

@@ -1,20 +1,70 @@
 <template>
   <div class="ViewMap">
-    <l-map ref="map">
-      <l-tile-layer :url="url" :attribution="attribution"/>
-      <l-marker
-        v-for="document in documents"
-        :key="document.id"
-        v-bind:lat-lng="getCoordinates(document)"
-        >
-        <l-popup :content="document.id"/>
-      </l-marker>
-    </l-map>
+    <div class="row">
+      <div :class="getMapClass()">
+        <l-map ref="map" @click="onMapClick">
+          <l-tile-layer :url="url" :attribution="attribution"/>
+          <l-marker
+            v-for="document in documents"
+            v-bind:lat-lng="getCoordinates(document)"
+            :key="document.id"
+            :icon="getIcon(document)"
+            @click="onMarkerClick(document)"
+          >
+          </l-marker>
+        </l-map>
+      </div>
+
+      <div v-if="currentDocument" class="col s2">
+        <div class="row">
+          <div class="col s9">
+            {{ currentDocument.id }}
+          </div>
+          <a
+            v-if="canEdit"
+            href=""
+            :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
+            @click.prevent="editCurrentDocument">
+            <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
+          </a>
+
+          <dropdown :id="currentDocument.id" myclass="icon-black">
+            <li>
+              <a
+                v-bind:class="{'disabled': !canDelete}"
+                @click="deleteCurrentDocument()"
+                v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
+                Delete
+              </a>
+            </li>
+          </dropdown>
+        </div>
+        <hr>
+        <p
+          v-json-formatter="{
+            content: {
+              id: currentDocument.id,
+              body: currentDocument.content
+            },
+            open: true
+          }"
+          />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker, LPopup, LIconDefault } from 'vue2-leaflet'
+import L from 'leaflet'
+import Dropdown from '../../Materialize/Dropdown'
+import '../../../../src/assets/leaflet.css'
+import JsonFormatter from '../../../directives/json-formatter.directive'
+import title from '../../../directives/title.directive'
+import {
+  canEditDocument,
+  canDeleteDocument
+} from '../../../services/userAuthorization'
 
 export default {
   name: 'ViewMap',
@@ -22,7 +72,9 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    LPopup
+    LPopup,
+    LIconDefault,
+    Dropdown
   },
   props: {
     documents: {
@@ -32,7 +84,13 @@ export default {
     getCoordinates: {
       type: Function,
       required: true
-    }
+    },
+    index: String,
+    collection: String
+  },
+  directives: {
+    JsonFormatter,
+    title
   },
   data() {
     return {
@@ -41,15 +99,82 @@ export default {
       map: null,
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution:
-        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      currentDocument: null,
+      defaultIcon: new L.Icon({
+        iconUrl: 'static/images/marker-icon-2x-blue.png',
+        shadowUrl: 'static/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      }),
+      selectedIcon: new L.Icon({
+        iconUrl: 'static/images/marker-icon-2x-green.png',
+        shadowUrl: 'static/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
     }
   },
   computed: {
     latLngs() {
       return this.documents.map(this.getCoordinates)
+    },
+    canEdit() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canEditDocument(this.index, this.collection)
+    },
+    canDelete() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canDeleteDocument(this.index, this.collection)
     }
   },
-  methods: {},
+  methods: {
+    onMarkerClick(document) {
+      if (this.currentDocument === document) {
+        this.currentDocument = null
+      } else {
+        this.currentDocument = document
+      }
+    },
+    onMapClick() {
+      this.currentDocument = null
+    },
+    getMapClass() {
+      const classes = {
+        col: true,
+        'document-map': true,
+        s12: this.currentDocument === null,
+        s10: this.currentDocument !== null
+      }
+
+      return classes
+    },
+    getIcon(document) {
+      if (this.currentDocument === document) {
+        return this.selectedIcon
+      }
+
+      return this.defaultIcon
+    },
+    deleteCurrentDocument() {
+      if (this.canDelete) {
+        this.$emit('delete', this.currentDocument.id)
+      }
+    },
+    editCurrentDocument() {
+      if (this.canEdit) {
+        this.$emit('edit', this.currentDocument.id)
+      }
+    }
+  },
   created() {},
   mounted() {
     this.$nextTick(() => {
@@ -59,14 +184,19 @@ export default {
     })
   },
   watch: {},
-  updated() {
-    this.map.fitBounds(this.latLngs)
-  }
+  updated() {}
 }
 </script>
 
 <style scoped lang="scss">
 .ViewMap {
+  .document-map {
+    height: 500px;
+  }
+
+  div i {
+    cursor: pointer;
+  }
 }
 
 .select-wrapper span.caret {
