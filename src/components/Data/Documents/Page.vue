@@ -114,18 +114,19 @@
 
           <div class="DocumentList-map col s12" v-if="currentFilter.listViewType === 'map'">
             <view-map
-            :documents="geoDocuments"
-            :getCoordinates="this.getCoordinates"
-            :selectedGeopoint="selectedGeopoint"
-            :index="index"
-            :collection="collection"
-            @edit="onEditDocumentClicked"
-            @delete="onDeleteClicked"
+              :documents="geoDocuments"
+              :getCoordinates="this.getCoordinates"
+              :selectedGeopoint="selectedGeopoint"
+              :index="index"
+              :collection="collection"
+              @edit="onEditDocumentClicked"
+              @delete="onDeleteClicked"
             />
           </div>
         </div>
       </div>
     </div>
+
     <delete-modal
       :candidates-for-deletion="candidatesForDeletion"
       :is-loading="deleteModalIsLoading"
@@ -488,7 +489,7 @@ export default {
         this.geopointList = this.listGeopoints(this.collectionMapping)
         this.selectedGeopoint = this.geopointList[0]
 
-        this.currentFilter.listViewType = 'list'
+        this.onListViewClicked()
       })
     }
   },
