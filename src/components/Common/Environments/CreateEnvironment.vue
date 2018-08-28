@@ -117,7 +117,7 @@ export default {
         '#546e7a',
         '#d81b60'
       ],
-      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please check that your Kuzzle supports HTTPS/SSL connections.`
+      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please ensure that your Kuzzle supports HTTPS/SSL connections.`
     }
   },
   methods: {
