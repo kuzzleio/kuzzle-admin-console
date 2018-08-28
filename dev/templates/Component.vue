@@ -4,6 +4,8 @@
 </template>
 
 <script>
+/* This Component is a template. */
+
 export default {
   name: 'Component',
   components: {},
