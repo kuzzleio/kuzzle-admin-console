@@ -15,7 +15,7 @@
         </l-map>
       </div>
 
-      <div v-if="currentDocument" class="col s2">
+      <div v-if="currentDocument" class="col s2 document-info">
         <div class="row">
           <div class="col s9">
             {{ currentDocument.id }}
@@ -192,6 +192,10 @@ export default {
 .ViewMap {
   .document-map {
     height: 500px;
+  }
+
+  .document-info {
+    overflow-x: scroll;
   }
 
   div i {

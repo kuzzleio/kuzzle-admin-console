@@ -130,6 +130,7 @@
 @confirm="onDeleteConfirmed"
 >
 </delete-modal>
+
 </div>
 </div>
 </div>
@@ -450,7 +451,9 @@ export default {
       this.viewType = 'boxes'
     },
     onMapViewClicked() {
-      this.viewType = 'map'
+      if (this.isCollectionGeo) {
+        this.viewType = 'map'
+      }
     },
     listGeopoints(mapping, path = []) {
       let attributes = []
@@ -468,15 +471,20 @@ export default {
       }
 
       return attributes
+    },
+    loadCollectionInfo() {
+      getMappingDocument(this.collection, this.index).then(response => {
+        this.collectionMapping = response.mapping
+
+        this.geopointList = this.listGeopoints(this.collectionMapping)
+        this.selectedGeopoint = this.geopointList[0]
+
+        this.viewType = 'list'
+      })
     }
   },
   mounted() {
-    getMappingDocument(this.collection, this.index).then(response => {
-      this.collectionMapping = response.mapping
-
-      this.geopointList = this.listGeopoints(this.collectionMapping)
-      this.selectedGeopoint = this.geopointList[0]
-    })
+    this.loadCollectionInfo()
 
     this.currentFilter = filterManager.load(
       this.index,
@@ -509,6 +517,12 @@ export default {
     },
     currentFilter() {
       this.fetchDocuments()
+    },
+    collection: {
+      immediate: true,
+      handler() {
+        this.loadCollectionInfo()
+      }
     }
   }
 }
