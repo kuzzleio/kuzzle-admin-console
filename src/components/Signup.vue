@@ -1,15 +1,11 @@
 <template>
-  <div class="signup">
+  <div class="Signup">
     <div class="container">
       <div class="row">
         <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
-          <div class="row">
-            <div class="col s12">
-              <h2 class="center-align logo">
-                <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Admin Console" style="width: 60%" />
-              </h2>
-            </div>
-          </div>
+          <h2 class="center-align logo">
+            <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Admin Console" style="width: 60%" />
+          </h2>
           <div class="row">
             <div class="col offset-s4 s2">
               <environment-switch
@@ -29,7 +25,7 @@
             </div>
           </div>
           <div class="row">
-            <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="signup">
+            <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="Signup">
               <div class="row">
                 <div class="input-field col s12">
                   <input id="username" v-model="username" type="text" name="username" required
@@ -90,83 +86,95 @@
 </template>
 
 <script>
-  import kuzzle from '../services/kuzzle'
-  import * as types from '../vuex/modules/auth/mutation-types'
-  import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
-  import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
+import kuzzle from '../services/kuzzle'
+import * as types from '../vuex/modules/auth/mutation-types'
+import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
+import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 
-  export default {
-    name: 'Signup',
-    components: {
-      EnvironmentSwitch
-    },
-    data () {
-      return {
-        username: '',
-        password1: '',
-        password2: '',
-        reset: false,
-        error: null,
-        waiting: false
+export default {
+  name: 'Signup',
+  components: {
+    EnvironmentSwitch
+  },
+  data() {
+    return {
+      username: '',
+      password1: '',
+      password2: '',
+      reset: false,
+      error: null,
+      waiting: false
+    }
+  },
+  methods: {
+    Signup() {
+      if (
+        this.username === '' ||
+        this.password1 === '' ||
+        this.password2 === ''
+      ) {
+        this.error = 'All fields are mandatory'
+        return
       }
-    },
-    methods: {
-      signup () {
-        if (this.username === '' || this.password1 === '' || this.password2 === '') {
-          this.error = 'All fields are mandatory'
-          return
-        }
 
-        if (this.password1 !== this.password2) {
-          this.error = 'Password does not match'
-          return
-        }
+      if (this.password1 !== this.password2) {
+        this.error = 'Password does not match'
+        return
+      }
 
-        this.error = null
-        this.waiting = true
+      this.error = null
+      this.waiting = true
 
-        const firstAdminRequest = {
-          _id: this.username,
-          reset: this.reset,
-          body: {
-            content: {},
-            credentials: {
-              local: {
-                username: this.username,
-                password: this.password1
-              }
+      const firstAdminRequest = {
+        _id: this.username,
+        reset: this.reset,
+        body: {
+          content: {},
+          credentials: {
+            local: {
+              username: this.username,
+              password: this.password1
             }
           }
         }
-
-        kuzzle
-          .queryPromise({controller: 'security', action: 'createFirstAdmin'}, firstAdminRequest)
-          .then(() => {
-            this.$store.dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
-            this.$store.commit(types.SET_ADMIN_EXISTS, true)
-            this.$router.push({name: 'Login'})
-          })
-          .catch((err) => {
-            // TODO manage this on the UI
-            console.error('An error occurred while creating the first admin', err)
-            this.$router.push({name: 'Login'})
-          })
-      },
-      loginAsGuest () {
-        this.error = ''
-        this.$store.dispatch(types.PREPARE_SESSION, 'anonymous')
-          .then(() => {
-            this.$router.push({name: 'Data'})
-          }).catch((err) => {
-            this.error = err.message
-          })
-      },
-      editEnvironment (id) {
-        this.$emit('environment::create', id)
-      },
-      deleteEnvironment (id) {
-        this.$emit('environment::delete', id)
       }
+
+      kuzzle
+        .queryPromise(
+          { controller: 'security', action: 'createFirstAdmin' },
+          firstAdminRequest
+        )
+        .then(() => {
+          this.$store.dispatch(
+            kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT,
+            null
+          )
+          this.$store.commit(types.SET_ADMIN_EXISTS, true)
+          this.$router.push({ name: 'Login' })
+        })
+        .catch(err => {
+          // TODO manage this on the UI
+          console.error('An error occurred while creating the first admin', err)
+          this.$router.push({ name: 'Login' })
+        })
+    },
+    loginAsGuest() {
+      this.error = ''
+      this.$store
+        .dispatch(types.PREPARE_SESSION, 'anonymous')
+        .then(() => {
+          this.$router.push({ name: 'Data' })
+        })
+        .catch(err => {
+          this.error = err.message
+        })
+    },
+    editEnvironment(id) {
+      this.$emit('environment::create', id)
+    },
+    deleteEnvironment(id) {
+      this.$emit('environment::delete', id)
     }
   }
+}
 </script>
