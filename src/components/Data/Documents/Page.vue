@@ -42,7 +42,7 @@
           </div>
           <div class="col s2">
             <list-view-buttons
-              :active-view="listViewType"
+              :active-view="currentFilter.listViewType"
               :boxes-enabled="true"
               :map-enabled="isCollectionGeo"
               @list="onListViewClicked"
@@ -70,7 +70,7 @@
 
         <div class="row" v-show="documents.length">
 
-          <div class="col s12" v-show="listViewType === 'list'">
+          <div class="DocumentList-list col s12" v-show="currentFilter.listViewType === 'list'">
             <div class="collection">
               <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
                 <document-list-item
@@ -126,7 +126,7 @@
               </div>
             </div>
           </div>
-          <div class="DocumentList-map col s12" v-show="listViewType === 'map'">
+          <div class="DocumentList-map col s12" v-show="currentFilter.listViewType === 'map'">
             <i class="fa fa-map-marked fa-5x"></i>
             <h2>Map List view</h2>
             <p>This feature is not yet implemented.</p>
@@ -204,7 +204,6 @@ export default {
   },
   data() {
     return {
-      listViewType: 'list',
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -417,13 +416,25 @@ export default {
     // LIST VIEW TYPES
     // =====================================================
     onListViewClicked() {
-      this.listViewType = 'list'
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          listViewType: filterManager.LIST_VIEW_LIST
+        })
+      )
     },
     onBoxesViewClicked() {
-      this.listViewType = 'boxes'
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          listViewType: filterManager.LIST_VIEW_BOXES
+        })
+      )
     },
     onMapViewClicked() {
-      this.listViewType = 'map'
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          listViewType: filterManager.LIST_VIEW_MAP
+        })
+      )
     }
   },
   mounted() {
