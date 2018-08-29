@@ -147,15 +147,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.CollectionForm-head {
-  color: $lavandia-color;
-}
-.CollectionForm-noMapping {
-  padding: 20px;
+.CollectionForm {
+  .CollectionForm-head {
+    color: $lavandia-color;
+  }
+  .CollectionForm-noMapping {
+    padding: 20px;
 
-  ul,
-  li {
-    list-style-type: disc;
+    ul,
+    li {
+      list-style-type: disc;
+    }
   }
 }
 </style>

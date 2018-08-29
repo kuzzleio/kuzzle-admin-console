@@ -122,11 +122,68 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .CollectionFormLine-name {
+  padding: 10px;
+  margin-bottom: 0;
+
+  &.odd {
+    background-color: #f4f4f4;
+
+    .multiselect__tags {
+      background-color: #fff !important;
+    }
+  }
   code {
     font-size: 0.8em;
     color: $disabled-color;
+  }
+
+  .info {
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: $lavandia-color;
+  }
+
+  .select-wrapper {
+    margin-top: 5px;
+    span.caret {
+      top: 10px;
+    }
+    input.select-dropdown {
+      height: 2rem;
+    }
+  }
+
+  .multiselect {
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    input {
+      height: 0;
+    }
+    .multiselect__select {
+      display: none;
+    }
+    .multiselect__input,
+    .multiselect__input:focus {
+      border-bottom: 0;
+    }
+
+    .multiselect__input {
+      margin-bottom: 0;
+    }
+    .multiselect__tags {
+      background-color: #fbfbfb;
+      span {
+        background-color: $blue-color;
+      }
+    }
+  }
+  .attribute-title,
+  .attribute-type {
+    margin-left: 0;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper" @submit.prevent="next">
+  <form class="Mapping wrapper" @submit.prevent="next">
     <!-- Required fields -->
     <div v-if="!$route.params.collection">
       <div class="row">
@@ -148,3 +148,15 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.Mapping {
+  .help {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  .pre_ace {
+    min-height: 500px;
+  }
+}
+</style>

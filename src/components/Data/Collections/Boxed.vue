@@ -1,5 +1,5 @@
 <template>
-  <div class="col s12 m6 l4 collection-boxed">
+  <div class="CollectionBoxed col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
@@ -45,29 +45,38 @@
 </template>
 
 <script>
-  import CollectionDropdown from './Dropdown'
-  import {canCreateDocument, canManageRealtime} from '../../../services/userAuthorization'
-  import Title from '../../../directives/title.directive'
+import CollectionDropdown from './Dropdown'
+import {
+  canCreateDocument,
+  canManageRealtime
+} from '../../../services/userAuthorization'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'CollectionBoxed',
-    props: ['index', 'collection', 'isRealtime'],
-    components: {
-      CollectionDropdown
-    },
-    methods: {
-      canManageRealtime,
-      canCreateDocument
-    },
-    directives: {
-      Title
-    }
+export default {
+  name: 'CollectionBoxed',
+  props: ['index', 'collection', 'isRealtime'],
+  components: {
+    CollectionDropdown
+  },
+  methods: {
+    canManageRealtime,
+    canCreateDocument
+  },
+  directives: {
+    Title
   }
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+.CollectionBoxed {
+  .dropdown-content > li {
+    a.remove {
+      color: $red-color;
+    }
+  }
   .name {
-    font-family: "AnonymousPro", sans-serif;
+    font-family: 'AnonymousPro', sans-serif;
   }
   .card-title {
     font-size: 22px;
@@ -95,4 +104,5 @@
       }
     }
   }
+}
 </style>

@@ -108,7 +108,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.CollectionCreateOrUpdate-index {
-  color: $grey-color;
+.CollectionCreateOrUpdate {
+  .CollectionCreateOrUpdate-index {
+    color: $grey-color;
+  }
+  .error {
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+  }
 }
 </style>
