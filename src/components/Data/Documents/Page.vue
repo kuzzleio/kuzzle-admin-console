@@ -578,7 +578,7 @@ export default {
   }
 }
 .DocumentsPage-container {
-  max-width: 1000px;
+  max-width: $container-width;
 }
 
 .DocumentList-gridItem {
