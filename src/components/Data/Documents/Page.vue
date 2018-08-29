@@ -99,7 +99,7 @@
             </div>
           </div>
 
-          <div class="col s12" v-show="listViewType === 'boxes'">
+          <div class="col s12" v-show="currentFilter.listViewType === 'boxes'">
             <div class="DocumentList-boxes">
               <document-box-item
               v-for="document in documents"

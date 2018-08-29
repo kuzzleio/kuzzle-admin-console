@@ -10,6 +10,7 @@
           <li>
             <a
               v-bind:class="{'disabled': !canEdit}"
+              v-title="{active: !canDelete, title: 'You are not allowed to edit this document'}"
               @click="editDocument"
               >
               Edit
@@ -19,6 +20,7 @@
           <li>
             <a
               v-bind:class="{'disabled': !canDelete}"
+              v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
               @click="deleteDocument"
               >
               Delete
@@ -26,7 +28,10 @@
           </li>
         </dropdown>
       </div>
-      <p v-for="(value, key) in documentContent" :key="value"><strong>{{key}}</strong>: {{value}}</p>
+      <p
+        class="DocumentBoxItem-content"
+        v-json-format="{content: documentContent, open: true}">
+      </p>
     </div>
 
   </div>
@@ -34,6 +39,8 @@
 
 <script>
 import Dropdown from '../../Materialize/Dropdown'
+import JsonFormat from '../../../directives/json-formatter.directive'
+import Title from '../../../directives/title.directive'
 import {
   canEditDocument,
   canDeleteDocument
@@ -46,7 +53,10 @@ export default {
     index: String,
     collection: String
   },
-  directives: {},
+  directives: {
+    JsonFormat,
+    Title
+  },
   components: {
     Dropdown
   },
@@ -111,5 +121,9 @@ export default {
 
 .DocumentBoxItem-actions {
   cursor: pointer;
+}
+
+.DocumentBoxItem-content {
+  overflow: hidden;
 }
 </style>
