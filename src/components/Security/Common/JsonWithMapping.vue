@@ -34,66 +34,66 @@
 </template>
 
 <style rel="stylesheet/scss" lang="scss">
-  .input-id {
-    margin-bottom: 0;
-  }
-  .error {
-    position: relative;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  .dismiss-error {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 2px;
+.input-id {
+  margin-bottom: 0;
+}
+.error {
+  position: relative;
+  padding: 8px 12px;
+  margin: 0;
+}
+.dismiss-error {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 2px;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, .2);
-    }
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
+}
 </style>
 
 <script>
-  import JsonForm from '../../Common/JsonForm/JsonForm'
-  import JsonEditor from '../../Common/JsonEditor'
+import JsonForm from '../../Common/JsonForm/JsonForm'
+import JsonEditor from '../../Common/JsonEditor'
 
-  export default {
-    name: 'DocumentCreateOrUpdate',
-    components: {
-      JsonForm,
-      JsonEditor
-    },
-    props: {
-      value: {
-        type: Object,
-        default: () => {
-          return {}
-        }
-      },
-      mapping: [Object, Array],
-      idContent: {
-        type: String,
-        default: 'content'
-      },
-      idMapping: {
-        type: String,
-        default: 'mapping'
+export default {
+  name: 'DocumentCreateOrUpdate',
+  components: {
+    JsonForm,
+    JsonEditor
+  },
+  props: {
+    value: {
+      type: Object,
+      default: () => {
+        return {}
       }
     },
-    data () {
-      return {
-        jsonDocument: {}
-      }
+    mapping: [Object, Array],
+    idContent: {
+      type: String,
+      default: 'content'
     },
-    methods: {
-      jsonChanged (json) {
-        this.$emit('input', json)
-      }
-    },
-    mounted () {
-      this.jsonDocument = this.value || {}
+    idMapping: {
+      type: String,
+      default: 'mapping'
     }
+  },
+  data() {
+    return {
+      jsonDocument: {}
+    }
+  },
+  methods: {
+    jsonChanged(json) {
+      this.$emit('input', json)
+    }
+  },
+  mounted() {
+    this.jsonDocument = this.value || {}
   }
+}
 </script>

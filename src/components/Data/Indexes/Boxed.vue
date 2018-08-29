@@ -30,50 +30,50 @@
 </template>
 
 <script>
-  import IndexDropdown from './Dropdown'
-  import {canCreateCollection} from '../../../services/userAuthorization'
-  import Title from '../../../directives/title.directive'
+import IndexDropdown from './Dropdown'
+import { canCreateCollection } from '../../../services/userAuthorization'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'IndexBoxed',
-    props: {
-      index: String
-    },
-    methods: {
-      canCreateCollection
-    },
-    directives: {
-      Title
-    },
-    components: {
-      IndexDropdown
-    }
+export default {
+  name: 'IndexBoxed',
+  props: {
+    index: String
+  },
+  methods: {
+    canCreateCollection
+  },
+  directives: {
+    Title
+  },
+  components: {
+    IndexDropdown
   }
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .name {
-    font-family: "AnonymousPro", sans-serif;
-  }
-  .card-title {
-    font-size: 22px;
-    padding: 1rem;
-    margin-bottom: 0;
+.name {
+  font-family: 'AnonymousPro', sans-serif;
+}
+.card-title {
+  font-size: 22px;
+  padding: 1rem;
+  margin-bottom: 0;
 
-    .fa-database {
-      font-size: 1.1rem;
-      vertical-align: 2px;
-      margin-right: 4px;
+  .fa-database {
+    font-size: 1.1rem;
+    vertical-align: 2px;
+    margin-right: 4px;
+  }
+}
+.card-content {
+  border-top: 1px solid rgba(160, 160, 160, 0.2);
+}
+.switch {
+  label {
+    .lever {
+      margin: 0;
     }
   }
-  .card-content {
-    border-top: 1px solid rgba(160, 160, 160, 0.2);
-  }
-  .switch {
-    label {
-      .lever {
-        margin: 0;
-      }
-    }
-  }
+}
 </style>

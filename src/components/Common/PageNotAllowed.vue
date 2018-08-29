@@ -20,12 +20,12 @@
 </template>
 
 <script>
-  import Headline from '../Materialize/Headline'
+import Headline from '../Materialize/Headline'
 
-  export default {
-    name: 'PageNotAllowed',
-    components: {
-      Headline
-    }
+export default {
+  name: 'PageNotAllowed',
+  components: {
+    Headline
   }
+}
 </script>

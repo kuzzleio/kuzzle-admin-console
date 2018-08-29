@@ -92,108 +92,126 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .switch {
-    label {
-      .lever {
-        margin: 0;
-      }
+.switch {
+  label {
+    .lever {
+      margin: 0;
     }
   }
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.input-field {
+  margin-top: 0;
+  label {
+    left: 0;
   }
-  .input-field {
-    margin-top: 0;
-    label {
-      left: 0;
-    }
-    input {
-      margin-bottom: 0;
-    }
+  input {
+    margin-bottom: 0;
   }
-  .list {
-    margin-top: 25px;
-  }
+}
+.list {
+  margin-top: 25px;
+}
 </style>
 
 
 <script>
-  import Headline from '../../Materialize/Headline'
-  import IndexDropdown from '../Indexes/Dropdown'
-  import ListNotAllowed from '../../Common/ListNotAllowed'
-  import CollectionBoxed from '../Collections/Boxed'
-  import {canSearchIndex, canSearchCollection, canCreateCollection} from '../../../services/userAuthorization'
-  import Title from '../../../directives/title.directive'
+import Headline from '../../Materialize/Headline'
+import IndexDropdown from '../Indexes/Dropdown'
+import ListNotAllowed from '../../Common/ListNotAllowed'
+import CollectionBoxed from '../Collections/Boxed'
+import {
+  canSearchIndex,
+  canSearchCollection,
+  canCreateCollection
+} from '../../../services/userAuthorization'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'CollectionsList',
-    props: {
-      index: String
-    },
-    components: {
-      Headline,
-      ListNotAllowed,
-      CollectionBoxed,
-      IndexDropdown
-    },
-    methods: {
-      canSearchIndex,
-      canSearchCollection,
-      canCreateCollection
-    },
-    directives: {
-      Title
-    },
-    data () {
-      return {
-        filter: ''
+export default {
+  name: 'CollectionsList',
+  props: {
+    index: String
+  },
+  components: {
+    Headline,
+    ListNotAllowed,
+    CollectionBoxed,
+    IndexDropdown
+  },
+  methods: {
+    canSearchIndex,
+    canSearchCollection,
+    canCreateCollection
+  },
+  directives: {
+    Title
+  },
+  data() {
+    return {
+      filter: ''
+    }
+  },
+  computed: {
+    collectionCount() {
+      if (!this.$store.state.index.indexesAndCollections[this.index]) {
+        return 0
       }
+
+      return (
+        this.$store.state.index.indexesAndCollections[this.index].stored
+          .length +
+        this.$store.state.index.indexesAndCollections[this.index].realtime
+          .length
+      )
     },
-    computed: {
-      collectionCount () {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return 0
-        }
-
-        return this.$store.state.index.indexesAndCollections[this.index].stored.length +
-          this.$store.state.index.indexesAndCollections[this.index].realtime.length
-      },
-      isCollectionForFilter () {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return
-        }
-
-        return this.$store.state.index.indexesAndCollections[this.index].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
-          this.$store.state.index.indexesAndCollections[this.index].realtime.filter(col => col.indexOf(this.filter !== -1)).length > 0
-      },
-      storedCollections () {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return []
-        }
-
-        return this.$store.state.index.indexesAndCollections[this.index].stored
-      },
-      realtimeCollections () {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return []
-        }
-
-        return this.$store.state.index.indexesAndCollections[this.index].realtime
-      },
-      filteredStoredCollections () {
-        return this.storedCollections.filter(col => col.indexOf(this.filter) !== -1)
-      },
-      filteredRealtimeCollections () {
-        return this.realtimeCollections.filter(col => col.indexOf(this.filter) !== -1)
-      },
-      orderedFilteredStoredCollections () {
-        return this.filteredStoredCollections.sort()
-      },
-      orderedFilteredRealtimeCollections () {
-        return this.filteredRealtimeCollections.sort()
+    isCollectionForFilter() {
+      if (!this.$store.state.index.indexesAndCollections[this.index]) {
+        return
       }
+
+      return (
+        this.$store.state.index.indexesAndCollections[this.index].stored.filter(
+          col => col.indexOf(this.filter !== -1)
+        ).length > 0 ||
+        this.$store.state.index.indexesAndCollections[
+          this.index
+        ].realtime.filter(col => col.indexOf(this.filter !== -1)).length > 0
+      )
+    },
+    storedCollections() {
+      if (!this.$store.state.index.indexesAndCollections[this.index]) {
+        return []
+      }
+
+      return this.$store.state.index.indexesAndCollections[this.index].stored
+    },
+    realtimeCollections() {
+      if (!this.$store.state.index.indexesAndCollections[this.index]) {
+        return []
+      }
+
+      return this.$store.state.index.indexesAndCollections[this.index].realtime
+    },
+    filteredStoredCollections() {
+      return this.storedCollections.filter(
+        col => col.indexOf(this.filter) !== -1
+      )
+    },
+    filteredRealtimeCollections() {
+      return this.realtimeCollections.filter(
+        col => col.indexOf(this.filter) !== -1
+      )
+    },
+    orderedFilteredStoredCollections() {
+      return this.filteredStoredCollections.sort()
+    },
+    orderedFilteredRealtimeCollections() {
+      return this.filteredRealtimeCollections.sort()
     }
   }
+}
 </script>

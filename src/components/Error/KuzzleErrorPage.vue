@@ -44,70 +44,74 @@
 </template>
 
 <script>
-  import Connecting from './Connecting'
-  import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
+import Connecting from './Connecting'
+import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
-  export default {
-    name: 'KuzzleErrorPage',
-    data () {
-      return {
-        host: null,
-        port: null
+export default {
+  name: 'KuzzleErrorPage',
+  data() {
+    return {
+      host: null,
+      port: null
+    }
+  },
+  components: {
+    Connecting,
+    EnvironmentSwitch
+  },
+  computed: {
+    errorInternalStatus() {
+      if (
+        !this.$store.state.kuzzle.errorFromKuzzle ||
+        !this.$store.state.kuzzle.errorFromKuzzle.internal
+      ) {
+        return null
       }
+      return this.$store.state.kuzzle.errorFromKuzzle.internal.status
     },
-    components: {
-      Connecting,
-      EnvironmentSwitch
-    },
-    computed: {
-      errorInternalStatus () {
-        if (!this.$store.state.kuzzle.errorFromKuzzle ||
-            !this.$store.state.kuzzle.errorFromKuzzle.internal) {
-          return null
-        }
-        return this.$store.state.kuzzle.errorFromKuzzle.internal.status
-      },
-      errorInternalMessage () {
-        if (!this.$store.state.kuzzle.errorFromKuzzle ||
-            !this.$store.state.kuzzle.errorFromKuzzle.internal) {
-          return null
-        }
-        return this.$store.state.kuzzle.errorFromKuzzle.internal.message
+    errorInternalMessage() {
+      if (
+        !this.$store.state.kuzzle.errorFromKuzzle ||
+        !this.$store.state.kuzzle.errorFromKuzzle.internal
+      ) {
+        return null
       }
+      return this.$store.state.kuzzle.errorFromKuzzle.internal.message
+    }
+  },
+  methods: {
+    editEnvironment(id) {
+      this.$emit('environment::create', id)
     },
-    methods: {
-      editEnvironment (id) {
-        this.$emit('environment::create', id)
-      },
-      deleteEnvironment (id) {
-        this.$emit('environment::delete', id)
-      }
+    deleteEnvironment(id) {
+      this.$emit('environment::delete', id)
     }
   }
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .message-warning {
-    h5 {
-      font-size: 1.2rem;
-    }
+.message-warning {
+  h5 {
+    font-size: 1.2rem;
   }
-  .kuzzle-disconnected {
-    margin-top: 30px;
+}
+.kuzzle-disconnected {
+  margin-top: 30px;
 
-    .card {
-      padding-bottom: 20px;
-    }
-
-    p {
-      font-family: "Roboto", "Arial", sans-serif;
-      font-size: 1.3em;
-      font-weight: 300;
-
-      .host {
-        font-weight: bold;
-      }
-      margin-bottom: 0;
-    }
+  .card {
+    padding-bottom: 20px;
   }
+
+  p {
+    font-family: 'Roboto', 'Arial', sans-serif;
+    font-size: 1.3em;
+    font-weight: 300;
+
+    .host {
+      font-weight: bold;
+    }
+    margin-bottom: 0;
+  }
+}
 </style>

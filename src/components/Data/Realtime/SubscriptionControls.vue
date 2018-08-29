@@ -35,41 +35,41 @@
 
 
 <script>
-  import {canSubscribe} from '../../../services/userAuthorization'
-  import Title from '../../../directives/title.directive'
+import { canSubscribe } from '../../../services/userAuthorization'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'SubscriptionControls',
-    props: {
-      index: String,
-      collection: String,
-      warning: Object,
-      subscribed: Boolean
+export default {
+  name: 'SubscriptionControls',
+  props: {
+    index: String,
+    collection: String,
+    warning: Object,
+    subscribed: Boolean
+  },
+  data() {
+    return {
+      scrollDown: true
+    }
+  },
+  directives: {
+    Title
+  },
+  methods: {
+    canSubscribe,
+    toggleSubscription() {
+      this.$emit('realtime-toggle-subscription')
     },
-    data () {
-      return {
-        scrollDown: true
-      }
-    },
-    directives: {
-      Title
-    },
-    methods: {
-      canSubscribe,
-      toggleSubscription () {
-        this.$emit('realtime-toggle-subscription')
-      },
-      clear () {
-        this.$emit('realtime-clear-messages')
-      }
-    },
-    mounted () {
-      this.$emit('scroll-down', this.scrollDown)
-    },
-    watch: {
-      scrollDown (value) {
-        this.$emit('scroll-down', value)
-      }
+    clear() {
+      this.$emit('realtime-clear-messages')
+    }
+  },
+  mounted() {
+    this.$emit('scroll-down', this.scrollDown)
+  },
+  watch: {
+    scrollDown(value) {
+      this.$emit('scroll-down', value)
     }
   }
+}
 </script>

@@ -18,20 +18,20 @@
 </template>
 
 <script>
-  import MSelect from '../../../Common/MSelect'
-  import title from '../../../../directives/title.directive'
+import MSelect from '../../../Common/MSelect'
+import title from '../../../../directives/title.directive'
 
-  export default {
-    name: 'CollectionFormName',
-    components: {
-      MSelect
-    },
-    directives: {
-      title
-    },
-    props: {
-      attributes: Object,
-      selectedDocumentName: String
-    }
+export default {
+  name: 'CollectionFormName',
+  components: {
+    MSelect
+  },
+  directives: {
+    title
+  },
+  props: {
+    attributes: Object,
+    selectedDocumentName: String
   }
+}
 </script>

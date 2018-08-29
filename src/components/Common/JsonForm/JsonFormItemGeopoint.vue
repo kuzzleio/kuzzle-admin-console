@@ -21,54 +21,54 @@
 </template>
 
 <script>
-  import JsonEditor from '../../Common/JsonEditor'
+import JsonEditor from '../../Common/JsonEditor'
 
-  export default {
-    name: 'JsonFormItemGeopoint',
-    components: {
-      JsonEditor
-    },
-    props: {
-      content: Object,
-      name: String,
-      type: String,
-      parent: String
-    },
-    data () {
-      return {
-        value: {
-          lat: null,
-          lon: null
-        }
+export default {
+  name: 'JsonFormItemGeopoint',
+  components: {
+    JsonEditor
+  },
+  props: {
+    content: Object,
+    name: String,
+    type: String,
+    parent: String
+  },
+  data() {
+    return {
+      value: {
+        lat: null,
+        lon: null
       }
-    },
-    methods: {
-      updateLocation (v) {
-        this.$emit('update-value', {name: this.name, value: this.value})
-      },
-      initValue () {
-        if (!this.content) {
-          return
-        }
-
-        if (this.parent && this.content[this.parent]) {
-          if (this.content[this.parent][this.name]) {
-            this.value.lat = this.content[this.parent][this.name].lat
-            this.value.lon = this.content[this.parent][this.name].lon
-          }
-        } else {
-          if (this.content[this.name]) {
-            this.value.lat = this.content[this.name].lat
-            this.value.lon = this.content[this.name].lon
-          }
-        }
-      }
-    },
-    mounted () {
-      this.initValue()
-    },
-    watch: {
-      content: 'initValue'
     }
+  },
+  methods: {
+    updateLocation(v) {
+      this.$emit('update-value', { name: this.name, value: this.value })
+    },
+    initValue() {
+      if (!this.content) {
+        return
+      }
+
+      if (this.parent && this.content[this.parent]) {
+        if (this.content[this.parent][this.name]) {
+          this.value.lat = this.content[this.parent][this.name].lat
+          this.value.lon = this.content[this.parent][this.name].lon
+        }
+      } else {
+        if (this.content[this.name]) {
+          this.value.lat = this.content[this.name].lat
+          this.value.lon = this.content[this.name].lon
+        }
+      }
+    }
+  },
+  mounted() {
+    this.initValue()
+  },
+  watch: {
+    content: 'initValue'
   }
+}
 </script>
