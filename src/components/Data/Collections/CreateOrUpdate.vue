@@ -1,7 +1,11 @@
 <template>
-  <div class="wrapper collection-edit">
+  <div class="CollectionCreateOrUpdate wrapper">
     <headline>
-      {{headline}} {{index}}
+      <span class="CollectionCreateOrUpdate-index">
+        {{index}}
+        <i class="fa fa-angle-right"></i>
+      </span>
+      {{headline}}
     </headline>
 
     <stepper
@@ -102,3 +106,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.CollectionCreateOrUpdate-index {
+  color: $grey-color;
+}
+</style>

@@ -46,8 +46,9 @@
 
     <div class="CollectionForm-noMapping" v-else>
       <h4>You are creating a collection with an empty mapping.</h4>
-      <p>This is OK, since the mapping of your collection will be determined by the
-        persistence engine as you create new documents, but there's a few things
+      <p>This is OK, since <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-field-mapping.html">
+        the mapping of your collection will be determined by the
+        persistence engine as you create new documents</a>, but there's a few things
         you may need to know before proceeding.</p>
 
       <ul>
