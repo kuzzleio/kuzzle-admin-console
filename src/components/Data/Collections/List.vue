@@ -177,9 +177,12 @@ export default {
         this.$store.state.index.indexesAndCollections[this.index].stored.filter(
           col => col.indexOf(this.filter !== -1)
         ).length > 0 ||
-        this.$store.state.index.indexesAndCollections[
-          this.index
-        ].realtime.filter(col => col.indexOf(this.filter !== -1)).length > 0
+        // prettier-ignore
+        this.$store.state.index
+          .indexesAndCollections[this.index]
+          .realtime
+          .filter(col => col.indexOf(this.filter !== -1))
+          .length > 0
       )
     },
     storedCollections() {
