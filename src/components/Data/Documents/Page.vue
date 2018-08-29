@@ -15,8 +15,7 @@
 
     <list-not-allowed v-if="!canSearchDocument(index, collection)"></list-not-allowed>
 
-    <div class="row">
-      <div class="col s12 xl10">
+    <div class="DocumentsPage-container">
 
         <div v-if="isCollectionEmpty" class="card-panel">
           <realtime-only-empty-state
@@ -155,7 +154,6 @@
           </div>
         </div>
 
-      </div>
     </div>
     <delete-modal
       :candidates-for-deletion="candidatesForDeletion"
@@ -579,6 +577,13 @@ export default {
     height: 500px;
   }
 }
+.DocumentsPage-container {
+  max-width: 1000px;
+}
+
+.DocumentList-gridItem {
+}
+
 .DocumentsPage-filtersAndButtons {
   margin-bottom: 0;
 }
