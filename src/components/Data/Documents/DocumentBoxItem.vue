@@ -100,30 +100,30 @@ export default {
 }
 </script>
 
-<style type="scss" rel="stylesheet/scss" scoped>
+<style type="scss" scoped>
 .DocumentBoxItem {
   min-width: 250px;
   max-width: 350px;
   margin: 0 25px 25px 0;
-}
 
-.DocumentBoxItem-title {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-}
+  .DocumentBoxItem-title {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
 
-.DocumentBoxItem-title span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .DocumentBoxItem-title span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-.DocumentBoxItem-actions {
-  cursor: pointer;
-}
+  .DocumentBoxItem-actions {
+    cursor: pointer;
+  }
 
-.DocumentBoxItem-content {
-  overflow: hidden;
+  .DocumentBoxItem-content {
+    overflow: hidden;
+  }
 }
 </style>
