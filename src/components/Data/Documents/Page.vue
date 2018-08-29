@@ -271,7 +271,7 @@ export default {
     }
   },
   methods: {
-    // VIEW MAP
+    // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
       return [
@@ -298,15 +298,9 @@ export default {
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
 
-      for (const [attributeName, { properties }] of Object.entries(mapping)) {
-        if (properties) {
-          if (properties.lat && properties.lon) {
-            attributes = attributes.concat(path.concat(attributeName).join('.'))
-          }
-
-          attributes = attributes.concat(
-            this.listMappingGeopoints(properties, path.concat(attributeName))
-          )
+      for (const [attributeName, { type }] of Object.entries(mapping)) {
+        if (type === 'geo_point') {
+          attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
 
