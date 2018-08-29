@@ -17,6 +17,7 @@
 </template>
 
 <style lang="scss" scoped>
+// @TODO pass this code to BEM
 .Stepper {
   padding: 20px 0 0 0;
 }

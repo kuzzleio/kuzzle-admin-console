@@ -69,6 +69,7 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+// @TODO pass this code to BEM
 .CollectionBoxed {
   .dropdown-content > li {
     a.remove {

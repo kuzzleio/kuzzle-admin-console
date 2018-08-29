@@ -147,6 +147,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// @TODO pass this code to BEM
 .CollectionForm {
   .CollectionForm-head {
     color: $lavandia-color;
