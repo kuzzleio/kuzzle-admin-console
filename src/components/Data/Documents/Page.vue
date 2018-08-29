@@ -65,8 +65,12 @@
           v-if="documents.length"
           :all-checked="allChecked"
           :display-bulk-delete="hasSelectedDocuments"
-          :geopointList="geopointList"
+          :mappingGeopoints="mappingGeopoints"
           :viewType="currentFilter.listViewType"
+          :displayCreate="canCreateDocument(this.index, this.collection)"
+          :displayGeopointSelect="currentFilter.listViewType === 'map'"
+          :displayBulkDelete="currentFilter.listViewType !== 'map'"
+          :displayToggleAll="currentFilter.listViewType !== 'map'"
           @create="onCreateClicked"
           @bulk-delete="onBulkDeleteClicked"
           @toggle-all="onToggleAllClicked"
@@ -206,7 +210,7 @@ export default {
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
       collectionMapping: {},
-      geopointList: [],
+      mappingGeopoints: [],
       selectedGeopoint: null
     }
   },
@@ -225,7 +229,7 @@ export default {
       return `content.${this.selectedGeopoint}.lon`
     },
     isCollectionGeo() {
-      return this.geopointList.length > 0
+      return this.mappingGeopoints.length > 0
     },
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
@@ -267,6 +271,8 @@ export default {
     }
   },
   methods: {
+    // VIEW MAP
+    // =========================================================================
     getCoordinates(document) {
       return [
         this.getProperty(document, this.latFieldPath),
@@ -289,15 +295,32 @@ export default {
     onSelectGeopoint(selectedGeopoint) {
       this.selectedGeopoint = selectedGeopoint
     },
+    listMappingGeopoints(mapping, path = []) {
+      let attributes = []
+
+      for (const [attributeName, { properties }] of Object.entries(mapping)) {
+        if (properties) {
+          if (properties.lat && properties.lon) {
+            attributes = attributes.concat(path.concat(attributeName).join('.'))
+          }
+
+          attributes = attributes.concat(
+            this.listMappingGeopoints(properties, path.concat(attributeName))
+          )
+        }
+      }
+
+      return attributes
+    },
 
     // CREATE
-    // =====================================================
+    // =========================================================================
     onCreateClicked() {
       this.$router.push({ name: 'DataCreateDocument' })
     },
 
     // UPDATE
-    // =====================================================
+    // =========================================================================
     onEditDocumentClicked(id) {
       this.$router.push({
         name: 'DataUpdateDocument',
@@ -306,7 +329,7 @@ export default {
     },
 
     // DELETE
-    // =====================================================
+    // =========================================================================
     performDeleteDocuments,
     onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
@@ -341,7 +364,7 @@ export default {
     },
 
     // LIST (FETCH & SEARCH)
-    // =====================================================
+    // =========================================================================
     performSearchDocuments,
     onFiltersUpdated(newFilters) {
       try {
@@ -401,7 +424,7 @@ export default {
     },
 
     // PAGINATION
-    // =====================================================
+    // =========================================================================
     changePage(from) {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
@@ -411,7 +434,7 @@ export default {
     },
 
     // PERMISSIONS
-    // =====================================================
+    // =========================================================================
     canSearchIndex,
     canSearchDocument,
     canCreateDocument,
@@ -419,7 +442,7 @@ export default {
     canEditDocument,
 
     // SELECT ITEMS
-    // =====================================================
+    // =========================================================================
     onToggleAllClicked() {
       if (this.allChecked) {
         this.selectedDocuments = []
@@ -443,7 +466,7 @@ export default {
     },
 
     // LIST VIEW TYPES
-    // =====================================================
+    // =========================================================================
     onListViewClicked() {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
@@ -465,36 +488,23 @@ export default {
         })
       )
     },
-    listGeopoints(mapping, path = []) {
-      let attributes = []
-
-      for (const [attributeName, { properties }] of Object.entries(mapping)) {
-        if (properties) {
-          if (properties.lat && properties.lon) {
-            attributes = attributes.concat(path.concat(attributeName).join('.'))
-          }
-
-          attributes = attributes.concat(
-            this.listGeopoints(properties, path.concat(attributeName))
-          )
-        }
-      }
-
-      return attributes
-    },
-    loadCollectionInfo() {
+    // INIT
+    // =========================================================================
+    loadMappingInfo() {
       getMappingDocument(this.collection, this.index).then(response => {
         this.collectionMapping = response.mapping
 
-        this.geopointList = this.listGeopoints(this.collectionMapping)
-        this.selectedGeopoint = this.geopointList[0]
+        this.mappingGeopoints = this.listMappingGeopoints(
+          this.collectionMapping
+        )
+        this.selectedGeopoint = this.mappingGeopoints[0]
 
         this.onListViewClicked()
       })
     }
   },
   mounted() {
-    this.loadCollectionInfo()
+    this.loadMappingInfo()
 
     this.currentFilter = filterManager.load(
       this.index,
@@ -531,7 +541,7 @@ export default {
     collection: {
       immediate: true,
       handler() {
-        this.loadCollectionInfo()
+        this.loadMappingInfo()
       }
     }
   }

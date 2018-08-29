@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Vue2Leaflet from 'vue2-leaflet'
 
 import App from './App'
 import store from './vuex/store'
@@ -10,7 +9,6 @@ import * as types from './vuex/modules/common/kuzzle/mutation-types'
 initStoreWithKuzzle(store)
 
 Vue.use(VueRouter)
-// Vue.use(Vue2Leaflet)
 
 store.dispatch(types.LOAD_ENVIRONMENTS)
 store

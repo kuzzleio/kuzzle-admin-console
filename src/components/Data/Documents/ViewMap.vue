@@ -120,7 +120,7 @@ export default {
     }
   },
   computed: {
-    latLngs() {
+    coordinates() {
       return this.documents.map(this.getCoordinates)
     },
     canEdit() {
@@ -180,7 +180,7 @@ export default {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject
 
-      this.map.fitBounds(this.latLngs)
+      this.map.fitBounds(this.coordinates)
     })
   },
   watch: {},

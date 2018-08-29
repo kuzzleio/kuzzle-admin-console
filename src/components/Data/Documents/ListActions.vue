@@ -1,8 +1,10 @@
 <template>
   <div class="ListActions row actions">
     <div class="col s8">
-      <button v-if="viewType !== 'map'"
+      <button
         class="btn btn-small waves-effect waves-light tertiary"
+        :disabled="!displayToggleAll"
+        :class="!displayToggleAll ? 'disabled' : ''"
         @click="$emit('toggle-all')">
         <i class="fa left"
           :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
@@ -12,12 +14,15 @@
 
       <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
         @click.prevent="$emit('create')"
+        :disabled="!displayCreate"
+        :class="!displayCreate ? 'disabled' : ''"
+        :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
       >
         <i class="fa fa-plus-circle left"></i>
         Create
       </button>
 
-      <button v-if="viewType !== 'map'" class="btn btn-small waves-effect waves-light"
+      <button class="btn btn-small waves-effect waves-light"
         :class="displayBulkDelete ? 'red-color' : 'disabled'"
         :disabled="!displayBulkDelete"
         @click="$emit('bulk-delete')"
@@ -26,13 +31,15 @@
         Delete
       </button>
     </div>
-    <div v-if="viewType === 'map'" class="col s2">
-      Selected geopoint
-    </div>
-    <div v-if="viewType === 'map'" class="col s2">
-      <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
-        <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
-      </m-select>
+    <div v-if="displayGeopointSelect">
+      <div class="col s2">
+        Selected geopoint
+      </div>
+      <div class="col s2">
+        <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
+          <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
+        </m-select>
+      </div>
     </div>
   </div>
 </template>
@@ -48,7 +55,8 @@ export default {
   props: {
     allChecked: Boolean,
     displayBulkDelete: Boolean,
-    viewType: String,
+    displayCreate: Boolean,
+    displayGeopointSelect: Boolean,
     geopointList: Array
   },
   data() {
