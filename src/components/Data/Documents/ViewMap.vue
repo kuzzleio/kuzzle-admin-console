@@ -15,7 +15,7 @@
         </l-map>
       </div>
 
-      <div v-if="currentDocument" class="col s2 document-info">
+      <div v-if="currentDocument" class="col s2 viewMap-document-info">
         <div class="row">
           <div class="col s9">
             {{ currentDocument.id }}
@@ -25,7 +25,7 @@
             href=""
             :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
             @click.prevent="editCurrentDocument">
-            <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
+            <i class="fa fa-pencil-alt pointer" :class="{'disabled': !canEdit}"></i>
           </a>
 
           <dropdown :id="currentDocument.id" myclass="icon-black">
@@ -150,7 +150,7 @@ export default {
     getMapClass() {
       const classes = {
         col: true,
-        'document-map': true,
+        'viewMap-document-map': true,
         s12: this.currentDocument === null,
         s10: this.currentDocument !== null
       }
@@ -190,20 +190,14 @@ export default {
 
 <style scoped lang="scss">
 .ViewMap {
-  .document-map {
+
+  .viewMap-document-map {
     height: 500px;
   }
 
-  .document-info {
+  .viewMap-document-info {
     overflow-x: scroll;
   }
 
-  div i {
-    cursor: pointer;
-  }
-}
-
-.select-wrapper span.caret {
-  top: 10px;
 }
 </style>
