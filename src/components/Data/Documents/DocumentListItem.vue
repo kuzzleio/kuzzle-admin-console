@@ -1,6 +1,6 @@
 <template>
-  <div class="DocumentItem" :class="{ 'collapsed': collapsed }">
-    <i class="DocumentItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div class="DocumentListItem" :class="{ 'collapsed': collapsed }">
+    <i class="DocumentListItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,9 +11,9 @@
 
     <label :for="checkboxId"></label>
 
-    <label class="DocumentItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
 
-    <div class="DocumentItem-actions right">
+    <div class="DocumentListItem-actions right">
       <a
         v-if="canEdit"
         href=""
@@ -34,7 +34,7 @@
       </dropdown>
     </div>
 
-    <div class="DocumentItem-content item-content">
+    <div class="DocumentListItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: false}"></pre>
     </div>
@@ -51,7 +51,7 @@ import {
 import title from '../../../directives/title.directive'
 
 export default {
-  name: 'DocumentItem',
+  name: 'DocumentListItem',
   props: {
     index: String,
     collection: String,
@@ -109,18 +109,18 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
-.DocumentItem-toggle {
+.DocumentListItem-toggle {
   padding: 0 10px;
   margin-left: -10px;
   cursor: pointer;
   transition-duration: 0.2s;
 }
 
-.collapsed .DocumentItem-toggle {
+.collapsed .DocumentListItem-toggle {
   transform: rotate(-90deg);
 }
 
-.DocumentItem-title {
+.DocumentListItem-title {
   color: black;
   line-height: 21px;
   cursor: pointer;
@@ -128,7 +128,7 @@ export default {
   font-family: 'AnonymousPro';
 }
 
-.DocumentItem-content {
+.DocumentListItem-content {
   transition-duration: 0.2s;
   max-height: 300px;
   overflow-x: hidden;
@@ -142,13 +142,13 @@ export default {
   }
 }
 
-.collapsed .DocumentItem-content {
+.collapsed .DocumentListItem-content {
   max-height: 0;
   transition-duration: 0;
   padding: 0 10px 0 0;
 }
 
-.DocumentItem-actions {
+.DocumentListItem-actions {
   margin-top: 1px;
   font-size: 1em;
 }

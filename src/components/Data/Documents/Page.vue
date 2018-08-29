@@ -70,18 +70,18 @@
 
         <div class="row" v-show="documents.length">
 
-          <div class="col s12" v-show="currentFilter.listViewType === 'list'">
+          <div class="DocumentList-list col s12" v-show="currentFilter.listViewType === 'list'">
             <div class="collection">
               <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-                <document-item
-                  :collection="collection"
+                <document-list-item
                   :document="document"
+                  :collection="collection"
                   :index="index"
                   :is-checked="isChecked(document.id)"
                   @checkbox-click="toggleSelectDocuments"
                   @edit="onEditDocumentClicked"
                   @delete="onDeleteClicked">
-                </document-item>
+                </document-list-item>
               </div>
             </div>
 
@@ -99,11 +99,32 @@
             </div>
           </div>
 
-          <div class="DocumentList-boxes col s12" v-show="currentFilter.listViewType === 'boxes'">
-            <i class="fa fa-th fa-5x"></i>
-            <h2>Boxes List view</h2>
-            <p>This feature is not yet implemented.</p>
-            <p>Hold on, we'll ship it soon!</p>
+          <div class="col s12" v-show="currentFilter.listViewType === 'boxes'">
+            <div class="DocumentList-boxes">
+              <document-box-item
+              v-for="document in documents"
+              :collection="collection"
+              :index="index"
+              :document="document"
+              :key="document.id"
+              @edit="onEditDocumentClicked"
+              @delete="onDeleteClicked"
+              >
+            </document-box-item>
+            </div>
+
+            <div class="row" v-show="documents.length">
+              <div class="col s12">
+                <pagination
+                  :from="paginationFrom"
+                  :max-page="1000"
+                  :number-in-page="documents.length"
+                  :size="paginationSize"
+                  :total="totalDocuments"
+                  @change-page="changePage"
+                ></pagination>
+              </div>
+            </div>
           </div>
           <div class="DocumentList-map col s12" v-show="currentFilter.listViewType === 'map'">
             <i class="fa fa-map-marked fa-5x"></i>
@@ -128,7 +149,8 @@
 </template>
 
 <script>
-import DocumentItem from './DocumentItem'
+import DocumentListItem from './DocumentListItem'
+import DocumentBoxItem from './DocumentBoxItem'
 import DeleteModal from './DeleteModal'
 import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
@@ -168,7 +190,8 @@ export default {
     CollectionDropdown,
     CommonList,
     DeleteModal,
-    DocumentItem,
+    DocumentBoxItem,
+    DocumentListItem,
     EmptyState,
     Headline,
     Filters,
@@ -464,7 +487,6 @@ export default {
   margin-bottom: 0;
 }
 
-.DocumentList-boxes,
 .DocumentList-map {
   text-align: center;
   padding: 30px;
@@ -472,5 +494,12 @@ export default {
   i {
     color: $lavandia-color;
   }
+}
+
+.DocumentList-boxes {
+  padding: 30px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: safe;
 }
 </style>
