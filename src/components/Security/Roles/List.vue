@@ -40,7 +40,7 @@ import CrudlDocument from './CrudlDocument'
 import UserItem from '../Users/UserItem'
 import RoleItem from '../Roles/RoleItem'
 import ProfileItem from '../Profiles/ProfileItem'
-import DocumentItem from '../../Data/Documents/DocumentItem'
+import DocumentItem from '../../Data/Documents/DocumentListItem'
 import * as filterManager from '../../../services/filterManager'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
