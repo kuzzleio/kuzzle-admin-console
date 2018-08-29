@@ -115,8 +115,7 @@ export default {
       filters: {
         basic: null,
         sorting: { ...emptySorting }
-      },
-      throttleSearch: false
+      }
     }
   },
   computed: {
