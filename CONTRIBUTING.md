@@ -217,7 +217,7 @@ Do not use the `#some-id` selector (because of [high specificity](https://develo
 
 // And with Sass nesting...
 .Tweet {
-  .retweetBtn {
+  .Tweet-retweetBtn {
     &[disabled]
   }
 }
