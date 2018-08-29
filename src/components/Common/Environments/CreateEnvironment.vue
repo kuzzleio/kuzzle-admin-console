@@ -1,7 +1,7 @@
 <template>
   <div class="environment">
     <warning-header
-      v-if="useHttps"
+      v-if="useHttps && !environment.ssl"
       :text="warningHeaderText"
     />
 
@@ -65,108 +65,129 @@
 </template>
 
 <script>
-  import WarningHeader from '../WarningHeader'
+import WarningHeader from '../WarningHeader'
 
-  import Focus from '../../../directives/focus.directive'
-  import { DEFAULT_COLOR } from '../../../services/environment'
-  import { UPDATE_ENVIRONMENT, CREATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
+import Focus from '../../../directives/focus.directive'
+import { DEFAULT_COLOR } from '../../../services/environment'
+import {
+  UPDATE_ENVIRONMENT,
+  CREATE_ENVIRONMENT
+} from '../../../vuex/modules/common/kuzzle/mutation-types'
 
-  export default {
-    name: 'CreateEnvironment',
-    components: {
-      WarningHeader
+const useHttps = window.location.protocol === 'https:'
+
+export default {
+  name: 'CreateEnvironment',
+  components: {
+    WarningHeader
+  },
+  props: ['environmentId'],
+  directives: {
+    Focus
+  },
+  computed: {
+    environments() {
+      return this.$store.state.kuzzle.environments
     },
-    props: ['environmentId'],
-    directives: {
-      Focus
-    },
-    computed: {
-      environments () {
-        return this.$store.state.kuzzle.environments
+    useHttps() {
+      return useHttps
+    }
+  },
+  data() {
+    return {
+      errors: {
+        name: false,
+        host: false,
+        environmentAlreadyExists: false
       },
-      useHttps() {
-        return window.location.protocol === 'https:'
-      }
-    },
-    data () {
-      return {
-        errors: {
-          name: false,
-          host: false,
-          environmentAlreadyExists: false
-        },
-        environment: {
-          name: null,
-          host: null,
-          port: 7512,
-          color: DEFAULT_COLOR
-        },
-        colors: [DEFAULT_COLOR, '#0277bd', '#8e24aa', '#689f38', '#f57c00', '#e53935', '#546e7a', '#d81b60'],
-        warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please check that your Kuzzle supports HTTPS/SSL connections.`
-      }
-    },
-    methods: {
-      createEnvironment () {
-        this.errors.name = (!this.environment.name)
-        // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
-        // Host is required and must be something like 'mydomain.com/toto'
-        this.errors.host = (!this.environment.host || /^(http|ws):\/\//.test(this.environment.host))
-
-        let _host = this.environment.host.trim()
-        let _name = this.environment.name.trim()
-
-        if (!this.environmentId || this.environmentId !== _name) {
-          this.errors.environmentAlreadyExists = this.$store.state.kuzzle.environments[_name] !== undefined
-        } else {
-          this.errors.environmentAlreadyExists = false
-        }
-
-        if (this.errors.name || this.errors.host || this.errors.environmentAlreadyExists) {
-          throw new Error('Name or host invalid')
-        }
-
-        if (this.environmentId) {
-          return this.$store.dispatch(UPDATE_ENVIRONMENT, {
-            id: this.environmentId,
-            environment: {
-              name: _name,
-              color: this.environment.color,
-              host: _host,
-              port: this.environment.port,
-              ssl: this.environment.ssl
-            }
-          })
-        } else {
-          return this.$store.dispatch(CREATE_ENVIRONMENT, {
-            id: _name,
-            environment: {
-              name: _name,
-              color: this.environment.color,
-              host: _host,
-              port: this.environment.port,
-              ssl: this.environment.ssl
-            }
-          })
-        }
+      environment: {
+        name: null,
+        host: null,
+        port: 7512,
+        color: DEFAULT_COLOR,
+        ssl: useHttps
       },
-      selectColor (index) {
-        this.environment.color = this.colors[index]
-      }
-    },
-    created () {
-      if (this.environmentId && this.environments[this.environmentId]) {
-        this.environment.name = this.environments[this.environmentId].name
-        this.environment.host = this.environments[this.environmentId].host
-        this.environment.port = this.environments[this.environmentId].port
-        this.environment.color = this.environments[this.environmentId].color
-        this.environment.ssl = this.environments[this.environmentId].ssl
+      colors: [
+        DEFAULT_COLOR,
+        '#0277bd',
+        '#8e24aa',
+        '#689f38',
+        '#f57c00',
+        '#e53935',
+        '#546e7a',
+        '#d81b60'
+      ],
+      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please ensure that your Kuzzle supports HTTPS/SSL connections.`
+    }
+  },
+  methods: {
+    createEnvironment() {
+      this.errors.name = !this.environment.name
+      // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
+      // Host is required and must be something like 'mydomain.com/toto'
+      this.errors.host =
+        !this.environment.host || /^(http|ws):\/\//.test(this.environment.host)
+
+      let _host = this.environment.host.trim()
+      let _name = this.environment.name.trim()
+
+      if (!this.environmentId || this.environmentId !== _name) {
+        this.errors.environmentAlreadyExists =
+          this.$store.state.kuzzle.environments[_name] !== undefined
       } else {
-        this.environment.name = null
-        this.environment.host = null
-        this.environment.port = 7512
-        this.environment.color = DEFAULT_COLOR
-        this.environment.ssl = false
+        this.errors.environmentAlreadyExists = false
       }
+
+      if (
+        this.errors.name ||
+        this.errors.host ||
+        this.errors.environmentAlreadyExists
+      ) {
+        throw new Error('Name or host invalid')
+      }
+
+      if (this.environmentId) {
+        return this.$store.dispatch(UPDATE_ENVIRONMENT, {
+          id: this.environmentId,
+          environment: {
+            name: _name,
+            color: this.environment.color,
+            host: _host,
+            port: this.environment.port,
+            ssl: this.environment.ssl
+          }
+        })
+      } else {
+        return this.$store.dispatch(CREATE_ENVIRONMENT, {
+          id: _name,
+          environment: {
+            name: _name,
+            color: this.environment.color,
+            host: _host,
+            port: this.environment.port,
+            ssl: this.environment.ssl
+          }
+        })
+      }
+    },
+    selectColor(index) {
+      this.environment.color = this.colors[index]
+    }
+  },
+  created() {
+    if (this.environmentId && this.environments[this.environmentId]) {
+      this.environment.name = this.environments[this.environmentId].name
+      this.environment.host = this.environments[this.environmentId].host
+      this.environment.port = this.environments[this.environmentId].port
+      this.environment.color = this.environments[this.environmentId].color
+      this.environment.ssl = this.environments[this.environmentId].ssl
+    } else {
+      this.environment.name = null
+      this.environment.host = null
+      this.environment.port = 7512
+      this.environment.color = DEFAULT_COLOR
+      this.environment.ssl = useHttps
     }
   }
+}
 </script>
