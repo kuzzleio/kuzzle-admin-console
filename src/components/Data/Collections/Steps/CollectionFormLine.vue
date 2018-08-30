@@ -1,7 +1,9 @@
 <template>
-  <div class="row collection-form-line valign-wrapper" :class="{odd: (index % 2) === 0}">
-    <p class="col s3 attribute-title truncate">{{name}}</p>
-    <div class="col s4 attribute-type">
+  <div class="CollectionFormLine row valign-wrapper" :class="{odd: (index % 2) === 0}">
+    <div class="CollectionFormLine-name col s3 attribute-title truncate">
+      {{name}} <code>(type: {{type}})</code>
+    </div>
+    <div class="col s3 attribute-type">
       <div class="">
         <m-select :value="value.id" @input="changeSchema" :options="optionsForAttribute">
           <option v-for="option in optionsForAttribute" :key="option.id" :value="option.id">{{option.name}}</option>
@@ -13,8 +15,9 @@
       v-if="type === 'force-json'"
       v-title="{active: true, position: 'bottom', title: 'This object has too many levels, the view json is forced for this attribute.'}">
     </i>
-    <div class="col s4" v-if="chooseValues">
+    <div class="col s6" >
       <multiselect
+        v-if="chooseValues"
         :options="[]"
         :taggable="true"
         tag-placeholder="Add this as new value."
@@ -118,3 +121,69 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.CollectionFormLine-name {
+  padding: 10px;
+  margin-bottom: 0;
+
+  &.odd {
+    background-color: #f4f4f4;
+
+    .multiselect__tags {
+      background-color: #fff !important;
+    }
+  }
+  code {
+    font-size: 0.8em;
+    color: $disabled-color;
+  }
+
+  .info {
+    margin-left: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: $lavandia-color;
+  }
+
+  .select-wrapper {
+    margin-top: 5px;
+    span.caret {
+      top: 10px;
+    }
+    input.select-dropdown {
+      height: 2rem;
+    }
+  }
+
+  .multiselect {
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    input {
+      height: 0;
+    }
+    .multiselect__select {
+      display: none;
+    }
+    .multiselect__input,
+    .multiselect__input:focus {
+      border-bottom: 0;
+    }
+
+    .multiselect__input {
+      margin-bottom: 0;
+    }
+    .multiselect__tags {
+      background-color: #fbfbfb;
+      span {
+        background-color: $blue-color;
+      }
+    }
+  }
+  .attribute-title,
+  .attribute-type {
+    margin-left: 0;
+  }
+}
+</style>

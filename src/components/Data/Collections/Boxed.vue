@@ -1,5 +1,5 @@
 <template>
-  <div class="col s12 m6 l5 collection-boxed">
+  <div class="CollectionBoxed col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
@@ -69,27 +69,42 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.name {
-  font-family: 'AnonymousPro', sans-serif;
-}
-.card-title {
-  font-size: 22px;
-  padding: 1rem;
-  margin-bottom: 0;
-
-  .fa-th-list,
-  .fa-bolt {
-    font-size: 1.1rem;
-    vertical-align: 2px;
-    margin-right: 4px;
+// @TODO pass this code to BEM
+.CollectionBoxed {
+  .dropdown-content > li {
+    a.remove {
+      color: $red-color;
+    }
   }
-
-  .fa-th-list {
-    vertical-align: 0;
+  .name {
+    font-family: 'AnonymousPro', sans-serif;
   }
-}
-.card-content {
-  border-top: 1px solid rgba(160, 160, 160, 0.2);
+  .card-title {
+    font-size: 22px;
+    padding: 1rem;
+    margin-bottom: 0;
+
+    .fa-th-list,
+    .fa-bolt {
+      font-size: 1.1rem;
+      vertical-align: 2px;
+      margin-right: 4px;
+    }
+
+    .fa-th-list,
+    .fa-bolt {
+      font-size: 1.1rem;
+      vertical-align: 2px;
+      margin-right: 4px;
+    }
+
+    .fa-th-list {
+      vertical-align: 0;
+    }
+  }
+  .card-content {
+    border-top: 1px solid rgba(160, 160, 160, 0.2);
+  }
 }
 .switch {
   label {

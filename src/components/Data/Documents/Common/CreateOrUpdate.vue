@@ -1,5 +1,5 @@
 <template>
-  <div class="document-create-update">
+  <div class="DocumentCreateOrUpdate">
     <div class="card-panel">
       <form class="wrapper" @submit.prevent="create">
 
@@ -52,7 +52,8 @@
           <div class="col s6 card" v-if="!$store.state.collection.isRealtimeOnly">
             <div class="card-content">
               <span class="card-title">Mapping</span>
-              <json-editor id="mapping" class="document-json" :content="$store.getters.simplifiedMapping" :readonly="true" :height="500"></json-editor>
+
+              <pre class="DocumentCreateOrUpdate-mapping" v-json-formatter="{content: $store.getters.simplifiedMapping, open: true}"></pre>
             </div>
           </div>
         </div>
@@ -82,23 +83,53 @@
 </template>
 
 <style rel="stylesheet/scss" lang="scss">
-.input-id {
-  margin-bottom: 0;
-}
-.error {
-  position: relative;
-  padding: 8px 12px;
-  margin: 0;
-}
-.dismiss-error {
-  position: absolute;
-  right: 10px;
-  cursor: pointer;
-  padding: 3px;
-  border-radius: 2px;
+// @TODO format this code to BEM
+.DocumentCreateOrUpdate {
+  form.wrapper {
+    padding-top: 0;
+  }
 
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  .json-view {
+    .card-content {
+      padding-top: 0;
+    }
+    .document-json {
+      .pre_ace,
+      .ace_editor {
+        height: 500px;
+      }
+
+      .field-json {
+        .pre_ace,
+        .ace_editor {
+          height: 500px;
+        }
+      }
+    }
+  }
+  .DocumentCreateOrUpdate-mapping {
+    height: 500px;
+    margin: 0;
+  }
+
+  .input-id {
+    margin-bottom: 0;
+  }
+  .error {
+    position: relative;
+    padding: 8px 12px;
+    margin: 0;
+  }
+  .dismiss-error {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 2px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
   }
 }
 </style>
@@ -108,6 +139,7 @@ import JsonForm from '../../../Common/JsonForm/JsonForm'
 import JsonEditor from '../../../Common/JsonEditor'
 import Focus from '../../../../directives/focus.directive'
 import title from '../../../../directives/title.directive'
+import JsonFormatter from '../../../../directives/json-formatter.directive'
 import { SET_COLLECTION_DEFAULT_VIEW_JSON } from '../../../../vuex/modules/collection/mutation-types'
 import { hasSameSchema } from '../../../../services/collectionHelper'
 
@@ -138,7 +170,8 @@ export default {
   },
   directives: {
     Focus,
-    title
+    title,
+    JsonFormatter
   },
   data() {
     return {
