@@ -37,35 +37,34 @@ export default {
       type: Array
     }
   },
-  data () {
+  data() {
     return {
       profileList: []
     }
   },
   computed: {
-    availableProfiles () {
+    availableProfiles() {
       return this.profileList.filter(profile => {
         return this.addedProfiles.indexOf(profile.id) === -1
       })
     }
   },
   methods: {
-    fetchProfileList () {
-      return performSearchProfiles()
-        .then(result => {
-          result.documents.forEach(profile => {
-            this.profileList.push(profile)
-          })
+    fetchProfileList() {
+      return performSearchProfiles().then(result => {
+        result.documents.forEach(profile => {
+          this.profileList.push(profile)
         })
+      })
     },
-    onProfileSelected (profile) {
+    onProfileSelected(profile) {
       this.$emit('selected-profile', profile)
     },
-    removeProfile (profile) {
+    removeProfile(profile) {
       this.$emit('remove-profile', profile)
     }
   },
-  mounted () {
+  mounted() {
     return this.fetchProfileList()
   }
 }

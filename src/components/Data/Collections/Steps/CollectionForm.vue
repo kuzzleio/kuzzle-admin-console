@@ -38,62 +38,68 @@
 </template>
 
 <script>
-  import title from '../../../../directives/title.directive'
-  import {SET_SCHEMA, SET_ALLOW_FORM} from '../../../../vuex/modules/collection/mutation-types'
-  import CollectionFormLine from './CollectionFormLine'
-  import CollectionFormName from './CollectionFormName'
+import title from '../../../../directives/title.directive'
+import {
+  SET_SCHEMA,
+  SET_ALLOW_FORM
+} from '../../../../vuex/modules/collection/mutation-types'
+import CollectionFormLine from './CollectionFormLine'
+import CollectionFormName from './CollectionFormName'
 
-  export default {
-    name: 'CollectionForm',
-    props: {
-      mapping: Object,
-      step: Number
+export default {
+  name: 'CollectionForm',
+  props: {
+    mapping: Object,
+    step: Number
+  },
+  components: {
+    CollectionFormLine,
+    CollectionFormName
+  },
+  directives: {
+    title
+  },
+  data() {
+    return {
+      schema: {},
+      allowForm: true
+    }
+  },
+  methods: {
+    next() {
+      this.$store.commit(SET_SCHEMA, this.schema)
+      this.$emit('collection-create::create')
     },
-    components: {
-      CollectionFormLine,
-      CollectionFormName
+    cancel() {
+      this.$emit('cancel')
     },
-    directives: {
-      title
+    changeAllowForm(e) {
+      this.$store.commit(SET_ALLOW_FORM, e.target.checked)
     },
-    data () {
-      return {
-        schema: {},
-        allowForm: true
-      }
+    changeSchema(event) {
+      this.$store.commit(SET_SCHEMA, {
+        ...this.schema,
+        [event.name]: event.element
+      })
+    }
+  },
+  computed: {
+    flattenMapping() {
+      return this.$store.getters.flattenMapping
     },
-    methods: {
-      next () {
-        this.$store.commit(SET_SCHEMA, this.schema)
-        this.$emit('collection-create::create')
-      },
-      cancel () {
-        this.$emit('cancel')
-      },
-      changeAllowForm (e) {
-        this.$store.commit(SET_ALLOW_FORM, e.target.checked)
-      },
-      changeSchema (event) {
-        this.$store.commit(SET_SCHEMA, {...this.schema, [event.name]: event.element})
-      }
+    flattenSchemaWithType() {
+      return this.$store.getters.flattenSchemaWithType
+    }
+  },
+  watch: {
+    step() {
+      // if (Object.keys(this.schema).length) {
+      //   this.$store.commit(SET_SCHEMA, this.schema)
+      // }
     },
-    computed: {
-      flattenMapping () {
-        return this.$store.getters.flattenMapping
-      },
-      flattenSchemaWithType () {
-        return this.$store.getters.flattenSchemaWithType
-      }
-    },
-    watch: {
-      step () {
-        // if (Object.keys(this.schema).length) {
-        //   this.$store.commit(SET_SCHEMA, this.schema)
-        // }
-      },
-      flattenSchemaWithType () {
-        this.schema = {...this.flattenSchemaWithType}
-      }
+    flattenSchemaWithType() {
+      this.schema = { ...this.flattenSchemaWithType }
     }
   }
+}
 </script>

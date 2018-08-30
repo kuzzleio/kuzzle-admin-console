@@ -8,15 +8,15 @@
 
 
 <script>
-  import Dropdown from '../../Materialize/Dropdown'
+import Dropdown from '../../Materialize/Dropdown'
 
-  export default {
-    name: 'UsersDropdown',
-    props: {
-      'myclass': String
-    },
-    components: {
-      Dropdown
-    }
+export default {
+  name: 'UsersDropdown',
+  props: {
+    myclass: String
+  },
+  components: {
+    Dropdown
   }
+}
 </script>

@@ -12,36 +12,36 @@
 
 
 <script>
-  import Dropdown from '../../Materialize/Dropdown'
-  import ModalDelete from './ModalDelete'
+import Dropdown from '../../Materialize/Dropdown'
+import ModalDelete from './ModalDelete'
 
-  export default {
-    name: 'IndexDropdown',
-    props: {
-      index: String,
-      myclass: String
+export default {
+  name: 'IndexDropdown',
+  props: {
+    index: String,
+    myclass: String
+  },
+  data() {
+    return {
+      isOpen: false
+    }
+  },
+  components: {
+    Dropdown,
+    ModalDelete
+  },
+  methods: {
+    openModal() {
+      this.isOpen = true
     },
-    data () {
-      return {
-        isOpen: false
-      }
-    },
-    components: {
-      Dropdown,
-      ModalDelete
-    },
-    methods: {
-      openModal () {
-        this.isOpen = true
-      },
-      close () {
-        this.isOpen = false
-      }
-    },
-    computed: {
-      isList () {
-        return this.$route.name === 'DataIndexSummary'
-      }
+    close() {
+      this.isOpen = false
+    }
+  },
+  computed: {
+    isList() {
+      return this.$route.name === 'DataIndexSummary'
     }
   }
+}
 </script>

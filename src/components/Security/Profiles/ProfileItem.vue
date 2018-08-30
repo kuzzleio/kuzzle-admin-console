@@ -153,4 +153,3 @@ export default {
   font-size: 1em;
 }
 </style>
-

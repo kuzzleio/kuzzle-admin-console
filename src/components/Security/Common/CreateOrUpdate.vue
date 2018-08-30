@@ -52,75 +52,80 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
-  .pre_ace, .ace_editor {
-    height: 350px;
-  }
-  .error {
-    position: relative;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  .dismiss-error {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 2px;
+.pre_ace,
+.ace_editor {
+  height: 350px;
+}
+.error {
+  position: relative;
+  padding: 8px 12px;
+  margin: 0;
+}
+.dismiss-error {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 2px;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, .2);
-    }
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
+}
 </style>
 
 <script>
-  import JsonEditor from '../../Common/JsonEditor'
-  import Headline from '../../Materialize/Headline'
-  import {cleanMapping} from '../../../services/documentFormat'
+import JsonEditor from '../../Common/JsonEditor'
+import Headline from '../../Materialize/Headline'
+import { cleanMapping } from '../../../services/documentFormat'
 
-  export default {
-    props: {
-      error: String,
-      document: Object,
-      title: String,
-      updateId: String,
-      getMapping: {type: Function, required: true}
-    },
-    name: 'SecurityCreateOrUpdate',
-    components: {
-      JsonEditor,
-      Headline
-    },
-    data () {
-      return {
-        id: null,
-        mapping: {}
-      }
-    },
-    computed: {
-      cleanedMapping () {
-        return cleanMapping(this.mapping)
-      }
-    },
-    methods: {
-      dismissError () {
-        this.$emit('security-create::reset-error')
-      },
-      create () {
-        this.$emit('security-create::create', this.id, this.$refs.jsoneditor.getJson())
-      },
-      cancel () {
-        this.$emit('security-create::cancel')
-      }
-    },
-    mounted () {
-      this.getMapping(this.collection, this.index)
-        .then((res) => {
-          this.mapping = res.mapping
-        })
-        .catch((e) => {
-          // todo errors
-        })
+export default {
+  props: {
+    error: String,
+    document: Object,
+    title: String,
+    updateId: String,
+    getMapping: { type: Function, required: true }
+  },
+  name: 'SecurityCreateOrUpdate',
+  components: {
+    JsonEditor,
+    Headline
+  },
+  data() {
+    return {
+      id: null,
+      mapping: {}
     }
+  },
+  computed: {
+    cleanedMapping() {
+      return cleanMapping(this.mapping)
+    }
+  },
+  methods: {
+    dismissError() {
+      this.$emit('security-create::reset-error')
+    },
+    create() {
+      this.$emit(
+        'security-create::create',
+        this.id,
+        this.$refs.jsoneditor.getJson()
+      )
+    },
+    cancel() {
+      this.$emit('security-create::cancel')
+    }
+  },
+  mounted() {
+    this.getMapping(this.collection, this.index)
+      .then(res => {
+        this.mapping = res.mapping
+      })
+      .catch(e => {
+        // todo errors
+      })
   }
+}
 </script>

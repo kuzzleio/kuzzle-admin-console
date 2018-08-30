@@ -77,16 +77,16 @@ export default {
     }
   },
   methods: {
-    setAutoGenerateKuid (event) {
+    setAutoGenerateKuid(event) {
       this.$emit('set-auto-generate-kuid', event.target.checked)
     },
-    setCustomKuid (event) {
+    setCustomKuid(event) {
       this.$emit('set-custom-kuid', event.target.value)
     },
-    onProfileSelected (profile) {
+    onProfileSelected(profile) {
       this.$emit('profile-add', profile)
     },
-    removeProfile (profile) {
+    removeProfile(profile) {
       this.$emit('profile-remove', profile)
     }
   }

@@ -19,22 +19,22 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .container-error {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    padding-top: 50px;
-    height: 100%;
+.container-error {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding-top: 50px;
+  height: 100%;
 
-    .logo {
-      margin-top: 40px;
-      margin-bottom: 25px;
+  .logo {
+    margin-top: 40px;
+    margin-bottom: 25px;
 
-      img {
-        width: 70%
-      }
+    img {
+      width: 70%;
     }
   }
+}
 </style>

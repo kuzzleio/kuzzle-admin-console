@@ -17,43 +17,42 @@
 </template>
 
 <style type="text/css" scoped>
-  .circle {
-    margin: 0 auto;
-  }
-  .line {
-    border-top: 1px solid gainsboro;
-    margin-top: 25px;
-  }
+.circle {
+  margin: 0 auto;
+}
+.line {
+  border-top: 1px solid gainsboro;
+  margin-top: 25px;
+}
 </style>
 
 <script>
-  export default {
-    name: 'Stepper',
-    props: {
-      currentStep: {
-        type: Number,
-        default: 0
-      },
-      disabledSteps: {
-        type: Array,
-        default: () => {
-          return []
-        }
-      },
-      steps: {
-        type: Array,
-        required: true
+export default {
+  name: 'Stepper',
+  props: {
+    currentStep: {
+      type: Number,
+      default: 0
+    },
+    disabledSteps: {
+      type: Array,
+      default: () => {
+        return []
       }
     },
-    methods: {
-      changeStep (number) {
-        if (this.disabledSteps.indexOf(number) !== -1) {
-          return
-        }
-
-        this.$emit('changed-step', number)
+    steps: {
+      type: Array,
+      required: true
+    }
+  },
+  methods: {
+    changeStep(number) {
+      if (this.disabledSteps.indexOf(number) !== -1) {
+        return
       }
+
+      this.$emit('changed-step', number)
     }
   }
+}
 </script>
-
