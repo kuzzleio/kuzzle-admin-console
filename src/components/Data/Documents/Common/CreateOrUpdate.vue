@@ -85,6 +85,8 @@
 <style rel="stylesheet/scss" lang="scss">
 // @TODO format this code to BEM
 .DocumentCreateOrUpdate {
+  max-width: $container-width;
+
   form.wrapper {
     padding-top: 0;
   }
