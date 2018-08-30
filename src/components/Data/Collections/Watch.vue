@@ -14,7 +14,7 @@
 
       <div class="card-panel" v-if="!canSubscribe(index, collection)">
         <div class="row valign-bottom empty-set">
-          <div class="col s1 offset-s1">
+          <div class="col s1">
             <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
           </div>
           <div class="col s10">
@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div v-else>
+      <div class="Watch-container" v-else>
         <filters
           submit-button-label="Subscribe"
           advanced-query-label="Click to open the filter builder"
@@ -59,7 +59,7 @@
 
         <div class="card-panel card-body" v-show="!subscribed && !notifications.length">
           <div class="row valign-bottom empty-set">
-            <div class="col s1 offset-s1">
+            <div class="col s1">
               <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
             </div>
             <div class="col s8 m9 l10">
@@ -77,7 +77,7 @@
 
         <div class="card-panel" v-show="subscribed && !notifications.length" id="wait-for-notif">
           <div class="row valign-center empty-set empty-set-condensed">
-            <div class="col s1 offset-s1">
+            <div class="col s1">
               <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
             </div>
             <div class="col s10">
@@ -468,6 +468,10 @@ export default {
 
   .fixed {
     position: fixed;
+  }
+
+  .Watch-container {
+    max-width: $container-width;
   }
 
   .wrapper {

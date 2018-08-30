@@ -43,11 +43,10 @@ $input-success-color: $secondary-color;
 
 // Media Query Ranges
 $small-screen-up: 1201px;
-$medium-screen-up: 1760px;
-$large-screen-up: 2000px;
+$medium-screen-up: 1401px;
+$large-screen-up: 1801px;
 $small-screen: 1000px;
 $medium-screen: 1400px;
-$large-screen: 1761px;
 
 // 13. Navigation Bar
 //   ==========================================================================
@@ -59,3 +58,8 @@ $navbar-height-mobile: 40px;
 //   ==========================================================================
 
 $sidebar-width: 240px;
+
+// 15. Treeview sidebar
+//   ==========================================================================
+
+$container-width: 1150px;

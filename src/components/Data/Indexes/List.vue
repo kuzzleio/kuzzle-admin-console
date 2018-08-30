@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="IndexesPage wrapper">
     <headline>Indexes - Browse</headline>
 
     <div class="row">
@@ -90,23 +90,25 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
+.IndexesPage {
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
 
-.input-field {
-  margin-top: 0;
-  label {
-    left: 0;
+  .input-field {
+    margin-top: 0;
+    label {
+      left: 0;
+    }
+    input {
+      margin-bottom: 0;
+    }
   }
-  input {
-    margin-bottom: 0;
+  .list {
+    margin-top: 25px;
   }
-}
-.list {
-  margin-top: 25px;
 }
 </style>
 

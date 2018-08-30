@@ -100,7 +100,7 @@ export default {
 }
 </script>
 
-<style type="scss" scoped>
+<style lang="scss">
 .DocumentBoxItem {
   min-width: 250px;
   max-width: 350px;
@@ -109,13 +109,13 @@ export default {
   .DocumentBoxItem-title {
     display: flex;
     flex-wrap: nowrap;
-    justify-content: space-between;
-  }
+    flex-direction: row;
 
-  .DocumentBoxItem-title span {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   .DocumentBoxItem-actions {

@@ -1,9 +1,9 @@
 <template>
-  <div class="col s12 m6 l4">
+  <div class="col s12 m6 l5">
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s11 truncate">
+        <div class="col s10 truncate">
           <!-- index browse link -->
           <router-link
             class="fluid-hover"
@@ -13,7 +13,7 @@
           </router-link>
         </div>
 
-        <div class="col s1 right-align">
+        <div class="col s2 right-align">
           <!-- actions related to the index -->
           <index-dropdown :index="index" class="icon-small icon-black"></index-dropdown>
         </div>
