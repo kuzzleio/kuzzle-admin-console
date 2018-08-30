@@ -90,9 +90,6 @@
   }
 
   .json-view {
-    .card-content {
-      padding-top: 0;
-    }
     .document-json {
       .pre_ace,
       .ace_editor {
