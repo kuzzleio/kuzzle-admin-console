@@ -518,8 +518,6 @@ export default {
           this.collectionMapping
         )
         this.selectedGeopoint = this.mappingGeopoints[0]
-
-        this.onListViewClicked()
       })
     }
   },
@@ -581,15 +579,11 @@ export default {
   max-width: $container-width;
 }
 
-.DocumentList-gridItem {
-}
-
 .DocumentsPage-filtersAndButtons {
   margin-bottom: 0;
 }
 
 .DocumentList-boxes {
-  text-align: center;
   padding: 30px;
 
   i {

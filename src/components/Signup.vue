@@ -2,7 +2,7 @@
   <div class="Signup">
     <div class="container">
       <div class="row">
-        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
+        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l8 offset-l2 xl6 offset-xl3">
           <h2 class="center-align logo">
             <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Admin Console" style="width: 60%" />
           </h2>
