@@ -16,42 +16,45 @@
 
 
 <script>
-  import Dropdown from '../../Materialize/Dropdown'
-  import {REMOVE_REALTIME_COLLECTION} from '../../../vuex/modules/index/mutation-types'
-  import ModalClear from './ModalClear.vue'
+import Dropdown from '../../Materialize/Dropdown'
+import { REMOVE_REALTIME_COLLECTION } from '../../../vuex/modules/index/mutation-types'
+import ModalClear from './ModalClear.vue'
 
-  export default {
-    name: 'CollectionDropdown',
-    props: {
-      index: String,
-      collection: String,
-      isRealtime: Boolean,
-      myclass: String
+export default {
+  name: 'CollectionDropdown',
+  props: {
+    index: String,
+    collection: String,
+    isRealtime: Boolean,
+    myclass: String
+  },
+  data() {
+    return {
+      isOpen: false
+    }
+  },
+  components: {
+    Dropdown,
+    ModalClear
+  },
+  computed: {
+    isList() {
+      return this.$route.name === 'DataDocumentsList'
+    }
+  },
+  methods: {
+    removeRealtimeCollection() {
+      this.$store.dispatch(REMOVE_REALTIME_COLLECTION, {
+        index: this.index,
+        collection: this.collection
+      })
     },
-    data () {
-      return {
-        isOpen: false
-      }
+    openModal() {
+      this.isOpen = true
     },
-    components: {
-      Dropdown,
-      ModalClear
-    },
-    computed: {
-      isList () {
-        return this.$route.name === 'DataDocumentsList'
-      }
-    },
-    methods: {
-      removeRealtimeCollection () {
-        this.$store.dispatch(REMOVE_REALTIME_COLLECTION, {index: this.index, collection: this.collection})
-      },
-      openModal () {
-        this.isOpen = true
-      },
-      close () {
-        this.isOpen = false
-      }
+    close() {
+      this.isOpen = false
     }
   }
+}
 </script>

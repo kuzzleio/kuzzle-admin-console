@@ -64,7 +64,7 @@ export default {
       this.throttleSearch = true
       setTimeout(() => {
         this.throttleSearch = false
-      }, 200)
+      }, 50)
 
       if (this.complexFilterActive) {
         this.$emit('refresh')

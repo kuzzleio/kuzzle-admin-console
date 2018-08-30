@@ -50,85 +50,89 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-    .error {
-        strong {
-            display: block;
-        }
+.error {
+  strong {
+    display: block;
+  }
+}
+.input-field {
+  label {
+    left: 0;
+    &.active {
+      transform: translateY(-50%);
+      font-size: 0.85rem;
     }
-    .input-field {
-        label {
-            left: 0;
-            &.active {
-              transform: translateY(-50%);
-              font-size: 0.85rem;
-            }
-        }
+  }
+}
+button {
+  &.btn-flat {
+    &:focus {
+      background-color: #eee;
     }
-    button {
-        &.btn-flat {
-            &:focus {
-                background-color: #EEE;
-            }
-        }
-    }
+  }
+}
 </style>
 
 <script>
-  import {CLEAR_COLLECTION} from '../../../vuex/modules/collection/mutation-types'
-  import Modal from '../../Materialize/Modal'
-  import Focus from '../../../directives/focus.directive'
-  import Title from '../../../directives/title.directive'
+import { CLEAR_COLLECTION } from '../../../vuex/modules/collection/mutation-types'
+import Modal from '../../Materialize/Modal'
+import Focus from '../../../directives/focus.directive'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'ClearCollectionModal',
-    props: {
-      id: String,
-      index: String,
-      collection: String,
-      isOpen: Boolean,
-      close: Function
-    },
-    directives: {
-      Focus,
-      Title
-    },
-    components: {
-      Modal
-    },
-    methods: {
-      refreshSearch () {
-        if (parseInt(this.$route.query.from) === 0) {
-          this.$router.push({query: null})
-        } else {
-          this.$router.push({query: {...this.$route.query, from: 0}})
-        }
-      },
-      toggleTruncatedError () {
-        this.errorTruncated = !this.errorTruncated
-      },
-      tryClearCollection () {
-        if (!this.index.trim() || !this.collection.trim()) {
-          return
-        }
-
-        this.$store.dispatch(CLEAR_COLLECTION, {index: this.index, collection: this.collection})
-          .then(() => {
-            this.collectionConfirmation = ''
-            this.error = ''
-            this.close()
-            this.refreshSearch()
-          })
-          .catch(err => {
-            this.error = err.message
-          })
+export default {
+  name: 'ClearCollectionModal',
+  props: {
+    id: String,
+    index: String,
+    collection: String,
+    isOpen: Boolean,
+    close: Function
+  },
+  directives: {
+    Focus,
+    Title
+  },
+  components: {
+    Modal
+  },
+  methods: {
+    refreshSearch() {
+      if (parseInt(this.$route.query.from) === 0) {
+        this.$router.push({ query: null })
+      } else {
+        this.$router.push({ query: { ...this.$route.query, from: 0 } })
       }
     },
-    data () {
-      return {
-        error: '',
-        collectionConfirmation: '',
-        errorTruncated: true
+    toggleTruncatedError() {
+      this.errorTruncated = !this.errorTruncated
+    },
+    tryClearCollection() {
+      if (!this.index.trim() || !this.collection.trim()) {
+        return
       }
+
+      this.$store
+        .dispatch(CLEAR_COLLECTION, {
+          index: this.index,
+          collection: this.collection
+        })
+        .then(() => {
+          this.collectionConfirmation = ''
+          this.error = ''
+          this.close()
+          this.refreshSearch()
+        })
+        .catch(err => {
+          this.error = err.message
+        })
+    }
+  },
+  data() {
+    return {
+      error: '',
+      collectionConfirmation: '',
+      errorTruncated: true
     }
   }
+}
 </script>

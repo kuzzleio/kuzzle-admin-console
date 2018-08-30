@@ -91,6 +91,13 @@ export default {
       margin-right: 4px;
     }
 
+    .fa-th-list,
+    .fa-bolt {
+      font-size: 1.1rem;
+      vertical-align: 2px;
+      margin-right: 4px;
+    }
+
     .fa-th-list {
       vertical-align: 0;
     }
@@ -98,11 +105,11 @@ export default {
   .card-content {
     border-top: 1px solid rgba(160, 160, 160, 0.2);
   }
-  .switch {
-    label {
-      .lever {
-        margin: 0;
-      }
+}
+.switch {
+  label {
+    .lever {
+      margin: 0;
     }
   }
 }

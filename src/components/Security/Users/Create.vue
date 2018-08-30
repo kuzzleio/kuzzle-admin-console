@@ -51,135 +51,147 @@
 
 
 <script>
-  import Headline from '../../Materialize/Headline'
-  import Stepper from '../../Common/Stepper'
-  import StepsContent from './Steps/StepsContent'
-  import kuzzle from '../../../services/kuzzle'
+import Headline from '../../Materialize/Headline'
+import Stepper from '../../Common/Stepper'
+import StepsContent from './Steps/StepsContent'
+import kuzzle from '../../../services/kuzzle'
 
-  export default {
-    name: 'UsersSecurityCreate',
-    components: {
-      Headline,
-      Stepper,
-      StepsContent
+export default {
+  name: 'UsersSecurityCreate',
+  components: {
+    Headline,
+    Stepper,
+    StepsContent
+  },
+  props: {
+    index: String,
+    collection: String
+  },
+  data() {
+    return {
+      error: '',
+      editionStep: 0,
+      submitted: false,
+      user: {
+        kuid: null,
+        addedProfiles: [],
+        credentials: {},
+        customContent: {}
+      }
+    }
+  },
+  computed: {
+    disabledSteps() {
+      let disabled = []
+      if (!this.hasBasicPayload) {
+        disabled.push(1)
+      }
+      if (!this.hasBasicPayload) {
+        disabled.push(2)
+      }
+      return disabled
     },
-    props: {
-      index: String,
-      collection: String
+    hasBasicPayload() {
+      return (
+        this.user.addedProfiles.length &&
+        (this.user.autoGenerateKuid ||
+          (!this.user.autoGenerateKuid && this.user.kuid))
+      )
     },
-    data () {
-      return {
-        error: '',
-        editionStep: 0,
-        submitted: false,
-        user: {
-          kuid: null,
-          addedProfiles: [],
-          credentials: {},
-          customContent: {}
+    validations() {
+      return [
+        () => {
+          if (!this.user.autoGenerateKuid && !this.user.kuid) {
+            throw new Error(
+              'Please fill the custom KUID or check the auto-generate box'
+            )
+          }
+          if (!this.user.addedProfiles.length) {
+            throw new Error('Please add at least one profile to the user')
+          }
+          return true
+        },
+        () => {
+          return true
+        },
+        () => {
+          return true
+        }
+      ]
+    }
+  },
+  methods: {
+    create() {
+      if (this.submitted) {
+        return
+      }
+
+      let userObject = {
+        content: {
+          profileIds: this.user.addedProfiles,
+          ...this.user.customContent
+        },
+        credentials: {
+          ...this.user.credentials
         }
       }
+
+      kuzzle.security
+        .createUserPromise(this.user.kuid, userObject)
+        .then(() =>
+          kuzzle.queryPromise(
+            { controller: 'index', action: 'refreshInternal' },
+            {}
+          )
+        )
+        .then(() => this.$router.push({ name: 'SecurityUsersList' }))
+        .catch(err => {
+          this.error = err.message
+          this.submitted = false
+        })
     },
-    computed: {
-      disabledSteps () {
-        let disabled = []
-        if (!this.hasBasicPayload) {
-          disabled.push(1)
-        }
-        if (!this.hasBasicPayload) {
-          disabled.push(2)
-        }
-        return disabled
-      },
-      hasBasicPayload () {
-        return this.user.addedProfiles.length &&
-              (this.user.autoGenerateKuid || (!this.user.autoGenerateKuid && this.user.kuid))
-      },
-      validations () {
-        return [
-          () => {
-            if (!this.user.autoGenerateKuid && !this.user.kuid) {
-              throw new Error('Please fill the custom KUID or check the auto-generate box')
-            }
-            if (!this.user.addedProfiles.length) {
-              throw new Error('Please add at least one profile to the user')
-            }
-            return true
-          },
-          () => {
-            return true
-          },
-          () => {
-            return true
-          }
-        ]
+    cancel() {
+      if (this.$router._prevTransition && this.$router._prevTransition.to) {
+        this.$router.go(this.$router._prevTransition.to)
+      } else {
+        this.$router.push({ name: 'SecurityUsersList' })
       }
     },
-    methods: {
-      create () {
-        if (this.submitted) {
-          return
+    setEditionStep(value) {
+      this.editionStep = value
+    },
+    setError(msg) {
+      this.error = msg
+      setTimeout(() => {
+        this.dismissError()
+      }, 5000)
+    },
+    dismissError() {
+      this.error = ''
+    },
+    onProfileAdded(profile) {
+      this.user.addedProfiles.push(profile)
+    },
+    onProfileRemoved(profile) {
+      this.user.addedProfiles.splice(
+        this.user.addedProfiles.indexOf(profile),
+        1
+      )
+    },
+    submitStep() {
+      if (this.editionStep < 2) {
+        try {
+          this.validations[this.editionStep]()
+          this.editionStep++
+        } catch (e) {
+          this.setError(e.message)
         }
-
-        let userObject = {
-          content: {
-            profileIds: this.user.addedProfiles,
-            ...this.user.customContent
-          },
-          credentials: {
-            ...this.user.credentials
-          }
-        }
-
-        kuzzle
-          .security
-          .createUserPromise(this.user.kuid, userObject)
-          .then(() => kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {}))
-          .then(() => this.$router.push({name: 'SecurityUsersList'}))
-          .catch(err => {
-            this.error = err.message
-            this.submitted = false
-          })
-      },
-      cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.go(this.$router._prevTransition.to)
-        } else {
-          this.$router.push({name: 'SecurityUsersList'})
-        }
-      },
-      setEditionStep (value) {
-        this.editionStep = value
-      },
-      setError (msg) {
-        this.error = msg
-        setTimeout(() => {
-          this.dismissError()
-        }, 5000)
-      },
-      dismissError () {
-        this.error = ''
-      },
-      onProfileAdded (profile) {
-        this.user.addedProfiles.push(profile)
-      },
-      onProfileRemoved (profile) {
-        this.user.addedProfiles.splice(this.user.addedProfiles.indexOf(profile), 1)
-      },
-      submitStep () {
-        if (this.editionStep < 2) {
-          try {
-            this.validations[this.editionStep]()
-            this.editionStep++
-          } catch (e) {
-            this.setError(e.message)
-          }
-        } else {
-          this.create({
-            // TODO
-          })
-        }
+      } else {
+        this.create({
+          // TODO
+        })
       }
     }
   }
+}
 </script>

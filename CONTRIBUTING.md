@@ -15,11 +15,6 @@ to it. Each subsection must contain a `Page.vue` file, used as the entry-point t
 - Vuex actions must be prefixed with a verb (doThing ...)
 - Getters must be named after the data they get.
 
-## Events
-
-The event name must be prefixed with the component and suffixed with the action with `::` as separator.
-Something like `security-create::create`, `filter-raw::search` or `crudl::refresh-search`.
-
 # Coding style-guides
 
 ## Javascript
@@ -222,7 +217,7 @@ Do not use the `#some-id` selector (because of [high specificity](https://develo
 
 // And with Sass nesting...
 .Tweet {
-  .retweetBtn {
+  .Tweet-retweetBtn {
     &[disabled]
   }
 }

@@ -37,69 +37,69 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .error {
-    strong {
-      display: block;
+.error {
+  strong {
+    display: block;
+  }
+}
+.input-field {
+  label {
+    left: 0;
+  }
+}
+button {
+  &.btn-flat {
+    &:focus {
+      background-color: #eee;
     }
   }
-  .input-field {
-    label {
-      left: 0;
-    }
-  }
-  button {
-    &.btn-flat {
-      &:focus {
-        background-color: #EEE;
-      }
-    }
-  }
+}
 </style>
 
 
 <script>
-  import Modal from '../../Materialize/Modal'
-  import Focus from '../../../directives/focus.directive'
-  import { deleteEnvironment } from '../../../services/environment'
+import Modal from '../../Materialize/Modal'
+import Focus from '../../../directives/focus.directive'
+import { deleteEnvironment } from '../../../services/environment'
 
-  export default {
-    name: 'EnvironmentDeleteModal',
-    props: ['environmentId', 'isOpen', 'close'],
-    directives: {
-      Focus
-    },
-    components: {
-      Modal
-    },
-    computed: {
-      environments () {
-        return this.$store.state.kuzzle.environments
-      }
-    },
-    data () {
-      return {
-        environmentName: null,
-        envConfirmation: null
-      }
-    },
-    methods: {
-      confirmDeleteEnvironment () {
-        if (this.environmentName === this.envConfirmation) {
-          deleteEnvironment(this.environmentId)
+export default {
+  name: 'EnvironmentDeleteModal',
+  props: ['environmentId', 'isOpen', 'close'],
+  directives: {
+    Focus
+  },
+  components: {
+    Modal
+  },
+  computed: {
+    environments() {
+      return this.$store.state.kuzzle.environments
+    }
+  },
+  data() {
+    return {
+      environmentName: null,
+      envConfirmation: null
+    }
+  },
+  methods: {
+    confirmDeleteEnvironment() {
+      if (this.environmentName === this.envConfirmation) {
+        deleteEnvironment(this.environmentId)
 
-          this.close()
-        }
-      }
-    },
-    watch: {
-      environmentId () {
-        if (this.environmentId && this.environments[this.environmentId]) {
-          this.environmentName = this.environments[this.environmentId].name
-        }
-      },
-      isOpen () {
-        this.envConfirmation = null
+        this.close()
       }
     }
+  },
+  watch: {
+    environmentId() {
+      if (this.environmentId && this.environments[this.environmentId]) {
+        this.environmentName = this.environments[this.environmentId].name
+      }
+    },
+    isOpen() {
+      this.envConfirmation = null
+    }
   }
+}
 </script>

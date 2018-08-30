@@ -1,6 +1,6 @@
 import Vue from 'vue'
-// import router from './services/router'
 import VueRouter from 'vue-router'
+
 import App from './App'
 import store from './vuex/store'
 import { initStoreWithKuzzle } from './services/kuzzleWrapper'

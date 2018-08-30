@@ -38,73 +38,85 @@
 </template>
 
 <script>
-  import {hasSecurityRights} from '../../services/userAuthorization'
-  import {DO_LOGOUT} from '../../vuex/modules/auth/mutation-types'
-  import {DEFAULT_COLOR} from '../../services/environment'
-  import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
-  import WarningHeader from './WarningHeader'
+import { hasSecurityRights } from '../../services/userAuthorization'
+import { DO_LOGOUT } from '../../vuex/modules/auth/mutation-types'
+import { DEFAULT_COLOR } from '../../services/environment'
+import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
+import WarningHeader from './WarningHeader'
 
-  export default {
-    name: 'MainMenu',
-    components: {
-      EnvironmentSwitch,
-      WarningHeader
+export default {
+  name: 'MainMenu',
+  components: {
+    EnvironmentSwitch,
+    WarningHeader
+  },
+  computed: {
+    currentEnvironmentColor() {
+      if (!this.$store.getters.currentEnvironment) {
+        return DEFAULT_COLOR
+      }
+
+      return this.$store.getters.currentEnvironment.color
     },
-    computed: {
-      currentEnvironmentColor () {
-        if (!this.$store.getters.currentEnvironment) {
-          return DEFAULT_COLOR
+
+    versionColor() {
+      return shadeColor2(this.currentEnvironmentColor, 0.5)
+    },
+
+    currentUserName() {
+      if (this.$store.state.auth.user) {
+        if (
+          this.$store.state.auth.user.params &&
+          this.$store.state.auth.user.params.name
+        ) {
+          return this.$store.state.auth.user.params.name
         }
-
-        return this.$store.getters.currentEnvironment.color
-      },
-
-      versionColor () {
-        return shadeColor2(this.currentEnvironmentColor, 0.5)
-      },
-
-      currentUserName () {
-        if (this.$store.state.auth.user) {
-          if (this.$store.state.auth.user.params && this.$store.state.auth.user.params.name) {
-            return this.$store.state.auth.user.params.name
-          }
-          return this.$store.state.auth.user.id
-        }
-      },
-
-      adminConsoleVersion () {
-        return require('../../../package.json').version
+        return this.$store.state.auth.user.id
       }
     },
 
-    methods: {
-      doLogout () {
-        return this.$store.dispatch(DO_LOGOUT)
-          .then(() => {
-            this.$router.push({name: 'Login'})
-          })
-      },
-      hasSecurityRights,
-      editEnvironment (id) {
-        this.$emit('environment::create', id)
-      },
-      deleteEnvironment (id) {
-        this.$emit('environment::delete', id)
-      }
+    adminConsoleVersion() {
+      return require('../../../package.json').version
+    }
+  },
+
+  methods: {
+    doLogout() {
+      return this.$store.dispatch(DO_LOGOUT).then(() => {
+        this.$router.push({ name: 'Login' })
+      })
+    },
+    hasSecurityRights,
+    editEnvironment(id) {
+      this.$emit('environment::create', id)
+    },
+    deleteEnvironment(id) {
+      this.$emit('environment::delete', id)
     }
   }
+}
 
-  function shadeColor2 (color, percent) {
-    // https://stackoverflow.com/questions/41173998/is-it-possible-to-use-the-computed-properties-to-compute-another-properties-in-v
-    var f, t, p, R, G, B
-    f = parseInt(color.slice(1), 16)
-    t = percent < 0 ? 0 : 255
-    p = percent < 0 ? percent * -1 : percent
-    R = f >> 16
-    G = f >> 8 & 0x00FF
-    B = f & 0x0000FF
-    return '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1)
-  }
+function shadeColor2(color, percent) {
+  // https://stackoverflow.com/questions/41173998/is-it-possible-to-use-the-computed-properties-to-compute-another-properties-in-v
+  var f, t, p, R, G, B
+  f = parseInt(color.slice(1), 16)
+  t = percent < 0 ? 0 : 255
+  p = percent < 0 ? percent * -1 : percent
+  R = f >> 16
+  G = (f >> 8) & 0x00ff
+  B = f & 0x0000ff
+  return (
+    '#' +
+    (
+      0x1000000 +
+      (Math.round((t - R) * p) + R) * 0x10000 +
+      (Math.round((t - G) * p) + G) * 0x100 +
+      (Math.round((t - B) * p) + B)
+    )
+      .toString(16)
+      .slice(1)
+  )
+}
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
@@ -127,13 +139,15 @@ nav {
       letter-spacing: 2px;
       font-weight: 400;
 
-      &.active, &:hover {
+      &.active,
+      &:hover {
         background-color: rgba(255, 255, 255, 0.2);
       }
     }
   }
 }
-.logo, .logo a {
+.logo,
+.logo a {
   height: 50px;
 }
 
@@ -143,7 +157,7 @@ nav {
 
 .version-container {
   position: absolute;
-  top:12px;
+  top: 12px;
   left: 0;
   color: white;
   width: 100%;

@@ -90,66 +90,71 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
 
-  .input-field {
-    margin-top: 0;
-    label {
-      left: 0;
-    }
-    input {
-      margin-bottom: 0;
-    }
+.input-field {
+  margin-top: 0;
+  label {
+    left: 0;
   }
-  .list {
-    margin-top: 25px;
+  input {
+    margin-bottom: 0;
   }
+}
+.list {
+  margin-top: 25px;
+}
 </style>
 
 <script>
-  import Headline from '../../Materialize/Headline'
-  import ModalCreate from './ModalCreate'
-  import IndexBoxed from './Boxed'
-  import Title from '../../../directives/title.directive'
-  import {canCreateIndex, canSearchIndex} from '../../../services/userAuthorization'
+import Headline from '../../Materialize/Headline'
+import ModalCreate from './ModalCreate'
+import IndexBoxed from './Boxed'
+import Title from '../../../directives/title.directive'
+import {
+  canCreateIndex,
+  canSearchIndex
+} from '../../../services/userAuthorization'
 
-  export default {
-    name: 'IndexesList',
-    components: {
-      Headline,
-      ModalCreate,
-      IndexBoxed
+export default {
+  name: 'IndexesList',
+  components: {
+    Headline,
+    ModalCreate,
+    IndexBoxed
+  },
+  directives: {
+    Title
+  },
+  methods: {
+    canSearchIndex,
+    canCreateIndex,
+    openModal() {
+      this.isOpen = true
     },
-    directives: {
-      Title
+    close() {
+      this.isOpen = false
+    }
+  },
+  data() {
+    return {
+      filter: '',
+      isOpen: false
+    }
+  },
+  computed: {
+    filteredIndices() {
+      return this.$store.state.index.indexes.filter(
+        indexName => indexName.indexOf(this.filter) !== -1
+      )
     },
-    methods: {
-      canSearchIndex,
-      canCreateIndex,
-      openModal () {
-        this.isOpen = true
-      },
-      close () {
-        this.isOpen = false
-      }
-    },
-    data () {
-      return {
-        filter: '',
-        isOpen: false
-      }
-    },
-    computed: {
-      filteredIndices () {
-        return this.$store.state.index.indexes.filter(indexName => indexName.indexOf(this.filter) !== -1)
-      },
-      orderedFilteredIndices () {
-        return this.filteredIndices.sort()
-      }
+    orderedFilteredIndices() {
+      return this.filteredIndices.sort()
     }
   }
+}
 </script>
