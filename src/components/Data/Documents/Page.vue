@@ -83,7 +83,7 @@
             <div class="row" v-show="documents.length">
 
               <div class="DocumentList-list col s12" v-show="currentFilter.listViewType === 'list'">
-                <div class="collection">
+                <div class="DocumentList-materializeCollection collection">
                   <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
                     <document-list-item
                       :document="document"
@@ -583,11 +583,9 @@ export default {
   margin-bottom: 0;
 }
 
-.DocumentList-boxes {
-  padding: 30px;
-
-  i {
-    color: $lavandia-color;
+.DocumentList-list {
+  .DocumentList-materializeCollection {
+    overflow: visible;
   }
 }
 
