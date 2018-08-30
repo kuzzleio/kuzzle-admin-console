@@ -1,0 +1,218 @@
+
+{
+  "kuzzle-bo-testindex-empty": {},
+  "kuzzle-bo-testindex": {
+    "kuzzle-bo-test": [
+      { "index" : {"_id": "ghopper"}},
+      { "username": "ghopper", "name": {"first": "Grace", "last": "Hopper"} },
+      { "index" : {"_id": "alovelace"}},
+      { "username": "alovelace", "name": {"first": "Ada", "last": "Lovelace"} }
+    ],
+    "private-collection": [
+      { "index" : {"_id": "the-ring"}},
+      { "username": "the-ring", "description": "Everybody wants me." }
+    ],
+    "readonly-collection": [
+      { "index" : {"_id": "light"}},
+      { "username": "light", "description": "Nobody can touch me." }
+    ],
+    "editable-collection": [
+      { "index" : {"_id": "hipster"}},
+      { "username": "hipster", "description": "Fashion can edit me." }
+    ],
+    "emptiable-collection": [
+      { "index" : {"_id": "wc"}},
+      { "username": "wc", "description": "You can flush me." }
+    ],
+    "not-editable-collection": [
+      { "index" : {"_id": "nutella"}},
+      { "username": "nutella", "description": "You can make me disappear." }
+    ]
+  },
+  "%kuzzle": {
+    "roles": [
+      { "index": { "_id": "anonymous" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
+          "auth": {
+            "actions": {
+              "login": true,
+              "checkToken": true,
+              "getMyRights": true,
+              "whoAmI": true,
+              "getCurrentUser": true
+            }
+          },
+          "read": {
+            "actions": {
+              "serverInfo": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "default" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "adminExists": true,
+              "createFirstAdmin": true
+            }
+          },
+          "auth": {
+            "actions": {
+              "logout": true,
+              "checkToken": true,
+              "getMyRights": true,
+              "whoAmI": true,
+              "getCurrentUser": true
+            }
+          },
+          "read": {
+            "actions": {
+              "serverInfo": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "fake-action" } },
+      {
+        "controllers": {
+          "fakeController1": {
+            "actions": {
+              "fakeAction": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "logout-and-get-user"}},
+      {
+        "controllers": {
+          "auth": {
+            "actions": {
+              "logout": true,
+              "getCurrentUser": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "login-and-check-token" } },
+      {
+        "controllers": {
+          "auth": {
+            "actions": {
+              "login": true,
+              "whoAmI": true,
+              "getMyRights": true,
+              "checkToken": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "list-indexes-collections" } },
+      {
+        "controllers": {
+          "read": {
+            "actions": {
+              "listIndexes": true,
+              "listCollections": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "read-data" } },
+      {
+        "controllers": {
+          "read": {
+            "actions": {
+              "search": true,
+              "get": true,
+              "listCollections": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "edit-collection" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "updateMapping": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "truncate-collection" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "truncateCollection": true
+            }
+          }
+        }
+      },
+      { "index": { "_id": "delete-collection" } },
+      {
+        "controllers": {
+          "admin": {
+            "actions": {
+              "deleteCollection": true
+            }
+          }
+        }
+      }
+    ],
+    "profiles": [
+      { "index": { "_id": "kuzzle-bo-dummy" } },
+      {
+        "policies": [
+          {"roleId": "fake-action"},
+          {"roleId": "login-and-check-token"},
+          {"roleId": "logout-and-get-user"}
+        ]
+      },
+      { "index": { "_id": "kuzzle-bo-standard" } },
+      {
+        "policies": [
+          {"roleId": "logout-and-get-user"},
+          {"roleId": "login-and-check-token"},
+          {"roleId": "list-indexes-collections"},
+          {"roleId": "read-data", "restrictedTo": [{"index": "kuzzle-bo-testindex"}]},
+          {"roleId": "edit-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["editable-collection"]}]},
+          {"roleId": "truncate-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["emptiable-collection"]}]},
+          {"roleId": "delete-collection", "restrictedTo": [{"index": "kuzzle-bo-testindex", "collections": ["not-editable-collection"]}]}
+        ]
+      }
+    ],
+    "users": [
+      { "index": { "_id": "kuzzle-bo-admin" } },
+      {
+        "username": "kuzzle-bo-admin",
+        "profileIds": ["admin"],
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      },
+      { "index": { "_id": "kuzzle-bo-dummy" } },
+      {
+        "username": "kuzzle-bo-dummy",
+        "profileIds": ["kuzzle-bo-dummy"],
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      },
+      { "index": { "_id": "kuzzle-bo-standard" } },
+      {
+        "username": "kuzzle-bo-standard",
+        "profileIds": ["kuzzle-bo-standard"],
+        "password": "8c4a804f73b8969c4526c82b28b72b036220e447",
+        "clearPassword": "test"
+      }
+    ]
+  }
+}
