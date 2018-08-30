@@ -65,99 +65,110 @@
 </template>
 
 <script>
-  const emptyBasicFilter = {attribute: null, operator: 'match', value: null}
-  const emptySorting = {attribute: null, order: 'asc'}
+const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
+const emptySorting = { attribute: null, order: 'asc' }
 
-  import MSelect from '../../../Common/MSelect'
+import MSelect from '../../../Common/MSelect'
 
-  export default {
-    props: {
-      basicFilter: Array,
-      sorting: Object,
-      setBasicFilter: Function,
-      availableFilters: {
-        type: Object,
-        required: true
-      },
-      labelSearchButton: {
-        type: String,
-        required: false,
-        'default': 'search'
-      },
-      sortingEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
-      }
+export default {
+  props: {
+    basicFilter: Array,
+    sorting: Object,
+    setBasicFilter: Function,
+    availableFilters: {
+      type: Object,
+      required: true
     },
-    components: {
-      MSelect
+    labelSearchButton: {
+      type: String,
+      required: false,
+      default: 'search'
     },
-    data () {
-      return {
-        filters: {
-          basic: null,
-          sorting: {...emptySorting}
-        }
-      }
-    },
-    methods: {
-      basicSearch () {
-        let filters = this.filters.basic
-
-        if (this.filters.basic.length === 1 &&
-          this.filters.basic[0].length === 1 &&
-          !this.filters.basic[0][0].attribute) {
-          filters = null
-        }
-
-        if (this.sortingEnabled) {
-          let sorting = this.filters.sorting
-
-          if (!this.filters.sorting.attribute) {
-            sorting = null
-          }
-
-          this.$emit('filters-basic-search', filters, sorting)
-        } else {
-          this.$emit('filters-basic-search', filters)
-        }
-      },
-      resetBasicSearch () {
-        this.filters.basic = [[{...emptyBasicFilter}]]
-        this.filters.sorting = {...emptySorting}
-      },
-      addGroupBasicFilter () {
-        this.filters.basic.push([{...emptyBasicFilter}])
-      },
-      addAndBasicFilter (groupIndex) {
-        if (!this.filters.basic[groupIndex]) {
-          return false
-        }
-
-        this.filters.basic[groupIndex].push({...emptyBasicFilter})
-      },
-      removeAndBasicFilter (groupIndex, filterIndex) {
-        if (!this.filters.basic[groupIndex] || !this.filters.basic[groupIndex][filterIndex]) {
-          return false
-        }
-
-        if (this.filters.basic.length === 1 && this.filters.basic[0].length === 1) {
-          this.$set(this.filters.basic[0], 0, {...emptyBasicFilter})
-          return
-        }
-
-        if (this.filters.basic[groupIndex].length === 1 && this.filters.basic.length > 1) {
-          this.filters.basic.splice(groupIndex, 1)
-          return
-        }
-
-        this.filters.basic[groupIndex].splice(filterIndex, 1)
-      }
-    },
-    mounted () {
-      this.filters.basic = this.basicFilter || [[{...emptyBasicFilter}]]
-      this.filters.sorting = this.sorting || {...emptySorting}
+    sortingEnabled: {
+      type: Boolean,
+      required: false,
+      default: true
     }
+  },
+  components: {
+    MSelect
+  },
+  data() {
+    return {
+      filters: {
+        basic: null,
+        sorting: { ...emptySorting }
+      }
+    }
+  },
+  methods: {
+    basicSearch() {
+      let filters = this.filters.basic
+
+      if (
+        this.filters.basic.length === 1 &&
+        this.filters.basic[0].length === 1 &&
+        !this.filters.basic[0][0].attribute
+      ) {
+        filters = null
+      }
+
+      if (this.sortingEnabled) {
+        let sorting = this.filters.sorting
+
+        if (!this.filters.sorting.attribute) {
+          sorting = null
+        }
+
+        this.$emit('filters-basic-search', filters, sorting)
+      } else {
+        this.$emit('filters-basic-search', filters)
+      }
+    },
+    resetBasicSearch() {
+      this.filters.basic = [[{ ...emptyBasicFilter }]]
+      this.filters.sorting = { ...emptySorting }
+    },
+    addGroupBasicFilter() {
+      this.filters.basic.push([{ ...emptyBasicFilter }])
+    },
+    addAndBasicFilter(groupIndex) {
+      if (!this.filters.basic[groupIndex]) {
+        return false
+      }
+
+      this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
+    },
+    removeAndBasicFilter(groupIndex, filterIndex) {
+      if (
+        !this.filters.basic[groupIndex] ||
+        !this.filters.basic[groupIndex][filterIndex]
+      ) {
+        return false
+      }
+
+      if (
+        this.filters.basic.length === 1 &&
+        this.filters.basic[0].length === 1
+      ) {
+        this.$set(this.filters.basic[0], 0, { ...emptyBasicFilter })
+        return
+      }
+
+      if (
+        this.filters.basic[groupIndex].length === 1 &&
+        this.filters.basic.length > 1
+      ) {
+        this.filters.basic.splice(groupIndex, 1)
+        return
+      }
+
+      this.filters.basic[groupIndex].splice(filterIndex, 1)
+    }
+  },
+  mounted() {
+    this.filters.basic = this.basicFilter || [[{ ...emptyBasicFilter }]]
+    this.filters.sorting = this.sorting || { ...emptySorting }
   }
+}
 </script>

@@ -36,80 +36,85 @@
 </template>
 
 <script>
-  import FormLine from './FormLine'
-  import {
-    flattenObjectMapping,
-    getDefaultSchemaForType,
-    flattenObjectSchema,
-    formatSchema
-  } from '../../../services/collectionHelper'
+import FormLine from './FormLine'
+import {
+  flattenObjectMapping,
+  getDefaultSchemaForType,
+  flattenObjectSchema,
+  formatSchema
+} from '../../../services/collectionHelper'
 
-  export default {
-    name: 'SchemaForm',
-    props: {
-      mapping: Object,
-      currentStep: {
-        type: Number,
-        required: true
-      }
-    },
-    components: {
-      FormLine
-    },
-    data () {
-      return {
-        schema: {},
-        allowForm: true
-      }
-    },
-    methods: {
-      next () {
-        this.$emit('next', this.gatherData)
-      },
-      cancel () {
-        this.$emit('cancel')
-      },
-      changeAllowForm (e) {
-        this.allowForm = e.target.checked
-      },
-      changeSchema (event) {
-        this.schema = formatSchema({...this.schema, [event.name]: event.element})
-      }
-    },
-    computed: {
-      flattenMapping () {
-        return flattenObjectMapping(this.mapping)
-      },
-      flattenSchema () {
-        return flattenObjectSchema(this.schema)
-      },
-      flattenSchemaWithType () {
-        let schema = {}
-
-        Object.keys(this.flattenMapping).forEach(attribute => {
-          if (this.flattenSchema && this.flattenSchema[attribute]) {
-            schema[attribute] = {...this.flattenSchema[attribute]}
-          } else {
-            schema[attribute] = {...getDefaultSchemaForType(this.flattenMapping[attribute])}
-          }
-        })
-
-        return schema
-      },
-      gatherData () {
-        return {
-          schema: this.schema,
-          allowForm: this.allowForm
-        }
-      }
-    },
-    watch: {
-      currentStep (value) {
-        this.$emit('change-step', this.gatherData)
-      }
-    },
-    mounted () {
-      this.schema = this.flattenSchemaWithType
+export default {
+  name: 'SchemaForm',
+  props: {
+    mapping: Object,
+    currentStep: {
+      type: Number,
+      required: true
     }
+  },
+  components: {
+    FormLine
+  },
+  data() {
+    return {
+      schema: {},
+      allowForm: true
+    }
+  },
+  methods: {
+    next() {
+      this.$emit('next', this.gatherData)
+    },
+    cancel() {
+      this.$emit('cancel')
+    },
+    changeAllowForm(e) {
+      this.allowForm = e.target.checked
+    },
+    changeSchema(event) {
+      this.schema = formatSchema({
+        ...this.schema,
+        [event.name]: event.element
+      })
+    }
+  },
+  computed: {
+    flattenMapping() {
+      return flattenObjectMapping(this.mapping)
+    },
+    flattenSchema() {
+      return flattenObjectSchema(this.schema)
+    },
+    flattenSchemaWithType() {
+      let schema = {}
+
+      Object.keys(this.flattenMapping).forEach(attribute => {
+        if (this.flattenSchema && this.flattenSchema[attribute]) {
+          schema[attribute] = { ...this.flattenSchema[attribute] }
+        } else {
+          schema[attribute] = {
+            ...getDefaultSchemaForType(this.flattenMapping[attribute])
+          }
+        }
+      })
+
+      return schema
+    },
+    gatherData() {
+      return {
+        schema: this.schema,
+        allowForm: this.allowForm
+      }
+    }
+  },
+  watch: {
+    currentStep(value) {
+      this.$emit('change-step', this.gatherData)
+    }
+  },
+  mounted() {
+    this.schema = this.flattenSchemaWithType
   }
+}
 </script>

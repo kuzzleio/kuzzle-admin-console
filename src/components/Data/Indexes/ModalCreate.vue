@@ -53,71 +53,72 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .error {
-    strong {
-      display: block;
+.error {
+  strong {
+    display: block;
+  }
+}
+.helper-text {
+  color: #aaa;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+.input-field {
+  label {
+    left: 0;
+  }
+}
+button {
+  &.btn-flat {
+    &:focus {
+      background-color: #eee;
     }
   }
-  .helper-text {
-    color: #aaa;
-    font-style: italic;
-    font-size: 0.9rem;
-  }
-  .input-field {
-    label {
-      left: 0;
-    }
-  }
-  button {
-    &.btn-flat {
-      &:focus {
-        background-color: #EEE;
-      }
-    }
-  }
+}
 </style>
 
 
 <script>
-  import Modal from '../../Materialize/Modal'
-  import Focus from '../../../directives/focus.directive'
-  import {CREATE_INDEX} from '../../../vuex/modules/index/mutation-types'
+import Modal from '../../Materialize/Modal'
+import Focus from '../../../directives/focus.directive'
+import { CREATE_INDEX } from '../../../vuex/modules/index/mutation-types'
 
-  export default {
-    name: 'CreateModal',
-    props: ['id', 'isOpen', 'close'],
-    directives: {
-      Focus
+export default {
+  name: 'CreateModal',
+  props: ['id', 'isOpen', 'close'],
+  directives: {
+    Focus
+  },
+  components: {
+    Modal
+  },
+  methods: {
+    toggleTruncatedError() {
+      this.errorTruncated = !this.errorTruncated
     },
-    components: {
-      Modal
-    },
-    methods: {
-      toggleTruncatedError () {
-        this.errorTruncated = !this.errorTruncated
-      },
-      tryCreateIndex (index) {
-        if (!index.trim()) {
-          return
-        }
+    tryCreateIndex(index) {
+      if (!index.trim()) {
+        return
+      }
 
-        this.$store.dispatch(CREATE_INDEX, index)
-          .then(() => {
-            this.index = ''
-            this.error = ''
-            this.close()
-          })
-          .catch(err => {
-            this.error = err.message
-          })
-      }
-    },
-    data () {
-      return {
-        error: '',
-        index: '',
-        errorTruncated: true
-      }
+      this.$store
+        .dispatch(CREATE_INDEX, index)
+        .then(() => {
+          this.index = ''
+          this.error = ''
+          this.close()
+        })
+        .catch(err => {
+          this.error = err.message
+        })
+    }
+  },
+  data() {
+    return {
+      error: '',
+      index: '',
+      errorTruncated: true
     }
   }
+}
 </script>

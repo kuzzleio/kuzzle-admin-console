@@ -82,136 +82,142 @@
 </template>
 
 <style rel="stylesheet/scss" lang="scss">
-  .input-id {
-    margin-bottom: 0;
-  }
-  .error {
-    position: relative;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  .dismiss-error {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 2px;
+.input-id {
+  margin-bottom: 0;
+}
+.error {
+  position: relative;
+  padding: 8px 12px;
+  margin: 0;
+}
+.dismiss-error {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 2px;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, .2);
-    }
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
+}
 </style>
 
 <script>
-  import JsonForm from '../../../Common/JsonForm/JsonForm'
-  import JsonEditor from '../../../Common/JsonEditor'
-  import Focus from '../../../../directives/focus.directive'
-  import title from '../../../../directives/title.directive'
-  import {SET_COLLECTION_DEFAULT_VIEW_JSON} from '../../../../vuex/modules/collection/mutation-types'
-  import {hasSameSchema} from '../../../../services/collectionHelper'
+import JsonForm from '../../../Common/JsonForm/JsonForm'
+import JsonEditor from '../../../Common/JsonEditor'
+import Focus from '../../../../directives/focus.directive'
+import title from '../../../../directives/title.directive'
+import { SET_COLLECTION_DEFAULT_VIEW_JSON } from '../../../../vuex/modules/collection/mutation-types'
+import { hasSameSchema } from '../../../../services/collectionHelper'
 
-  // We have to init the JSON only if the data comes from the server.
-  // This flag allow to not trigger an infinite loop when the doc is updated
-  let jsonAlreadyInit = false
+// We have to init the JSON only if the data comes from the server.
+// This flag allow to not trigger an infinite loop when the doc is updated
+let jsonAlreadyInit = false
 
-  export default {
-    name: 'DocumentCreateOrUpdate',
-    components: {
-      JsonForm,
-      JsonEditor
+export default {
+  name: 'DocumentCreateOrUpdate',
+  components: {
+    JsonForm,
+    JsonEditor
+  },
+  props: {
+    error: String,
+    index: String,
+    collection: String,
+    hideId: Boolean,
+    mandatoryId: {
+      default: false,
+      type: Boolean
     },
-    props: {
-      error: String,
-      index: String,
-      collection: String,
-      hideId: Boolean,
-      mandatoryId: {
-        'default': false,
-        type: Boolean
-      },
-      value: Object,
-      submitted: {
-        type: Boolean,
-        default: false
-      }
-    },
-    directives: {
-      Focus,
-      title
-    },
-    data () {
-      return {
-        jsonDocument: {},
-        warningSwitch: false
-      }
-    },
-    methods: {
-      dismissError () {
-        this.$emit('document-create::reset-error')
-      },
-      create () {
-        if (this.submitted) {
-          return
-        }
-
-        if (!this.$store.state.collection.defaultViewJson) {
-          return this.$emit('document-create::create', {...this.value})
-        }
-
-        if (this.$refs.jsoneditor.isValid()) {
-          this.$emit('document-create::create', {...this.value})
-        } else {
-          this.$emit('document-create::error', 'Invalid JSON provided.')
-        }
-      },
-      cancel () {
-        this.$emit('document-create::cancel')
-      },
-      updateValue (e) {
-        this.$emit('input', {...this.value, [e.name]: e.value})
-      },
-      switchView (e) {
-        this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
-          index: this.$route.params.index,
-          collection: this.$route.params.collection,
-          jsonView: e.target.checked
-        })
-        this.jsonDocument = {...this.value}
-      },
-      updateId (e) {
-        this.$emit('change-id', e.target.value)
-      },
-      jsonChanged (json) {
-        this.warningSwitch = !hasSameSchema(json, this.$store.state.collection.schema)
-        this.$emit('input', json)
-        jsonAlreadyInit = true
-      },
-      initJsonDocument () {
-        if (!jsonAlreadyInit) {
-          if (this.value) {
-            if (!Object.keys(this.value).length) {
-              this.jsonDocument = {}
-              return
-            }
-
-            this.jsonDocument = {...this.value}
-            jsonAlreadyInit = true
-          }
-        }
-      }
-    },
-    computed: {
-      isFormView () {
-        return !this.$store.state.collection.defaultViewJson && this.$store.state.collection.allowForm
-      }
-    },
-    mounted () {
-      jsonAlreadyInit = false
-      this.initJsonDocument()
-    },
-    watch: {
-      value: 'initJsonDocument'
+    value: Object,
+    submitted: {
+      type: Boolean,
+      default: false
     }
+  },
+  directives: {
+    Focus,
+    title
+  },
+  data() {
+    return {
+      jsonDocument: {},
+      warningSwitch: false
+    }
+  },
+  methods: {
+    dismissError() {
+      this.$emit('document-create::reset-error')
+    },
+    create() {
+      if (this.submitted) {
+        return
+      }
+
+      if (!this.$store.state.collection.defaultViewJson) {
+        return this.$emit('document-create::create', { ...this.value })
+      }
+
+      if (this.$refs.jsoneditor.isValid()) {
+        this.$emit('document-create::create', { ...this.value })
+      } else {
+        this.$emit('document-create::error', 'Invalid JSON provided.')
+      }
+    },
+    cancel() {
+      this.$emit('document-create::cancel')
+    },
+    updateValue(e) {
+      this.$emit('input', { ...this.value, [e.name]: e.value })
+    },
+    switchView(e) {
+      this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
+        index: this.$route.params.index,
+        collection: this.$route.params.collection,
+        jsonView: e.target.checked
+      })
+      this.jsonDocument = { ...this.value }
+    },
+    updateId(e) {
+      this.$emit('change-id', e.target.value)
+    },
+    jsonChanged(json) {
+      this.warningSwitch = !hasSameSchema(
+        json,
+        this.$store.state.collection.schema
+      )
+      this.$emit('input', json)
+      jsonAlreadyInit = true
+    },
+    initJsonDocument() {
+      if (!jsonAlreadyInit) {
+        if (this.value) {
+          if (!Object.keys(this.value).length) {
+            this.jsonDocument = {}
+            return
+          }
+
+          this.jsonDocument = { ...this.value }
+          jsonAlreadyInit = true
+        }
+      }
+    }
+  },
+  computed: {
+    isFormView() {
+      return (
+        !this.$store.state.collection.defaultViewJson &&
+        this.$store.state.collection.allowForm
+      )
+    }
+  },
+  mounted() {
+    jsonAlreadyInit = false
+    this.initJsonDocument()
+  },
+  watch: {
+    value: 'initJsonDocument'
   }
+}
 </script>

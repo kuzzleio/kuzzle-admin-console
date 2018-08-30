@@ -44,35 +44,33 @@ export default {
     Mapping,
     FormSchema
   },
-  data () {
+  data() {
     return {
       mapping: {},
       loading: false
     }
   },
   methods: {
-    onMappingSubmit (mapping) {
+    onMappingSubmit(mapping) {
       const newMapping = mapping || {}
       this.mapping = newMapping
       this.save()
     },
-    onCancel () {
-      this.$router.push({name: 'SecurityUsersList'})
+    onCancel() {
+      this.$router.push({ name: 'SecurityUsersList' })
     },
-    save () {
-      return updateMappingUsers(this.mapping)
-        .then(() => {
-          this.$router.push({name: 'SecurityUsersList'})
-        })
+    save() {
+      return updateMappingUsers(this.mapping).then(() => {
+        this.$router.push({ name: 'SecurityUsersList' })
+      })
     }
   },
-  mounted () {
+  mounted() {
     this.loading = true
-    return getMappingUsers()
-      .then(result => {
-        this.mapping = result.mapping || {}
-        this.loading = false
-      })
+    return getMappingUsers().then(result => {
+      this.mapping = result.mapping || {}
+      this.loading = false
+    })
   }
 }
 </script>

@@ -5,15 +5,15 @@
 </template>
 
 <script>
-  export default {
-    name: 'WarningHeader',
-    props: {
-      text: {
-        type: String,
-        required: true
-      }
+export default {
+  name: 'WarningHeader',
+  props: {
+    text: {
+      type: String,
+      required: true
     }
   }
+}
 </script>
 
 <style lang="scss">
