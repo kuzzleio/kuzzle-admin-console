@@ -145,7 +145,8 @@ export default {
     label {
       top: 0.4rem;
       &.active {
-        transform: translateY(-120%);
+        transform: translateY(-20%);
+        font-size: 0.7em;
       }
     }
     .inline-actions {

@@ -85,14 +85,13 @@
 <style rel="stylesheet/scss" lang="scss">
 // @TODO format this code to BEM
 .DocumentCreateOrUpdate {
+  max-width: $container-width;
+
   form.wrapper {
     padding-top: 0;
   }
 
   .json-view {
-    .card-content {
-      padding-top: 0;
-    }
     .document-json {
       .pre_ace,
       .ace_editor {
