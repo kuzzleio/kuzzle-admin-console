@@ -41,6 +41,7 @@ services:
       - ./:/app/
     working_dir: /app/
     shm_size: 1gb #512M
-    entrypoint: ['sh', '-c', '/app/run-test.sh']
+    entrypoint: ['sh', '-c', 'sleep infinity']
+    # entrypoint: ['sh', '-c', '/app/run-test.sh']
     depends_on:
       - backoffice

@@ -9,6 +9,5 @@ done
 set -e
 
 [[ -d /app/output ]] || mkdir /app/output
-npm i puppeteer
-
-node scripts/createEnvironment.puppeteer.js
+npm i
+npm test
