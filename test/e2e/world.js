@@ -34,7 +34,8 @@ const getPage = async () => {
 module.exports = {
   getBrowser,
   getPage,
+  isLocal: process.env.e2eLocal !== undefined,
   url: process.env.e2eLocal
-    ? 'http://localhost:8080'
-    : 'http://adminconsole:8080'
+    ? 'http://localhost:3000'
+    : 'http://adminconsole:3000'
 }

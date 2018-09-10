@@ -10,7 +10,7 @@ before('Getting browser and page...', async function() {
 })
 
 describe('Setting up Mocha...', function() {
-  this.timeout(30000)
+  this.timeout(300000)
 })
 
 after('Close browser', async function() {

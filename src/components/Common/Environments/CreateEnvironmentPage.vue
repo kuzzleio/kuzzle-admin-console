@@ -22,7 +22,7 @@
 
           <div class="row">
             <div class="col s4 right">
-              <button type="submit" class="CreateEnvironmentPage-createBtn waves-effect btn">Create connection</button>
+              <button type="submit" class="CreateEnvironmentPage-createBtn Environment-SubmitButton waves-effect btn">Create connection</button>
             </div>
           </div>
         </div>

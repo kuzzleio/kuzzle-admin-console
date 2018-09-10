@@ -30,9 +30,9 @@ services:
   adminconsole:
     image: node:8
     ports:
-      - '8080:8080'
+      - '3000:3000'
     working_dir: /var/app
-    command: sh -c 'npm i && npm run build && npm start'
+    command: sh -c 'npm i && npm run dev'
     volumes:
       - '../../:/var/app'
     depends_on:

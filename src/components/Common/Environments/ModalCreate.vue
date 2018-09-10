@@ -15,7 +15,7 @@
       </create-environment>
 
       <span slot="footer">
-        <button type="submit" class="EnvironmentsCreateModal-submit waves-effect btn">
+        <button type="submit" class="EnvironmentsCreateModal-submit Environment-SubmitButton waves-effect btn">
             {{environmentId ? 'Update' : 'Create'}}
         </button>
         <button class="btn-flat waves-effect waves-grey" @click.prevent="close">

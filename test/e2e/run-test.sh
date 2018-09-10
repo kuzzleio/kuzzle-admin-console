@@ -1,7 +1,7 @@
 #!/bin/bash
 
 adminConsoleHost="localhost"
-adminConsolePort="8080"
+adminConsolePort="3000"
 if [[ -z "$e2eLocal" ]]; then
   adminConsoleHost="adminconsole"
 fi

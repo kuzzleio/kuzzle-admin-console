@@ -71,7 +71,7 @@
                       </div>
                     </div>
                   </div>
-                  <a class="btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
+                  <a class="LoginAsAnonymous-Btn btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
                   <button v-show="!waiting" class="btn waves-effect waves-light right" type="submit" name="action">
                     CREATE ADMIN ACCOUNT
                   </button>

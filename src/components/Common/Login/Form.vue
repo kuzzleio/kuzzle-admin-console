@@ -24,7 +24,7 @@
       </div>
       <div class="col s8">
         <p class="right">
-          <a class="btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
+          <a class="LoginAsAnonymous-Btn btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
           <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
         </p>
       </div>

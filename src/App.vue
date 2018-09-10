@@ -27,7 +27,7 @@
       </login>
     </div>
 
-    <div v-show="!$store.state.kuzzle.errorFromKuzzle && $store.getters.hasEnvironment && $store.getters.isAuthenticated">
+    <div v-if="!$store.state.kuzzle.errorFromKuzzle && $store.getters.hasEnvironment && $store.getters.isAuthenticated">
       <router-view
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment">
