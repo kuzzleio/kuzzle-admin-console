@@ -1,5 +1,5 @@
 <template>
-  <div class="environment">
+  <div class="CreateEnvironment environment">
     <warning-header
       v-if="useHttps && !environment.ssl"
       :text="warningHeaderText"
@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
-          <input id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name || errors.environmentAlreadyExists}">
+          <input class="CreateEnvironment-name" id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name || errors.environmentAlreadyExists}">
           <label for="env-name" :class="{'active': environment.name}" data-error="Name is required and must be unique">Name</label>
         </div>
       </div>
@@ -17,7 +17,7 @@
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
-          <input id="host" type="text" v-model="environment.host" required :class="{invalid: errors.host}">
+          <input class="CreateEnvironment-host" id="host" type="text" v-model="environment.host" required :class="{invalid: errors.host}">
           <label for="host" :class="{'active': environment.host}" data-error="The host must be something like 'mydomain.com'">Host</label>
         </div>
       </div>
@@ -26,13 +26,13 @@
     <div class="row">
       <div class="col s6">
         <div class="input-field left-align">
-          <input id="port" type="number" v-model="environment.port" required :class="{invalid: errors.port}">
+          <input class="CreateEnvironment-port" id="port" type="number" v-model="environment.port" required :class="{invalid: errors.port}">
           <label for="port" :class="{'active': environment.port}" data-error="port number must be an integer">Port</label>
         </div>
       </div>
       <div class="col s6">
         <div class="input-field left-align">
-          <input id="ssl" type="checkbox" v-model="environment.ssl">
+          <input class="CreateEnvironment-ssl" id="ssl" type="checkbox" v-model="environment.ssl">
           <label for="ssl">use SSL</label>
         </div>
       </div>
@@ -51,7 +51,7 @@
       </div>
       <div class="col s12">
         <div class="row">
-          <div class="col s6 m3" v-for="(color, index) in colors">
+          <div class="col s6 m3" v-for="(color, index) in colors" :key="color">
             <div class="color card valign-wrapper"
                  :style="{backgroundColor: color}"
                  @click="selectColor(index)">

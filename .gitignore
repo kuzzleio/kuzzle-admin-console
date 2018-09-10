@@ -12,3 +12,4 @@ phantomjsdriver.log
 *.sublime-*
 dist
 .vscode
+test/e2e/output

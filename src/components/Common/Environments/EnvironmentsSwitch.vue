@@ -1,5 +1,5 @@
 <template>
-  <span ref="dropdown">
+  <span class="EnvironmentsSwitch" ref="dropdown">
     <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
        :data-activates='"environment-dropdown-" + _uid'>
         <span v-if="$store.getters.currentEnvironment" class="current-environment-name truncate">
@@ -11,8 +11,8 @@
         <i class="fa fa-caret-down"></i>
     </a>
 
-    <ul :id='"environment-dropdown-" + _uid' class='dropdown-content environment-dropdown'>
-      <li v-for="(env, index) in $store.state.kuzzle.environments" class="environment">
+    <ul :id='"environment-dropdown-" + _uid' class="EnvironmentsSwitch-envList dropdown-content environment-dropdown">
+      <li v-for="(env, index) in $store.state.kuzzle.environments" :key="env.name" :id="`EnvironmentsSwitch-env_${env.name}`" class="environment">
         <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute truncate">{{env.host}}</span>
@@ -21,7 +21,7 @@
         <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
       </li>
       <li class="divider"></li>
-      <li><a href="" @click.prevent="$emit('environment::create')"><i class="fa fa-plus-circle"></i> Create new connection</a></li>
+      <li ><a href="" @click.prevent="$emit('environment::create')"><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle"></i> Create new connection</a></li>
     </ul>
   </span>
 </template>
