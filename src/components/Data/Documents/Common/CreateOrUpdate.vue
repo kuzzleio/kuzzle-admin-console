@@ -4,21 +4,7 @@
       <form class="wrapper" @submit.prevent="create">
 
         <div class="row" v-if="$store.state.collection.allowForm">
-          <div class="switch right">
-            <label>
-              Form
-              <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
-              <span
-                class="lever"
-                v-title="{
-                active: warningSwitch,
-                position: 'bottom',
-                title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
-                }">
-              </span>
-              JSON
-            </label>
-          </div>
+
         </div>
 
         <div class="row input-id" v-if="!hideId">
@@ -26,6 +12,35 @@
             <div class="input-field">
               <input id="id" type="text" name="collection" @input="updateId" v-focus :required="mandatoryId" />
               <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
+            </div>
+          </div>
+          <div class="col s6">
+
+            <div
+              class="switch right"
+              v-if="$store.state.collection.allowForm"
+              >
+              <label>
+                Form
+                <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
+                <span
+                  class="lever"
+                  v-title="{
+                  active: warningSwitch,
+                  position: 'bottom',
+                  title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
+                  }">
+                </span>
+                JSON
+              </label>
+            </div>
+
+            <div
+              v-if="!$store.state.collection.allowForm"
+              class="DocumentCreateOrUpdate-formDisabled"
+              >
+                <p>Document-creation form is not enabled for this collection</p>
+                <router-link :to="{name: 'DataCollectionEdit', params: {index, collection}}">Enable it</router-link>
             </div>
           </div>
         </div>
@@ -106,6 +121,16 @@
       }
     }
   }
+
+  .DocumentCreateOrUpdate-formDisabled {
+    float: right;
+    font-size: 0.9em;
+    font-weight: 800;
+    font-family: 'Courier New', Courier, monospace;
+    color: $grey-color;
+    text-align: right;
+  }
+
   .DocumentCreateOrUpdate-mapping {
     height: 500px;
     margin: 0;
