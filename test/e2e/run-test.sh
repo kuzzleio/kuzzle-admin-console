@@ -1,13 +1,18 @@
 #!/bin/bash
 
-while ! curl -f -s -o /dev/null "http://backoffice:3000"
+adminConsoleHost="localhost"
+adminConsolePort="8080"
+if [[ -z "$e2eLocal" ]]; then
+  adminConsoleHost="adminconsole"
+fi
+
+while ! curl -f -s -o /dev/null "http://$adminConsoleHost:$adminConsolePort"
 do
-    echo "[$(date --rfc-3339 seconds)] - Waiting for http://backoffice:3000"
+    echo "[$(date --rfc-3339 seconds)] - Waiting for Kuzzle Admin Connsole to be up at http://$adminConsoleHost:$adminConsolePort"
     sleep 5
 done
 
 set -e
 
-[[ -d /app/output ]] || mkdir /app/output
 npm i
 npm test

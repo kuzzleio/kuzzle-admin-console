@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  puppeteer:
+    image: kuzzleio/puppeteer-light
+    volumes:
+      - ./:/app/
+    working_dir: /app/
+    shm_size: 1gb #512M
+    entrypoint: ['sh', '-c', '/app/run-test.sh']
+    depends_on:
+      - adminconsole

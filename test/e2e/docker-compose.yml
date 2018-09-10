@@ -27,22 +27,13 @@ services:
       - cluster.name=kuzzle
       - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
 
-  backoffice:
-    image: kuzzleio/dev
-    command: sh -c 'npm run dev'
+  adminconsole:
+    image: node:8
+    ports:
+      - '8080:8080'
+    working_dir: /var/app
+    command: sh -c 'npm i && npm run build && npm start'
     volumes:
       - '../../:/var/app'
     depends_on:
       - kuzzle
-
-  puppeteer:
-    # build: .
-    image: kuzzleio/puppeteer-light
-    volumes:
-      - ./:/app/
-    working_dir: /app/
-    shm_size: 1gb #512M
-    entrypoint: ['sh', '-c', 'sleep infinity']
-    # entrypoint: ['sh', '-c', '/app/run-test.sh']
-    depends_on:
-      - backoffice

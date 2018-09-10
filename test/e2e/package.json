@@ -2,7 +2,7 @@
   "name": "kuzzle-admin-console-e2e-tests",
   "version": "1.0.0",
   "scripts": {
-    "test": "mocha -R spec -b"
+    "test": "mocha -R spec -S -b"
   },
   "license": "MIT",
   "dependencies": {
