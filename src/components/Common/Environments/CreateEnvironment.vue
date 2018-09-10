@@ -50,7 +50,7 @@
         </div>
       </div>
       <div class="col s12">
-        <div class="row">
+        <div class="CreateEnvironment-colorBtns row">
           <div class="col s6 m3" v-for="(color, index) in colors" :key="color">
             <div class="color card valign-wrapper"
                  :style="{backgroundColor: color}"

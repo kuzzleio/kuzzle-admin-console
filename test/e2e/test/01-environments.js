@@ -68,7 +68,7 @@ describe('Manage environments', function() {
     expect(foundEnvironment).to.eql(null)
   })
 
-  it.only('Should be able to create an invalid environment and switch back to the valid one', async () => {
+  it('Should be able to create an invalid environment and switch back to the valid one', async () => {
     const invalidEnvName = 'invalid'
     const invalidEnvHost = 'invalid-host'
     const validEnvName = 'valid'
@@ -106,5 +106,46 @@ describe('Manage environments', function() {
     // Now verify that we see a Login as Anonymous button
     const foundLoginAsAnonymousButton = await page.$$(`.LoginAsAnonymous-Btn`)
     expect(foundLoginAsAnonymousButton.length).to.be.above(0)
+  })
+
+  it.only('Properly sets a color for the environment', async () => {
+    const page = await world.getPage()
+    const newEnvName = 'colored'
+    const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
+    const newEnvColorIdx = 3
+
+    await page.goto(world.url)
+
+    await sharedSteps.openCreateEnvModalIfExists(page)
+
+    // Get the color of the box that will be clicked
+    await page.waitForSelector(
+      `.CreateEnvironment-colorBtns div:nth-child(${newEnvColorIdx}) div.color`
+    )
+    const selectedColor = await page.$eval(
+      `.CreateEnvironment-colorBtns div:nth-child(${newEnvColorIdx}) div.color`,
+      node => node.style.backgroundColor
+    )
+
+    // Create the environment with the given color
+    await sharedSteps.createEnvironment(
+      page,
+      newEnvName,
+      newEnvHost,
+      undefined,
+      newEnvColorIdx
+    )
+
+    // Log in to the Admin Console
+    await page.waitForSelector('.LoginAsAnonymous-Btn')
+    await page.click('.LoginAsAnonymous-Btn')
+
+    // Check the background color of the navbar is the selected one
+    await page.waitForSelector('nav')
+    const headerColor = await page.$eval(
+      'nav',
+      node => node.style.backgroundColor
+    )
+    expect(headerColor).to.be.eql(selectedColor)
   })
 })

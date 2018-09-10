@@ -12,7 +12,7 @@ module.exports = {
       await page.click('.EnvironmentsSwitch-newConnectionBtn')
     } catch (error) {}
   },
-  createEnvironment: async (page, name, host, port) => {
+  createEnvironment: async (page, name, host, port, colorIndex) => {
     // Create environment
     // ============================================
     await page.waitForSelector('.CreateEnvironment-name')
@@ -25,6 +25,11 @@ module.exports = {
     }
     if (port) {
       await page.type('.CreateEnvironment-port', port)
+    }
+    if (colorIndex) {
+      await page.click(
+        `.CreateEnvironment-colorBtns div:nth-child(${colorIndex}) div.color`
+      )
     }
 
     await page.waitForSelector('.Environment-SubmitButton', {
