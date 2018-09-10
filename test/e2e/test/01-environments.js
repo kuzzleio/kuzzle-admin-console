@@ -108,7 +108,7 @@ describe('Manage environments', function() {
     expect(foundLoginAsAnonymousButton.length).to.be.above(0)
   })
 
-  it.only('Properly sets a color for the environment', async () => {
+  it('Properly sets a color for the environment', async () => {
     const page = await world.getPage()
     const newEnvName = 'colored'
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
