@@ -10,7 +10,6 @@ const getBrowser = async () => {
     const isLocal = process.env.e2eLocal !== undefined
     const baseOpts = {
       args: ['--no-sandbox'],
-      defaultViewport: { width: 1920, height: 983 },
       dumpio: process.env.showConsoleOutput !== undefined
     }
     const localDevOpts = {
@@ -28,7 +27,7 @@ const getPage = async () => {
   if (!page) {
     const b = await getBrowser()
     page = await b.newPage()
-    await page.setViewport({ width: 1920, height: 983 })
+    await page.setViewport({ width: 1400, height: 900 })
   }
   return page
 }
