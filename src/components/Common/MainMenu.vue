@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header class="MainMenu">
     <div class="navbar-fixed">
       <nav :style="{backgroundColor: currentEnvironmentColor}" id="mainnav">
         <ul>

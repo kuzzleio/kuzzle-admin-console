@@ -1,5 +1,7 @@
 <template>
-  <form @submit.prevent="tryCreateIndex(index)">
+  <form
+    class="CreateIndexModal"
+    @submit.prevent="tryCreateIndex(index)">
     <modal :id="id" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
@@ -13,11 +15,11 @@
         <div class="col s7">
           <div class="input-field left-align">
             <label for="index-name">Index name</label>
-            <input id="index-name" type="text" v-model="index" :class="{'invalid': error}" v-focus>
+            <input class="CreateIndexModal-name" id="index-name" type="text" v-model="index" :class="{'invalid': error}" v-focus>
           </div>
         </div>
 
-        <div class="col s5 error" v-if="error">
+        <div class="CreateIndexModal-error col s5 error" v-if="error">
           <div class="red-text">An error has occurred during index creation:</div>
           <span :class="{'truncate': errorTruncated}">
             {{error}}
@@ -38,7 +40,7 @@
         <button
           type="submit"
           href="#!"
-          class="waves-effect btn">
+          class="CreateIndexModal-createBtn waves-effect btn">
             Create
         </button>
         <button
@@ -84,7 +86,7 @@ import Focus from '../../../directives/focus.directive'
 import { CREATE_INDEX } from '../../../vuex/modules/index/mutation-types'
 
 export default {
-  name: 'CreateModal',
+  name: 'CreateIndexModal',
   props: ['id', 'isOpen', 'close'],
   directives: {
     Focus
