@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "expect.js": "^0.3.1",
+    "kuzzle-sdk": "^5.0.10",
     "mocha": "^5.2.0",
     "puppeteer": "^0.12.0"
   }

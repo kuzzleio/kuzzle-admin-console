@@ -9,10 +9,7 @@ before('Getting browser and page...', async function() {
   await world.getPage()
 })
 
-describe('Setting up Mocha...', function() {
-  this.timeout(300000)
-})
-
 after('Close browser', async function() {
   await browser.close()
+  world.kuzzle.disconnect()
 })

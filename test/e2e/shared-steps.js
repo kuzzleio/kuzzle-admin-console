@@ -1,5 +1,7 @@
-module.exports = {
-  openCreateEnvModalIfExists: async page => {
+const world = require('./world')
+
+class SharedSteps {
+  async openCreateEnvModalIfExists(page) {
     try {
       await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
         timeout: 1000
@@ -11,11 +13,11 @@ module.exports = {
       })
       await page.click('.EnvironmentsSwitch-newConnectionBtn')
     } catch (error) {}
-  },
-  createEnvironment: async (page, name, host, port, colorIndex) => {
+  }
+  async createEnvironment(page, name, host, port, colorIndex) {
     // Create environment
     // ============================================
-    await page.waitForSelector('.CreateEnvironment-name')
+    await page.waitForSelector('.CreateEnvironment-name', { timeout: 2000 })
 
     if (name) {
       await page.type('.CreateEnvironment-name', name)
@@ -37,4 +39,48 @@ module.exports = {
     })
     await page.click('.Environment-SubmitButton')
   }
+  async connectToValidEnvironment(page) {
+    const validEnvName = 'kuzzle'
+    const validEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
+
+    await this.openCreateEnvModalIfExists(page)
+    await this.createEnvironment(page, validEnvName, validEnvHost)
+  }
+  async isLoggedIn(page) {
+    try {
+      await page.waitForSelector('.App-loggedIn', { timeout: 2000 })
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+  async isConnected(page) {
+    try {
+      await page.waitForSelector('.App-connected', { timeout: 2000 })
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+  async logInAsAnonymous(page) {
+    if (!(await this.isConnected(page))) {
+      await this.connectToValidEnvironment(page)
+    }
+    if (!(await this.isLoggedIn(page))) {
+      await page.waitForSelector('.LoginAsAnonymous-Btn', { timeout: 2000 })
+      await page.click('.LoginAsAnonymous-Btn')
+    }
+  }
+  async createIndex(page, name) {
+    await page.waitForSelector('.IndexesPage-createBtn', { timeout: 2000 })
+    await page.click('.IndexesPage-createBtn')
+
+    await page.waitForSelector('.CreateIndexModal-name', { timeout: 2000 })
+    await page.type('.CreateIndexModal-name', name)
+
+    await page.waitForSelector('.CreateIndexModal-createBtn', { timeout: 2000 })
+    await page.click('.CreateIndexModal-createBtn')
+  }
 }
+
+module.exports = new SharedSteps()

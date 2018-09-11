@@ -1,7 +1,9 @@
 const puppeteer = require('puppeteer')
+const Kuzzle = require('kuzzle-sdk')
 
 let browser
 let page
+let kuzzle = new Kuzzle(process.env.e2eLocal ? 'localhost' : 'kuzzle')
 
 const getBrowser = async () => {
   if (!browser) {
@@ -35,6 +37,8 @@ module.exports = {
   getBrowser,
   getPage,
   isLocal: process.env.e2eLocal !== undefined,
+  kuzzle,
+  defaultTestTimeout: 900000,
   url: process.env.e2eLocal
     ? 'http://localhost:3000'
     : 'http://adminconsole:3000'

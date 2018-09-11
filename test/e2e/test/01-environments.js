@@ -3,7 +3,7 @@ const expect = require('expect.js')
 const sharedSteps = require('../shared-steps')
 
 describe('Manage environments', function() {
-  this.timeout(30000)
+  this.timeout(world.defaultTestTimeout)
 
   afterEach('Take screenshot if test failed', async function() {
     if (this.currentTest.state === 'failed') {
