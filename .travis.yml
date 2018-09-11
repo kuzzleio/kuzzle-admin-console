@@ -1,7 +1,9 @@
 sudo: required
 group: edge
+
 services:
   - docker
+
 env:
   global:
     - DOCKER_COMPOSE_VERSION=1.9.0
@@ -10,8 +12,10 @@ env:
     - BUCKET_NAME=dl.kuzzle.io
     - secure: MJlvmEbSYf5q7tQ/DtPTMGLpN5SgudJ03bpI9zqIjq5p55YosaRz4egXArTJeZsfNsA6Z9Wx2yV9/zqp1Iaq0O7AqoWuB08X5DJ0I3WsEHTgly2a94W+nC8QnESbMVuo7kkNlykq2Xo9w2oBmuSgMsPL+6Qlcbb9+h09hUgENISldnv9Hw7dSstfUIAXSGVp4D/RjwaEfoOEfORdSAxO5sr9PuxV8P8RSwKuu/M82dG582w/pY9MOq6goIaIWTbNQDTT2FS7hzCAZuvhLxPqMAkcNYt8v/BA0AVpnPcDCduC5T9LM1EkV61pizV2C6PSEf5x28HP4eK7flU8A82KBGwXUZjc93v0cuYAsYh3CDQcHm8spljgVakVmhs+rogOu6roHexEQR4Y6pkVH9s80Q7ZmANqKIShWheYIBScBS1dl4Nq8O9z7GRUtEwNjarDi7GzPJDumAsl53/qeDw+B5UN746QFqdIJDpvZw1lf92dAlKjbMtvwpxBoFjqBCACFDhIZFLZz+c+uC4SItgirLXSRjJMglzromo0MRQ0Ga4JNPcJVXamzwMT7U8d9b44CsesBhLx498xP8S3pr+LAHIeEuGnoaxFS6ACjDO92ffKPjYvQW2pubWILEYyIuUk/MfUIBIVNAzUWnLzRETKw8bD3B/mmikDlvwAvN2XdL8=
     - secure: epbUm0zRQdQmnZMazfI4B8wclxxN61Dfp45z9mhlNlZYfprTdMP/+cKvLrTzi4FbfRRkH9WwK3Ic1Wm5CQAvAHOVyVg9EYaMKVOhymd8bVsFWStChXmvBKw2ghV4/MsbhUAnP2mNA7YWDMnCsANV/g4JBNgSZaeWSw8hen2w5zugHRnUz9vzwLzSOa7vLsId8ctmjwwFAObvuc6U9Vy755FrmX86uDmZGE8oRQtiwbkmQpj15+AqhYLN/LUnyapxqFyT3bgKoc+TAzR1nrEDtZ3Yg4kkgvmlks7jXEvXhwSAvASQvGhvYNpBpDVsL9LP3oTvvzZIvAYpVXwUY9gjlbGw+oa2ysurDxZoguAK2Ni5ZhXF0KoGha1GfY4YeNguBkbainVuFbTXkiis/veGRPfYGYh1uStbn2WRDSeY7eeGfoVqLfWHuMUZIFZMXaTq41UEYLJwKFuNeNtxs6eJyfVybWaO52ZtZYb5heetk62joZZtZ1ph9hnsBdnAY9duKB2NE7QXXLpA2VPqqndKcm47/z3mHOadg4PlR/pOJno/TxPaxTRYVotPzt9k2DcGiAcu/kUpwsl4uXJ4xmYCnm18lsfJ2Sq/6mj0+bguZLVTyt3j3uL3IVV+9sPFYwNod4fPEeH5xGvk0Vqk/k+IX4db5Tz/UK+7EV+Ii19XUEY=
+
 before_install:
   - sudo sysctl -w vm.max_map_count=262144
+
 addons:
   apt:
     packages:
@@ -21,6 +25,8 @@ addons:
       - zip
 install:
   - pip install awscli --upgrade --user
+  - npm i
+
 script:
   - npm test
 
