@@ -11,7 +11,7 @@ const getBrowser = async () => {
     const baseOpts = {
       args: ['--no-sandbox'],
       defaultViewport: { width: 1920, height: 983 },
-      dumpio: true
+      dumpio: process.env.showConsoleOutput !== undefined
     }
     const localDevOpts = {
       headless: false,
