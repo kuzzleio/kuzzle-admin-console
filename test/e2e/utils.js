@@ -51,5 +51,6 @@ const compareScreenshot = async name => {
 
 module.exports = {
   getCurrentScreenshotPath,
-  compareScreenshot
+  compareScreenshot,
+  visualRegressionPaths: paths
 }

@@ -4,8 +4,6 @@ const sharedSteps = require('../shared-steps')
 const utils = require('../utils.js')
 
 describe('Indexes and Collections', function() {
-  this.timeout(world.defaultTestTimeout)
-
   beforeEach(async () => {
     const indexes = await world.kuzzle.listIndexesPromise()
     indexes.forEach(index =>
