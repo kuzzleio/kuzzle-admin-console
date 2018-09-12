@@ -119,7 +119,9 @@ describe('Manage environments', function() {
     await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
 
     // Select the valid environment
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
+    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
+      timeout: world.defaultWaitElTimeout
+    })
     await page.click('.EnvironmentsSwitch > .btn-flat')
 
     await page.waitForSelector(`#EnvironmentsSwitch-env_${validEnvName}`, {
@@ -127,8 +129,8 @@ describe('Manage environments', function() {
     })
     await page.click(`#EnvironmentsSwitch-env_${validEnvName}`)
 
-    // Now verify that we see a Login as Anonymous button
-    const foundLoginAsAnonymousButton = await page.$$(`.LoginAsAnonymous-Btn`)
-    expect(foundLoginAsAnonymousButton.length).to.be.above(0)
+    // Now verify that we are connected to a valid environment
+    const isConnected = await sharedSteps.isConnected(page)
+    expect(isConnected).to.be(true)
   })
 })
