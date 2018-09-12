@@ -7,12 +7,20 @@ const utils = require('../utils')
 let browser
 
 before('Test environment setup...', async function() {
-  if (!fs.existsSync(utils.visualRegressionPaths.current)) {
-    fs.mkdirSync(utils.visualRegressionPaths.current)
+  const currentPath = path.join(
+    utils.visualRegressionPaths.base,
+    utils.visualRegressionPaths.current
+  )
+  if (!fs.existsSync(currentPath)) {
+    fs.mkdirSync(currentPath)
   }
 
-  if (!fs.existsSync(utils.visualRegressionPaths.diff)) {
-    fs.mkdirSync(utils.visualRegressionPaths.diff)
+  const diffPath = path.join(
+    utils.visualRegressionPaths.base,
+    utils.visualRegressionPaths.diff
+  )
+  if (!fs.existsSync(diffPath)) {
+    fs.mkdirSync(diffPath)
   }
 
   if (!fs.existsSync(world.failScreenshotPath)) {
