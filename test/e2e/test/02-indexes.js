@@ -1,6 +1,7 @@
 const world = require('../world')
 const expect = require('expect.js')
 const sharedSteps = require('../shared-steps')
+const utils = require('../utils.js')
 
 describe('Indexes and Collections', function() {
   this.timeout(world.defaultTestTimeout)
@@ -13,6 +14,43 @@ describe('Indexes and Collections', function() {
         {}
       )
     )
+  })
+
+  it('[VISUAL] Indexes page (empty state)', async () => {
+    const screenshotName = 'data.indexes.empty'
+    const currentScreenshotPath = utils.getCurrentScreenshotPath(screenshotName)
+
+    const page = await world.getPage()
+    await page.goto(world.url)
+
+    await sharedSteps.logInAsAnonymous(page)
+
+    await page.screenshot({
+      path: currentScreenshotPath
+    })
+
+    await utils.compareScreenshot(screenshotName)
+  })
+
+  it('[VISUAL] Indexes page (one index)', async () => {
+    const indexName = 'testindex'
+    const screenshotName = 'data.indexes.oneindex'
+    const currentScreenshotPath = utils.getCurrentScreenshotPath(screenshotName)
+
+    const page = await world.getPage()
+    await page.goto(world.url)
+
+    await sharedSteps.logInAsAnonymous(page)
+    await sharedSteps.createIndex(page, indexName)
+    await page.waitForSelector(`.IndexBoxed[title=${indexName}]`, {
+      timeout: 2000
+    })
+
+    await page.screenshot({
+      path: currentScreenshotPath
+    })
+
+    await utils.compareScreenshot(screenshotName)
   })
 
   it('Should properly create an index', async () => {

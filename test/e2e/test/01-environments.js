@@ -68,46 +68,6 @@ describe('Manage environments', function() {
     expect(foundEnvironment).to.eql(null)
   })
 
-  it('Should be able to create an invalid environment and switch back to the valid one', async () => {
-    const invalidEnvName = 'invalid'
-    const invalidEnvHost = 'invalid-host'
-    const validEnvName = 'valid'
-    const validEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
-    const page = await world.getPage()
-
-    await page.goto(world.url)
-
-    // Create a valid environment
-    await sharedSteps.openCreateEnvModalIfExists(page)
-    await sharedSteps.createEnvironment(page, validEnvName, validEnvHost)
-
-    // Create an invalid environment
-    await sharedSteps.openCreateEnvModalIfExists(page)
-    await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
-
-    // Select the invalid environment
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
-    await page.click('.EnvironmentsSwitch > .btn-flat')
-
-    await page.waitForSelector(`#EnvironmentsSwitch-env_${invalidEnvName}`, {
-      timeout: 2000
-    })
-    await page.click(`#EnvironmentsSwitch-env_${invalidEnvName}`)
-
-    // Select the valid environment
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
-    await page.click('.EnvironmentsSwitch > .btn-flat')
-
-    await page.waitForSelector(`#EnvironmentsSwitch-env_${validEnvName}`, {
-      timeout: 2000
-    })
-    await page.click(`#EnvironmentsSwitch-env_${validEnvName}`)
-
-    // Now verify that we see a Login as Anonymous button
-    const foundLoginAsAnonymousButton = await page.$$(`.LoginAsAnonymous-Btn`)
-    expect(foundLoginAsAnonymousButton.length).to.be.above(0)
-  })
-
   it('Properly sets a color for the environment', async () => {
     const page = await world.getPage()
     const newEnvName = 'colored'
@@ -147,5 +107,45 @@ describe('Manage environments', function() {
       node => node.style.backgroundColor
     )
     expect(headerColor).to.be.eql(selectedColor)
+  })
+
+  it('Should be able to create an invalid environment and switch back to the valid one', async () => {
+    const invalidEnvName = 'invalid'
+    const invalidEnvHost = 'invalid-host'
+    const validEnvName = 'valid'
+    const validEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
+    const page = await world.getPage()
+
+    await page.goto(world.url)
+
+    // Create a valid environment
+    await sharedSteps.openCreateEnvModalIfExists(page)
+    await sharedSteps.createEnvironment(page, validEnvName, validEnvHost)
+
+    // Create an invalid environment
+    await sharedSteps.openCreateEnvModalIfExists(page)
+    await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
+
+    // Select the invalid environment
+    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
+    await page.click('.EnvironmentsSwitch > .btn-flat')
+
+    await page.waitForSelector(`#EnvironmentsSwitch-env_${invalidEnvName}`, {
+      timeout: 2000
+    })
+    await page.click(`#EnvironmentsSwitch-env_${invalidEnvName}`)
+
+    // Select the valid environment
+    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
+    await page.click('.EnvironmentsSwitch > .btn-flat')
+
+    await page.waitForSelector(`#EnvironmentsSwitch-env_${validEnvName}`, {
+      timeout: 2000
+    })
+    await page.click(`#EnvironmentsSwitch-env_${validEnvName}`)
+
+    // Now verify that we see a Login as Anonymous button
+    const foundLoginAsAnonymousButton = await page.$$(`.LoginAsAnonymous-Btn`)
+    expect(foundLoginAsAnonymousButton.length).to.be.above(0)
   })
 })
