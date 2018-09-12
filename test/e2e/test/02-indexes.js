@@ -41,7 +41,7 @@ describe('Indexes and Collections', function() {
     await sharedSteps.logInAsAnonymous(page)
     await sharedSteps.createIndex(page, indexName)
     await page.waitForSelector(`.IndexBoxed[title=${indexName}]`, {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
 
     await page.screenshot({
@@ -59,7 +59,7 @@ describe('Indexes and Collections', function() {
     await sharedSteps.logInAsAnonymous(page)
     await sharedSteps.createIndex(page, indexName)
     await page.waitForSelector(`.IndexBoxed[title=${indexName}]`, {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
 
     // Check that one .IndexBoxed-name element exists that contains indexName
@@ -77,10 +77,12 @@ describe('Indexes and Collections', function() {
     await sharedSteps.logInAsAnonymous(page)
     await sharedSteps.createIndex(page, indexName)
     await page.waitForSelector(`.IndexBoxed[title=${indexName}]`, {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
     await sharedSteps.createIndex(page, indexName)
-    await page.waitForSelector('.CreateIndexModal-error', { timeout: 2000 })
+    await page.waitForSelector('.CreateIndexModal-error', {
+      timeout: world.defaultWaitElTimeout
+    })
   })
 
   it('Should properly delete an index', async () => {
@@ -92,23 +94,25 @@ describe('Indexes and Collections', function() {
     await sharedSteps.createIndex(page, indexName)
 
     await page.waitForSelector(`.IndexBoxed[title=${indexName}]`, {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
     await page.click(`.IndexBoxed[title=${indexName}] .IndexBoxed-dropdown`)
 
     await page.waitForSelector(
       `.IndexBoxed[title=${indexName}] .IndexDropdown-delete`,
-      { timeout: 2000 }
+      { timeout: world.defaultWaitElTimeout }
     )
     await page.click(`.IndexBoxed[title=${indexName}] .IndexDropdown-delete`)
 
     // Create a watchdog to wait for the index to be really deleted
     const indexIsDeleted = page.waitForFunction(
       `document.querySelector('.IndexBoxed[title=${indexName}]') === null`,
-      { timeout: 5000 }
+      { timeout: world.defaultWaitElTimeout }
     )
 
-    await page.waitForSelector('.IndexDeleteModal-name', { timeout: 2000 })
+    await page.waitForSelector('.IndexDeleteModal-name', {
+      timeout: world.defaultWaitElTimeout
+    })
     await page.type('.IndexDeleteModal-name', indexName)
     await page.click('.IndexDeleteModal-deleteBtn')
 

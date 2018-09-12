@@ -4,12 +4,12 @@ class SharedSteps {
   async openCreateEnvModalIfExists(page) {
     try {
       await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
-        timeout: 1000
+        timeout: world.defaultWaitElTimeout
       })
       await page.click('.EnvironmentsSwitch > .btn-flat')
 
       await page.waitForSelector('.EnvironmentsSwitch-newConnectionBtn', {
-        timeout: 1000
+        timeout: world.defaultWaitElTimeout
       })
       await page.click('.EnvironmentsSwitch-newConnectionBtn')
     } catch (error) {}
@@ -17,7 +17,9 @@ class SharedSteps {
   async createEnvironment(page, name, host, port, colorIndex) {
     // Create environment
     // ============================================
-    await page.waitForSelector('.CreateEnvironment-name', { timeout: 2000 })
+    await page.waitForSelector('.CreateEnvironment-name', {
+      timeout: world.defaultWaitElTimeout
+    })
 
     if (name) {
       await page.type('.CreateEnvironment-name', name)
@@ -35,7 +37,7 @@ class SharedSteps {
     }
 
     await page.waitForSelector('.Environment-SubmitButton', {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
     await page.click('.Environment-SubmitButton')
   }
@@ -48,7 +50,9 @@ class SharedSteps {
   }
   async isLoggedIn(page) {
     try {
-      await page.waitForSelector('.App-loggedIn', { timeout: 2000 })
+      await page.waitForSelector('.App-loggedIn', {
+        timeout: world.defaultWaitElTimeout
+      })
       return true
     } catch (error) {
       return false
@@ -56,7 +60,9 @@ class SharedSteps {
   }
   async isConnected(page) {
     try {
-      await page.waitForSelector('.App-connected', { timeout: 2000 })
+      await page.waitForSelector('.App-connected', {
+        timeout: world.defaultWaitElTimeout
+      })
       return true
     } catch (error) {
       return false
@@ -67,18 +73,26 @@ class SharedSteps {
       await this.connectToValidEnvironment(page)
     }
     if (!(await this.isLoggedIn(page))) {
-      await page.waitForSelector('.LoginAsAnonymous-Btn', { timeout: 2000 })
+      await page.waitForSelector('.LoginAsAnonymous-Btn', {
+        timeout: world.defaultWaitElTimeout
+      })
       await page.click('.LoginAsAnonymous-Btn')
     }
   }
   async createIndex(page, name) {
-    await page.waitForSelector('.IndexesPage-createBtn', { timeout: 2000 })
+    await page.waitForSelector('.IndexesPage-createBtn', {
+      timeout: world.defaultWaitElTimeout
+    })
     await page.click('.IndexesPage-createBtn')
 
-    await page.waitForSelector('.CreateIndexModal-name', { timeout: 2000 })
+    await page.waitForSelector('.CreateIndexModal-name', {
+      timeout: world.defaultWaitElTimeout
+    })
     await page.type('.CreateIndexModal-name', name)
 
-    await page.waitForSelector('.CreateIndexModal-createBtn', { timeout: 2000 })
+    await page.waitForSelector('.CreateIndexModal-createBtn', {
+      timeout: world.defaultWaitElTimeout
+    })
     await page.click('.CreateIndexModal-createBtn')
   }
 }

@@ -38,6 +38,7 @@ module.exports = {
   isLocal: process.env.e2eLocal !== undefined,
   kuzzle,
   defaultTestTimeout: 900000,
+  defaultWaitElTimeout: process.env.waitElTimeout || 4000,
   url: process.env.e2eLocal
     ? 'http://localhost:3000'
     : 'http://adminconsole:3000'

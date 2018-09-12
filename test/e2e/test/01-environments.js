@@ -25,7 +25,7 @@ describe('Manage environments', function() {
     await page.click('.EnvironmentsSwitch > .btn-flat')
 
     await page.waitForSelector(`#EnvironmentsSwitch-env_${newEnvName}`, {
-      timeout: 3000
+      timeout: world.defaultWaitElTimeout
     })
   })
 
@@ -45,7 +45,7 @@ describe('Manage environments', function() {
 
     await page.waitForSelector(
       `#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`,
-      { timeout: 2000 }
+      { timeout: world.defaultWaitElTimeout }
     )
     await page.click(`#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`)
 
@@ -129,7 +129,7 @@ describe('Manage environments', function() {
     await page.click('.EnvironmentsSwitch > .btn-flat')
 
     await page.waitForSelector(`#EnvironmentsSwitch-env_${invalidEnvName}`, {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
     await page.click(`#EnvironmentsSwitch-env_${invalidEnvName}`)
 
@@ -138,7 +138,7 @@ describe('Manage environments', function() {
     await page.click('.EnvironmentsSwitch > .btn-flat')
 
     await page.waitForSelector(`#EnvironmentsSwitch-env_${validEnvName}`, {
-      timeout: 2000
+      timeout: world.defaultWaitElTimeout
     })
     await page.click(`#EnvironmentsSwitch-env_${validEnvName}`)
 
