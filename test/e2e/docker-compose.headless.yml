@@ -5,6 +5,12 @@ services:
     image: kuzzleio/puppeteer-light
     volumes:
       - ./:/app/
+    environment:
+      - cloudinary_cloud_name
+      - cloudinary_api_key
+      - cloudinary_api_secret
+      - CI
+      - TRAVIS
     working_dir: /app/
     shm_size: 1gb #512M
     entrypoint: ['sh', '-c', '/app/run-test.sh']

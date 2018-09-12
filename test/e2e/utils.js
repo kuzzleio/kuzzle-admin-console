@@ -8,6 +8,17 @@ const paths = {
   diff: 'diff'
 }
 const threshold = 0.01
+const cloudinary = require('cloudinary')
+
+cloudinary.config({
+  cloud_name: process.env.cloudinary_cloud_name || 'kuzzle',
+  api_key: process.env.cloudinary_api_key,
+  api_secret: process.env.cloudinary_api_secret
+})
+
+const sendToCloudinary = path => {
+  cloudinary.v2.uploader.upload(path, { tags: ['kuzzle-admin-console'] })
+}
 
 const getCurrentScreenshotPath = name => {
   return path.join(paths.base, paths.current, name + '.png')
@@ -52,5 +63,6 @@ const compareScreenshot = async name => {
 module.exports = {
   getCurrentScreenshotPath,
   compareScreenshot,
-  visualRegressionPaths: paths
+  visualRegressionPaths: paths,
+  sendToCloudinary
 }

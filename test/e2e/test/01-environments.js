@@ -1,15 +1,8 @@
-const world = require('../world')
 const expect = require('expect.js')
+const world = require('../world')
 const sharedSteps = require('../shared-steps')
 
 describe('Manage environments', function() {
-  afterEach('Take screenshot if test failed', async function() {
-    if (this.currentTest.state === 'failed') {
-      const page = await world.getPage()
-      await page.screenshot({ path: './test-error.png', type: 'png' })
-    }
-  })
-
   it('should be able to create a new environment', async () => {
     const page = await world.getPage()
     const newEnvName = 'local'
@@ -17,11 +10,17 @@ describe('Manage environments', function() {
 
     await page.goto(world.url)
 
+    await page.waitForSelector('.TOTO', {
+      timeout: world.defaultWaitElTimeout
+    })
+
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, newEnvName, newEnvHost)
 
     // Check new environment exists
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
+    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
+      timeout: world.defaultWaitElTimeout
+    })
     await page.click('.EnvironmentsSwitch > .btn-flat')
 
     await page.waitForSelector(`#EnvironmentsSwitch-env_${newEnvName}`, {

@@ -8,6 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "blink-diff": "^1.0.13",
+    "cloudinary": "^1.11.0",
     "expect.js": "^0.3.1",
     "kuzzle-sdk": "^5.0.10",
     "mocha": "^5.2.0",
