@@ -1,3 +1,12 @@
+To start the Kuzzle Admin Console in development-mode with hot-reload run the following commands:
+
+```
+$ npm install
+$ npm run dev
+```
+
+The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:3000
+
 # Coding organization
 
 We follow the general Vuejs scaffolding for organizing our JS code.
@@ -418,45 +427,62 @@ $mq-large: mq-build(1100px, null);
 
 ## Testing
 
-### How to test ready in a component
+### End-to-end
+
+We use Chrome Puppeteer to e2e the UI. We both perform interaction tests and visual regression tests. Everything runs in a Mocha test suite and uses [expect-js](https://github.com/Automattic/expect.js) for assertions, even if you won't need them most of the time.
+
+#### Before you start
+
+There's a few things it's good to know, here they go.
+
+- You will need NodeJS version >= 8 to perform end-to-end tests locally because they make heavy use of `async/await`.
+- The `world.js` file contains everything you need to interact with Chrome Puppeteer, namely the `browser` and `page` singletons, but also some other useful variables (you should take a look at the `module.exports` in this file). You must always use the singletons provided in this file to interact with Puppeteer.
+- The `shared-steps.js` file is your friend. It's here to keep your tests DRY. All the steps that can be factorized and re-used are here. You must put here the steps that are repeated in your tests.
+- When performing visual regression testing, you must prepend the name of your test with `[VISUAL]`. This will enable the `update-visual-reference.sh` script to properly update the visual reference for this test.
+- You are encouraged to perform your test setup and teardown using the proper Mocha Hooks `beforeEach` and `afterEach`. If these steps involve interacting with data on Kuzzle-side, you should perform these operations via the Kuzzle SDK (it will be much faster and it won't pollute the state of your browser before the test).
+
+#### Interaction tests
+
+You write interaction tests by piloting an instance of Chrome Puppeteer and making it interact with the app feature you want to test. If things go wrong, Puppeteer will not find the elements it expects to interact with, will throw and make the test fail.
+You can control Chrome Puppeteer using its [standard API](https://pptr.dev/#?product=Puppeteer&version=v1.8.0) on the `world.page` object. There are a few best practices you should follow, though.
+
+- Always [wait for an element to be available](https://pptr.dev/#?product=Puppeteer&version=v1.8.0&show=api-pagewaitforselectorselector-options) before interacting with it. Always set the `timeout` to `world.defaultWaitElTimeout` (the default in Puppeteer is 30s). You can override the `defaultWaitElTimeout` value by setting the environment variable `waitElTimeout` in your console.
+- The elements you interact with should have well-formed BEM-compliant CSS classes: it will be much simpler to find them in the page. If you follow the styling guidelines you'll be just fine.
+- You can use the Chrome Extension [Puppeteer Recorder](https://github.com/checkly/puppeteer-recorder) to live-record your clicks on the page, but it's not very solid. It is way better to use the BEM classes to interact with elements in the page.
+
+#### Visual Regression tests
+
+You write visual regression tests just like you write normal interaction tests. The only difference is that you'll take a screenshot at some point, store it in the `visual-regression/current` directory, and then compare it to the reference by calling the `utils.compareScreenshot` function. Follow the example below
 
 ```javascript
-document.body.insertAdjacentHTML('afterbegin', '<body></body>')
-let vm = new Vue({
-  template: '<div><my-component v-ref:component"></my-component></div>',
-  components: {
-    MyComponent
-  }
-}).$mount('body')
-```
+// Do not forget the [VISUAL] prefix in the name
+it('[VISUAL] Indexes page (empty state)', async () => {
+  // Set a screenshot name following this convention
+  const screenshotName = 'data.indexes.empty'
 
-The `ready` is triggerd with `mount('body')`. You can also trigger event destroy with `vm.$refs.component.$destroy`.
+  // Get the path where the current screenshot will be stored
+  const currentScreenshotPath = utils.getCurrentScreenshotPath(screenshotName)
 
-### How to test with $router in ready
+  // Go to the screen you want to test
+  const page = await world.getPage()
+  await page.goto(world.url)
+  await sharedSteps.logInAsAnonymous(page)
 
-```javascript
-document.body.insertAdjacentHTML('afterbegin', '<body></body>')
-let vm = new Vue({
-  template: '<div><my-component v-ref:component"></my-component></div>',
-  components: {
-    MyComponent
-  }
+  // Take the screenshot and save it in the right place
+  await page.screenshot({
+    path: currentScreenshotPath
+  })
+
+  // This will perform a visual comparison between the current
+  // screenshot and the reference one (versioned).
+  // The diff will be output in `visual-regression/diff/${screenshotName}`
+  await utils.compareScreenshot(screenshotName)
 })
-vm.$router = { go: sandbox.stub(), _children: { push: sandbox.stub() } }
-vm.$mount('body')
 ```
 
-### How to test with $dispatch in ready
+Now, the first time you write such a test, the reference screenshot will not exist (because, probably, even the screen to test didn't exist) and the test will fail. This is ok, read further.
 
-```javascript
-$dispatch = sandbox.stub(Vue.prototype, '$dispatch')
-document.body.insertAdjacentHTML('afterbegin', '<body></body>')
-let vm = new Vue({
-  template: '<div><my-component v-ref:component"></my-component></div>',
-  components: {
-    MyComponent
-  }
-})
-vm.$router = { go: sandbox.stub(), _children: { push: sandbox.stub() } }
-vm.$mount('body')
-```
+##### Updating reference screenshots
+
+- Every time you write a **new test** for the first time, you should run `npm run e2e-update-reference`. This script will generate all the screenshots and copy the new ones to the `reference` directory.
+- Whenever you want to **update an existing test**, you'll have to manually overwrite the existing reference with the new screenshot: the scripts won't do that for you.

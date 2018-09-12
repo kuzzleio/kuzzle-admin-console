@@ -20,7 +20,7 @@ updatingVisualReference=1 npm run test-visual
 echo
 echo Copying current screenshots to reference...
 echo
-cp visual-regression/current/* visual-regression/reference/
+rsync -av --ignore-existing visual-regression/current/ visual-regression/reference/
 
 echo Done.
 echo

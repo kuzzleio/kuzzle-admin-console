@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "test": "mocha --no-timeouts -R spec -S -b",
-    "test-visual": "mocha --no-timeouts -g VISUAL"
+    "test-visual": "mocha --no-timeouts -R nyan -g VISUAL"
   },
   "license": "MIT",
   "dependencies": {
