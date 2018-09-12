@@ -9,11 +9,6 @@ describe('Manage environments', function() {
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
 
     await page.goto(world.url)
-
-    await page.waitForSelector('.TOTO', {
-      timeout: world.defaultWaitElTimeout
-    })
-
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, newEnvName, newEnvHost)
 
