@@ -118,15 +118,6 @@ describe('Manage environments', function() {
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
 
-    // Select the invalid environment
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
-    await page.click('.EnvironmentsSwitch > .btn-flat')
-
-    await page.waitForSelector(`#EnvironmentsSwitch-env_${invalidEnvName}`, {
-      timeout: world.defaultWaitElTimeout
-    })
-    await page.click(`#EnvironmentsSwitch-env_${invalidEnvName}`)
-
     // Select the valid environment
     await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
     await page.click('.EnvironmentsSwitch > .btn-flat')

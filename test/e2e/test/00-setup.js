@@ -37,15 +37,18 @@ afterEach('Take screenshot if test failed', async function() {
       await page.screenshot({
         path: screenshotPath
       })
+
+      if (process.env.CI) {
+        console.log('====================================')
+        console.log('Sending screenshots to Cloudinary...')
+        console.log('====================================')
+        utils.sendToCloudinary(
+          screenshotPath,
+          `admin-console-test-fail-${Date.now()}`
+        )
+      }
     } catch (error) {
       console.log(error)
-    }
-    if (process.env.CI) {
-      try {
-        utils.sendToCloudinary(screenshotPath)
-      } catch (error) {
-        console.log(error)
-      }
     }
   }
 })

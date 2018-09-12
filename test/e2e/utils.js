@@ -16,8 +16,11 @@ cloudinary.config({
   api_secret: process.env.cloudinary_api_secret
 })
 
-const sendToCloudinary = path => {
-  cloudinary.v2.uploader.upload(path, { tags: ['kuzzle-admin-console'] })
+const sendToCloudinary = (path, publicId) => {
+  cloudinary.v2.uploader.upload(path, {
+    public_id: publicId,
+    tags: ['kuzzle-admin-console']
+  })
 }
 
 const getCurrentScreenshotPath = name => {
