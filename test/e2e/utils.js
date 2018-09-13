@@ -17,10 +17,10 @@ cloudinary.config({
   api_secret: process.env.cloudinary_api_secret
 })
 
-const sendToCloudinary = (path, publicId) => {
+const sendToCloudinary = (path, publicId, tags) => {
   cloudinary.v2.uploader.upload(path, {
     public_id: publicId,
-    tags: ['kuzzle-admin-console']
+    tags
   })
 }
 

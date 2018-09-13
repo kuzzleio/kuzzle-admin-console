@@ -46,13 +46,14 @@ afterEach('Take screenshot if test failed', async function() {
         path: screenshotPath
       })
 
-      if (process.env.CI) {
+      if (process.env.TRAVIS) {
         console.log('====================================')
         console.log('Sending screenshots to Cloudinary...')
         console.log('====================================')
         utils.sendToCloudinary(
           screenshotPath,
-          `admin-console-test-fail-${Date.now()}`
+          `admin-console-test-fail-${Date.now()}`,
+          [`travis-${process.env.TRAVIS_BUILD_NUMBER}`]
         )
       }
     } catch (error) {

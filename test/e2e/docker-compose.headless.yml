@@ -10,8 +10,9 @@ services:
       - cloudinary_api_key
       - cloudinary_api_secret
       - waitElTimeout
-      - CI
       - TRAVIS
+      - TRAVIS_JOB_NUMBER
+      - TRAVIS_BUILD_NUMBER
     working_dir: /app/
     shm_size: 1gb #512M
     entrypoint: ['sh', '-c', '/app/run-test.sh']
