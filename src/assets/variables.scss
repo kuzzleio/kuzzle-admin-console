@@ -1,27 +1,29 @@
-/* 1. Colors
-   ========================================================================== */
+// 1. Colors
+//   ==========================================================================
 
 $primary-color: #002835;
 $secondary-color: #3498db;
 $tertiary-color: #efc94c;
 $blue-color: #3498db;
-$red-color: #E94E77;
-$green-color: #9DE0AD;
-$skin-color: #E08E79;
-$lavandia-color: #73626E;
+$red-color: #e94e77;
+$green-color: #9de0ad;
+$skin-color: #e08e79;
+$lavandia-color: #73626e;
+$grey-color: #7b7b7b;
 $disabled-color: #9f9f9f;
 
 $link-color: $primary-color;
 $tabs-text-color: $primary-color;
 $dropdown-color: $primary-color;
+$dropdown-border-color: #eeeeee;
 
-/* 3. Buttons
-   ========================================================================== */
+// 3. Buttons
+//   ==========================================================================
 
 $button-padding: 0 1rem !default;
 
-/* 9. Fonts
-   ========================================================================== */
+// 9. Fonts
+//   ==========================================================================
 
 $body-font-family: 'Ubuntu', sans-serif;
 $header-font-family: 'Ubuntu', sans-serif;
@@ -30,30 +32,34 @@ $roboto-font-path: '../../static/fonts/roboto/' !default;
 $gobold-font-path: '../../static/fonts/gobold/' !default;
 $anonymous-pro-font-path: '../../static/fonts/anonymous-pro/' !default;
 
-/* 10. Forms
-   ========================================================================== */
+// 10. Forms
+//   ==========================================================================
 
 $input-focus-color: $lavandia-color;
 $input-success-color: $secondary-color;
 
-/* 11. Global
-   ========================================================================== */
+// 11. Global
+//   ==========================================================================
 
 // Media Query Ranges
 $small-screen-up: 1201px;
-$medium-screen-up: 1760px;
-$large-screen-up: 2000px;
+$medium-screen-up: 1401px;
+$large-screen-up: 1801px;
 $small-screen: 1000px;
 $medium-screen: 1400px;
-$large-screen: 1761px;
 
-/* 13. Navigation Bar
-   ========================================================================== */
+// 13. Navigation Bar
+//   ==========================================================================
 
 $navbar-height: 50px;
 $navbar-height-mobile: 40px;
 
-/* 14. Treeview sidebar
-   ========================================================================== */
+// 14. Treeview sidebar
+//   ==========================================================================
 
 $sidebar-width: 240px;
+
+// 15. Treeview sidebar
+//   ==========================================================================
+
+$container-width: 1150px;

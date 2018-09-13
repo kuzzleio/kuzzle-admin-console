@@ -1,7 +1,7 @@
 <template>
   <div>
     <aside>
-      <ul class="side-nav fixed leftside-navigation ps-container ps-active-y">
+      <ul class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
         <router-link v-if="canManageUsers()" class="bold" tag="li" :to="{name: 'SecurityUsersList'}" active-class="active">
           <a class="waves-effect">
             <i class="fa fa-user" aria-hidden="true"></i>
@@ -32,60 +32,74 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .side-nav {
-    a {
-      i.fa {
-        color: #646464
-      }
-      height: 54px;
-      line-height: 54px;
-    }
+.Treeview-container {
+  @media (max-width: $medium-screen) {
+    // @HACK this is nasty, but we need it to override the default
+    // MaterializeCSS behavior, hiding the side menu whenever the
+    // screen is less than medium-width.
+    transform: translateX(0);
   }
-  aside {
-    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
-    a {
-      padding: 0 20px;
+}
+.side-nav {
+  top: 50px;
+  width: $sidebar-width;
+  a {
+    i.fa {
+      color: #646464;
     }
-    .fa {
-      width: 18px;
-    }
+    height: 54px;
+    line-height: 54px;
   }
+}
+aside {
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  a {
+    padding: 0 20px;
+  }
+  .fa {
+    width: 18px;
+  }
+}
 </style>
 
 <script>
-  import * as types from '../../vuex/modules/security/mutation-types'
-  import { canManageUsers, canManageRoles, canManageProfiles } from '../../services/userAuthorization'
+import * as types from '../../vuex/modules/security/mutation-types'
+import {
+  canManageUsers,
+  canManageRoles,
+  canManageProfiles
+} from '../../services/userAuthorization'
 
-  export default {
-    name: 'SecurityLayout',
-    methods: {
-      canManageUsers,
-      canManageRoles,
-      canManageProfiles,
-      fetchMapping (v) {
-        if (!v.meta) {
-          return
-        }
-        switch (v.meta.section) {
-          case 'users':
-            this.$store.dispatch(types.FETCH_USER_MAPPING)
-            break
-          case 'profiles':
-            this.$store.dispatch(types.FETCH_PROFILE_MAPPING)
-            break
-          case 'roles':
-            this.$store.dispatch(types.FETCH_ROLE_MAPPING)
-            break
-        }
+export default {
+  name: 'SecurityLayout',
+  methods: {
+    canManageUsers,
+    canManageRoles,
+    canManageProfiles,
+    fetchMapping(v) {
+      if (!v.meta) {
+        return
       }
-    },
-    mounted () {
-      this.fetchMapping(this.$route)
-    },
-    watch: {
-      '$route' (v) {
-        this.fetchMapping(v)
+      switch (v.meta.section) {
+        case 'users':
+          this.$store.dispatch(types.FETCH_USER_MAPPING)
+          break
+        case 'profiles':
+          this.$store.dispatch(types.FETCH_PROFILE_MAPPING)
+          break
+        case 'roles':
+          this.$store.dispatch(types.FETCH_ROLE_MAPPING)
+          break
       }
     }
+  },
+  mounted() {
+    this.fetchMapping(this.$route)
+  },
+  watch: {
+    $route(v) {
+      this.fetchMapping(v)
+    }
   }
+}
 </script>

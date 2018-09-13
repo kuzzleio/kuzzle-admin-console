@@ -1,6 +1,6 @@
+import { DELETE_ENVIRONMENT } from '../../../../src/vuex/modules/common/kuzzle/mutation-types'
+import { DO_LOGOUT } from '../../../../src/vuex/modules/auth/mutation-types'
 const environmentInjector = require('inject-loader!../../../../src/services/environment')
-import {DELETE_ENVIRONMENT} from '../../../../src/vuex/modules/common/kuzzle/mutation-types'
-import {DO_LOGOUT} from '../../../../src/vuex/modules/auth/mutation-types'
 
 let sandbox = sinon.sandbox.create()
 let dummyEnvironments = {
@@ -20,7 +20,7 @@ let dummyStore = {
     }
   },
   getters: {
-    currentEnvironment: {current: 'environment'},
+    currentEnvironment: { current: 'environment' },
     currentEnvironmentId: 'currentEnvironmentId'
   },
   dispatch: sandbox.stub()
@@ -46,7 +46,9 @@ describe('Environment service', () => {
   describe('deleteEnvironment', () => {
     it('should call deleteEnvironment', () => {
       envService.deleteEnvironment('toto')
-      expect(dummyStore.dispatch.calledWith(DELETE_ENVIRONMENT, 'toto')).to.be.equal(true)
+      expect(
+        dummyStore.dispatch.calledWith(DELETE_ENVIRONMENT, 'toto')
+      ).to.be.equal(true)
     })
 
     it('should logout if the current environment is deleted', () => {

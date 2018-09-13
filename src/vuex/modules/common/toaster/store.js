@@ -5,7 +5,7 @@ const state = {
 }
 
 export const mutations = {
-  [SET_TOAST] (state, payload) {
+  [SET_TOAST](state, payload) {
     state.toast = {
       text: null,
       duration: 5000,

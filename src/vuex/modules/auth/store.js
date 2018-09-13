@@ -14,13 +14,13 @@ const state = {
 }
 
 export const mutations = {
-  [SET_CURRENT_USER] (state, user) {
+  [SET_CURRENT_USER](state, user) {
     state.user = user
   },
-  [SET_TOKEN_VALID] (state, valid) {
+  [SET_TOKEN_VALID](state, valid) {
     state.tokenValid = valid
   },
-  [SET_ADMIN_EXISTS] (state, exists) {
+  [SET_ADMIN_EXISTS](state, exists) {
     state.adminAlreadyExists = exists
   }
 }

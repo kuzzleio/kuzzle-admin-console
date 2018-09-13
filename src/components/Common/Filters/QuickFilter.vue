@@ -1,52 +1,145 @@
 <template>
-  <div class="row">
-    <form class="">
-      <div class="col s7">
-        <div class="search-bar">
-          <i class="fa fa-search search"></i>
-          <input type="text" placeholder="Search..." v-model="filters.searchTerm" v-focus />
-          <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayComplexSearch">More query options</a>
-          <a v-else href="#" class="fluid-hover" @click.prevent="displayComplexSearch">Less query options</a>
+  <div class="QuickFilter row">
+    <form>
+      <div class="col s8 l8 xl8">
+        <div class="QuickFilter-searchBar">
+          <i class="QuickFilter-searchIcon fa fa-search search"></i>
+          <div v-if="complexFilterActive || !enabled" class="QuickFilter-chip chip">
+            <span class="QuickFilter-chipLabel" @click.prevent="displayAdvancedFilters">{{advancedQueryLabel}}</span>
+          </div>
+          <input v-else type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus @input="submitSearch">
+          <a class="QuickFilter-optionBtn fluid-hover" v-if="!advancedFiltersVisible" href="#" @click.prevent="displayAdvancedFilters">More query options</a>
+          <a class="QuickFilter-optionBtn fluid-hover" v-else href="#" @click.prevent="displayAdvancedFilters">Less query options</a>
         </div>
       </div>
-      <div class="col s5 actions-quicksearch">
-        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="quickSearch">Search</button>
-        <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">reset</button>
+      <div v-if="actionButtonsVisible" class="QuickFilter-actions col s4 l4 xl4">
+        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
+        <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
       </div>
     </form>
   </div>
 </template>
 
 <script>
-  import Focus from '../../../directives/focus.directive'
+import Focus from '../../../directives/focus.directive'
 
-  export default {
-    name: 'QuickFilter',
-    props: ['searchTerm', 'displayBlockFilter'],
-    directives: {
-      Focus
+export default {
+  name: 'QuickFilter',
+  props: {
+    searchTerm: String,
+    advancedQueryLabel: {
+      type: String,
+      required: false,
+      default: 'Advanced query...'
     },
-    data () {
-      return {
-        filters: {
-          searchTerm: null
-        }
+    submitButtonLabel: {
+      type: String,
+      required: false,
+      default: 'search'
+    },
+    actionButtonsVisible: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    complexFilterActive: Boolean,
+    advancedFiltersVisible: Boolean,
+    enabled: Boolean
+  },
+  directives: {
+    Focus
+  },
+  data() {
+    return {
+      inputSearchTerm: this.searchTerm,
+      throttleSearch: false
+    }
+  },
+  methods: {
+    submitSearch() {
+      if (this.throttleSearch) {
+        return
+      }
+
+      this.throttleSearch = true
+      setTimeout(() => {
+        this.throttleSearch = false
+      }, 50)
+
+      if (this.complexFilterActive) {
+        this.$emit('refresh')
+      } else {
+        this.$emit('update-filter', this.inputSearchTerm)
       }
     },
-    methods: {
-      quickSearch () {
-        this.$emit('filters-quick-search', this.filters.searchTerm)
-      },
-      resetQuickSearch () {
-        this.filters.searchTerm = null
-        this.$emit('filters-quick-search', null)
-      },
-      displayComplexSearch () {
-        this.$emit('filters-display-block-filter')
-      }
+    resetSearch() {
+      this.$emit('reset')
     },
-    mounted () {
-      this.filters.searchTerm = this.searchTerm
+    displayAdvancedFilters() {
+      this.$emit('display-advanced-filters')
+    }
+  },
+  watch: {
+    searchTerm: {
+      immediate: true,
+      handler(value) {
+        this.inputSearchTerm = value
+      }
     }
   }
+}
 </script>
+
+<style lang="scss" scoped>
+.QuickFilter {
+  margin-bottom: 0;
+}
+.QuickFilter-searchBar {
+  position: relative;
+  height: 48px;
+  border-bottom: solid 1px #e4e1e1;
+
+  input {
+    height: 48px;
+    padding-left: 34px;
+    margin-bottom: 0;
+    width: 100%;
+    padding-right: 215px;
+    box-sizing: border-box;
+    border-bottom: solid 1px #e4e1e1;
+  }
+}
+
+.QuickFilter-searchIcon {
+  position: absolute;
+  font-size: 1.3rem;
+  margin-left: 4px;
+  color: grey;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.QuickFilter-chip {
+  margin-top: 9px;
+  margin-left: 30px;
+  cursor: pointer;
+
+  .QuickFilter-chipLabel {
+    display: inline-block;
+    padding-right: 10px;
+  }
+}
+
+.QuickFilter-optionBtn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  text-decoration: underline;
+}
+
+.QuickFilter-actions {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

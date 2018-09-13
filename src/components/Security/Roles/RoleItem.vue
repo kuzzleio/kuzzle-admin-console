@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'collapsed': collapsed }" class="item-document">
-    <i class="fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div  class="RoleItem" :class="{ 'collapsed': collapsed }">
+    <i class="RoleItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
     <input
       type="checkbox"
@@ -11,13 +11,13 @@
 
     <label :for="checkboxId" ></label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="RoleItem-title item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
-    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="additional-attribute">
+    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="RoleItem-additionalAttribute">
       ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
     </label>
 
-    <div class="right actions">
+    <div class="RoleItem-actions right">
       <a href="#" @click.prevent="update"
           v-title="{active: !canEditRole(), title: 'You are not allowed to edit this role'}">
           <i class="fa fa-pencil" :class="{'disabled': !canEditRole()}"></i>
@@ -31,7 +31,7 @@
       </dropdown>
     </div>
 
-    <div class="item-content">
+    <div class="RoleItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: true}"></pre>
     </div>
@@ -57,31 +57,35 @@ export default {
     jsonFormatter,
     title
   },
-  data () {
+  data() {
     return {
       collapsed: true
     }
   },
   computed: {
-    checkboxId () {
+    checkboxId() {
       return `checkbox-${this.document.id}`
     }
   },
   methods: {
-    toggleCollapse () {
+    toggleCollapse() {
       this.collapsed = !this.collapsed
     },
-    notifyCheckboxClick () {
+    notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
     },
-    deleteDocument () {
+    deleteDocument() {
       if (this.canDeleteRole()) {
         this.$emit('delete-document', this.document.id)
       }
     },
-    update () {
+    update() {
       if (this.canEditRole()) {
-        this.$emit('common-list::edit-document', 'SecurityRolesUpdate', this.document.id)
+        this.$emit(
+          'common-list::edit-document',
+          'SecurityRolesUpdate',
+          this.document.id
+        )
       }
     },
     canEditRole,
@@ -89,3 +93,59 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.RoleItem-toggle {
+  padding: 0 10px;
+  margin-left: -10px;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+
+/* HACK for centring the checkbox between the caret and the title */
+[type='checkbox'] + label {
+  height: 15px;
+  padding-left: 30px;
+}
+
+.RoleItem-title {
+  cursor: pointer;
+  font-size: 1rem;
+  color: #272727;
+}
+
+.RoleItem-content {
+  transition-duration: 0.2s;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 10px 0 0;
+
+  pre {
+    margin: 0;
+    width: 70%;
+    display: inline-block;
+  }
+}
+
+.collapsed {
+  .RoleItem-toggle {
+    transform: rotate(-90deg);
+  }
+  .RoleItem-content {
+    max-height: 0;
+    transition-duration: 0;
+    padding: 0 10px 0 0;
+  }
+}
+
+.RoleItem-additionalAttribute {
+  color: grey;
+  font-style: italic;
+}
+
+.RoleItem-actions {
+  margin-top: 1px;
+  font-size: 1em;
+}
+</style>

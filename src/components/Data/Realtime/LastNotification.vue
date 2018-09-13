@@ -19,28 +19,26 @@
 
 
 <script>
-  import JsonFormatter from '../../../directives/json-formatter.directive'
+import JsonFormatter from '../../../directives/json-formatter.directive'
 
-  export default {
-    name: 'LastNotification',
-    props: [
-      'lastNotification'
-    ],
-    directives: {
-      JsonFormatter
-    }
+export default {
+  name: 'LastNotification',
+  props: ['lastNotification'],
+  directives: {
+    JsonFormatter
   }
+}
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-  #lastNotification-container {
-    margin-left: 10px;
-    margin-top: 0px;
-    height: 412px;
-    .lastNotification-body {
-      height:348px;
-      overflow-y: auto;
-    }
-  }
-</style>
+#lastNotification-container {
+  margin-left: 10px;
+  margin-top: 0px;
+  height: 412px;
 
+  .lastNotification-body {
+    height: 348px;
+    overflow-y: auto;
+  }
+}
+</style>

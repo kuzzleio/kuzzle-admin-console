@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import {config, elementJson, elements} from '../config/schemaMapping'
+import { config, elementJson, elements } from '../config/schemaMapping'
 
 const isObject = item => {
-  return (item && typeof item === 'object' && !Array.isArray(item))
+  return item && typeof item === 'object' && !Array.isArray(item)
 }
 
 /**
@@ -14,26 +14,31 @@ const isObject = item => {
 
 export const mergeSchemaMapping = (target, source, propertiesCounter = 0) => {
   if (isObject(target) && isObject(source)) {
-    Object.keys(source)
-      .forEach(key => {
-        if (!target[key]) {
-          if (source[key].type) {
-            target[key] = config[source[key].type] ? config[source[key].type].default : {...elements['json']}
-          } else if (source[key].properties) {
-            if (propertiesCounter >= 2) {
-              target[key] = {...elements['json']}
-              return
-            }
-            propertiesCounter += 1
-
-            target[key] = {
-              tag: 'fieldset',
-              properties: mergeSchemaMapping({}, source[key].properties, propertiesCounter)
-            }
-            propertiesCounter = 0
+    Object.keys(source).forEach(key => {
+      if (!target[key]) {
+        if (source[key].type) {
+          target[key] = config[source[key].type]
+            ? config[source[key].type].default
+            : { ...elements['json'] }
+        } else if (source[key].properties) {
+          if (propertiesCounter >= 2) {
+            target[key] = { ...elements['json'] }
+            return
           }
+          propertiesCounter += 1
+
+          target[key] = {
+            tag: 'fieldset',
+            properties: mergeSchemaMapping(
+              {},
+              source[key].properties,
+              propertiesCounter
+            )
+          }
+          propertiesCounter = 0
         }
-      })
+      }
+    })
   }
   return target
 }
@@ -45,18 +50,24 @@ export const flattenObjectMapping = (mapping, path = '', level = 1) => {
     path += '.'
   }
 
-  Object.keys(mapping)
-    .forEach(attribute => {
-      if (mapping[attribute].properties) {
-        if (level > 1) {
-          flattenObj[path + attribute] = 'force-json'
-        } else {
-          flattenObj = {...flattenObj, ...flattenObjectMapping(mapping[attribute].properties, path + attribute, level + 1)}
-        }
+  Object.keys(mapping).forEach(attribute => {
+    if (mapping[attribute].properties) {
+      if (level > 1) {
+        flattenObj[path + attribute] = 'force-json'
       } else {
-        flattenObj[path + attribute] = mapping[attribute].type
+        flattenObj = {
+          ...flattenObj,
+          ...flattenObjectMapping(
+            mapping[attribute].properties,
+            path + attribute,
+            level + 1
+          )
+        }
       }
-    })
+    } else {
+      flattenObj[path + attribute] = mapping[attribute].type
+    }
+  })
 
   return flattenObj
 }
@@ -75,43 +86,49 @@ export const flattenObjectSchema = (schema, path = '', level = 1) => {
     path += '.'
   }
 
-  Object.keys(schema)
-    .forEach(attribute => {
-      if (schema[attribute].properties) {
-        if (level > 1) {
-          flattenObj[path + attribute] = {...elementJson}
-        } else {
-          flattenObj = {...flattenObj, ...flattenObjectSchema(schema[attribute].properties, path + attribute, level + 1)}
-        }
+  Object.keys(schema).forEach(attribute => {
+    if (schema[attribute].properties) {
+      if (level > 1) {
+        flattenObj[path + attribute] = { ...elementJson }
       } else {
-        flattenObj[path + attribute] = schema[attribute]
+        flattenObj = {
+          ...flattenObj,
+          ...flattenObjectSchema(
+            schema[attribute].properties,
+            path + attribute,
+            level + 1
+          )
+        }
       }
-    })
+    } else {
+      flattenObj[path + attribute] = schema[attribute]
+    }
+  })
 
   return flattenObj
 }
 
-export const getSchemaForType = (type) => {
+export const getSchemaForType = type => {
   if (!config[type] || !config[type].elements) {
-    return [{...elementJson}]
+    return [{ ...elementJson }]
   }
 
   return config[type].elements
     .map(element => {
-      return {...element}
+      return { ...element }
     })
-    .concat([{...elementJson}])
+    .concat([{ ...elementJson }])
 }
 
-export const getDefaultSchemaForType = (type) => {
+export const getDefaultSchemaForType = type => {
   if (!config[type] || !config[type].default) {
-    return {...elementJson}
+    return { ...elementJson }
   }
 
-  return {...config[type].default}
+  return { ...config[type].default }
 }
 
-export const getElementDefinition = (id) => {
+export const getElementDefinition = id => {
   return elements[id]
 }
 
@@ -136,7 +153,7 @@ export const castByElementId = (id, value) => {
  * @param schema {Object}
  * @returns {Object} the formatted schema ready to be stored
  */
-export const formatSchema = (schema) => {
+export const formatSchema = schema => {
   let formattedSchema = {}
   Object.keys(schema).map(attributeName => {
     let fullPath = attributeName
@@ -159,8 +176,8 @@ export const formatSchema = (schema) => {
  * @param allowForm {Boolean}
  * @returns {{properties: {}, _meta: {schema: *, allowForm: *}}}
  */
-export const mergeMetaAttributes = ({mapping, schema, allowForm}) => {
-  return {properties: {...mapping}, _meta: {schema, allowForm}}
+export const mergeMetaAttributes = ({ mapping, schema, allowForm }) => {
+  return { properties: { ...mapping }, _meta: { schema, allowForm } }
 }
 
 /**
@@ -168,7 +185,7 @@ export const mergeMetaAttributes = ({mapping, schema, allowForm}) => {
  * @param mapping {Object}
  * @returns the cleaned mapping
  */
-export const cleanMapping = (mapping) => {
+export const cleanMapping = mapping => {
   let _mapping = {}
 
   Object.keys(mapping).forEach(attr => {

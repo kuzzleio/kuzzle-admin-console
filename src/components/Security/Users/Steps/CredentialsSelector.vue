@@ -19,67 +19,70 @@
 </template>
 
 <script>
-  import Headline from '../../../Materialize/Headline'
-  import CredentialsEdit from '../../Common/JsonWithMapping'
-  import MSelect from '../../../Common/MSelect'
+import Headline from '../../../Materialize/Headline'
+import CredentialsEdit from '../../Common/JsonWithMapping'
+import MSelect from '../../../Common/MSelect'
 
-  export default {
-    name: 'CredentialsSelector',
-    components: {
-      CredentialsEdit,
-      Headline,
-      MSelect
-    },
-    props: ['fields', 'strategies', 'credentials', 'credentialsMapping'],
-    data () {
-      return {
-        error: '',
-        document: null,
-        id: null,
-        currentStrategy: null
+export default {
+  name: 'CredentialsSelector',
+  components: {
+    CredentialsEdit,
+    Headline,
+    MSelect
+  },
+  props: ['fields', 'strategies', 'credentials', 'credentialsMapping'],
+  data() {
+    return {
+      error: '',
+      document: null,
+      id: null,
+      currentStrategy: null
+    }
+  },
+  computed: {
+    fieldsForStrategy() {
+      if (
+        !this.credentialsMapping ||
+        !this.credentialsMapping[this.currentStrategy]
+      ) {
+        return []
       }
-    },
-    computed: {
-      fieldsForStrategy () {
-        if (!this.credentialsMapping || !this.credentialsMapping[this.currentStrategy]) {
-          return []
-        }
 
-        return this.credentialsMapping[this.currentStrategy]
-      },
-      credentialsForStrategy () {
-        if (!this.credentials || !this.credentials[this.currentStrategy]) {
-          return []
-        }
-
-        return this.credentials[this.currentStrategy]
-      }
+      return this.credentialsMapping[this.currentStrategy]
     },
-    methods: {
-      fieldType (fieldName) {
-        if (fieldName === 'password') {
-          return 'password'
-        }
+    credentialsForStrategy() {
+      if (!this.credentials || !this.credentials[this.currentStrategy]) {
+        return []
+      }
 
-        return 'text'
-      },
-      onFieldChange (input) {
-        this.$emit('input', {
-          strategy: this.currentStrategy,
-          credentials: {
-            ...this.credentials[this.currentStrategy],
-            [input.target.name]: input.target.value
-          }
-        })
+      return this.credentials[this.currentStrategy]
+    }
+  },
+  methods: {
+    fieldType(fieldName) {
+      if (fieldName === 'password') {
+        return 'password'
       }
+
+      return 'text'
     },
-    watch: {
-      strategies () {
-        if (!this.strategies.length) {
-          return
+    onFieldChange(input) {
+      this.$emit('input', {
+        strategy: this.currentStrategy,
+        credentials: {
+          ...this.credentials[this.currentStrategy],
+          [input.target.name]: input.target.value
         }
-        this.currentStrategy = this.strategies[0]
+      })
+    }
+  },
+  watch: {
+    strategies() {
+      if (!this.strategies.length) {
+        return
       }
+      this.currentStrategy = this.strategies[0]
     }
   }
+}
 </script>

@@ -6,44 +6,44 @@
 </template>
 
 <script>
-  export default {
-    name: 'JsonFormItemInput',
-    props: {
-      content: [Object, String, Number],
-      name: String,
-      type: String,
-      step: Number,
-      parent: String
-    },
-    data () {
-      return {
-        value: '',
-        display: false
-      }
-    },
-    methods: {
-      update (e) {
-        this.$emit('update-value', {name: this.name, value: e.target.value})
-      },
-      initValue () {
-        if (!this.content || !Object.keys(this.content).length) {
-          return
-        }
-
-        if (this.parent) {
-          if (this.content[this.parent] && this.content[this.parent][this.name]) {
-            this.value = this.content[this.parent][this.name]
-          }
-        } else {
-          this.value = this.content[this.name]
-        }
-      }
-    },
-    mounted () {
-      this.initValue()
-    },
-    watch: {
-      content: 'initValue'
+export default {
+  name: 'JsonFormItemInput',
+  props: {
+    content: [Object, String, Number],
+    name: String,
+    type: String,
+    step: Number,
+    parent: String
+  },
+  data() {
+    return {
+      value: '',
+      display: false
     }
+  },
+  methods: {
+    update(e) {
+      this.$emit('update-value', { name: this.name, value: e.target.value })
+    },
+    initValue() {
+      if (!this.content || !Object.keys(this.content).length) {
+        return
+      }
+
+      if (this.parent) {
+        if (this.content[this.parent] && this.content[this.parent][this.name]) {
+          this.value = this.content[this.parent][this.name]
+        }
+      } else {
+        this.value = this.content[this.name]
+      }
+    }
+  },
+  mounted() {
+    this.initValue()
+  },
+  watch: {
+    content: 'initValue'
   }
+}
 </script>

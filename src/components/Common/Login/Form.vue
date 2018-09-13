@@ -33,77 +33,84 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  #loginForm {
-    margin-top: 15px;
-  }
-  .error {
-    position: relative;
-    padding: 8px 12px;
-    margin: 0;
-  }
-  .right-align {
-    margin-top: 0;
-  }
-  .dismiss-error {
-    position: absolute;
-    right: 10px;
-    cursor: pointer;
-    padding: 3px;
-    border-radius: 2px;
+#loginForm {
+  margin-top: 15px;
+}
+.error {
+  position: relative;
+  padding: 8px 12px;
+  margin: 0;
+}
+.right-align {
+  margin-top: 0;
+}
+.dismiss-error {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 2px;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, .2);
-    }
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
+}
 </style>
 
 
 <script>
-  import Focus from '../../../directives/focus.directive'
-  import {
-    DO_LOGIN,
-    PREPARE_SESSION
-  } from '../../../vuex/modules/auth/mutation-types'
-  import kuzzle from '../../../services/kuzzle'
+import Focus from '../../../directives/focus.directive'
+import {
+  DO_LOGIN,
+  PREPARE_SESSION
+} from '../../../vuex/modules/auth/mutation-types'
+import kuzzle from '../../../services/kuzzle'
 
-  export default {
-    name: 'LoginForm',
-    props: {
-      onLogin: Function
+export default {
+  name: 'LoginForm',
+  props: {
+    onLogin: Function
+  },
+  directives: {
+    Focus
+  },
+  data() {
+    return {
+      username: null,
+      password: null,
+      error: ''
+    }
+  },
+  methods: {
+    dismissError() {
+      this.error = ''
     },
-    directives: {
-      Focus
+    login() {
+      this.error = ''
+      this.$store
+        .dispatch(DO_LOGIN, {
+          username: this.username,
+          password: this.password
+        })
+        .then(() => {
+          this.onLogin()
+        })
+        .catch(err => {
+          this.error = err.message
+        })
     },
-    data () {
-      return {
-        username: null,
-        password: null,
-        error: ''
-      }
-    },
-    methods: {
-      dismissError () {
-        this.error = ''
-      },
-      login () {
-        this.error = ''
-        this.$store.dispatch(DO_LOGIN, {username: this.username, password: this.password})
-          .then(() => {
-            this.onLogin()
-          }).catch((err) => {
-            this.error = err.message
-          })
-      },
-      loginAsGuest () {
-        this.error = ''
-        kuzzle.unsetJwtToken()
-        this.$store.dispatch(PREPARE_SESSION, 'anonymous')
-          .then(() => {
-            this.onLogin()
-          }).catch((err) => {
-            this.error = err.message
-          })
-      }
+    loginAsGuest() {
+      this.error = ''
+      kuzzle.unsetJwtToken()
+      this.$store
+        .dispatch(PREPARE_SESSION, 'anonymous')
+        .then(() => {
+          this.onLogin()
+        })
+        .catch(err => {
+          this.error = err.message
+        })
     }
   }
+}
 </script>

@@ -1,77 +1,80 @@
 <template>
-  <div class="search-filter">
+  <div class="Filters">
     <div class="row card-panel card-header">
       <div class="col s7">
-        <role-list
-                class="role-list"
-                :added-roles="addedRoles"
-                @selected-role="selectedRole"
-                @remove-role="removeRole"
-        ></role-list>
+        <role-chips
+          :added-roles="addedRoles"
+          @selected-role="onRoleSelected"
+          @remove-role="removeRole"
+        ></role-chips>
       </div>
-      <div class="col s3 actions-quicksearch">
-        <button type="submit" class="btn btn-small waves-effect waves-light"@click.prevent="basicSearch">{{labelSearchButton}}</button>
-        <button class="btn-flat btn-small waves-effect waves-light" @click="resetBasicSearch">Reset</button>
+      <div class="Filters-actions col s3">
+        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{labelSearchButton}}</button>
+        <button class="btn-flat btn-small waves-effect waves-light" @click="reset">Reset</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import QuickFilter from '../Common/Filters/QuickFilter'
-  import RoleList from './RoleList'
-  import MSelect from '../../Common/MSelect'
+import QuickFilter from '../Common/Filters/QuickFilter'
+import RoleChips from './RoleChips'
+import MSelect from '../../Common/MSelect'
 
-  export default {
-    name: 'Filters',
-    props: {
-      availableFilters: {
-        type: Object,
-        required: true
-      },
-      quickFilterEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
-      },
-      labelSearchButton: {
-        type: String,
-        required: false,
-        'default': 'search'
-      },
-      basicFilter: [Array, Object],
-      setBasicFilter: Function,
-      searchTerm: String
+export default {
+  name: 'Filters',
+  props: {
+    labelSearchButton: {
+      type: String,
+      required: false,
+      default: 'search'
     },
-    components: {
-      QuickFilter,
-      RoleList,
-      MSelect
+    currentFilter: Object
+  },
+  components: {
+    QuickFilter,
+    RoleChips,
+    MSelect
+  },
+  data() {
+    return {
+      addedRoles: []
+    }
+  },
+  methods: {
+    onRoleSelected(role) {
+      this.addedRoles.push(role)
     },
-    data () {
-      return {
-        addedRoles: []
+    removeRole(role) {
+      this.addedRoles.splice(this.addedRoles.indexOf(role), 1)
+    },
+    submitSearch() {
+      if (this.addedRoles.length === 0) {
+        this.$emit('filters-updated', null)
+        return
       }
+
+      this.$emit('filters-updated', { roles: this.addedRoles })
     },
-    methods: {
-      broadcastFilterQuickSearch (term) {
-        this.$emit('filters-quick-search', term)
-      },
-      refreshSearch () {
-        this.$emit('filters-refresh-search')
-      },
-      selectedRole (role) {
-        this.addedRoles.push(role)
-      },
-      removeRole (role) {
-        this.addedRoles.splice(this.addedRoles.indexOf(role), 1)
-      },
-      basicSearch () {
-        this.$emit('filters-basic-search', {roles: this.addedRoles})
-      },
-      resetBasicSearch () {
-        this.addedRoles = []
+    reset() {
+      this.addedRoles = []
+      this.$emit('reset', null)
+    }
+  },
+  watch: {
+    currentFilter: {
+      immediate: true,
+      handler(value) {
+        this.addedRoles = value && value.roles ? value.roles : []
       }
     }
   }
+}
 </script>
+
+<style lang="scss" scoped>
+.Filters-actions {
+  height: 48px;
+  line-height: 48px;
+}
+</style>

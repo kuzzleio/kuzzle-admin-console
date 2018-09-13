@@ -1,3 +1,12 @@
+/* remove yellow effect on chrome when autofill inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-transition: color 9999s ease-out, background-color 9999s ease-out;
+  -webkit-transition-delay: 9999s;
+}
+
 @-webkit-keyframes slideInLeft {
   from {
     -webkit-transform: translate3d(-105%, 0, 0);
@@ -132,8 +141,8 @@
 @-webkit-keyframes zoomIn {
   from {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 
   50% {
@@ -144,8 +153,8 @@
 @keyframes zoomIn {
   from {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 
   50% {
@@ -160,8 +169,8 @@
 
   50% {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 }
 
@@ -172,8 +181,8 @@
 
   50% {
     opacity: 0;
-    -webkit-transform: scale3d(.35, .35, .35);
-    transform: scale3d(.35, .35, .35);
+    -webkit-transform: scale3d(0.35, 0.35, 0.35);
+    transform: scale3d(0.35, 0.35, 0.35);
   }
 }
 

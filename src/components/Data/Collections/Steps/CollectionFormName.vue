@@ -1,5 +1,5 @@
 <template>
-  <div class="row collection-form-name">
+  <div class="CollectionFormName row">
     <div class="col s3">
       <p>
         Document name:
@@ -11,27 +11,35 @@
     </div>
     <div class="col s4 list-names">
       <m-select :value="selectedDocumentName" >
-        <option v-for="(_, option) in attributes" :value="option">{{option}}</option>
+        <option v-for="(_, option) in attributes" :value="option" :key="option">{{option}}</option>
       </m-select>
     </div>
   </div>
 </template>
 
 <script>
-  import MSelect from '../../../Common/MSelect'
-  import title from '../../../../directives/title.directive'
+import MSelect from '../../../Common/MSelect'
+import title from '../../../../directives/title.directive'
 
-  export default {
-    name: 'CollectionFormName',
-    components: {
-      MSelect
-    },
-    directives: {
-      title
-    },
-    props: {
-      attributes: Object,
-      selectedDocumentName: String
-    }
+export default {
+  name: 'CollectionFormName',
+  components: {
+    MSelect
+  },
+  directives: {
+    title
+  },
+  props: {
+    attributes: Object,
+    selectedDocumentName: String
   }
+}
 </script>
+
+<style lang="scss" scoped>
+.CollectionFormName {
+  .list-names {
+    margin-top: 15px;
+  }
+}
+</style>

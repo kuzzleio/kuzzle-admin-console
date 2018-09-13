@@ -59,10 +59,12 @@ import ModalDelete from './components/Common/Environments/ModalDelete'
 
 import Toaster from './components/Materialize/Toaster.vue'
 
-window.jQuery = window.$ = require('jquery')
-require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
+// @TODO we'll have to import FA from global.scss one day...
+import '@fortawesome/fontawesome-free/css/all.css'
 
-import 'font-awesome/css/font-awesome.css'
+window.jQuery = window.$ = require('jquery')
+// eslint-disable-next-line
+require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
 
 export default {
   name: 'KuzzleBackOffice',
@@ -77,7 +79,7 @@ export default {
     Login,
     CreateEnvironmentPage
   },
-  data () {
+  data() {
     return {
       environmentId: null,
       isOpen: false,
@@ -85,15 +87,15 @@ export default {
     }
   },
   methods: {
-    editEnvironment (id) {
+    editEnvironment(id) {
       this.environmentId = id
       this.isOpen = true
     },
-    deleteEnvironment (id) {
+    deleteEnvironment(id) {
       this.environmentId = id
       this.deleteIsOpen = true
     },
-    close () {
+    close() {
       this.isOpen = false
       this.deleteIsOpen = false
     }

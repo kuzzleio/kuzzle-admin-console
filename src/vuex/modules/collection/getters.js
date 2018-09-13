@@ -23,19 +23,21 @@ export const flattenSchemaWithType = (state, getters) => {
 
   Object.keys(getters.flattenMapping).forEach(attribute => {
     if (getters.flattenSchema && getters.flattenSchema[attribute]) {
-      schema[attribute] = {...getters.flattenSchema[attribute]}
+      schema[attribute] = { ...getters.flattenSchema[attribute] }
     } else {
-      schema[attribute] = {...getDefaultSchemaForType(getters.flattenMapping[attribute])}
+      schema[attribute] = {
+        ...getDefaultSchemaForType(getters.flattenMapping[attribute])
+      }
     }
   })
 
   return schema
 }
 
-export const schemaMappingMerged = (state) => {
+export const schemaMappingMerged = state => {
   return mergeSchemaMapping(state.schema, state.mapping)
 }
 
-export const simplifiedMapping = (state) => {
+export const simplifiedMapping = state => {
   return cleanMapping(state.mapping)
 }

@@ -2,16 +2,18 @@
 
 We follow the general Vuejs scaffolding for organizing our JS code.
 
+## Components and pages
+
+The `src/components` directory contains the files that constitute the UI of the application. The contents of this directory
+are organized in sections, mimicking the menu hierarchy. Each section must contain a `Layout.vue` file, used as the entry-point
+to it. Each subsection must contain a `Page.vue` file, used as the entry-point to it.
+
 ## Vuex
 
-- Only use actions/store/getters in Vuex if your data have to be shared between components
+- Only use actions/store/getters in Vuex if your data have to be shared between sibling components (try to avoid using the store
+  for parent-to-children communication).
 - Vuex actions must be prefixed with a verb (doThing ...)
-- getters must be named after the data they get
-
-## Vuejs
-
-- events: The event name must be prefixed with the component and suffixed with the action with `::` as separator.
-  Something like `security-create::create`, `filter-raw::search` or `crudl::refresh-search`.
+- Getters must be named after the data they get.
 
 # Coding style-guides
 
@@ -39,7 +41,7 @@ body {
 }
 
 .selector,
-.other[type="text"] {
+.other[type='text'] {
   font-weight: bold;
   color: black;
 }
@@ -47,7 +49,7 @@ body {
 @media (min-width: 768px) {
   .something {
     display: block;
-    background-image: url("/assets/img/pattern.png");
+    background-image: url('/assets/img/pattern.png');
   }
 }
 ```
@@ -215,7 +217,7 @@ Do not use the `#some-id` selector (because of [high specificity](https://develo
 
 // And with Sass nesting...
 .Tweet {
-  .retweetBtn {
+  .Tweet-retweetBtn {
     &[disabled]
   }
 }
@@ -399,7 +401,7 @@ Name media queries allow you to define a media query once, and reuse it every ti
 Since this feature is not standardized or supported yet, we can mimick this behavior in Sass to make our Sass code easier to maintain. Use this `mq-build` function to store full media queries in variables:
 
 ```css
-@import "node_modules/sass-mq-build/mq-build";
+@import 'node_modules/sass-mq-build/mq-build';
 $mq-small: mq-build(null, 750px);
 $mq-medium: mq-build(750px, 1100px);
 $mq-large: mq-build(1100px, null);
@@ -419,13 +421,13 @@ $mq-large: mq-build(1100px, null);
 ### How to test ready in a component
 
 ```javascript
-document.body.insertAdjacentHTML("afterbegin", "<body></body>");
+document.body.insertAdjacentHTML('afterbegin', '<body></body>')
 let vm = new Vue({
   template: '<div><my-component v-ref:component"></my-component></div>',
   components: {
     MyComponent
   }
-}).$mount("body");
+}).$mount('body')
 ```
 
 The `ready` is triggerd with `mount('body')`. You can also trigger event destroy with `vm.$refs.component.$destroy`.
@@ -433,28 +435,28 @@ The `ready` is triggerd with `mount('body')`. You can also trigger event destroy
 ### How to test with $router in ready
 
 ```javascript
-document.body.insertAdjacentHTML("afterbegin", "<body></body>");
+document.body.insertAdjacentHTML('afterbegin', '<body></body>')
 let vm = new Vue({
   template: '<div><my-component v-ref:component"></my-component></div>',
   components: {
     MyComponent
   }
-});
-vm.$router = { go: sandbox.stub(), _children: { push: sandbox.stub() } };
-vm.$mount("body");
+})
+vm.$router = { go: sandbox.stub(), _children: { push: sandbox.stub() } }
+vm.$mount('body')
 ```
 
 ### How to test with $dispatch in ready
 
 ```javascript
-$dispatch = sandbox.stub(Vue.prototype, "$dispatch");
-document.body.insertAdjacentHTML("afterbegin", "<body></body>");
+$dispatch = sandbox.stub(Vue.prototype, '$dispatch')
+document.body.insertAdjacentHTML('afterbegin', '<body></body>')
 let vm = new Vue({
   template: '<div><my-component v-ref:component"></my-component></div>',
   components: {
     MyComponent
   }
-});
-vm.$router = { go: sandbox.stub(), _children: { push: sandbox.stub() } };
-vm.$mount("body");
+})
+vm.$router = { go: sandbox.stub(), _children: { push: sandbox.stub() } }
+vm.$mount('body')
 ```

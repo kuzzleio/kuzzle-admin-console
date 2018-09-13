@@ -40,25 +40,25 @@
         </router-link>
       </li>
 
-      <li v-if="$store.state.route.params.index">
+      <li v-if="$route.params.index">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
-        <router-link :to="{name: 'DataIndexSummary', params: {index: $store.state.route.params.index}}">
-          {{$store.state.route.params.index}}
+        <router-link :to="{name: 'DataIndexSummary', params: {index: $route.params.index}}">
+          {{$route.params.index}}
         </router-link>
       </li>
 
-      <li v-if="$store.state.route.params.collection">
+      <li v-if="$route.params.collection">
         <i class="fa fa-angle-right separator" aria-hidden="true"></i>
 
         <router-link v-if="isCollectionRealtime()"
-           :to="{name: 'DataCollectionWatch', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
-          {{$store.state.route.params.collection}}
+           :to="{name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}}">
+          {{$route.params.collection}}
         </router-link>
 
         <router-link v-else
-          :to="{name: 'DataDocumentsList', params: {index: $store.state.route.params.index, collection: $store.state.route.params.collection}}">
-          {{$store.state.route.params.collection}}
+          :to="{name: 'DataDocumentsList', params: {index: $route.params.index, collection: $route.params.collection}}">
+          {{$route.params.collection}}
         </router-link>
       </li>
     </ul>
@@ -67,53 +67,61 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .nav-breadcrumb {
-    margin-bottom: 1.68rem;
-    padding-left: 2px;
-    i {
-      height: auto;
-      margin-right: 3px;
+.nav-breadcrumb {
+  margin-bottom: 1.68rem;
+  padding-left: 2px;
+  i {
+    height: auto;
+    margin-right: 3px;
+  }
+  ul {
+    color: #aaa;
+    padding: 0;
+    margin: 0;
+    .separator {
+      margin-left: 3px;
     }
-    ul {
-      color: #AAA;
-      padding: 0;
-      margin: 0;
-      .separator {
-        margin-left: 3px;
-      }
-      li {
-        display: inline-block;
-      }
-      a {
-        color: #AAA;
-        &:hover {
-          color: #444;
-        }
+    li {
+      display: inline-block;
+    }
+    a {
+      color: #aaa;
+      &:hover {
+        color: #444;
       }
     }
   }
+}
 </style>
 
 <script>
-  import {canSearchIndex} from '../../services/userAuthorization'
-  export default {
-    name: 'CommonBreadcrumb',
-    methods: {
-      canSearchIndex,
-      isCollectionRealtime () {
-        if (!this.$store.state.index.indexesAndCollections[this.$store.state.route.params.index]) {
-          return false
-        }
-
-        return this.$store.state.index.indexesAndCollections[this.$store.state.route.params.index].realtime.indexOf(this.$store.state.route.params.collection) !== -1
-      },
-      isRouteActive (routeName) {
-        if (Array.isArray(routeName)) {
-          return routeName.indexOf(this.$store.state.route.name) >= 0
-        }
-
-        return this.$store.state.route.name === routeName
+import { canSearchIndex } from '../../services/userAuthorization'
+export default {
+  name: 'CommonBreadcrumb',
+  methods: {
+    canSearchIndex,
+    isCollectionRealtime() {
+      if (
+        !this.$store.state.index.indexesAndCollections[this.$route.params.index]
+      ) {
+        return false
       }
+
+      return (
+        // prettier-ignore
+        this.$store.state.index
+          .indexesAndCollections[this.$route.params.index]
+          .realtime
+          .indexOf(this.$route.params.collection) !== -1
+      )
+    },
+    isRouteActive(routeName) {
+      if (Array.isArray(routeName)) {
+        return routeName.indexOf(this.$route.name) >= 0
+      }
+
+      return this.$route.name === routeName
     }
   }
+}
 </script>

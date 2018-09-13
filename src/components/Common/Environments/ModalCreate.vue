@@ -27,28 +27,26 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-
 </style>
 
 <script>
-  import Modal from '../../Materialize/Modal'
-  import CreateEnvironment from './CreateEnvironment'
+import Modal from '../../Materialize/Modal'
+import CreateEnvironment from './CreateEnvironment'
 
-  export default {
-    name: 'EnvironmentsCreateModal',
-    props: ['environmentId', 'isOpen', 'close'],
-    components: {
-      Modal,
-      CreateEnvironment
-    },
-    methods: {
-      createEnvironment () {
-        try {
-          this.$refs.createEnvironmentComponent.createEnvironment()
-          this.close()
-        } catch (e) {
-        }
-      }
+export default {
+  name: 'EnvironmentsCreateModal',
+  props: ['environmentId', 'isOpen', 'close'],
+  components: {
+    Modal,
+    CreateEnvironment
+  },
+  methods: {
+    createEnvironment() {
+      try {
+        this.$refs.createEnvironmentComponent.createEnvironment()
+        this.close()
+      } catch (e) {}
     }
   }
+}
 </script>

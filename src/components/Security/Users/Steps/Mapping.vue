@@ -63,13 +63,13 @@ export default {
     }
   },
   methods: {
-    submit () {
+    submit() {
       let newMapping = this.$refs.jsoneditor.getJson()
       this.$emit('submit', newMapping)
     }
   },
   watch: {
-    currentStep (value) {
+    currentStep(value) {
       let newMapping = this.$refs.jsoneditor.getJson()
       this.$emit('submit', newMapping)
     }

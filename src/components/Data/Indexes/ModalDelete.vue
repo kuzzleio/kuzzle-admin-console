@@ -50,79 +50,79 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-  .error {
-    strong {
-      display: block;
+.error {
+  strong {
+    display: block;
+  }
+}
+.input-field {
+  label {
+    left: 0;
+    &.active {
+      transform: translateY(-50%);
+      font-size: 0.85rem;
     }
   }
-  .input-field {
-    label {
-      left: 0;
-      &.active {
-        transform: translateY(-50%);
-        font-size: 0.85rem;
-      }
-    }
-
-  }
-  button {
-    &.btn-flat {
-      &:focus {
-        background-color: #EEE;
-      }
+}
+button {
+  &.btn-flat {
+    &:focus {
+      background-color: #eee;
     }
   }
+}
 </style>
 
 
 <script>
-  import {DELETE_INDEX} from '../../../vuex/modules/index/mutation-types'
-  import Modal from '../../Materialize/Modal'
-  import Focus from '../../../directives/focus.directive'
-  import Title from '../../../directives/title.directive'
+import { DELETE_INDEX } from '../../../vuex/modules/index/mutation-types'
+import Modal from '../../Materialize/Modal'
+import Focus from '../../../directives/focus.directive'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'IndexDeleteModal',
-    props: {
-      id: String,
-      index: String,
-      isOpen: Boolean,
-      close: Function
+export default {
+  name: 'IndexDeleteModal',
+  props: {
+    id: String,
+    index: String,
+    isOpen: Boolean,
+    close: Function
+  },
+  directives: {
+    Focus,
+    Title
+  },
+  components: {
+    Modal
+  },
+  methods: {
+    toggleTruncatedError() {
+      this.errorTruncated = !this.errorTruncated
     },
-    directives: {
-      Focus,
-      Title
-    },
-    components: {
-      Modal
-    },
-    methods: {
-      toggleTruncatedError () {
-        this.errorTruncated = !this.errorTruncated
-      },
-      tryDeleteIndex (index) {
-        if (!index.trim()) {
-          return
-        }
+    tryDeleteIndex(index) {
+      if (!index.trim()) {
+        return
+      }
 
-        this.$store.dispatch(DELETE_INDEX, index)
-          .then(() => {
-            this.indexConfirmation = ''
-            this.error = ''
-            this.close()
-            this.$router.push({name: 'Data'})
-          })
-          .catch(err => {
-            this.error = err.message
-          })
-      }
-    },
-    data () {
-      return {
-        error: '',
-        indexConfirmation: '',
-        errorTruncated: true
-      }
+      this.$store
+        .dispatch(DELETE_INDEX, index)
+        .then(() => {
+          this.indexConfirmation = ''
+          this.error = ''
+          this.close()
+          this.$router.push({ name: 'Data' })
+        })
+        .catch(err => {
+          this.error = err.message
+        })
+    }
+  },
+  data() {
+    return {
+      error: '',
+      indexConfirmation: '',
+      errorTruncated: true
     }
   }
+}
 </script>

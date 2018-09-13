@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 export default {
   id: 'focus',
-  bind (el) {
+  bind(el) {
     Vue.nextTick(() => {
       if (el) {
         el.focus()

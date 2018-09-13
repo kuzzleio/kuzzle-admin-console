@@ -1,170 +1,257 @@
 <template>
-  <div class="search-filter">
-    <div v-if="(!basicFilter && !rawFilter && !sorting) && quickFilterEnabled" class="card-panel card-header">
-      <div class="row margin-bottom-0 filters">
-        <quick-filter
-          :search-term="searchTerm"
-          :display-block-filter="displayBlockFilter"
-          @filters-display-block-filter="displayBlockFilter = !displayBlockFilter"
-          @filters-quick-search="broadcastFilterQuickSearch">
-        </quick-filter>
-      </div>
-    </div>
+  <div class="Filters">
 
-    <div v-if="(basicFilter || rawFilter || sorting) || !quickFilterEnabled" class="complex-search card-panel card-header filters">
-      <div class="row margin-bottom-0">
-        <div class="col s8 m6 l4" style="min-width: 520px">
-          <div class="search-bar">
-            <i class="fa fa-search search"></i>
-            <div v-if="!displayBlockFilter" class="chip">
-              <span class="label-chip" @click.prevent="displayBlockFilter = true">{{labelComplexQuery}}</span>
-              <i class="close fa fa-close" v-if="quickFilterEnabled" @click.prevent="resetComplexSearch"></i>
+    <quick-filter
+      :advanced-query-label="advancedQueryLabel"
+      :submit-button-label="submitButtonLabel"
+      :complex-filter-active="complexFilterActive"
+      :search-term="quickFilter"
+      :advanced-filters-visible="advancedFiltersVisible"
+      :enabled="quickFilterEnabled"
+      :action-buttons-visible="actionButtonsVisible"
+      @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
+      @update-filter="onQuickFilterUpdated"
+      @refresh="onRefresh"
+      @reset="onReset">
+    </quick-filter>
+
+
+    <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
+      <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
+      <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
+        <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
+        <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
+
+        <div slot="contents" class="card">
+          <div class="col s12">
+            <div v-show="complexFiltersSelectedTab === 'basic'">
+              <basic-filter
+                :basic-filter="basicFilter"
+                :sorting-enabled="sortingEnabled"
+                :available-operands="availableOperands"
+                :submit-button-label="submitButtonLabel"
+                :action-buttons-visible="actionButtonsVisible"
+                :sorting="sorting"
+                :collection-mapping="collectionMapping"
+                @update-filter="onBasicFilterUpdated"
+                @reset="onReset">
+              </basic-filter>
             </div>
-            <a v-if="!displayBlockFilter" href="#" class="fluid-hover" @click.prevent="displayBlockFilter = true">More query options</a>
-            <a v-else href="#" class="fluid-hover" @click.prevent="displayBlockFilter = false">Less query options</a>
-          </div>
-        </div>
-        <div class="col s4 m3 l3 actions-quicksearch">
-          <button type="submit" class="btn btn-small waves-effect waves-light" @click="refreshSearch">{{labelSearchButton}}</button>
-          <button class="btn-flat btn-small waves-effect waves-light" @click="resetComplexSearch">reset</button>
-        </div>
-      </div>
-    </div>
 
-    <div class="row card-panel open-search" v-show="displayBlockFilter">
-      <i class="fa fa-times close" @click="displayBlockFilter = false"></i>
-      <div class="col s12">
-        <tabs @tab-changed="switchFilter" :active="tabActive" :is-displayed="displayBlockFilter" :object-tab-active="objectTabActive">
-          <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
-          <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
-
-          <div slot="contents" class="card">
-            <div class="col s12">
-              <div v-show="tabActive === 'basic'">
-                <basic-filter
-                  :basic-filter="basicFilter"
-                  :sorting-enabled="sortingEnabled"
-                  :available-filters="availableFilters"
-                  :label-search-button="labelSearchButton"
-                  :sorting="sorting"
-                  :set-basic-filter="setBasicFilter"
-                  @filters-basic-search="broadcastFilterBasicSearch">
-                </basic-filter>
-              </div>
-
-              <div v-show="tabActive === 'raw'">
-                <raw-filter
-                  :raw-filter="rawFilter"
-                  :format-from-basic-search="formatFromBasicSearch"
-                  :sorting-enabled="sortingEnabled"
-                  :label-search-button="labelSearchButton"
-                  @filters-raw-search="broadcastRawSearch">
-                </raw-filter>
-              </div>
+            <div v-show="complexFiltersSelectedTab === 'raw'">
+              <raw-filter
+                :raw-filter="rawFilter"
+                :format-from-basic-search="formatFromBasicSearch"
+                :sorting-enabled="sortingEnabled"
+                :action-buttons-visible="actionButtonsVisible"
+                :submit-button-label="submitButtonLabel"
+                @update-filter="onRawFilterUpdated"
+                @reset="onReset">
+              </raw-filter>
             </div>
           </div>
-        </tabs>
-      </div>
+        </div>
+      </tabs>
     </div>
   </div>
 </template>
 
-<script>
-  import Tabs from '../../Materialize/Tabs'
-  import Tab from '../../Materialize/Tab'
-  import QuickFilter from './QuickFilter'
-  import BasicFilter from './BasicFilter'
-  import RawFilter from './RawFilter'
-  import Vue from 'vue'
+<style lang="scss" scoped>
+.Filters-advanced {
+  background-color: #fff;
+  padding-top: 0;
+  padding-right: 30px;
+  padding-bottom: 0;
+  margin-top: 0;
+  position: relative;
 
-  export default {
-    name: 'Filters',
-    props: {
-      availableFilters: {
-        type: Object,
-        required: true
-      },
-      quickFilterEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
-      },
-      sortingEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
-      },
-      labelSearchButton: {
-        type: String,
-        required: false,
-        'default': 'search'
-      },
-      labelComplexQuery: {
-        type: String,
-        required: false,
-        'default': 'Complex query here'
-      },
-      rawFilter: Object,
-      basicFilter: Array,
-      setBasicFilter: Function,
-      searchTerm: String,
-      sorting: Object,
-      formatFromBasicSearch: Function
-    },
-    components: {
-      Tabs,
-      Tab,
-      QuickFilter,
-      BasicFilter,
-      RawFilter
-    },
-    watch: {
-      'displayBlockFilter' () {
-        this.$emit('json-editor-refresh')
-      },
-      'tabActive' () {
-        this.$emit('json-editor-refresh')
-      }
-    },
-    data () {
-      return {
-        displayBlockFilter: false,
-        tabActive: 'basic',
-        jsonInvalid: false,
-        objectTabActive: null
-      }
-    },
-    methods: {
-      broadcastFilterQuickSearch (term) {
-        this.$emit('filters-quick-search', term)
-      },
-      switchFilter (name) {
-        this.tabActive = name
-      },
-      resetComplexSearch () {
-        this.$emit('filters-raw-search', {})
-      },
-      refreshSearch () {
-        this.$emit('filters-refresh-search')
-      },
-      broadcastFilterBasicSearch (filters, sorting) {
-        this.displayBlockFilter = false
-        this.$emit('filters-basic-search', filters, sorting)
-      },
-      setObjectTabActive (tab) {
-        this.objectTabActive = tab
-      },
-      broadcastRawSearch (filter) {
-        this.$emit('filters-raw-search', filter)
-      }
-    },
-    mounted () {
-      Vue.nextTick(() => {
-        window.document.addEventListener('keydown', this.handleEsc)
-      })
-    },
-    destroyed () {
-      window.document.removeEventListener('keydown', this.handleEsc)
+  .Filters-btnClose {
+    float: right;
+    font-size: 1.3em;
+    cursor: pointer;
+    color: grey;
+    position: absolute;
+    top: 10px;
+    right: 16px;
+
+    &:hover {
+      color: #555;
+      background: #eee;
+      border-radius: 3px;
     }
   }
+
+  .card-action {
+    padding: 15px;
+    margin-bottom: 0;
+    button {
+      margin-right: 10px;
+    }
+  }
+
+  .select-wrapper span.caret {
+    top: 10px;
+  }
+}
+</style>
+
+<script>
+import Tabs from '../../Materialize/Tabs'
+import Tab from '../../Materialize/Tab'
+import QuickFilter from './QuickFilter'
+import BasicFilter from './BasicFilter'
+import RawFilter from './RawFilter'
+import Vue from 'vue'
+import {
+  NO_ACTIVE,
+  ACTIVE_QUICK,
+  ACTIVE_BASIC,
+  ACTIVE_RAW,
+  Filter
+} from '../../../services/filterManager'
+
+export default {
+  name: 'Filters',
+  components: {
+    Tabs,
+    Tab,
+    QuickFilter,
+    BasicFilter,
+    RawFilter
+  },
+  props: {
+    advancedQueryLabel: {
+      type: String,
+      required: false,
+      default: 'Advanced query...'
+    },
+    submitButtonLabel: {
+      type: String,
+      required: false,
+      default: 'search'
+    },
+    actionButtonsVisible: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    availableOperands: {
+      type: Object,
+      required: true
+    },
+    quickFilterEnabled: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    sortingEnabled: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    currentFilter: Object,
+    formatFromBasicSearch: Function,
+    collectionMapping: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    return {
+      advancedFiltersVisible: false,
+      complexFiltersSelectedTab: null,
+      jsonInvalid: false,
+      objectTabActive: null
+    }
+  },
+  computed: {
+    complexFilterActive() {
+      return (
+        (this.currentFilter.active === ACTIVE_BASIC &&
+          this.currentFilter.basic !== null) ||
+        (this.currentFilter.active === ACTIVE_RAW &&
+          this.currentFilter.raw !== null)
+      )
+    },
+    quickFilter() {
+      if (!this.currentFilter) {
+        return null
+      }
+      return this.currentFilter.quick
+    },
+    basicFilter() {
+      if (!this.currentFilter) {
+        return null
+      }
+      return this.currentFilter.basic
+    },
+    rawFilter() {
+      if (!this.currentFilter) {
+        return null
+      }
+      return this.currentFilter.raw
+    },
+    sorting() {
+      return this.currentFilter.sorting
+    }
+  },
+  methods: {
+    onQuickFilterUpdated(term) {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          active: term ? ACTIVE_QUICK : NO_ACTIVE,
+          quick: term,
+          from: 0
+        })
+      )
+    },
+    onBasicFilterUpdated(filter, sorting) {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          active: filter ? ACTIVE_BASIC : NO_ACTIVE,
+          basic: filter,
+          sorting,
+          from: 0
+        })
+      )
+    },
+    onRawFilterUpdated(filter) {
+      this.advancedFiltersVisible = false
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          active: filter ? ACTIVE_RAW : NO_ACTIVE,
+          raw: filter,
+          from: 0
+        })
+      )
+    },
+    onRefresh() {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          from: 0
+        })
+      )
+    },
+    onReset() {
+      this.$emit('reset', new Filter())
+    },
+    switchComplexFilterTab(name) {
+      this.complexFiltersSelectedTab = name
+    },
+    setObjectTabActive(tab) {
+      this.objectTabActive = tab
+    },
+    onFiltersUpdated(newFilters) {
+      this.$emit('filters-updated', newFilters)
+    }
+  },
+  mounted() {
+    Vue.nextTick(() => {
+      window.document.addEventListener('keydown', this.handleEsc)
+    })
+  },
+  destroyed() {
+    window.document.removeEventListener('keydown', this.handleEsc)
+  }
+}
 </script>

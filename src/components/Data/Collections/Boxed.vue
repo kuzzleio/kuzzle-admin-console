@@ -1,9 +1,9 @@
 <template>
-  <div class="col s12 m6 l4 collection-boxed">
+  <div class="CollectionBoxed col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
 
-        <div class="col s11 truncate">
+        <div class="col s10 truncate">
           <!-- collection browse link -->
           <router-link
              class="fluid-hover"
@@ -13,7 +13,7 @@
           </router-link>
         </div>
 
-        <div class="col s1 right-align">
+        <div class="col s2 right-align">
           <!-- actions related to the collection -->
           <collection-dropdown
             class="icon-small icon-black"
@@ -45,34 +45,51 @@
 </template>
 
 <script>
-  import CollectionDropdown from './Dropdown'
-  import {canCreateDocument, canManageRealtime} from '../../../services/userAuthorization'
-  import Title from '../../../directives/title.directive'
+import CollectionDropdown from './Dropdown'
+import {
+  canCreateDocument,
+  canManageRealtime
+} from '../../../services/userAuthorization'
+import Title from '../../../directives/title.directive'
 
-  export default {
-    name: 'CollectionBoxed',
-    props: ['index', 'collection', 'isRealtime'],
-    components: {
-      CollectionDropdown
-    },
-    methods: {
-      canManageRealtime,
-      canCreateDocument
-    },
-    directives: {
-      Title
-    }
+export default {
+  name: 'CollectionBoxed',
+  props: ['index', 'collection', 'isRealtime'],
+  components: {
+    CollectionDropdown
+  },
+  methods: {
+    canManageRealtime,
+    canCreateDocument
+  },
+  directives: {
+    Title
   }
+}
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
+// @TODO pass this code to BEM
+.CollectionBoxed {
+  .dropdown-content > li {
+    a.remove {
+      color: $red-color;
+    }
+  }
   .name {
-    font-family: "AnonymousPro", sans-serif;
+    font-family: 'AnonymousPro', sans-serif;
   }
   .card-title {
     font-size: 22px;
     padding: 1rem;
     margin-bottom: 0;
+
+    .fa-th-list,
+    .fa-bolt {
+      font-size: 1.1rem;
+      vertical-align: 2px;
+      margin-right: 4px;
+    }
 
     .fa-th-list,
     .fa-bolt {
@@ -88,11 +105,12 @@
   .card-content {
     border-top: 1px solid rgba(160, 160, 160, 0.2);
   }
-  .switch {
-    label {
-      .lever {
-        margin: 0;
-      }
+}
+.switch {
+  label {
+    .lever {
+      margin: 0;
     }
   }
+}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit user - <span class="bold">{{decodeURIComponent($store.state.route.params.id)}}</span>
+      Edit user - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
     </headline>
 
     <div class="card-panel card-body">
@@ -48,115 +48,124 @@
 </template>
 
 <style scoped>
-  .bold {
-    font-weight: normal;
-  }
+.bold {
+  font-weight: normal;
+}
 </style>
 
 <script>
-  import Headline from '../../Materialize/Headline'
-  import kuzzle from '../../../services/kuzzle'
-  import CredentialsEdit from '../Common/JsonWithMapping'
-  import Tabs from '../../Materialize/Tabs'
-  import Tab from '../../Materialize/Tab'
-  import Promise from 'bluebird'
-  import StepsContent from './Steps/StepsContent'
+import Headline from '../../Materialize/Headline'
+import kuzzle from '../../../services/kuzzle'
+import CredentialsEdit from '../Common/JsonWithMapping'
+import Tabs from '../../Materialize/Tabs'
+import Tab from '../../Materialize/Tab'
+import Promise from 'bluebird'
+import StepsContent from './Steps/StepsContent'
 
-  export default {
-    name: 'UpdateUser',
-    components: {
-      Headline,
-      CredentialsEdit,
-      Tabs,
-      Tab,
-      StepsContent
+export default {
+  name: 'UpdateUser',
+  components: {
+    Headline,
+    CredentialsEdit,
+    Tabs,
+    Tab,
+    StepsContent
+  },
+  data() {
+    return {
+      error: '',
+      loading: false,
+      refresh: false,
+      activeTab: 'basic',
+      activeTabObject: null,
+      submitted: false,
+      user: {
+        kuid: null,
+        addedProfiles: [],
+        credentials: {},
+        customContent: {}
+      }
+    }
+  },
+  computed: {
+    stepNumber() {
+      switch (this.activeTab) {
+        case 'basic':
+          return 0
+        case 'credentials':
+          return 1
+        default:
+          return 2
+      }
+    }
+  },
+  methods: {
+    switchTab(name) {
+      this.activeTab = name
     },
-    data () {
-      return {
-        error: '',
-        loading: false,
-        refresh: false,
-        activeTab: 'basic',
-        activeTabObject: null,
-        submitted: false,
-        user: {
-          kuid: null,
-          addedProfiles: [],
-          credentials: {},
-          customContent: {}
+    setActiveTabObject(tab) {
+      this.activeTabObject = tab
+    },
+    validate() {
+      if (!this.user.addedProfiles.length) {
+        throw new Error('Please add at least one profile to the user')
+      }
+
+      return true
+    },
+    async save() {
+      try {
+        this.validate()
+      } catch (e) {
+        this.setError(e.message)
+        return
+      }
+      this.submitted = true
+
+      let userObject = {
+        profileIds: this.user.addedProfiles,
+        ...this.user.customContent
+      }
+
+      try {
+        await kuzzle.security.replaceUserPromise(this.user.kuid, userObject)
+        await Promise.all(
+          Object.keys(this.user.credentials).map(async strategy => {
+            await kuzzle.security.updateCredentialsPromise(
+              strategy,
+              this.user.kuid,
+              this.user.credentials[strategy]
+            )
+          })
+        )
+        await kuzzle.queryPromise(
+          { controller: 'index', action: 'refreshInternal' },
+          {}
+        )
+        this.$router.push({ name: 'SecurityUsersList' })
+      } catch (err) {
+        if (err) {
+          this.setError(err.message)
+          this.submitted = false
         }
       }
     },
-    computed: {
-      stepNumber () {
-        switch (this.activeTab) {
-          case 'basic':
-            return 0
-          case 'credentials':
-            return 1
-          default:
-            return 2
-        }
-      }
+    setError(msg) {
+      this.error = msg
+      setTimeout(() => {
+        this.dismissError()
+      }, 5000)
     },
-    methods: {
-      switchTab (name) {
-        this.activeTab = name
-      },
-      setActiveTabObject (tab) {
-        this.activeTabObject = tab
-      },
-      validate () {
-        if (!this.user.addedProfiles.length) {
-          throw new Error('Please add at least one profile to the user')
-        }
-
-        return true
-      },
-      async save () {
-        try {
-          this.validate()
-        } catch (e) {
-          this.setError(e.message)
-          return
-        }
-        this.submitted = true
-
-        let userObject = {
-          profileIds: this.user.addedProfiles,
-          ...this.user.customContent
-        }
-
-        try {
-          await kuzzle.security.replaceUserPromise(this.user.kuid, userObject)
-          await Promise.all(Object.keys(this.user.credentials).map(async (strategy) => {
-            await kuzzle.security.updateCredentialsPromise(strategy, this.user.kuid, this.user.credentials[strategy])
-          }))
-          await kuzzle.queryPromise({controller: 'index', action: 'refreshInternal'}, {})
-          this.$router.push({name: 'SecurityUsersList'})
-        } catch (err) {
-          if (err) {
-            this.setError(err.message)
-            this.submitted = false
-          }
-        }
-      },
-      setError (msg) {
-        this.error = msg
-        setTimeout(() => {
-          this.dismissError()
-        }, 5000)
-      },
-      dismissError () {
-        this.error = ''
-      },
-      cancel () {
-        if (this.$router._prevTransition && this.$router._prevTransition.to) {
-          this.$router.push(this.$router._prevTransition.to)
-        } else {
-          this.$router.push({name: 'SecurityUsersList'})
-        }
+    dismissError() {
+      this.error = ''
+    },
+    cancel() {
+      if (this.$router._prevTransition && this.$router._prevTransition.to) {
+        this.$router.push(this.$router._prevTransition.to)
+      } else {
+        this.$router.push({ name: 'SecurityUsersList' })
       }
     }
   }
+}
 </script>

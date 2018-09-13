@@ -13,7 +13,7 @@ export const currentEnvironment = (state, getters) => {
   return state.environments[getters.currentEnvironmentId]
 }
 
-export const hasEnvironment = (state) => {
+export const hasEnvironment = state => {
   return Object.keys(state.environments).length !== 0
 }
 
@@ -30,5 +30,7 @@ export const oldMappingSupport = (state, getters) => {
     return null
   }
 
-  return /^2/.test(state.environments[getters.currentEnvironmentId].storageEngineVersion)
+  return /^2/.test(
+    state.environments[getters.currentEnvironmentId].storageEngineVersion
+  )
 }

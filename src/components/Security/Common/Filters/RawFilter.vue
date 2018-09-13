@@ -16,59 +16,59 @@
 </template>
 
 <script>
-  import JsonEditor from '../../../Common/JsonEditor'
+import JsonEditor from '../../../Common/JsonEditor'
 
-  export default {
-    props: {
-      rawFilter: {
-        type: Object,
-        'default' () {
-          return {}
-        }
-      },
-      formatFromBasicSearch: Function,
-      labelSearchButton: {
-        type: String,
-        required: false,
-        'default': 'search'
-      },
-      sortingEnabled: {
-        type: Boolean,
-        required: false,
-        'default': true
+export default {
+  props: {
+    rawFilter: {
+      type: Object,
+      default() {
+        return {}
       }
     },
-    components: {
-      JsonEditor
+    formatFromBasicSearch: Function,
+    labelSearchButton: {
+      type: String,
+      required: false,
+      default: 'search'
     },
-    data () {
-      return {
-        filters: {
-          raw: {}
-        },
-        jsonInvalid: false
-      }
-    },
-    methods: {
-      rawSearch () {
-        let json = this.$refs.jsoneditor.getJson()
-
-        if (json === null) {
-          this.jsonInvalid = true
-          return
-        }
-
-        this.jsonInvalid = false
-        this.filters.raw = json
-
-        this.$emit('filters-raw-search', this.filters.raw)
-      },
-      resetRawSearch () {
-        this.filters.raw = {}
-      }
-    },
-    mounted () {
-      this.filters.raw = this.rawFilter || {}
+    sortingEnabled: {
+      type: Boolean,
+      required: false,
+      default: true
     }
+  },
+  components: {
+    JsonEditor
+  },
+  data() {
+    return {
+      filters: {
+        raw: {}
+      },
+      jsonInvalid: false
+    }
+  },
+  methods: {
+    rawSearch() {
+      let json = this.$refs.jsoneditor.getJson()
+
+      if (json === null) {
+        this.jsonInvalid = true
+        return
+      }
+
+      this.jsonInvalid = false
+      this.filters.raw = json
+
+      this.$emit('filters-raw-search', this.filters.raw)
+    },
+    resetRawSearch() {
+      this.filters.raw = {}
+    }
+  },
+  mounted() {
+    this.filters.raw = this.rawFilter || {}
   }
+}
 </script>

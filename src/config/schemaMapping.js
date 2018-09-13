@@ -5,7 +5,7 @@ export const elements = {
     tag: 'input',
     type: 'text'
   },
-  'textarea': {
+  textarea: {
     id: 'textarea',
     name: 'Textarea',
     tag: 'textarea'
@@ -50,7 +50,7 @@ export const elements = {
     chooseValues: true,
     cast: 'integer'
   },
-  'checkbox': {
+  checkbox: {
     id: 'checkbox',
     name: 'Checkbox',
     tag: 'checkbox'
@@ -100,12 +100,12 @@ export const elements = {
     name: 'Fieldset',
     tag: 'fieldset'
   },
-  'geopoint': {
+  geopoint: {
     id: 'geopoint',
     name: 'Geo point',
     tag: 'geo-point'
   },
-  'json': {
+  json: {
     id: 'json',
     name: 'Json',
     tag: 'json'
@@ -135,17 +135,11 @@ export const config = {
     default: elements['input:text']
   },
   boolean: {
-    elements: [
-      elements['checkbox'],
-      elements['input:text']
-    ],
+    elements: [elements['checkbox'], elements['input:text']],
     default: elements['checkbox']
   },
   long: {
-    elements: [
-      elements['input:number:integer'],
-      elements['select:float']
-    ],
+    elements: [elements['input:number:integer'], elements['select:float']],
     default: elements['input:number:integer']
   },
   integer: {
@@ -205,15 +199,11 @@ export const config = {
     default: elements['input:number:float']
   },
   object: {
-    elements: [
-      elements['input:fieldset']
-    ],
+    elements: [elements['input:fieldset']],
     default: elements['input:fieldset']
   },
   nested: {
-    elements: [
-      elements['json']
-    ],
+    elements: [elements['json']],
     default: elements['json']
   },
   ip: {
@@ -225,23 +215,15 @@ export const config = {
     default: elements['input:text']
   },
   date: {
-    elements: [
-      elements['input:text']
-    ],
+    elements: [elements['input:text']],
     default: elements['input:text']
   },
   binary: {
-    elements: [
-      elements['input:text'],
-      elements['input:textarea']
-    ],
+    elements: [elements['input:text'], elements['input:textarea']],
     default: elements['input:textarea']
   },
   geo_point: {
-    elements: [
-      elements['geopoint'],
-      elements['input:text']
-    ],
+    elements: [elements['geopoint'], elements['input:text']],
     default: elements['geopoint']
   }
 }

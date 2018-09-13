@@ -3,7 +3,7 @@ export default [
   {
     path: '/data',
     name: 'Data',
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Indexes/List'], resolve)
     }
   },
@@ -13,49 +13,49 @@ export default [
     meta: {
       auth: true
     },
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Collections/List'], resolve)
     }
   },
   {
     path: '/data/:index/create',
     name: 'DataCreateCollection',
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Collections/Create'], resolve)
     }
   },
   {
     path: '/data/:index/:collection/watch',
     name: 'DataCollectionWatch',
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Collections/Watch'], resolve)
     }
   },
   {
     path: '/data/:index/:collection/edit',
     name: 'DataCollectionEdit',
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Collections/Update'], resolve)
     }
   },
   {
     path: '/data/:index/:collection',
     name: 'DataDocumentsList',
-    component (resolve) {
-      require(['../../components/Data/Documents/List'], resolve)
+    component(resolve) {
+      require(['../../components/Data/Documents/Page'], resolve)
     }
   },
   {
     path: '/data/:index/:collection/create',
     name: 'DataCreateDocument',
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
     }
   },
   {
     path: '/data/:index/:collection/update/:id',
     name: 'DataUpdateDocument',
-    component (resolve) {
+    component(resolve) {
       require(['../../components/Data/Documents/Update'], resolve)
     }
   }

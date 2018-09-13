@@ -83,40 +83,40 @@ export default {
       }
     }
   },
-  data () {
+  data() {
     return {
       viewType: 'form',
       newContent: {}
     }
   },
   computed: {
-    isFormView () {
+    isFormView() {
       return this.viewType === 'form'
     },
-    schema () {
+    schema() {
       return mergeSchemaMapping({}, this.mapping)
     }
   },
   watch: {
-    value: function (val) {
+    value: function(val) {
       if (this.viewType === 'form') {
-        this.newContent = {...val}
+        this.newContent = { ...val }
       }
     }
   },
   methods: {
-    switchView () {
+    switchView() {
       if (this.viewType === 'json') {
         Object.assign(this.newContent, this.$refs.jsoneditor.getJson())
       }
       this.viewType = this.isFormView ? 'json' : 'form'
-      this.newContent = {...this.value}
+      this.newContent = { ...this.value }
     },
-    updateValue (payload) {
+    updateValue(payload) {
       this.newContent[payload.name] = payload.value
       this.$emit('input', this.newContent)
     },
-    jsonChanged () {
+    jsonChanged() {
       this.$emit('input', this.$refs.jsoneditor.getJson())
     }
   }
