@@ -454,7 +454,8 @@ You can control Chrome Puppeteer using its [standard API](https://pptr.dev/#?pro
 
 #### Visual Regression tests
 
-You write visual regression tests just like you write normal interaction tests. The only difference is that you'll take a screenshot at some point, store it in the `visual-regression/current` directory, and then compare it to the reference by calling the `utils.compareScreenshot` function. Follow the example below
+You write visual regression tests just like you write normal interaction tests. The only difference is that you'll take a screenshot at some point, store it in the `visual-regression/current` directory, and then compare it to the reference by calling the `utils.compareScreenshot` function. This will generate a diff file in `visual-regression/diff`.
+To write a visual regression test, follow the example below
 
 ```javascript
 // Do not forget the [VISUAL] prefix in the name
@@ -487,7 +488,7 @@ Now, the first time you write such a test, the reference screenshot will not exi
 ##### Updating reference screenshots
 
 - Every time you write a **new test** for the first time, you should run `npm run e2e-update-reference`. This script will generate all the screenshots and copy the new ones to the `reference` directory.
-- Whenever you want to **update an existing test**, you'll have to manually overwrite the existing reference with the new screenshot: the scripts won't do that for you.
+- Whenever you want to **update an existing test**, you'll have to manually overwrite the existing reference with the new screenshot: the scripts won't do that for you. Don't forget to commit your references.
 
 #### All green locally, red on Travis
 
