@@ -14,9 +14,7 @@ class SharedSteps {
   async createEnvironment(page, name, host, port, colorIndex) {
     // Create environment
     // ============================================
-    await utils.waitForSelector(page, '.CreateEnvironment-name', {
-      timeout: world.defaultWaitElTimeout
-    })
+    await utils.waitForSelector(page, '.CreateEnvironment-name')
 
     if (name) {
       await page.type('.CreateEnvironment-name', name)

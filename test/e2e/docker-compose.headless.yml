@@ -9,6 +9,7 @@ services:
       - cloudinary_cloud_name
       - cloudinary_api_key
       - cloudinary_api_secret
+      - waitElTimeout
       - CI
       - TRAVIS
     working_dir: /app/
