@@ -43,6 +43,7 @@ class SharedSteps {
 
     await this.openCreateEnvModalIfExists(page)
     await this.createEnvironment(page, validEnvName, validEnvHost)
+    await this.isConnected(page)
   }
   async isLoggedIn(page) {
     try {
@@ -67,6 +68,7 @@ class SharedSteps {
     if (!(await this.isLoggedIn(page))) {
       await utils.waitForSelector(page, '.LoginAsAnonymous-Btn')
       await utils.click(page, '.LoginAsAnonymous-Btn')
+      await this.isLoggedIn(page)
     }
   }
   async createIndex(page, name) {
