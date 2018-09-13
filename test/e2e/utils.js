@@ -9,6 +9,7 @@ const paths = {
 }
 const threshold = 0.01
 const cloudinary = require('cloudinary')
+const world = require('./world')
 
 cloudinary.config({
   cloud_name: process.env.cloudinary_cloud_name || 'kuzzle',
@@ -63,9 +64,46 @@ const compareScreenshot = async name => {
   }
 }
 
+const waitForSelector = async (page, selector) => {
+  if (!page) {
+    throw new Error('waitForSelector: Please provide a page instance')
+  }
+  try {
+    await page.waitForSelector(selector, {
+      timeout: world.defaultWaitElTimeout
+    })
+  } catch (error) {
+    throw new Error(
+      `Something went wrong waiting for ${selector} to appear. ${error.message}`
+    )
+  }
+}
+
+const click = async (page, selector) => {
+  if (!page) {
+    throw new Error('click: Please provide a page instance')
+  }
+  try {
+    await page.click(selector)
+  } catch (error) {
+    throw new Error(
+      `Something went wrong clicking ${selector}. ${error.message}`
+    )
+  }
+}
+
+const wait = async (page, timeout) => {
+  try {
+    await page.waitForFunction(() => false, { timeout })
+  } catch (error) {}
+}
+
 module.exports = {
   getCurrentScreenshotPath,
   compareScreenshot,
   visualRegressionPaths: paths,
-  sendToCloudinary
+  sendToCloudinary,
+  waitForSelector,
+  click,
+  wait
 }

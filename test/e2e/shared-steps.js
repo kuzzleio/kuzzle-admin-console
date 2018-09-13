@@ -1,23 +1,20 @@
 const world = require('./world')
+const utils = require('./utils')
 
 class SharedSteps {
   async openCreateEnvModalIfExists(page) {
     try {
-      await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
-        timeout: world.defaultWaitElTimeout
-      })
-      await page.click('.EnvironmentsSwitch > .btn-flat')
+      await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
+      await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-      await page.waitForSelector('.EnvironmentsSwitch-newConnectionBtn', {
-        timeout: world.defaultWaitElTimeout
-      })
-      await page.click('.EnvironmentsSwitch-newConnectionBtn')
+      await utils.waitForSelector(page, '.EnvironmentsSwitch-newConnectionBtn')
+      await utils.click(page, '.EnvironmentsSwitch-newConnectionBtn')
     } catch (error) {}
   }
   async createEnvironment(page, name, host, port, colorIndex) {
     // Create environment
     // ============================================
-    await page.waitForSelector('.CreateEnvironment-name', {
+    await utils.waitForSelector(page, '.CreateEnvironment-name', {
       timeout: world.defaultWaitElTimeout
     })
 
@@ -31,15 +28,16 @@ class SharedSteps {
       await page.type('.CreateEnvironment-port', port)
     }
     if (colorIndex) {
-      await page.click(
+      await utils.click(
+        page,
         `.CreateEnvironment-colorBtns div:nth-child(${colorIndex}) div.color`
       )
     }
 
-    await page.waitForSelector('.Environment-SubmitButton', {
+    await utils.waitForSelector(page, '.Environment-SubmitButton', {
       timeout: world.defaultWaitElTimeout
     })
-    await page.click('.Environment-SubmitButton')
+    await utils.click(page, '.Environment-SubmitButton')
   }
   async connectToValidEnvironment(page) {
     const validEnvName = 'kuzzle'
@@ -50,9 +48,7 @@ class SharedSteps {
   }
   async isLoggedIn(page) {
     try {
-      await page.waitForSelector('.App-loggedIn', {
-        timeout: world.defaultWaitElTimeout
-      })
+      await utils.waitForSelector(page, '.App-loggedIn')
       return true
     } catch (error) {
       return false
@@ -60,9 +56,7 @@ class SharedSteps {
   }
   async isConnected(page) {
     try {
-      await page.waitForSelector('.App-connected', {
-        timeout: world.defaultWaitElTimeout
-      })
+      await utils.waitForSelector(page, '.App-connected')
       return true
     } catch (error) {
       return false
@@ -73,27 +67,25 @@ class SharedSteps {
       await this.connectToValidEnvironment(page)
     }
     if (!(await this.isLoggedIn(page))) {
-      await page.waitForSelector('.LoginAsAnonymous-Btn', {
-        timeout: world.defaultWaitElTimeout
-      })
-      await page.click('.LoginAsAnonymous-Btn')
+      await utils.waitForSelector(page, '.LoginAsAnonymous-Btn')
+      await utils.click(page, '.LoginAsAnonymous-Btn')
     }
   }
   async createIndex(page, name) {
-    await page.waitForSelector('.IndexesPage-createBtn', {
+    await utils.waitForSelector(page, '.IndexesPage-createBtn', {
       timeout: world.defaultWaitElTimeout
     })
-    await page.click('.IndexesPage-createBtn')
+    await utils.click(page, '.IndexesPage-createBtn')
 
-    await page.waitForSelector('.CreateIndexModal-name', {
+    await utils.waitForSelector(page, '.CreateIndexModal-name', {
       timeout: world.defaultWaitElTimeout
     })
     await page.type('.CreateIndexModal-name', name)
 
-    await page.waitForSelector('.CreateIndexModal-createBtn', {
+    await utils.waitForSelector(page, '.CreateIndexModal-createBtn', {
       timeout: world.defaultWaitElTimeout
     })
-    await page.click('.CreateIndexModal-createBtn')
+    await utils.click(page, '.CreateIndexModal-createBtn')
   }
 }
 

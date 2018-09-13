@@ -1,6 +1,7 @@
 const expect = require('expect.js')
 const world = require('../world')
 const sharedSteps = require('../shared-steps')
+const utils = require('../utils')
 
 describe('Manage environments', function() {
   it('should be able to create a new environment', async () => {
@@ -9,18 +10,15 @@ describe('Manage environments', function() {
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
 
     await page.goto(world.url)
+
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, newEnvName, newEnvHost)
 
     // Check new environment exists
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
-      timeout: world.defaultWaitElTimeout
-    })
-    await page.click('.EnvironmentsSwitch > .btn-flat')
+    await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
+    await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await page.waitForSelector(`#EnvironmentsSwitch-env_${newEnvName}`, {
-      timeout: world.defaultWaitElTimeout
-    })
+    await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${newEnvName}`)
   })
 
   it('should be able to delete an environment', async () => {
@@ -34,24 +32,25 @@ describe('Manage environments', function() {
     await sharedSteps.createEnvironment(page, envToDeleteName, envToDeleteHost)
 
     // Now delete it
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat')
-    await page.click('.EnvironmentsSwitch > .btn-flat')
+    await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
+    await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await page.waitForSelector(
-      `#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`,
-      { timeout: world.defaultWaitElTimeout }
+    utils.wait(page, 1000)
+    await utils.click(
+      page,
+      `#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`
     )
-    await page.click(`#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`)
 
-    await page.waitForSelector('.EnvironmentDeleteModal-envName')
-    await page.click('.EnvironmentDeleteModal-envName')
+    await utils.waitForSelector(page, '.EnvironmentDeleteModal-envName')
+    await utils.click(page, '.EnvironmentDeleteModal-envName')
 
     await page.type('.EnvironmentDeleteModal-envName', envToDeleteName)
 
-    await page.waitForSelector(
+    await utils.waitForSelector(
+      page,
       'div > #delete-env > .modal-footer > span > .btn'
     )
-    await page.click('div > #delete-env > .modal-footer > span > .btn')
+    await utils.click(page, 'div > #delete-env > .modal-footer > span > .btn')
 
     // Now verify the environment is no more present
     const foundEnvironment = await page.$(
@@ -71,7 +70,8 @@ describe('Manage environments', function() {
     await sharedSteps.openCreateEnvModalIfExists(page)
 
     // Get the color of the box that will be clicked
-    await page.waitForSelector(
+    await utils.waitForSelector(
+      page,
       `.CreateEnvironment-colorBtns div:nth-child(${newEnvColorIdx}) div.color`
     )
     const selectedColor = await page.$eval(
@@ -89,11 +89,11 @@ describe('Manage environments', function() {
     )
 
     // Log in to the Admin Console
-    await page.waitForSelector('.LoginAsAnonymous-Btn')
-    await page.click('.LoginAsAnonymous-Btn')
+    await utils.waitForSelector(page, '.LoginAsAnonymous-Btn')
+    await utils.click(page, '.LoginAsAnonymous-Btn')
 
     // Check the background color of the navbar is the selected one
-    await page.waitForSelector('nav')
+    await utils.waitForSelector(page, 'nav')
     const headerColor = await page.$eval(
       'nav',
       node => node.style.backgroundColor
@@ -119,15 +119,11 @@ describe('Manage environments', function() {
     await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
 
     // Select the valid environment
-    await page.waitForSelector('.EnvironmentsSwitch > .btn-flat', {
-      timeout: world.defaultWaitElTimeout
-    })
-    await page.click('.EnvironmentsSwitch > .btn-flat')
+    await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
+    await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await page.waitForSelector(`#EnvironmentsSwitch-env_${validEnvName}`, {
-      timeout: world.defaultWaitElTimeout
-    })
-    await page.click(`#EnvironmentsSwitch-env_${validEnvName}`)
+    await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${validEnvName}`)
+    await utils.click(page, `#EnvironmentsSwitch-env_${validEnvName}`)
 
     // Now verify that we are connected to a valid environment
     const isConnected = await sharedSteps.isConnected(page)
