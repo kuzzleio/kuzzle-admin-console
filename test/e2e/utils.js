@@ -18,9 +18,20 @@ cloudinary.config({
 })
 
 const sendToCloudinary = (path, publicId, tags) => {
-  cloudinary.v2.uploader.upload(path, {
-    public_id: publicId,
-    tags
+  return new Promise((resolve, reject) => {
+    cloudinary.v2.uploader.upload(
+      path,
+      {
+        public_id: publicId,
+        tags
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error)
+        }
+        return resolve()
+      }
+    )
   })
 }
 
@@ -51,8 +62,8 @@ const compareScreenshot = async name => {
     imageBPath: currentScreenshotPath,
     thresholdType: BlinkDiff.THRESHOLD_PERCENT,
     threshold,
-    imageOutputPath: diffScreenshotPath,
-    composition: false
+    imageOutputPath: diffScreenshotPath
+    // composition: false
   })
 
   const diffResult = await diff.runWithPromise()
