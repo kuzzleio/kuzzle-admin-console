@@ -488,3 +488,15 @@ Now, the first time you write such a test, the reference screenshot will not exi
 
 - Every time you write a **new test** for the first time, you should run `npm run e2e-update-reference`. This script will generate all the screenshots and copy the new ones to the `reference` directory.
 - Whenever you want to **update an existing test**, you'll have to manually overwrite the existing reference with the new screenshot: the scripts won't do that for you.
+
+#### All green locally, red on Travis
+
+Yeah, sometimes life is a shit. 99% of the time, shit happens because Puppeteer is rendering the UI _slightly slower_ on Travis than on your local machine. This is frustrating but it's also a good thing, because it helps you spot wrong assumptions you do in your code.
+But don't worry, we got your back: here goes a list of things you can check in order to understand what goes on on the good ol' fellow Travis.
+
+- Exceptions are your friends. If you properly used `utils.waitForSelector` and `utils.click`, the exception will mention the selector involved in the problem. That info will help you understand which part of your code causes the trouble.
+- You can also go to the Kuzzle Cloudinary account and take a look at the screenshot that has been taken right after the test failed (the filename will be `admin-console-test-fail-${Date.now()}`). You'll find it by searching the tag `travis-${TRAVIS_BUILD_NUMBER}` (the build number is written in the build header).
+- If it's a timeout problem, try giving it MOAR timeout (by setting the `waitElTimeout` in the Travis settings).
+- If it's a click that fails, it's probably because Puppeteer didn't have the time to make the element appear. Did you wait for the element?
+- If you _did wait_ for the element but the click still fails, then it's probably that waiting for the element doesn't make sense. Some interactive widgets we use (such as `Dropdown.vue`) hide some parts by attaching their elements to the DOM and assigning them an `absolute` position outside the viewport, which will make `waitForSelector` to return immediately. Sometimes it will return before the element is actually visible and clickable, making the subsequent `click` actions unstable. As a workaround, you can `utils.wait` a hardcoded amount of time (this is still a hack, but it's all we have for now).
+- If it's a visual diff problem, go directly to Cloudinary, search the tag corresponding to the build number (as explained above) and take a look at the diff files.
