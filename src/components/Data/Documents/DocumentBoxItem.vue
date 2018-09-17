@@ -111,6 +111,10 @@ export default {
     flex-wrap: nowrap;
     flex-direction: row;
 
+    .card-title {
+      flex-grow: 1;
+    }
+
     span {
       white-space: nowrap;
       overflow: hidden;
