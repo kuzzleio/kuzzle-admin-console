@@ -38,7 +38,8 @@
     "http-server": "^0.11.1",
     "lodash": "^4.17.10",
     "serve-static": "^1.13.2",
-    "vue-quill-editor": "^1.1.1"
+    "vue-quill-editor": "^1.1.1",
+    "why-is-node-running": "^2.0.3"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.3.1",
