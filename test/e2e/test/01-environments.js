@@ -2,6 +2,7 @@ const expect = require('expect.js')
 const world = require('../world')
 const sharedSteps = require('../shared-steps')
 const utils = require('../utils')
+const fmt = require('../../../src/utils').formatForDom
 
 describe('Manage environments', function() {
   it('should be able to create a new environment', async () => {
@@ -20,7 +21,7 @@ describe('Manage environments', function() {
 
     await utils.waitForSelector(
       page,
-      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(newEnvName)}]`
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`
     )
   })
 
@@ -41,7 +42,7 @@ describe('Manage environments', function() {
     utils.wait(page, 1000)
     await utils.click(
       page,
-      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(
         envToDeleteName
       )}] > i.fa-trash`
     )
@@ -59,9 +60,7 @@ describe('Manage environments', function() {
 
     // Now verify the environment is no more present
     const foundEnvironment = await page.$(
-      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
-        envToDeleteName
-      )}]`
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(envToDeleteName)}]`
     )
     expect(foundEnvironment).to.eql(null)
   })
@@ -131,16 +130,12 @@ describe('Manage environments', function() {
 
     await utils.waitForSelector(
       page,
-      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
-        validEnvName
-      )}]`
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`
     )
     await utils.wait(page, 1000)
     await utils.click(
       page,
-      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
-        validEnvName
-      )}]`
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`
     )
 
     // Now verify that we are connected to a valid environment

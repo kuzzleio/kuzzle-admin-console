@@ -118,10 +118,6 @@ const screenshot = async (page, path) => {
   } catch (error) {}
 }
 
-const formatForDom = word => {
-  return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
-}
-
 module.exports = {
   getCurrentScreenshotPath,
   compareScreenshot,
@@ -130,6 +126,5 @@ module.exports = {
   waitForSelector,
   click,
   wait,
-  screenshot,
-  formatForDom
+  screenshot
 }
