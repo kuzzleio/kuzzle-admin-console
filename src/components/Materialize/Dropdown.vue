@@ -43,6 +43,7 @@ a.dropdown-button {
 
 <script>
 import Vue from 'vue'
+import { formatForDom } from '../../utils'
 
 export default {
   props: ['id', 'myclass'],
@@ -54,7 +55,7 @@ export default {
 
       let parsed = this.id + this._uid
 
-      return parsed.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
+      return formatForDom(parsed)
     }
   },
   mounted() {

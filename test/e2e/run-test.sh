@@ -17,8 +17,8 @@ do
     echo -ne ". "
     sleep 5
 done
+echo -ne " Let's go!"
 
 set -e
 
-npm i --unsafe-perm
-npm test
+node_modules/.bin/mocha --no-timeouts -R spec -S -b test/e2e/test/*.js

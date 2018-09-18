@@ -20,8 +20,7 @@ done
 
 set -e
 
-npm i --unsafe-perm
-updatingVisualReference=1 npm run test-visual
+updatingVisualReference=1 node_modules/.bin/mocha -no-timeouts -R nyan -g VISUAL
 
 echo
 echo Copying current screenshots to reference...

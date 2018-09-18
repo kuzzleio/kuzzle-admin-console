@@ -11,8 +11,8 @@
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "e2e": "docker-compose -f test/e2e/docker-compose.yml -f test/e2e/docker-compose.headless.yml run puppeteer",
-    "e2e-local": "docker-compose -f test/e2e/docker-compose.yml up -d && cd test/e2e && e2eLocal=1 ./run-test.sh",
-    "e2e-update-reference": "docker-compose -f test/e2e/docker-compose.yml up -d && cd test/e2e && e2eLocal=1 ./update-visual-regression.sh",
+    "e2e-local": "docker-compose -f test/e2e/docker-compose.yml up -d && e2eLocal=1 ./test/e2e/run-test.sh",
+    "e2e-update-reference": "docker-compose -f test/e2e/docker-compose.yml up -d && && e2eLocal=1 ./test/e2e/update-visual-regression.sh",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
     "install_deps": "npm i --unsafe-perm",
@@ -41,6 +41,8 @@
     "vue-quill-editor": "^1.1.1"
   },
   "devDependencies": {
+    "cloudinary": "^1.11.0",
+    "expect.js": "^0.3.1",
     "@fortawesome/fontawesome-free": "^5.3.1",
     "ace-builds": "git://github.com/ajaxorg/ace-builds.git#v1.1.8",
     "autoprefixer": "^6.7.2",

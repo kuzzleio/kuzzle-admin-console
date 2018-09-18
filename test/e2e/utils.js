@@ -2,7 +2,7 @@ const BlinkDiff = require('blink-diff')
 const path = require('path')
 const fs = require('fs')
 const paths = {
-  base: 'visual-regression',
+  base: `${__dirname}/visual-regression`,
   reference: 'reference',
   current: 'current',
   diff: 'diff'
@@ -113,7 +113,13 @@ const screenshot = async (page, path) => {
   await page.screenshot({
     path
   })
-  fs.chmodSync(path, 0o777)
+  try {
+    fs.chmodSync(path, 0o777)
+  } catch (error) {}
+}
+
+const formatForDom = word => {
+  return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
 module.exports = {
@@ -124,5 +130,6 @@ module.exports = {
   waitForSelector,
   click,
   wait,
-  screenshot
+  screenshot,
+  formatForDom
 }

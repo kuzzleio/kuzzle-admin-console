@@ -18,7 +18,10 @@ describe('Manage environments', function() {
     await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
     await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${newEnvName}`)
+    await utils.waitForSelector(
+      page,
+      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(newEnvName)}]`
+    )
   })
 
   it('should be able to delete an environment', async () => {
@@ -38,7 +41,9 @@ describe('Manage environments', function() {
     utils.wait(page, 1000)
     await utils.click(
       page,
-      `#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`
+      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
+        envToDeleteName
+      )}] > i.fa-trash`
     )
 
     await utils.waitForSelector(page, '.EnvironmentDeleteModal-envName')
@@ -54,7 +59,9 @@ describe('Manage environments', function() {
 
     // Now verify the environment is no more present
     const foundEnvironment = await page.$(
-      `#EnvironmentsSwitch-env_${envToDeleteName}`
+      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
+        envToDeleteName
+      )}]`
     )
     expect(foundEnvironment).to.eql(null)
   })
@@ -114,22 +121,28 @@ describe('Manage environments', function() {
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, validEnvName, validEnvHost)
 
-    utils.screenshot(page, world.failScreenshotPath + '/step1.png')
-
     // Create an invalid environment
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
 
     // Select the valid environment
     await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
-    utils.screenshot(page, world.failScreenshotPath + '/step2.png')
     await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${validEnvName}`)
-    utils.screenshot(page, world.failScreenshotPath + '/step3.png')
-    await utils.click(page, `#EnvironmentsSwitch-env_${validEnvName}`)
+    await utils.waitForSelector(
+      page,
+      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
+        validEnvName
+      )}]`
+    )
+    await utils.wait(page, 1000)
+    await utils.click(
+      page,
+      `.EnvironmentsSwitch-env[data-env=env_${utils.formatForDom(
+        validEnvName
+      )}]`
+    )
 
-    utils.screenshot(page, world.failScreenshotPath + '/step4.png')
     // Now verify that we are connected to a valid environment
     const isConnected = await sharedSteps.isConnected(page)
     expect(isConnected).to.be(true)

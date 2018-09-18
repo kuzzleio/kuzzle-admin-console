@@ -4,7 +4,7 @@ services:
   puppeteer:
     image: kuzzleio/puppeteer-light
     volumes:
-      - ./:/app/
+      - ../../:/app/
     environment:
       - cloudinary_cloud_name
       - cloudinary_api_key
@@ -16,6 +16,6 @@ services:
     working_dir: /app/
     shm_size: 1gb #512M
     # entrypoint: ['sh', '-c', 'sleep infinity']
-    entrypoint: ['sh', '-c', '/app/run-test.sh']
+    entrypoint: ['sh', '-c', '/app/test/e2e/run-test.sh']
     depends_on:
       - adminconsole
