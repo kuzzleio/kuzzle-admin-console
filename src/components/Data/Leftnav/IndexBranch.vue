@@ -74,18 +74,10 @@ export default {
       return []
     },
     orderedFilteredStoredCollections() {
-      return this.filteredStoredCollections
-        .map(obj => {
-          return this.highlight(obj, this.filter)
-        })
-        .sort()
+      return this.filteredStoredCollections.sort()
     },
     orderedFilteredRealtimeCollections() {
-      return this.filteredRealtimeCollections
-        .map(obj => {
-          return this.highlight(obj, this.filter)
-        })
-        .sort()
+      return this.filteredRealtimeCollections.sort()
     }
   },
   methods: {
