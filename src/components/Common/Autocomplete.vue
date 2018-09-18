@@ -19,7 +19,7 @@
         class="Autocomplete-result"
         :key="result"
         :class="{ 'is-active': i === selectionCursor }"
-        @click="setResult(result, true)"
+        @click="setResult(result)"
       >
         {{ result }}
       </li>
