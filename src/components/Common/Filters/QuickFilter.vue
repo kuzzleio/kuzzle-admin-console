@@ -71,7 +71,7 @@ export default {
         if (this.lastThrottledSearch) {
           this.submitSearch()
         }
-      }, 100)
+      }, 300)
 
       if (this.complexFilterActive) {
         this.$emit('refresh')
