@@ -75,13 +75,13 @@ const compareScreenshot = async name => {
   }
 }
 
-const waitForSelector = async (page, selector) => {
+const waitForSelector = async (page, selector, timeout) => {
   if (!page) {
     throw new Error('waitForSelector: Please provide a page instance')
   }
   try {
     await page.waitForSelector(selector, {
-      timeout: world.defaultWaitElTimeout
+      timeout: timeout || world.defaultWaitElTimeout
     })
   } catch (error) {
     throw new Error(
@@ -109,6 +109,13 @@ const wait = async (page, timeout) => {
   } catch (error) {}
 }
 
+const screenshot = async (page, path) => {
+  await page.screenshot({
+    path
+  })
+  fs.chmodSync(path, 0o777)
+}
+
 module.exports = {
   getCurrentScreenshotPath,
   compareScreenshot,
@@ -116,5 +123,6 @@ module.exports = {
   sendToCloudinary,
   waitForSelector,
   click,
-  wait
+  wait,
+  screenshot
 }

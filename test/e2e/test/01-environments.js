@@ -114,17 +114,22 @@ describe('Manage environments', function() {
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, validEnvName, validEnvHost)
 
+    utils.screenshot(page, world.failScreenshotPath + '/step1.png')
+
     // Create an invalid environment
     await sharedSteps.openCreateEnvModalIfExists(page)
     await sharedSteps.createEnvironment(page, invalidEnvName, invalidEnvHost)
 
     // Select the valid environment
     await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
+    utils.screenshot(page, world.failScreenshotPath + '/step2.png')
     await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
     await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${validEnvName}`)
+    utils.screenshot(page, world.failScreenshotPath + '/step3.png')
     await utils.click(page, `#EnvironmentsSwitch-env_${validEnvName}`)
 
+    utils.screenshot(page, world.failScreenshotPath + '/step4.png')
     // Now verify that we are connected to a valid environment
     const isConnected = await sharedSteps.isConnected(page)
     expect(isConnected).to.be(true)

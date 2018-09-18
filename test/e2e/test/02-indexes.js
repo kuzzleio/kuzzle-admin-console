@@ -23,10 +23,7 @@ describe('Indexes and Collections', function() {
 
     await sharedSteps.logInAsAnonymous(page)
 
-    await page.screenshot({
-      path: currentScreenshotPath
-    })
-
+    await utils.screenshot(page, currentScreenshotPath)
     await utils.compareScreenshot(screenshotName)
   })
 
@@ -42,10 +39,7 @@ describe('Indexes and Collections', function() {
     await sharedSteps.createIndex(page, indexName)
     await utils.waitForSelector(page, `.IndexBoxed[title=${indexName}]`)
 
-    await page.screenshot({
-      path: currentScreenshotPath
-    })
-
+    await utils.screenshot(page, currentScreenshotPath)
     await utils.compareScreenshot(screenshotName)
   })
 
@@ -73,8 +67,11 @@ describe('Indexes and Collections', function() {
     await sharedSteps.logInAsAnonymous(page)
     await sharedSteps.createIndex(page, indexName)
     await utils.waitForSelector(page, `.IndexBoxed[title=${indexName}]`)
-    await sharedSteps.createIndex(page, indexName)
-    await utils.waitForSelector(page, '.CreateIndexModal-error')
+    try {
+      await sharedSteps.createIndex(page, indexName)
+    } catch (error) {
+      await utils.waitForSelector(page, '.CreateIndexModal-error')
+    }
   })
 
   it('Should properly delete an index', async () => {

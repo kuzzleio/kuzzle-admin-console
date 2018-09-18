@@ -42,9 +42,7 @@ afterEach('Take screenshot if test failed', async function() {
     const screenshotName = `e2e-fail-${Date.now()}.png`
     const screenshotPath = path.join(world.failScreenshotPath, screenshotName)
     try {
-      await page.screenshot({
-        path: screenshotPath
-      })
+      await utils.screenshot(page, screenshotPath)
 
       if (process.env.TRAVIS) {
         console.log('====================================')
