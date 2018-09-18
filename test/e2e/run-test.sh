@@ -18,7 +18,20 @@ do
     sleep 5
 done
 echo -ne " Let's go!"
+echo
 
 set -e
 
-node_modules/.bin/mocha --no-timeouts -R spec -S -b test/e2e/test/*.js
+if [[ -z "$updatingVisualReference" ]]; then
+  node_modules/.bin/mocha --no-timeouts -R spec -S -b test/e2e/test/*.js
+else
+  node_modules/.bin/mocha --no-timeouts -R spec -g VISUAL test/e2e/test/*.js
+
+  echo
+  echo Copying current screenshots to reference...
+  echo
+  rsync -av --ignore-existing test/e2e/visual-regression/current/ test/e2e/visual-regression/reference/
+
+  echo Done.
+  echo
+fi

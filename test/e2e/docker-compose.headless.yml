@@ -10,12 +10,12 @@ services:
       - cloudinary_api_key
       - cloudinary_api_secret
       - waitElTimeout
+      - updatingVisualReference
       - TRAVIS
       - TRAVIS_JOB_NUMBER
       - TRAVIS_BUILD_NUMBER
     working_dir: /app/
     shm_size: 1gb #512M
-    # entrypoint: ['sh', '-c', 'sleep infinity']
     entrypoint: ['sh', '-c', '/app/test/e2e/run-test.sh']
     depends_on:
       - adminconsole

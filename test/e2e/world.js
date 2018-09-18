@@ -39,7 +39,7 @@ module.exports = {
   kuzzle,
   defaultTestTimeout: 900000,
   defaultWaitElTimeout: process.env.waitElTimeout || 1000,
-  failScreenshotPath: 'failed-tests',
+  failScreenshotPath: `${__dirname}/failed-tests`,
   url: process.env.e2eLocal
     ? 'http://localhost:3000'
     : 'http://adminconsole:3000'

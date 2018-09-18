@@ -23,7 +23,10 @@ describe('Indexes and Collections', function() {
 
     await sharedSteps.logInAsAnonymous(page)
 
-    await utils.screenshot(page, currentScreenshotPath)
+    await utils.waitForSelector(page, '.IndexesPage')
+    const indexes = await page.$('.IndexesPage')
+
+    await utils.screenshot(indexes, currentScreenshotPath)
     await utils.compareScreenshot(screenshotName)
   })
 
@@ -39,7 +42,9 @@ describe('Indexes and Collections', function() {
     await sharedSteps.createIndex(page, indexName)
     await utils.waitForSelector(page, `.IndexBoxed[title=${indexName}]`)
 
-    await utils.screenshot(page, currentScreenshotPath)
+    const indexes = await page.$('.IndexesPage')
+
+    await utils.screenshot(indexes, currentScreenshotPath)
     await utils.compareScreenshot(screenshotName)
   })
 

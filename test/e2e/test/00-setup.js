@@ -13,6 +13,7 @@ before('Test environment setup...', async function() {
   )
   if (!fs.existsSync(currentPath)) {
     fs.mkdirSync(currentPath)
+    fs.chmodSync(currentPath, 0o777)
   }
 
   const diffPath = path.join(
@@ -21,10 +22,12 @@ before('Test environment setup...', async function() {
   )
   if (!fs.existsSync(diffPath)) {
     fs.mkdirSync(diffPath)
+    fs.chmodSync(diffPath, 0o777)
   }
 
   if (!fs.existsSync(world.failScreenshotPath)) {
     fs.mkdirSync(world.failScreenshotPath)
+    fs.chmodSync(world.failScreenshotPath, 0o777)
   }
 
   browser = await world.getBrowser()
