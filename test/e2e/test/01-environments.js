@@ -19,6 +19,7 @@ describe('Manage environments', function() {
     await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
     await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
+    await utils.wait(page, 1000)
     await utils.waitForSelector(
       page,
       `.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`
