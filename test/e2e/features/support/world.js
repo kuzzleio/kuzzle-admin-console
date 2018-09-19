@@ -21,8 +21,6 @@ function CustomWorld() {
   this.url = process.env.e2eLocal
     ? 'http://localhost:3000'
     : 'http://adminconsole:3000'
-
-  this.failScreenshotPath = `${__dirname}/failed-tests`
 }
 
 setDefaultTimeout(60 * 1000)
