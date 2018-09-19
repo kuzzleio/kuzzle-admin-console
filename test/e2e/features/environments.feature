@@ -8,6 +8,7 @@ Feature: Environments
     Given I open the admin console with no environments
     When I create a new valid environment called local
     Then I should see local in the environment dropdown
+      And I am connected to the selected environment
 
   @visual
   Scenario: As a user I want to see the environment creation form

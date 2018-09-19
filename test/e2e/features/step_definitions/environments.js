@@ -45,3 +45,7 @@ Then(
     await utils.compareScreenshot(screenshotName)
   }
 )
+
+Then('I am connected to the selected environment', async function() {
+  await utils.waitForSelector(this.page, '.App-connected', 10000)
+})

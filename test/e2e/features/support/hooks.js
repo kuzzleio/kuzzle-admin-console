@@ -79,3 +79,15 @@ After(async function(testCase) {
   await this.page.close()
   await this.browser.close()
 })
+
+// Tagged Hooks
+
+Before('@indexes', async function() {
+  const indexes = await this.kuzzle.listIndexesPromise()
+  indexes.forEach(index =>
+    this.kuzzle.queryPromise(
+      { index, controller: 'index', action: 'delete' },
+      {}
+    )
+  )
+})
