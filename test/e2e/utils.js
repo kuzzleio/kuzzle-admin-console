@@ -95,6 +95,7 @@ const click = async (page, selector) => {
     throw new Error('click: Please provide a page instance')
   }
   try {
+    await waitForSelector(page, selector)
     await page.click(selector)
   } catch (error) {
     throw new Error(

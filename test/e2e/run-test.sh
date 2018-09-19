@@ -26,12 +26,12 @@ cd test/e2e/
 if [[ -z "$updatingVisualReference" ]]; then
   ../../node_modules/.bin/cucumber-js
 else
-  node_modules/.bin/mocha --no-timeouts -R spec -g VISUAL test/e2e/test/*.js
+  ../../node_modules/.bin/cucumber-js --tags "@visual"
 
   echo
   echo Copying current screenshots to reference...
   echo
-  rsync -av --ignore-existing test/e2e/visual-regression/current/ test/e2e/visual-regression/reference/
+  rsync -av --ignore-existing visual-regression/current/ visual-regression/reference/
 
   echo Done.
   echo

@@ -12,13 +12,7 @@ Given('I open the admin console with no environments', async function() {
 
 When(/I create a new valid environment called (.*)/, async function(envName) {
   try {
-    await utils.waitForSelector(this.page, '.EnvironmentsSwitch > .btn-flat')
     await utils.click(this.page, '.EnvironmentsSwitch > .btn-flat')
-
-    await utils.waitForSelector(
-      this.page,
-      '.EnvironmentsSwitch-newConnectionBtn'
-    )
     await utils.click(this.page, '.EnvironmentsSwitch-newConnectionBtn')
   } catch (error) {}
 
@@ -27,12 +21,10 @@ When(/I create a new valid environment called (.*)/, async function(envName) {
   await this.page.type('.CreateEnvironment-name', envName)
   await this.page.type('.CreateEnvironment-host', this.kuzzleHostname)
 
-  await utils.waitForSelector(this.page, '.Environment-SubmitButton')
   await utils.click(this.page, '.Environment-SubmitButton')
 })
 
 Then(/I should see (.*) in the environment dropdown/, async function(envName) {
-  await utils.waitForSelector(this.page, '.EnvironmentsSwitch > .btn-flat')
   await utils.click(this.page, '.EnvironmentsSwitch > .btn-flat')
 
   await utils.waitForSelector(
@@ -40,3 +32,16 @@ Then(/I should see (.*) in the environment dropdown/, async function(envName) {
     `.EnvironmentsSwitch-env[data-env="env_${envName}"]`
   )
 })
+
+Then(
+  'The environment creation form is visible and well formed',
+  async function() {
+    const screenshotName = 'no-env.create'
+    const currentScreenshotPath = utils.getCurrentScreenshotPath(screenshotName)
+    await utils.waitForSelector(this.page, '.CreateEnvironmentPage')
+    const createEnvForm = await this.page.$('.CreateEnvironmentPage')
+
+    await utils.screenshot(createEnvForm, currentScreenshotPath)
+    await utils.compareScreenshot(screenshotName)
+  }
+)
