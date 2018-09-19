@@ -1,5 +1,5 @@
 <template>
-  <div class="col s12 m6 l5">
+  <div class="IndexBoxed col s12 m6 l5" :title="index">
     <div class="card">
       <div class="card-title row">
 
@@ -9,13 +9,13 @@
             class="fluid-hover"
             :to="{name: 'DataIndexSummary', params: {index: index}}" >
             <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
-            <span class="name">{{index}}</span>
+            <span class="IndexBoxed-name">{{index}}</span>
           </router-link>
         </div>
 
         <div class="col s2 right-align">
           <!-- actions related to the index -->
-          <index-dropdown :index="index" class="icon-small icon-black"></index-dropdown>
+          <index-dropdown :index="index" class="IndexBoxed-dropdown icon-small icon-black"></index-dropdown>
         </div>
       </div>
 
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.name {
+.IndexBoxed-name {
   font-family: 'AnonymousPro', sans-serif;
 }
 .card-title {

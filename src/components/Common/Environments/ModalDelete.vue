@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="confirmDeleteEnvironment">
+  <form class="EnvironmentDeleteModal" @submit.prevent="confirmDeleteEnvironment">
     <modal id="delete-env" additional-class="left-align" :close="close" :is-open="isOpen">
       <div class="row">
         <div class="col s12">
@@ -11,8 +11,8 @@
       <div class="row">
         <div class="col s7">
           <div class="input-field left-align">
-            <label for="env-name">Confirm environment name</label>
-            <input id="env-name" type="text" v-model="envConfirmation" v-focus>
+            <label for="env-to-delete-name">Confirm environment name</label>
+            <input class="EnvironmentDeleteModal-envName" id="env-to-delete-name" type="text" v-model="envConfirmation" v-focus>
           </div>
         </div>
       </div>

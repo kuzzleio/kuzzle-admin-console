@@ -1,6 +1,8 @@
 <template>
-  <div>
-    <div v-if="$store.state.kuzzle.errorFromKuzzle">
+  <div class="App">
+    <div
+      class="App-errored"
+      v-if="$store.state.kuzzle.errorFromKuzzle">
       <error-layout>
         <kuzzle-error-page
           @environment::create="editEnvironment"
@@ -8,31 +10,56 @@
         </kuzzle-error-page>
       </error-layout>
     </div>
-
-    <div v-else-if="!$store.state.kuzzle.errorFromKuzzle && !$store.getters.hasEnvironment">
-      <create-environment-page></create-environment-page>
+    <div v-else>
+      <div
+        class="App-noEnvironments"
+        v-if="!$store.getters.hasEnvironment">
+        <create-environment-page></create-environment-page>
+      </div>
+      <div v-else>
+        <div
+          class="App-disconnected"
+          v-if="!$store.getters.currentEnvironmentId">
+          <!-- This is not supposed to happen, see error case above -->
+        </div>
+        <div
+          class="App-connected"
+          v-else
+          >
+          <div
+            class="App-loggedOut"
+            v-if="!$store.getters.isAuthenticated">
+            <div
+              class="App-noAdmin"
+              v-if="!$store.getters.adminAlreadyExists">
+              <sign-up
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment">
+              </sign-up>
+            </div>
+            <div
+              class="App-hasAdmin"
+              v-else>
+               <login
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment">
+              </login>
+            </div>
+          </div>
+          <div
+            class="App-loggedIn"
+            v-else>
+             <router-view
+              @environment::create="editEnvironment"
+              @environment::delete="deleteEnvironment">
+            </router-view>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div v-else-if="$store.getters.currentEnvironmentId && !$store.getters.isAuthenticated && !$store.getters.adminAlreadyExists">
-      <sign-up
-        @environment::create="editEnvironment"
-        @environment::delete="deleteEnvironment">
-      </sign-up>
-    </div>
 
-    <div v-else-if="$store.getters.currentEnvironmentId && !$store.getters.isAuthenticated">
-      <login
-        @environment::create="editEnvironment"
-        @environment::delete="deleteEnvironment">
-      </login>
-    </div>
 
-    <div v-show="!$store.state.kuzzle.errorFromKuzzle && $store.getters.hasEnvironment && $store.getters.isAuthenticated">
-      <router-view
-        @environment::create="editEnvironment"
-        @environment::delete="deleteEnvironment">
-      </router-view>
-    </div>
 
     <modal-create :is-open="isOpen" :close="close" :environment-id="environmentId"></modal-create>
     <modal-delete :environment-id="environmentId" :close="close" :is-open="deleteIsOpen"></modal-delete>
