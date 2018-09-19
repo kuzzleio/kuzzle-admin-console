@@ -10,7 +10,8 @@ const getBrowser = async () => {
     const isLocal = process.env.e2eLocal !== undefined
     const baseOpts = {
       args: ['--no-sandbox'],
-      dumpio: process.env.show_console_output !== undefined
+      dumpio: process.env.show_console_output !== undefined,
+      slowMo: 120
     }
     const localDevOpts = {
       headless: false,
@@ -38,7 +39,7 @@ module.exports = {
   isLocal: process.env.e2eLocal !== undefined,
   kuzzle,
   defaultTestTimeout: 900000,
-  defaultWaitElTimeout: process.env.waitElTimeout || 1000,
+  defaultWaitElTimeout: process.env.waitElTimeout || 3000,
   failScreenshotPath: `${__dirname}/failed-tests`,
   url: process.env.e2eLocal
     ? 'http://localhost:3000'

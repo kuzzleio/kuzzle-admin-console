@@ -88,25 +88,30 @@ describe('Indexes and Collections', function() {
     await sharedSteps.createIndex(page, indexName)
 
     await utils.waitForSelector(page, `.IndexBoxed[title=${indexName}]`)
-    await page.click(`.IndexBoxed[title=${indexName}] .IndexBoxed-dropdown`)
+    await utils.click(
+      page,
+      `.IndexBoxed[title=${indexName}] .IndexBoxed-dropdown`
+    )
 
     await utils.waitForSelector(
       page,
       `.IndexBoxed[title=${indexName}] .IndexDropdown-delete`
     )
-    await page.click(`.IndexBoxed[title=${indexName}] .IndexDropdown-delete`)
-
-    // Create a watchdog to wait for the index to be really deleted
-    const indexIsDeleted = page.waitForFunction(
-      `document.querySelector('.IndexBoxed[title=${indexName}]') === null`,
-      { timeout: world.defaultWaitElTimeout }
+    await utils.click(
+      page,
+      `.IndexBoxed[title=${indexName}] .IndexDropdown-delete`
     )
 
     await utils.waitForSelector(page, '.IndexDeleteModal-name')
     await page.type('.IndexDeleteModal-name', indexName)
-    await page.click('.IndexDeleteModal-deleteBtn')
+    await utils.click(page, '.IndexDeleteModal-deleteBtn')
+    await utils.wait(page, 2000)
 
-    // Await the watchdog condition
-    await indexIsDeleted
+    const selector = `.IndexBoxed[title="${indexName}"]`
+    await page.waitForFunction(
+      selector => document.querySelector(selector) === null,
+      { timeout: world.defaultWaitElTimeout },
+      selector
+    )
   })
 })
