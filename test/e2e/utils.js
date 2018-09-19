@@ -1,15 +1,16 @@
 const BlinkDiff = require('blink-diff')
-const path = require('path')
+const cloudinary = require('cloudinary')
 const fs = require('fs')
+const path = require('path')
+
+const threshold = 0.1
+const defaultWaitElTimeout = process.env.waitElTimeout || 3000
 const paths = {
   base: `${__dirname}/visual-regression`,
   reference: 'reference',
   current: 'current',
   diff: 'diff'
 }
-const threshold = 0.1
-const cloudinary = require('cloudinary')
-const world = require('./world')
 
 cloudinary.config({
   cloud_name: process.env.cloudinary_cloud_name || 'kuzzle',
@@ -63,7 +64,6 @@ const compareScreenshot = async name => {
     thresholdType: BlinkDiff.THRESHOLD_PERCENT,
     threshold,
     imageOutputPath: diffScreenshotPath
-    // composition: false
   })
 
   const diffResult = await diff.runWithPromise()
@@ -81,7 +81,7 @@ const waitForSelector = async (page, selector, timeout) => {
   }
   try {
     await page.waitForSelector(selector, {
-      timeout: timeout || world.defaultWaitElTimeout
+      timeout: timeout || defaultWaitElTimeout
     })
   } catch (error) {
     throw new Error(

@@ -1,19 +1,33 @@
-const log = require('why-is-node-running')
-const { Before, After, AfterAll } = require('cucumber')
+const { Before, BeforeAll, After, AfterAll } = require('cucumber')
+const puppeteer = require('puppeteer')
+const Kuzzle = require('kuzzle-sdk')
+
+const instantiateKuzzle = async host => {
+  return new Promise((resolve, reject) => {
+    // eslint-disable-next-line
+    new Kuzzle(host, (err, kuzzle) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve(kuzzle)
+    })
+  })
+}
 
 Before(async function() {
-  const browser = await this.browser
-  this.page = await browser.newPage()
+  this.kuzzle = await instantiateKuzzle(this.kuzzleHostname)
+  this.browser = await puppeteer.launch(this.puppeteerOpts)
+  this.page = await this.browser.newPage()
   await this.page.setViewport({ width: 1400, height: 900 })
 })
 
-After(async function() {
-  await this.page.close()
-  const browser = await this.browser
-  await browser.close()
-})
+BeforeAll(async function() {})
 
-AfterAll(function() {
-  console.error('AFTERALLLLLLLL')
-  log()
+AfterAll(async function() {})
+
+After(async function() {
+  this.kuzzle.disconnect()
+  await this.page.close()
+  await this.browser.close()
 })
