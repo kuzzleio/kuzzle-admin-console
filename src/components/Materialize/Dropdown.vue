@@ -1,6 +1,5 @@
 <template>
   <span :cmylass="myclass">
-
     <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
 
     <ul :id="parsedId" class='dropdown-content'>
@@ -55,7 +54,7 @@ export default {
 
       let parsed = this.id + this._uid
 
-      return parsed.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '\\$&')
+      return parsed.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
     }
   },
   mounted() {
