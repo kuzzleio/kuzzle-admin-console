@@ -7,7 +7,7 @@ const paths = {
   current: 'current',
   diff: 'diff'
 }
-const threshold = 0.01
+const threshold = 0.1
 const cloudinary = require('cloudinary')
 const world = require('./world')
 

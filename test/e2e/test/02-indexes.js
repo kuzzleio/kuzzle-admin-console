@@ -18,7 +18,7 @@ describe('Indexes and Collections', function() {
     const screenshotName = 'data.indexes.empty'
     const currentScreenshotPath = utils.getCurrentScreenshotPath(screenshotName)
 
-    const page = await world.getPage()
+    const page = await world.getNewPage()
     await page.goto(world.url)
 
     await sharedSteps.logInAsAnonymous(page)
@@ -35,7 +35,7 @@ describe('Indexes and Collections', function() {
     const screenshotName = 'data.indexes.oneindex'
     const currentScreenshotPath = utils.getCurrentScreenshotPath(screenshotName)
 
-    const page = await world.getPage()
+    const page = await world.getNewPage()
     await page.goto(world.url)
 
     await sharedSteps.logInAsAnonymous(page)
@@ -50,7 +50,7 @@ describe('Indexes and Collections', function() {
 
   it('Should properly create an index', async () => {
     const indexName = 'testindex'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
     await sharedSteps.logInAsAnonymous(page)
@@ -66,7 +66,7 @@ describe('Indexes and Collections', function() {
 
   it('Should not allow to create the same index twice', async () => {
     const indexName = 'sameindex'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
     await sharedSteps.logInAsAnonymous(page)
@@ -81,7 +81,7 @@ describe('Indexes and Collections', function() {
 
   it('Should properly delete an index', async () => {
     const indexName = 'testindex'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
     await sharedSteps.logInAsAnonymous(page)

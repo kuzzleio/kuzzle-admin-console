@@ -6,7 +6,7 @@ const fmt = require('../../../src/utils').formatForDom
 
 describe('Manage environments', function() {
   it('should be able to create a new environment', async () => {
-    const page = await world.getPage()
+    const page = await world.getNewPage()
     const newEnvName = 'local'
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
 
@@ -29,7 +29,7 @@ describe('Manage environments', function() {
   it('should be able to delete an environment', async () => {
     const envToDeleteName = 'toDelete'
     const envToDeleteHost = world.isLocal ? 'localhost' : 'kuzzle'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
 
@@ -67,7 +67,7 @@ describe('Manage environments', function() {
   })
 
   it('Properly sets a color for the environment', async () => {
-    const page = await world.getPage()
+    const page = await world.getNewPage()
     const newEnvName = 'colored'
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
     const newEnvColorIdx = 3
@@ -113,7 +113,7 @@ describe('Manage environments', function() {
     const invalidEnvHost = 'invalid-host'
     const validEnvName = 'valid'
     const validEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
 
