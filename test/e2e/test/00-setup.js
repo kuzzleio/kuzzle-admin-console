@@ -4,7 +4,6 @@ const fs = require('fs')
 const path = require('path')
 const world = require('../world')
 const utils = require('../utils')
-let browser
 
 before('Test environment setup...', async function() {
   const currentPath = path.join(
@@ -13,6 +12,7 @@ before('Test environment setup...', async function() {
   )
   if (!fs.existsSync(currentPath)) {
     fs.mkdirSync(currentPath)
+    fs.chmodSync(currentPath, 0o777)
   }
 
   const diffPath = path.join(
@@ -21,30 +21,27 @@ before('Test environment setup...', async function() {
   )
   if (!fs.existsSync(diffPath)) {
     fs.mkdirSync(diffPath)
+    fs.chmodSync(diffPath, 0o777)
   }
 
   if (!fs.existsSync(world.failScreenshotPath)) {
     fs.mkdirSync(world.failScreenshotPath)
+    fs.chmodSync(world.failScreenshotPath, 0o777)
   }
-
-  browser = await world.getBrowser()
-  await world.getPage()
 })
 
 after('Test environment teardown...', async function() {
-  await browser.close()
   world.kuzzle.disconnect()
+  await world.close()
 })
 
 afterEach('Take screenshot if test failed', async function() {
   if (this.currentTest.state === 'failed') {
-    const page = await world.getPage()
+    const page = await world.getCurrentPage()
     const screenshotName = `e2e-fail-${Date.now()}.png`
     const screenshotPath = path.join(world.failScreenshotPath, screenshotName)
     try {
-      await page.screenshot({
-        path: screenshotPath
-      })
+      await utils.screenshot(page, screenshotPath)
 
       if (process.env.TRAVIS) {
         console.log('====================================')

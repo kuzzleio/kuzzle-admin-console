@@ -2,12 +2,12 @@ const BlinkDiff = require('blink-diff')
 const path = require('path')
 const fs = require('fs')
 const paths = {
-  base: 'visual-regression',
+  base: `${__dirname}/visual-regression`,
   reference: 'reference',
   current: 'current',
   diff: 'diff'
 }
-const threshold = 0.01
+const threshold = 0.1
 const cloudinary = require('cloudinary')
 const world = require('./world')
 
@@ -75,13 +75,13 @@ const compareScreenshot = async name => {
   }
 }
 
-const waitForSelector = async (page, selector) => {
+const waitForSelector = async (page, selector, timeout) => {
   if (!page) {
     throw new Error('waitForSelector: Please provide a page instance')
   }
   try {
     await page.waitForSelector(selector, {
-      timeout: world.defaultWaitElTimeout
+      timeout: timeout || world.defaultWaitElTimeout
     })
   } catch (error) {
     throw new Error(
@@ -109,6 +109,15 @@ const wait = async (page, timeout) => {
   } catch (error) {}
 }
 
+const screenshot = async (page, path) => {
+  await page.screenshot({
+    path
+  })
+  try {
+    fs.chmodSync(path, 0o777)
+  } catch (error) {}
+}
+
 module.exports = {
   getCurrentScreenshotPath,
   compareScreenshot,
@@ -116,5 +125,6 @@ module.exports = {
   sendToCloudinary,
   waitForSelector,
   click,
-  wait
+  wait,
+  screenshot
 }

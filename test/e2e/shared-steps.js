@@ -32,9 +32,7 @@ class SharedSteps {
       )
     }
 
-    await utils.waitForSelector(page, '.Environment-SubmitButton', {
-      timeout: world.defaultWaitElTimeout
-    })
+    await utils.waitForSelector(page, '.Environment-SubmitButton')
     await utils.click(page, '.Environment-SubmitButton')
   }
   async connectToValidEnvironment(page) {
@@ -55,7 +53,7 @@ class SharedSteps {
   }
   async isConnected(page) {
     try {
-      await utils.waitForSelector(page, '.App-connected')
+      await utils.waitForSelector(page, '.App-connected', 10000)
       return true
     } catch (error) {
       return false
@@ -72,20 +70,25 @@ class SharedSteps {
     }
   }
   async createIndex(page, name) {
-    await utils.waitForSelector(page, '.IndexesPage-createBtn', {
-      timeout: world.defaultWaitElTimeout
-    })
+    await utils.waitForSelector(page, '.IndexesPage-createBtn')
     await utils.click(page, '.IndexesPage-createBtn')
 
-    await utils.waitForSelector(page, '.CreateIndexModal-name', {
-      timeout: world.defaultWaitElTimeout
-    })
+    await utils.waitForSelector(page, '.CreateIndexModal-name')
     await page.type('.CreateIndexModal-name', name)
 
-    await utils.waitForSelector(page, '.CreateIndexModal-createBtn', {
-      timeout: world.defaultWaitElTimeout
-    })
+    await utils.waitForSelector(page, '.CreateIndexModal-createBtn')
     await utils.click(page, '.CreateIndexModal-createBtn')
+
+    await page.waitForFunction(
+      () => {
+        return (
+          document.querySelector('.CreateIndexModal .modal-content') === null
+        )
+      },
+      {
+        timeout: 2000
+      }
+    )
   }
 }
 

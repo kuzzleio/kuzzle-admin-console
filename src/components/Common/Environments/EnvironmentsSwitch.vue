@@ -12,7 +12,7 @@
     </a>
 
     <ul :id='"environment-dropdown-" + _uid' class="EnvironmentsSwitch-envList dropdown-content environment-dropdown">
-      <li v-for="(env, index) in $store.state.kuzzle.environments" :key="env.name" :id="`EnvironmentsSwitch-env_${env.name}`" class="environment">
+      <li v-for="(env, index) in $store.state.kuzzle.environments" :key="env.name" :data-env="`env_${formatForDom(env.name)}`" class="EnvironmentsSwitch-env environment">
         <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute truncate">{{env.host}}</span>
@@ -32,6 +32,7 @@ import { SWITCH_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation
 import tinycolor from 'tinycolor2/tinycolor'
 import Promise from 'bluebird'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
+import { formatForDom } from '../../../utils'
 
 export default {
   name: 'EnvironmentsSwitch',
@@ -83,7 +84,8 @@ export default {
           )
           return Promise.reject(e)
         })
-    }
+    },
+    formatForDom
   },
   mounted() {
     $(this.$refs.dropdown)

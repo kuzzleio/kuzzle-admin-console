@@ -433,7 +433,7 @@ We use Chrome Puppeteer to e2e the UI. We both perform interaction tests and vis
 
 #### Before you start
 
-There's a few things it's good to know, here they go.
+There are a few things that are good to know, here they go.
 
 - You will need NodeJS version >= 8 to perform end-to-end tests locally because they make heavy use of `async/await`.
 - The `world.js` file contains everything you need to interact with Chrome Puppeteer, namely the `browser` and `page` singletons, but also some other useful variables (you should take a look at the `module.exports` in this file). You must always use the singletons provided in this file to interact with Puppeteer.

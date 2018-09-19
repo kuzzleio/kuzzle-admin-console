@@ -1,6 +1,5 @@
 <template>
   <span :cmylass="myclass">
-
     <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
 
     <ul :id="parsedId" class='dropdown-content'>
@@ -44,6 +43,7 @@ a.dropdown-button {
 
 <script>
 import Vue from 'vue'
+import { formatForDom } from '../../utils'
 
 export default {
   props: ['id', 'myclass'],
@@ -55,7 +55,7 @@ export default {
 
       let parsed = this.id + this._uid
 
-      return parsed.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '\\$&')
+      return formatForDom(parsed)
     }
   },
   mounted() {

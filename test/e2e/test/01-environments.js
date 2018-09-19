@@ -2,10 +2,11 @@ const expect = require('expect.js')
 const world = require('../world')
 const sharedSteps = require('../shared-steps')
 const utils = require('../utils')
+const fmt = require('../../../src/utils').formatForDom
 
 describe('Manage environments', function() {
   it('should be able to create a new environment', async () => {
-    const page = await world.getPage()
+    const page = await world.getNewPage()
     const newEnvName = 'local'
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
 
@@ -18,13 +19,17 @@ describe('Manage environments', function() {
     await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
     await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${newEnvName}`)
+    await utils.wait(page, 1000)
+    await utils.waitForSelector(
+      page,
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`
+    )
   })
 
   it('should be able to delete an environment', async () => {
     const envToDeleteName = 'toDelete'
     const envToDeleteHost = world.isLocal ? 'localhost' : 'kuzzle'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
 
@@ -38,7 +43,9 @@ describe('Manage environments', function() {
     utils.wait(page, 1000)
     await utils.click(
       page,
-      `#EnvironmentsSwitch-env_${envToDeleteName} > i.fa-trash`
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(
+        envToDeleteName
+      )}] > i.fa-trash`
     )
 
     await utils.waitForSelector(page, '.EnvironmentDeleteModal-envName')
@@ -54,13 +61,13 @@ describe('Manage environments', function() {
 
     // Now verify the environment is no more present
     const foundEnvironment = await page.$(
-      `#EnvironmentsSwitch-env_${envToDeleteName}`
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(envToDeleteName)}]`
     )
     expect(foundEnvironment).to.eql(null)
   })
 
   it('Properly sets a color for the environment', async () => {
-    const page = await world.getPage()
+    const page = await world.getNewPage()
     const newEnvName = 'colored'
     const newEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
     const newEnvColorIdx = 3
@@ -106,7 +113,7 @@ describe('Manage environments', function() {
     const invalidEnvHost = 'invalid-host'
     const validEnvName = 'valid'
     const validEnvHost = world.isLocal ? 'localhost' : 'kuzzle'
-    const page = await world.getPage()
+    const page = await world.getNewPage()
 
     await page.goto(world.url)
 
@@ -122,8 +129,15 @@ describe('Manage environments', function() {
     await utils.waitForSelector(page, '.EnvironmentsSwitch > .btn-flat')
     await utils.click(page, '.EnvironmentsSwitch > .btn-flat')
 
-    await utils.waitForSelector(page, `#EnvironmentsSwitch-env_${validEnvName}`)
-    await utils.click(page, `#EnvironmentsSwitch-env_${validEnvName}`)
+    await utils.waitForSelector(
+      page,
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`
+    )
+    await utils.wait(page, 1000)
+    await utils.click(
+      page,
+      `.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`
+    )
 
     // Now verify that we are connected to a valid environment
     const isConnected = await sharedSteps.isConnected(page)
