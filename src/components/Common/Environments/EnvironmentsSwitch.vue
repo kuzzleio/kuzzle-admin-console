@@ -12,12 +12,12 @@
     </a>
 
     <ul :id='"environment-dropdown-" + _uid' class='dropdown-content environment-dropdown'>
-      <li v-for="(env, index) in $store.state.kuzzle.environments" class="environment">
+      <li v-for="(env, index) in $store.state.kuzzle.environments" :key="env.name" class="environment">
         <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute truncate">{{env.host}}</span>
         </div>
-        <i class="edit primary fa fa-pencil" @click.prevent="$emit('environment::create', index)"></i>
+        <i class="edit primary fa fa-pencil-alt" @click.prevent="$emit('environment::create', index)"></i>
         <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
       </li>
       <li class="divider"></li>
