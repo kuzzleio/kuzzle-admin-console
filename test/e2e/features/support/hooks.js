@@ -50,6 +50,7 @@ Before(async function() {
   this.browser = await puppeteer.launch(this.puppeteerOpts)
   this.page = await this.browser.newPage()
   await this.page.setViewport({ width: 1400, height: 900 })
+  await this.page.goto(this.url)
 })
 
 AfterAll(async function() {})
