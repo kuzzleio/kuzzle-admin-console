@@ -20,7 +20,7 @@
     <div class="ProfileItem-actions right">
       <a href="#" @click.prevent="update"
          v-title="{active: !canEditProfile(), title: 'You are not allowed to edit this profile'}">
-        <i class="fa fa-pencil" :class="{'disabled': !canEditProfile()}"></i>
+        <i class="fa fa-pencil-alt" :class="{'disabled': !canEditProfile()}"></i>
       </a>
       <dropdown :id="document.id" myclass="icon-black">
         <li><a @click="deleteDocument(document.id)"
