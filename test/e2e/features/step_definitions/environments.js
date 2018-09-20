@@ -53,6 +53,16 @@ When(/I delete the environment called (.*)/, async function(envName) {
   )
 })
 
+When(/I switch to the (\w*) environment/, async function(envName) {
+  await utils.click(this.page, '.EnvironmentsSwitch > .btn-flat')
+
+  await utils.wait(this.page, 1000)
+  await utils.click(
+    this.page,
+    `.EnvironmentsSwitch-env[data-env=env_${fmt(envName)}]`
+  )
+})
+
 Then(/I should see (.*) in the environment dropdown/, async function(envName) {
   await utils.click(this.page, '.EnvironmentsSwitch > .btn-flat')
 
@@ -88,6 +98,10 @@ Then(
 
 Then('I am connected to the selected environment', async function() {
   await utils.waitForSelector(this.page, '.App-connected', 10000)
+})
+
+Then('I am not connected to Kuzzle', async function() {
+  await utils.waitForSelector(this.page, '.App-errored', 10000)
 })
 
 Then(

@@ -33,7 +33,11 @@ Feature: Environments
       | 3           | rgb(142, 36, 170) |
       | 4           | rgb(104, 159, 56) |
 
-# Scenario: As a user I want to be able to switch from an invalid scenario to a valid one
-#   Given I open the admin console with no environments
-#   When I create a new valid environment called local
+  Scenario: As a user I want to be able to switch from an invalid scenario to a valid one
+    Given I open the admin console with no environments
+    When I create a new valid environment called local
+    And I create a new invalid environment called invalid
+    Then I am not connected to Kuzzle
+    When I switch to the local environment
+    Then I am connected to the selected environment
 
