@@ -76,7 +76,6 @@ After(async function(testCase) {
     }
   }
   this.kuzzle.disconnect()
-  await this.page.close()
   await this.browser.close()
 })
 

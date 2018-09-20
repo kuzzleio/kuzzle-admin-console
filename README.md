@@ -42,7 +42,7 @@ To run the end-to-end tests in headless mode, run
 npm run e2e
 ```
 
-To run the end-to-end tests in headful mode (requires node >= v8.x.x), run
+To run the end-to-end tests in headful mode (requires node >= v8.12.0), run
 
 ```
 npm run e2e-local

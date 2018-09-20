@@ -110,6 +110,14 @@ const wait = async (page, timeout) => {
   } catch (error) {}
 }
 
+const selectorIsNotPresent = async (page, selector) => {
+  await page.waitForFunction(
+    selector => document.querySelector(selector) === null,
+    {},
+    selector
+  )
+}
+
 const screenshot = async (page, path) => {
   await page.screenshot({
     path
@@ -125,6 +133,7 @@ module.exports = {
   visualRegressionPaths: paths,
   sendToCloudinary,
   waitForSelector,
+  selectorIsNotPresent,
   click,
   wait,
   screenshot

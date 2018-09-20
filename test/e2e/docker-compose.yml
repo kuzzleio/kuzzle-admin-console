@@ -32,7 +32,7 @@ services:
     ports:
       - '3000:3000'
     working_dir: /var/app
-    command: sh -c 'npm i && npm run dev'
+    command: sh -c 'npm i --unsafe-perm && npm run dev'
     volumes:
       - '../../:/var/app'
     depends_on:

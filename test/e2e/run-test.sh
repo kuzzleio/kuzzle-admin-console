@@ -19,8 +19,10 @@ do
 done
 echo -ne " Let's go!"
 echo
+echo
 
 set -e
+
 cd test/e2e/
 
 if [[ -z "$updatingVisualReference" ]]; then
