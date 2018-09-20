@@ -67,7 +67,7 @@
               v-if="documents.length"
               :all-checked="allChecked"
               :display-bulk-delete="hasSelectedDocuments"
-              :mappingGeopoints="mappingGeopoints"
+              :geopointList="mappingGeopoints"
               :viewType="currentFilter.listViewType"
               :displayCreate="canCreateDocument(this.index, this.collection)"
               :displayGeopointSelect="currentFilter.listViewType === 'map'"
@@ -329,7 +329,7 @@ export default {
           if (properties.lat && properties.lon) {
             attributes = attributes.concat(path.concat(attributeName).join('.'))
           }
-          
+
           attributes = attributes.concat(
             this.listMappingGeopoints(properties, path.concat(attributeName))
           )
