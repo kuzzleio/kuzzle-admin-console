@@ -61,13 +61,9 @@ After(async function(testCase) {
     const screenshotName = `e2e-fail-${Date.now()}.png`
     const screenshotPath = path.join(failScreenshotPath, screenshotName)
 
-    console.log('Taking local screenshot...')
     await utils.screenshot(this.page, screenshotPath)
 
     if (process.env.TRAVIS) {
-      console.log('====================================')
-      console.log('Sending screenshots to Cloudinary...')
-      console.log('====================================')
       await utils.sendToCloudinary(
         screenshotPath,
         `admin-console-test-fail-${Date.now()}`,
