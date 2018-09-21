@@ -20,7 +20,7 @@
     <div class="RoleItem-actions right">
       <a href="#" @click.prevent="update"
           v-title="{active: !canEditRole(), title: 'You are not allowed to edit this role'}">
-          <i class="fa fa-pencil" :class="{'disabled': !canEditRole()}"></i>
+          <i class="fa fa-pencil-alt" :class="{'disabled': !canEditRole()}"></i>
       </a>
       <dropdown :id="document.id" myclass="icon-black">
         <li><a @click="deleteDocument(document.id)"
