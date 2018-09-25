@@ -6,7 +6,8 @@
       :class="inputClass"
       :placeholder="placeholder"
       @input="onInput"
-      @change="(evt) => setResult(evt.target.value)"
+      @change="(evt) => changeResult(evt.target.value)"
+      @focus="onInput"
       @keydown.down="onArrowDown"
       @keydown.up="onArrowUp"
       @keydown.enter.prevent="onEnter"
@@ -73,8 +74,11 @@ export default {
       )
     },
     setResult(result) {
-      this.search = result
       this.isOpen = false
+      this.search = result
+      this.$emit('autocomplete::change', result)
+    },
+    changeResult(result) {
       this.$emit('autocomplete::change', result)
     },
     onArrowDown() {
