@@ -67,7 +67,7 @@
               v-if="documents.length"
               :all-checked="allChecked"
               :display-bulk-delete="hasSelectedDocuments"
-              :mappingGeopoints="mappingGeopoints"
+              :geopointList="mappingGeopoints"
               :viewType="currentFilter.listViewType"
               :displayCreate="canCreateDocument(this.index, this.collection)"
               :displayGeopointSelect="currentFilter.listViewType === 'map'"
@@ -324,8 +324,16 @@ export default {
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
 
-      for (const [attributeName, { type }] of Object.entries(mapping)) {
-        if (type === 'geo_point') {
+      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
+        if (properties) {
+          if (properties.lat && properties.lon) {
+            attributes = attributes.concat(path.concat(attributeName).join('.'))
+          }
+
+          attributes = attributes.concat(
+            this.listMappingGeopoints(properties, path.concat(attributeName))
+          )
+        } else if (type === 'geo_point') {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
