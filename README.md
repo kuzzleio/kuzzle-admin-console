@@ -1,6 +1,5 @@
 [![codecov](https://codecov.io/gh/kuzzleio/kuzzle-backoffice/branch/master/graph/badge.svg)](https://codecov.io/gh/kuzzleio/kuzzle-backoffice)
 
-
 # Kuzzle Admin Console
 
 > The Kuzzle Admin Console allows you to manage your Kuzzle instance. Use it to administer your data, subscriptions and Kuzzle configuration.
@@ -19,17 +18,40 @@ You can get the latest version of the Kuzzle Admin Console [here](http://console
 
 To get a working copy of the Kuzzle Admin Console on your computer, follow these instructions:
 
- - `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz` : Download and extract the latest version of the Kuzzle Admin Console
- - `tar xf kuzzle-admin-console.tar.gz` : Extract it
- - Open the file `dist/index.html` in your favorite web browser, you're done!
+- `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz` : Download and extract the latest version of the Kuzzle Admin Console
+- `tar xf kuzzle-admin-console.tar.gz` : Extract it
+- Open the file `dist/index.html` in your favorite web browser, you're done!
 
-## Contributing to this project
+# Tests
 
-To start the Kuzzle Admin Console in development-mode with hot-reload run the following commands:
+To run all the tests, just type
 
 ```
-$ npm run install_deps
-$ npm run dev
+npm test
 ```
 
-The Kuzzle Admin Console will then be accessible at the following URL: http://localhost:3000
+This executes both unit and end-to-end tests. To run only the unit-tests, run
+
+```
+npm run unit
+```
+
+To run the end-to-end tests in headless mode, run
+
+```
+npm run e2e
+```
+
+To run the end-to-end tests in headful mode (requires node >= v8.12.0), run
+
+```
+npm run e2e-local
+```
+
+End-to-end tests perform visual regression tests against refernce screenshots that are git-versioned. To update the reference screenshots (this is only meant for development purpose and you should take extreme care in doing it), run
+
+```
+npm run e2e-update-reference
+```
+
+Please refer to the CONTRIBUTING file to learn more about how to write code and tests for this project.

@@ -1,83 +1,39 @@
 version: '2'
 
 services:
-  proxy:
-    image: kuzzleio/proxy
-
   kuzzle:
-    image: kuzzleio/kuzzle:develop
+    image: kuzzleio/kuzzle
+    ports:
+      - '7512:7512'
+    cap_add:
+      - SYS_PTRACE
     depends_on:
       - redis
       - elasticsearch
-      - proxy
     environment:
-      - kuzzle_services__db__client__host=elasticsearch:9200
+      - kuzzle_services__db__client__host=http://elasticsearch:9200
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
-      - kuzzle_services__proxyBroker__host=proxy
       - NODE_ENV=production
 
   redis:
     image: redis:3.2
 
   elasticsearch:
-    image: elasticsearch:5.0
-
-  backoffice:
-    image: kuzzleio/dev
-    command:  sh -c 'npm run dev'
-    volumes:
-      - "../../:/var/app"
+    image: kuzzleio/elasticsearch:5.4.1
+    ulimits:
+      nofile: 65536
     environment:
-      - TRAVIS
-      - TRAVIS_COMMIT
-      - TRAVIS_JOB_NUMBER
-      - TRAVIS_BRANCH
-      - TRAVIS_JOB_ID
-      - TRAVIS_PULL_REQUEST
-      - TRAVIS_REPO_SLUG
+      - cluster.name=kuzzle
+      - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
+
+  adminconsole:
+    image: node:8
+    ports:
+      - '3000:3000'
+    working_dir: /var/app
+    command: sh -c 'npm i --unsafe-perm && npm run dev'
+    volumes:
+      - '../../:/var/app'
     depends_on:
       - kuzzle
-
-  testim:
-    image: kuzzleio/testim
-    command: sh -c 'chmod 755 /opt/run-test.sh && /opt/run-test.sh'
-    volumes:
-      - "./run-test.sh:/opt/run-test.sh"
-      - "./config-file.js:/opt/config-file.js"
-    environment:
-     - BROWSER
-     - TESTIM_PROJECT
-     - TESTIM_TOKEN
-    depends_on:
-     - hub
-
-  hub:
-   image: selenium/hub
-   environment:
-     - GRID_MAX_SESSION=50
-#     - JAVA_OPTS=-Xmx8g -Xms8g
-   depends_on:
-    - backoffice
-    - chrome
-    - firefox
-
-  chrome:
-   image: testim/node-chrome
-   volumes:
-     - /dev/shm:/dev/shm
-   environment:
-    HUB_PORT_4444_TCP_ADDR: hub
-    HUB_PORT_4444_TCP_PORT: 4444
-   depends_on:
-    - backoffice
-
-  firefox:
-   image: testim/node-firefox
-   volumes:
-     - /dev/shm:/dev/shm
-   environment:
-    HUB_PORT_4444_TCP_ADDR: hub
-    HUB_PORT_4444_TCP_PORT: 4444
-   depends_on:
-    - backoffice

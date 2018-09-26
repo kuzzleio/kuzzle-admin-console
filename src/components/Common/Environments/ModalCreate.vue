@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="createEnvironment">
+  <form class="EnvironmentsCreateModal" @submit.prevent="createEnvironment">
     <modal id="create-env" :footer-fixed="true" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
@@ -15,7 +15,7 @@
       </create-environment>
 
       <span slot="footer">
-        <button type="submit" class="waves-effect btn">
+        <button type="submit" class="EnvironmentsCreateModal-submit Environment-SubmitButton waves-effect btn">
             {{environmentId ? 'Update' : 'Create'}}
         </button>
         <button class="btn-flat waves-effect waves-grey" @click.prevent="close">

@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="tryDeleteIndex(index)">
+  <form class="IndexDeleteModal" @submit.prevent="tryDeleteIndex(index)">
     <modal :id="id" additional-class="left-align" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
@@ -12,7 +12,7 @@
         <div class="col s7">
           <div class="input-field left-align">
             <label for="index-name">Confirm index name</label>
-            <input id="index-name" type="text" v-model="indexConfirmation" :class="{'invalid': error}" v-focus>
+            <input class="IndexDeleteModal-name" id="index-name" type="text" v-model="indexConfirmation" :class="{'invalid': error}" v-focus>
           </div>
         </div>
 
@@ -35,7 +35,7 @@
           :disabled="index !== indexConfirmation"
           v-title="{active: index === indexConfirmation, position: 'left', title: 'Be careful. This action can not be undone'}"
           :class="{unauthorized: index !== indexConfirmation}"
-          class="waves-effect btn">
+          class="IndexDeleteModal-deleteBtn waves-effect btn">
             Delete
         </button>
         <button

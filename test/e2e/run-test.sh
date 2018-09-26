@@ -1,13 +1,40 @@
 #!/bin/bash
 
-while ! curl -f -s -o /dev/null "http://backoffice:3000"
+adminConsoleHost="localhost"
+adminConsolePort="3000"
+if [[ -z "$e2eLocal" ]]; then
+  adminConsoleHost="adminconsole"
+fi
+
+echo
+echo " ### Kuzzle Admin Console End to End tests ###"
+echo "     ====================================="
+echo
+echo " Waiting for Kuzzle Admin Connsole to be up at http://$adminConsoleHost:$adminConsolePort"
+echo
+while ! curl -f -s -o /dev/null "http://$adminConsoleHost:$adminConsolePort"
 do
-    echo "[$(date --rfc-3339 seconds)] - Waiting for http://backoffice:3000"
+    echo -ne ". "
     sleep 5
 done
+echo -ne " Let's go!"
+echo
+echo
 
 set -e
 
-testim --token $TESTIM_TOKEN --project $TESTIM_PROJECT --host "hub" --browser $BROWSER --label firstAdmin --base-url http://backoffice:3000 --report-file testim-report.xml --config-file /opt/config-file.js
-testim --token $TESTIM_TOKEN --project $TESTIM_PROJECT --host "hub" --browser $BROWSER --label normal --base-url http://backoffice:3000 --report-file testim-report.xml --config-file /opt/config-file.js
-testim --token $TESTIM_TOKEN --project $TESTIM_PROJECT --host "hub" --browser $BROWSER --label securityUser --base-url http://backoffice:3000 --report-file testim-report.xml --config-file /opt/config-file.js
+cd test/e2e/
+
+if [[ -z "$updatingVisualReference" ]]; then
+  ../../node_modules/.bin/cucumber-js
+else
+  ../../node_modules/.bin/cucumber-js --tags "@visual"
+
+  echo
+  echo Copying current screenshots to reference...
+  echo
+  rsync -av --ignore-existing visual-regression/current/ visual-regression/reference/
+
+  echo Done.
+  echo
+fi
