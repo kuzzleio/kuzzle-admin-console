@@ -17,7 +17,7 @@
           <span class="name environment-attribute truncate">{{env.name}}</span>
           <span class="host environment-attribute truncate">{{env.host}}</span>
         </div>
-        <i class="edit primary fa fa-pencil" @click.prevent="$emit('environment::create', index)"></i>
+        <i class="edit primary fa fa-pencil-alt" @click.prevent="$emit('environment::create', index)"></i>
         <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
       </li>
       <li class="divider"></li>

@@ -52,25 +52,34 @@ export default {
   data() {
     return {
       inputSearchTerm: this.searchTerm,
-      throttleSearch: false
+      throttleSearch: false,
+      lastThrottledSearch: null
     }
   },
   methods: {
     submitSearch() {
       if (this.throttleSearch) {
+        // Keep the last throttled search to replay it when user stop typing
+        this.lastThrottledSearch = this.inputSearchTerm
         return
       }
 
       this.throttleSearch = true
       setTimeout(() => {
         this.throttleSearch = false
-      }, 50)
+
+        if (this.lastThrottledSearch) {
+          this.submitSearch()
+        }
+      }, 300)
 
       if (this.complexFilterActive) {
         this.$emit('refresh')
       } else {
         this.$emit('update-filter', this.inputSearchTerm)
       }
+
+      this.lastThrottledSearch = null
     },
     resetSearch() {
       this.$emit('reset')
