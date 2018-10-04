@@ -6,5 +6,6 @@
   "pluginsFile": "test/e2e/cypress/plugins/index.js",
   "supportFile": "test/e2e/cypress/support/index.js",
   "screenshotsFolder": "test/e2e/falied-tests/",
+  "videosFolder": "test/e2e/videos",
   "videoUploadOnPasses": false
 }

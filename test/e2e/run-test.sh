@@ -4,9 +4,6 @@ adminConsoleHost="localhost"
 kuzzleHost="localhost"
 adminConsolePort="3000"
 kuzzlePort="7512"
-if [[ -z "$e2eLocal" ]]; then
-  adminConsoleHost="adminconsole"
-fi
 
 echo
 echo " ### Kuzzle Admin Console End to End tests ###"
