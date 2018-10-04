@@ -76,4 +76,43 @@ describe('Environments', function() {
       )
     })
   })
+
+  it.only('is able to create an invalid environment and switch back to the valid one', function() {
+    const validEnvName = 'valid'
+    const invalidEnvName = 'invalid'
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [validEnvName]: {
+          name: validEnvName,
+          color: '#002835',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          token: null
+        }
+      })
+    )
+    localStorage.setItem('lastConnectedEnv', validEnvName)
+
+    cy.visit('/')
+
+    cy.get('.EnvironmentsSwitch > .btn-flat').click()
+    cy.get('.EnvironmentsSwitch-newConnectionBtn').click()
+
+    cy.get('.CreateEnvironment-name').type(invalidEnvName, {
+      force: true
+    })
+    cy.get('.CreateEnvironment-host').type('invalid-host', {
+      force: true
+    })
+    cy.get('.Environment-SubmitButton').click()
+
+    cy.contains('Kuzzle does not respond')
+
+    cy.get('.EnvironmentsSwitch > .btn-flat').click()
+    cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`).click()
+
+    cy.get('.App-connected')
+  })
 })
