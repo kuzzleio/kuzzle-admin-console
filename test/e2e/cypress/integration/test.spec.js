@@ -1,4 +1,5 @@
 const fmt = require('../../../../src/utils').formatForDom
+const hexrgb = require('hex-rgb')
 
 describe('Environments', function() {
   this.beforeEach(() => {})
@@ -24,7 +25,7 @@ describe('Environments', function() {
     cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`)
   })
 
-  it.only('is able to delete an environment', function() {
+  it('is able to delete an environment', function() {
     const envToDeleteName = 'local'
     localStorage.setItem(
       'environments',
@@ -48,7 +49,31 @@ describe('Environments', function() {
       )}] > i.fa-trash`
     ).click()
     cy.get('.EnvironmentDeleteModal-envName').type(envToDeleteName)
-    cy.get('div > #delete-env > .modal-footer > span > .btn').click()
+    cy.get('.EnvironmentDeleteModal-submit').click()
     cy.contains('Create a Connection')
+  })
+
+  it.only('is able to set the color of an environment', function() {
+    cy.visit('/')
+    cy.get('.CreateEnvironment-name').type('local', {
+      force: true
+    })
+    cy.get('.CreateEnvironment-host').type('localhost', {
+      force: true
+    })
+    cy.get(`.CreateEnvironment-colorBtns div:nth-child(3) div.color`)
+      .as('colorEl')
+      .click()
+
+    cy.get('.Environment-SubmitButton').click()
+    cy.get('.LoginAsAnonymous-Btn').click()
+
+    cy.get('.navbar-fixed > nav').should($nav => {
+      const env = JSON.parse(localStorage.getItem('environments')).local
+      const c = hexrgb(env.color)
+      expect($nav.attr('style')).to.equal(
+        `background-color: rgb(${c.red}, ${c.green}, ${c.blue});`
+      )
+    })
   })
 })
