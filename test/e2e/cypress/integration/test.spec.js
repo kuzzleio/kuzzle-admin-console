@@ -53,7 +53,7 @@ describe('Environments', function() {
     cy.contains('Create a Connection')
   })
 
-  it.only('is able to set the color of an environment', function() {
+  it('is able to set the color of an environment', function() {
     cy.visit('/')
     cy.get('.CreateEnvironment-name').type('local', {
       force: true

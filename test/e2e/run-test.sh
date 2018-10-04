@@ -3,7 +3,7 @@
 adminConsoleHost="localhost"
 kuzzleHost="localhost"
 adminConsolePort="3000"
-kuzlePort="7512"
+kuzzlePort="7512"
 if [[ -z "$e2eLocal" ]]; then
   adminConsoleHost="adminconsole"
 fi
@@ -13,13 +13,13 @@ echo " ### Kuzzle Admin Console End to End tests ###"
 echo "     ====================================="
 echo
 
-# echo " Waiting for Kuzzle to be up at http://$kuzzleHost:$kuzzleHost"
-# echo
-# while ! curl -f -s -o /dev/null "http://$kuzzleHost:$kuzzleHost"
-# do
-#     echo -ne ". "
-#     sleep 5
-# done
+echo " Waiting for Kuzzle to be up at http://$kuzzleHost:$kuzzlePort"
+echo
+while ! curl -f -s -o /dev/null "http://$kuzzleHost:$kuzzlePort"
+do
+    echo -ne ". "
+    sleep 5
+done
 
 echo
 echo -ne " Kuzzle is up!"
@@ -38,10 +38,8 @@ echo
 
 set -e
 
-cd test/e2e/
-
 if [[ -z "$e2eLocal" ]]; then
-  ../../node_modules/.bin/cypress run --record
+  $(npm bin)/cypress run --record
 else
-  ../../node_modules/.bin/cypress open
+  $(npm bin)/cypress open
 fi
