@@ -77,7 +77,7 @@ describe('Environments', function() {
     })
   })
 
-  it.only('is able to create an invalid environment and switch back to the valid one', function() {
+  it('is able to create an invalid environment and switch back to the valid one', function() {
     const validEnvName = 'valid'
     const invalidEnvName = 'invalid'
     localStorage.setItem(
