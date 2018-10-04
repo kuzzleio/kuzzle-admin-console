@@ -10,9 +10,8 @@
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
-    "e2e": "docker-compose -f test/e2e/docker-compose.yml -f test/e2e/docker-compose.headless.yml run puppeteer",
+    "e2e": "docker-compose -f test/e2e/docker-compose.yml up -d && ./test/e2e/run-test.sh",
     "e2e-local": "docker-compose -f test/e2e/docker-compose.yml up -d && e2eLocal=1 ./test/e2e/run-test.sh",
-    "e2e-update-reference": "updatingVisualReference=1 npm run e2e",
     "test": "npm run unit && npm run codecov && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
     "install_deps": "npm i --unsafe-perm",
@@ -34,16 +33,14 @@
   "license": "Apache-2.0",
   "dependencies": {
     "commander": "^2.15.1",
-    "cucumber": "^5.0.0",
-    "eslint-plugin-cypress": "^2.0.1",
     "finalhandler": "^1.1.1",
     "http-server": "^0.11.1",
-    "lodash": "^4.17.10",
-    "serve-static": "^1.13.2",
-    "vue-quill-editor": "^1.1.1",
-    "why-is-node-running": "^2.0.3"
+    "serve-static": "^1.13.2"
   },
   "devDependencies": {
+    "lodash": "^4.17.10",
+    "vue-quill-editor": "^1.1.1",
+    "eslint-plugin-cypress": "^2.0.1",
     "@fortawesome/fontawesome-free": "^5.3.1",
     "ace-builds": "git://github.com/ajaxorg/ace-builds.git#v1.1.8",
     "autoprefixer": "^6.7.2",
