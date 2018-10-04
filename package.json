@@ -35,6 +35,7 @@
   "dependencies": {
     "commander": "^2.15.1",
     "cucumber": "^5.0.0",
+    "eslint-plugin-cypress": "^2.0.1",
     "finalhandler": "^1.1.1",
     "http-server": "^0.11.1",
     "lodash": "^4.17.10",
@@ -72,6 +73,7 @@
     "eslint-loader": "^1.6.1",
     "eslint-plugin-html": "^4.0.5",
     "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-mocha": "^5.2.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",

@@ -1,3 +1,10 @@
 {
-  "projectId": "im2yeo"
+  "projectId": "im2yeo",
+  "baseUrl": "http://localhost:3000",
+  "fixturesFolder": "test/e2e/cypress/fixtures",
+  "integrationFolder": "test/e2e/cypress/integration",
+  "pluginsFile": "test/e2e/cypress/plugins/index.js",
+  "supportFile": "test/e2e/cypress/support/index.js",
+  "screenshotsFolder": "test/e2e/falied-tests/",
+  "videoUploadOnPasses": false
 }
