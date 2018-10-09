@@ -41,6 +41,7 @@
     "@fortawesome/fontawesome-free": "^5.3.1",
     "ace-builds": "git://github.com/ajaxorg/ace-builds.git#v1.1.8",
     "autoprefixer": "^6.7.2",
+    "axios": "^0.17.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^7.1.1",
     "babel-loader": "^6.2.10",
