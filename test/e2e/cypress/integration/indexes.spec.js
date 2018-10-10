@@ -60,6 +60,6 @@ describe('Indexes', () => {
     cy.get('.IndexDeleteModal-name').type(indexName, { force: true })
     cy.get('.IndexDeleteModal-deleteBtn').click()
 
-    cy.should('not.contain', indexName)
+    cy.get('.IndexesPage').should('not.contain', indexName)
   })
 })
