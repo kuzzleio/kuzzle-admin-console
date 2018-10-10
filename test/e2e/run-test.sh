@@ -5,7 +5,7 @@ kuzzleHost="localhost"
 adminConsolePort="3000"
 kuzzlePort="7512"
 
-[[ -d node_modules/cypress ]] || npm install cypress
+npm install cypress
 
 echo
 echo " ### Kuzzle Admin Console End to End tests ###"
