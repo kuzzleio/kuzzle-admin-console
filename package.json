@@ -37,6 +37,9 @@
     "http-server": "^0.11.1",
     "serve-static": "^1.13.2"
   },
+  "peerDependencies": {
+    "cypress": "^3.1.0"
+  },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.3.1",
     "ace-builds": "git://github.com/ajaxorg/ace-builds.git#v1.1.8",
@@ -60,7 +63,6 @@
     "cross-env": "^3.1.4",
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.26.1",
-    "cypress": "^3.1.0",
     "eslint": "^5.4.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-friendly-formatter": "^2.0.7",
