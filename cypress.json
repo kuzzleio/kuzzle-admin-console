@@ -1,5 +1,4 @@
 {
-  "projectId": "im2yeo",
   "baseUrl": "http://localhost:3000",
   "fixturesFolder": "test/e2e/cypress/fixtures",
   "integrationFolder": "test/e2e/cypress/integration",
@@ -7,5 +6,6 @@
   "supportFile": "test/e2e/cypress/support/index.js",
   "screenshotsFolder": "test/e2e/falied-tests/",
   "videosFolder": "test/e2e/videos",
-  "videoUploadOnPasses": false
+  "videoUploadOnPasses": false,
+  "projectId": "qnb41a"
 }
