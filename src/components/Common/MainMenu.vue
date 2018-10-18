@@ -1,7 +1,7 @@
 <template>
   <header class="MainMenu">
     <div class="navbar-fixed">
-      <nav :style="{backgroundColor: currentEnvironmentColor}" id="mainnav">
+      <nav :style="{backgroundColor: currentEnvironmentColor}" class="MainMenu-nav" id="mainnav">
         <ul>
           <li class="logo">
             <div class="logo-container">

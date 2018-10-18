@@ -16,3 +16,4 @@ test/e2e/test-error.png
 test/e2e/visual-regression/current
 test/e2e/visual-regression/diff
 test/e2e/failed-tests
+test/e2e/videos

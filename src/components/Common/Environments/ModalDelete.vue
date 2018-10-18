@@ -22,7 +22,7 @@
           type="submit"
           :disabled="environmentName !== envConfirmation"
           :class="{unauthorized: environmentName !== envConfirmation}"
-          class="waves-effect btn">
+          class="EnvironmentDeleteModal-submit waves-effect btn">
             Delete
         </button>
         <button

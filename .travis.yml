@@ -4,6 +4,11 @@ group: edge
 services:
   - docker
 
+cache:
+  directories:
+    - ~/.npm
+    - ~/.cache
+
 env:
   global:
     - DOCKER_COMPOSE_VERSION=1.9.0
@@ -33,10 +38,6 @@ script:
 
 after_script:
   - npm run codecov
-
-after_failure:
-  - cd test/e2e
-  - node ./publish-diffs.js
 
 before_deploy:
   - npm run tar_dist
