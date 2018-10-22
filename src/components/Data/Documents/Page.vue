@@ -244,8 +244,10 @@ export default {
     geoDocuments() {
       return this.documents.filter(document => {
         const [lat, lng] = this.getCoordinates(document)
+        const latFloat = parseFloat(lat)
+        const lngFloat = parseFloat(lng)
 
-        return lat && typeof lat === 'number' && lng && typeof lng === 'number'
+        return (!isNaN(latFloat) && !isNaN(lngFloat))
       })
     },
     latFieldPath() {
