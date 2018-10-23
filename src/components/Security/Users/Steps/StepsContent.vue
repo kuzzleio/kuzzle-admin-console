@@ -118,10 +118,17 @@ export default {
 
         await Promise.all(
           this.strategies.map(async strategy => {
-            let strategyCredentials = await kuzzle.security.getCredentialsPromise(
+            const credentialsExists = await kuzzle.security.hasCredentialsPromise(strategy, this.kuid)
+
+            if (!credentialsExists) {
+              return
+            }
+
+            const strategyCredentials = await kuzzle.security.getCredentialsPromise(
               strategy,
               this.kuid
             )
+            
             if (strategyCredentials.kuid) {
               delete strategyCredentials.kuid
             }
