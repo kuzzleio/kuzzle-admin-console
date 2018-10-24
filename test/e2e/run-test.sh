@@ -5,7 +5,10 @@ kuzzleHost="localhost"
 adminConsolePort="3000"
 kuzzlePort="7512"
 
+# Cypress can't be installed as a dev dependency since it
+# makes the Netlify build extremely slow.
 npm install cypress
+npm run dev &
 
 echo
 echo " ### Kuzzle Admin Console End to End tests ###"
