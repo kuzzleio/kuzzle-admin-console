@@ -1,6 +1,7 @@
 <template>
   <div>
-    <label></label>
+    <h5>Available strategies</h5>
+    <hr>
     <m-select v-model="currentStrategy">
       <option v-for="strategy in strategies">{{strategy}}</option>
     </m-select>
