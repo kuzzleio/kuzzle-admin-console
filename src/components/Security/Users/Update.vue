@@ -131,11 +131,21 @@ export default {
         await kuzzle.security.replaceUserPromise(this.user.kuid, userObject)
         await Promise.all(
           Object.keys(this.user.credentials).map(async strategy => {
-            await kuzzle.security.updateCredentialsPromise(
-              strategy,
-              this.user.kuid,
-              this.user.credentials[strategy]
-            )
+            const credentialsExists = await kuzzle.security.hasCredentialsPromise(strategy, this.user.kuid)
+
+            if (credentialsExists) {
+              await kuzzle.security.updateCredentialsPromise(
+                strategy,
+                this.user.kuid,
+                this.user.credentials[strategy]
+              )
+            } else {
+              await kuzzle.security.createCredentialsPromise(
+                strategy,
+                this.user.kuid,
+                this.user.credentials[strategy]
+              )
+            }
           })
         )
         await kuzzle.queryPromise(
