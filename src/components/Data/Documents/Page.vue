@@ -404,6 +404,7 @@ export default {
           this.index,
           this.collection
         )
+        this.fetchDocuments()
       } catch (error) {
         this.$store.commit(SET_TOAST, {
           text:
@@ -545,6 +546,7 @@ export default {
       this.index,
       this.collection
     )
+    this.fetchDocuments()
   },
   watch: {
     $route: {
@@ -563,9 +565,9 @@ export default {
         )
       }
     },
-    currentFilter() {
-      this.fetchDocuments()
-    },
+    // currentFilter() {
+    //   this.fetchDocuments()
+    // },
     collection: {
       immediate: true,
       handler() {
