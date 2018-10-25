@@ -48,7 +48,7 @@
               </div>
               <div class="col s3 xl3">
                 <list-view-buttons
-                  :active-view="currentFilter.listViewType"
+                  :active-view="listViewType"
                   :boxes-enabled="true"
                   :map-enabled="isCollectionGeo"
                   @list="onListViewClicked"
@@ -68,11 +68,11 @@
               :all-checked="allChecked"
               :display-bulk-delete="hasSelectedDocuments"
               :geopointList="mappingGeopoints"
-              :viewType="currentFilter.listViewType"
+              :viewType="listViewType"
               :displayCreate="canCreateDocument(this.index, this.collection)"
-              :displayGeopointSelect="currentFilter.listViewType === 'map'"
-              :displayBulkDelete="currentFilter.listViewType !== 'map'"
-              :displayToggleAll="currentFilter.listViewType !== 'map'"
+              :displayGeopointSelect="listViewType === 'map'"
+              :displayBulkDelete="listViewType !== 'map'"
+              :displayToggleAll="listViewType !== 'map'"
               @create="onCreateClicked"
               @bulk-delete="onBulkDeleteClicked"
               @toggle-all="onToggleAllClicked"
@@ -82,7 +82,7 @@
 
             <div class="row" v-show="documents.length">
 
-              <div class="DocumentList-list col s12" v-show="currentFilter.listViewType === 'list'">
+              <div class="DocumentList-list col s12" v-show="listViewType === 'list'">
                 <div class="DocumentList-materializeCollection collection">
                   <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
                     <document-list-item
@@ -111,7 +111,7 @@
                 </div>
               </div>
 
-              <div class="col s12" v-show="currentFilter.listViewType === 'boxes'">
+              <div class="col s12" v-show="listViewType === 'boxes'">
                 <div class="DocumentList-boxes">
                   <document-box-item
                   v-for="document in documents"
@@ -139,7 +139,7 @@
                 </div>
               </div>
 
-              <div class="DocumentList-map col s12" v-if="currentFilter.listViewType === 'map'">
+              <div class="DocumentList-map col s12" v-if="listViewType === 'map'">
                 <view-map
                   :documents="geoDocuments"
                   :getCoordinates="this.getCoordinates"
@@ -199,6 +199,10 @@ import {
 } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
+const LIST_VIEW_LIST = 'list'
+const LIST_VIEW_BOXES = 'boxes'
+const LIST_VIEW_MAP = 'map'
+
 export default {
   name: 'DocumentsPage',
   props: {
@@ -232,6 +236,7 @@ export default {
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
+      listViewType: LIST_VIEW_LIST,
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
@@ -499,25 +504,13 @@ export default {
     // LIST VIEW TYPES
     // =========================================================================
     onListViewClicked() {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          listViewType: filterManager.LIST_VIEW_LIST
-        })
-      )
+      this.listViewType = LIST_VIEW_LIST
     },
     onBoxesViewClicked() {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          listViewType: filterManager.LIST_VIEW_BOXES
-        })
-      )
+      this.listViewType = LIST_VIEW_BOXES
     },
     onMapViewClicked() {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          listViewType: filterManager.LIST_VIEW_MAP
-        })
-      )
+      this.listViewType = LIST_VIEW_MAP
     },
     // INIT
     // =========================================================================
@@ -565,9 +558,6 @@ export default {
         )
       }
     },
-    // currentFilter() {
-    //   this.fetchDocuments()
-    // },
     collection: {
       immediate: true,
       handler() {
