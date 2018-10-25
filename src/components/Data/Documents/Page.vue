@@ -199,6 +199,7 @@ import {
 } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
+const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
 const LIST_VIEW_BOXES = 'boxes'
 const LIST_VIEW_MAP = 'map'
@@ -512,7 +513,7 @@ export default {
     onMapViewClicked() {
       this.listViewType = LIST_VIEW_MAP
     },
-    // INIT
+    // Collection Metadata management
     // =========================================================================
     loadMappingInfo() {
       getMappingDocument(this.collection, this.index).then(response => {
@@ -523,6 +524,17 @@ export default {
         )
         this.selectedGeopoint = this.mappingGeopoints[0]
       })
+    },
+    loadListView() {
+      if (this.$route.query.listViewType) {
+        // Load from route
+      } else {
+        // Load from localStorage
+      }
+    },
+    saveListView() {
+      this.$route.query.listViewType = this.listViewType
+      localStorage.setItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`, this.listViewType)
     }
   },
   mounted() {
