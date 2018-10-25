@@ -26,14 +26,3 @@ services:
     environment:
       - cluster.name=kuzzle
       - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
-
-  adminconsole:
-    image: node:8
-    ports:
-      - '3000:3000'
-    working_dir: /var/app
-    command: sh -c 'npm i --unsafe-perm && npm run dev'
-    volumes:
-      - '../../:/var/app'
-    depends_on:
-      - kuzzle
