@@ -34,7 +34,9 @@ describe('Search', function() {
   it('refreshes search when the Search button is hit twice', function () {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
