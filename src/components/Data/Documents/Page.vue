@@ -167,6 +167,8 @@
 </template>
 
 <script>
+// import _ from 'lodash'
+
 import DocumentListItem from './DocumentListItem'
 import DocumentBoxItem from './DocumentBoxItem'
 import DeleteModal from './DeleteModal'
@@ -404,12 +406,12 @@ export default {
     performSearchDocuments,
     onFiltersUpdated(newFilters) {
       try {
-        filterManager.save(
-          newFilters,
-          this.$router,
-          this.index,
-          this.collection
-        )
+        // filterManager.save(
+        // newFilters,
+        // this.$router,
+        // this.index,
+        // this.collection
+        // )
         this.fetchDocuments()
       } catch (error) {
         this.$store.commit(SET_TOAST, {
@@ -506,12 +508,15 @@ export default {
     // =========================================================================
     onListViewClicked() {
       this.listViewType = LIST_VIEW_LIST
+      this.saveListView()
     },
     onBoxesViewClicked() {
       this.listViewType = LIST_VIEW_BOXES
+      this.saveListView()
     },
     onMapViewClicked() {
       this.listViewType = LIST_VIEW_MAP
+      this.saveListView()
     },
     // Collection Metadata management
     // =========================================================================
@@ -525,55 +530,42 @@ export default {
         this.selectedGeopoint = this.mappingGeopoints[0]
       })
     },
-    loadListView() {
+    syncListView() {
       if (this.$route.query.listViewType) {
-        // Load from route
+        this.listViewType = this.$route.query.listViewType
+        localStorage.setItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`, this.listViewType)
       } else {
-        // Load from localStorage
+        const typeFromLS = localStorage.getItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`)
+        if (typeFromLS) {
+          this.listViewType = typeFromLS
+          this.$router.push({query: {listViewType: this.listViewType}})
+        }
       }
     },
     saveListView() {
-      this.$route.query.listViewType = this.listViewType
       localStorage.setItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`, this.listViewType)
+      this.$router.push({query: {listViewType: this.listViewType}})
     }
   },
-  mounted() {
-    this.loadMappingInfo()
-
-    this.currentFilter = filterManager.load(
-      this.index,
-      this.collection,
-      this.$route
-    )
-    filterManager.save(
-      this.currentFilter,
-      this.$router,
-      this.index,
-      this.collection
-    )
-    this.fetchDocuments()
-  },
   watch: {
-    $route: {
-      immediate: false,
-      handler(newValue, oldValue) {
-        this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
-          newValue
-        )
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.index,
-          this.collection
-        )
-      }
-    },
     collection: {
       immediate: true,
       handler() {
         this.loadMappingInfo()
+        this.syncListView()
+
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          this.$route
+        )
+        // filterManager.save(
+        //   this.currentFilter,
+        //   this.$router,
+        //   this.index,
+        //   this.collection
+        // )
+        this.fetchDocuments()
       }
     }
   }

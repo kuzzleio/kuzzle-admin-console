@@ -45,7 +45,9 @@ export const loadFromRoute = route => {
     throw new Error('No store specified')
   }
 
-  let filter = Object.assign({}, route.query)
+  const emptyFilter = new Filter()
+
+  let filter = _.pick(route.query, Object.keys(emptyFilter)) // Object.assign({}, route.query)
 
   if (filter.raw && typeof filter.raw === 'string') {
     filter.raw = JSON.parse(filter.raw)
@@ -98,7 +100,8 @@ export const saveToRouter = (filter, router) => {
   if (filter.sorting) {
     formattedFilter.sorting = JSON.stringify(filter.sorting)
   }
-  router.push({ query: formattedFilter })
+
+  router.push({ query: _.merge(router.currentRoute.query, formattedFilter) })
 }
 
 export const saveToLocalStorage = (filter, index, collection) => {
