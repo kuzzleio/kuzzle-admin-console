@@ -63,7 +63,7 @@
       </div>
     </div>
     <div v-if="actionButtonsVisible" class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
+      <button type="submit" class="BasicFilter-submitBtn btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
       <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
     </div>
   </form>
