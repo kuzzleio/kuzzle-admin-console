@@ -17,7 +17,7 @@
     "install_deps": "npm i --unsafe-perm",
     "prepublishOnly": "npm run build",
     "start": "http-server dist",
-    "tar_dist": "tar cfz kuzzle-admin-console_v$RELEASE_VERSION.tar.gz dist && chmod +r kuzzle-admin-console.tar.gz"
+    "tar_dist": "bash .ci/release_package.sh"
   },
   "keywords": [
     "kuzzle",
