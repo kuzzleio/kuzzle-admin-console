@@ -167,7 +167,7 @@
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 
 import DocumentListItem from './DocumentListItem'
 import DocumentBoxItem from './DocumentBoxItem'
@@ -255,7 +255,7 @@ export default {
         const latFloat = parseFloat(lat)
         const lngFloat = parseFloat(lng)
 
-        return (!isNaN(latFloat) && !isNaN(lngFloat))
+        return !isNaN(latFloat) && !isNaN(lngFloat)
       })
     },
     latFieldPath() {
@@ -334,7 +334,9 @@ export default {
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
 
-      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
+      for (const [attributeName, { type, properties }] of Object.entries(
+        mapping
+      )) {
         if (properties) {
           if (properties.lat && properties.lon) {
             attributes = attributes.concat(path.concat(attributeName).join('.'))
@@ -406,12 +408,12 @@ export default {
     performSearchDocuments,
     onFiltersUpdated(newFilters) {
       try {
-        // filterManager.save(
-        // newFilters,
-        // this.$router,
-        // this.index,
-        // this.collection
-        // )
+        filterManager.save(
+          newFilters,
+          this.$router,
+          this.index,
+          this.collection
+        )
         this.fetchDocuments()
       } catch (error) {
         this.$store.commit(SET_TOAST, {
@@ -530,21 +532,30 @@ export default {
         this.selectedGeopoint = this.mappingGeopoints[0]
       })
     },
-    syncListView() {
+    loadListView() {
       if (this.$route.query.listViewType) {
         this.listViewType = this.$route.query.listViewType
-        localStorage.setItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`, this.listViewType)
       } else {
-        const typeFromLS = localStorage.getItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`)
+        const typeFromLS = localStorage.getItem(
+          `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`
+        )
         if (typeFromLS) {
           this.listViewType = typeFromLS
-          this.$router.push({query: {listViewType: this.listViewType}})
+        } else {
+          this.listViewType = LIST_VIEW_LIST
         }
       }
     },
     saveListView() {
-      localStorage.setItem(`${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`, this.listViewType)
-      this.$router.push({query: {listViewType: this.listViewType}})
+      localStorage.setItem(
+        `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
+        this.listViewType
+      )
+      const mergedQuery = _.merge(
+        { listViewType: this.listViewType },
+        this.$router.currentRoute.query
+      )
+      this.$router.push({ query: mergedQuery })
     }
   },
   watch: {
@@ -552,19 +563,20 @@ export default {
       immediate: true,
       handler() {
         this.loadMappingInfo()
-        this.syncListView()
+        this.loadListView()
+        this.saveListView()
 
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
           this.$route
         )
-        // filterManager.save(
-        //   this.currentFilter,
-        //   this.$router,
-        //   this.index,
-        //   this.collection
-        // )
+        filterManager.save(
+          this.currentFilter,
+          this.$router,
+          this.index,
+          this.collection
+        )
         this.fetchDocuments()
       }
     }

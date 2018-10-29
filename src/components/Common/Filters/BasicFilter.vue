@@ -127,10 +127,8 @@ export default {
       for (const orBlock of this.filters.basic) {
         for (const andBlock of orBlock) {
           if (
-            andBlock.attribute === null ||
-            andBlock.attribute === '' ||
-            andBlock.value === null ||
-            andBlock.value === ''
+            (!andBlock.attribute && andBlock.value) ||
+            (andBlock.attribute && !andBlock.value)
           ) {
             return false
           }

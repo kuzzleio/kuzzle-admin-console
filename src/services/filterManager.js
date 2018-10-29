@@ -90,6 +90,7 @@ export const save = (filter, router, index, collection) => {
 }
 
 export const saveToRouter = (filter, router) => {
+  const emptyFilter = new Filter()
   const formattedFilter = Object.assign({}, filter)
   if (filter.basic) {
     formattedFilter.basic = JSON.stringify(filter.basic)
@@ -101,7 +102,13 @@ export const saveToRouter = (filter, router) => {
     formattedFilter.sorting = JSON.stringify(filter.sorting)
   }
 
-  router.push({ query: _.merge(router.currentRoute.query, formattedFilter) })
+  const otherQueryParams = _.omit(
+    router.currentRoute.query,
+    Object.keys(emptyFilter)
+  )
+  const mergedQuery = _.merge(formattedFilter, otherQueryParams)
+
+  router.push({ query: mergedQuery })
 }
 
 export const saveToLocalStorage = (filter, index, collection) => {
