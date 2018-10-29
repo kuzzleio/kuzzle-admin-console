@@ -31,6 +31,118 @@ describe('Search', function() {
     )
   })
 
+  it('perists the Quick Search query in the URL', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('.QuickFilter-searchBar input').type('Keylogger')
+    cy.url().should('contain', 'quick=Keylogger')
+    cy.url().should('contain', 'active=quick')
+  })
+
+  it('persists the Basic Search query in the URL', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-submitBtn').click()
+    cy.url().should('contain', 'active=basic')
+    cy.url().should('contain', 'attribute')
+    cy.url().should('contain', 'job')
+    cy.url().should('contain', 'match')
+    cy.url().should('contain', 'Blockchain')
+  })
+
+  it('remembers the Quick Search query across collections', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+      firstName: 'Nicolas',
+      lastName: 'Juelle',
+      job: 'CSS Level: Expert !important'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+      firstName: 'Alexandre',
+      lastName: 'Bouthinon',
+      job: 'From scratch All the Things!'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('.QuickFilter-searchBar input').type('Keylogger')
+    cy.get('.Treeview-root .tree-item')
+      .contains('anothercollection')
+      .click()
+    cy.url().should('not.contain', 'Keylogger')
+    cy.get('.DocumentListItem').should('have.length', 2)
+
+    cy.get('.Treeview-root .tree-item')
+      .contains(collectionName)
+      .click()
+    cy.url().should('contain', 'Keylogger')
+    cy.get('.DocumentListItem').should('have.length', 1)
+  })
+
+  it.only('remembers the Basic Search query across collections', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+      firstName: 'Nicolas',
+      lastName: 'Juelle',
+      job: 'CSS Level: Expert !important'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+      firstName: 'Alexandre',
+      lastName: 'Bouthinon',
+      job: 'From scratch All the Things!'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
+    cy.get('.BasicFilter-submitBtn').click()
+    cy.get('.DocumentListItem').should('have.length', 1)
+
+    cy.get('.Treeview-root .tree-item')
+      .contains('anothercollection')
+      .click()
+    cy.url().should('not.contain', 'Keylogger')
+    cy.get('.DocumentListItem').should('have.length', 2)
+
+    cy.get('.Treeview-root .tree-item')
+      .contains(collectionName)
+      .click()
+    cy.url().should('contain', 'Keylogger')
+    cy.get('.DocumentListItem').should('have.length', 1)
+  })
+
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()

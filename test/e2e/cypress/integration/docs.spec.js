@@ -67,7 +67,7 @@ describe('Documents', function() {
       .should('have.class', 'DocumentBoxItem')
   })
 
-  it.only('remembers the list view settings when navigating from one collection to another', function() {
+  it('remembers the list view settings when navigating from one collection to another', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
