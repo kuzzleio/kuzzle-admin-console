@@ -44,7 +44,7 @@ jobs:
 # Functionnal Testing
 # ---------------------------------------
     - stage: tests
-      name: "Functionnal Tests"
+      name: "End to end Tests"
 
       services:
         - docker
