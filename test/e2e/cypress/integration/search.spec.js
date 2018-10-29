@@ -39,6 +39,7 @@ describe('Search', function() {
     })
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger')
     cy.url().should('contain', 'quick=Keylogger')
@@ -53,6 +54,7 @@ describe('Search', function() {
     })
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
@@ -86,6 +88,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger')
     cy.get('.Treeview-root .tree-item')
@@ -122,6 +125,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -175,6 +179,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger')
 

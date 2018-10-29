@@ -34,6 +34,7 @@ describe('Documents', function() {
   it('sets and persists the listViewType param accessing a collection', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.url().should('contain', 'listViewType=list')
   })
@@ -41,6 +42,7 @@ describe('Documents', function() {
   it('shows list items when viewType is set to list', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.DocumentList-list .collection-item')
       .children()
@@ -50,6 +52,7 @@ describe('Documents', function() {
   it('sets and persists the listViewType param when switching the list view', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
     cy.url().should('contain', 'listViewType=boxes')
@@ -60,6 +63,7 @@ describe('Documents', function() {
   it('shows boxed items when viewType is set to boxes', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
     cy.get('.DocumentList-boxes')
@@ -71,6 +75,7 @@ describe('Documents', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
       firstName: 'Adrien',
