@@ -407,9 +407,10 @@ export default {
     // =========================================================================
     performSearchDocuments,
     onFiltersUpdated(newFilters) {
+      this.currentFilter = newFilters
       try {
         filterManager.save(
-          newFilters,
+          this.currentFilter,
           this.$router,
           this.index,
           this.collection
