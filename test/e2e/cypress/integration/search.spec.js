@@ -170,7 +170,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 2)
   })
 
-  it.only('when the RESET button is hit, the search query is reset but not the list view type', function() {
+  it('when the RESET button is hit, the search query is reset but not the list view type', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
