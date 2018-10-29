@@ -31,7 +31,7 @@ describe('Search', function() {
     )
   })
 
-  it('refreshes search when the Search button is hit twice', function () {
+  it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')
@@ -52,5 +52,5 @@ describe('Search', function() {
 
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 2)
-  })    
+  })
 })

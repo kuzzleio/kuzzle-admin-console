@@ -552,9 +552,13 @@ export default {
         `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
         this.listViewType
       )
+      const otherQueryParams = _.omit(
+        this.$router.currentRoute.query,
+        'listViewType'
+      )
       const mergedQuery = _.merge(
         { listViewType: this.listViewType },
-        this.$router.currentRoute.query
+        otherQueryParams
       )
       this.$router.push({ query: mergedQuery })
     }

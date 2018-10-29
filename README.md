@@ -42,16 +42,11 @@ To run the end-to-end tests in headless mode, run
 npm run e2e
 ```
 
-To run the end-to-end tests in headful mode (requires node >= v8.12.0), run
+To run the end-to-end tests in headful mode, run
 
 ```
+npm run dev
 npm run e2e-local
-```
-
-End-to-end tests perform visual regression tests against refernce screenshots that are git-versioned. To update the reference screenshots (this is only meant for development purpose and you should take extreme care in doing it), run
-
-```
-npm run e2e-update-reference
 ```
 
 Please refer to the CONTRIBUTING file to learn more about how to write code and tests for this project.
