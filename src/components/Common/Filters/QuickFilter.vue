@@ -13,8 +13,8 @@
         </div>
       </div>
       <div v-if="actionButtonsVisible" class="QuickFilter-actions col s4 l4 xl4">
-        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
-        <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
+        <button type="submit" class="QuickFilter-submitBtn btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
+        <button class="QuickFilter-resetBtn btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
       </div>
     </form>
   </div>

@@ -101,7 +101,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 1)
   })
 
-  it.only('remembers the Basic Search query across collections', function() {
+  it('remembers the Basic Search query across collections', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -164,5 +164,50 @@ describe('Search', function() {
 
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 2)
+  })
+
+  it.only('when the RESET button is hit, the search query is reset but not the list view type', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('.QuickFilter-searchBar input').type('Keylogger')
+
+    cy.url().should('contain', 'Keylogger')
+    cy.get('.DocumentListItem').should('have.length', 1)
+
+    cy.get('.ListViewButtons-btn[title~="boxes"]').click()
+    cy.get('.DocumentList-boxes')
+      .children()
+      .should('have.class', 'DocumentBoxItem')
+    cy.get('.DocumentBoxItem').should('have.length', 1)
+
+    cy.get('.QuickFilter-resetBtn').click()
+
+    cy.url().should('not.contain', 'Keylogger')
+    cy.url().should('contain', 'listViewType=boxes')
+    cy.get('.DocumentList-boxes')
+      .children()
+      .should('have.class', 'DocumentBoxItem')
+    cy.get('.DocumentBoxItem').should('have.length', 2)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
+    cy.get('.BasicFilter-submitBtn').click()
+    cy.get('.DocumentBoxItem').should('have.length', 1)
+
+    cy.get('.BasicFilter-resetBtn').click()
+    cy.url().should('not.contain', 'Keylogger')
+    cy.url().should('contain', 'listViewType=boxes')
+    cy.get('.DocumentList-boxes')
+      .children()
+      .should('have.class', 'DocumentBoxItem')
+    cy.get('.DocumentBoxItem').should('have.length', 2)
   })
 })
