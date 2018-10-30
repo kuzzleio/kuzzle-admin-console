@@ -3,7 +3,7 @@
     <div class="row center">
       <h1>404 not found</h1>
       <p>The index or collection that you requested doesn't exist.</p>
-      <a href="#">Go back to the main page</a>
+      <router-link class="404BackToHome-link" :to="{name: 'Data'}"> Go back to the main page </router-link>
     </div>
   </div>
 </template>
