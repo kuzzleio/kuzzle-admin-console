@@ -13,6 +13,7 @@
                   input-class="validate"
                   placeholder="Attribute"
                   :items="attributeItems"
+                  :value="filters.basic[groupIndex][filterIndex].attribute || ''"
                   @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
                 />
               </div>
