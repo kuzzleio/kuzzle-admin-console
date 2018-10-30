@@ -104,7 +104,7 @@ describe('Document List', function() {
       .should('have.class', 'DocumentListItem')
   })
 
-  it.only('has items with working dropdowns (even if the ID contains weird characters)', function() {
+  it('has items with working dropdowns (even if the ID contains weird characters)', function() {
     const adrienID = 'adrien maret'
     const nicoID = 'nico_juelle'
     cy.request(
