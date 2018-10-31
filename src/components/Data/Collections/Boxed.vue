@@ -7,7 +7,7 @@
           <!-- collection browse link -->
           <router-link
              class="fluid-hover"
-             :to="{name: 'DataDocumentsList', params: {index, collection}}">
+             :to="collectionLink">
             <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
             <span class="name">{{collection}}</span>
           </router-link>
@@ -57,6 +57,21 @@ export default {
   props: ['index', 'collection', 'isRealtime'],
   components: {
     CollectionDropdown
+  },
+  computed: {
+    collectionLink() {
+      if (this.isRealtime) {
+        return {
+          name: 'DataCollectionWatch',
+          params: { index: this.index, collection: this.collection }
+        }
+      } else {
+        return {
+          name: 'DataDocumentsList',
+          params: { index: this.index, collection: this.collection }
+        }
+      }
+    }
   },
   methods: {
     canManageRealtime,
