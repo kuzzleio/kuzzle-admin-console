@@ -22,7 +22,7 @@
         <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
       </a>
 
-      <dropdown :id="document.id" myclass="icon-black">
+      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black">
         <li>
           <a
             v-bind:class="{'disabled': !canDelete}"
