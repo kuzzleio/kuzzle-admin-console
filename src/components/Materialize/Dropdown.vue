@@ -1,5 +1,5 @@
 <template>
-  <span :cmylass="myclass">
+  <span :class="myclass">
     <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
 
     <ul :id="parsedId" class='dropdown-content'>
