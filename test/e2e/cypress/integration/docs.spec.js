@@ -1,4 +1,4 @@
-describe('Documents', function() {
+describe('Document List', function() {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -102,5 +102,51 @@ describe('Documents', function() {
     cy.get('.DocumentList-list .collection-item')
       .children()
       .should('have.class', 'DocumentListItem')
+  })
+
+  it('has items with working dropdowns (even if the ID contains weird characters)', function() {
+    const adrienID = 'adrien maret'
+    const nicoID = 'nico_juelle'
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${adrienID}/_create`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service'
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${nicoID}/_create`,
+      {
+        firstName: 'Nico',
+        lastName: 'Juelle',
+        job: 'Standing-desk Advocacy Superstar'
+      }
+    )
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.DocumentListItem')
+      .contains(adrienID)
+      .parent()
+      .siblings('.DocumentListItem-actions')
+      .children('.DocumentListItem-dropdown')
+      .click()
+      .contains('Delete')
+
+    cy.get('.Headline').click()
+
+    cy.get('.DocumentListItem')
+      .contains(nicoID)
+      .parent()
+      .siblings('.DocumentListItem-actions')
+      .children('.DocumentListItem-dropdown')
+      .click()
+      .contains('Delete')
   })
 })

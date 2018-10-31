@@ -105,7 +105,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 1)
   })
 
-  it('remembers the Basic Search query across collections', function() {
+  it.only('remembers the Basic Search query across collections', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -146,6 +146,14 @@ describe('Search', function() {
       .click()
     cy.url().should('contain', 'Keylogger')
     cy.get('.DocumentListItem').should('have.length', 1)
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').should(
+      'have.value',
+      'job'
+    )
+    cy.get('.BasicFilter-query input[placeholder=Value]').should(
+      'have.value',
+      'Keylogger'
+    )
   })
 
   it('refreshes search when the Search button is hit twice', function() {
