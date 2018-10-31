@@ -51,7 +51,10 @@ export default {
           typeof collection !== 'undefined' &&
           this.$store.getters
             .indexCollections(index)
-            .stored.indexOf(collection) === -1
+            .stored.indexOf(collection) === -1 &&
+          this.$store.getters
+            .indexCollections(index)
+            .realtime.indexOf(collection) === -1
         ) {
           this.routeExist = false
         }

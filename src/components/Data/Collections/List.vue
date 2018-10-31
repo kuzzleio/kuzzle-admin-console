@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="CollectionsList wrapper">
     <headline>
       {{index}}
       <index-dropdown :index="index" class="icon-medium icon-black"></index-dropdown>
@@ -10,7 +10,7 @@
 
         <div class="row actions" v-if="collectionCount">
           <div class="col s9">
-            <router-link class="btn waves-effect waves-light primary" v-if="canCreateCollection(index)"
+            <router-link class="CollectionsList-createBtn btn waves-effect waves-light primary" v-if="canCreateCollection(index)"
                v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                :class="{unauthorized: !canCreateCollection(index)}"
                :to="{name: 'DataCreateCollection', params: {index: index}}">
