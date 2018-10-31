@@ -5,7 +5,7 @@
       <div class="row">
         <!-- Collection name -->
         <div class="col s6">
-          <div class="input-field">
+          <div class="Mapping-name input-field">
             <input id="collection-name" type="text" name="collection" required
                    class="validate" tabindex="1" :value="$store.state.collection.name" @input="setName" v-focus />
             <label for="collection-name">Collection name</label>
@@ -22,7 +22,7 @@
     <div class="row">
       <div class="col s12">
         <div class="row">
-          <p>
+          <p class="Mapping-realtimeOnly">
             <input
               type="checkbox"
               class="filled-in"
@@ -78,7 +78,7 @@
     <div class="row">
       <div class="col s12">
         <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-        <button type="submit" class="btn primary waves-effect waves-light">
+        <button type="submit" class="Mapping-submitBtn btn primary waves-effect waves-light">
           {{collectionIsRealtimeOnly ? 'Save' : 'Next' }}
         </button>
       </div>
