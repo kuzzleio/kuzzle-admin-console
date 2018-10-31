@@ -64,7 +64,7 @@
     </div>
     <div v-if="actionButtonsVisible" class="row card-action">
       <button type="submit" class="BasicFilter-submitBtn btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
-      <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
+      <button class="BasicFilter-resetBtn btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
     </div>
   </form>
 </template>
@@ -127,10 +127,8 @@ export default {
       for (const orBlock of this.filters.basic) {
         for (const andBlock of orBlock) {
           if (
-            andBlock.attribute === null ||
-            andBlock.attribute === '' ||
-            andBlock.value === null ||
-            andBlock.value === ''
+            (!andBlock.attribute && andBlock.value) ||
+            (andBlock.attribute && !andBlock.value)
           ) {
             return false
           }

@@ -48,7 +48,7 @@
               </div>
               <div class="col s3 xl3">
                 <list-view-buttons
-                  :active-view="currentFilter.listViewType"
+                  :active-view="listViewType"
                   :boxes-enabled="true"
                   :map-enabled="isCollectionGeo"
                   @list="onListViewClicked"
@@ -68,11 +68,11 @@
               :all-checked="allChecked"
               :display-bulk-delete="hasSelectedDocuments"
               :geopointList="mappingGeopoints"
-              :viewType="currentFilter.listViewType"
+              :viewType="listViewType"
               :displayCreate="canCreateDocument(this.index, this.collection)"
-              :displayGeopointSelect="currentFilter.listViewType === 'map'"
-              :displayBulkDelete="currentFilter.listViewType !== 'map'"
-              :displayToggleAll="currentFilter.listViewType !== 'map'"
+              :displayGeopointSelect="listViewType === 'map'"
+              :displayBulkDelete="listViewType !== 'map'"
+              :displayToggleAll="listViewType !== 'map'"
               @create="onCreateClicked"
               @bulk-delete="onBulkDeleteClicked"
               @toggle-all="onToggleAllClicked"
@@ -82,7 +82,7 @@
 
             <div class="row" v-show="documents.length">
 
-              <div class="DocumentList-list col s12" v-show="currentFilter.listViewType === 'list'">
+              <div class="DocumentList-list col s12" v-show="listViewType === 'list'">
                 <div class="DocumentList-materializeCollection collection">
                   <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
                     <document-list-item
@@ -111,7 +111,7 @@
                 </div>
               </div>
 
-              <div class="col s12" v-show="currentFilter.listViewType === 'boxes'">
+              <div class="col s12" v-show="listViewType === 'boxes'">
                 <div class="DocumentList-boxes">
                   <document-box-item
                   v-for="document in documents"
@@ -139,7 +139,7 @@
                 </div>
               </div>
 
-              <div class="DocumentList-map col s12" v-if="currentFilter.listViewType === 'map'">
+              <div class="DocumentList-map col s12" v-if="listViewType === 'map'">
                 <view-map
                   :documents="geoDocuments"
                   :getCoordinates="this.getCoordinates"
@@ -167,6 +167,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 import DocumentListItem from './DocumentListItem'
 import DocumentBoxItem from './DocumentBoxItem'
 import DeleteModal from './DeleteModal'
@@ -198,6 +200,11 @@ import {
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
+
+const LOCALSTORAGE_PREFIX = 'current-list-view'
+const LIST_VIEW_LIST = 'list'
+const LIST_VIEW_BOXES = 'boxes'
+const LIST_VIEW_MAP = 'map'
 
 export default {
   name: 'DocumentsPage',
@@ -232,6 +239,7 @@ export default {
       totalDocuments: 0,
       documentToDelete: null,
       currentFilter: new filterManager.Filter(),
+      listViewType: LIST_VIEW_LIST,
       deleteModalIsOpen: false,
       deleteModalIsLoading: false,
       candidatesForDeletion: [],
@@ -247,7 +255,7 @@ export default {
         const latFloat = parseFloat(lat)
         const lngFloat = parseFloat(lng)
 
-        return (!isNaN(latFloat) && !isNaN(lngFloat))
+        return !isNaN(latFloat) && !isNaN(lngFloat)
       })
     },
     latFieldPath() {
@@ -326,7 +334,9 @@ export default {
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
 
-      for (const [attributeName, { type, properties }] of Object.entries(mapping)) {
+      for (const [attributeName, { type, properties }] of Object.entries(
+        mapping
+      )) {
         if (properties) {
           if (properties.lat && properties.lon) {
             attributes = attributes.concat(path.concat(attributeName).join('.'))
@@ -397,9 +407,10 @@ export default {
     // =========================================================================
     performSearchDocuments,
     onFiltersUpdated(newFilters) {
+      this.currentFilter = newFilters
       try {
         filterManager.save(
-          newFilters,
+          this.currentFilter,
           this.$router,
           this.index,
           this.collection
@@ -499,27 +510,18 @@ export default {
     // LIST VIEW TYPES
     // =========================================================================
     onListViewClicked() {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          listViewType: filterManager.LIST_VIEW_LIST
-        })
-      )
+      this.listViewType = LIST_VIEW_LIST
+      this.saveListView()
     },
     onBoxesViewClicked() {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          listViewType: filterManager.LIST_VIEW_BOXES
-        })
-      )
+      this.listViewType = LIST_VIEW_BOXES
+      this.saveListView()
     },
     onMapViewClicked() {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          listViewType: filterManager.LIST_VIEW_MAP
-        })
-      )
+      this.listViewType = LIST_VIEW_MAP
+      this.saveListView()
     },
-    // INIT
+    // Collection Metadata management
     // =========================================================================
     loadMappingInfo() {
       getMappingDocument(this.collection, this.index).then(response => {
@@ -530,32 +532,49 @@ export default {
         )
         this.selectedGeopoint = this.mappingGeopoints[0]
       })
+    },
+    loadListView() {
+      if (this.$route.query.listViewType) {
+        this.listViewType = this.$route.query.listViewType
+      } else {
+        const typeFromLS = localStorage.getItem(
+          `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`
+        )
+        if (typeFromLS) {
+          this.listViewType = typeFromLS
+        } else {
+          this.listViewType = LIST_VIEW_LIST
+        }
+      }
+    },
+    saveListView() {
+      localStorage.setItem(
+        `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
+        this.listViewType
+      )
+      const otherQueryParams = _.omit(
+        this.$router.currentRoute.query,
+        'listViewType'
+      )
+      const mergedQuery = _.merge(
+        { listViewType: this.listViewType },
+        otherQueryParams
+      )
+      this.$router.push({ query: mergedQuery })
     }
   },
-  mounted() {
-    this.loadMappingInfo()
-
-    this.currentFilter = filterManager.load(
-      this.index,
-      this.collection,
-      this.$route
-    )
-    filterManager.save(
-      this.currentFilter,
-      this.$router,
-      this.index,
-      this.collection
-    )
-    this.fetchDocuments()
-  },
   watch: {
-    $route: {
-      immediate: false,
-      handler(newValue, oldValue) {
+    collection: {
+      immediate: true,
+      handler() {
+        this.loadMappingInfo()
+        this.loadListView()
+        this.saveListView()
+
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
-          newValue
+          this.$route
         )
         filterManager.save(
           this.currentFilter,
@@ -563,15 +582,7 @@ export default {
           this.index,
           this.collection
         )
-      }
-    },
-    // currentFilter() {
-    //   this.fetchDocuments()
-    // },
-    collection: {
-      immediate: true,
-      handler() {
-        this.loadMappingInfo()
+        this.fetchDocuments()
       }
     }
   }

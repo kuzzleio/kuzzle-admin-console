@@ -7,7 +7,7 @@ kuzzlePort="7512"
 
 # Cypress can't be installed as a dev dependency since it
 # makes the Netlify build extremely slow.
-npm install cypress
+npm install --no-save cypress
 if [ -z $e2eLocal ]; then
   npm run dev &
 fi

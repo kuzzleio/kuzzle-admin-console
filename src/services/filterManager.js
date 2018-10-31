@@ -1,5 +1,24 @@
 import _ from 'lodash'
 
+export const NO_ACTIVE = null
+export const ACTIVE_QUICK = 'quick'
+export const ACTIVE_BASIC = 'basic'
+export const ACTIVE_RAW = 'raw'
+export const SORT_ASC = 'asc'
+export const SORT_DESC = 'desc'
+export const DEFAULT_QUICK = ''
+
+export function Filter() {
+  this.active = NO_ACTIVE
+  this.quick = DEFAULT_QUICK
+  this.basic = null
+  this.raw = null
+  this.sorting = null
+  this.from = 0
+}
+
+const LOCALSTORAGE_PREFIX = 'search-filter-current'
+
 export const load = (index, collection, route) => {
   if (!index || !collection) {
     throw new Error(
@@ -26,7 +45,9 @@ export const loadFromRoute = route => {
     throw new Error('No store specified')
   }
 
-  let filter = Object.assign({}, route.query)
+  const emptyFilter = new Filter()
+
+  let filter = _.pick(route.query, Object.keys(emptyFilter)) // Object.assign({}, route.query)
 
   if (filter.raw && typeof filter.raw === 'string') {
     filter.raw = JSON.parse(filter.raw)
@@ -48,7 +69,7 @@ export const loadFromLocalStorage = (index, collection) => {
     )
   }
   const filterStr = localStorage.getItem(
-    `search-filter-current:${index}/${collection}`
+    `${LOCALSTORAGE_PREFIX}:${index}/${collection}`
   )
   if (filterStr) {
     return JSON.parse(filterStr)
@@ -69,6 +90,7 @@ export const save = (filter, router, index, collection) => {
 }
 
 export const saveToRouter = (filter, router) => {
+  const emptyFilter = new Filter()
   const formattedFilter = Object.assign({}, filter)
   if (filter.basic) {
     formattedFilter.basic = JSON.stringify(filter.basic)
@@ -79,7 +101,14 @@ export const saveToRouter = (filter, router) => {
   if (filter.sorting) {
     formattedFilter.sorting = JSON.stringify(filter.sorting)
   }
-  router.push({ query: formattedFilter })
+
+  const otherQueryParams = _.omit(
+    router.currentRoute.query,
+    Object.keys(emptyFilter)
+  )
+  const mergedQuery = _.merge(formattedFilter, otherQueryParams)
+
+  router.push({ query: mergedQuery })
 }
 
 export const saveToLocalStorage = (filter, index, collection) => {
@@ -89,7 +118,7 @@ export const saveToLocalStorage = (filter, index, collection) => {
     )
   }
   localStorage.setItem(
-    `search-filter-current:${index}/${collection}`,
+    `${LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filter)
   )
 }
@@ -139,27 +168,6 @@ export const stripDefaultValuesFromFilter = filter => {
     strippedFilter[key] = filter[key]
   })
   return strippedFilter
-}
-
-export const NO_ACTIVE = null
-export const ACTIVE_QUICK = 'quick'
-export const ACTIVE_BASIC = 'basic'
-export const ACTIVE_RAW = 'raw'
-export const SORT_ASC = 'asc'
-export const SORT_DESC = 'desc'
-export const DEFAULT_QUICK = ''
-export const LIST_VIEW_LIST = 'list'
-export const LIST_VIEW_BOXES = 'boxes'
-export const LIST_VIEW_MAP = 'map'
-
-export function Filter() {
-  this.active = NO_ACTIVE
-  this.quick = DEFAULT_QUICK
-  this.basic = null
-  this.raw = null
-  this.sorting = null
-  this.from = 0
-  this.listViewType = LIST_VIEW_LIST
 }
 
 export const searchFilterOperands = {
