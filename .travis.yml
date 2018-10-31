@@ -80,13 +80,9 @@ jobs:
         - npm run build
 
       deploy:
-        provider: s3
-        access_key_id: $AWS_ACCESS_KEY_ID
-        secret_access_key: $AWS_SECRET_ACCESS_KEY
-        bucket: $AWS_S3_BUCKET_PROD
-        region: us-west-2
+        provider: script
+        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_PROD --delete
         skip_cleanup: true
-        local-dir: dist
 
       after_deploy:
         - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "/*"
@@ -113,13 +109,9 @@ jobs:
         - npm run build
 
       deploy:
-        provider: s3
-        access_key_id: $AWS_ACCESS_KEY_ID
-        secret_access_key: $AWS_SECRET_ACCESS_KEY
-        bucket: $AWS_S3_BUCKET_DEV
-        region: us-west-2
+        provider: script
+        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV --delete
         skip_cleanup: true
-        local-dir: dist
         on:
           all_branches: true
 
