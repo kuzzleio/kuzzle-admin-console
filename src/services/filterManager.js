@@ -134,7 +134,21 @@ export const toSearchQuery = filter => {
     case ACTIVE_BASIC:
       return filter.basic ? formatFromBasicSearch(filter.basic) : {}
     case ACTIVE_RAW:
-      return filter.raw || {}
+      return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
+    case NO_ACTIVE:
+    default:
+      return {}
+  }
+}
+
+export const toSort = filter => {
+  switch (filter.active) {
+    case ACTIVE_QUICK:
+      return ['_uid']
+    case ACTIVE_BASIC:
+      return filter.basic ? basicFilterToSort(filter.basic) : ['_uid']
+    case ACTIVE_RAW:
+      return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
     case NO_ACTIVE:
     default:
       return {}
@@ -245,6 +259,26 @@ export const formatFromQuickSearch = searchTerm => {
   }
 }
 
+export const rawFilterToSearchQuery = rawFilter => {
+  if (!rawFilter.query) {
+    throw new Error('The filter is malformed: "query" attribute not found')
+  }
+
+  return { query: rawFilter.query }
+}
+export const rawFilterToSort = rawFilter => {
+  return rawFilter.sort || ['_uid']
+}
+
+export const basicFilterToSort = basicFilter => {
+  if (!basicFilter.sorting.attribute) {
+    return ['_uid']
+  }
+  return [
+    { [basicFilter.sorting.attribute]: { order: basicFilter.sorting.order } }
+  ]
+}
+
 // TODO rename to basicFilterToSearchQuery
 export const formatFromBasicSearch = (groups = [[]]) => {
   let bool = {}
@@ -304,12 +338,4 @@ export const formatPagination = (currentPage, limit) => {
     from: limit * (currentPage - 1),
     size: limit
   }
-}
-
-export const formatSort = sorting => {
-  if (!sorting.attribute) {
-    return []
-  }
-
-  return [{ [sorting.attribute]: { order: sorting.order } }]
 }

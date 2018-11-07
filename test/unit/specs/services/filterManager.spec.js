@@ -381,14 +381,14 @@ describe('filterManager tests', () => {
     })
   })
 
-  describe('formatSort tests', () => {
+  describe('toSort tests', () => {
     it('should return an empty array if no attribute is in sorting', () => {
-      expect(filterManager.formatSort({})).to.deep.equals([])
+      expect(filterManager.toSort({})).to.deep.equals([])
     })
 
     it('should return a formated object', () => {
       expect(
-        filterManager.formatSort({ attribute: 'foo', order: 'bar' })
+        filterManager.toSort({ attribute: 'foo', order: 'bar' })
       ).to.deep.equals([{ foo: { order: 'bar' } }])
     })
   })
