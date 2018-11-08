@@ -295,7 +295,7 @@ describe('Search', function() {
     })
   })
 
-  it.only('sorts the results when sorting is specfied in the raw filter', function() {
+  it('sorts the results when sorting is specfied in the raw filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
