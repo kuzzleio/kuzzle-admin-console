@@ -331,13 +331,14 @@ describe('Search', function() {
 "bool": {
 "must": {
 "match_phrase_prefix": {
-"job": "Blockchain"
-,
+"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
 "sort": {
 "lastName": "desc"
 }`,
       { force: true }
     )
+
+    cy.get('.RawFilter-submitBtn').click()
 
     cy.get('.DocumentListItem').should(function($el) {
       expect($el.first()).to.contain('Maret')
