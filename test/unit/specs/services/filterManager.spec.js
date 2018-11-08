@@ -382,14 +382,26 @@ describe('filterManager tests', () => {
   })
 
   describe('toSort tests', () => {
-    it('should return an empty array if no attribute is in sorting', () => {
-      expect(filterManager.toSort({})).to.deep.equals([])
+    it('should sort by `_uid` if no attribute is in sorting', () => {
+      expect(filterManager.toSort({})).to.deep.equals(['_uid'])
     })
 
-    it('should return a formated object', () => {
+    it('should return a formatted object when provided a basic filter', () => {
       expect(
-        filterManager.toSort({ attribute: 'foo', order: 'bar' })
+        filterManager.toSort({
+          active: 'basic',
+          sorting: { attribute: 'foo', order: 'bar' }
+        })
       ).to.deep.equals([{ foo: { order: 'bar' } }])
+    })
+
+    it('should return a formatted object when provided a raw filter', () => {
+      expect(
+        filterManager.toSort({
+          active: 'raw',
+          raw: { query: { bool: {} }, sort: { foo: 'bar' } }
+        })
+      ).to.deep.equals({ foo: 'bar' })
     })
   })
 })

@@ -141,20 +141,6 @@ export const toSearchQuery = filter => {
   }
 }
 
-export const toSort = filter => {
-  switch (filter.active) {
-    case ACTIVE_QUICK:
-      return ['_uid']
-    case ACTIVE_BASIC:
-      return filter.basic ? basicFilterToSort(filter.basic) : ['_uid']
-    case ACTIVE_RAW:
-      return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
-    case NO_ACTIVE:
-    default:
-      return {}
-  }
-}
-
 export const toRealtimeQuery = filter => {
   if (!filter) {
     throw new Error('No filter specified')
@@ -266,17 +252,30 @@ export const rawFilterToSearchQuery = rawFilter => {
 
   return { query: rawFilter.query }
 }
+
+export const toSort = filter => {
+  switch (filter.active) {
+    case ACTIVE_QUICK:
+      return ['_uid']
+    case ACTIVE_BASIC:
+      return filter.sorting ? formatSort(filter.sorting) : ['_uid']
+    case ACTIVE_RAW:
+      return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
+    case NO_ACTIVE:
+    default:
+      return ['_uid']
+  }
+}
+
 export const rawFilterToSort = rawFilter => {
   return rawFilter.sort || ['_uid']
 }
 
-export const basicFilterToSort = basicFilter => {
-  if (!basicFilter.sorting.attribute) {
+export const formatSort = sorting => {
+  if (!sorting.attribute) {
     return ['_uid']
   }
-  return [
-    { [basicFilter.sorting.attribute]: { order: basicFilter.sorting.order } }
-  ]
+  return [{ [sorting.attribute]: { order: sorting.order } }]
 }
 
 // TODO rename to basicFilterToSearchQuery

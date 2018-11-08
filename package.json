@@ -16,7 +16,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/**/*.js",
     "install_deps": "npm i --unsafe-perm",
     "prepublishOnly": "npm run build",
-    "start": "http-server dist",
+    "start": "http-server dist -p 3000",
     "tar_dist": "bash .ci/release_package.sh"
   },
   "keywords": [
