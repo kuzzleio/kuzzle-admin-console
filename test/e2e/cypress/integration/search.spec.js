@@ -135,7 +135,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 1)
   })
 
-  it.only('remembers the Basic Search query across collections', function() {
+  it('remembers the Basic Search query across collections', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
