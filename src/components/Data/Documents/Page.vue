@@ -435,7 +435,6 @@ export default {
 
       let searchQuery = null
       searchQuery = filterManager.toSearchQuery(this.currentFilter)
-      console.log(searchQuery)
       if (!searchQuery) {
         searchQuery = {}
       }
