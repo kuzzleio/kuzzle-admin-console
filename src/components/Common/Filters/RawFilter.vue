@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form class="RawFilter">
     <json-editor
       id="rawsearch"
       ref="jsoneditor"
@@ -11,7 +11,7 @@
       <button
         v-if="actionButtonsVisible"
         type="submit"
-        class="btn primary waves-effect waves-light"
+        class="RawFilter-submitBtn btn primary waves-effect waves-light"
         @click.prevent="submitSearch">
         {{submitButtonLabel}}
       </button>

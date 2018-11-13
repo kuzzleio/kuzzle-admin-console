@@ -439,11 +439,8 @@ export default {
         searchQuery = {}
       }
 
-      let sorting = ['_uid'] // by default, sort on uid: prevent random order
-      if (this.currentFilter.sorting) {
-        sorting = filterManager.formatSort(this.currentFilter.sorting)
-      }
-
+      const sorting = filterManager.toSort(this.currentFilter)
+      console.log(sorting)
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       this.performSearchDocuments(

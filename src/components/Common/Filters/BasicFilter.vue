@@ -50,9 +50,9 @@
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
+              <input placeholder="Attribute" type="text" class="BasicFilter-sortingAttr validate" v-model="filters.sorting.attribute">
             </div>
-            <div class="col s2">
+            <div class="BasicFilter-sortingValue col s2">
               <m-select v-model="filters.sorting.order">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>

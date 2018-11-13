@@ -7,7 +7,37 @@ describe('Search', function() {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
-    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
+      properties: {
+        firstName: {
+          type: 'text',
+          fields: {
+            keyword: {
+              type: 'keyword',
+              ignore_above: 256
+            }
+          }
+        },
+        job: {
+          type: 'text',
+          fields: {
+            keyword: {
+              type: 'keyword',
+              ignore_above: 256
+            }
+          }
+        },
+        lastName: {
+          type: 'keyword',
+          fields: {
+            keyword: {
+              type: 'keyword',
+              ignore_above: 256
+            }
+          }
+        }
+      }
+    })
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
@@ -105,7 +135,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 1)
   })
 
-  it.only('remembers the Basic Search query across collections', function() {
+  it('remembers the Basic Search query across collections', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -179,7 +209,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 2)
   })
 
-  it('when the RESET button is hit, the search query is reset but not the list view type', function() {
+  it('resets the search query but not the list view type, when the RESET button is hit', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -223,5 +253,96 @@ describe('Search', function() {
       .children()
       .should('have.class', 'DocumentBoxItem')
     cy.get('.DocumentBoxItem').should('have.length', 2)
+  })
+
+  it('sorts the results when sorting is selected in the basic filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Nicolas',
+      lastName: 'Juelle',
+      job: 'CSS Level: Expert !important'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Alexandre',
+      lastName: 'Bouthinon',
+      job: 'From scratch All the Things!'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+
+    cy.get('.BasicFilter-sortingAttr').type('lastName')
+    cy.get('.BasicFilter-sortingValue')
+      .click()
+      .contains('desc')
+      .click()
+
+    cy.get('.BasicFilter-submitBtn').click()
+
+    cy.get('.DocumentListItem').should(function($el) {
+      expect($el.first()).to.contain('Maret')
+      expect($el.last()).to.contain('Marchesini')
+    })
+  })
+
+  it('sorts the results when sorting is specfied in the raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Nicolas',
+      lastName: 'Juelle',
+      job: 'CSS Level: Expert !important'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Alexandre',
+      lastName: 'Bouthinon',
+      job: 'From scratch All the Things!'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.tab.col')
+      .contains('JSON')
+      .click()
+
+    cy.get('#rawsearch .ace_line')
+      .contains('}')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input').type(
+      `
+"query": { 
+"bool": {
+"must": {
+"match_phrase_prefix": {
+"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+"sort": {
+"lastName": "desc"
+}`,
+      { force: true }
+    )
+
+    cy.get('.RawFilter-submitBtn').click()
+
+    cy.get('.DocumentListItem').should(function($el) {
+      expect($el.first()).to.contain('Maret')
+      expect($el.last()).to.contain('Marchesini')
+    })
   })
 })
