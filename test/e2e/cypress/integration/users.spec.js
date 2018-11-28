@@ -27,7 +27,7 @@ describe('Users', function() {
     )
   })
 
-  it.only('deletes a user successfully via the dropdown menu', function() {
+  it('deletes a user successfully via the dropdown menu', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
       content: {
