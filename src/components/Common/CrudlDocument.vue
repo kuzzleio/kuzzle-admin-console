@@ -19,7 +19,8 @@
             <br>Please try with another filter.
           </p>
           <p>
-            <em>Learn more about filtering syntax on
+            <em>
+              Learn more about filtering syntax on
               <a
                 href="http://docs.kuzzle.io/elasticsearch-cookbook/"
                 target="_blank"
@@ -29,7 +30,7 @@
         </div>
       </div>
 
-      <div class="row actions" v-if="documents.length">
+      <div class="BulkActions row actions" v-if="documents.length">
         <div class="col s8">
           <button class="btn btn-small waves-effect waves-light tertiary" @click="dispatchToggle">
             <i class="fa left" :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"></i>
@@ -94,13 +95,19 @@
       </span>
     </modal>
 
-    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
+    <modal
+      class="SingleDeleteModal"
+      id="single-delete"
+      :is-open="singleDeleteIsOpen"
+      :close="close"
+      :loading="isLoading"
+    >
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
         <button
-          class="waves-effect waves-green btn red-color"
+          class="SingleDeleteModal-confirmBtn waves-effect waves-green btn red-color"
           @click="confirmSingleDelete(documentIdToDelete)"
         >I'm sure!</button>
         <button class="btn-flat" @click.prevent="close">Cancel</button>
