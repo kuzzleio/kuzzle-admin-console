@@ -58,6 +58,8 @@ describe('Users', function() {
 
     cy.contains(`Do you really want to delete ${kuid}`)
     cy.contains('sure!').click()
+
+    cy.wait(2000)
     cy.should('not.contain', kuid)
   })
 
@@ -85,8 +87,11 @@ describe('Users', function() {
     cy.get('.BulkActions')
       .contains('Delete')
       .click()
+
     cy.contains(`Do you really want to delete 1 documents`)
     cy.contains('sure!').click()
+
+    cy.wait(2000)
     cy.should('not.contain', kuid)
   })
 
