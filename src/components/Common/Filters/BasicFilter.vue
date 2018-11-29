@@ -103,9 +103,7 @@
           class="BasicFilter-translateBtn btn waves-effect waves-light success right"
           v-bind:disabled="!isFilterValid"
           @click.prevent="translateToRaw"
-        >
-          <i class="fa fa-angle-double-right"></i> Translate to RAW
-        </button>
+        >Translate to RAW</button>
       </div>
     </div>
   </form>
