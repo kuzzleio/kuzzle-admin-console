@@ -1,44 +1,59 @@
 <template>
   <div class="UserItem" :class="{ 'collapsed': collapsed }">
-    <i class="UserItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
-
+    <i
+      class="UserItem-toggle fa fa-caret-down item-toggle"
+      aria-hidden="true"
+      @click="toggleCollapse()"
+    ></i>
+    
     <input
       type="checkbox"
       class="filled-in"
       :id="checkboxId"
       :value="document.id"
-      @click="notifyCheckboxClick" :checked="isChecked"/>
-
+      @click="notifyCheckboxClick"
+      :checked="isChecked"
+    >
+    
     <label :for="checkboxId"></label>
     <!-- The following anchor will go to the user details page -->
     <label class="UserItem-title item-title">
       <a @click="toggleCollapse">{{document.id}}</a>
       <div class="UserItem-profileList">
         <div class="profileChip chip" v-for="profile in profileList" :key="profile">
-          <router-link :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}" class="truncate" >{{profile}}</router-link>
+          <router-link
+            :to="{name: 'SecurityProfilesUpdate', params: { id: profile }}"
+            class="truncate"
+          >{{profile}}</router-link>
         </div>
         <div class="chip show-all-profiles" v-if="showAllProfiles">
-          <router-link :to="{ name: 'SecurityProfilesList', params: { userId: document.id }}">Show all...</router-link>
+          <router-link
+            :to="{ name: 'SecurityProfilesList', params: { userId: document.id }}"
+          >Show all...</router-link>
         </div>
       </div>
     </label>
-
-    <label v-if="document.additionalAttribute && document.additionalAttribute.value" class="UserItem-additionalAttribute">
-      ({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})
-    </label>
+    
+    <label
+      v-if="document.additionalAttribute && document.additionalAttribute.value"
+      class="UserItem-additionalAttribute"
+    >({{document.additionalAttribute.name}}: {{document.additionalAttribute.value}})</label>
 
     <div class="UserItem-actions right">
       <a
-        href="#" @click.prevent="update"
+        href="#"
+        @click.prevent="update"
         :title="canEditUser ? 'Edit User' : 'You are not allowed to edit this user'"
-        >
+      >
         <i class="fa fa-pencil-alt" :class="{'disabled': !canEditUser()}"></i>
       </a>
-      <dropdown :id="document.id" myclass="icon-black">
-        <li><a @click="deleteDocument(document.id)"
-               :class="{'disabled': !canDeleteUser()}"
-               v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}">
-          Delete</a>
+      <dropdown :id="document.id" myclass="UserItem-dropdown icon-black">
+        <li>
+          <a
+            @click="deleteDocument(document.id)"
+            :class="{'disabled': !canDeleteUser()}"
+            v-title="{active: !canDeleteUser(), title: 'You are not allowed to delete this user'}"
+          >Delete</a>
         </li>
       </dropdown>
     </div>
