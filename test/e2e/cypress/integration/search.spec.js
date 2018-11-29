@@ -346,7 +346,7 @@ describe('Search', function() {
     })
   })
 
-  it.only('translates a search query from basic filter to raw filter', function() {
+  it('translates a search query from basic filter to raw filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
