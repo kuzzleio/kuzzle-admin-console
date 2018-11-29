@@ -30,7 +30,10 @@ describe('Collection management', function() {
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.visit(`/#/data/${indexName}/create`)
 
-    cy.get('.Mapping-name').click()
+    cy.get('.Mapping-name')
+      .contains('Collection name')
+      .click()
+    cy.wait(500)
     cy.get('#collection-name').type(collectionName, { force: true })
     cy.get('.Mapping-realtimeOnly label').click()
     cy.get('.Mapping-submitBtn').click()

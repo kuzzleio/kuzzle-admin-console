@@ -60,7 +60,7 @@ describe('Users', function() {
     cy.contains('sure!').click()
 
     cy.wait(2000)
-    cy.should('not.contain', kuid)
+    cy.get('.CommonList').should('not.contain', kuid)
   })
 
   it('deletes a user successfully via the checkbox and bulk delete button', function() {
@@ -92,7 +92,7 @@ describe('Users', function() {
     cy.contains('sure!').click()
 
     cy.wait(2000)
-    cy.should('not.contain', kuid)
+    cy.get('.CommonList').should('not.contain', kuid)
   })
 
   it('updates the user mapping successfully', function() {
