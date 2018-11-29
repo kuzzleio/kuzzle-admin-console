@@ -425,7 +425,6 @@ export default {
       }
 
       const sorting = filterManager.toSort(this.currentFilter)
-      console.log(sorting)
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       this.performSearchDocuments(
