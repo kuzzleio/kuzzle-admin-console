@@ -2,12 +2,21 @@
   <form class="BasicFilter" @submit.prevent="submitSearch">
     <div class="row">
       <div class="col s12">
-
         <div class="BasicFilter-query row">
-          <p><i class="fa fa-search"></i>Query</p>
+          <p>
+            <i class="fa fa-search"></i>Query
+          </p>
 
-          <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
-            <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
+          <div
+            v-for="(orBlock, groupIndex) in filters.basic"
+            v-bind:key="`orBlock-${groupIndex}`"
+            class="BasicFilter-orBlock row"
+          >
+            <div
+              v-for="(andBlock, filterIndex) in orBlock"
+              v-bind:key="`andBlock-${filterIndex}`"
+              class="BasicFilter-andBlock row dots"
+            >
               <div class="col s4">
                 <autocomplete
                   input-class="validate"
@@ -19,19 +28,26 @@
               </div>
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
-                  <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
+                  <option
+                    v-for="(label, identifiers) in availableOperands"
+                    :value="identifiers"
+                    v-bind:key="label"
+                  >{{label}}</option>
                 </m-select>
               </div>
               <div class="col s3">
                 <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
               </div>
               <div class="col s2">
-                <i class="BasicFilter-removeBtn fa fa-times"
-                   @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
+                <i
+                  class="BasicFilter-removeBtn fa fa-times"
+                  @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                ></i>
                 <a
                   v-if="filterIndex === orBlock.length - 1"
                   class="BasicFilter-andBtn inline btn btn-small waves-effect waves-light"
-                  @click="addAndBasicFilter(groupIndex)">
+                  @click="addAndBasicFilter(groupIndex)"
+                >
                   <i class="fa fa-plus left"></i>And
                 </a>
               </div>
@@ -47,10 +63,17 @@
         </div>
 
         <div class="BasicFilter-sortBlock row" v-if="sortingEnabled">
-          <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
-          <div class="row block-content" >
+          <p>
+            <i class="fa fa-sort-amount-asc"></i>Sorting
+          </p>
+          <div class="row block-content">
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="BasicFilter-sortingAttr validate" v-model="filters.sorting.attribute">
+              <input
+                placeholder="Attribute"
+                type="text"
+                class="BasicFilter-sortingAttr validate"
+                v-model="filters.sorting.attribute"
+              >
             </div>
             <div class="BasicFilter-sortingValue col s2">
               <m-select v-model="filters.sorting.order">
@@ -60,12 +83,30 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
     <div v-if="actionButtonsVisible" class="row card-action">
-      <button type="submit" class="BasicFilter-submitBtn btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
-      <button class="BasicFilter-resetBtn btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
+      <div class="col s7">
+        <button
+          type="submit"
+          class="BasicFilter-submitBtn btn waves-effect waves-light primary"
+          @click.prevent="submitSearch"
+        >{{submitButtonLabel}}</button>
+        <button
+          class="BasicFilter-resetBtn btn-flat waves-effect waves-light"
+          @click="resetSearch"
+        >Reset</button>
+      </div>
+      <div class="col s5">
+        <button
+          type="submit"
+          class="BasicFilter-translateBtn btn waves-effect waves-light success right"
+          v-bind:disabled="!isFilterValid"
+          @click.prevent="translateToRaw"
+        >
+          <i class="fa fa-angle-double-right"></i> Translate to RAW
+        </button>
+      </div>
     </div>
   </form>
 </template>
@@ -73,6 +114,10 @@
 <script>
 import MSelect from '../../Common/MSelect'
 import Autocomplete from '../Autocomplete'
+import {
+  formatFromBasicSearch,
+  formatSort
+} from '../../../services/filterManager'
 
 const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
@@ -228,6 +273,11 @@ export default {
       }
 
       return attributes
+    },
+    translateToRaw() {
+      const rawFilter = formatFromBasicSearch(this.filters.basic)
+      rawFilter.sort = formatSort(this.filters.sorting)
+      this.$emit('translated-to-raw', rawFilter)
     }
   },
   watch: {

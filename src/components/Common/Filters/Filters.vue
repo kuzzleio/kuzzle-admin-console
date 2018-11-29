@@ -1,6 +1,5 @@
 <template>
   <div class="Filters">
-
     <quick-filter
       :advanced-query-label="advancedQueryLabel"
       :submit-button-label="submitButtonLabel"
@@ -12,15 +11,23 @@
       @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
       @update-filter="onQuickFilterUpdated"
       @refresh="onRefresh"
-      @reset="onReset">
-    </quick-filter>
-
+      @reset="onReset"
+    ></quick-filter>
 
     <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
       <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
-      <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
-        <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
-        <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
+      <tabs
+        @tab-changed="switchComplexFilterTab"
+        :active="complexFiltersSelectedTab"
+        :is-displayed="advancedFiltersVisible"
+        :object-tab-active="objectTabActive"
+      >
+        <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic">
+          <a href>Basic Mode</a>
+        </tab>
+        <tab @tabs-on-select="setObjectTabActive" name="raw">
+          <a href>Raw JSON Mode</a>
+        </tab>
 
         <div slot="contents" class="card">
           <div class="col s12">
@@ -34,8 +41,9 @@
                 :sorting="sorting"
                 :collection-mapping="collectionMapping"
                 @update-filter="onBasicFilterUpdated"
-                @reset="onReset">
-              </basic-filter>
+                @reset="onReset"
+                @translated-to-raw="onTranslatedToRaw"
+              ></basic-filter>
             </div>
 
             <div v-show="complexFiltersSelectedTab === 'raw'">
@@ -46,8 +54,8 @@
                 :action-buttons-visible="actionButtonsVisible"
                 :submit-button-label="submitButtonLabel"
                 @update-filter="onRawFilterUpdated"
-                @reset="onReset">
-              </raw-filter>
+                @reset="onReset"
+              ></raw-filter>
             </div>
           </div>
         </div>
@@ -243,6 +251,10 @@ export default {
     },
     onFiltersUpdated(newFilters) {
       this.$emit('filters-updated', newFilters)
+    },
+    onTranslatedToRaw(rawFilter) {
+      this.switchComplexFilterTab('raw')
+      this.$emit('set-raw-filter', rawFilter)
     }
   },
   mounted() {
