@@ -27,7 +27,7 @@ describe('Users', function() {
     )
   })
 
-  it('deletes a user successfully', function() {
+  it('deletes a user successfully via the dropdown menu', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
       content: {
@@ -42,7 +42,57 @@ describe('Users', function() {
       }
     })
 
-    // TODO here
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit('/#/security/users')
+
+    cy.get('.UserItem')
+      .contains(kuid)
+      .parent()
+      .siblings('.UserItem-actions')
+      .children('.UserItem-dropdown')
+      .click()
+      .contains('Delete')
+      .click()
+
+    cy.contains(`Do you really want to delete ${kuid}`)
+    cy.contains('sure!').click()
+
+    cy.wait(2000)
+    cy.get('.CommonList').should('not.contain', kuid)
+  })
+
+  it('deletes a user successfully via the checkbox and bulk delete button', function() {
+    const kuid = 'dummy'
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
+      content: {
+        profileIds: ['default'],
+        name: 'Dummy User'
+      },
+      credentials: {
+        local: {
+          username: 'dummy',
+          password: 'test'
+        }
+      }
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit('/#/security/users')
+
+    cy.get('[for="checkbox-dummy"]').click()
+    cy.get('.BulkActions')
+      .contains('Delete')
+      .click()
+
+    cy.contains(`Do you really want to delete 1 documents`)
+    cy.contains('sure!').click()
+
+    cy.wait(2000)
+    cy.get('.CommonList').should('not.contain', kuid)
   })
 
   it('updates the user mapping successfully', function() {
