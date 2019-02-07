@@ -27,7 +27,7 @@ export const canSearchIndex = () => {
     (rights.controller === 'index' || rights.controller === '*')
   )
 
-  return indexListRight[0].value === 'allowed'
+  return indexListRight[0] && indexListRight[0].value === 'allowed'
 }
 export const canCreateIndex = () => {
   return isActionAllowed(store.state.user, 'index', 'create')
