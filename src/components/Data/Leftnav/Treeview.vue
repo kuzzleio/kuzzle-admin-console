@@ -10,7 +10,7 @@
         </ul>
       </li>
     </ul>
-    <ul v-if="canSearchIndex()" class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
+    <ul v-else class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
       <li>
         <nav>
           <div class="nav-wrapper">
