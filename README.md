@@ -18,8 +18,9 @@ You can get the latest version of the Kuzzle Admin Console [here](http://console
 
 To get a working copy of the Kuzzle Admin Console on your computer, follow these instructions:
 
-- `wget https://dl.kuzzle.io/kuzzle-admin-console.tar.gz` : Download and extract the latest version of the Kuzzle Admin Console
-- `tar xf kuzzle-admin-console.tar.gz` : Extract it
+- `git clone https://github.com/kuzzleio/kuzzle-admin-console` : Clone this repository
+- `npm install` : Install dependencies
+- `npm run build` : Build the Admin Console
 - Open the file `dist/index.html` in your favorite web browser, you're done!
 
 # Tests
