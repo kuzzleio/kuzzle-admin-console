@@ -16,12 +16,15 @@ The Kuzzle Admin Console is a static front-end client which runs in your web bro
 
 You can get the latest version of the Kuzzle Admin Console [here](http://console.kuzzle.io) (or if you're using Kuzzle through SSL, you can use the [https](https://console.kuzzle.io) version)
 
-To get a working copy of the Kuzzle Admin Console on your computer, follow these instructions:
+To get a working copy of the Admin Console on your computer, you can download it here: https://dl.kuzzle.io/admin-console/kuzzle-admin-console.tar.gz
+
+To build the Kuzzle Admin Console on your computer, follow these instructions:
 
 - `git clone https://github.com/kuzzleio/kuzzle-admin-console` : Clone this repository
 - `npm install` : Install dependencies
 - `npm run build` : Build the Admin Console
 - Open the file `dist/index.html` in your favorite web browser, you're done!
+
 
 # Tests
 
