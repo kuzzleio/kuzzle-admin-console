@@ -72,7 +72,7 @@ export default {
             collection: this.$route.params.collection
           })
         })
-        .catch(() => null)
+        .catch(error => console.error(error))
     }
   },
   watch: {

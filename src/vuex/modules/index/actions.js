@@ -64,7 +64,11 @@ export default {
             .then(res => {
               commit(types.RECEIVE_INDEXES_COLLECTIONS, res || {})
             })
-            .catch(() => null) // Silent on purpose when listCollection is forbidden
+            .catch(error => {
+              if (error.message.indexOf('Forbidden') === -1) {
+                reject(error)
+              }
+            })
 
           promises.push(promise)
           /* eslint-enable */
