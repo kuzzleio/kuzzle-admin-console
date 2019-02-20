@@ -61,16 +61,20 @@ export default {
               resolveOne(indexesAndCollections)
             })
           })
+            .then(res => {
+              commit(types.RECEIVE_INDEXES_COLLECTIONS, res || {})
+            })
+            .catch(error => {
+              if (error.message.indexOf('Forbidden') === -1) {
+                reject(error)
+              }
+            })
+
           promises.push(promise)
           /* eslint-enable */
         })
 
-        Promise.all(promises)
-          .then(res => {
-            commit(types.RECEIVE_INDEXES_COLLECTIONS, res[0] || [])
-            resolve()
-          })
-          .catch(error => reject(error))
+        Promise.all(promises).then(() => resolve())
       })
     })
   },
