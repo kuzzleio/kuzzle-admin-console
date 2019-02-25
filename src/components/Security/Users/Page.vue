@@ -29,7 +29,7 @@
           </div>
           <div class="col s10">
             <p>
-              In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/essentials/user-authentication">users</a>
+              In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/1/essentials/user-authentication/">users</a>
               defined in your Kuzzle server.<br/>
               <em>Currently, no user is defined. You can create one by pushing the "Create" button above.</em>
             </p>

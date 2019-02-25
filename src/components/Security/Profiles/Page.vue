@@ -22,7 +22,7 @@
           </div>
           <div class="col s10">
             <p>
-              In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/essentials/security">Security Profiles</a>
+              In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-profiles">Security Profiles</a>
               defined in your Kuzzle server.<br/>
               <em>Currently, no Profile is defined. You can create one by pushing the "Create" button above.</em>
             </p>
