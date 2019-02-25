@@ -1,13 +1,5 @@
 #!/bin/bash
 
-echo
-echo "####################################################"
-echo "### KUZZLE END-TO-END TESTS TEMPORARILY DISABLED ###"
-echo "####################################################"
-echo
-
-exit 0
-
 adminConsoleHost="localhost"
 kuzzleHost="localhost"
 adminConsolePort="3000"
