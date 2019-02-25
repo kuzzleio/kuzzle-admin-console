@@ -21,7 +21,7 @@
             Please try with another filter.
           </p>
           <p>
-            <em>Learn more about filtering syntax on <a href="http://docs.kuzzle.io/elasticsearch-cookbook/" target="_blank">Kuzzle Elasticsearch Cookbook</a></em>
+            <em>Learn more about filtering syntax on <a href="https://docs.kuzzle.io/guide/1/elasticsearch/" target="_blank">Kuzzle Elasticsearch Cookbook</a></em>
           </p>
         </div>
       </div>
