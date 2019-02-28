@@ -7,15 +7,14 @@
 
         </div>
 
-        <div class="row input-id" v-if="!hideId">
+        <div class="row input-id">
           <div class="col s6">
-            <div class="input-field">
+            <div class="input-field" v-if="!hideId">
               <input id="id" type="text" name="collection" @input="updateId" v-focus :required="mandatoryId" />
               <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
             </div>
           </div>
           <div class="col s6">
-
             <div
               class="switch right"
               v-if="$store.state.collection.allowForm"
