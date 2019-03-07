@@ -2,7 +2,7 @@
   <div class="Autocomplete">
     <input
       type="text"
-      v-model="search"
+      v-model="inputValue"
       :class="inputClass"
       :placeholder="placeholder"
       @input="onInput"
@@ -51,11 +51,16 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    value: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   data() {
     return {
-      search: '',
+      inputValue: '',
       results: [],
       isOpen: false,
       selectionCursor: -1
@@ -70,12 +75,12 @@ export default {
     },
     filterResults() {
       this.results = this.items.filter(
-        item => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+        item => item.toLowerCase().indexOf(this.inputValue.toLowerCase()) > -1
       )
     },
     setResult(result) {
       this.isOpen = false
-      this.search = result
+      this.inputValue = result
       this.$emit('autocomplete::change', result)
     },
     changeResult(result) {
@@ -99,6 +104,14 @@ export default {
       if (!this.$el.contains(evt.target)) {
         this.isOpen = false
         this.selectionCursor = -1
+      }
+    }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(newValue) {
+        this.inputValue = newValue
       }
     }
   },

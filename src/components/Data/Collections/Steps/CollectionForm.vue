@@ -141,6 +141,11 @@ export default {
     },
     flattenSchemaWithType() {
       this.schema = { ...this.flattenSchemaWithType }
+    },
+    flattenMapping(newMapping) {
+      if (Object.keys(newMapping).length === 0) {
+        this.$store.commit(SET_ALLOW_FORM, false)
+      }
     }
   }
 }

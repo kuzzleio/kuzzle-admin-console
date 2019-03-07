@@ -1,5 +1,5 @@
 <template>
-  <span :cmylass="myclass">
+  <span :class="myclass">
     <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
 
     <ul :id="parsedId" class='dropdown-content'>
@@ -63,7 +63,7 @@ export default {
       /* eslint no-undef: 0 */
       $(this.$el)
         .find('.dropdown-button')
-        .dropdown({ constrain_width: false, belowOrigin: true })
+        .dropdown({ constrainWidth: false, belowOrigin: true })
     })
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-admin-console",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "A handy administrative console for Kuzzle",
   "author": "The Kuzzle team <support@kuzzle.io>",
   "private": false,
@@ -16,8 +16,8 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/**/*.js",
     "install_deps": "npm i --unsafe-perm",
     "prepublishOnly": "npm run build",
-    "start": "http-server dist",
-    "tar_dist": "tar cfz kuzzle-admin-console.tar.gz dist && chmod +r kuzzle-admin-console.tar.gz"
+    "start": "http-server dist -p 3000",
+    "tar_dist": "bash .ci/release_package.sh"
   },
   "keywords": [
     "kuzzle",
@@ -32,6 +32,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
+    "chromium": "^1.0.2",
     "commander": "^2.15.1",
     "finalhandler": "^1.1.1",
     "http-server": "^0.11.1",

@@ -112,7 +112,6 @@ import Filters from './Filters'
 import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
 import {
   formatFromBasicSearch,
-  formatSort,
   ACTIVE_BASIC,
   NO_ACTIVE
 } from '../../../services/filterManager'
@@ -148,7 +147,6 @@ export default {
   data() {
     return {
       formatFromBasicSearch,
-      formatSort,
       documentIdToDelete: '',
       singleDeleteIsOpen: false,
       bulkDeleteIsOpen: false,

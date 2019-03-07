@@ -167,7 +167,7 @@ export default {
 
       let sorting = ['_uid'] // by default, sort on uid: prevent random order
       if (this.currentFilter.sorting) {
-        sorting = filterManager.formatSort(this.currentFilter.sorting)
+        sorting = filterManager.toSort(this.currentFilter)
       }
 
       // TODO: refactor how search is done

@@ -1,5 +1,5 @@
 <template>
-  <form class="wrapper" @submit.prevent="submit">
+  <form class="UserCustomMappingEditor wrapper" @submit.prevent="submit">
     <div class="row">
       <div class="col s8">
         <div class="row">
@@ -37,7 +37,7 @@
     <div class="row">
       <div class="col s12">
         <a tabindex="6" class="btn-flat waves-effect" @click.prevent="$emit('cancel')">Cancel</a>
-        <button type="submit" class="btn primary waves-effect waves-light">Save</button>
+        <button type="submit" class="UserCustomMappingEditor-submit btn primary waves-effect waves-light">Save</button>
       </div>
     </div>
   </form>

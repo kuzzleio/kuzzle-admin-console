@@ -22,7 +22,12 @@ function isActionAllowed(
 // Index CRUDL
 
 export const canSearchIndex = () => {
-  return isActionAllowed(store.state.user, 'index', 'list')
+  const indexListRight = store.state.user.rights.filter(rights =>
+    (rights.action === 'list' || rights.action === '*') &&
+    (rights.controller === 'index' || rights.controller === '*')
+  )
+
+  return indexListRight[0] && indexListRight[0].value === 'allowed'
 }
 export const canCreateIndex = () => {
   return isActionAllowed(store.state.user, 'index', 'create')

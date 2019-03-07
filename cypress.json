@@ -7,5 +7,7 @@
   "screenshotsFolder": "test/e2e/falied-tests/",
   "videosFolder": "test/e2e/videos",
   "videoUploadOnPasses": false,
-  "projectId": "qnb41a"
+  "projectId": "qnb41a",
+  "viewportHeight": 800,
+  "viewportWidth": 1400
 }

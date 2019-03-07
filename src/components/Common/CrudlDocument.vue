@@ -7,8 +7,7 @@
         :collection-mapping="collectionMapping"
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
-        >
-      </filters>
+      ></filters>
     </div>
     <div class="card-panel card-body">
       <div class="row valign-center empty-set" v-show="!documents.length">
@@ -16,41 +15,46 @@
           <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
         </div>
         <div class="col s12">
-          <p>
-            There is no result matching your query<br />
-            Please try with another filter.
+          <p>There is no result matching your query
+            <br>Please try with another filter.
           </p>
           <p>
-            <em>Learn more about filtering syntax on <a href="https://docs.kuzzle.io/guide/1/elasticsearch/" target="_blank">Kuzzle Elasticsearch Cookbook</a></em>
+            <em>
+              Learn more about filtering syntax on
+              <a
+                href="https://docs.kuzzle.io/guide/1/elasticsearch/"
+                target="_blank"
+              >Kuzzle Elasticsearch Cookbook</a>
+            </em>
           </p>
         </div>
       </div>
 
-      <div class="row actions" v-if="documents.length">
+      <div class="BulkActions row actions" v-if="documents.length">
         <div class="col s8">
-          <button
-            class="btn btn-small waves-effect waves-light tertiary"
-            @click="dispatchToggle">
-            <i class="fa left"
-              :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-            ></i>
+          <button class="btn btn-small waves-effect waves-light tertiary" @click="dispatchToggle">
+            <i class="fa left" :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"></i>
             Toggle all
           </button>
-
-          <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
+          
+          <button
+            class="btn btn-small waves-effect waves-light margin-right-5 primary"
             @click.prevent="onCreateClicked"
             :class="!displayCreate ? 'disabled' : ''"
             :disabled="!displayCreate"
-            :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'">
+            :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
+          >
             <i class="fa fa-plus-circle left"></i>
             Create
           </button>
-
-          <button class="btn btn-small waves-effect waves-light"
+          
+          <button
+            class="btn btn-small waves-effect waves-light"
             :class="displayBulkDelete ? 'red-color' : 'disabled'"
             :disabled="!displayBulkDelete"
             @click="deleteBulk"
-            :title="displayBulkDelete ? '' : 'You need to select at least one element'">
+            :title="displayBulkDelete ? '' : 'You need to select at least one element'"
+          >
             <i class="fa fa-minus-circle left"></i>
             Delete
           </button>
@@ -64,17 +68,17 @@
       </div>
 
       <div class="row" v-show="documents.length">
-      <div class="col s12">
-        <pagination
-          @change-page="changePage"
-          :total="totalDocuments"
-          :from="paginationFrom"
-          :size="paginationSize"
-          :max-page="1000"
-          :number-in-page="documents.length"
-        ></pagination>
+        <div class="col s12">
+          <pagination
+            @change-page="changePage"
+            :total="totalDocuments"
+            :from="paginationFrom"
+            :size="paginationSize"
+            :max-page="1000"
+            :number-in-page="documents.length"
+          ></pagination>
+        </div>
       </div>
-    </div>
     </div>
 
     <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close" :loading="isLoading">
@@ -85,28 +89,28 @@
         <button
           href="#"
           class="waves-effect waves-green btn red-color"
-          @click="confirmBulkDelete()">
-            I'm sure!
-        </button>
-        <button href="#" class="btn-flat" @click.prevent="close">
-            Cancel
-        </button>
+          @click="confirmBulkDelete()"
+        >I'm sure!</button>
+        <button href="#" class="btn-flat" @click.prevent="close">Cancel</button>
       </span>
     </modal>
 
-    <modal id="single-delete" :is-open="singleDeleteIsOpen" :close="close" :loading="isLoading">
+    <modal
+      class="SingleDeleteModal"
+      id="single-delete"
+      :is-open="singleDeleteIsOpen"
+      :close="close"
+      :loading="isLoading"
+    >
       <h4>Delete element</h4>
       <p>Do you really want to delete {{documentIdToDelete}}?</p>
 
       <span slot="footer">
         <button
-          class="waves-effect waves-green btn red-color"
-          @click="confirmSingleDelete(documentIdToDelete)">
-            I'm sure!
-        </button>
-        <button class="btn-flat" @click.prevent="close">
-            Cancel
-        </button>
+          class="SingleDeleteModal-confirmBtn waves-effect waves-green btn red-color"
+          @click="confirmSingleDelete(documentIdToDelete)"
+        >I'm sure!</button>
+        <button class="btn-flat" @click.prevent="close">Cancel</button>
       </span>
     </modal>
   </div>
@@ -210,6 +214,9 @@ export default {
       this.singleDeleteIsOpen = false
       this.bulkDeleteIsOpen = false
       this.documentIdToDelete = []
+    },
+    refreshSearch() {
+      this.$emit('crudl-refresh-search')
     }
   },
   watch: {

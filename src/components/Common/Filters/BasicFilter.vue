@@ -13,6 +13,7 @@
                   input-class="validate"
                   placeholder="Attribute"
                   :items="attributeItems"
+                  :value="filters.basic[groupIndex][filterIndex].attribute || ''"
                   @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
                 />
               </div>
@@ -49,9 +50,9 @@
           <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
           <div class="row block-content" >
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="validate" v-model="filters.sorting.attribute">
+              <input placeholder="Attribute" type="text" class="BasicFilter-sortingAttr validate" v-model="filters.sorting.attribute">
             </div>
-            <div class="col s2">
+            <div class="BasicFilter-sortingValue col s2">
               <m-select v-model="filters.sorting.order">
                 <option value="asc">asc</option>
                 <option value="desc">desc</option>
@@ -63,8 +64,8 @@
       </div>
     </div>
     <div v-if="actionButtonsVisible" class="row card-action">
-      <button type="submit" class="btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
-      <button class="btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
+      <button type="submit" class="BasicFilter-submitBtn btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
+      <button class="BasicFilter-resetBtn btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
     </div>
   </form>
 </template>
@@ -127,10 +128,8 @@ export default {
       for (const orBlock of this.filters.basic) {
         for (const andBlock of orBlock) {
           if (
-            andBlock.attribute === null ||
-            andBlock.attribute === '' ||
-            andBlock.value === null ||
-            andBlock.value === ''
+            (!andBlock.attribute && andBlock.value) ||
+            (andBlock.attribute && !andBlock.value)
           ) {
             return false
           }

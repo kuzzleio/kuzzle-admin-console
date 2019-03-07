@@ -51,7 +51,10 @@ export default {
           typeof collection !== 'undefined' &&
           this.$store.getters
             .indexCollections(index)
-            .stored.indexOf(collection) === -1
+            .stored.indexOf(collection) === -1 &&
+          this.$store.getters
+            .indexCollections(index)
+            .realtime.indexOf(collection) === -1
         ) {
           this.routeExist = false
         }
@@ -69,7 +72,7 @@ export default {
             collection: this.$route.params.collection
           })
         })
-        .catch(err => console.error(err))
+        .catch(error => console.error(error))
     }
   },
   watch: {
