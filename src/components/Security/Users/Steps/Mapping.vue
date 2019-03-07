@@ -21,7 +21,6 @@
             and the fields it contains, are stored and indexed.
             <a href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/" target="_blank">Read more about mapping</a>
           </br>
-            You should omit the root "properties" field in this form.
             <pre>
 {
   "age": { "type": "integer" },

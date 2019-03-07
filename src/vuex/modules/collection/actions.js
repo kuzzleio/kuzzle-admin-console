@@ -80,7 +80,7 @@ export default {
 
           commit(types.RECEIVE_COLLECTION_DETAIL, {
             name: collection,
-            mapping: result.properties || {},
+            mapping: result || {},
             schema,
             allowForm,
             isRealtimeOnly: false

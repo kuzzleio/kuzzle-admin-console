@@ -177,7 +177,7 @@ export const formatSchema = schema => {
  * @returns {{properties: {}, _meta: {schema: *, allowForm: *}}}
  */
 export const mergeMetaAttributes = ({ mapping, schema, allowForm }) => {
-  return { properties: { ...mapping }, _meta: { schema, allowForm } }
+  return { ...mapping, _meta: { schema, allowForm } }
 }
 
 /**
@@ -189,8 +189,10 @@ export const cleanMapping = mapping => {
   let _mapping = {}
 
   Object.keys(mapping).forEach(attr => {
-    if (mapping[attr].properties) {
-      _mapping[attr] = cleanMapping(mapping[attr].properties)
+    if (attr === 'properties') {
+      _mapping.properties = cleanMapping(mapping.properties)
+    } else if (attr === 'dynamic') {
+      _mapping.dynamic = mapping.dynamic
     } else {
       _mapping[attr] = mapping[attr].type
     }

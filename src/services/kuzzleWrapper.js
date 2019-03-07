@@ -255,9 +255,7 @@ export const updateMappingUsers = newMapping => {
     .queryPromise(
       { controller: 'security', action: 'updateUserMapping' },
       {
-        body: {
-          properties: newMapping
-        }
+        body: newMapping
       }
     )
     .then(res => res.result)
