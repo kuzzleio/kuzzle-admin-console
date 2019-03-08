@@ -23,8 +23,10 @@
           </br>
             <pre>
 {
-  "age": { "type": "integer" },
-  "name": { "type": "string" }
+  "properties": {
+    "age": { "type": "integer" },
+    "name": { "type": "text" }
+  }
 }
             </pre>
           </p>

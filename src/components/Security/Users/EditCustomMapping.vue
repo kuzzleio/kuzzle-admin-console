@@ -15,7 +15,7 @@
         <mapping :mapping="mapping" @submit="onMappingSubmit" @cancel="onCancel"></mapping>
         <div class="ErrorBox card error red-color" v-if="error">
           <i class="ErrorBox-dismissBtn fa fa-times" @click="dismissError()"></i>
-          <p v-html="error"></p>
+          <p class="white-text" v-html="error"></p>
         </div>
       </div>
     </div>

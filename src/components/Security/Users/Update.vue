@@ -39,7 +39,7 @@
         <div class="col s9">
           <div v-if="error" class="card error red-color white-text">
             <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-            {{error}}
+            <p class="white-text" v-html="error"></p>
           </div>
         </div>
       </div>

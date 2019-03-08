@@ -46,7 +46,7 @@
             tabindex="4"
             ref="jsoneditor"
             myclass="pre_ace"
-            :content="$store.state.collection.mapping">
+            :content="cleanMapping($store.state.collection.mapping)">
           </json-editor>
         </div>
       </div>
@@ -60,8 +60,10 @@
             <br>
             <pre>
 {
-  "age": { "type": "integer" },
-  "name": { "type": "text" }
+  "properties": {
+    "age": { "type": "integer" },
+    "name": { "type": "text" }
+  }
 }
             </pre>
           </p>
@@ -87,6 +89,7 @@
 
 <script>
 import JsonEditor from '../../../Common/JsonEditor'
+import { removeMeta } from '../../../../services/collectionHelper'
 import {
   SET_MAPPING,
   SET_REALTIME_ONLY,
@@ -112,6 +115,9 @@ export default {
     }
   },
   methods: {
+    cleanMapping (mapping) {
+      return removeMeta(mapping)
+    },
     setName(e) {
       this.$store.commit(SET_COLLECTION_NAME, e.target.value.trim())
     },

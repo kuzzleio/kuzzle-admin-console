@@ -11,6 +11,10 @@ export const isRealtimeOnly = state => {
 }
 
 export const flattenMapping = state => {
+  if (state.mapping.properties) {
+    return flattenObjectMapping(state.mapping.properties)
+  }
+
   return flattenObjectMapping(state.mapping)
 }
 

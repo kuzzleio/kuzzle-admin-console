@@ -86,7 +86,7 @@
           <div class="col s7 m8 l9" v-if="error">
             <div class="card error red-color">
               <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              <p v-html="error"></p>
+              <p class="white-text" v-html="error"></p>
             </div>
           </div>
         </div>
@@ -142,6 +142,9 @@
     position: relative;
     padding: 8px 12px;
     margin: 0;
+  }
+  .error-text {
+    color: white;
   }
   .dismiss-error {
     position: absolute;

@@ -155,6 +155,7 @@ export const castByElementId = (id, value) => {
  */
 export const formatSchema = schema => {
   let formattedSchema = {}
+
   Object.keys(schema).map(attributeName => {
     let fullPath = attributeName
 
@@ -177,7 +178,7 @@ export const formatSchema = schema => {
  * @returns {{properties: {}, _meta: {schema: *, allowForm: *}}}
  */
 export const mergeMetaAttributes = ({ mapping, schema, allowForm }) => {
-  return { ...mapping, _meta: { schema, allowForm } }
+  return { dynamic: mapping.dynamic, properties: mapping.properties, _meta: { schema, allowForm } }
 }
 
 /**
@@ -210,6 +211,13 @@ export const hasSameSchema = (document, schema) => {
   return Object.keys(document).every(attribute => {
     return checkPathSchemaRecursive(document, schema, attribute)
   })
+}
+
+export const removeMeta = mapping => {
+  const cleanMapping = mapping
+  delete cleanMapping._meta
+
+  return cleanMapping
 }
 
 const checkPathSchemaRecursive = (document, schema, path) => {
