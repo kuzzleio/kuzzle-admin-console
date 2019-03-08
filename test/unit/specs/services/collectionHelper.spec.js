@@ -252,12 +252,13 @@ describe('CollectionHelper', () => {
 
   describe('mergeMetaAttributes', () => {
     it('should merge meta attributes and mapping', () => {
-      let mapping = {mapping: 'mapping'}
+      let mapping = {properties: 'mapping', dynamic: 'true'}
       let schema = {schema: 'schema'}
       let allowForm = true
 
       expect(collectionHelper.mergeMetaAttributes({mapping, schema, allowForm})).deep.eql({
-        properties: mapping,
+        dynamic: 'true',
+        properties: mapping.properties,
         _meta: {
           schema,
           allowForm
@@ -269,16 +270,14 @@ describe('CollectionHelper', () => {
   describe('cleanMapping', () => {
     it('should return a clean mapping with only type', () => {
       let mapping = {
-        name: {
-          properties: {
-            first: {type: 'text'},
-            last: {type: 'text'}
-          }
+        properties: {
+          first: {type: 'text'},
+          last: {type: 'text'}
         }
       }
-
+      console.log(collectionHelper.cleanMapping(mapping))
       expect(collectionHelper.cleanMapping(mapping)).deep.eql({
-        name: {
+        properties: {
           first: 'text',
           last: 'text'
         }

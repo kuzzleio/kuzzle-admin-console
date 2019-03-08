@@ -78,7 +78,7 @@ describe('Collections module', () => {
           index: 'myindex',
           collection: 'tutu'
         }, state, [
-          {type: RECEIVE_COLLECTION_DETAIL, payload: {name: 'tutu', mapping: {toto: 'tutu'}, schema: {}, isRealtimeOnly: false, allowForm: false}}
+          {type: RECEIVE_COLLECTION_DETAIL, payload: {name: 'tutu', mapping: { properties: { toto: 'tutu' } }, schema: {}, isRealtimeOnly: false, allowForm: false}}
         ], done, null, {indexCollections: () => {
           return {realtime: ['toto'], stored: ['tutu']}
         }})
