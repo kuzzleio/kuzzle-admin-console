@@ -14,7 +14,7 @@
       :steps="['Mapping', 'Form']"
       @changed-step="setEditionStep"
       class="card-panel card-header">
-    </stepper>²
+    </stepper>
 
     <div class="row card-panel card-body">
       <div class="col s12">
