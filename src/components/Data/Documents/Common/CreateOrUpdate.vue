@@ -143,9 +143,6 @@
     padding: 8px 12px;
     margin: 0;
   }
-  .error-text {
-    color: white;
-  }
   .dismiss-error {
     position: absolute;
     right: 10px;

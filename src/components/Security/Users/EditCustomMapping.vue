@@ -1,5 +1,5 @@
 <template>
-  <div class="UsersCustomMappingWizard">
+  <div class="EditCustomMapping">
     <headline>Edit User Custom Data Mapping</headline>
 
     <div v-show="!loading" class="wrapper collection-edit">
@@ -53,7 +53,7 @@ import {
 } from '../../../services/kuzzleWrapper'
 
 export default {
-  name: 'UsersCustomMappingWizard',
+  name: 'EditCustomMapping',
   components: {
     Headline,
     Stepper,
@@ -92,7 +92,7 @@ export default {
   mounted() {
     this.loading = true
     return getMappingUsers().then(result => {
-      this.mapping = result.mapping || {}
+      this.mapping = { properties: result.mapping || {} }
       this.loading = false
     })
   }
