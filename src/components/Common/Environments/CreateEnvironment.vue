@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
-          <input class="CreateEnvironment-name" id="env-name" type="text" v-model="environment.name"  required :class="{invalid: errors.name || errors.environmentAlreadyExists}">
+          <input class="CreateEnvironment-name" id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name || errors.environmentAlreadyExists}">
           <label for="env-name" :class="{'active': environment.name}" data-error="Name is required and must be unique">Name</label>
         </div>
       </div>
