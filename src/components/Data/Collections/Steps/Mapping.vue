@@ -23,15 +23,17 @@
       <div class="col s12">
         <div class="row">
           <p class="Mapping-realtimeOnly">
-            <input
-              type="checkbox"
-              class="filled-in"
-              tabindex="3"
-              id="realtime-collection"
-              :checked="collectionIsRealtimeOnly"
-              @change="setRealtimeOnly"/>
-            <label for="realtime-collection">
-              Real-time only
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in"
+                tabindex="3"
+                id="realtime-collection"
+                :checked="collectionIsRealtimeOnly"
+                @change="setRealtimeOnly"/>
+              <span>
+                Real-time only
+              </span>
             </label>
           </p>
         </div>

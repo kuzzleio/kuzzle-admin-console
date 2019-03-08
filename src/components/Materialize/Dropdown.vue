@@ -1,6 +1,6 @@
 <template>
   <span :class="myclass">
-    <a class="action dropdown-button fa fa-ellipsis-v" :data-activates="parsedId"></a>
+    <a class="action dropdown-button fa fa-ellipsis-v" :data-target="parsedId"></a>
 
     <ul :id="parsedId" class='dropdown-content'>
       <slot></slot>

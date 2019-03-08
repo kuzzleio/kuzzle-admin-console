@@ -27,8 +27,10 @@
     </div>
 
     <div class="col s3 m3 l2 right-align truncate">
-      <input type="checkbox" v-model="scrollDown" class="filled-in" id="filled-in-box" />
-      <label for="filled-in-box">Scroll on new messages</label>
+      <label>
+        <input type="checkbox" v-model="scrollDown" class="filled-in" id="filled-in-box" />
+        <span>Scroll on new messages</span>
+      </label>
     </div>
   </div>
 </template>

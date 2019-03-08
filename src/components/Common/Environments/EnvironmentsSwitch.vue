@@ -1,7 +1,7 @@
 <template>
   <span class="EnvironmentsSwitch" ref="dropdown">
     <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
-       :data-activates='"environment-dropdown-" + _uid'>
+       :data-target='"environment-dropdown-" + _uid'>
         <span v-if="$store.getters.currentEnvironment" class="current-environment-name truncate">
           {{currentEnvironmentName}}
         </span>
@@ -114,7 +114,6 @@ export default {
 }
 
 .environment-dropdown {
-  top: 50px;
   width: 280px;
   .environment {
     position: relative;
