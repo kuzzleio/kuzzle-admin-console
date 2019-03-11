@@ -83,7 +83,7 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users')
 
-    cy.get('[for="checkbox-dummy"]').click()
+    cy.get('[id="checkbox-dummy"]').click({force: true})
     cy.get('.BulkActions')
       .contains('Delete')
       .click()
