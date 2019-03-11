@@ -147,4 +147,8 @@ export default {
 li {
   position: relative;
 }
+
+.sidenav {
+    transform: translateX(0%) !important;
+}
 </style>
