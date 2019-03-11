@@ -28,7 +28,6 @@
           <li
             v-for="indexName in orderedFilteredIndices" :key="indexName">
             <index-branch
-              :force-open="indexCount === 1"
               :index-name="indexName"
               :route-name="routeName"
               :collections="indexesAndCollections[indexName]"
@@ -83,9 +82,6 @@ export default {
       return Object.keys(this.$store.state.index.indexesAndCollections).length
         ? this.$store.state.index.indexesAndCollections
         : {}
-    },
-    indexCount() {
-      return Object.keys(this.indexesAndCollections).length
     }
   }
 }
