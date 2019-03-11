@@ -10,7 +10,7 @@ export default {
       /* eslint no-undef: 0 */
       $(el).tooltip()
       $(el).on('click', () => {
-        $(el).tooltip('remove')
+        $(el).tooltip('destroy')
       })
     }
   }
