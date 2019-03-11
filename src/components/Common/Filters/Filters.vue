@@ -53,7 +53,13 @@
         </div>
       </tabs>
     </div>
+
+    <div class="card-panel orange lighten-3" v-show="currentFilter.active">
+      <span>Warning: There is actually an active filter, not every documents are shown.</span>
+    </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
