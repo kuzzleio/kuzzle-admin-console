@@ -6,16 +6,18 @@
       @click="toggleCollapse()"
     ></i>
     
-    <input
-      type="checkbox"
-      class="filled-in"
-      :id="checkboxId"
-      :value="document.id"
-      @click="notifyCheckboxClick"
-      :checked="isChecked"
-    >
-    
-    <label :for="checkboxId"></label>
+    <label>
+      <input
+        type="checkbox"
+        class="filled-in"
+        :id="checkboxId"
+        :value="document.id"
+        @click="notifyCheckboxClick"
+        :checked="isChecked"
+      >
+      
+      <span></span>
+    </label>
     <!-- The following anchor will go to the user details page -->
     <label class="UserItem-title item-title">
       <a @click="toggleCollapse">{{document.id}}</a>
