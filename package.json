@@ -101,7 +101,7 @@
     "kuzzle-sdk": "^5.0.11",
     "lodash": "^4.17.10",
     "lolex": "^1.5.2",
-    "materialize-css": "^0.100.2",
+    "materialize-css": "^1.0.0",
     "mocha": "^5.2.0",
     "moment": "^2.22.1",
     "node-sass": "^4.9.2",

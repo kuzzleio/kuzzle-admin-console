@@ -1,8 +1,8 @@
 <template>
-  <div class="row input-field">
+  <label>
     <input :id="name" type="checkbox" name="name" @change="update" :checked="value" />
-    <label :for="name">{{name}}</label>
-  </div>
+    <span>{{name}}</span>
+  </label>
 </template>
 
 <script>

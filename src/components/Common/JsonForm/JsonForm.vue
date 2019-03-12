@@ -143,7 +143,6 @@ export default {
       border-bottom: 1px solid #e4e1e1;
     }
     label {
-      top: 0.4rem;
       &.active {
         transform: translateY(-20%);
         font-size: 0.7em;

@@ -21,15 +21,17 @@
         >{{kuid}}</span>
       </div>
       <div class="col s3" v-if="editKuid">
-        <input
-          type="checkbox"
-          id="user-auto-generate-kuid"
-          class="filled-in"
-          :checked="autoGenerateKuid"
-          @change="setAutoGenerateKuid"
-        />
-        <label for="user-auto-generate-kuid">
-          Auto-generate
+        <label>
+          <input
+            type="checkbox"
+            id="user-auto-generate-kuid"
+            class="filled-in"
+            :checked="autoGenerateKuid"
+            @change="setAutoGenerateKuid"
+          />
+          <span>
+            Auto-generate
+          </span>
         </label>
       </div>
     </div>
