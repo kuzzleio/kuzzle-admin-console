@@ -150,6 +150,18 @@
                   @delete="onDeleteClicked"
                 />
               </div>
+              <div class="row" v-show="documents.length">
+                <div class="col s12">
+                  <pagination
+                    :from="paginationFrom"
+                    :max-page="1000"
+                    :number-in-page="documents.length"
+                    :size="paginationSize"
+                    :total="totalDocuments"
+                    @change-page="changePage"
+                  ></pagination>
+                </div>
+              </div>
             </div>
           </div>
         </div>
