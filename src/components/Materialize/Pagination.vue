@@ -12,7 +12,8 @@
         </a>
       </li>
 
-      <li v-for="n in pager"
+      <li v-for="(n, index) in pager"
+          :key="index"
           :class="{active: currentPage === n}"
           class="waves-effect" @click.prevent="setCurrentPage(n)">
         <a href="#">{{n}}</a>
