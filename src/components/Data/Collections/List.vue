@@ -130,6 +130,7 @@ import {
   canCreateCollection
 } from '../../../services/userAuthorization'
 import Title from '../../../directives/title.directive'
+import { LIST_INDEXES_AND_COLLECTION } from '../../../vuex/modules/index/mutation-types'
 
 export default {
   name: 'CollectionsList',
@@ -158,6 +159,7 @@ export default {
   computed: {
     collectionCount() {
       if (!this.$store.state.index.indexesAndCollections[this.index]) {
+        this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
         return 0
       }
 
