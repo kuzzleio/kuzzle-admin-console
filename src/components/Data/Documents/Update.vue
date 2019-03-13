@@ -92,7 +92,7 @@ export default {
 
       return kuzzle
         .collection(this.collection, this.index)
-        .replaceDocumentPromise(
+        .updateDocumentPromise(
           decodeURIComponent(this.$route.params.id),
           document,
           { refresh: 'wait_for' }
