@@ -55,7 +55,7 @@
     </div>
 
     <div class="card-panel orange lighten-3" v-show="currentFilter.active">
-      <span>Warning: There is actually an active filter, not every documents are shown.</span>
+      <span>Warning: a filter has been set, some documents might be hidden.</span>
     </div>
 
   </div>
