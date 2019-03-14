@@ -149,6 +149,8 @@ jobs:
         api_key: $GITHUB_TOKEN
         file_glob: true
         file: deploy/*
+        on:
+          tags: true
       - provider: s3
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_SECRET_ACCESS_KEY
