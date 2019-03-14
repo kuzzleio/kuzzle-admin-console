@@ -151,7 +151,7 @@
                 />
               </div>
               <div class="row" v-show="documents.length">
-                <div class="col s12">
+                <div class="col s12" v-if="listViewType === 'map'">
                   <pagination
                     :from="paginationFrom"
                     :max-page="1000"
