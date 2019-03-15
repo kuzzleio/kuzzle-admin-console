@@ -15,6 +15,7 @@ export function Filter() {
   this.raw = null
   this.sorting = null
   this.from = 0
+  this.size = 10
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current'
