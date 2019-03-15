@@ -70,16 +70,16 @@
 
           <div v-if="canSearchCollection(index)">
             <collection-boxed
-              v-for="collection in orderedFilteredStoredCollections"
-              :key="Math.random()"
+              v-for="(collection, i) in orderedFilteredStoredCollections"
+              :key="i"
               :index="index"
               :collection="collection"
               :is-realtime="false">
             </collection-boxed>
 
             <collection-boxed
-                v-for="collection in orderedFilteredRealtimeCollections"
-                :key="Math.random()"
+                v-for="(collection, i) in orderedFilteredRealtimeCollections"
+                :key="i"
                 :index="index"
                 :collection="collection"
                 :is-realtime="true">
@@ -130,7 +130,6 @@ import {
   canCreateCollection
 } from '../../../services/userAuthorization'
 import Title from '../../../directives/title.directive'
-import { LIST_INDEXES_AND_COLLECTION } from '../../../vuex/modules/index/mutation-types'
 
 export default {
   name: 'CollectionsList',
@@ -159,10 +158,8 @@ export default {
   computed: {
     collectionCount() {
       if (!this.$store.state.index.indexesAndCollections[this.index]) {
-        this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
         return 0
       }
-
       return (
         this.$store.state.index.indexesAndCollections[this.index].stored
           .length +

@@ -1,6 +1,7 @@
 import * as types from './mutation-types'
 import * as getters from './getters'
 import actions from './actions'
+import Vue from 'vue'
 
 const state = {
   indexes: [],
@@ -10,7 +11,9 @@ const state = {
 export const mutations = {
   [types.RECEIVE_INDEXES_COLLECTIONS](state, indexesAndCollections) {
     state.indexes = Object.keys(indexesAndCollections)
-    state.indexesAndCollections = indexesAndCollections
+    for (const index of state.indexes) {
+      Vue.set(state.indexesAndCollections, index, indexesAndCollections[index])
+    }
   },
   [types.ADD_STORED_COLLECTION](state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
