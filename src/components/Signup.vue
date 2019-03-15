@@ -49,8 +49,10 @@
               </div>
               <div class="row">
                 <div class="input-field col s12 reset">
-                  <input v-model="reset" type="checkbox" class="filled-in" id="reset"/>
-                  <label for="reset">Remove anonymous user credentials.</label>
+                  <label>
+                    <input v-model="reset" type="checkbox" class="filled-in" id="reset"/>
+                    <span>Remove anonymous user credentials.</span>
+                  </label>
                 </div>
               </div>
               <div class="row">

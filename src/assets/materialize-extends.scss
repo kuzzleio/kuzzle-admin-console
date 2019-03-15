@@ -278,9 +278,3 @@ input[type='checkbox'] + label {
 .text-light-blue {
   color: $secondary-color;
 }
-
-// Hack to fix checkbox in input-field,
-// waiting materialize-css fix this bug
-.input-field label {
-  pointer-events: auto;
-}

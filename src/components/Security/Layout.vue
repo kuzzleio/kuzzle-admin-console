@@ -1,7 +1,7 @@
 <template>
   <div>
     <aside>
-      <ul class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
+      <ul class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
         <router-link v-if="canManageUsers()" class="bold" tag="li" :to="{name: 'SecurityUsersList'}" active-class="active">
           <a class="waves-effect">
             <i class="fa fa-user" aria-hidden="true"></i>
@@ -40,7 +40,7 @@
     transform: translateX(0);
   }
 }
-.side-nav {
+.sidenav {
   top: 50px;
   width: $sidebar-width;
   a {
@@ -50,6 +50,7 @@
     height: 54px;
     line-height: 54px;
   }
+  transform: translateX(0%) !important;
 }
 aside {
   font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;

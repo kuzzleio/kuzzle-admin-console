@@ -1,6 +1,6 @@
 <template>
   <aside class="Treeview">
-    <ul v-if="!canSearchIndex()" class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
+    <ul v-if="!canSearchIndex()" class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
       <li class="Treeview-unauthorized">
         <ul class="indexes">
           <li>
@@ -10,7 +10,7 @@
         </ul>
       </li>
     </ul>
-    <ul v-else class="Treeview-container side-nav fixed leftside-navigation ps-container ps-active-y">
+    <ul v-else class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
       <li>
         <nav>
           <div class="nav-wrapper">
@@ -142,5 +142,9 @@ export default {
 
 li {
   position: relative;
+}
+
+.sidenav {
+    transform: translateX(0%) !important;
 }
 </style>
