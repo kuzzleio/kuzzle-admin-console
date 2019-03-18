@@ -85,7 +85,7 @@
     "function-bind": "^1.1.1",
     "hex-rgb": "^3.0.0",
     "html-webpack-plugin": "^2.30.1",
-    "http-proxy-middleware": "^0.17.3",
+    "http-proxy-middleware": "^0.19.1",
     "imports-loader": "^0.7.0",
     "inject-loader": "^2.0.1",
     "jquery": "^3.3.1",
