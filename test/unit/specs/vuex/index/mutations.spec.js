@@ -62,7 +62,7 @@ describe('Data mutation', () => {
 
   describe('RECEIVE_INDEXES_COLLECTIONS tests', () => {
     it('should set indexes and collections', () => {
-      let state = {user: null}
+      let state = {indexesAndCollections: {}}
 
       mutations[RECEIVE_INDEXES_COLLECTIONS](state, {foo: {realtime: ['toto'], stored: ['tutu']}})
       expect(state.indexesAndCollections).to.deep.equal({foo: {realtime: ['toto'], stored: ['tutu']}})

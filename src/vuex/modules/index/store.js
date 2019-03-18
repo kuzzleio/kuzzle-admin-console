@@ -1,6 +1,7 @@
 import * as types from './mutation-types'
 import * as getters from './getters'
 import actions from './actions'
+import Vue from 'vue'
 
 const state = {
   indexes: [],
@@ -10,12 +11,14 @@ const state = {
 export const mutations = {
   [types.RECEIVE_INDEXES_COLLECTIONS](state, indexesAndCollections) {
     state.indexes = Object.keys(indexesAndCollections)
-    state.indexesAndCollections = indexesAndCollections
+    for (const index of state.indexes) {
+      Vue.set(state.indexesAndCollections, index, indexesAndCollections[index])
+    }
   },
   [types.ADD_STORED_COLLECTION](state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
       state.indexes.push(payload.index)
-      state.indexesAndCollections[payload.index] = { realtime: [], stored: [] }
+      Vue.set(state.indexesAndCollections, payload.index, { realtime: [], stored: [] })
     }
 
     state.indexesAndCollections[payload.index].stored.push(payload.name)
@@ -23,14 +26,14 @@ export const mutations = {
   [types.ADD_REALTIME_COLLECTION](state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
       state.indexes.push(payload.index)
-      state.indexesAndCollections[payload.index] = { realtime: [], stored: [] }
+      Vue.set(state.indexesAndCollections, payload.index, { realtime: [], stored: [] })
     }
 
     state.indexesAndCollections[payload.index].realtime.push(payload.name)
   },
   [types.ADD_INDEX](state, index) {
     state.indexes.push(index)
-    state.indexesAndCollections[index] = { realtime: [], stored: [] }
+    Vue.set(state.indexesAndCollections, index, { realtime: [], stored: [] })
   },
   [types.DELETE_INDEX](state, index) {
     state.indexes.splice(state.indexes.indexOf(index), 1)
