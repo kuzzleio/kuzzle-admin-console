@@ -107,7 +107,7 @@ export default {
 }
 
 /* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + label {
+[type='checkbox'] + span:not(.lever) {
   height: 15px;
   padding-left: 30px;
 }
