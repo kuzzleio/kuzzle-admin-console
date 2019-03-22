@@ -8,12 +8,12 @@ export default {
   watch: {
     '$store.state.toaster.toast'() {
       /* eslint no-undef: 0 */
-      M.toast(
-        this.$store.state.toaster.toast.text,
-        this.$store.state.toaster.toast.duration,
-        this.$store.state.toaster.toast.cssClass,
-        this.$store.state.toaster.toast.cb
-      )
+      M.toast({
+        html: this.$store.state.toaster.toast.text,
+        inDuration: this.$store.state.toaster.toast.duration,
+        classes: this.$store.state.toaster.toast.cssClass,
+        completeCallback: this.$store.state.toaster.toast.cb
+      })
     }
   }
 }
