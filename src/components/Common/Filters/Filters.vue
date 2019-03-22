@@ -46,6 +46,7 @@
                 :action-buttons-visible="actionButtonsVisible"
                 :submit-button-label="submitButtonLabel"
                 :current-filter="currentFilter"
+                :refresh-ace="refreshace"
                 @update-filter="onRawFilterUpdated"
                 @reset="onReset">
               </raw-filter>
@@ -168,7 +169,8 @@ export default {
       advancedFiltersVisible: false,
       complexFiltersSelectedTab: null,
       jsonInvalid: false,
-      objectTabActive: null
+      objectTabActive: null,
+      refreshace: false
     }
   },
   computed: {
@@ -245,6 +247,7 @@ export default {
     },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
+      this.refreshace = !this.refreshace
     },
     onFiltersUpdated(newFilters) {
       this.$emit('filters-updated', newFilters)

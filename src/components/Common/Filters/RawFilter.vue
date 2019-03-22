@@ -67,6 +67,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    refreshAce: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -77,8 +81,7 @@ export default {
       filters: {
         raw: {}
       },
-      jsonInvalid: false,
-      refreshAce: false
+      jsonInvalid: false
     }
   },
   mounted () {
@@ -118,7 +121,6 @@ export default {
       immediate: true,
       handler(newValue, oldValue) {
         this.$set(this.filters, 'raw', filterManager.toSearchQuery(this.currentFilter))
-        this.refreshAce = !this.refreshAce
       }
     }
   }
