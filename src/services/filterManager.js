@@ -309,7 +309,7 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           }
         })
       } else if (filter.operator === 'not_equal') {
-        formattedFilter.bool.must_notformattedFilter.push({
+        formattedFilter.bool.must_not.push({
           range: {
             [filter.attribute]: {
               gte: filter.value,
