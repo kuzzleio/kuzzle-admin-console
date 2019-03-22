@@ -176,8 +176,7 @@ export const searchFilterOperands = {
   not_match: 'Not Match',
   equal: 'Equal',
   not_equal: 'Not equal',
-  gt: 'Greater than',
-  lt: 'Lower than'
+  range: 'Range'
 }
 
 export const realtimeFilterOperands = {
@@ -310,7 +309,7 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           }
         })
       } else if (filter.operator === 'not_equal') {
-        formattedFilter.bool.must_not.push({
+        formattedFilter.bool.must_notformattedFilter.push({
           range: {
             [filter.attribute]: {
               gte: filter.value,
@@ -318,22 +317,29 @@ export const formatFromBasicSearch = (groups = [[]]) => {
             }
           }
         })
-      } else if (filter.operator === 'gt') {
-        formattedFilter.bool.must.push({
-          match: {
+      } else if (filter.operator === 'range') {
+        let range = {range: {}}
+        if (filter.gt_value && filter.lt_value) {
+          range.range = {
             [filter.attribute]: {
-              gt: filter.value
+              gt: filter.gt_value,
+              lt: filter.lt_value
             }
           }
-        })
-      } else if (filter.operator === 'lt') {
-        formattedFilter.bool.must.push({
-          match: {
+        } else if (filter.gt_value && !filter.lt_value) {
+          range.range = {
             [filter.attribute]: {
-              lt: filter.value
+              gt: filter.gt_value
             }
           }
-        })
+        } else {
+          range.range = {
+            [filter.attribute]: {
+              lt: filter.lt_value
+            }
+          }
+        }
+        formattedFilter.bool.must.push(range)
       }
     })
 

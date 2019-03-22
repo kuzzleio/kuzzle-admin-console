@@ -36,7 +36,7 @@
 
           <div class="card-panel card-header">
             <div class="DocumentsPage-filtersAndButtons row">
-              <div class="col s9 xl9">
+              <div class="col s10 xl10">
                 <filters
                   :available-operands="searchFilterOperands"
                   :current-filter="currentFilter"
@@ -46,7 +46,7 @@
                 >
                 </filters>
               </div>
-              <div class="col s3 xl3">
+              <div class="col s2 xl2">
                 <list-view-buttons
                   :active-view="listViewType"
                   :boxes-enabled="true"
