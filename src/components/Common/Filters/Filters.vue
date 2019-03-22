@@ -45,6 +45,7 @@
                 :sorting-enabled="sortingEnabled"
                 :action-buttons-visible="actionButtonsVisible"
                 :submit-button-label="submitButtonLabel"
+                :current-filter="currentFilter"
                 @update-filter="onRawFilterUpdated"
                 @reset="onReset">
               </raw-filter>
@@ -212,14 +213,12 @@ export default {
       )
     },
     onBasicFilterUpdated(filter, sorting) {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          active: filter ? ACTIVE_BASIC : NO_ACTIVE,
-          basic: filter,
-          sorting,
-          from: 0
-        })
-      )
+      const newFilter = new Filter()
+      newFilter.basic = filter
+      newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
+      newFilter.sorting = sorting
+      newFilter.from = 0
+      this.onFiltersUpdated(newFilter)
     },
     onRawFilterUpdated(filter) {
       this.advancedFiltersVisible = false

@@ -1,10 +1,16 @@
 <template>
   <form class="RawFilter">
+    <div class="card-panel blue lighten-3" v-if="currentFilter.basic">
+      A Basic filter is currently active. This shows your basic filter as raw filter.
+      If you modify this raw filter it will not change the basic filter view and will reset this raw filter to the
+      original content of the basic filter.
+    </div>
     <json-editor
       id="rawsearch"
       ref="jsoneditor"
       myclass="pre_ace"
       :content="filters.raw"
+      :refresh-ace="refreshAce"
     >
     </json-editor>
     <div class="row card-action">
@@ -28,6 +34,7 @@
 
 <script>
 import JsonEditor from '../../Common/JsonEditor'
+import * as filterManager from '../../../services/filterManager'
 
 export default {
   props: {
@@ -53,6 +60,13 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    currentFilter: {
+      type: Object,
+      required: false,
+      default: () => {
+        return {}
+      }
     }
   },
   components: {
@@ -63,8 +77,12 @@ export default {
       filters: {
         raw: {}
       },
-      jsonInvalid: false
+      jsonInvalid: false,
+      refreshAce: false
     }
+  },
+  mounted () {
+    this.filters.raw = filterManager.toSearchQuery(this.currentFilter)
   },
   methods: {
     submitSearch() {
@@ -94,6 +112,13 @@ export default {
         } else {
           this.filters.raw = {}
         }
+      }
+    },
+    currentFilter: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.$set(this.filters, 'raw', filterManager.toSearchQuery(this.currentFilter))
+        this.refreshAce = !this.refreshAce
       }
     }
   }
