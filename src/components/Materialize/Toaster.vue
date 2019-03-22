@@ -8,7 +8,7 @@ export default {
   watch: {
     '$store.state.toaster.toast'() {
       /* eslint no-undef: 0 */
-      Materialize.toast(
+      M.toast(
         this.$store.state.toaster.toast.text,
         this.$store.state.toaster.toast.duration,
         this.$store.state.toaster.toast.cssClass,

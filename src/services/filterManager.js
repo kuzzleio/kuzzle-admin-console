@@ -175,7 +175,9 @@ export const searchFilterOperands = {
   match: 'Match',
   not_match: 'Not Match',
   equal: 'Equal',
-  not_equal: 'Not equal'
+  not_equal: 'Not equal',
+  gt: 'Greater than',
+  lt: 'Lower than'
 }
 
 export const realtimeFilterOperands = {
@@ -313,6 +315,22 @@ export const formatFromBasicSearch = (groups = [[]]) => {
             [filter.attribute]: {
               gte: filter.value,
               lte: filter.value
+            }
+          }
+        })
+      } else if (filter.operator === 'gt') {
+        formattedFilter.bool.must.push({
+          match: {
+            [filter.attribute]: {
+              gt: filter.value
+            }
+          }
+        })
+      } else if (filter.operator === 'lt') {
+        formattedFilter.bool.must.push({
+          match: {
+            [filter.attribute]: {
+              lt: filter.value
             }
           }
         })
