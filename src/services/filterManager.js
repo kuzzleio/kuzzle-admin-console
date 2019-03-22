@@ -318,7 +318,7 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           }
         })
       } else if (filter.operator === 'range') {
-        let range = {range: {}}
+        const range = {range: {}}
         if (filter.gt_value && filter.lt_value) {
           range.range = {
             [filter.attribute]: {
