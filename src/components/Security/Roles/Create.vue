@@ -1,6 +1,7 @@
 <template>
   <div>
     <Headline>Role - Create</Headline>
+    <Notice></Notice>
     <create-or-update
       title="Create a role"
       :error="error"
@@ -20,6 +21,7 @@
 <script>
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
+import Notice from '../Common/Notice'
 import kuzzle from '../../../services/kuzzle'
 import { getMappingRoles } from '../../../services/kuzzleWrapper'
 
@@ -27,12 +29,21 @@ export default {
   name: 'RolesSecurityCreate',
   components: {
     Headline,
-    CreateOrUpdate
+    CreateOrUpdate,
+    Notice
   },
   data() {
     return {
       error: '',
-      document: {},
+      document: {
+        controllers: {
+          yourController: {
+            actions: {
+              yourAction: true
+            }
+          }
+        }
+      },
       id: null,
       submitted: false
     }
