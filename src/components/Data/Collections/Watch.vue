@@ -96,8 +96,8 @@
             <div v-if="notifications.length">
               <ul class="collapsible" v-collapsible data-collapsible="expandable">
                 <notification
-                  v-for="notification in notifications"
-                  :key="Math.random()"
+                  v-for="(notification, i) in notifications"
+                  :key="i"
                   :notification="notification">
                 </notification>
               </ul>
@@ -416,7 +416,7 @@ export default {
     computeNotifHeight() {
       Vue.nextTick(() => {
         const mainNavHeight = document.getElementById('mainnav').offsetHeight
-        const searchFilter = document.getElementsByClassName('search-filter')[0]
+        const searchFilter = document.getElementsByClassName('Filters')[0]
           .offsetHeight
         const subCtrl = this.$refs.subscribeControl.offsetHeight
         const notifHeight =

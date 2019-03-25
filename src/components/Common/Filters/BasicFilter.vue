@@ -22,8 +22,18 @@
                   <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
                 </m-select>
               </div>
-              <div class="col s3">
-                <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
+              <div v-if="andBlock.operator !== 'range'">
+                <div class="col s3">
+                  <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
+                </div>
+              </div>
+              <div v-else>
+                <div class="col s1">
+                  <input placeholder="Value 1" type="text" class="validate" v-model="andBlock.gt_value">
+                </div>
+                <div class="col s1">
+                  <input placeholder="Value 2" type="text" class="validate" v-model="andBlock.lt_value">
+                </div>
               </div>
               <div class="col s2">
                 <i class="BasicFilter-removeBtn fa fa-times"
@@ -129,7 +139,7 @@ export default {
         for (const andBlock of orBlock) {
           if (
             (!andBlock.attribute && andBlock.value) ||
-            (andBlock.attribute && !andBlock.value)
+            (andBlock.attribute && (!andBlock.value) && (!andBlock.lt_value && !andBlock.gt_value))
           ) {
             return false
           }
