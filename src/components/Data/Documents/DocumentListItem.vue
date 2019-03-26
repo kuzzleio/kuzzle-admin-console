@@ -2,14 +2,15 @@
   <div class="DocumentListItem" :class="{ 'collapsed': collapsed }">
     <i class="DocumentListItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
-    <input
-      type="checkbox"
-      class="filled-in"
-      :id="checkboxId"
-      :value="document.id"
-      @click="notifyCheckboxClick" :checked="isChecked"/>
-
-    <label :for="checkboxId"></label>
+    <label>
+      <input
+        type="checkbox"
+        class="filled-in"
+        :id="checkboxId"
+        :value="document.id"
+        @click="notifyCheckboxClick" :checked="isChecked"/>
+      <span></span>
+    </label>
 
     <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
 
@@ -154,7 +155,7 @@ export default {
 }
 
 /* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + label {
+[type='checkbox'] + span:not(.lever) {
   height: 15px;
   padding-left: 30px;
 }

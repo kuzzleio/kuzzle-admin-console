@@ -30,16 +30,16 @@ export default {
     options() {
       setTimeout(() => {
         let $el = $(this.$refs.mselect)
-        $el.material_select('destroy')
-        $el.material_select()
+        $el.formSelect('destroy')
+        $el.formSelect()
       }, 100)
     },
     value() {
       this.content = this.value
       setTimeout(() => {
         let $el = $(this.$refs.mselect)
-        $el.material_select('destroy')
-        $el.material_select()
+        $el.formSelect('destroy')
+        $el.formSelect()
       }, 100)
     }
   },
@@ -48,7 +48,7 @@ export default {
       let $el = $(this.$refs.mselect)
       this.content = this.value
       /* eslint no-undef: 0 */
-      $el.material_select()
+      $el.formSelect()
       $el.on('change', e => {
         if ($el[0].value) {
           this.$emit('input', $el[0].value)

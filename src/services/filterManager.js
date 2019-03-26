@@ -15,6 +15,7 @@ export function Filter() {
   this.raw = null
   this.sorting = null
   this.from = 0
+  this.size = 10
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current'
@@ -174,7 +175,8 @@ export const searchFilterOperands = {
   match: 'Match',
   not_match: 'Not Match',
   equal: 'Equal',
-  not_equal: 'Not equal'
+  not_equal: 'Not equal',
+  range: 'Range'
 }
 
 export const realtimeFilterOperands = {
@@ -315,6 +317,29 @@ export const formatFromBasicSearch = (groups = [[]]) => {
             }
           }
         })
+      } else if (filter.operator === 'range') {
+        const range = {range: {}}
+        if (filter.gt_value && filter.lt_value) {
+          range.range = {
+            [filter.attribute]: {
+              gt: filter.gt_value,
+              lt: filter.lt_value
+            }
+          }
+        } else if (filter.gt_value && !filter.lt_value) {
+          range.range = {
+            [filter.attribute]: {
+              gt: filter.gt_value
+            }
+          }
+        } else {
+          range.range = {
+            [filter.attribute]: {
+              lt: filter.lt_value
+            }
+          }
+        }
+        formattedFilter.bool.must.push(range)
       }
     })
 

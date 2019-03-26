@@ -2,14 +2,16 @@
   <div class="ProfileItem" :class="{ 'collapsed': collapsed }">
     <i class="ProfileItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
 
-    <input
-      type="checkbox"
-      class="filled-in"
-      :id="checkboxId"
-      :value="document.id"
-      @click="notifyCheckboxClick" :checked="isChecked"/>
+    <label>
+      <input
+        type="checkbox"
+        class="filled-in"
+        :id="checkboxId"
+        :value="document.id"
+        @click="notifyCheckboxClick" :checked="isChecked"/>
 
-    <label :for="checkboxId" ></label>
+      <span></span>
+    </label>
     <!-- The following anchor will go to the profile details page -->
     <label class="ProfileItem-title item-title"><a @click="toggleCollapse">{{document.id}}</a></label>
 
@@ -105,7 +107,7 @@ export default {
 }
 
 /* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + label {
+[type='checkbox'] + span:not(.lever) {
   height: 15px;
   padding-left: 30px;
 }

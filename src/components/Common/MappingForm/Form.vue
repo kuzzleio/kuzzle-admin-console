@@ -2,8 +2,10 @@
   <div class="wrapper collection-form">
 
     <div class="row">
-      <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="allowFormProp"/>
-      <label for="allowForm" class="allow-form">Associate mapping to form.</label>
+      <label>
+        <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="allowFormProp"/>
+        <span class="allow-form">Associate mapping to form.</span>
+      </label>
     </div>
 
     <form-line

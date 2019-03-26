@@ -36,7 +36,7 @@
 
           <div class="card-panel card-header">
             <div class="DocumentsPage-filtersAndButtons row">
-              <div class="col s9 xl9">
+              <div class="col s10 xl10">
                 <filters
                   :available-operands="searchFilterOperands"
                   :current-filter="currentFilter"
@@ -46,7 +46,7 @@
                 >
                 </filters>
               </div>
-              <div class="col s3 xl3">
+              <div class="col s2 xl2">
                 <list-view-buttons
                   :active-view="listViewType"
                   :boxes-enabled="true"
@@ -61,6 +61,12 @@
           </div>
 
           <div class="card-panel card-body">
+            <div class="row">
+              <div class="col s12">
+                Result per page: <span v-for="(v, i) in resultPerPage" :key="i"><a href="#" @click.prevent="changePaginationSize(v)" :class="{active: v === paginationSize}">{{v}}</a>{{i === resultPerPage.length - 1 ? '' : ' / '}}</span>
+              </div>
+            </div>
+
             <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
 
             <list-actions
@@ -257,7 +263,8 @@ export default {
       candidatesForDeletion: [],
       collectionMapping: {},
       mappingGeopoints: [],
-      selectedGeopoint: null
+      selectedGeopoint: null,
+      resultPerPage: [10, 25, 50, 100]
     }
   },
   computed: {
@@ -483,6 +490,13 @@ export default {
         })
       )
     },
+    changePaginationSize(size) {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          size
+        })
+      )
+    },
 
     // PERMISSIONS
     // =========================================================================
@@ -626,5 +640,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: safe;
+}
+
+.active {
+  color: $blue-color;
 }
 </style>

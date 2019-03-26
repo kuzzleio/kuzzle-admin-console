@@ -81,7 +81,7 @@ export default {
     },
     refreshAce() {
       setTimeout(() => {
-        this.editor.resize()
+        this.editor.focus()
       }, 500)
     }
   },

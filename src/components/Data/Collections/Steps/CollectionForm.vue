@@ -9,8 +9,10 @@
       <p>You can toggle the document-creation form using the checkbox below</p>
 
       <div class="row">
-        <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="$store.state.collection.allowForm"/>
-        <label for="allowForm" class="allow-form">Enable forms for this collection.</label>
+        <label>
+          <input type="checkbox" class="filled-in" id="allowForm" @change="changeAllowForm" :checked="$store.state.collection.allowForm"/>
+          <span class="allow-form">Enable forms for this collection.</span>
+        </label>
       </div>
 
       <div

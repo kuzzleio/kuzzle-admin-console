@@ -345,4 +345,23 @@ describe('Search', function() {
       expect($el.last()).to.contain('Marchesini')
     })
   })
+
+  it('transforms a search query from basic filter to raw filter', function() {
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+  
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar')
+    cy.get('.BasicFilter-submitBtn').click()
+  
+    cy.get('#raw').click()
+    cy.get('.ace_content')
+      .should('contain', 'query')
+      .and('contain', 'must')
+      .and('contain', 'match_phrase_prefix')
+      .and('contain', 'bar')
+  })
 })

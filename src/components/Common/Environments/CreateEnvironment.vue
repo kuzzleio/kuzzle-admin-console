@@ -31,10 +31,10 @@
         </div>
       </div>
       <div class="col s6">
-        <div class="input-field left-align">
-          <input class="CreateEnvironment-ssl" id="ssl" type="checkbox" v-model="environment.ssl">
-          <label for="ssl">use SSL</label>
-        </div>
+        <label>
+          <input class="CreateEnvironment-ssl" type="checkbox" id="usessl" :checked="environment.ssl" v-model="environment.ssl">
+          <span>use SSL</span>
+        </label>
       </div>
     </div>
 
