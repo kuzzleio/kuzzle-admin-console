@@ -3,6 +3,7 @@
     <Headline>
        Edit role - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
     </Headline>
+    <Notice></Notice>
     <create-or-update
       title="Update role"
       :update-id="id"
@@ -20,6 +21,7 @@
 <script>
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
+import Notice from '../Common/Notice'
 import kuzzle from '../../../services/kuzzle'
 import { getMappingRoles } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
@@ -28,7 +30,8 @@ export default {
   name: 'RolesUpdate',
   components: {
     Headline,
-    CreateOrUpdate
+    CreateOrUpdate,
+    Notice
   },
   data() {
     return {

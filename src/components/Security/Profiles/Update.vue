@@ -3,6 +3,7 @@
     <Headline>
        Edit profile - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
     </Headline>
+    <Notice></Notice>
     <create-or-update
       title="Update profile"
       :update-id="id"
@@ -21,6 +22,7 @@
 <script>
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
+import Notice from '../Common/Notice'
 import kuzzle from '../../../services/kuzzle'
 import { getMappingProfiles } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
@@ -29,7 +31,8 @@ export default {
   name: 'SecurityUpdate',
   components: {
     Headline,
-    CreateOrUpdate
+    CreateOrUpdate,
+    Notice
   },
   data() {
     return {

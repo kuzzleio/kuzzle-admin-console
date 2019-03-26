@@ -42,7 +42,7 @@
     "cypress": "^3.1.0"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.3.1",
+    "@fortawesome/fontawesome-free": "^5.8.1",
     "ace-builds": "git://github.com/ajaxorg/ace-builds.git#v1.1.8",
     "autoprefixer": "^6.7.2",
     "babel-core": "^6.26.3",
