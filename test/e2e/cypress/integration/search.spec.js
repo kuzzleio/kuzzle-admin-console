@@ -345,4 +345,28 @@ describe('Search', function() {
       expect($el.last()).to.contain('Marchesini')
     })
   })
+
+  it('transforms a search query from basic filter to raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'Adrien',
+      lastName: 'Maret',
+      job: 'Blockchain Keylogger as a Service'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+  
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+  
+    cy.get('.BasicFilter-translateBtn').click()
+    cy.get('.ace_content')
+      .should('contain', 'query')
+      .and('contain', 'must')
+      .and('contain', 'match_phrase_prefix')
+      .and('contain', 'Blockchain')
+  })
 })
