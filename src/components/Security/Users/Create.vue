@@ -4,6 +4,8 @@
       User - Create
     </headline>
 
+    <Notice></Notice>
+
     <div class="wrapper collection-edit">
       <stepper
         :current-step="editionStep"
@@ -54,6 +56,7 @@
 import Headline from '../../Materialize/Headline'
 import Stepper from '../../Common/Stepper'
 import StepsContent from './Steps/StepsContent'
+import Notice from '../Common/Notice'
 import kuzzle from '../../../services/kuzzle'
 
 export default {
@@ -61,7 +64,8 @@ export default {
   components: {
     Headline,
     Stepper,
-    StepsContent
+    StepsContent,
+    Notice
   },
   props: {
     index: String,

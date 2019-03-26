@@ -35,7 +35,7 @@
             </div>
 
             <div
-              v-if="!$store.state.collection.allowForm"
+              v-if="!$store.state.collection.allowForm && index && collection"
               class="DocumentCreateOrUpdate-formDisabled"
               >
                 <p>Document-creation form is not enabled for this collection</p>

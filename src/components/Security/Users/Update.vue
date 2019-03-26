@@ -4,6 +4,8 @@
       Edit user - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
     </headline>
 
+    <Notice></Notice>
+
     <div class="card-panel card-body">
       <div class="col s12">
         <tabs v-if="!loading" @tab-changed="switchTab" :active="activeTab" :object-tab-active="activeTabObject">
@@ -59,6 +61,7 @@ import kuzzle from '../../../services/kuzzle'
 import CredentialsEdit from '../Common/JsonWithMapping'
 import Tabs from '../../Materialize/Tabs'
 import Tab from '../../Materialize/Tab'
+import Notice from '../Common/Notice'
 import Promise from 'bluebird'
 import StepsContent from './Steps/StepsContent'
 
@@ -69,7 +72,8 @@ export default {
     CredentialsEdit,
     Tabs,
     Tab,
-    StepsContent
+    StepsContent,
+    Notice
   },
   data() {
     return {
