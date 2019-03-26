@@ -361,6 +361,7 @@ describe('Search', function() {
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-submitBtn').click()
   
     cy.get('#raw').click()
     cy.get('.ace_content')
