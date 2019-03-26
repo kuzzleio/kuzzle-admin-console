@@ -19,8 +19,8 @@
     <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
       <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
       <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
-        <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
-        <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
+        <tab id="basic" @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
+        <tab id="raw" @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
         <div slot="contents" class="card">
           <div class="col s12">

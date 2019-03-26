@@ -362,7 +362,7 @@ describe('Search', function() {
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
   
-    cy.get('.BasicFilter-translateBtn').click()
+    cy.get('#raw').click()
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
