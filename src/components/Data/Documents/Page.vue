@@ -462,23 +462,22 @@ export default {
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
-      this.performSearchDocuments(
-        this.collection,
-        this.index,
-        searchQuery,
-        pagination,
-        sorting
-      )
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+      try {
+        const res = this.performSearchDocuments(
+          this.collection,
+          this.index,
+          searchQuery,
+          pagination,
+          sorting
+        )
+        this.documents = res.documents
+        this.totalDocuments = res.total
+      } catch (e) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while performing search: <br />' + e.message
         })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, {
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-        })
+      }
     },
 
     // PAGINATION

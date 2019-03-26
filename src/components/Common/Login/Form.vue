@@ -85,19 +85,18 @@ export default {
     dismissError() {
       this.error = ''
     },
-    login() {
+    async login() {
       this.error = ''
-      this.$store
-        .dispatch(DO_LOGIN, {
-          username: this.username,
-          password: this.password
-        })
-        .then(() => {
-          this.onLogin()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      try {
+        await this.$store
+          .dispatch(DO_LOGIN, {
+            username: this.username,
+            password: this.password
+          })
+        this.onLogin()
+      } catch (err) {
+        this.error = err.message
+      }
     },
     loginAsGuest() {
       this.error = ''

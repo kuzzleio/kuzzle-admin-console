@@ -1,10 +1,6 @@
-import Kuzzle from 'kuzzle-sdk/dist/kuzzle'
-import Promise from 'bluebird'
-Kuzzle.prototype.bluebird = Promise
+import {WebSocket, Kuzzle} from 'kuzzle-sdk/dist/kuzzle'
 
-let kuzzle = new Kuzzle('localhost', {
-  connect: 'manual'
-})
+let kuzzle = new Kuzzle(new WebSocket('localhost'))
 
 window.kuzzle = kuzzle
 export default kuzzle

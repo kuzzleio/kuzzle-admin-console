@@ -1,4 +1,5 @@
 import kuzzle from './kuzzle'
+import {WebSocket} from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 // import * as actions from '../vuex/modules/auth/actions'
 import * as types from '../vuex/modules/auth/mutation-types'
@@ -34,19 +35,15 @@ export const connectToEnvironment = environment => {
     kuzzle.disconnect()
   }
 
-  kuzzle.host = environment.host
-  kuzzle.port = environment.port
-  kuzzle.sslConnection = environment.ssl
+  kuzzle.protocol = new WebSocket(environment.host, {
+    port: environment.port,
+    sslConnection: environment.ssl
+  })
   kuzzle.connect()
 }
 
 export const initStoreWithKuzzle = store => {
-  kuzzle.off('tokenExpired')
-  kuzzle.off('queryError')
-  kuzzle.off('networkError')
-  kuzzle.off('connected')
-  kuzzle.off('reconnected')
-  kuzzle.off('discarded')
+  kuzzle.removeAllListeners()
 
   kuzzle.on('queryError', error => {
     if (error && error.message) {
@@ -125,7 +122,7 @@ class Credentials {
   }
 }
 
-export const performSearchDocuments = (
+export const performSearchDocuments = async (
   collection,
   index,
   filters = {},
@@ -133,45 +130,44 @@ export const performSearchDocuments = (
   sort = []
 ) => {
   if (!collection || !index) {
-    return Promise.reject(new Error('Missing collection or index'))
+    throw new Error('Missong collection or index')
   }
 
-  return kuzzle
-    .collection(collection, index)
-    .searchPromise({ ...filters, sort }, { ...pagination })
-    .then(result => {
-      let additionalAttributeName = null
+  const result = await kuzzle
+    .collection
+    .search(index, collection, { ...filters, sort }, { ...pagination })
 
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
+  let additionalAttributeName = null
+
+  if (sort.length > 0) {
+    if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
+      additionalAttributeName = sort[0]
+    } else {
+      additionalAttributeName = Object.keys(sort[0])[0]
+    }
+  }
+
+  const documents = result.documents.map(document => {
+    const object = {
+      content: new Content(document.content),
+      id: document.id,
+      meta: new Meta(document.meta)
+    }
+
+    if (additionalAttributeName) {
+      object.additionalAttribute = {
+        name: additionalAttributeName,
+        value: getValueAdditionalAttribute(
+          document.content,
+          additionalAttributeName.split('.')
+        )
       }
+    }
 
-      const documents = result.documents.map(document => {
-        const object = {
-          content: new Content(document.content),
-          id: document.id,
-          meta: new Meta(document.meta)
-        }
+    return object
+  })
 
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(
-              document.content,
-              additionalAttributeName.split('.')
-            )
-          }
-        }
-
-        return object
-      })
-
-      return { documents, total: result.total }
-    })
+  return { documents, total: result.total }
 }
 
 export const getMappingDocument = (collection, index) => {
@@ -381,4 +377,44 @@ export const performDeleteProfiles = (index, collection, ids) => {
         {}
       )
     )
+}
+
+export const isKuzzleActionAllowed = (rights, controller, action, index, collection) => {
+  var filteredRights
+
+  if (!rights || typeof rights !== 'object') {
+    throw new Error('rights parameter is mandatory for isActionAllowed function')
+  }
+  if (!controller || typeof controller !== 'string') {
+    throw new Error('controller parameter is mandatory for isActionAllowed function')
+  }
+  if (!action || typeof action !== 'string') {
+    throw new Error('action parameter is mandatory for isActionAllowed function')
+  }
+
+  // We filter in all the rights that match the request (including wildcards).
+  filteredRights = rights
+    .filter(function (right) {
+      return right.controller === controller || right.controller === '*'
+    })
+    .filter(function (right) {
+      return right.action === action || right.action === '*'
+    })
+    .filter(function (right) {
+      return right.index === index || right.index === '*'
+    })
+    .filter(function (right) {
+      return right.collection === collection || right.collection === '*'
+    })
+
+  // Then, if at least one right allows the action, we return 'allowed'
+  if (filteredRights.some(function (item) { return item.value === 'allowed' })) {
+    return 'allowed'
+  }
+  // If no right allows the action, we check for conditionals.
+  if (filteredRights.some(function (item) { return item.value === 'conditional' })) {
+    return 'conditional'
+  }
+  // Otherwise we return 'denied'.
+  return 'denied'
 }
