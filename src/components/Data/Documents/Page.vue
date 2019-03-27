@@ -588,7 +588,7 @@ export default {
     addHumanReadableDateFields() {
       const keys = []
       const findDateFields = (mapping, previousKey) => {
-        for (let key in mapping) {
+        for (const key of Object.keys(mapping)) {
           if (typeof mapping[key] === 'object') {
             findDateFields(mapping[key], key)
           } else if (key === 'type' && mapping[key] === 'date') {
@@ -597,7 +597,7 @@ export default {
         }
       }
       const changeField = (document, keys) => {
-        for (let field in document) {
+        for (const field of Object.keys(document)) {
           if (keys.includes(field) && Number.isInteger(document[field])) {
             const date = new Date(document[field])
             document[field] += ` (${date.toUTCString()})`
