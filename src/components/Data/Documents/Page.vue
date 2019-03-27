@@ -584,6 +584,32 @@ export default {
         otherQueryParams
       )
       this.$router.push({ query: mergedQuery })
+    },
+    addHumanReadableDateFields() {
+      const keys = []
+      const findDateFields = (mapping, previousKey) => {
+        for (const key of Object.keys(mapping)) {
+          if (typeof mapping[key] === 'object') {
+            findDateFields(mapping[key], key)
+          } else if (key === 'type' && mapping[key] === 'date') {
+            keys.push(previousKey)
+          }
+        }
+      }
+      const changeField = (document, keys) => {
+        for (const field of Object.keys(document)) {
+          if (keys.includes(field) && Number.isInteger(document[field])) {
+            const date = new Date(document[field])
+            document[field] += ` (${date.toUTCString()})`
+          } else if (typeof document[field] === 'object') {
+            changeField(document[field], keys)
+          }
+        }
+      }
+      findDateFields(this.collectionMapping, null)
+      this.documents.forEach(document => {
+        changeField(document, keys)
+      })
     }
   },
   watch: {
@@ -606,6 +632,12 @@ export default {
           this.collection
         )
         this.fetchDocuments()
+      }
+    },
+    documents: {
+      immediate: true,
+      handler() {
+        this.addHumanReadableDateFields()
       }
     }
   }
