@@ -73,7 +73,7 @@ export default {
   },
   mounted() {
     const date = new Date(this.document.meta.createdAt)
-    this.document.meta.createdAt += ' (' + date.toUTCString() + ')'
+    this.document.meta.createdAt += ` (${date.toUTCString()})`
   },
   methods: {
     toggleCollapse() {

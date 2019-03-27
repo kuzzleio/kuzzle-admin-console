@@ -600,7 +600,7 @@ export default {
         for (let field in document) {
           if (keys.includes(field) && Number.isInteger(document[field])) {
             const date = new Date(document[field])
-            document[field] += ' (' + date.toUTCString() + ')'
+            document[field] += ` (${date.toUTCString()})`
           } else if (typeof document[field] === 'object') {
             changeField(document[field], keys)
           }
