@@ -86,6 +86,10 @@ import ModalDelete from './components/Common/Environments/ModalDelete'
 
 import Toaster from './components/Materialize/Toaster.vue'
 
+import * as types from './vuex/modules/auth/mutation-types'
+import * as kuzzleTypes from './vuex/modules/common/kuzzle/mutation-types'
+import { SET_TOAST } from './vuex/modules/common/toaster/mutation-types'
+
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
 
@@ -105,6 +109,35 @@ export default {
     SignUp,
     Login,
     CreateEnvironmentPage
+  },
+  mounted() {
+    this.$kuzzle.removeAllListeners()
+
+    this.$kuzzle.on('queryError', error => {
+      if (error && error.message) {
+        switch (error.message) {
+          case 'Token expired':
+          case 'Invalid token':
+          case 'Json Web Token Error':
+            this.$store.commit(types.SET_TOKEN_VALID, false)
+            this.$kuzzle.connect()
+            break
+        }
+      }
+    })
+    this.$kuzzle.on('networkError', error => {
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
+    })
+    this.$kuzzle.on('connected', () => {
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+    })
+    this.$kuzzle.on('reconnected', () => {
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+      this.$store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
+    })
+    this.$kuzzle.on('discarded', function(data) {
+      this.$store.commit(SET_TOAST, { text: data.message })
+    })
   },
   data() {
     return {

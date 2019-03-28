@@ -1,10 +1,6 @@
 import kuzzle from './kuzzle'
 import {WebSocket} from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
-// import * as actions from '../vuex/modules/auth/actions'
-import * as types from '../vuex/modules/auth/mutation-types'
-import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
-import { SET_TOAST } from '../vuex/modules/common/toaster/mutation-types'
 
 export const waitForConnected = (timeout = 1000) => {
   if (kuzzle.state !== 'connected') {
@@ -40,36 +36,6 @@ export const connectToEnvironment = environment => {
     sslConnection: environment.ssl
   })
   kuzzle.connect()
-}
-
-export const initStoreWithKuzzle = store => {
-  kuzzle.removeAllListeners()
-
-  kuzzle.on('queryError', error => {
-    if (error && error.message) {
-      switch (error.message) {
-        case 'Token expired':
-        case 'Invalid token':
-        case 'Json Web Token Error':
-          store.commit(types.SET_TOKEN_VALID, false)
-          kuzzle.connect()
-          break
-      }
-    }
-  })
-  kuzzle.on('networkError', error => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
-  })
-  kuzzle.on('connected', () => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
-  })
-  kuzzle.on('reconnected', () => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
-    store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
-  })
-  kuzzle.on('discarded', function(data) {
-    store.commit(SET_TOAST, { text: data.message })
-  })
 }
 
 // Helper for performSearch
