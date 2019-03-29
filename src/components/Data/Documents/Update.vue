@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     getMappingDocument,
-    update(document) {
+    update(document, replace = false) {
       this.submitted = true
       this.error = ''
 
@@ -90,9 +90,12 @@ export default {
         return
       }
 
+      let action = 'updateDocumentPromise'
+      if (replace) {
+        action = 'replaceDocumentPromise'
+      }
       return kuzzle
-        .collection(this.collection, this.index)
-        .updateDocumentPromise(
+        .collection(this.collection, this.index)[action](
           decodeURIComponent(this.$route.params.id),
           document,
           { refresh: 'wait_for' }
