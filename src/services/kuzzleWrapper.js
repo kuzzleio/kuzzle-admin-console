@@ -1,19 +1,19 @@
-import kuzzle from './kuzzle'
 import {WebSocket} from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
+import Vue from 'vue'
 
 export const waitForConnected = (timeout = 1000) => {
-  if (kuzzle.state !== 'connected') {
+  if (Vue.prototype.$kuzzle.state !== 'connected') {
     return new Promise((resolve, reject) => {
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
       let timeoutId = setTimeout(() => {
-        kuzzle.removeListener('connected', id)
+        Vue.prototype.$kuzzle.removeListener('connected', id)
         reject(new Error('Kuzzle does not respond'))
       }, timeout)
 
-      let id = kuzzle.addListener('connected', () => {
+      let id = Vue.prototype.$kuzzle.addListener('connected', () => {
         clearTimeout(timeoutId)
-        kuzzle.removeListener('connected', id)
+        Vue.prototype.$kuzzle.removeListener('connected', id)
         resolve()
       })
     })
@@ -27,15 +27,15 @@ export const connectToEnvironment = environment => {
   if (environment.port === undefined) environment.port = 7512
   if (typeof environment.ssl !== 'boolean') environment.ssl = false
 
-  if (kuzzle.state === 'connected') {
-    kuzzle.disconnect()
+  if (Vue.prototype.$kuzzle.state === 'connected') {
+    Vue.prototype.$kuzzle.disconnect()
   }
 
-  kuzzle.protocol = new WebSocket(environment.host, {
+  Vue.prototype.$kuzzle.protocol = new WebSocket(environment.host, {
     port: environment.port,
     sslConnection: environment.ssl
   })
-  kuzzle.connect()
+  Vue.prototype.$kuzzle.connect()
 }
 
 // Helper for performSearch
@@ -99,7 +99,7 @@ export const performSearchDocuments = async (
     throw new Error('Missong collection or index')
   }
 
-  const result = await kuzzle
+  const result = await Vue.prototype.$kuzzle
     .collection
     .search(index, collection, { ...filters, sort }, { ...pagination })
 
@@ -137,7 +137,7 @@ export const performSearchDocuments = async (
 }
 
 export const getMappingDocument = (collection, index) => {
-  return kuzzle.collection(collection, index).getMappingPromise()
+  return Vue.prototype.$kuzzle.collection(collection, index).getMappingPromise()
 }
 
 export const performSearchUsers = (
@@ -148,12 +148,12 @@ export const performSearchUsers = (
   sort = []
 ) => {
   let strategies
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise({ controller: 'auth', action: 'getStrategies' }, {})
     .then(res => {
       strategies = res.result
 
-      return kuzzle.security
+      return Vue.prototype.$kuzzle.security
         .searchUsersPromise({ ...filters, sort }, { ...pagination })
         .then(result => {
           let additionalAttributeName = null
@@ -188,7 +188,7 @@ export const performSearchUsers = (
 
             strategies.forEach(strategy => {
               promises.push(
-                kuzzle.security
+                Vue.prototype.$kuzzle.security
                   .getCredentialsPromise(strategy, document.id)
                   .then(res => {
                     object.credentials[strategy] = res
@@ -207,13 +207,13 @@ export const performSearchUsers = (
 }
 
 export const getMappingUsers = () => {
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise({ controller: 'security', action: 'getUserMapping' }, {})
     .then(res => res.result)
 }
 
 export const updateMappingUsers = newMapping => {
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise(
       { controller: 'security', action: 'updateUserMapping' },
       {
@@ -226,7 +226,7 @@ export const updateMappingUsers = newMapping => {
 }
 
 export const performSearchProfiles = (filters = {}, pagination = {}) => {
-  return kuzzle.security
+  return Vue.prototype.$kuzzle.security
     .searchProfilesPromise({ ...filters }, { size: 100, ...pagination })
     .then(result => {
       let profiles = result.profiles.map(document => {
@@ -244,13 +244,13 @@ export const performSearchProfiles = (filters = {}, pagination = {}) => {
 }
 
 export const getMappingProfiles = () => {
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise({ controller: 'security', action: 'getProfileMapping' }, {})
     .then(res => res.result)
 }
 
 export const performSearchRoles = (controllers = {}, pagination = {}) => {
-  return kuzzle.security
+  return Vue.prototype.$kuzzle.security
     .searchRolesPromise(controllers, { ...pagination })
     .then(result => {
       let roles = result.roles.map(document => {
@@ -268,7 +268,7 @@ export const performSearchRoles = (controllers = {}, pagination = {}) => {
 }
 
 export const getMappingRoles = () => {
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise({ controller: 'security', action: 'getRoleMapping' }, {})
     .then(res => res.result)
 }
@@ -284,7 +284,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle.queryPromise(
+  return Vue.prototype.$kuzzle.queryPromise(
     { controller: 'document', action: 'mDelete', collection, index },
     { body: { ids } },
     { refresh: 'wait_for' }
@@ -296,13 +296,13 @@ export const performDeleteUsers = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise(
       { controller: 'security', action: 'mDeleteUsers' },
       { body: { ids } }
     )
     .then(() =>
-      kuzzle.queryPromise(
+      Vue.prototype.$kuzzle.queryPromise(
         { controller: 'index', action: 'refreshInternal' },
         {}
       )
@@ -314,13 +314,13 @@ export const performDeleteRoles = ids => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise(
       { controller: 'security', action: 'mDeleteRoles' },
       { body: { ids } }
     )
     .then(() =>
-      kuzzle.queryPromise(
+      Vue.prototype.$kuzzle.queryPromise(
         { controller: 'index', action: 'refreshInternal' },
         {}
       )
@@ -332,13 +332,13 @@ export const performDeleteProfiles = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle
+  return Vue.prototype.$kuzzle
     .queryPromise(
       { controller: 'security', action: 'mDeleteProfiles' },
       { body: { ids } }
     )
     .then(() =>
-      kuzzle.queryPromise(
+      Vue.prototype.$kuzzle.queryPromise(
         { controller: 'index', action: 'refreshInternal' },
         {}
       )

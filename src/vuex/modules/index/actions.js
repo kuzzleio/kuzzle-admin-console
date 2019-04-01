@@ -1,4 +1,3 @@
-import kuzzle from '../../../services/kuzzle'
 import {
   dedupeRealtimeCollections,
   splitRealtimeStoredCollections,
@@ -8,10 +7,11 @@ import { removeIndex } from 'services/localStore'
 import Promise from 'bluebird'
 import * as types from './mutation-types'
 import * as collectionTypes from '../collection/mutation-types'
+import Vue from 'vue'
 
 export default {
   [types.CREATE_INDEX]({ commit }, index) {
-    return kuzzle
+    return Vue.prototype.$kuzzle
       .queryPromise({ index: index, controller: 'index', action: 'create' }, {})
       .then(() => {
         commit(types.ADD_INDEX, index)
@@ -19,7 +19,7 @@ export default {
       .catch(error => Promise.reject(new Error(error.message)))
   },
   [types.DELETE_INDEX]({ commit }, index) {
-    return kuzzle
+    return Vue.prototype.$kuzzle
       .queryPromise({ index: index, controller: 'index', action: 'delete' }, {})
       .then(() => {
         removeIndex(index)
@@ -28,7 +28,7 @@ export default {
       .catch(error => Promise.reject(new Error(error.message)))
   },
   async [types.LIST_INDEXES_AND_COLLECTION]({ commit }) {
-    let result = await kuzzle
+    let result = await Vue.prototype.$kuzzle
       .index
       .list()
 
@@ -36,7 +36,7 @@ export default {
     result = result.filter(index => index !== '%kuzzle')
     for (const index of result) {
       try {
-        const res = await kuzzle
+        const res = await Vue.prototype.$kuzzle
           .collection
           .list(index)
       
