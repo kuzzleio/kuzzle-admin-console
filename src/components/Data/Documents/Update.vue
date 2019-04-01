@@ -91,7 +91,7 @@ export default {
       }
 
       let action = 'updateDocumentPromise'
-      if (replace) {
+      if (replace === true) {
         action = 'replaceDocumentPromise'
       }
       return kuzzle
