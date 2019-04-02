@@ -102,7 +102,7 @@
               Create
             </button>
 
-            <button v-if="hideId" type="submit" class="btn primary waves-effect waves-light" ref="update" data-position="top" data-tooltip="Partially update a document, does not remove any attributes from a document." :disabled="submitted">
+            <button v-if="hideId" type="submit" class="btn primary waves-effect waves-light" ref="update" data-position="top" data-tooltip="Update some of a document's fields (does not remove unset attributes)." :disabled="submitted">
               <i class="fa fa-pencil-alt left"></i>
               Update
             </button>
