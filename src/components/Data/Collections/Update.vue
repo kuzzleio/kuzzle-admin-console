@@ -68,22 +68,21 @@ export default {
       this.error = payload
     }
   },
-  mounted() {
-    this.$store
-      .dispatch(LIST_INDEXES_AND_COLLECTION)
-      .then(() =>
-        this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-          index: this.index,
-          collection: this.$route.params.collection
-        })
-      )
-      .catch(e => {
-        this.$store.commit(SET_TOAST, { text: e.message })
-        this.$router.push({
-          name: 'DataIndexSummary',
-          params: { index: this.index }
-        })
+  async mounted() {
+    try {
+      await this.$store
+        .dispatch(LIST_INDEXES_AND_COLLECTION)
+      await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        index: this.index,
+        collection: this.$route.params.collection
       })
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$router.push({
+        name: 'DataIndexSummary',
+        params: { index: this.index }
+      })
+    }
   }
 }
 </script>

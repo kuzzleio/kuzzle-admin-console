@@ -10,13 +10,10 @@ import * as collectionTypes from '../collection/mutation-types'
 import Vue from 'vue'
 
 export default {
-  [types.CREATE_INDEX]({ commit }, index) {
-    return Vue.prototype.$kuzzle
-      .queryPromise({ index: index, controller: 'index', action: 'create' }, {})
-      .then(() => {
-        commit(types.ADD_INDEX, index)
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
+  async [types.CREATE_INDEX]({ commit }, index) {
+    await Vue.prototype.$kuzzle
+      .query({ index: index, controller: 'index', action: 'create' })
+    commit(types.ADD_INDEX, index)
   },
   [types.DELETE_INDEX]({ commit }, index) {
     return Vue.prototype.$kuzzle

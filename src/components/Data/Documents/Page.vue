@@ -352,7 +352,6 @@ export default {
     },
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
-
       for (const [attributeName, { type, properties }] of Object.entries(
         mapping
       )) {
@@ -390,22 +389,16 @@ export default {
     // DELETE
     // =========================================================================
     performDeleteDocuments,
-    onDeleteConfirmed(documentsToDelete) {
+    async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
-      this.performDeleteDocuments(
-        this.index,
-        this.collection,
-        documentsToDelete
-      )
-        .then(() => {
-          this.closeDeleteModal()
-          this.fetchDocuments()
-          this.deleteModalIsLoading = false
-          return null
-        })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
-        })
+      try {
+        await this.performDeleteDocuments(this.index, this.collection, documentsToDelete)
+        this.closeDeleteModal()
+        this.fetchDocuments()
+        this.deleteModalIsLoading = false
+      } catch (e) {
+        this.$store.commit(SET_TOAST, { text: e.message })
+      }
     },
     closeDeleteModal() {
       this.deleteModalIsOpen = false
@@ -442,7 +435,7 @@ export default {
         })
       }
     },
-    fetchDocuments() {
+    async fetchDocuments() {
       this.$forceUpdate()
 
       this.selectedDocuments = []
@@ -463,7 +456,7 @@ export default {
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       try {
-        const res = this.performSearchDocuments(
+        const res = await this.performSearchDocuments(
           this.collection,
           this.index,
           searchQuery,
@@ -545,15 +538,14 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    loadMappingInfo() {
-      getMappingDocument(this.collection, this.index).then(response => {
-        this.collectionMapping = response.mapping
+    async loadMappingInfo() {
+      const response = await getMappingDocument(this.collection, this.index)
+      this.collectionMapping = response[this.index].mappings[this.collection].properties
 
-        this.mappingGeopoints = this.listMappingGeopoints(
-          this.collectionMapping
-        )
-        this.selectedGeopoint = this.mappingGeopoints[0]
-      })
+      this.mappingGeopoints = this.listMappingGeopoints(
+        this.collectionMapping
+      )
+      this.selectedGeopoint = this.mappingGeopoints[0]
     },
     loadListView() {
       if (this.$route.query.listViewType) {
@@ -600,7 +592,7 @@ export default {
           if (keys.includes(field) && Number.isInteger(document[field])) {
             const date = new Date(document[field])
             document[field] += ` (${date.toUTCString()})`
-          } else if (typeof document[field] === 'object') {
+          } else if (document[field] && typeof document[field] === 'object') {
             changeField(document[field], keys)
           }
         }

@@ -10,7 +10,7 @@
       <div class="card horizontal tertiary col m5">
         <div class="card-content">
           <span class="card-title">Warning</span>
-          <p>This document has been edited while you were editing it. <a href="#" @click.prevent="fetch">Click here to refresh it</a></p>
+          <p>This document has been edited while you were editing it. <a href="#" @click.prevent="refresh">Click here to refresh it</a></p>
         </div>
       </div>
     </div>
@@ -45,7 +45,6 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
-import kuzzle from '../../../services/kuzzle'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import CollectionTabs from '../Collections/Tabs'
@@ -81,7 +80,7 @@ export default {
   },
   methods: {
     getMappingDocument,
-    update(document) {
+    async update(document) {
       this.submitted = true
       this.error = ''
 
@@ -90,25 +89,18 @@ export default {
         return
       }
 
-      return kuzzle
-        .collection(this.collection, this.index)
-        .updateDocumentPromise(
-          decodeURIComponent(this.$route.params.id),
-          document,
-          { refresh: 'wait_for' }
-        )
-        .then(() => {
-          this.$router.push({
-            name: 'DataDocumentsList',
-            params: { index: this.index, collection: this.collection }
-          })
+      try {
+        await this.$kuzzle.document.update(this.index, this.collection, this.$route.params.id, document, { refresh: 'wait_for' })
+        this.$router.push({
+          name: 'DataDocumentsList',
+          params: { index: this.index, collection: this.collection }
         })
-        .catch(err => {
-          this.error =
-            'An error occurred while trying to update the document: <br/> ' +
-            err.message
-          this.submitted = false
-        })
+      } catch (err) {
+        this.error =
+          'An error occurred while trying to update the document: <br/> ' +
+          err.message
+        this.submitted = false
+      }
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -120,41 +112,29 @@ export default {
         })
       }
     },
-    fetch() {
+    async fetch() {
       this.show = false
-      kuzzle
-        .collection(this.collection, this.index)
-        .fetchDocumentPromise(decodeURIComponent(this.$route.params.id))
-        .then(res => {
-          this.document = res.content
-          this.$emit('document-create::fill', res.content)
-          return null
-        })
-        .catch(err => {
-          this.$store.commit(SET_TOAST, { text: err.message })
-        })
+      try {
+        const res = await this.$kuzzle.document.get(this.index, this.collection, this.$route.params.id)
+        this.document = res._source
+        this.$emit('document-create::fill', res._source)
+      } catch (err) {
+        this.$store.commit(SET_TOAST, { text: err.message })
+      }
     },
     setError(payload) {
       this.error = payload
+    },
+    refresh() {
+      this.$router.go()
     }
   },
-  mounted() {
+  async mounted() {
     this.fetch()
-    kuzzle
-      .collection(this.collection, this.index)
-      .subscribe(
-        { ids: { values: [decodeURIComponent(this.$route.params.id)] } },
-        () => {
-          this.show = true
-        }
-      )
-      .onDone((error, kuzzleRoom) => {
-        if (error) {
-          /* TODO: manage subscription error */
-          return
-        }
-
-        room = kuzzleRoom
+    this.room = await this.$kuzzle.realtime.subscribe(this.index, this.collection,
+      { ids: { values: [decodeURIComponent(this.$route.params.id)] } },
+      () => {
+        this.show = true
       })
   },
   destroyed() {

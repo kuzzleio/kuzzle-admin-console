@@ -57,7 +57,9 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 class Content {
   constructor(content) {
     Object.keys(content).forEach(key => {
-      this[key] = content[key]
+      if (key !== '_kuzzle_info') {
+        this[key] = content[key]
+      }
     })
   }
 }
@@ -100,7 +102,7 @@ export const performSearchDocuments = async (
   }
 
   const result = await Vue.prototype.$kuzzle
-    .collection
+    .document
     .search(index, collection, { ...filters, sort }, { ...pagination })
 
   let additionalAttributeName = null
@@ -113,18 +115,18 @@ export const performSearchDocuments = async (
     }
   }
 
-  const documents = result.documents.map(document => {
+  const documents = result.hits.map(document => {
     const object = {
-      content: new Content(document.content),
-      id: document.id,
-      meta: new Meta(document.meta)
+      content: new Content(document._source),
+      id: document._id,
+      meta: new Meta(document._meta)
     }
 
     if (additionalAttributeName) {
       object.additionalAttribute = {
         name: additionalAttributeName,
         value: getValueAdditionalAttribute(
-          document.content,
+          document._source,
           additionalAttributeName.split('.')
         )
       }
@@ -132,12 +134,11 @@ export const performSearchDocuments = async (
 
     return object
   })
-
   return { documents, total: result.total }
 }
 
 export const getMappingDocument = (collection, index) => {
-  return Vue.prototype.$kuzzle.collection(collection, index).getMappingPromise()
+  return Vue.prototype.$kuzzle.collection.getMapping(index, collection)
 }
 
 export const performSearchUsers = (
@@ -284,11 +285,8 @@ export const performDeleteDocuments = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return Vue.prototype.$kuzzle.queryPromise(
-    { controller: 'document', action: 'mDelete', collection, index },
-    { body: { ids } },
-    { refresh: 'wait_for' }
-  )
+  return Vue.prototype.$kuzzle.query(
+    { controller: 'document', action: 'mDelete', collection, index, body: { ids }, refresh: 'wait_for' })
 }
 
 export const performDeleteUsers = (index, collection, ids) => {
