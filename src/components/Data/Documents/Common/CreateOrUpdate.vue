@@ -107,7 +107,7 @@
               Update
             </button>
 
-            <button @click.prevent="create(true)" class="btn primary waves-effect waves-light" ref="replace" data-position="top" data-tooltip="Replace a whole document, removes attributes if they are not set." :disabled="submitted" v-if="hideId">
+            <button @click.prevent="create(true)" class="btn primary waves-effect waves-light" ref="replace" data-position="top" data-tooltip="Replace the content of a document." :disabled="submitted" v-if="hideId">
               <i class="fa fa-fire-alt left"></i>
               Replace
             </button>
