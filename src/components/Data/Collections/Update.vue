@@ -49,20 +49,19 @@ export default {
     }
   },
   methods: {
-    update() {
+    async update() {
       this.error = ''
 
-      return this.$store
-        .dispatch(UPDATE_COLLECTION, { index: this.index })
-        .then(() => {
-          this.$router.push({
-            name: 'DataIndexSummary',
-            params: { index: this.index }
-          })
+      try {
+        await this.$store
+          .dispatch(UPDATE_COLLECTION, { index: this.index })
+        this.$router.push({
+          name: 'DataIndexSummary',
+          params: { index: this.index }
         })
-        .catch(e => {
-          this.error = e.message
-        })
+      } catch (e) {
+        this.error = e.message
+      }
     },
     setError(payload) {
       this.error = payload
