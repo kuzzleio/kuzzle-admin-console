@@ -216,12 +216,7 @@ export const getMappingUsers = () => {
 export const updateMappingUsers = newMapping => {
   return Vue.prototype.$kuzzle
     .queryPromise(
-      { controller: 'security', action: 'updateUserMapping' },
-      {
-        body: {
-          properties: newMapping
-        }
-      }
+      { controller: 'security', action: 'updateUserMapping', body: { properties: newMapping } }
     )
     .then(res => res.result)
 }
