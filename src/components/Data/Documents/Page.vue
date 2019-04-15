@@ -83,6 +83,7 @@
               @bulk-delete="onBulkDeleteClicked"
               @toggle-all="onToggleAllClicked"
               @select-geopoint="onSelectGeopoint"
+              @refresh="onRefreshClicked"
             >
             </list-actions>
 
@@ -421,7 +422,9 @@ export default {
       this.candidatesForDeletion.push(id)
       this.deleteModalIsOpen = true
     },
-
+    onRefreshClicked() {
+      this.fetchDocuments()
+    },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     performSearchDocuments,

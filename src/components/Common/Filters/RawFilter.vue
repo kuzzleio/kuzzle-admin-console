@@ -86,6 +86,9 @@ export default {
   },
   mounted () {
     this.filters.raw = filterManager.toSearchQuery(this.currentFilter)
+    if (this.currentFilter.raw.sort) {
+      this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
+    }
   },
   methods: {
     submitSearch() {
@@ -121,6 +124,9 @@ export default {
       immediate: true,
       handler(newValue, oldValue) {
         this.$set(this.filters, 'raw', filterManager.toSearchQuery(this.currentFilter))
+        if (this.currentFilter.raw.sort) {
+          this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
+        }
       }
     }
   }
