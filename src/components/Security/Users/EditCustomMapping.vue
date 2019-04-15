@@ -76,25 +76,23 @@ export default {
     onCancel() {
       this.$router.push({ name: 'SecurityUsersList' })
     },
-    save() {
-      return updateMappingUsers(this.mapping)
-        .then(() => {
-          this.$router.push({ name: 'SecurityUsersList' })
-        })
-        .catch(error => {
-          this.error = error.message
-        })
+    async save() {
+      try {
+        await updateMappingUsers(this.mapping)
+        this.$router.push({ name: 'SecurityUsersList' })
+      } catch (error) {
+        this.error = error.message
+      }
     },
     dismissError() {
       this.error = ''
     }
   },
-  mounted() {
+  async mounted() {
     this.loading = true
-    return getMappingUsers().then(result => {
-      this.mapping = result.mapping || {}
-      this.loading = false
-    })
+    const result = await getMappingUsers()
+    this.mapping = result.result.mapping || {}
+    this.loading = false
   }
 }
 </script>

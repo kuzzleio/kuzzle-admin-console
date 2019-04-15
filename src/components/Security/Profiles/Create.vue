@@ -22,8 +22,6 @@
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Notice from '../Common/Notice'
-import kuzzle from '../../../services/kuzzle'
-import { getMappingProfiles } from '../../../services/kuzzleWrapper'
 
 export default {
   name: 'ProfilesSecurityCreate',
@@ -47,8 +45,7 @@ export default {
     }
   },
   methods: {
-    getMappingProfiles,
-    create(profile) {
+    async create(profile) {
       this.error = ''
 
       if (!profile) {
@@ -62,21 +59,20 @@ export default {
 
       this.submitted = true
 
-      kuzzle.security
-        .createProfilePromise(this.id, profile.policies, {
-          replaceIfExist: true
-        })
-        .then(() => {
-          setTimeout(() => {
-            // we can't perform refresh index on %kuzzle
-            this.$router.push({ name: 'SecurityProfilesList' })
-          }, 1000)
-        })
-        .catch(e => {
-          this.error =
-            'An error occurred while creating profile: <br />' + e.message
-          this.submitted = false
-        })
+      try {
+        await this.$kuzzle.security
+          .createProfile(this.id, {policies: profile.policies}, {
+            replaceIfExist: true
+          })
+        setTimeout(() => {
+          // we can't perform refresh index on %kuzzle
+          this.$router.push({ name: 'SecurityProfilesList' })
+        }, 1000)
+      } catch (e) {
+        this.error =
+          'An error occurred while creating profile: <br />' + e.message
+        this.submitted = false
+      }
     },
     cancel() {
       this.$router.push({ name: 'SecurityProfilesList' })

@@ -14,44 +14,47 @@ import SessionUser from '../../../../../src/models/SessionUser'
 let triggerError
 const actionsInjector = require('inject-loader!../../../../../src/vuex/modules/auth/actions')
 const actions = actionsInjector({
-  '../../../services/kuzzle': {
-    unsetJwtToken() {
-      return this
-    },
-    loginPromise() {
-      return new Promise((resolve, reject) => {
-        if (triggerError.login) {
-          reject(new Error('login error'))
-        } else {
-          resolve({ _id: 'foo', jwt: 'jwt' })
+  'vue': {
+    prototype: {
+      $kuzzle: {
+        auth: {
+          login() {
+            return new Promise((resolve, reject) => {
+              if (triggerError.login) {
+                reject(new Error('login error'))
+              } else {
+                resolve({ _id: 'foo', jwt: 'jwt' })
+              }
+            })
+          },
+          getCurrentUser() {
+            return new Promise((resolve, reject) => {
+              if (triggerError.whoAmI) {
+                reject(new Error('whoAmI error'))
+              } else {
+                resolve({ _id: 'foo', jwt: 'jwt', content: { foo: 'bar' } })
+              }
+            })
+          },
+          getMyRights() {
+            return new Promise((resolve, reject) => {
+              if (triggerError.getMyRights) {
+                reject(new Error('getMyRights error'))
+              } else {
+                resolve([
+                  {
+                    controller: '*',
+                    action: '*',
+                    index: '*',
+                    collection: '*',
+                    value: 'allowed'
+                  }
+                ])
+              }
+            })
+          }
         }
-      })
-    },
-    whoAmIPromise() {
-      return new Promise((resolve, reject) => {
-        if (triggerError.whoAmI) {
-          reject(new Error('whoAmI error'))
-        } else {
-          resolve({ id: 'foo', jwt: 'jwt', content: { foo: 'bar' } })
-        }
-      })
-    },
-    getMyRightsPromise() {
-      return new Promise((resolve, reject) => {
-        if (triggerError.getMyRights) {
-          reject(new Error('getMyRights error'))
-        } else {
-          resolve([
-            {
-              controller: '*',
-              action: '*',
-              index: '*',
-              collection: '*',
-              value: 'allowed'
-            }
-          ])
-        }
-      })
+      }
     }
   },
   '../../../services/userCookies': {
@@ -173,7 +176,6 @@ describe('loginByToken action', () => {
       }
     ]
   }
-  const setJwtTokenStub = sinon.stub()
   const injectMock = (
     userIsValid = true,
     checkTokenError = false,
@@ -182,61 +184,55 @@ describe('loginByToken action', () => {
     kuzzleState = 'connecting'
   ) => {
     return actionsInjector({
-      '../../../services/kuzzle': {
-        state: kuzzleState,
-        checkTokenPromise: () => {
-          if (checkTokenError) {
-            return Promise.reject(new Error('checkToken error'))
-          } else {
-            if (userIsValid) {
-              return Promise.resolve({ valid: true })
-            }
-
-            return Promise.resolve({ valid: false })
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            protocol: {
+              state: kuzzleState
+            },
+            auth: {
+              checkToken: () => {
+                if (checkTokenError) {
+                  return Promise.reject(new Error('checkToken error'))
+                } else {
+                  if (userIsValid) {
+                    return Promise.resolve({ valid: true })
+                  }
+      
+                  return Promise.resolve({ valid: false })
+                }
+              },
+              getCurrentUser() {
+                if (whoAmIError) {
+                  return Promise.reject(new Error('whoAmI error'))
+                } else {
+                  return Promise.resolve({
+                    _id: loggedUser.id,
+                    content: loggedUser.params
+                  })
+                }
+              },
+              getMyRights() {
+                if (getMyRightsError) {
+                  return Promise.reject(new Error('getMyRights error'))
+                } else {
+                  return Promise.resolve(loggedUser.rights)
+                }
+              }
+            },
+            addListener(type, cb) {
+              this.state = 'connected'
+              cb()
+            },
+            removeListener: sinon.stub()
           }
-        },
-        whoAmIPromise() {
-          if (whoAmIError) {
-            return Promise.reject(new Error('whoAmI error'))
-          } else {
-            return Promise.resolve({
-              id: loggedUser.id,
-              content: loggedUser.params
-            })
-          }
-        },
-        getMyRightsPromise() {
-          if (getMyRightsError) {
-            return Promise.reject(new Error('getMyRights error'))
-          } else {
-            return Promise.resolve(loggedUser.rights)
-          }
-        },
-        setJwtToken: setJwtTokenStub,
-        unsetJwtToken: sinon.stub(),
-        addListener(type, cb) {
-          this.state = 'connected'
-          cb()
-        },
-        removeListener: sinon.stub()
+        }
       },
       '../../../services/environment': {
         setTokenToCurrentEnvironment: sinon.stub()
       }
     })
   }
-
-  it('should call setJwtToken with given token', done => {
-    let actions = injectMock()
-    const state = {
-      commit: () => {},
-      dispatch: () => {}
-    }
-    actions.default[LOGIN_BY_TOKEN](state, { token: 'a-token' }).then(() => {
-      expect(setJwtTokenStub.calledWith('a-token')).to.be.equal(true)
-      done()
-    })
-  })
 
   it('should not log the user if no token is provided', done => {
     let actions = injectMock()
@@ -293,20 +289,25 @@ describe('checkFirstAdmin action', () => {
 
   const injectMock = (exists = true) => {
     actions = actionsInjector({
-      '../../../services/kuzzle': {
-        state: kuzzleState,
-        queryPromise: () => {
-          if (triggerError) {
-            return Promise.reject(new Error('error from Kuzzle'))
-          } else {
-            if (exists) {
-              return Promise.resolve({ result: { exists: true } })
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            protocol: {
+              state: kuzzleState
+            },
+            query: () => {
+              if (triggerError) {
+                return Promise.reject(new Error('error from Kuzzle'))
+              } else {
+                if (exists) {
+                  return Promise.resolve({ result: { exists: true } })
+                }
+    
+                return Promise.resolve({ result: { exists: false } })
+              }
             }
-
-            return Promise.resolve({ result: { exists: false } })
           }
-        },
-        unsetJwtToken: sinon.spy()
+        }
       }
     })
   }
@@ -349,9 +350,14 @@ describe('checkFirstAdmin action', () => {
 
 describe('logout action', () => {
   const actions = actionsInjector({
-    '../../../services/kuzzle': {
-      logout: sinon.mock(),
-      unsetJwtToken: sinon.mock()
+    'vue': {
+      prototype: {
+        $kuzzle: {
+          auth: {
+            logout: sinon.mock()
+          }
+        }
+      }
     },
     '../../../services/userCookies': {
       delete: sinon.mock()

@@ -64,7 +64,6 @@ import {
   DO_LOGIN,
   PREPARE_SESSION
 } from '../../../vuex/modules/auth/mutation-types'
-import kuzzle from '../../../services/kuzzle'
 
 export default {
   name: 'LoginForm',
@@ -100,7 +99,7 @@ export default {
     },
     loginAsGuest() {
       this.error = ''
-      kuzzle.unsetJwtToken()
+      this.$kuzzle.jwt = null
       this.$store
         .dispatch(PREPARE_SESSION, 'anonymous')
         .then(() => {

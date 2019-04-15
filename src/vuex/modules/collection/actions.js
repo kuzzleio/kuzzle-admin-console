@@ -123,22 +123,16 @@ export default {
     localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
     return commit(types.SET_COLLECTION_DEFAULT_VIEW_JSON, { jsonView })
   },
-  [types.CLEAR_COLLECTION]({ state }, { index, collection }) {
-    return Vue.prototype.$kuzzle
+  async [types.CLEAR_COLLECTION]({ state }, { index }) {
+    await Vue.prototype.$kuzzle
       .query(
         {
           controller: 'collection',
-          action: 'truncate'
-        },
-        {
+          action: 'truncate',
           index,
-          collection: state.name
-        },
-        {
+          collection: state.name,
           refresh: 'wait_for'
         }
       )
-      .then(() => Promise.resolve)
-      .catch(error => Promise.reject(new Error(error.message)))
   }
 }

@@ -57,7 +57,6 @@
 
 <script>
 import Headline from '../../Materialize/Headline'
-import kuzzle from '../../../services/kuzzle'
 import CredentialsEdit from '../Common/JsonWithMapping'
 import Tabs from '../../Materialize/Tabs'
 import Tab from '../../Materialize/Tab'
@@ -132,19 +131,19 @@ export default {
       }
 
       try {
-        await kuzzle.security.replaceUserPromise(this.user.kuid, userObject)
+        await this.$kuzzle.security.replaceUser(this.user.kuid, userObject)
         await Promise.all(
           Object.keys(this.user.credentials).map(async strategy => {
-            const credentialsExists = await kuzzle.security.hasCredentialsPromise(strategy, this.user.kuid)
+            const credentialsExists = await this.$kuzzle.security.hasCredentials(strategy, this.user.kuid)
 
             if (credentialsExists) {
-              await kuzzle.security.updateCredentialsPromise(
+              await this.$kuzzle.security.updateCredentials(
                 strategy,
                 this.user.kuid,
                 this.user.credentials[strategy]
               )
             } else {
-              await kuzzle.security.createCredentialsPromise(
+              await this.$kuzzle.security.createCredentials(
                 strategy,
                 this.user.kuid,
                 this.user.credentials[strategy]
@@ -152,9 +151,8 @@ export default {
             }
           })
         )
-        await kuzzle.queryPromise(
-          { controller: 'index', action: 'refreshInternal' },
-          {}
+        await this.$kuzzle.query(
+          { controller: 'index', action: 'refreshInternal' }
         )
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (err) {

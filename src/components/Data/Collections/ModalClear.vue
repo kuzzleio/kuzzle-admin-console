@@ -22,8 +22,8 @@
                         {{error}}
                     </span>
                     <a @click.prevent="toggleTruncatedError()">
-                        <span v-if="errorTruncated">view more</span>
-                        <span v-if="!errorTruncated">view less</span>
+                        <span v-if="errorTruncated"><a href="#">view more</a></span>
+                        <span v-if="!errorTruncated"><a href="#">view less</a></span>
                     </a>
                 </div>
 
@@ -51,6 +51,8 @@
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .error {
+  font-size: 1.3rem;
+  line-height: 1.1;
   strong {
     display: block;
   }
@@ -97,34 +99,29 @@ export default {
   },
   methods: {
     refreshSearch() {
-      if (parseInt(this.$route.query.from) === 0) {
-        this.$router.push({ query: null })
-      } else {
-        this.$router.push({ query: { ...this.$route.query, from: 0 } })
-      }
+      this.$router.go()
     },
     toggleTruncatedError() {
       this.errorTruncated = !this.errorTruncated
     },
-    tryClearCollection() {
+    async tryClearCollection() {
       if (!this.index.trim() || !this.collection.trim()) {
         return
       }
 
-      this.$store
-        .dispatch(CLEAR_COLLECTION, {
-          index: this.index,
-          collection: this.collection
-        })
-        .then(() => {
-          this.collectionConfirmation = ''
-          this.error = ''
-          this.close()
-          this.refreshSearch()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      try {
+        await this.$store
+          .dispatch(CLEAR_COLLECTION, {
+            index: this.index,
+            collection: this.collection
+          })
+        this.collectionConfirmation = ''
+        this.error = ''
+        this.close()
+        this.refreshSearch()
+      } catch (err) {
+        this.error = err.message
+      }
     }
   },
   data() {

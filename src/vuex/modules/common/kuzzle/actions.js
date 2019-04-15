@@ -94,7 +94,7 @@ export default {
   },
   async [types.SWITCH_ENVIRONMENT]({ commit, state, dispatch }, id) {
     if (!id) {
-      return Promise.reject(new Error('No id provided'))
+      throw new Error('No id provided')
     }
 
     let environment = state.environments[id]

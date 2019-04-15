@@ -22,7 +22,6 @@
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Notice from '../Common/Notice'
-import kuzzle from '../../../services/kuzzle'
 import { getMappingRoles } from '../../../services/kuzzleWrapper'
 
 export default {
@@ -50,7 +49,7 @@ export default {
   },
   methods: {
     getMappingRoles,
-    create(role) {
+    async create(role) {
       this.error = ''
 
       if (!role) {
@@ -64,19 +63,18 @@ export default {
 
       this.submitted = true
 
-      kuzzle.security
-        .createRolePromise(this.id, role, { replaceIfExist: true })
-        .then(() => {
-          setTimeout(() => {
-            // we can't perform refresh index on %kuzzle
-            this.$router.push({ name: 'SecurityRolesList' })
-          }, 1000)
-        })
-        .catch(e => {
-          this.error =
-            'An error occurred while creating role: <br />' + e.message
-          this.submitted = false
-        })
+      try {
+        await this.$kuzzle.security
+          .createRole(this.id, role)
+        setTimeout(() => {
+          // we can't perform refresh index on %kuzzle
+          this.$router.push({ name: 'SecurityRolesList' })
+        }, 1000)
+      } catch (e) {
+        this.error =
+          'An error occurred while creating role: <br />' + e.message
+        this.submitted = false
+      }
     },
     cancel() {
       this.$router.push({ name: 'SecurityRolesList' })

@@ -2,8 +2,10 @@ import {WebSocket} from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
 
+// ### Environment
+
 export const waitForConnected = (timeout = 1000) => {
-  if (Vue.prototype.$kuzzle.state !== 'connected') {
+  if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
     return new Promise((resolve, reject) => {
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
       let timeoutId = setTimeout(() => {
@@ -27,7 +29,7 @@ export const connectToEnvironment = environment => {
   if (environment.port === undefined) environment.port = 7512
   if (typeof environment.ssl !== 'boolean') environment.ssl = false
 
-  if (Vue.prototype.$kuzzle.state === 'connected') {
+  if (Vue.prototype.$kuzzle.protocol.state === 'connected') {
     Vue.prototype.$kuzzle.disconnect()
   }
 
@@ -37,6 +39,8 @@ export const connectToEnvironment = environment => {
   })
   Vue.prototype.$kuzzle.connect()
 }
+
+// ### Data
 
 // Helper for performSearch
 let getValueAdditionalAttribute = (content, attributePath) => {
@@ -98,7 +102,7 @@ export const performSearchDocuments = async (
   sort = []
 ) => {
   if (!collection || !index) {
-    throw new Error('Missong collection or index')
+    throw new Error('Missing collection or index')
   }
 
   const result = await Vue.prototype.$kuzzle
@@ -141,134 +145,6 @@ export const getMappingDocument = (collection, index) => {
   return Vue.prototype.$kuzzle.collection.getMapping(index, collection)
 }
 
-export const performSearchUsers = (
-  collection,
-  index,
-  filters = {},
-  pagination = {},
-  sort = []
-) => {
-  let strategies
-  return Vue.prototype.$kuzzle
-    .queryPromise({ controller: 'auth', action: 'getStrategies' }, {})
-    .then(res => {
-      strategies = res.result
-
-      return Vue.prototype.$kuzzle.security
-        .searchUsersPromise({ ...filters, sort }, { ...pagination })
-        .then(result => {
-          let additionalAttributeName = null
-          let users = []
-          const promises = []
-
-          if (sort.length > 0) {
-            if (typeof sort[0] === 'string') {
-              additionalAttributeName = sort[0]
-            } else {
-              additionalAttributeName = Object.keys(sort[0])[0]
-            }
-          }
-
-          result.users.forEach(document => {
-            let object = {
-              content: new Content(document.content),
-              id: document.id,
-              credentials: new Credentials({}),
-              meta: new Meta(document.meta || {})
-            }
-
-            if (additionalAttributeName) {
-              object.additionalAttribute = {
-                name: additionalAttributeName,
-                value: getValueAdditionalAttribute(
-                  document.content,
-                  additionalAttributeName.split('.')
-                )
-              }
-            }
-
-            strategies.forEach(strategy => {
-              promises.push(
-                Vue.prototype.$kuzzle.security
-                  .getCredentialsPromise(strategy, document.id)
-                  .then(res => {
-                    object.credentials[strategy] = res
-                  })
-                  .catch(() => {})
-              )
-            })
-            users.push(object)
-          })
-
-          return Promise.all(promises).then(() => {
-            return { documents: users, total: result.total }
-          })
-        })
-    })
-}
-
-export const getMappingUsers = () => {
-  return Vue.prototype.$kuzzle
-    .queryPromise({ controller: 'security', action: 'getUserMapping' }, {})
-    .then(res => res.result)
-}
-
-export const updateMappingUsers = newMapping => {
-  return Vue.prototype.$kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'updateUserMapping', body: { properties: newMapping } }
-    )
-    .then(res => res.result)
-}
-
-export const performSearchProfiles = (filters = {}, pagination = {}) => {
-  return Vue.prototype.$kuzzle.security
-    .searchProfilesPromise({ ...filters }, { size: 100, ...pagination })
-    .then(result => {
-      let profiles = result.profiles.map(document => {
-        let object = {
-          content: document.content,
-          meta: new Meta(document.meta || {}),
-          id: document.id
-        }
-
-        return object
-      })
-
-      return { documents: profiles, total: result.total }
-    })
-}
-
-export const getMappingProfiles = () => {
-  return Vue.prototype.$kuzzle
-    .queryPromise({ controller: 'security', action: 'getProfileMapping' }, {})
-    .then(res => res.result)
-}
-
-export const performSearchRoles = (controllers = {}, pagination = {}) => {
-  return Vue.prototype.$kuzzle.security
-    .searchRolesPromise(controllers, { ...pagination })
-    .then(result => {
-      let roles = result.roles.map(document => {
-        let object = {
-          content: document.content,
-          meta: new Meta(document.meta || {}),
-          id: document.id
-        }
-
-        return object
-      })
-
-      return { documents: roles, total: result.total }
-    })
-}
-
-export const getMappingRoles = () => {
-  return Vue.prototype.$kuzzle
-    .queryPromise({ controller: 'security', action: 'getRoleMapping' }, {})
-    .then(res => res.result)
-}
-
 export const performDeleteDocuments = (index, collection, ids) => {
   if (
     !ids ||
@@ -284,57 +160,158 @@ export const performDeleteDocuments = (index, collection, ids) => {
     { controller: 'document', action: 'mDelete', collection, index, body: { ids }, refresh: 'wait_for' })
 }
 
-export const performDeleteUsers = (index, collection, ids) => {
-  if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return Promise.reject(new Error('ids<Array> parameter is required'))
+// ### Security
+
+// Users related
+export const performSearchUsers = async (
+  collection,
+  index,
+  filters = {},
+  pagination = {},
+  sort = []
+) => {
+  let strategies
+  const res = await Vue.prototype.$kuzzle
+    .query({ controller: 'auth', action: 'getStrategies' })
+  strategies = res.result
+
+  const result = await Vue.prototype.$kuzzle.security
+    .searchUsers({ ...filters, sort }, { ...pagination })
+  let additionalAttributeName = null
+  let users = []
+
+  if (sort.length > 0) {
+    if (typeof sort[0] === 'string') {
+      additionalAttributeName = sort[0]
+    } else {
+      additionalAttributeName = Object.keys(sort[0])[0]
+    }
   }
 
+  for (const document of result.hits) {
+    let object = {
+      content: new Content(document.content),
+      id: document._id,
+      credentials: new Credentials({}),
+      meta: new Meta(document.meta || {})
+    }
+
+    if (additionalAttributeName) {
+      object.additionalAttribute = {
+        name: additionalAttributeName,
+        value: getValueAdditionalAttribute(
+          document.content,
+          additionalAttributeName.split('.')
+        )
+      }
+    }
+
+    for (const strategy of strategies) {
+      try {
+        const res = await Vue.prototype.$kuzzle.security
+          .getCredentials(strategy, document._id)
+        object.credentials[strategy] = res
+      } catch (e) {}
+    }
+    users.push(object)
+  }
+
+  return {documents: users, total: result.total}
+}
+
+export const getMappingUsers = () => {
   return Vue.prototype.$kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'mDeleteUsers' },
-      { body: { ids } }
-    )
-    .then(() =>
-      Vue.prototype.$kuzzle.queryPromise(
-        { controller: 'index', action: 'refreshInternal' },
-        {}
-      )
+    .query({ controller: 'security', action: 'getUserMapping' })
+}
+
+export const updateMappingUsers = newMapping => {
+  return Vue.prototype.$kuzzle
+    .query(
+      { controller: 'security', action: 'updateUserMapping', body: { properties: newMapping } }
     )
 }
 
-export const performDeleteRoles = ids => {
+export const performDeleteUsers = async (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return Vue.prototype.$kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'mDeleteRoles' },
-      { body: { ids } }
+  await Vue.prototype.$kuzzle
+    .query(
+      { controller: 'security', action: 'mDeleteUsers', body: { ids } }
     )
-    .then(() =>
-      Vue.prototype.$kuzzle.queryPromise(
-        { controller: 'index', action: 'refreshInternal' },
-        {}
-      )
+  await Vue.prototype.$kuzzle
+    .query(
+      { controller: 'index', action: 'refreshInternal' }
     )
 }
 
-export const performDeleteProfiles = (index, collection, ids) => {
+// Profiles related
+export const performSearchProfiles = async (filters = {}, pagination = {}) => {
+  const result = await Vue.prototype.$kuzzle.security
+    .searchProfiles({ ...filters }, { size: 100, ...pagination })
+
+  let profiles = result.hits.map(document => {
+    let object = {
+      content: {policies: document.policies},
+      meta: new Meta(document.meta || {}),
+      id: document._id
+    }
+
+    return object
+  })
+  return { documents: profiles, total: result.total }
+}
+
+export const performDeleteProfiles = async (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return Vue.prototype.$kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'mDeleteProfiles' },
-      { body: { ids } }
+  await Vue.prototype.$kuzzle
+    .query(
+      { controller: 'security', action: 'mDeleteProfiles', body: { ids } }
     )
-    .then(() =>
-      Vue.prototype.$kuzzle.queryPromise(
-        { controller: 'index', action: 'refreshInternal' },
-        {}
-      )
+  await Vue.prototype.$kuzzle
+    .query(
+      { controller: 'index', action: 'refreshInternal' }
+    )
+}
+
+// Roles related
+export const performSearchRoles = async (controllers = {}, pagination = {}) => {
+  const result = await Vue.prototype.$kuzzle.security
+    .searchRoles(controllers, { ...pagination })
+  let roles = result.hits.map(document => {
+    let object = {
+      content: {controllers: document.controllers},
+      meta: new Meta(document.meta || {}),
+      id: document._id
+    }
+
+    return object
+  })
+
+  return { documents: roles, total: result.total }
+}
+
+export const getMappingRoles = async () => {
+  const res = Vue.prototype.$kuzzle
+    .query({ controller: 'security', action: 'getRoleMapping' })
+  return res.result
+}
+
+export const performDeleteRoles = async ids => {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return Promise.reject(new Error('ids<Array> parameter is required'))
+  }
+
+  await Vue.prototype.$kuzzle
+    .query(
+      { controller: 'security', action: 'mDeleteRoles', body: { ids } })
+  await Vue.prototype.$kuzzle
+    .query(
+      { controller: 'index', action: 'refreshInternal' }
     )
 }
 
