@@ -1,4 +1,4 @@
-import {WebSocket} from 'kuzzle-sdk/dist/kuzzle'
+import {WebSocket} from 'kuzzle-sdk'
 import Promise from 'bluebird'
 import Vue from 'vue'
 
@@ -34,9 +34,10 @@ export const connectToEnvironment = environment => {
   }
 
   Vue.prototype.$kuzzle.protocol = new WebSocket(environment.host, {
-    port: environment.port,
+    port: parseInt(environment.port),
     sslConnection: environment.ssl
   })
+  
   Vue.prototype.$kuzzle.connect()
 }
 
