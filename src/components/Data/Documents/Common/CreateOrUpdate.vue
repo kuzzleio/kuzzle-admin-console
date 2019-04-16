@@ -2,34 +2,40 @@
   <div class="DocumentCreateOrUpdate">
     <div class="card-panel">
       <form class="wrapper" @submit.prevent="create">
-
-        <div class="row" v-if="$store.state.collection.allowForm">
-
-        </div>
+        <div class="row" v-if="$store.state.collection.allowForm"></div>
 
         <div class="row input-id">
           <div class="col s6">
             <div class="input-field" v-if="!hideId">
-              <input id="id" type="text" name="collection" @input="updateId" v-focus :required="mandatoryId" />
+              <input
+                id="id"
+                type="text"
+                name="collection"
+                @input="updateId"
+                v-focus
+                :required="mandatoryId"
+              >
               <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
             </div>
           </div>
           <div class="col s6">
-            <div
-              class="switch right"
-              v-if="$store.state.collection.allowForm"
-              >
+            <div class="switch right" v-if="$store.state.collection.allowForm">
               <label>
                 Form
-                <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
+                <input
+                  :disabled="warningSwitch"
+                  type="checkbox"
+                  @change="switchView"
+                  :checked="$store.state.collection.defaultViewJson"
+                >
                 <span
                   class="lever"
                   v-title="{
                   active: warningSwitch,
                   position: 'bottom',
                   title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
-                  }">
-                </span>
+                  }"
+                ></span>
                 JSON
               </label>
             </div>
@@ -37,9 +43,9 @@
             <div
               v-if="!$store.state.collection.allowForm && index && collection"
               class="DocumentCreateOrUpdate-formDisabled"
-              >
-                <p>Document-creation form is not enabled for this collection</p>
-                <router-link :to="{name: 'DataCollectionEdit', params: {index, collection}}">Enable it</router-link>
+            >
+              <p>Document-creation form is not enabled for this collection</p>
+              <router-link :to="{name: 'DataCollectionEdit', params: {index, collection}}">Enable it</router-link>
             </div>
           </div>
         </div>
@@ -47,8 +53,11 @@
         <div class="row" v-if="isFormView">
           <div class="col s12 card">
             <div class="card-content">
-              <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="value">
-              </json-form>
+              <json-form
+                :schema="$store.getters.schemaMappingMerged"
+                @update-value="updateValue"
+                :document="value"
+              ></json-form>
             </div>
           </div>
         </div>
@@ -58,7 +67,14 @@
           <div class="col s6 card" :class="{s12: $store.state.collection.isRealtimeOnly}">
             <div class="card-content">
               <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
-              <json-editor id="document" class="document-json" :content="jsonDocument" ref="jsoneditor" @changed="jsonChanged" :height="500"></json-editor>
+              <json-editor
+                id="document"
+                class="document-json"
+                :content="jsonDocument"
+                ref="jsoneditor"
+                @changed="jsonChanged"
+                :height="500"
+              ></json-editor>
             </div>
           </div>
 
@@ -67,17 +83,22 @@
             <div class="card-content">
               <span class="card-title">Mapping</span>
 
-              <pre class="DocumentCreateOrUpdate-mapping" v-json-formatter="{content: $store.getters.simplifiedMapping, open: true}"></pre>
+              <pre
+                class="DocumentCreateOrUpdate-mapping"
+                v-json-formatter="{content: $store.getters.simplifiedMapping, open: true}"
+              ></pre>
             </div>
           </div>
         </div>
 
         <div class="row">
           <div class="col s5 m4 l3">
-            <a @click.prevent="cancel" class="btn-flat waves-effect">
-              Cancel
-            </a>
-            <button type="submit" class="btn primary waves-effect waves-light" :disabled="submitted">
+            <a @click.prevent="cancel" class="btn-flat waves-effect">Cancel</a>
+            <button
+              type="submit"
+              class="btn primary waves-effect waves-light"
+              :disabled="submitted"
+            >
               <i v-if="!hideId" class="fa fa-plus-circle left"></i>
               <i v-else class="fa fa-pencil left"></i>
               {{hideId ? 'Update' : 'Create'}}
@@ -90,7 +111,6 @@
             </div>
           </div>
         </div>
-
       </form>
     </div>
   </div>
@@ -121,7 +141,7 @@
     }
   }
 
-  .DocumentCreateOrUpdate-formDisabled {
+  &-formDisabled {
     float: right;
     font-size: 0.9em;
     font-weight: 800;
@@ -130,9 +150,10 @@
     text-align: right;
   }
 
-  .DocumentCreateOrUpdate-mapping {
+  &-mapping {
     height: 500px;
     margin: 0;
+    overflow-y: scroll;
   }
 
   .input-id {
