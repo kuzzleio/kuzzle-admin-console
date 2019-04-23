@@ -12,7 +12,7 @@ export default {
       .auth
       .login(
         'local',
-        { username: data.username, password: data.password },
+        data,
         '2h'
       )
     return dispatch(types.PREPARE_SESSION, jwt)
@@ -63,8 +63,7 @@ export default {
   },
   async [types.CHECK_FIRST_ADMIN]({ commit }) {
     try {
-      const res = await Vue.prototype.$kuzzle.query({ controller: 'server', action: 'adminExists' }, {})
-      if (!res.result.exists) {
+      if (!await Vue.prototype.$kuzzle.server.adminExists()) {
         return commit(types.SET_ADMIN_EXISTS, false)
       }
 

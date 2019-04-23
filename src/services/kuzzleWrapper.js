@@ -157,8 +157,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return Vue.prototype.$kuzzle.query(
-    { controller: 'document', action: 'mDelete', collection, index, body: { ids }, refresh: 'wait_for' })
+  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, {refresh: 'wait_for'})
 }
 
 // ### Security
@@ -171,10 +170,8 @@ export const performSearchUsers = async (
   pagination = {},
   sort = []
 ) => {
-  let strategies
-  const res = await Vue.prototype.$kuzzle
-    .query({ controller: 'auth', action: 'getStrategies' })
-  strategies = res.result
+  const strategies = await Vue.prototype.$kuzzle.auth
+    .getStrategies()
 
   const result = await Vue.prototype.$kuzzle.security
     .searchUsers({ ...filters, sort }, { ...pagination })
@@ -221,15 +218,13 @@ export const performSearchUsers = async (
 }
 
 export const getMappingUsers = () => {
-  return Vue.prototype.$kuzzle
-    .query({ controller: 'security', action: 'getUserMapping' })
+  return Vue.prototype.$kuzzle.security
+    .getUserMapping()
 }
 
 export const updateMappingUsers = newMapping => {
-  return Vue.prototype.$kuzzle
-    .query(
-      { controller: 'security', action: 'updateUserMapping', body: { properties: newMapping } }
-    )
+  return Vue.prototype.$kuzzle.security
+    .updateUserMapping({properties: newMapping})
 }
 
 export const performDeleteUsers = async (index, collection, ids) => {
@@ -237,14 +232,8 @@ export const performDeleteUsers = async (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  await Vue.prototype.$kuzzle
-    .query(
-      { controller: 'security', action: 'mDeleteUsers', body: { ids } }
-    )
-  await Vue.prototype.$kuzzle
-    .query(
-      { controller: 'index', action: 'refreshInternal' }
-    )
+  await Vue.prototype.$kuzzle.security
+    .mDeleteUsers(ids, {refresh: 'wait_for'})
 }
 
 // Profiles related
@@ -252,14 +241,12 @@ export const performSearchProfiles = async (filters = {}, pagination = {}) => {
   const result = await Vue.prototype.$kuzzle.security
     .searchProfiles({ ...filters }, { size: 100, ...pagination })
 
-  let profiles = result.hits.map(document => {
-    let object = {
+  const profiles = result.hits.map(document => {
+    return {
       content: {policies: document.policies},
       meta: new Meta(document.meta || {}),
       id: document._id
     }
-
-    return object
   })
   return { documents: profiles, total: result.total }
 }
@@ -269,14 +256,8 @@ export const performDeleteProfiles = async (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  await Vue.prototype.$kuzzle
-    .query(
-      { controller: 'security', action: 'mDeleteProfiles', body: { ids } }
-    )
-  await Vue.prototype.$kuzzle
-    .query(
-      { controller: 'index', action: 'refreshInternal' }
-    )
+  await Vue.prototype.$kuzzle.security
+    .mDeleteProfiles(ids, { refresh: 'wait_for' })
 }
 
 // Roles related
@@ -297,9 +278,8 @@ export const performSearchRoles = async (controllers = {}, pagination = {}) => {
 }
 
 export const getMappingRoles = async () => {
-  const res = Vue.prototype.$kuzzle
-    .query({ controller: 'security', action: 'getRoleMapping' })
-  return res.result
+  return Vue.prototype.$kuzzle.security
+    .getRoleMapping()
 }
 
 export const performDeleteRoles = async ids => {
@@ -307,13 +287,8 @@ export const performDeleteRoles = async ids => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  await Vue.prototype.$kuzzle
-    .query(
-      { controller: 'security', action: 'mDeleteRoles', body: { ids } })
-  await Vue.prototype.$kuzzle
-    .query(
-      { controller: 'index', action: 'refreshInternal' }
-    )
+  await Vue.prototype.$kuzzle.security
+    .mDeleteRoles(ids, {refresh: 'wait_for'})
 }
 
 export const isKuzzleActionAllowed = (rights, controller, action, index, collection) => {

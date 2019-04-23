@@ -12,12 +12,12 @@ import Vue from 'vue'
 export default {
   async [types.CREATE_INDEX]({ commit }, index) {
     await Vue.prototype.$kuzzle
-      .query({ index, controller: 'index', action: 'create' })
+      .index.create(index)
     commit(types.ADD_INDEX, index)
   },
   async [types.DELETE_INDEX]({ commit }, index) {
     await Vue.prototype.$kuzzle
-      .query({ index, controller: 'index', action: 'delete' })
+      .index.delete(index)
     removeIndex(index)
     commit(types.DELETE_INDEX, index)
   },

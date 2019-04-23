@@ -62,12 +62,8 @@ export default {
       try {
         await this.$kuzzle.security
           .createProfile(this.id, {policies: profile.policies}, {
-            replaceIfExist: true
+            refresh: 'wait_for'
           })
-        setTimeout(() => {
-          // we can't perform refresh index on %kuzzle
-          this.$router.push({ name: 'SecurityProfilesList' })
-        }, 1000)
       } catch (e) {
         this.error =
           'An error occurred while creating profile: <br />' + e.message

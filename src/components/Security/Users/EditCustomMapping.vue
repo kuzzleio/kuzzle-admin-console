@@ -91,7 +91,7 @@ export default {
   async mounted() {
     this.loading = true
     const result = await getMappingUsers()
-    this.mapping = result.result.mapping || {}
+    this.mapping = result.mapping || {}
     this.loading = false
   }
 }

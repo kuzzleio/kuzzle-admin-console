@@ -88,7 +88,7 @@ export default {
   },
   async mounted() {
     const response = await getMappingUsers()
-    this.userMapping = response.result.mapping
+    this.userMapping = response.mapping
   }
 }
 </script>

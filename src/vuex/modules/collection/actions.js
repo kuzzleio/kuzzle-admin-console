@@ -48,16 +48,8 @@ export default {
     }
 
     if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
-      const response = await Vue.prototype.$kuzzle
-        .query(
-          {
-            controller: 'collection',
-            action: 'getMapping',
-            collection: collection,
-            index: index
-          }
-        )
-      let result = response.result[index].mappings[collection]
+      const response = await Vue.prototype.$kuzzle.collection.getMapping(index, collection)
+      let result = response[index].mappings[collection]
       let schema = {}
       let allowForm = false
 
