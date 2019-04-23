@@ -20,11 +20,13 @@ describe('Index module', () => {
         'vue': {
           prototype: {
             $kuzzle: {
-              query: () => {
-                if (triggerError) {
-                  return Promise.reject(new Error('error'))
-                } else {
-                  return Promise.resolve({})
+              index: {
+                create: () => {
+                  if (triggerError) {
+                    return Promise.reject(new Error('error'))
+                  } else {
+                    return Promise.resolve({})
+                  }
                 }
               }
             }
@@ -54,11 +56,13 @@ describe('Index module', () => {
         'vue': {
           prototype: {
             $kuzzle: {
-              query: () => {
-                if (triggerError) {
-                  return Promise.reject(new Error('error'))
-                } else {
-                  return Promise.resolve({})
+              index: {
+                delete: () => {
+                  if (triggerError) {
+                    return Promise.reject(new Error('error'))
+                  } else {
+                    return Promise.resolve({})
+                  }
                 }
               }
             }

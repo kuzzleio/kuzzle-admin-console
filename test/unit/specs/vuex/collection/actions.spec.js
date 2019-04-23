@@ -24,7 +24,9 @@ describe('Collections module', () => {
           'vue': {
             prototype: {
               $kuzzle: {
-                query: sinon.stub()
+                collection: {
+                  getMapping: sinon.stub()
+                }
               }
             }
           }
@@ -47,7 +49,9 @@ describe('Collections module', () => {
           'vue': {
             prototype: {
               $kuzzle: {
-                query: sinon.stub()
+                collection: {
+                  getMapping: sinon.stub()
+                }
               }
             }
           }
@@ -68,9 +72,9 @@ describe('Collections module', () => {
           'vue': {
             prototype: {
               $kuzzle: {
-                query: ({controller, action, collection, index}) => {
-                  return Promise.resolve({
-                    result: {
+                collection: {
+                  getMapping: (index, collection) => {
+                    return Promise.resolve({
                       [index]: {
                         mappings: {
                           [collection]: {
@@ -78,8 +82,8 @@ describe('Collections module', () => {
                           }
                         }
                       }
-                    }
-                  })
+                    })
+                  }
                 }
               }
             }

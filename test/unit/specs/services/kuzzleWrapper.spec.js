@@ -170,15 +170,14 @@ describe('Kuzzle wrapper service', () => {
         'vue': {
           prototype: {
             $kuzzle: {
-              query() {
-                if (triggerError) {
-                  return Promise.reject(new Error('error'))
-                } else {
-                  return Promise.resolve()
+              document: {
+                mDelete() {
+                  if (triggerError) {
+                    return Promise.reject(new Error('error'))
+                  } else {
+                    return Promise.resolve()
+                  }
                 }
-              },
-              refreshIndex() {
-                return Promise.resolve()
               }
             }
           }
@@ -304,6 +303,11 @@ describe('Kuzzle wrapper service', () => {
         'vue': {
           prototype: {
             $kuzzle: {
+              auth: {
+                getStrategies: () => {
+                  return Promise.resolve(['strategy-1'])
+                }
+              },
               security: {
                 searchUsers: () => {
                   return Promise.resolve({
@@ -314,11 +318,6 @@ describe('Kuzzle wrapper service', () => {
                 getCredentials: () => {
                   return Promise.resolve(credentialExample)
                 }
-              },
-              query: () => {
-                return Promise.resolve({
-                  result: ['strategy-1']
-                })
               }
             }
           }
@@ -445,7 +444,9 @@ describe('Kuzzle wrapper service', () => {
       'vue': {
         prototype: {
           $kuzzle: {
-            query: queryStub
+            security: {
+              mDeleteUsers: queryStub
+            }
           }
         }
       }
@@ -464,7 +465,7 @@ describe('Kuzzle wrapper service', () => {
       return kuzzleWrapper
         .performDeleteUsers('myIndex', 'myCollection', [2])
         .then(() => {
-          expect(queryStub.callCount).to.be.equal(2)
+          expect(queryStub.callCount).to.be.equal(1)
         })
     })
   })
@@ -475,7 +476,9 @@ describe('Kuzzle wrapper service', () => {
       'vue': {
         prototype: {
           $kuzzle: {
-            query: queryStub
+            security: {
+              mDeleteProfiles: queryStub
+            }
           }
         }
       }
@@ -494,7 +497,7 @@ describe('Kuzzle wrapper service', () => {
       return kuzzleWrapper
         .performDeleteProfiles('myIndex', 'myCollection', [2])
         .then(() => {
-          expect(queryStub.callCount).to.be.equal(2)
+          expect(queryStub.callCount).to.be.equal(1)
         })
     })
   })
@@ -505,7 +508,9 @@ describe('Kuzzle wrapper service', () => {
       'vue': {
         prototype: {
           $kuzzle: {
-            query: queryStub
+            security: {
+              mDeleteRoles: queryStub
+            }
           }
         }
       }
@@ -522,7 +527,7 @@ describe('Kuzzle wrapper service', () => {
     })
     it('should not reject if ids are provided', () => {
       return kuzzleWrapper.performDeleteRoles([2]).then(() => {
-        expect(queryStub.callCount).to.be.equal(2)
+        expect(queryStub.callCount).to.be.equal(1)
       })
     })
   })

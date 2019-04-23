@@ -284,7 +284,6 @@ describe('loginByToken action', () => {
 
 describe('checkFirstAdmin action', () => {
   let kuzzleState = 'connecting'
-  let triggerError = false
   let actions
 
   const injectMock = (exists = true) => {
@@ -295,15 +294,12 @@ describe('checkFirstAdmin action', () => {
             protocol: {
               state: kuzzleState
             },
-            query: () => {
-              if (triggerError) {
-                return Promise.reject(new Error('error from Kuzzle'))
-              } else {
-                if (exists) {
-                  return Promise.resolve({ result: { exists: true } })
+            server: {
+              adminExists: () => {
+                if (triggerError) {
+                  throw new Error('error from Kuzzle')
                 }
-    
-                return Promise.resolve({ result: { exists: false } })
+                return exists
               }
             }
           }
