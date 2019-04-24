@@ -149,17 +149,14 @@ describe('Kuzzle actions', () => {
     })
   })
 
-  describe('SWITCH_ENVIRONMENT', () => {
-    it('should do nothing if id is null', done => {
-      testAction(actions.default[SWITCH_ENVIRONMENT], null, {}, [], done)
-    })
-    it('should throw error if the environment for the given id is null', () => {
-      expect(() => {
-        actions.default[SWITCH_ENVIRONMENT](
-          { state: { environments: {} } },
-          'toto'
-        )
-      }).to.throw(Error)
+  describe('SWITCH_ENVIRONMENT', done => {
+    it('should throw error if the environment for the given id is null', done => {
+      actions.default[SWITCH_ENVIRONMENT](
+        { state: { environments: {} } },
+        'toto'
+      ).catch(() => {
+        done()
+      })
     })
     it('should call reset', done => {
       testAction(

@@ -63,31 +63,28 @@ export default {
   },
   mounted() {
     if (canSearchIndex()) {
-      this.$store
-        .dispatch(LIST_INDEXES_AND_COLLECTION)
-        .then(() => {
-          this.setRouteExist()
-          return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-            index: this.$route.params.index,
-            collection: this.$route.params.collection
-          })
-        })
-        .catch(error => console.error(error))
+      this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
+      this.setRouteExist()
+      
+      this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        index: this.$route.params.index,
+        collection: this.$route.params.collection
+      })
     }
   },
   watch: {
     $route() {
       if (canSearchIndex()) {
-        this.$store
-          .dispatch(LIST_INDEXES_AND_COLLECTION)
-          .then(() => {
-            this.setRouteExist()
-            return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-              index: this.$route.params.index,
-              collection: this.$route.params.collection
-            })
+        try {
+          this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
+          this.setRouteExist()
+          return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+            index: this.$route.params.index,
+            collection: this.$route.params.collection
           })
-          .catch(err => this.$store.commit(SET_TOAST, { text: err.message }))
+        } catch (err) {
+          this.$store.commit(SET_TOAST, { text: err.message })
+        }
       }
     }
   }

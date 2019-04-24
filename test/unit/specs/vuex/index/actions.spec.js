@@ -17,12 +17,18 @@ describe('Index module', () => {
     describe('createIndex', () => {
       let triggerError = true
       let actions = actionsInjector({
-        '../../../services/kuzzle': {
-          queryPromise: (queryArgs, query) => {
-            if (triggerError) {
-              return Promise.reject(new Error('error'))
-            } else {
-              return Promise.resolve({})
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              index: {
+                create: () => {
+                  if (triggerError) {
+                    return Promise.reject(new Error('error'))
+                  } else {
+                    return Promise.resolve({})
+                  }
+                }
+              }
             }
           }
         }
@@ -47,12 +53,18 @@ describe('Index module', () => {
     describe('deleteIndex', () => {
       let triggerError = true
       let actions = actionsInjector({
-        '../../../services/kuzzle': {
-          queryPromise: (queryArgs, query) => {
-            if (triggerError) {
-              return Promise.reject(new Error('error'))
-            } else {
-              return Promise.resolve({})
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              index: {
+                delete: () => {
+                  if (triggerError) {
+                    return Promise.reject(new Error('error'))
+                  } else {
+                    return Promise.resolve({})
+                  }
+                }
+              }
             }
           }
         }
@@ -81,19 +93,27 @@ describe('Index module', () => {
     let sandbox = sinon.sandbox.create()
 
     const actions = actionsInjector({
-      '../../../services/kuzzle': {
-        listIndexes (cb) {
-          if (triggerError[0]) {
-            cb(new Error('error'))
-          } else {
-            cb(null, ['index1', 'index2'])
-          }
-        },
-        listCollections (index, cb) {
-          if (triggerError[1]) {
-            cb(new Error('error'))
-          } else {
-            cb(null, [{name: 'collection1', type: 'stored'}, {name: 'collection2', type: 'stored'}])
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            index: {
+              list () {
+                if (triggerError[0]) {
+                  return Promise.reject(new Error('error'))
+                } else {
+                  return Promise.resolve(['index1'])
+                }
+              }
+            },
+            collection: {
+              list () {
+                if (triggerError[1]) {
+                  return Promise.reject(new Error('error'))
+                } else {
+                  return Promise.resolve({collections: [{name: 'collection1', type: 'stored'}, {name: 'collection2', type: 'stored'}]})
+                }
+              }
+            }
           }
         }
       }
@@ -117,10 +137,6 @@ describe('Index module', () => {
         {type: RECEIVE_INDEXES_COLLECTIONS,
           payload: {
             index1: {
-              stored: ['collection1', 'collection2'],
-              realtime: []
-            },
-            index2: {
               stored: ['collection1', 'collection2'],
               realtime: []
             }

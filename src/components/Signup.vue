@@ -88,7 +88,6 @@
 </template>
 
 <script>
-import kuzzle from '../services/kuzzle'
 import * as types from '../vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
@@ -109,7 +108,7 @@ export default {
     }
   },
   methods: {
-    Signup() {
+    async Signup() {
       if (
         this.username === '' ||
         this.password1 === '' ||
@@ -127,38 +126,34 @@ export default {
       this.error = null
       this.waiting = true
 
-      const firstAdminRequest = {
-        _id: this.username,
-        reset: this.reset,
-        body: {
-          content: {},
-          credentials: {
-            local: {
-              username: this.username,
-              password: this.password1
+      try {
+        await this.$kuzzle
+          .query({
+            controller: 'security', 
+            action: 'createFirstAdmin',
+            _id: this.username,
+            reset: this.reset,
+            body: {
+              content: {},
+              credentials: {
+                local: {
+                  username: this.username,
+                  password: this.password1
+                }
+              }
             }
-          }
-        }
-      }
-
-      kuzzle
-        .queryPromise(
-          { controller: 'security', action: 'createFirstAdmin' },
-          firstAdminRequest
+          })
+        this.$store.dispatch(
+          kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT,
+          null
         )
-        .then(() => {
-          this.$store.dispatch(
-            kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT,
-            null
-          )
-          this.$store.commit(types.SET_ADMIN_EXISTS, true)
-          this.$router.push({ name: 'Login' })
-        })
-        .catch(err => {
-          // TODO manage this on the UI
-          console.error('An error occurred while creating the first admin', err)
-          this.$router.push({ name: 'Login' })
-        })
+        this.$store.commit(types.SET_ADMIN_EXISTS, true)
+        this.$router.push({ name: 'Login' })
+      } catch (err) {
+        // TODO manage this on the UI
+        console.error('An error occurred while creating the first admin', err)
+        this.$router.push({ name: 'Login' })
+      }
     },
     loginAsGuest() {
       this.error = ''
