@@ -23,12 +23,9 @@
         <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
       </a>
 
-      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black">
+      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black" v-if="canDelete">
         <li>
-          <a
-            v-bind:class="{'disabled': !canDelete}"
-            @click="deleteDocument"
-            v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
+          <a @click="deleteDocument">
             Delete
           </a>
         </li>

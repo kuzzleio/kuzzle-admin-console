@@ -2,7 +2,11 @@
   <div class="CollectionsList wrapper">
     <headline>
       {{index}}
-      <index-dropdown :index="index" class="icon-medium icon-black"></index-dropdown>
+      <index-dropdown 
+        v-if="canDeleteIndex(index)"
+        :index="index" 
+        class="icon-medium icon-black"
+      ></index-dropdown>
     </headline>
 
     <div class="row">
@@ -125,6 +129,7 @@ import IndexDropdown from '../Indexes/Dropdown'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionBoxed from '../Collections/Boxed'
 import {
+  canDeleteIndex,
   canSearchIndex,
   canSearchCollection,
   canCreateCollection
@@ -143,6 +148,7 @@ export default {
     IndexDropdown
   },
   methods: {
+    canDeleteIndex,
     canSearchIndex,
     canSearchCollection,
     canCreateCollection

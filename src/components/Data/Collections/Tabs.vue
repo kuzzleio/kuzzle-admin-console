@@ -6,21 +6,21 @@
           Browse
         </router-link>
       </li>
-      <li :class="{active: isRouteActive('DataCollectionWatch')}">
-        <router-link href="#!" :to="{name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}}">
+      <li
+        v-if="canSubscribe($route.params.index, $route.params.collection)"
+        :class="{active: isRouteActive('DataCollectionWatch')}">
+        <router-link href="#!"
+          :to="{name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}}">
           Watch
         </router-link>
       </li>
-      <li :class="{active: isRouteActive('DataCreateDocument')}">
-        <router-link v-if="canCreateDocument($route.params.index, $route.params.collection) && !$store.state.collection.isRealtimeOnly"
+      <li
+        v-if="canCreateDocument($route.params.index, $route.params.collection) && !$store.state.collection.isRealtimeOnly"
+        :class="{active: isRouteActive('DataCreateDocument')}">
+        <router-link
           :to="{name: 'DataCreateDocument', params: {index: $route.params.index, collection: $route.params.collection}}">
           Create a document
         </router-link>
-        <a v-if="!canCreateDocument($route.params.index, $route.params.collection) && !$store.state.collection.isRealtimeOnly"
-           class="disabled"
-           title="You are not allowed to create a document in this collection">
-          Create a document
-        </a>
       </li>
     </ul>
   </div>
@@ -53,7 +53,10 @@
 </style>
 
 <script>
-import { canCreateDocument } from '../../../services/userAuthorization'
+import {
+  canCreateDocument,
+  canSubscribe
+} from '../../../services/userAuthorization'
 
 export default {
   name: 'CollectionTabs',
@@ -65,7 +68,8 @@ export default {
 
       return this.$route.name === routeName
     },
-    canCreateDocument
+    canCreateDocument,
+    canSubscribe
   }
 }
 </script>

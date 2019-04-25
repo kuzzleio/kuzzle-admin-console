@@ -3,8 +3,7 @@
     <div class="col s8">
       <button
         class="btn btn-small waves-effect waves-light tertiary"
-        :disabled="!displayToggleAll"
-        :class="!displayToggleAll ? 'disabled' : ''"
+        v-if="displayToggleAll"
         @click="$emit('toggle-all')">
         <i class="fa left"
           :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
@@ -13,20 +12,17 @@
       </button>
 
       <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
+        v-if="displayCreate"
         @click.prevent="$emit('create')"
-        :disabled="!displayCreate"
-        :class="!displayCreate ? 'disabled' : ''"
-        :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
       >
         <i class="fa fa-plus-circle left"></i>
         Create
       </button>
 
-      <button class="btn btn-small waves-effect waves-light"
-        :class="displayBulkDelete ? 'red-color' : 'disabled'"
-        :disabled="!displayBulkDelete"
+      <button class="btn btn-small waves-effect waves-light red-color"
+        v-if="displayBulkDelete"
         @click="$emit('bulk-delete')"
-        :title="displayBulkDelete ? '' : 'You need to select at least one element'">
+      >
         <i class="fa fa-minus-circle left"></i>
         Delete
       </button>

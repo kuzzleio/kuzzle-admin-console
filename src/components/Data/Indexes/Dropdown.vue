@@ -1,9 +1,9 @@
 <template>
   <span>
     <dropdown class="IndexDropdown" :id="'index-' + index" :myclass="myclass">
-      <li v-if="!isList"><router-link :to="{name: 'DataIndexSummary', params: {index: index}}">Browse collections</router-link></li>
+      <li v-if="!isList"><router-link :to="{name: 'DataIndexSummary', params: {index}}">Browse collections</router-link></li>
       <li class="divider"></li>
-      <li><a @click.prevent="openModal" class="IndexDropdown-delete red-text">Delete</a></li>
+      <li v-if="canDeleteIndex(index)"><a @click.prevent="openModal" class="IndexDropdown-delete red-text">Delete</a></li>
     </dropdown>
 
     <modal-delete :id="'index-delete-' + index" :index="index" :is-open="isOpen" :close="close"></modal-delete>
@@ -14,6 +14,9 @@
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import ModalDelete from './ModalDelete'
+import {
+  canDeleteIndex
+} from '../../../services/userAuthorization'
 
 export default {
   name: 'IndexDropdown',
@@ -31,6 +34,7 @@ export default {
     ModalDelete
   },
   methods: {
+    canDeleteIndex,
     openModal() {
       this.isOpen = true
     },

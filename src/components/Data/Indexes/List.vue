@@ -17,8 +17,7 @@
                 <em>Currently there is no index.</em>
               </p>
               <button @click.prevent="openModal"
-                      v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
-                      :class="{unauthorized: !canCreateIndex()}"
+                      v-if="canCreateIndex()"
                       class="IndexesPage-createBtn btn primary waves-effect waves-light">
                 <i class="fa fa-plus-circle left"></i>
                 Create an index
@@ -30,8 +29,7 @@
         <div class="row actions" v-if="$store.state.index.indexes.length">
           <div class="col s9">
             <button class="IndexesPage-createBtn btn waves-effect waves-light primary"
-               v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
-               :class="{unauthorized: !canCreateIndex()}"
+               v-if="canCreateIndex()"
                @click.prevent="openModal">
               <i class="fa fa-plus-circle left"></i>
               <span>Create an index</span>
@@ -81,7 +79,7 @@
               :key="key">
             </index-boxed>
           </div>
-          <modal-create v-if="canCreateIndex" id="index-create" :is-open="isOpen" :close="close"></modal-create>
+          <modal-create v-if="canCreateIndex()" id="index-create" :is-open="isOpen" :close="close"></modal-create>
         </div>
 
       </div>
