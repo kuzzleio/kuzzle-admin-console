@@ -77,9 +77,11 @@ export default {
     }
   },
   async [types.DO_LOGOUT]({ commit, dispatch }) {
-    await Vue.prototype.$kuzzle
-      .auth
-      .logout()
+    if (Vue.prototype.$kuzzle.jwt) {
+      await Vue.prototype.$kuzzle
+        .auth
+        .logout()
+    }
     Vue.prototype.$kuzzle.jwt = null
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
     commit(types.SET_CURRENT_USER, SessionUser())
