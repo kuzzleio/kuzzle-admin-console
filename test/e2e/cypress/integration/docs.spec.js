@@ -150,3 +150,102 @@ describe('Document List', function() {
       .contains('Delete')
   })
 })
+
+describe('Document update/replace', () => {
+  const kuzzleUrl = 'http://localhost:7512'
+  const indexName = 'testindex'
+  const collectionName = 'testcollection'
+
+  beforeEach(() => {
+    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`, {
+      foo: 'bar',
+      more: 'moar'
+    })
+
+    const validEnvName = 'valid'
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [validEnvName]: {
+          name: validEnvName,
+          color: '#002835',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          token: null
+        }
+      })
+    )
+  })
+
+  it('should update a document', () => {
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.DocumentListItem')
+    .contains('myId')
+    .parent()
+    .siblings('.DocumentListItem-actions')
+    .children('.DocumentListItem-update')
+    .click()
+
+    cy
+    .get('#document .ace_line')
+    .should('be.visible')
+
+    cy.get('#document .ace_line')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{{}"foo":"changed"}`, {
+      force: true
+    })
+    cy.get('.DocumentUpdate')
+    .click()
+
+    cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`)
+    .then(res => {
+      expect(res.body.result._source.foo).to.be.equals('changed')
+      expect(res.body.result._source.more).to.be.equals('moar')
+    })
+  })
+
+  it('should replace a document', () => {
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.DocumentListItem')
+    .contains('myId')
+    .parent()
+    .siblings('.DocumentListItem-actions')
+    .children('.DocumentListItem-update')
+    .click()
+
+    cy
+    .get('#document .ace_line')
+    .should('be.visible')
+
+    cy.get('#document .ace_line')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{{}"foo":"changed"}`, {
+      force: true
+    })
+    cy.get('.DocumentReplace')
+    .click()
+
+    cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`)
+    .then(res => {
+      expect(res.body.result._source.foo).to.be.equals('changed')
+      expect(res.body.result._source.more).to.be.undefined
+    })
+  })
+})

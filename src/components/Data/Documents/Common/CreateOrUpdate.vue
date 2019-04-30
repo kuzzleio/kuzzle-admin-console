@@ -102,12 +102,12 @@
               Create
             </button>
 
-            <button v-if="hideId" type="submit" class="btn primary waves-effect waves-light" ref="update" data-position="top" data-tooltip="Update some of a document's fields (does not remove unset attributes)." :disabled="submitted">
+            <button v-if="hideId" type="submit" class="btn primary waves-effect waves-light DocumentUpdate" ref="update" data-position="top" data-tooltip="Update some of a document's fields (does not remove unset attributes)." :disabled="submitted">
               <i class="fa fa-pencil-alt left"></i>
               Update
             </button>
 
-            <button @click.prevent="create(true)" class="btn primary waves-effect waves-light" ref="replace" data-position="top" data-tooltip="Replace the content of a document." :disabled="submitted" v-if="hideId">
+            <button @click.prevent="create(true)" class="btn primary waves-effect waves-light DocumentReplace" ref="replace" data-position="top" data-tooltip="Replace the content of a document." :disabled="submitted" v-if="hideId">
               <i class="fa fa-fire-alt left"></i>
               Replace
             </button>
