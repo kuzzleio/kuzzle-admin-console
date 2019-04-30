@@ -57,7 +57,6 @@ import Headline from '../../Materialize/Headline'
 import Stepper from '../../Common/Stepper'
 import StepsContent from './Steps/StepsContent'
 import Notice from '../Common/Notice'
-import kuzzle from '../../../services/kuzzle'
 
 export default {
   name: 'UsersSecurityCreate',
@@ -125,7 +124,7 @@ export default {
     }
   },
   methods: {
-    create() {
+    async create() {
       if (this.submitted) {
         return
       }
@@ -140,19 +139,17 @@ export default {
         }
       }
 
-      kuzzle.security
-        .createUserPromise(this.user.kuid, userObject)
-        .then(() =>
-          kuzzle.queryPromise(
-            { controller: 'index', action: 'refreshInternal' },
-            {}
-          )
+      try {
+        await this.$kuzzle.security
+          .createUser(this.user.kuid, userObject)
+        this.$kuzzle.query(
+          { controller: 'index', action: 'refreshInternal' }
         )
-        .then(() => this.$router.push({ name: 'SecurityUsersList' }))
-        .catch(err => {
-          this.error = err.message
-          this.submitted = false
-        })
+        this.$router.push({ name: 'SecurityUsersList' })
+      } catch (err) {
+        this.error = err.message
+        this.submitted = false
+      }
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {

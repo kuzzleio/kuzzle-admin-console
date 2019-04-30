@@ -16,11 +16,15 @@ describe('Security module', () => {
 
   beforeEach(() => {
     actions = actionsInjector({
-      '../../../services/kuzzle': {
-        queryPromise: () => {
-          return Promise.resolve({
-            result: exampleMapping
-          })
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            query: () => {
+              return Promise.resolve({
+                result: exampleMapping
+              })
+            }
+          }
         }
       }
     })

@@ -49,41 +49,39 @@ export default {
     }
   },
   methods: {
-    update() {
+    async update() {
       this.error = ''
 
-      return this.$store
-        .dispatch(UPDATE_COLLECTION, { index: this.index })
-        .then(() => {
-          this.$router.push({
-            name: 'DataIndexSummary',
-            params: { index: this.index }
-          })
+      try {
+        await this.$store
+          .dispatch(UPDATE_COLLECTION, { index: this.index })
+        this.$router.push({
+          name: 'DataIndexSummary',
+          params: { index: this.index }
         })
-        .catch(e => {
-          this.error = e.message
-        })
+      } catch (e) {
+        this.error = e.message
+      }
     },
     setError(payload) {
       this.error = payload
     }
   },
-  mounted() {
-    this.$store
-      .dispatch(LIST_INDEXES_AND_COLLECTION)
-      .then(() =>
-        this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-          index: this.index,
-          collection: this.$route.params.collection
-        })
-      )
-      .catch(e => {
-        this.$store.commit(SET_TOAST, { text: e.message })
-        this.$router.push({
-          name: 'DataIndexSummary',
-          params: { index: this.index }
-        })
+  async mounted() {
+    try {
+      await this.$store
+        .dispatch(LIST_INDEXES_AND_COLLECTION)
+      await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        index: this.index,
+        collection: this.$route.params.collection
       })
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$router.push({
+        name: 'DataIndexSummary',
+        params: { index: this.index }
+      })
+    }
   }
 }
 </script>

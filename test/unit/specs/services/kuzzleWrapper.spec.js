@@ -5,7 +5,23 @@ let sandbox = sinon.sandbox.create()
 describe('Kuzzle wrapper service', () => {
   describe('performSearch tests', () => {
     let triggerError = true
-    let fakeResponse = {
+    const fakeResponse = {
+      total: 42,
+      hits: [
+        {
+          _source: {
+            name: {
+              first: 'toto'
+            }
+          },
+          _id: 'id',
+          _meta: {
+            createdAt: 10101101
+          }
+        }
+      ]
+    }
+    const fakeFormattedResponse = {
       total: 42,
       documents: [
         {
@@ -21,7 +37,7 @@ describe('Kuzzle wrapper service', () => {
         }
       ]
     }
-    let responseWithAdditionalAttr = {
+    const formattedResponseWithAdditionalAttr = {
       documents: [
         {
           content: { name: { first: 'toto' } },
@@ -38,24 +54,19 @@ describe('Kuzzle wrapper service', () => {
 
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          collection() {
-            return {
-              search(filters, cb) {
-                if (triggerError) {
-                  cb(new Error('error'))
-                } else {
-                  cb(null, fakeResponse)
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              document: {
+                search() {
+                  return new Promise((resolve, reject) => {
+                    if (triggerError) {
+                      reject(new Error('error'))
+                    } else {
+                      resolve(fakeResponse)
+                    }
+                  })
                 }
-              },
-              searchPromise() {
-                return new Promise((resolve, reject) => {
-                  if (triggerError) {
-                    reject(new Error('error'))
-                  } else {
-                    resolve(fakeResponse)
-                  }
-                })
               }
             }
           }
@@ -88,7 +99,7 @@ describe('Kuzzle wrapper service', () => {
       kuzzleWrapper
         .performSearchDocuments('collection', 'index')
         .then(res => {
-          expect(res).to.deep.equals(fakeResponse)
+          expect(res).to.deep.equals(fakeFormattedResponse)
           done()
         })
         .catch(e => done(e))
@@ -101,7 +112,7 @@ describe('Kuzzle wrapper service', () => {
           { 'name.first': 'asc' }
         ])
         .then(res => {
-          expect(res).to.deep.equals(responseWithAdditionalAttr)
+          expect(res).to.deep.equals(formattedResponseWithAdditionalAttr)
           done()
         })
         .catch(() => {})
@@ -112,10 +123,12 @@ describe('Kuzzle wrapper service', () => {
       kuzzleWrapper
         .performSearchDocuments('collection', 'index', {}, {}, ['name.first'])
         .then(res => {
-          expect(res).to.deep.equals(responseWithAdditionalAttr)
+          expect(res).to.deep.equals(formattedResponseWithAdditionalAttr)
           done()
         })
-        .catch(() => {})
+        .catch(err => {
+          console.error(err)
+        })
     })
   })
 
@@ -126,10 +139,16 @@ describe('Kuzzle wrapper service', () => {
 
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          disconnect: disconnectMock,
-          connect: connectMock,
-          state: 'connected'
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              protocol: {
+                state: 'connected'
+              },
+              disconnect: disconnectMock,
+              connect: connectMock
+            }
+          }
         }
       })
     })
@@ -148,23 +167,29 @@ describe('Kuzzle wrapper service', () => {
 
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          queryPromise() {
-            if (triggerError) {
-              return Promise.reject(new Error('error'))
-            } else {
-              return Promise.resolve()
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              document: {
+                mDelete() {
+                  if (triggerError) {
+                    return Promise.reject(new Error('error'))
+                  } else {
+                    return Promise.resolve()
+                  }
+                }
+              }
             }
-          },
-          refreshIndex(index) {
-            return Promise.resolve()
           }
         }
       })
     })
 
-    it('should do nothing if there is no ids nor index and collection', () => {
+    it('should reject a promise if no ids are given', done => {
       kuzzleWrapper.performDeleteDocuments()
+        .catch(() => {
+          done()
+        })
     })
 
     it('should reject a promise', done => {
@@ -193,8 +218,14 @@ describe('Kuzzle wrapper service', () => {
 
     it('should resolve if kuzzle is connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          state: 'connected'
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              protocol: {
+                state: 'connected'
+              }
+            }
+          }
         }
       })
 
@@ -206,12 +237,18 @@ describe('Kuzzle wrapper service', () => {
 
     it('should resolve if kuzzle trigger event connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          state: 'connecting',
-          addListener(event, cb) {
-            cb()
-          },
-          removeListener
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              protocol: {
+                state: 'connectiong'
+              },
+              addListener(event, cb) {
+                cb()
+              },
+              removeListener
+            }
+          }
         }
       })
 
@@ -226,10 +263,16 @@ describe('Kuzzle wrapper service', () => {
 
     it('should reject if kuzzle never trigger event connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          state: 'connecting',
-          addListener: sandbox.stub(),
-          removeListener
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              protocol: {
+                state: 'connectiong'
+              },
+              addListener: sandbox.stub(),
+              removeListener
+            }
+          }
         }
       })
 
@@ -242,46 +285,13 @@ describe('Kuzzle wrapper service', () => {
     })
   })
 
-  describe('initStoreWithKuzzle', () => {
-    let kuzzleWrapper
-    let off = sandbox.stub()
-    let on = sandbox.stub()
-    let setTokenValid = sandbox.stub()
-
-    it('should call off and on with right params', () => {
-      kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          host: 'toto',
-          port: 8888,
-          state: 'connecting',
-          addListener(event, cb) {
-            cb({ message: null })
-          },
-          off,
-          on
-        }
-      })
-
-      let store = { state: { kuzzle: {} }, commit: sandbox.stub() }
-      kuzzleWrapper.initStoreWithKuzzle(store)
-
-      expect(off.calledWith('tokenExpired'))
-      expect(off.calledWith('queryError'))
-      expect(off.calledWith('networkError'))
-      expect(off.calledWith('connected'))
-      expect(off.calledWith('reconnected'))
-      expect(off.calledWith('discarded'))
-      expect(setTokenValid.calledWithMatch(store, false))
-    })
-  })
-
   describe('performSearchUsers', () => {
     let kuzzleWrapper
     const userExample = {
       content: {
         aField: 'aValue'
       },
-      id: 'toto',
+      _id: 'toto',
       meta: {}
     }
     const credentialExample = {
@@ -290,22 +300,26 @@ describe('Kuzzle wrapper service', () => {
     }
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          security: {
-            searchUsersPromise: () => {
-              return Promise.resolve({
-                users: [userExample],
-                total: 1
-              })
-            },
-            getCredentialsPromise: () => {
-              return Promise.resolve(credentialExample)
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              auth: {
+                getStrategies: () => {
+                  return Promise.resolve(['strategy-1'])
+                }
+              },
+              security: {
+                searchUsers: () => {
+                  return Promise.resolve({
+                    hits: [userExample],
+                    total: 1
+                  })
+                },
+                getCredentials: () => {
+                  return Promise.resolve(credentialExample)
+                }
+              }
             }
-          },
-          queryPromise: () => {
-            return Promise.resolve({
-              result: ['strategy-1']
-            })
           }
         }
       })
@@ -320,7 +334,7 @@ describe('Kuzzle wrapper service', () => {
           expect(res.total).to.be.equal(1)
           expect(res.documents).to.be.an('array')
           expect(res.documents.length).to.be.equal(1)
-          expect(res.documents[0].id).to.be.equal(userExample.id)
+          expect(res.documents[0].id).to.be.equal(userExample._id)
           expect(res.documents[0].meta).to.eql(userExample.meta)
           expect(res.documents[0].content).to.eql(userExample.content)
           expect(res.documents[0].credentials).to.eql({
@@ -345,21 +359,25 @@ describe('Kuzzle wrapper service', () => {
   describe('performSearchProfiles', () => {
     let kuzzleWrapper
     const profileExample = {
-      content: {
+      policies: {
         aField: 'aValue'
       },
       meta: {},
-      id: 'toto'
+      _id: 'toto'
     }
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          security: {
-            searchProfilesPromise: () => {
-              return Promise.resolve({
-                profiles: [profileExample],
-                total: 1
-              })
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              security: {
+                searchProfiles: () => {
+                  return Promise.resolve({
+                    hits: [profileExample],
+                    total: 1
+                  })
+                }
+              }
             }
           }
         }
@@ -372,9 +390,9 @@ describe('Kuzzle wrapper service', () => {
         expect(res.total).to.be.equal(1)
         expect(res.documents).to.be.an('array')
         expect(res.documents.length).to.be.equal(1)
-        expect(res.documents[0].id).to.be.equal(profileExample.id)
+        expect(res.documents[0].id).to.be.equal(profileExample._id)
         expect(res.documents[0].meta).to.eql(profileExample.meta)
-        expect(res.documents[0].content).to.eql(profileExample.content)
+        expect(res.documents[0].content.policies).to.eql(profileExample.policies)
       })
     })
   })
@@ -382,21 +400,25 @@ describe('Kuzzle wrapper service', () => {
   describe('performSearchRoles', () => {
     let kuzzleWrapper
     const roleExample = {
-      content: {
+      controllers: {
         aField: 'aValue'
       },
       meta: {},
-      id: 'toto'
+      _id: 'toto'
     }
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        './kuzzle': {
-          security: {
-            searchRolesPromise: () => {
-              return Promise.resolve({
-                roles: [roleExample],
-                total: 1
-              })
+        'vue': {
+          prototype: {
+            $kuzzle: {
+              security: {
+                searchRoles: () => {
+                  return Promise.resolve({
+                    hits: [roleExample],
+                    total: 1
+                  })
+                }
+              }
             }
           }
         }
@@ -409,9 +431,9 @@ describe('Kuzzle wrapper service', () => {
         expect(res.total).to.be.equal(1)
         expect(res.documents).to.be.an('array')
         expect(res.documents.length).to.be.equal(1)
-        expect(res.documents[0].id).to.be.equal(roleExample.id)
+        expect(res.documents[0].id).to.be.equal(roleExample._id)
         expect(res.documents[0].meta).to.eql(roleExample.meta)
-        expect(res.documents[0].content).to.eql(roleExample.content)
+        expect(res.documents[0].content.controllers).to.eql(roleExample.controllers)
       })
     })
   })
@@ -419,8 +441,14 @@ describe('Kuzzle wrapper service', () => {
   describe('performDeleteUsers', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
     let kuzzleWrapper = kuzzleWrapperInjector({
-      './kuzzle': {
-        queryPromise: queryStub
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            security: {
+              mDeleteUsers: queryStub
+            }
+          }
+        }
       }
     })
 
@@ -437,7 +465,7 @@ describe('Kuzzle wrapper service', () => {
       return kuzzleWrapper
         .performDeleteUsers('myIndex', 'myCollection', [2])
         .then(() => {
-          expect(queryStub.callCount).to.be.equal(2)
+          expect(queryStub.callCount).to.be.equal(1)
         })
     })
   })
@@ -445,8 +473,14 @@ describe('Kuzzle wrapper service', () => {
   describe('performDeleteProfiles', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
     let kuzzleWrapper = kuzzleWrapperInjector({
-      './kuzzle': {
-        queryPromise: queryStub
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            security: {
+              mDeleteProfiles: queryStub
+            }
+          }
+        }
       }
     })
 
@@ -463,7 +497,7 @@ describe('Kuzzle wrapper service', () => {
       return kuzzleWrapper
         .performDeleteProfiles('myIndex', 'myCollection', [2])
         .then(() => {
-          expect(queryStub.callCount).to.be.equal(2)
+          expect(queryStub.callCount).to.be.equal(1)
         })
     })
   })
@@ -471,8 +505,14 @@ describe('Kuzzle wrapper service', () => {
   describe('performDeleteRoles', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
     let kuzzleWrapper = kuzzleWrapperInjector({
-      './kuzzle': {
-        queryPromise: queryStub
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            security: {
+              mDeleteRoles: queryStub
+            }
+          }
+        }
       }
     })
 
@@ -487,7 +527,7 @@ describe('Kuzzle wrapper service', () => {
     })
     it('should not reject if ids are provided', () => {
       return kuzzleWrapper.performDeleteRoles([2]).then(() => {
-        expect(queryStub.callCount).to.be.equal(2)
+        expect(queryStub.callCount).to.be.equal(1)
       })
     })
   })

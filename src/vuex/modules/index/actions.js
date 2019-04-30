@@ -1,4 +1,3 @@
-import kuzzle from '../../../services/kuzzle'
 import {
   dedupeRealtimeCollections,
   splitRealtimeStoredCollections,
@@ -8,75 +7,51 @@ import { removeIndex } from 'services/localStore'
 import Promise from 'bluebird'
 import * as types from './mutation-types'
 import * as collectionTypes from '../collection/mutation-types'
+import Vue from 'vue'
 
 export default {
-  [types.CREATE_INDEX]({ commit }, index) {
-    return kuzzle
-      .queryPromise({ index: index, controller: 'index', action: 'create' }, {})
-      .then(() => {
-        commit(types.ADD_INDEX, index)
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
+  async [types.CREATE_INDEX]({ commit }, index) {
+    await Vue.prototype.$kuzzle
+      .index.create(index)
+    commit(types.ADD_INDEX, index)
   },
-  [types.DELETE_INDEX]({ commit }, index) {
-    return kuzzle
-      .queryPromise({ index: index, controller: 'index', action: 'delete' }, {})
-      .then(() => {
-        removeIndex(index)
-        commit(types.DELETE_INDEX, index)
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
+  async [types.DELETE_INDEX]({ commit }, index) {
+    await Vue.prototype.$kuzzle
+      .index.delete(index)
+    removeIndex(index)
+    commit(types.DELETE_INDEX, index)
   },
-  [types.LIST_INDEXES_AND_COLLECTION]({ commit }) {
-    let promises = []
+  async [types.LIST_INDEXES_AND_COLLECTION]({ commit }) {
+    let result = await Vue.prototype.$kuzzle
+      .index
+      .list()
 
-    return new Promise((resolve, reject) => {
-      kuzzle.listIndexes((error, result) => {
-        let indexesAndCollections = {}
+    let indexesAndCollections = {}
+    result = result.filter(index => index !== '%kuzzle')
+    for (const index of result) {
+      try {
+        const res = await Vue.prototype.$kuzzle
+          .collection
+          .list(index)
+      
+        let collections = splitRealtimeStoredCollections(res.collections)
 
-        if (error) {
-          return reject(new Error(error.message))
+        if (!collections.realtime) {
+          collections.realtime = []
         }
 
-        result.filter(index => index !== '%kuzzle').forEach(index => {
-          /* eslint-disable */
-          let promise = new Promise((resolveOne, rejectOne) => {
-            kuzzle.listCollections(index, (error, result) => {
-              if (error) {
-                rejectOne(new Error(error.message))
-                return
-              }
-              result = splitRealtimeStoredCollections(result)
-
-              if (!result.realtime) {
-                result.realtime = []
-              }
-
-              result.realtime = result.realtime.concat(
-                getRealtimeCollectionFromStorage(index)
-              )
-              result = dedupeRealtimeCollections(result)
-
-              indexesAndCollections[index] = result
-              resolveOne(indexesAndCollections)
-            })
-          })
-            .then(res => {
-              commit(types.RECEIVE_INDEXES_COLLECTIONS, res || {})
-            })
-            .catch(error => {
-              if (error.message.indexOf('Forbidden') === -1) {
-                reject(error)
-              }
-            })
-
-          promises.push(promise)
-          /* eslint-enable */
-        })
-
-        Promise.all(promises).then(() => resolve())
-      })
-    })
+        collections.realtime = collections.realtime.concat(
+          getRealtimeCollectionFromStorage(index)
+        )
+        collections = dedupeRealtimeCollections(collections)
+        indexesAndCollections[index] = collections
+        commit(types.RECEIVE_INDEXES_COLLECTIONS, indexesAndCollections || {})
+      } catch (error) {
+        if (error.message.indexOf('Forbidden') === -1) {
+          throw error
+        }
+      }
+    }
   },
   [types.CREATE_COLLECTION_IN_INDEX](
     { dispatch, commit, getters },

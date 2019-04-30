@@ -86,10 +86,9 @@ export default {
     performSearchUsers,
     performDeleteUsers
   },
-  mounted() {
-    getMappingUsers().then(response => {
-      this.userMapping = response.mapping
-    })
+  async mounted() {
+    const response = await getMappingUsers()
+    this.userMapping = response.mapping
   }
 }
 </script>

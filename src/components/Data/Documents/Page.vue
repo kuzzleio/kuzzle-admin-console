@@ -353,7 +353,6 @@ export default {
     },
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
-
       for (const [attributeName, { type, properties }] of Object.entries(
         mapping
       )) {
@@ -391,22 +390,16 @@ export default {
     // DELETE
     // =========================================================================
     performDeleteDocuments,
-    onDeleteConfirmed(documentsToDelete) {
+    async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
-      this.performDeleteDocuments(
-        this.index,
-        this.collection,
-        documentsToDelete
-      )
-        .then(() => {
-          this.closeDeleteModal()
-          this.fetchDocuments()
-          this.deleteModalIsLoading = false
-          return null
-        })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
-        })
+      try {
+        await this.performDeleteDocuments(this.index, this.collection, documentsToDelete)
+        this.closeDeleteModal()
+        this.fetchDocuments()
+        this.deleteModalIsLoading = false
+      } catch (e) {
+        this.$store.commit(SET_TOAST, { text: e.message })
+      }
     },
     closeDeleteModal() {
       this.deleteModalIsOpen = false
@@ -445,7 +438,7 @@ export default {
         })
       }
     },
-    fetchDocuments() {
+    async fetchDocuments() {
       this.$forceUpdate()
 
       this.selectedDocuments = []
@@ -465,23 +458,22 @@ export default {
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
-      this.performSearchDocuments(
-        this.collection,
-        this.index,
-        searchQuery,
-        pagination,
-        sorting
-      )
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+      try {
+        const res = await this.performSearchDocuments(
+          this.collection,
+          this.index,
+          searchQuery,
+          pagination,
+          sorting
+        )
+        this.documents = res.documents
+        this.totalDocuments = res.total
+      } catch (e) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while performing search: <br />' + e.message
         })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, {
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-        })
+      }
     },
 
     // PAGINATION
@@ -549,15 +541,14 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    loadMappingInfo() {
-      getMappingDocument(this.collection, this.index).then(response => {
-        this.collectionMapping = response.mapping
+    async loadMappingInfo() {
+      const response = await getMappingDocument(this.collection, this.index)
+      this.collectionMapping = response[this.index].mappings[this.collection].properties
 
-        this.mappingGeopoints = this.listMappingGeopoints(
-          this.collectionMapping
-        )
-        this.selectedGeopoint = this.mappingGeopoints[0]
-      })
+      this.mappingGeopoints = this.listMappingGeopoints(
+        this.collectionMapping
+      )
+      this.selectedGeopoint = this.mappingGeopoints[0]
     },
     loadListView() {
       if (this.$route.query.listViewType) {

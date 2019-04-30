@@ -34,7 +34,6 @@ import WarningHeader from './Common/WarningHeader'
 import LoginForm from './Common/Login/Form'
 import Modal from './Materialize/Modal'
 import KuzzleDisconnected from './Error/KuzzleDisconnected'
-import kuzzle from '../services/kuzzle'
 import * as types from '../vuex/modules/auth/mutation-types'
 
 export default {
@@ -47,7 +46,7 @@ export default {
     WarningHeader
   },
   mounted() {
-    kuzzle.addListener('tokenExpired', () => this.onTokenExpired())
+    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
   },
   data() {
     return {

@@ -124,7 +124,6 @@ import LastNotification from '../Realtime/LastNotification'
 import SubscriptionControls from '../Realtime/SubscriptionControls'
 import CollectionDropdown from '../Collections/Dropdown'
 import Filters from '../../Common/Filters/Filters'
-import kuzzle from '../../../services/kuzzle'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
@@ -158,16 +157,15 @@ export default {
   created() {
     window.addEventListener('scroll', this.handleScroll)
   },
-  mounted() {
+  async mounted() {
     this.notifications = []
-    getMappingDocument(this.collection, this.index).then(response => {
-      this.collectionMapping = response.mapping
-    })
+    const response = await getMappingDocument(this.collection, this.index)
+    this.collectionMapping = response[this.index].mappings[this.collection].properties
   },
-  destroyed() {
+  async destroyed() {
     this.reset()
     if (this.room) {
-      this.room.unsubscribe()
+      await this.$kuzzle.realtime.unsubscribe(this.room)
     }
     window.removeEventListener('scroll', this.handleScroll)
   },
@@ -224,8 +222,8 @@ export default {
     },
     notificationToMessage(notification) {
       const idText =
-        notification.type === 'document' && notification.document.id
-          ? `(${notification.document.id})`
+        notification.type === 'document' && notification.result._id
+          ? `(${notification.result._id})`
           : ''
       const messageItem = {
         text: '',
@@ -243,22 +241,22 @@ export default {
       }
 
       if (notification.type === 'document') {
-        if (notification.document.id) {
-          messageItem.source.id = notification.document.id
+        if (notification.result._id) {
+          messageItem.source.id = notification.result._id
         }
 
         if (
-          notification.document.meta &&
-          Object.keys(notification.document.meta).length > 0
+          notification.result._meta &&
+          Object.keys(notification.result._meta).length > 0
         ) {
-          messageItem.source.meta = notification.document.meta
+          messageItem.source.meta = notification.result._meta
         }
 
         if (
-          notification.document.content &&
-          Object.keys(notification.document.content).length > 0
+          notification.result._source &&
+          Object.keys(notification.result._source).length > 0
         ) {
-          messageItem.source.body = notification.document.content
+          messageItem.source.body = notification.result._source
         }
       } else {
         messageItem.source.users = notification.user.count
@@ -328,12 +326,7 @@ export default {
         }, 0)
       }
     },
-    handleMessage(error, result) {
-      if (error) {
-        this.warning.message = error.message
-        return
-      }
-
+    handleMessage(result) {
       if (this.notifications.length > this.notificationsLengthLimit) {
         if (this.warning.message === '') {
           this.warning.info = true
@@ -366,30 +359,31 @@ export default {
 
       this.makeAutoScroll()
     },
-    subscribe() {
-      return kuzzle
-        .collection(this.collection, this.index)
-        .subscribe(
-          filterManager.toRealtimeQuery(this.filters),
-          this.subscribeOptions,
-          this.handleMessage
-        )
-        .onDone((err, room) => {
-          if (err) {
-            this.room = null
-            this.subscribed = false
-            this.$store.commit(SET_TOAST, { text: err.message })
-          } else {
-            this.subscribed = true
-            this.room = room
-          }
-        })
+    async subscribe() {
+      try {
+        const room = await this.$kuzzle
+          .realtime
+          .subscribe(
+            this.index,
+            this.collection,
+            filterManager.toRealtimeQuery(this.filters),
+            this.handleMessage,
+            this.subscribeOptions
+          )
+        this.subscribed = true
+        this.room = room
+      } catch (err) {
+        this.room = null
+        this.subscribed = false
+        this.$store.commit(SET_TOAST, { text: err.message })
+      }
     },
-    unsubscribe(room) {
+    async unsubscribe(room) {
       this.warning.message = ''
       this.warning.count = 0
 
-      room.unsubscribe()
+      await this.$kuzzle.realtime.unsubscribe(room)
+      this.room = null
     },
     onReset(newFilters) {
       filterManager.saveToRouter(

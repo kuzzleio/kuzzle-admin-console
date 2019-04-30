@@ -98,21 +98,19 @@ export default {
     toggleTruncatedError() {
       this.errorTruncated = !this.errorTruncated
     },
-    tryCreateIndex(index) {
+    async tryCreateIndex(index) {
       if (!index.trim()) {
         return
       }
 
-      this.$store
-        .dispatch(CREATE_INDEX, index)
-        .then(() => {
-          this.index = ''
-          this.error = ''
-          this.close()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      try {
+        await this.$store.dispatch(CREATE_INDEX, index)
+        this.index = ''
+        this.error = ''
+        this.close()
+      } catch (err) {
+        this.error = err.message
+      }
     }
   },
   data() {

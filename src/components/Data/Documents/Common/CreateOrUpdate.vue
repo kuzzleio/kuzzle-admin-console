@@ -171,6 +171,7 @@
     position: relative;
     padding: 8px 12px;
     margin: 0;
+    color: #ffffff;
   }
   .dismiss-error {
     position: absolute;

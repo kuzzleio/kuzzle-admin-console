@@ -22,7 +22,6 @@
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Notice from '../Common/Notice'
-import kuzzle from '../../../services/kuzzle'
 import { getMappingRoles } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
@@ -43,7 +42,7 @@ export default {
   },
   methods: {
     getMappingRoles,
-    update(role) {
+    async update(role) {
       this.error = ''
 
       if (!role) {
@@ -53,18 +52,17 @@ export default {
 
       this.submitted = true
 
-      kuzzle.security
-        .createRolePromise(this.id, role, { replaceIfExist: true })
-        .then(() => {
-          setTimeout(() => {
-            // we can't perform refresh index on %kuzzle
-            this.$router.push({ name: 'SecurityRolesList' })
-          }, 1000)
-        })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
-          this.submitted = false
-        })
+      try {
+        this.$kuzzle.security
+          .updateRole(this.id, role)
+        setTimeout(() => {
+          // we can't perform refresh index on %kuzzle
+          this.$router.push({ name: 'SecurityRolesList' })
+        }, 1000)
+      } catch (e) {
+        this.$store.commit(SET_TOAST, { text: e.message })
+        this.submitted = false
+      }
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -77,17 +75,15 @@ export default {
       this.error = payload
     }
   },
-  mounted() {
-    kuzzle.security
-      .fetchRolePromise(this.$route.params.id)
-      .then(role => {
-        this.id = role.id
-        this.document = role.content
-      })
-      .catch(e => {
-        this.$store.commit(SET_TOAST, { text: e.message })
-        this.$router.push({ name: 'SecurityRolesCreate' })
-      })
+  async mounted() {
+    try {
+      const role = await this.$kuzzle.security
+        .getRole(this.$route.params.id)
+      this.id = role._id
+      this.document = {controllers: role.controllers}
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+    }
   }
 }
 </script>
