@@ -421,7 +421,7 @@ export default {
     // LIST (FETCH & SEARCH)
     // =========================================================================
     performSearchDocuments,
-    onFiltersUpdated(newFilters) {
+    async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -430,7 +430,7 @@ export default {
           this.index,
           this.collection
         )
-        this.fetchDocuments()
+        await this.fetchDocuments()
       } catch (error) {
         this.$store.commit(SET_TOAST, {
           text:
