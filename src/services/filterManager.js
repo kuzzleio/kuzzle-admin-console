@@ -252,7 +252,11 @@ export const rawFilterToSearchQuery = rawFilter => {
     throw new Error('The filter is malformed: "query" attribute not found')
   }
 
-  return { query: rawFilter.query }
+  if (rawFilter._source && rawFilter._source.indexOf('_kuzzle_info') === -1) {
+    rawFilter._source.push('_kuzzle_info')
+  }
+
+  return rawFilter
 }
 
 export const toSort = filter => {
