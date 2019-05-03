@@ -1,6 +1,7 @@
 <template>
   <div>
     <Headline>Profile - Create</Headline>
+    <Notice></Notice>
     <create-or-update
       title="Create a profile"
       :error="error"
@@ -20,26 +21,31 @@
 <script>
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
-import kuzzle from '../../../services/kuzzle'
-import { getMappingProfiles } from '../../../services/kuzzleWrapper'
+import Notice from '../Common/Notice'
 
 export default {
   name: 'ProfilesSecurityCreate',
   components: {
     Headline,
-    CreateOrUpdate
+    CreateOrUpdate,
+    Notice
   },
   data() {
     return {
       error: '',
-      document: {},
+      document: {
+        policies: [
+          {
+            roleId: 'yourRoleId'
+          }
+        ]
+      },
       id: null,
       submitted: false
     }
   },
   methods: {
-    getMappingProfiles,
-    create(profile) {
+    async create(profile) {
       this.error = ''
 
       if (!profile) {
@@ -53,21 +59,16 @@ export default {
 
       this.submitted = true
 
-      kuzzle.security
-        .createProfilePromise(this.id, profile.policies, {
-          replaceIfExist: true
-        })
-        .then(() => {
-          setTimeout(() => {
-            // we can't perform refresh index on %kuzzle
-            this.$router.push({ name: 'SecurityProfilesList' })
-          }, 1000)
-        })
-        .catch(e => {
-          this.error =
-            'An error occurred while creating profile: <br />' + e.message
-          this.submitted = false
-        })
+      try {
+        await this.$kuzzle.security
+          .createProfile(this.id, {policies: profile.policies}, {
+            refresh: 'wait_for'
+          })
+      } catch (e) {
+        this.error =
+          'An error occurred while creating profile: <br />' + e.message
+        this.submitted = false
+      }
     },
     cancel() {
       this.$router.push({ name: 'SecurityProfilesList' })

@@ -36,7 +36,7 @@
 
           <div class="card-panel card-header">
             <div class="DocumentsPage-filtersAndButtons row">
-              <div class="col s9 xl9">
+              <div class="col s10 xl10">
                 <filters
                   :available-operands="searchFilterOperands"
                   :current-filter="currentFilter"
@@ -46,7 +46,7 @@
                 >
                 </filters>
               </div>
-              <div class="col s3 xl3">
+              <div class="col s2 xl2">
                 <list-view-buttons
                   :active-view="listViewType"
                   :boxes-enabled="true"
@@ -61,6 +61,12 @@
           </div>
 
           <div class="card-panel card-body">
+            <div class="row">
+              <div class="col s12">
+                Result per page: <span v-for="(v, i) in resultPerPage" :key="i"><a href="#" @click.prevent="changePaginationSize(v)" :class="{active: v === paginationSize}">{{v}}</a>{{i === resultPerPage.length - 1 ? '' : ' / '}}</span>
+              </div>
+            </div>
+
             <no-results-empty-state v-show="!documents.length"></no-results-empty-state>
 
             <list-actions
@@ -77,6 +83,7 @@
               @bulk-delete="onBulkDeleteClicked"
               @toggle-all="onToggleAllClicked"
               @select-geopoint="onSelectGeopoint"
+              @refresh="onRefreshClicked"
             >
             </list-actions>
 
@@ -149,6 +156,18 @@
                   @edit="onEditDocumentClicked"
                   @delete="onDeleteClicked"
                 />
+              </div>
+              <div class="row" v-show="documents.length">
+                <div class="col s12" v-if="listViewType === 'map'">
+                  <pagination
+                    :from="paginationFrom"
+                    :max-page="1000"
+                    :number-in-page="documents.length"
+                    :size="paginationSize"
+                    :total="totalDocuments"
+                    @change-page="changePage"
+                  ></pagination>
+                </div>
               </div>
             </div>
           </div>
@@ -245,7 +264,8 @@ export default {
       candidatesForDeletion: [],
       collectionMapping: {},
       mappingGeopoints: [],
-      selectedGeopoint: null
+      selectedGeopoint: null,
+      resultPerPage: [10, 25, 50, 100]
     }
   },
   computed: {
@@ -333,7 +353,6 @@ export default {
     },
     listMappingGeopoints(mapping, path = []) {
       let attributes = []
-
       for (const [attributeName, { type, properties }] of Object.entries(
         mapping
       )) {
@@ -371,22 +390,16 @@ export default {
     // DELETE
     // =========================================================================
     performDeleteDocuments,
-    onDeleteConfirmed(documentsToDelete) {
+    async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
-      this.performDeleteDocuments(
-        this.index,
-        this.collection,
-        documentsToDelete
-      )
-        .then(() => {
-          this.closeDeleteModal()
-          this.fetchDocuments()
-          this.deleteModalIsLoading = false
-          return null
-        })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
-        })
+      try {
+        await this.performDeleteDocuments(this.index, this.collection, documentsToDelete)
+        this.closeDeleteModal()
+        this.fetchDocuments()
+        this.deleteModalIsLoading = false
+      } catch (e) {
+        this.$store.commit(SET_TOAST, { text: e.message })
+      }
     },
     closeDeleteModal() {
       this.deleteModalIsOpen = false
@@ -402,11 +415,13 @@ export default {
       this.candidatesForDeletion.push(id)
       this.deleteModalIsOpen = true
     },
-
+    onRefreshClicked() {
+      this.fetchDocuments()
+    },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     performSearchDocuments,
-    onFiltersUpdated(newFilters) {
+    async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -415,7 +430,7 @@ export default {
           this.index,
           this.collection
         )
-        this.fetchDocuments()
+        await this.fetchDocuments()
       } catch (error) {
         this.$store.commit(SET_TOAST, {
           text:
@@ -423,7 +438,7 @@ export default {
         })
       }
     },
-    fetchDocuments() {
+    async fetchDocuments() {
       this.$forceUpdate()
 
       this.selectedDocuments = []
@@ -443,23 +458,22 @@ export default {
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
-      this.performSearchDocuments(
-        this.collection,
-        this.index,
-        searchQuery,
-        pagination,
-        sorting
-      )
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+      try {
+        const res = await this.performSearchDocuments(
+          this.collection,
+          this.index,
+          searchQuery,
+          pagination,
+          sorting
+        )
+        this.documents = res.documents
+        this.totalDocuments = res.total
+      } catch (e) {
+        this.$store.commit(SET_TOAST, {
+          text:
+            'An error occurred while performing search: <br />' + e.message
         })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, {
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-        })
+      }
     },
 
     // PAGINATION
@@ -468,6 +482,13 @@ export default {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           from
+        })
+      )
+    },
+    changePaginationSize(size) {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          size
         })
       )
     },
@@ -520,15 +541,14 @@ export default {
     },
     // Collection Metadata management
     // =========================================================================
-    loadMappingInfo() {
-      getMappingDocument(this.collection, this.index).then(response => {
-        this.collectionMapping = response.mapping
+    async loadMappingInfo() {
+      const response = await getMappingDocument(this.collection, this.index)
+      this.collectionMapping = response[this.index].mappings[this.collection].properties
 
-        this.mappingGeopoints = this.listMappingGeopoints(
-          this.collectionMapping
-        )
-        this.selectedGeopoint = this.mappingGeopoints[0]
-      })
+      this.mappingGeopoints = this.listMappingGeopoints(
+        this.collectionMapping
+      )
+      this.selectedGeopoint = this.mappingGeopoints[0]
     },
     loadListView() {
       if (this.$route.query.listViewType) {
@@ -558,6 +578,32 @@ export default {
         otherQueryParams
       )
       this.$router.push({ query: mergedQuery })
+    },
+    addHumanReadableDateFields() {
+      const keys = []
+      const findDateFields = (mapping, previousKey) => {
+        for (const key of Object.keys(mapping)) {
+          if (typeof mapping[key] === 'object') {
+            findDateFields(mapping[key], key)
+          } else if (key === 'type' && mapping[key] === 'date') {
+            keys.push(previousKey)
+          }
+        }
+      }
+      const changeField = (document, keys) => {
+        for (const field of Object.keys(document)) {
+          if (keys.includes(field) && Number.isInteger(document[field])) {
+            const date = new Date(document[field])
+            document[field] += ` (${date.toUTCString()})`
+          } else if (document[field] && typeof document[field] === 'object') {
+            changeField(document[field], keys)
+          }
+        }
+      }
+      findDateFields(this.collectionMapping, null)
+      this.documents.forEach(document => {
+        changeField(document, keys)
+      })
     }
   },
   watch: {
@@ -580,6 +626,12 @@ export default {
           this.collection
         )
         this.fetchDocuments()
+      }
+    },
+    documents: {
+      immediate: true,
+      handler() {
+        this.addHumanReadableDateFields()
       }
     }
   }
@@ -614,5 +666,9 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: safe;
+}
+
+.active {
+  color: $blue-color;
 }
 </style>

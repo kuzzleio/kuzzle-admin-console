@@ -21,8 +21,14 @@ describe('Collections module', () => {
     describe('fetchCollectionDetail', () => {
       it('should do nothing if collection is not in stored and not in realtime', (done) => {
         let actions = actionsInjector({
-          '../../../services/kuzzle': {
-            queryPromise: sinon.stub()
+          'vue': {
+            prototype: {
+              $kuzzle: {
+                collection: {
+                  getMapping: sinon.stub()
+                }
+              }
+            }
           }
         })
 
@@ -40,8 +46,14 @@ describe('Collections module', () => {
 
       it('should dispatch event with collection and realtime', (done) => {
         let actions = actionsInjector({
-          '../../../services/kuzzle': {
-            queryPromise: sinon.stub()
+          'vue': {
+            prototype: {
+              $kuzzle: {
+                collection: {
+                  getMapping: sinon.stub()
+                }
+              }
+            }
           }
         })
 
@@ -57,19 +69,23 @@ describe('Collections module', () => {
 
       it('should get mapping if collection is stored', (done) => {
         let actions = actionsInjector({
-          '../../../services/kuzzle': {
-            queryPromise: ({controller, action}, {collection, index}) => {
-              return Promise.resolve({
-                result: {
-                  [index]: {
-                    mappings: {
-                      [collection]: {
-                        properties: {toto: 'tutu'}
+          'vue': {
+            prototype: {
+              $kuzzle: {
+                collection: {
+                  getMapping: (index, collection) => {
+                    return Promise.resolve({
+                      [index]: {
+                        mappings: {
+                          [collection]: {
+                            properties: {toto: 'tutu'}
+                          }
+                        }
                       }
-                    }
+                    })
                   }
                 }
-              })
+              }
             }
           }
         })
@@ -89,12 +105,16 @@ describe('Collections module', () => {
   describe('Truncate collection', () => {
     let triggerError = true
     let actions = actionsInjector({
-      '../../../services/kuzzle': {
-        queryPromise: () => {
-          if (triggerError) {
-            return Promise.reject(new Error('error'))
-          } else {
-            return Promise.resolve({})
+      'vue': {
+        prototype: {
+          $kuzzle: {
+            query: () => {
+              if (triggerError) {
+                return Promise.reject(new Error('error'))
+              } else {
+                return Promise.resolve({})
+              }
+            }
           }
         }
       }

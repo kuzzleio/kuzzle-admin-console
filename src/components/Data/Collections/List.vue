@@ -70,16 +70,16 @@
 
           <div v-if="canSearchCollection(index)">
             <collection-boxed
-              v-for="collection in orderedFilteredStoredCollections"
-              :key="Math.random()"
+              v-for="(collection, i) in orderedFilteredStoredCollections"
+              :key="i"
               :index="index"
               :collection="collection"
               :is-realtime="false">
             </collection-boxed>
 
             <collection-boxed
-                v-for="collection in orderedFilteredRealtimeCollections"
-                :key="Math.random()"
+                v-for="(collection, i) in orderedFilteredRealtimeCollections"
+                :key="i"
                 :index="index"
                 :collection="collection"
                 :is-realtime="true">
@@ -160,7 +160,6 @@ export default {
       if (!this.$store.state.index.indexesAndCollections[this.index]) {
         return 0
       }
-
       return (
         this.$store.state.index.indexesAndCollections[this.index].stored
           .length +

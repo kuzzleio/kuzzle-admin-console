@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import kuzzle from '../../../../services/kuzzle'
 import { SET_TOAST } from '../../../../vuex/modules/common/toaster/mutation-types'
 import { getMappingUsers } from '../../../../services/kuzzleWrapper'
 import Basic from './Basic'
@@ -96,7 +95,7 @@ export default {
     this.loading = true
 
     try {
-      let credentialsMapping = await kuzzle.security.getAllCredentialFieldsPromise()
+      let credentialsMapping = await this.$kuzzle.security.getAllCredentialFields()
       this.strategies = Object.keys(credentialsMapping)
 
       // Clean "kuid" from credentialsMapping
@@ -107,7 +106,7 @@ export default {
       })
       this.credentialsMapping = credentialsMapping
 
-      let { mapping } = await getMappingUsers()
+      const { mapping } = await getMappingUsers()
       if (mapping) {
         this.customContentMapping = mapping
         delete this.customContentMapping.profileIds
@@ -118,13 +117,13 @@ export default {
 
         await Promise.all(
           this.strategies.map(async strategy => {
-            const credentialsExists = await kuzzle.security.hasCredentialsPromise(strategy, this.kuid)
+            const credentialsExists = await this.$kuzzle.security.hasCredentials(strategy, this.kuid)
 
             if (!credentialsExists) {
               return
             }
 
-            const strategyCredentials = await kuzzle.security.getCredentialsPromise(
+            let strategyCredentials = await this.$kuzzle.security.getCredentials(
               strategy,
               this.kuid
             )
@@ -137,8 +136,8 @@ export default {
           })
         )
 
-        let { id, content } = await kuzzle.security.fetchUserPromise(this.kuid)
-        this.id = id
+        let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
+        this.id = _id
         this.addedProfiles = content.profileIds
         delete content.profileIds
         this.customContent = { ...content }

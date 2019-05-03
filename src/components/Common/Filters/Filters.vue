@@ -19,8 +19,8 @@
     <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
       <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
       <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
-        <tab @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
-        <tab @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
+        <tab id="basic" @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
+        <tab id="raw" @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
 
         <div slot="contents" class="card">
           <div class="col s12">
@@ -45,6 +45,8 @@
                 :sorting-enabled="sortingEnabled"
                 :action-buttons-visible="actionButtonsVisible"
                 :submit-button-label="submitButtonLabel"
+                :current-filter="currentFilter"
+                :refresh-ace="refreshace"
                 @update-filter="onRawFilterUpdated"
                 @reset="onReset">
               </raw-filter>
@@ -53,7 +55,13 @@
         </div>
       </tabs>
     </div>
+
+    <div class="card-panel orange lighten-3" v-show="currentFilter.active">
+      <span>Warning: a filter has been set, some documents might be hidden.</span>
+    </div>
+
   </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -161,7 +169,8 @@ export default {
       advancedFiltersVisible: false,
       complexFiltersSelectedTab: null,
       jsonInvalid: false,
-      objectTabActive: null
+      objectTabActive: null,
+      refreshace: false
     }
   },
   computed: {
@@ -206,14 +215,12 @@ export default {
       )
     },
     onBasicFilterUpdated(filter, sorting) {
-      this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
-          active: filter ? ACTIVE_BASIC : NO_ACTIVE,
-          basic: filter,
-          sorting,
-          from: 0
-        })
-      )
+      const newFilter = new Filter()
+      newFilter.basic = filter
+      newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
+      newFilter.sorting = sorting
+      newFilter.from = 0
+      this.onFiltersUpdated(newFilter)
     },
     onRawFilterUpdated(filter) {
       this.advancedFiltersVisible = false
@@ -240,6 +247,7 @@ export default {
     },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
+      this.refreshace = !this.refreshace
     },
     onFiltersUpdated(newFilters) {
       this.$emit('filters-updated', newFilters)

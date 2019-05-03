@@ -1,19 +1,9 @@
-# [2.1.1](https://github.com/kuzzleio/kuzzle-backoffice/releases/tag/2.1.1) (2017-07-19)
+# [2.2.7](https://github.com/kuzzleio/kuzzle-admin-console/releases/tag/2.2.7) (2019-03-14)
 
-### Compatibility
+#### Bug fixes
 
-| Kuzzle | Proxy |
-|--------|-------|
-| 1.0.0 | 1.0.0 |
+- [ [#505](https://github.com/kuzzleio/kuzzle-admin-console/pull/505) ] Add a warning when a filter is set when looking at documents and users ([jenow](https://github.com/jenow))
+- [ [#506](https://github.com/kuzzleio/kuzzle-admin-console/pull/506) ] Fix a bug which sometimes doesn't display the list of collection in an not empty index ([jenow](https://github.com/jenow))
+- [ [#507](https://github.com/kuzzleio/kuzzle-admin-console/pull/507) ] Update a document instead of replacing it ([jenow](https://github.com/jenow))
+- [ [#508](https://github.com/kuzzleio/kuzzle-admin-console/pull/508) ] Add missing pagination to map view ([jenow](https://github.com/jenow))
 
-#### Enhancements
-
-- [ [#345](https://github.com/kuzzleio/kuzzle-backoffice/pull/345) ] Display message limitation 1000 pages   ([AnthonySendra](https://github.com/AnthonySendra))
-- [ [#327](https://github.com/kuzzleio/kuzzle-backoffice/pull/327) ] Add Meta tree in JSON viewer of Security documents (User, Profile, Role)   ([samniisan](https://github.com/samniisan))
-- [ [#315](https://github.com/kuzzleio/kuzzle-backoffice/pull/315) ] Implement search role with multi select   ([AnthonySendra](https://github.com/AnthonySendra))
-
-#### Others
-
-- [ [#339](https://github.com/kuzzleio/kuzzle-backoffice/pull/339) ] Fixed KuzzleErrorPage   ([xbill82](https://github.com/xbill82))
-- [ [#338](https://github.com/kuzzleio/kuzzle-backoffice/pull/338) ] Fix stylesheet to avoid blurry buttons   ([xbill82](https://github.com/xbill82))
----

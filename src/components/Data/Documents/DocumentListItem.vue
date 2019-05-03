@@ -9,7 +9,6 @@
         :id="checkboxId"
         :value="document.id"
         @click="notifyCheckboxClick" :checked="isChecked"/>
-
       <span></span>
     </label>
 
@@ -71,6 +70,10 @@ export default {
     return {
       collapsed: true
     }
+  },
+  mounted() {
+    const date = new Date(this.document.meta.createdAt)
+    this.document.meta.createdAt += ` (${date.toUTCString()})`
   },
   methods: {
     toggleCollapse() {
@@ -156,7 +159,7 @@ export default {
 }
 
 /* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + label {
+[type='checkbox'] + span:not(.lever) {
   height: 15px;
   padding-left: 30px;
 }

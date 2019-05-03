@@ -64,7 +64,6 @@ import {
   DO_LOGIN,
   PREPARE_SESSION
 } from '../../../vuex/modules/auth/mutation-types'
-import kuzzle from '../../../services/kuzzle'
 
 export default {
   name: 'LoginForm',
@@ -85,23 +84,22 @@ export default {
     dismissError() {
       this.error = ''
     },
-    login() {
+    async login() {
       this.error = ''
-      this.$store
-        .dispatch(DO_LOGIN, {
-          username: this.username,
-          password: this.password
-        })
-        .then(() => {
-          this.onLogin()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      try {
+        await this.$store
+          .dispatch(DO_LOGIN, {
+            username: this.username,
+            password: this.password
+          })
+        this.onLogin()
+      } catch (err) {
+        this.error = err.message
+      }
     },
     loginAsGuest() {
       this.error = ''
-      kuzzle.unsetJwtToken()
+      this.$kuzzle.jwt = null
       this.$store
         .dispatch(PREPARE_SESSION, 'anonymous')
         .then(() => {

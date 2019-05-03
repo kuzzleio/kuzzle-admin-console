@@ -30,6 +30,13 @@
         <i class="fa fa-minus-circle left"></i>
         Delete
       </button>
+
+      <button class="btn btn-small waves-effect waves-light margin-right-5"
+        @click.prevent="$emit('refresh')"
+      >
+        <i class="fas fa-sync-alt left"></i>
+        Refresh
+      </button>
     </div>
     <div v-if="displayGeopointSelect">
       <div class="col s2">

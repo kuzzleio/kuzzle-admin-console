@@ -3,6 +3,7 @@
     <Headline>
        Edit profile - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
     </Headline>
+    <Notice></Notice>
     <create-or-update
       title="Update profile"
       :update-id="id"
@@ -21,15 +22,15 @@
 <script>
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
-import kuzzle from '../../../services/kuzzle'
-import { getMappingProfiles } from '../../../services/kuzzleWrapper'
+import Notice from '../Common/Notice'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'SecurityUpdate',
   components: {
     Headline,
-    CreateOrUpdate
+    CreateOrUpdate,
+    Notice
   },
   data() {
     return {
@@ -40,8 +41,7 @@ export default {
     }
   },
   methods: {
-    getMappingProfiles,
-    update() {
+    async update() {
       this.error = ''
 
       if (!this.document || !this.document.policies) {
@@ -51,20 +51,17 @@ export default {
 
       this.submitted = true
 
-      kuzzle.security
-        .createProfilePromise(this.id, this.document.policies, {
-          replaceIfExist: true
-        })
-        .then(() => {
-          setTimeout(() => {
-            // we can't perform refresh index on %kuzzle
-            this.$router.push({ name: 'SecurityProfilesList' })
-          }, 1000)
-        })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
-          this.submitted = false
-        })
+      try {
+        await this.$kuzzle.security
+          .updateProfile(this.id, {policies: this.document.policies})
+        setTimeout(() => {
+          // we can't perform refresh index on %kuzzle
+          this.$router.push({ name: 'SecurityProfilesList' })
+        }, 1000)
+      } catch (e) {
+        this.$store.commit(SET_TOAST, { text: e.message })
+        this.submitted = false
+      }
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -77,17 +74,15 @@ export default {
       this.error = payload
     }
   },
-  mounted() {
-    kuzzle.security
-      .fetchProfilePromise(this.$route.params.id)
-      .then(profile => {
-        this.id = profile.id
-        this.document = profile.content
-      })
-      .catch(e => {
-        this.$store.commit(SET_TOAST, { text: e.message })
-        this.$router.push({ name: 'SecurityProfilesCreate' })
-      })
+  async mounted() {
+    try {
+      const profile = await this.$kuzzle.security
+        .getProfile(this.$route.params.id)
+      this.id = profile._id
+      this.document = {policies: profile.policies}
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+    }
   }
 }
 </script>

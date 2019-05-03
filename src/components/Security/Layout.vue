@@ -50,6 +50,7 @@
     height: 54px;
     line-height: 54px;
   }
+  transform: translateX(0%) !important;
 }
 aside {
   font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
