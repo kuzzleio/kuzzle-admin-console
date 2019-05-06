@@ -95,6 +95,19 @@ class Credentials {
   }
 }
 
+/**
+ * Constructor only used for displaying the constructor name in the list
+ * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+ * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Aggregations {
+  constructor(aggregations) {
+    Object.keys(aggregations).forEach(key => {
+      this[key] = aggregations[key]
+    })
+  }
+}
+
 export const performSearchDocuments = async (
   collection,
   index,
@@ -121,10 +134,14 @@ export const performSearchDocuments = async (
   }
 
   const documents = result.hits.map(document => {
-    const object = {
+    let object = {
       content: new Content(document._source),
       id: document._id,
       meta: new Meta(document._meta)
+    }
+
+    if (result.aggregations) {
+      object.aggregations = new Aggregations(result.aggregations)
     }
 
     if (additionalAttributeName) {
@@ -192,6 +209,10 @@ export const performSearchUsers = async (
       id: document._id,
       credentials: new Credentials({}),
       meta: new Meta(document.meta || {})
+    }
+
+    if (result.aggregations) {
+      object.aggregations = result.aggregations
     }
 
     if (additionalAttributeName) {

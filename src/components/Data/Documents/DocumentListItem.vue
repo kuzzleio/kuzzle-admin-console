@@ -38,6 +38,7 @@
     <div class="DocumentListItem-content item-content">
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: false}"></pre>
+      <pre v-if="document.aggregations" v-json-formatter="{content: document.aggregations, open: true}"></pre>
     </div>
   </div>
 </template>

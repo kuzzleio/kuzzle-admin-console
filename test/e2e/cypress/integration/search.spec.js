@@ -11,6 +11,7 @@ describe('Search', function() {
       properties: {
         firstName: {
           type: 'text',
+          fielddata: true,
           fields: {
             keyword: {
               type: 'keyword',
@@ -325,8 +326,10 @@ describe('Search', function() {
     cy.get('#rawsearch .ace_line')
       .contains('}')
       .click({ force: true })
-    cy.get('textarea.ace_text-input').type(
-      `
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(
+      `{{}
 "query": { 
 "bool": {
 "must": {
@@ -341,6 +344,7 @@ describe('Search', function() {
     cy.get('.RawFilter-submitBtn').click()
 
     cy.get('.DocumentListItem').should(function($el) {
+      console.log($el.first())
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
@@ -363,5 +367,78 @@ describe('Search', function() {
       .and('contain', 'must')
       .and('contain', 'match_phrase_prefix')
       .and('contain', 'bar')
+  })
+
+  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'bar'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.tab.col')
+      .contains('JSON')
+      .click()
+
+      cy
+      .get('#rawsearch .ace_line')
+      .should('be.visible')
+  
+      cy.get('#rawsearch .ace_line')
+        .click({ force: true })
+      cy.get('textarea.ace_text-input')
+      .clear({force: true})
+      .type(`{{}"query": {},
+      "aggregations": {
+        "my_aggs": {
+          "terms": {
+            "field": "firstName"
+          }`, {
+        force: true
+      })
+
+    cy.get('.RawFilter-submitBtn').click()
+
+    cy.get('.DocumentListItem').should(function($el) {
+      expect($el.first()).to.contain('Aggregations')
+    })
+  })
+
+  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'bar'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.tab.col')
+      .contains('JSON')
+      .click()
+
+      cy
+      .get('#rawsearch .ace_line')
+      .should('be.visible')
+  
+      cy.get('#rawsearch .ace_line')
+        .click({ force: true })
+      cy.get('textarea.ace_text-input')
+      .clear({force: true})
+      .type(`{{}"query": {}`, {
+        force: true
+      })
+
+    cy.get('.RawFilter-submitBtn').click()
+
+    cy.get('.DocumentListItem').should(function($el) {
+      expect($el.first()).to.not.contain('Aggregations')
+    })
   })
 })
