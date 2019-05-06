@@ -369,7 +369,7 @@ describe('Search', function() {
       .and('contain', 'bar')
   })
 
-  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+  it.only('should show aggregations in search result when aggregations are specified in the raw filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'bar'
     })
@@ -431,7 +431,7 @@ describe('Search', function() {
         .click({ force: true })
       cy.get('textarea.ace_text-input')
       .clear({force: true})
-      .type(`{{}"query": {}`, {
+      .type(`{{}"query": {{}}}`, {
         force: true
       })
 
