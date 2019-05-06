@@ -369,7 +369,7 @@ describe('Search', function() {
       .and('contain', 'bar')
   })
 
-  it.only('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'bar'
     })
