@@ -134,7 +134,7 @@ export const performSearchDocuments = async (
   }
 
   const documents = result.hits.map(document => {
-    let object = {
+    const object = {
       content: new Content(document._source),
       id: document._id,
       meta: new Meta(document._meta)
