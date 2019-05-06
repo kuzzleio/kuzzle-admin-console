@@ -5,3 +5,7 @@ coverage:
     project:
       default:
         threshold: 1
+    patch:
+      default:
+        branches:
+          - master
