@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     getMappingDocument,
-    async update(document) {
+    async update(document, replace = false) {
       this.submitted = true
       this.error = ''
 
@@ -90,7 +90,11 @@ export default {
       }
 
       try {
-        await this.$kuzzle.document.update(this.index, this.collection, this.$route.params.id, document, { refresh: 'wait_for' })
+        let action = 'update'
+        if (replace === true) {
+          action = 'replace'
+        }
+        await this.$kuzzle.document[action](this.index, this.collection, this.$route.params.id, document, { refresh: 'wait_for' })
         this.$router.push({
           name: 'DataDocumentsList',
           params: { index: this.index, collection: this.collection }

@@ -4,7 +4,7 @@
   "integrationFolder": "test/e2e/cypress/integration",
   "pluginsFile": "test/e2e/cypress/plugins/index.js",
   "supportFile": "test/e2e/cypress/support/index.js",
-  "screenshotsFolder": "test/e2e/falied-tests/",
+  "screenshotsFolder": "test/e2e/failed-tests/",
   "videosFolder": "test/e2e/videos",
   "videoUploadOnPasses": false,
   "projectId": "qnb41a",

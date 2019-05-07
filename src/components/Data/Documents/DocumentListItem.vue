@@ -16,6 +16,7 @@
 
     <div class="DocumentListItem-actions right">
       <a
+        class="DocumentListItem-update"
         v-if="canEdit"
         href=""
         :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
