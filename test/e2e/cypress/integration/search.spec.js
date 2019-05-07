@@ -70,7 +70,7 @@ describe('Search', function() {
     })
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
     cy.url().should('contain', 'quick=Keylogger')
@@ -85,7 +85,7 @@ describe('Search', function() {
     })
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
@@ -119,7 +119,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 250 })
     cy.wait(250)
@@ -157,7 +157,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -190,7 +190,7 @@ describe('Search', function() {
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
@@ -219,7 +219,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
 
@@ -275,7 +275,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -315,7 +315,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -323,23 +323,25 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
     cy.get('#rawsearch .ace_line')
-      .contains('}')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
     .clear({force: true})
-    .type(
-      `{{}
-"query": { 
-"bool": {
-"must": {
-"match_phrase_prefix": {
-"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-"sort": {
-"lastName": "desc"
-}`,
-      { force: true }
-    )
+    .type(`{{}
+    "query": { 
+    "bool": {
+    "must": {
+    "match_phrase_prefix": {
+    "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+    "sort": {
+    "lastName": "desc"
+    }`, {
+      force: true
+    })
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -353,7 +355,7 @@ describe('Search', function() {
   it('transforms a search query from basic filter to raw filter', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
   
     cy.get('.QuickFilter-optionBtn').click()
@@ -376,7 +378,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -384,22 +386,22 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-      cy
-      .get('#rawsearch .ace_line')
-      .should('be.visible')
-  
-      cy.get('#rawsearch .ace_line')
-        .click({ force: true })
-      cy.get('textarea.ace_text-input')
-      .clear({force: true})
-      .type(`{{}"query": {},
-      "aggregations": {
-        "my_aggs": {
-          "terms": {
-            "field": "firstName"
-          }`, {
-        force: true
-      })
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
+    cy.get('#rawsearch .ace_line')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{{}"query": {},
+    "aggregations": {
+      "my_aggs": {
+        "terms": {
+          "field": "firstName"
+        }`, {
+      force: true
+    })
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -415,7 +417,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -423,17 +425,17 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-      cy
-      .get('#rawsearch .ace_line')
-      .should('be.visible')
-  
-      cy.get('#rawsearch .ace_line')
-        .click({ force: true })
-      cy.get('textarea.ace_text-input')
-      .clear({force: true})
-      .type(`{{}"query": {{}}}`, {
-        force: true
-      })
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
+    cy.get('#rawsearch .ace_line')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{{}"query": {{}}}`, {
+      force: true
+    })
 
     cy.get('.RawFilter-submitBtn').click()
 
