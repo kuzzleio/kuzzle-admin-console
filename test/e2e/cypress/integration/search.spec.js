@@ -394,7 +394,8 @@ describe('Search', function() {
       .click({ force: true })
     cy.get('textarea.ace_text-input')
     .clear({force: true})
-    .type(`{{}"query": {},
+    .type(`{{}
+    "query": {},
     "aggregations": {
       "my_aggs": {
         "terms": {
