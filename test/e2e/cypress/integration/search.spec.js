@@ -331,7 +331,7 @@ describe('Search', function() {
       .click({ force: true })
     cy.get('textarea.ace_text-input')
     .clear({force: true})
-    .type(`{{}
+    .type(`{
     "query": { 
     "bool": {
     "must": {
