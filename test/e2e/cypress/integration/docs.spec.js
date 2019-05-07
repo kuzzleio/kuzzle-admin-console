@@ -200,6 +200,7 @@ describe('Document update/replace', () => {
     .should('be.visible')
 
     cy.get('#document .ace_line')
+      .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
     .clear({force: true})
@@ -232,6 +233,7 @@ describe('Document update/replace', () => {
 
     cy
     .get('#document .ace_line')
+    .contains('{')
     .should('be.visible')
 
     cy.get('#document .ace_line')

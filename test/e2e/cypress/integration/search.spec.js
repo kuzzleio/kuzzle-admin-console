@@ -391,6 +391,7 @@ describe('Search', function() {
     .should('be.visible')
 
     cy.get('#rawsearch .ace_line')
+      .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
     .clear({force: true})
@@ -431,6 +432,7 @@ describe('Search', function() {
     .should('be.visible')
 
     cy.get('#rawsearch .ace_line')
+      .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
     .clear({force: true})
