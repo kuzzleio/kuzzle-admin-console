@@ -8,7 +8,7 @@ export default {
     return kuzzle.queryPromise(
       {
         controller: 'collection',
-        action: 'updateMapping'
+        action: 'create'
       },
       {
         collection: state.name,
