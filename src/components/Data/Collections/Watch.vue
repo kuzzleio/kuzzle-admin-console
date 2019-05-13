@@ -42,9 +42,6 @@
           @reset="onReset"
           >
         </filters>
-        <a href="https://www.npmjs.com/package/koncorde" class="grey-text text-lighten-1">Koncorde</a>
-
-
         <div class="card-panel card-body" v-show="subscribed || notifications.length" ref="subscribeControl">
           <!-- subscription controls in page flow -->
           <subscription-controls
