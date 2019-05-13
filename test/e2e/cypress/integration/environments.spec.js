@@ -115,4 +115,47 @@ describe('Environments', function() {
 
     cy.get('.App-connected')
   })
+
+  it('should import environment', () => {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('.CreateEnvironment-import').click({
+      force: true
+    })
+
+    cy.fixture('environment.json').then(fileContent => {
+      cy.get('input[type=file').upload(
+        { fileContent, fileName:'environment.json', mimeType: 'application/json' },
+        {}
+      );
+    });
+
+    cy.get('.EnvironmentsCreateModal-import').click(
+      {force: true}
+    )
+  })
+
+  it.only('should export all environment', () => {
+    const validEnvName = 'valid'
+
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [validEnvName]: {
+          name: validEnvName,
+          color: '#002835',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          token: null
+        }
+      })
+    )
+    localStorage.setItem('lastConnectedEnv', validEnvName)
+
+    cy.visit('/')
+
+    cy.get('.EnvironmentsSwitch > .btn-flat').click()
+    cy.get('.EnvironmentsSwitch-export-all').click({force: true})
+  })
 })

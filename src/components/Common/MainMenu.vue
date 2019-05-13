@@ -26,7 +26,7 @@
             <b>{{currentUserName}}</b> on
           </li>
           <li>
-            <environment-switch blend-color="true" style="display: inline-flex" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
+            <environment-switch blend-color="true" style="display: inline-flex" @environment::importEnv="importEnv" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
           </li>
           <li>
             <a @click="doLogout" title="Logout"><i class="logout fa fa-power-off"></i></a>
@@ -89,6 +89,9 @@ export default {
     hasSecurityRights,
     editEnvironment(id) {
       this.$emit('environment::create', id)
+    },
+    importEnv() {
+      this.$emit('environment::importEnv')
     },
     deleteEnvironment(id) {
       this.$emit('environment::delete', id)

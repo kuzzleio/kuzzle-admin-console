@@ -7,6 +7,13 @@
 
     <div class="row">
       <div class="col s12">
+        <a ref="export" class="btn" v-if="environmentId">Export</a>
+        <a v-else href="#" class="CreateEnvironment-import" @click.prevent="$emit('environment::importEnv')"><i class="fa fa-file-import"></i>Import</a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
         <div class="input-field left-align">
           <input class="CreateEnvironment-name" id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name || errors.environmentAlreadyExists}">
           <label for="env-name" :class="{'active': environment.name}" data-error="Name is required and must be unique">Name</label>
@@ -84,6 +91,17 @@ export default {
   props: ['environmentId'],
   directives: {
     Focus
+  },
+  mounted () {
+    if (this.environmentId) {
+      const env = Object.assign({}, this.$store.getters.currentEnvironment)
+
+      delete env.token
+      const blob = new Blob([JSON.stringify(env)], {type: 'application/json'})
+
+      this.$refs.export.href = URL.createObjectURL(blob)
+      this.$refs.export.download = `${this.$store.getters.currentEnvironment.name}.json`
+    }
   },
   computed: {
     environments() {
