@@ -44,8 +44,10 @@
               <label for="filter"><i class="fa fa-search"></i> Filter</label>
               <input id="filter" v-model="filter" type="text" tabindex="1">
             </div>
+              <a href="https://www.npmjs.com/package/koncorde" class="grey-text text-lighten-1">Koncorde</a>
           </div>
         </div>
+
 
         <div class="row list">
           <!-- Not allowed -->
