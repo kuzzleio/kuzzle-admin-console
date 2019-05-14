@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col s12">
         <a ref="export" class="btn" v-if="environmentId">Export</a>
-        <a v-else href="#" class="CreateEnvironment-import" @click.prevent="$emit('environment::importEnv')"><i class="fa fa-file-import"></i>Import</a>
+        <button v-else class="CreateEnvironment-import btn" @click.prevent="$emit('environment::importEnv')">Import a connection</button>
       </div>
     </div>
 
@@ -94,9 +94,11 @@ export default {
   },
   mounted () {
     if (this.environmentId) {
-      const env = Object.assign({}, this.$store.getters.currentEnvironment)
+      const env = {}
 
-      delete env.token
+      env[this.$store.getters.currentEnvironment.name] = Object.assign({}, this.$store.getters.currentEnvironment)
+
+      delete env[this.$store.getters.currentEnvironment.name].token
       const blob = new Blob([JSON.stringify(env)], {type: 'application/json'})
 
       this.$refs.export.href = URL.createObjectURL(blob)

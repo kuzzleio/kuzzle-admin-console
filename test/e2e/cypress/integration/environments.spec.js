@@ -126,16 +126,11 @@ describe('Environments', function() {
     cy.fixture('environment.json').then(fileContent => {
       cy.get('input[type=file').upload(
         { fileContent, fileName:'environment.json', mimeType: 'application/json' },
-        {}
-      );
-    });
-
-    cy.get('.EnvironmentsCreateModal-import').click(
-      {force: true}
-    )
+        { subjectType: 'input' })
+    })
   })
 
-  it.only('should export all environment', () => {
+  it('should export all environment', () => {
     const validEnvName = 'valid'
 
     localStorage.setItem(
