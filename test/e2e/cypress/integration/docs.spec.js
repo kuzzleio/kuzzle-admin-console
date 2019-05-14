@@ -187,6 +187,7 @@ describe('Document update/replace', () => {
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
+    cy.get('.DocumentListItem').should('be.visible')
     cy.get('.DocumentListItem')
     .contains('myId')
     .parent()
@@ -221,6 +222,7 @@ describe('Document update/replace', () => {
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
+    cy.get('.DocumentListItem').should('be.visible')
     cy.get('.DocumentListItem')
     .contains('myId')
     .parent()
