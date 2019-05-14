@@ -28,15 +28,15 @@
         <router-link class="btn btn-small"
            v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canCreateDocument(index, collection)}"
-		       :to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
-           v-if="!isRealtime && canCreateDocument(index, collection)">
+		       :to="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}}: ''"
+           v-if="!isRealtime">
           Create a document
         </router-link>
         <router-link class="btn btn-small"
-           v-if="isRealtime && canManageRealtime(index, collection)"
+           v-if="isRealtime"
            v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
            :class="{unauthorized: !canManageRealtime(index, collection)}"
-           :to="{name: 'DataCollectionWatch', params: {index: index, collection: collection}}">
+           :to="canManageRealtime(index, collection) ? {name: 'DataCollectionWatch', params: {index: index, collection: collection}} : ''">
           Watch messages
         </router-link>
       </div>

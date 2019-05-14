@@ -1,21 +1,25 @@
 <template>
-  <span
-    v-if="canEditCollection(index, collection) || canSubscribe(index, collection) || canTruncateCollection(index, collection)"
-  >
+  <span>
     <dropdown :id="'collection-' + collection" :myclass="myclass">
-      <li
-        v-if="canEditCollection(index, collection)"
-      ><router-link :to="{name: 'DataCollectionEdit', params: {collection, index}}">Edit collection</router-link></li>
+      <li><router-link
+        :class="{disabled: !canEditCollection(index, collection)}"
+        :to="canEditCollection(index, collection) ? {name: 'DataCollectionEdit', params: {collection, index}} : ''"
+        >Edit collection</router-link>
+      </li>
       <li v-if="isRealtime"><a class="remove" @click="removeRealtimeCollection">Remove collection</a></li>
       <li class="divider"></li>
       <li v-if="!isRealtime && !isList"><router-link :to="{name: 'DataDocumentsList', params: {collection: collection, index: index}}">Browse documents</router-link></li>
-      <li
-        v-if="canSubscribe(index, collection)"
-      ><router-link :to="{name: 'DataCollectionWatch', params: {collection, index}}">Watch messages</router-link></li>
+      <li><router-link
+        :class="{disabled: !canSubscribe(index, collection)}"
+        :to="canSubscribe(index, collection) ? {name: 'DataCollectionWatch', params: {collection, index}}: ''"
+        >Watch messages</router-link>
+      </li>
       <li class="divider"></li>
-      <li
-        v-if="!isRealtime && isList && canTruncateCollection(index, collection)"
-      ><a @click.prevent="openModal" class="red-text">Clear documents</a></li>
+      <li v-if="!isRealtime && isList"><a
+        @click.prevent="openModal"
+        :class="{'red-text': canTruncateCollection(index, collection), disabled: !canTruncateCollection(index, collection)}"
+        >Clear documents</a>
+      </li>
     </dropdown>
 
     <modal-clear :id="'collection-clear-' + collection" :index="index" :collection="collection" :is-open="isOpen" :close="close"></modal-clear>
@@ -66,7 +70,9 @@ export default {
       })
     },
     openModal() {
-      this.isOpen = true
+      if (this.canTruncateCollection(this.$props.index, this.$props.collection)) {
+        this.isOpen = true
+      }
     },
     close() {
       this.isOpen = false

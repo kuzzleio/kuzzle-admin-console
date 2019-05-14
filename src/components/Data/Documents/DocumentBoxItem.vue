@@ -4,18 +4,25 @@
       <div class="DocumentBoxItem-title">
         <span class="card-title">{{document.id}}</span>
         <dropdown
-          v-if="canDelete || canEdit"
           class="DocumentBoxItem-actions"
           :id="`document-dropdown-${document.id}`"
           >
-          <li v-if="canEdit">
-            <a @click="editDocument">
+          <li>
+            <a
+              @click="editDocument"
+              :disabled="!canEdit"
+              :class="{disabled: !canEdit}"
+            >
               Edit
             </a>
           </li>
           <li class="divider"></li>
-          <li v-if="canDelete">
-            <a @click="deleteDocument">
+          <li>
+            <a
+              @click="deleteDocument"
+              :disabled="!canDelete"
+              :class="{disabled: !canDelete}"
+            >
               Delete
             </a>
           </li>

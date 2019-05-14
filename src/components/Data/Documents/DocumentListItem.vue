@@ -17,16 +17,19 @@
     <div class="DocumentListItem-actions right">
       <a
         class="DocumentListItem-update"
-        v-if="canEdit"
         href=""
         :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
         @click.prevent="editDocument">
         <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
       </a>
 
-      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black" v-if="canDelete">
+      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black">
         <li>
-          <a @click="deleteDocument">
+          <a
+            @click="deleteDocument"
+            :disabled="!canDelete"
+            :class="{disabled: !canDelete}"
+          >
             Delete
           </a>
         </li>

@@ -7,18 +7,19 @@
         </router-link>
       </li>
       <li
-        v-if="canSubscribe($route.params.index, $route.params.collection)"
         :class="{active: isRouteActive('DataCollectionWatch')}">
         <router-link href="#!"
-          :to="{name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}}">
+          :class="{disabled: !canSubscribe($route.params.index, $route.params.collection)}"
+          :to="canSubscribe($route.params.index, $route.params.collection) ? {name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}} : ''">
           Watch
         </router-link>
       </li>
       <li
-        v-if="canCreateDocument($route.params.index, $route.params.collection) && !$store.state.collection.isRealtimeOnly"
+        v-if="!$store.state.collection.isRealtimeOnly"
         :class="{active: isRouteActive('DataCreateDocument')}">
         <router-link
-          :to="{name: 'DataCreateDocument', params: {index: $route.params.index, collection: $route.params.collection}}">
+          :class="{disabled: !canCreateDocument($route.params.index, $route.params.collection)}"
+          :to="canCreateDocument($route.params.index, $route.params.collection) ? {name: 'DataCreateDocument', params: {index: $route.params.index, collection: $route.params.collection}} : ''">
           Create a document
         </router-link>
       </li>

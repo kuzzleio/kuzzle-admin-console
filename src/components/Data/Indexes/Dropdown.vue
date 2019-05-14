@@ -3,7 +3,14 @@
     <dropdown class="IndexDropdown" :id="'index-' + index" :myclass="myclass">
       <li v-if="!isList"><router-link :to="{name: 'DataIndexSummary', params: {index}}">Browse collections</router-link></li>
       <li class="divider"></li>
-      <li v-if="canDeleteIndex(index)"><a @click.prevent="openModal" class="IndexDropdown-delete red-text">Delete</a></li>
+      <li :class="{unauthorized: !canDeleteIndex(index)}">
+        <a
+          @click.prevent="openModal"
+          class="IndexDropdown-delete"
+          :class="{disabled: !canDeleteIndex(index), 'red-text': canDeleteIndex(index)}"
+          :disabled="!canDeleteIndex(index)"
+        >Delete</a>
+      </li>
     </dropdown>
 
     <modal-delete :id="'index-delete-' + index" :index="index" :is-open="isOpen" :close="close"></modal-delete>
@@ -36,7 +43,9 @@ export default {
   methods: {
     canDeleteIndex,
     openModal() {
-      this.isOpen = true
+      if (this.canDeleteIndex(this.$props.index)) {
+        this.isOpen = true
+      }
     },
     close() {
       this.isOpen = false

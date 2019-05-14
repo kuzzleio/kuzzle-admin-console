@@ -29,7 +29,8 @@
         <div class="row actions" v-if="$store.state.index.indexes.length">
           <div class="col s9">
             <button class="IndexesPage-createBtn btn waves-effect waves-light primary"
-               v-if="canCreateIndex()"
+               v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
+               :class="{unauthorized: !canCreateIndex()}"
                @click.prevent="openModal">
               <i class="fa fa-plus-circle left"></i>
               <span>Create an index</span>

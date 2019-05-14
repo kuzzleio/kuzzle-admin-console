@@ -3,7 +3,8 @@
     <div class="col s8">
       <button
         class="btn btn-small waves-effect waves-light tertiary"
-        v-if="displayToggleAll"
+        :disabled="!displayToggleAll"
+        :class="{disabled: !displayToggleAll}"
         @click="$emit('toggle-all')">
         <i class="fa left"
           :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
@@ -12,7 +13,8 @@
       </button>
 
       <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
-        v-if="displayCreate"
+        :disabled="!displayCreate"
+        :class="{disabled: !displayCreate}"
         @click.prevent="$emit('create')"
       >
         <i class="fa fa-plus-circle left"></i>
@@ -20,7 +22,8 @@
       </button>
 
       <button class="btn btn-small waves-effect waves-light red-color"
-        v-if="displayBulkDelete"
+        :disabled="!displayBulkDelete"
+        :class="{disabled: !displayBulkDelete}"
         @click="$emit('bulk-delete')"
       >
         <i class="fa fa-minus-circle left"></i>
