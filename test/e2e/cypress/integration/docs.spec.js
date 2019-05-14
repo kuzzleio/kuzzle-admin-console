@@ -242,7 +242,10 @@ describe('Document update/replace', () => {
       force: true
     })
     cy.get('.DocumentReplace')
-    .click()
+    .click({force: true})
+
+    cy.get('.DocumentListItem')
+    .should('be.visible')
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`)
     .then(res => {
