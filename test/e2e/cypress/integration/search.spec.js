@@ -322,21 +322,25 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
     cy.get('#rawsearch .ace_line')
-      .contains('}')
       .click({ force: true })
-    cy.get('textarea.ace_text-input').type(
-      `
-"query": { 
-"bool": {
-"must": {
-"match_phrase_prefix": {
-"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-"sort": {
-"lastName": "desc"
-}`,
-      { force: true }
-    )
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{
+    "query": { 
+    "bool": {
+    "must": {
+    "match_phrase_prefix": {
+    "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+    "sort": {
+    "lastName": "desc"
+    }`, {
+      force: true
+    })
 
     cy.get('.RawFilter-submitBtn').click()
 
