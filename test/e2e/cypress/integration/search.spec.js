@@ -11,6 +11,7 @@ describe('Search', function() {
       properties: {
         firstName: {
           type: 'text',
+          fielddata: true,
           fields: {
             keyword: {
               type: 'keyword',
@@ -69,7 +70,7 @@ describe('Search', function() {
     })
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
     cy.url().should('contain', 'quick=Keylogger')
@@ -84,7 +85,7 @@ describe('Search', function() {
     })
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
@@ -118,7 +119,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 250 })
     cy.wait(250)
@@ -156,7 +157,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -189,7 +190,7 @@ describe('Search', function() {
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
@@ -218,7 +219,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
 
@@ -274,7 +275,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -314,7 +315,7 @@ describe('Search', function() {
 
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
@@ -322,25 +323,30 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
     cy.get('#rawsearch .ace_line')
-      .contains('}')
       .click({ force: true })
-    cy.get('textarea.ace_text-input').type(
-      `
-"query": { 
-"bool": {
-"must": {
-"match_phrase_prefix": {
-"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-"sort": {
-"lastName": "desc"
-}`,
-      { force: true }
-    )
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{
+    "query": { 
+    "bool": {
+    "must": {
+    "match_phrase_prefix": {
+    "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+    "sort": {
+    "lastName": "desc"
+    }`, {
+      force: true
+    })
 
     cy.get('.RawFilter-submitBtn').click()
 
     cy.get('.DocumentListItem').should(function($el) {
+      console.log($el.first())
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
@@ -349,7 +355,7 @@ describe('Search', function() {
   it('transforms a search query from basic filter to raw filter', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('Indexes')
+    cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
   
     cy.get('.QuickFilter-optionBtn').click()
@@ -363,5 +369,82 @@ describe('Search', function() {
       .and('contain', 'must')
       .and('contain', 'match_phrase_prefix')
       .and('contain', 'bar')
+  })
+
+  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'bar'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('.IndexesPage').should('be.visible')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.tab.col')
+      .contains('JSON')
+      .click()
+
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
+    cy.get('#rawsearch .ace_line')
+      .contains('{')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{
+    "query": {},
+    "aggregations": {
+      "my_aggs": {
+        "terms": {
+          "field": "firstName"
+        `, {
+      force: true
+    })
+
+    cy.get('.RawFilter-submitBtn').click()
+
+    cy.get('.DocumentListItem').should(function($el) {
+      expect($el.first()).to.contain('Aggregations')
+    })
+  })
+
+  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      firstName: 'bar'
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('.IndexesPage').should('be.visible')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('.QuickFilter-optionBtn').click()
+    cy.get('.tab.col')
+      .contains('JSON')
+      .click()
+
+    cy
+    .get('#rawsearch .ace_line')
+    .should('be.visible')
+
+    cy.get('#rawsearch .ace_line')
+      .contains('{')
+      .click({ force: true })
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{
+      "query": {}`, {
+      force: true
+    })
+
+    cy.get('.RawFilter-submitBtn').click()
+
+    cy.get('.DocumentListItem').should(function($el) {
+      expect($el.first()).to.not.contain('Aggregations')
+    })
   })
 })

@@ -8,7 +8,9 @@ export default {
     return Vue.prototype.$kuzzle.query(
       {
         controller: 'collection',
-        action: 'updateMapping',
+        action: 'create'
+      },
+      {
         collection: state.name,
         index,
         body: mergeMetaAttributes({
