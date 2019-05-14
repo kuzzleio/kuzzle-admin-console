@@ -101,10 +101,16 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users/custom-mapping')
 
+    cy
+    .get('#user-custom-data-mapping-editor .ace_line')
+    .should('be.visible')
+
     cy.get('#user-custom-data-mapping-editor .ace_line')
-      .contains('},')
+      .contains('{')
       .click({ force: true })
-    cy.get('textarea.ace_text-input').type(`"address": {{}"type": "text"},`, {
+    cy.get('textarea.ace_text-input')
+    .clear({force: true})
+    .type(`{{}"address": {{}"type": "text"},`, {
       force: true
     })
 
