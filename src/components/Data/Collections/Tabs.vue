@@ -9,6 +9,7 @@
       <li
         :class="{active: isRouteActive('DataCollectionWatch')}">
         <router-link href="#!"
+          :title="canSubscribe($route.params.index, $route.params.collection) ? '' : 'You are not allowed to subscribe to this collection'"
           :class="{disabled: !canSubscribe($route.params.index, $route.params.collection)}"
           :to="canSubscribe($route.params.index, $route.params.collection) ? {name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}} : ''">
           Watch
@@ -18,6 +19,7 @@
         v-if="!$store.state.collection.isRealtimeOnly"
         :class="{active: isRouteActive('DataCreateDocument')}">
         <router-link
+          :title="canCreateDocument($route.params.index, $route.params.collection) ? '' : 'You are not allowed to create a document in this collection'"
           :class="{disabled: !canCreateDocument($route.params.index, $route.params.collection)}"
           :to="canCreateDocument($route.params.index, $route.params.collection) ? {name: 'DataCreateDocument', params: {index: $route.params.index, collection: $route.params.collection}} : ''">
           Create a document
