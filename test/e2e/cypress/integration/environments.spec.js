@@ -129,28 +129,4 @@ describe('Environments', function() {
         { subjectType: 'input' })
     })
   })
-
-  it('should export all environment', () => {
-    const validEnvName = 'valid'
-
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: '#002835',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: null
-        }
-      })
-    )
-    localStorage.setItem('lastConnectedEnv', validEnvName)
-
-    cy.visit('/')
-
-    cy.get('.EnvironmentsSwitch > .btn-flat').click()
-    cy.get('.EnvironmentsSwitch-export-all').click({force: true})
-  })
 })
