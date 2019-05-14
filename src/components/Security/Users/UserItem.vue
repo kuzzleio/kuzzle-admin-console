@@ -64,6 +64,7 @@
       <pre v-json-formatter="{content: document.content, open: true}"></pre>
       <pre v-json-formatter="{content: document.meta, open: true}"></pre>
       <pre v-json-formatter="{content: document.credentials, open: true}"></pre>
+      <pre v-if="document.aggregations" v-json-formatter="{content: document.aggregations, open: true}"></pre>
     </div>
   </div>
 </template>

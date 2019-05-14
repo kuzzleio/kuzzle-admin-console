@@ -92,16 +92,24 @@
         </div>
 
         <div class="row">
-          <div class="col s5 m4 l3">
-            <a @click.prevent="cancel" class="btn-flat waves-effect">Cancel</a>
-            <button
-              type="submit"
-              class="btn primary waves-effect waves-light"
-              :disabled="submitted"
-            >
-              <i v-if="!hideId" class="fa fa-plus-circle left"></i>
-              <i v-else class="fa fa-pencil left"></i>
-              {{hideId ? 'Update' : 'Create'}}
+          <div class="col s7 m6 l5">
+            <a @click.prevent="cancel" class="btn-flat waves-effect">
+              Cancel
+            </a>
+
+            <button v-if="!hideId" type="submit" class="btn primary waves-effect waves-light" :disabled="submitted">
+              <i class="fa fa-plus-circle left"></i>
+              Create
+            </button>
+
+            <button v-if="hideId" type="submit" class="btn primary waves-effect waves-light DocumentUpdate" ref="update" data-position="top" data-tooltip="Update some of a document's fields (does not remove unset attributes)." :disabled="submitted">
+              <i class="fa fa-pencil-alt left"></i>
+              Update
+            </button>
+
+            <button @click.prevent="create(true)" class="btn primary waves-effect waves-light DocumentReplace" ref="replace" data-position="top" data-tooltip="Replace the content of a document." :disabled="submitted" v-if="hideId">
+              <i class="fa fa-fire-alt left"></i>
+              Replace
             </button>
           </div>
           <div class="col s7 m8 l9" v-if="error">
@@ -228,17 +236,17 @@ export default {
     dismissError() {
       this.$emit('document-create::reset-error')
     },
-    create() {
+    create(replace = false) {
       if (this.submitted) {
         return
       }
 
       if (!this.$store.state.collection.defaultViewJson) {
-        return this.$emit('document-create::create', { ...this.value })
+        return this.$emit('document-create::create', { ...this.value }, replace)
       }
 
       if (this.$refs.jsoneditor.isValid()) {
-        this.$emit('document-create::create', { ...this.value })
+        this.$emit('document-create::create', { ...this.value }, replace)
       } else {
         this.$emit('document-create::error', 'Invalid JSON provided.')
       }
@@ -293,6 +301,9 @@ export default {
   mounted() {
     jsonAlreadyInit = false
     this.initJsonDocument()
+    /* eslint no-undef: 0 */
+    M.Tooltip.init(this.$refs.update)
+    M.Tooltip.init(this.$refs.replace)
   },
   watch: {
     value: 'initJsonDocument'
