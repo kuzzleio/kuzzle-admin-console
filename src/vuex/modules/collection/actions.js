@@ -8,7 +8,9 @@ export default {
     return kuzzle.queryPromise(
       {
         controller: 'collection',
-        action: 'create'
+        action: 'create',
+        collection: state.name,
+        index
       },
       {
         collection: state.name,
