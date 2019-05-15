@@ -2,7 +2,8 @@
   <div class="Main">
     <main-menu
       @environment::create="editEnvironment"
-      @environment::delete="deleteEnvironment">
+      @environment::delete="deleteEnvironment"
+      @environment::importEnv="importEnv">
     </main-menu>
 
     <main class="loader">
@@ -67,6 +68,9 @@ export default {
     },
     deleteEnvironment(id) {
       this.$emit('environment::delete', id)
+    },
+    importEnv() {
+      this.$emit('environment::importEnv')
     },
     onTokenExpired() {
       this.$store.commit(types.SET_TOKEN_VALID, false)

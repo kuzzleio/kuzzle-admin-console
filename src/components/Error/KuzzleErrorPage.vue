@@ -4,7 +4,8 @@
       <div class="col offset-s4 s2">
         <environment-switch
           @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment">
+          @environment::delete="deleteEnvironment"
+          @environment::importEnv="importEnv">
         </environment-switch>
       </div>
     </div>
@@ -85,6 +86,9 @@ export default {
     },
     deleteEnvironment(id) {
       this.$emit('environment::delete', id)
+    },
+    importEnv() {
+      this.$emit('environment::importEnv')
     }
   }
 }
