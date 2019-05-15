@@ -14,12 +14,7 @@ export default {
     dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, id)
   },
   [types.CREATE_ENVIRONMENT]({ commit, state, dispatch }, payload) {
-    try {
-      commit(types.CREATE_ENVIRONMENT, payload)
-    } catch (e) {
-      console.warn(`Unable to add ${payload.id}. Got the following error
-      ${e.message}`)
-    }
+    commit(types.CREATE_ENVIRONMENT, payload)
 
     localStorage.setItem(
       ENVIRONMENT_ITEM_NAME,

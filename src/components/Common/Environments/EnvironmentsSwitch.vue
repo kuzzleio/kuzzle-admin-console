@@ -21,7 +21,9 @@
         <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
       </li>
       <li class="divider"></li>
-      <li ><a href="" @click.prevent="$emit('environment::create')"><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle"></i> Create new connection</a></li>
+      <li><a href="" @click.prevent="$emit('environment::create')"><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle"></i> Create new connection</a></li>
+      <li><a ref="export"><i class="EnvironmentsSwitch-export-all fa fa-file-export"></i>Export all</a></li>
+      <li><a href="#" @click.prevent="$emit('environment::importEnv')"><i class="fa fa-file-import"></i>Import</a></li>
     </ul>
   </span>
 </template>
@@ -88,6 +90,17 @@ export default {
     formatForDom
   },
   mounted() {
+    const env = {}
+    for (const name in this.$store.state.kuzzle.environments) {
+      env[name] = Object.assign({}, this.$store.state.kuzzle.environments[name])
+      delete env[name].token
+    }
+
+    const blob = new Blob([JSON.stringify(env)], {type: 'application/json'})
+
+    this.$refs.export.href = URL.createObjectURL(blob)
+    this.$refs.export.download = 'connections.json'
+
     $(this.$refs.dropdown)
       .find('.dropdown-button')
       .dropdown({ constrain_width: false, belowOrigin: true })

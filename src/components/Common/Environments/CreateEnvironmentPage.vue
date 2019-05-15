@@ -17,6 +17,7 @@
           <create-environment
             :environment-id="null"
             ref="createEnvironmentComponent"
+            @environment::importEnv="importEnv"
             >
           </create-environment>
 
@@ -47,6 +48,9 @@ export default {
           .then(() => this.$router.push({ name: 'Home' }))
           .catch(e => console.error(e))
       } catch (e) {}
+    },
+    importEnv() {
+      this.$emit('environment::importEnv')
     }
   }
 }

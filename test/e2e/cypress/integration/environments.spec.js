@@ -115,4 +115,18 @@ describe('Environments', function() {
 
     cy.get('.App-connected')
   })
+
+  it('should import environment', () => {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('.CreateEnvironment-import').click({
+      force: true
+    })
+
+    cy.fixture('environment.json').then(fileContent => {
+      cy.get('input[type=file').upload(
+        { fileContent, fileName:'environment.json', mimeType: 'application/json' },
+        { subjectType: 'input' })
+    })
+  })
 })
