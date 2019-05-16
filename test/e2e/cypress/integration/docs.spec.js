@@ -198,9 +198,8 @@ describe('Document update/replace', () => {
     cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
     cy.wait(1000)
-
+    
     cy.get('textarea.ace_text-input')
-    .should('be.visible')
     .clear({force: true})
     .type(`{
       "foo":"changed"`, {
@@ -232,10 +231,12 @@ describe('Document update/replace', () => {
 
     cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
-    cy.wait(1000)
 
     cy.get('textarea.ace_text-input')
     .should('be.visible')
+    cy.wait(1000)
+    
+    cy.get('textarea.ace_text-input')
     .clear({force: true})
     .type(`{
       "foo":"changed"`, {
