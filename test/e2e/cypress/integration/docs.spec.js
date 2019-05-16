@@ -240,15 +240,14 @@ describe('Document update/replace', () => {
     .children('.DocumentListItem-update')
     .click()
 
-    cy
-    .get('#document .ace_line')
+    cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
-
-    cy.get('#document .ace_line')
-      .click({ force: true })
+    cy.wait(2000)
+    
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{{}"foo":"changed"}`, {
+    .type('{selectall}{backspace}', {delay: 200, force: true})
+    .type(`{
+      "foo":"changed"`, {
       force: true
     })
     cy.get('.DocumentUpdate')
@@ -275,19 +274,24 @@ describe('Document update/replace', () => {
     .children('.DocumentListItem-update')
     .click()
 
-    cy
-    .get('#document .ace_line')
+    cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
 
-    cy.get('#document .ace_line')
-      .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{{}"foo":"changed"}`, {
+    .should('be.visible')
+    cy.wait(2000)
+    
+    cy.get('textarea.ace_text-input')
+    .type('{selectall}{backspace}', {delay: 200, force: true})
+    .type(`{
+      "foo":"changed"`, {
       force: true
     })
     cy.get('.DocumentReplace')
-    .click()
+    .click({force: true})
+
+    cy.get('.DocumentListItem')
+    .should('be.visible')
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`)
     .then(res => {
