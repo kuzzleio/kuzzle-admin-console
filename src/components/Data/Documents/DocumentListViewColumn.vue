@@ -239,10 +239,14 @@ export default {
 
 <style lang="scss" scoped>
 .DocumentColumnItem {
-  padding: 3px 5px;
+  padding: 0px 0px;
   white-space: pre;
   word-wrap: break-word;
   font-size: .9rem;
+}
+
+td {
+  padding: 0 0 0 0;
 }
 
 .ListViewColumnInput {
