@@ -250,4 +250,15 @@ describe('Document update/replace', () => {
       expect(res.body.result._source.more).to.be.undefined
     })
   })
+
+  it('should handle the column view properly', function() {
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('.ListViewButtons-btn[title~="column"]').click()
+    cy.url().should('contain', 'listViewType=column')
+    
+    
+  })
 })

@@ -5,7 +5,7 @@
         <th class="actions"></th>
         <th>id</th>
         <th v-for="(attr, k) in customFields" :key="k">
-          {{attr}} <i class="fa fa-minus ListViewColumn-remove" @click="removeColumn(k)"></i>
+          {{attr}}<i class="fa fa-times-circle ListViewColumn-remove" @click="removeColumn(k)"></i>
         </th>
         <th>
           <form>
@@ -253,6 +253,7 @@ export default {
 .ListViewColumn-remove {
   color: #3498db;
   cursor: pointer;
+  padding-left: 6px;
 }
 
 .DocumentListViewColumn-add {
