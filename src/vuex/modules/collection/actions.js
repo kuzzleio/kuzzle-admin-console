@@ -5,21 +5,13 @@ import Vue from 'vue'
 
 export default {
   [types.CREATE_COLLECTION]({ state }, { index }) {
-    return Vue.prototype.$kuzzle.query(
-      {
-        controller: 'collection',
-        action: 'create'
-      },
-      {
-        collection: state.name,
-        index,
-        body: mergeMetaAttributes({
-          mapping: state.mapping,
-          schema: state.schema,
-          allowForm: state.allowForm
-        })
-      }
-    )
+    return Vue.prototype.$kuzzle
+      .collection
+      .create(index, state.name, mergeMetaAttributes({
+        mapping: state.mapping,
+        schema: state.schema,
+        allowForm: state.allowForm
+      }))
   },
   [types.UPDATE_COLLECTION]({ state }, { index }) {
     if (state.isRealtimeOnly) {
