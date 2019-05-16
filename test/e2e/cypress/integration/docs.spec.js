@@ -150,7 +150,7 @@ describe('Document List', function() {
       .contains('Delete')
   })
 
-  it.only('should handle the column view properly', function() {
+  it('should handle the column view properly', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       jsonObject: {
         "foo": "bar"
