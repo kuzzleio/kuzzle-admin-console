@@ -202,6 +202,7 @@ describe('Document update/replace', () => {
     cy.get('#document .ace_line')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
+    .should('be.visible')
     .clear({force: true})
     .type(`{{}"foo":"changed"}`, {
       force: true
@@ -237,6 +238,7 @@ describe('Document update/replace', () => {
     cy.get('#document .ace_line')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
+    .should('be.visible')
     .clear({force: true})
     .type(`{{}"foo":"changed"}`, {
       force: true
