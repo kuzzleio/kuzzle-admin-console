@@ -43,7 +43,7 @@ echo
 set -e
 
 if [[ -z "$e2eLocal" ]]; then
-  $(npm bin)/cypress run --record --browser chrome
+  $(npm bin)/cypress run --record
 else
   $(npm bin)/cypress open
 fi

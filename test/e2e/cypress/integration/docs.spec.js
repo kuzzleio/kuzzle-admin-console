@@ -200,7 +200,7 @@ describe('Document update/replace', () => {
     cy.wait(2000)
     
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
+    .type('{selectall}{backspace}', {delay: 200, force: true})
     .type(`{
       "foo":"changed"`, {
       force: true
@@ -237,7 +237,7 @@ describe('Document update/replace', () => {
     cy.wait(2000)
     
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
+    .type('{selectall}{backspace}', {delay: 200, force: true})
     .type(`{
       "foo":"changed"`, {
       force: true
