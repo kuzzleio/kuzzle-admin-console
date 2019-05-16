@@ -6,7 +6,7 @@
       :class="inputClass"
       :placeholder="placeholder"
       @input="onInput"
-      @change="(evt) => changeResult(evt.target.value)"
+      @change="evt => { if (this.notifyChange) { return changeResult(evt.target.value)}}"
       @focus="onInput"
       @keydown.down="onArrowDown"
       @keydown.up="onArrowUp"
@@ -56,6 +56,11 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    notifyChange: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -68,7 +73,7 @@ export default {
   },
   methods: {
     onInput() {
-      if (this.results.length > 0) {
+      if (this.results.length >= 0) {
         this.isOpen = true
       }
       this.filterResults()
@@ -82,9 +87,11 @@ export default {
       this.isOpen = false
       this.inputValue = result
       this.$emit('autocomplete::change', result)
+      this.inputValue = ''
     },
     changeResult(result) {
       this.$emit('autocomplete::change', result)
+      this.inputValue = ''
     },
     onArrowDown() {
       if (this.selectionCursor + 1 < this.results.length) {

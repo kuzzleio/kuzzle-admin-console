@@ -54,6 +54,7 @@
                   @list="onListViewClicked"
                   @boxes="onBoxesViewClicked"
                   @map="onMapViewClicked"
+                  @column="onColumnViewClicked"
                 >
                 </list-view-buttons>
               </div>
@@ -102,6 +103,32 @@
                       @delete="onDeleteClicked">
                     </document-list-item>
                   </div>
+                </div>
+
+                <div class="row" v-show="documents.length">
+                  <div class="col s12">
+                    <pagination
+                    :from="paginationFrom"
+                    :max-page="1000"
+                    :number-in-page="documents.length"
+                    :size="paginationSize"
+                    :total="totalDocuments"
+                    @change-page="changePage"
+                    ></pagination>
+                  </div>
+                </div>
+              </div>
+
+              <div class="DocumentList-column col s12" v-show="listViewType === 'column'">
+                <div class="DocumentList-materializeCollection h-scroll">
+                  <DocumentListViewColumn 
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :index="index"
+                  :collection="collection"
+                  @edit="onEditDocumentClicked"
+                  @delete="onDeleteClicked"
+                  ></DocumentListViewColumn>
                 </div>
 
                 <div class="row" v-show="documents.length">
@@ -190,6 +217,7 @@ import _ from 'lodash'
 
 import DocumentListItem from './DocumentListItem'
 import DocumentBoxItem from './DocumentBoxItem'
+import DocumentListViewColumn from './DocumentListViewColumn'
 import DeleteModal from './DeleteModal'
 import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
@@ -224,6 +252,7 @@ const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
 const LIST_VIEW_BOXES = 'boxes'
 const LIST_VIEW_MAP = 'map'
+const LIST_VIEW_COLUMN = 'column'
 
 export default {
   name: 'DocumentsPage',
@@ -238,6 +267,7 @@ export default {
     DeleteModal,
     DocumentBoxItem,
     DocumentListItem,
+    DocumentListViewColumn,
     EmptyState,
     Headline,
     Filters,
@@ -531,6 +561,10 @@ export default {
       this.listViewType = LIST_VIEW_LIST
       this.saveListView()
     },
+    onColumnViewClicked() {
+      this.listViewType = LIST_VIEW_COLUMN
+      this.saveListView()
+    },
     onBoxesViewClicked() {
       this.listViewType = LIST_VIEW_BOXES
       this.saveListView()
@@ -648,7 +682,7 @@ export default {
   }
 }
 .DocumentsPage-container {
-  max-width: $container-width;
+  // max-width: $container-width;
 }
 
 .DocumentsPage-filtersAndButtons {
@@ -670,5 +704,17 @@ export default {
 
 .active {
   color: $blue-color;
+}
+
+.h-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.DocumentColumnItem {
+  padding: 3px 5px;
+  white-space: pre;
+  word-wrap: break-word;
+  font-size: .9rem;
 }
 </style>
