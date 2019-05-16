@@ -195,18 +195,11 @@ describe('Document update/replace', () => {
     .children('.DocumentListItem-update')
     .click()
 
-    cy
-    .get('#document .ace_line')
-    .should('be.visible')
-
-    cy.get('#document .ace_line')
-      .click({ force: true })
-    cy.get('textarea.ace_text-input')
+    cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
     .clear({force: true})
     .type(`{
-      "foo":"changed"
-    }`, {
+      "foo":"changed"`, {
       force: true
     })
     cy.get('.DocumentUpdate')
@@ -237,14 +230,11 @@ describe('Document update/replace', () => {
     .get('#document .ace_line')
     .should('be.visible')
 
-    cy.get('#document .ace_line')
-      .click({ force: true })
-    cy.get('textarea.ace_text-input')
+    cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
     .clear({force: true})
     .type(`{
-      "foo":"changed"
-    }`, {
+      "foo":"changed"`, {
       force: true
     })
     cy.get('.DocumentReplace')
