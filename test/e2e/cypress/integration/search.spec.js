@@ -296,7 +296,7 @@ describe('Search', function() {
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function() {
+  it.only('sorts the results when sorting is specfied in the raw filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -330,6 +330,7 @@ describe('Search', function() {
     cy.get('#rawsearch .ace_line')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
+    .should('be.visible')
     .clear({force: true})
     .type(`{
     "query": { 
