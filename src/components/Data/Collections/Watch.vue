@@ -42,7 +42,6 @@
           @reset="onReset"
           >
         </filters>
-
         <div class="card-panel card-body" v-show="subscribed || notifications.length" ref="subscribeControl">
           <!-- subscription controls in page flow -->
           <subscription-controls
@@ -65,7 +64,7 @@
             <div class="col s8 m9 l10">
               <p>
                 You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Kuzzle DSL</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em>
               </p>
               <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
                 <i class="fa left fa-play"></i>
@@ -85,7 +84,7 @@
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Kuzzle DSL</a></em>
+                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em>
               </p>
             </div>
           </div>
