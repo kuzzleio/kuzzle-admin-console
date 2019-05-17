@@ -2,7 +2,10 @@
   <div class="CollectionsList wrapper">
     <headline>
       {{index}}
-      <index-dropdown :index="index" class="icon-medium icon-black"></index-dropdown>
+      <index-dropdown 
+        :index="index"
+        class="icon-medium icon-black"
+      ></index-dropdown>
     </headline>
 
     <div class="row">
@@ -10,11 +13,11 @@
 
         <div class="row actions" v-if="collectionCount">
           <div class="col s9">
-            <router-link class="CollectionsList-createBtn btn waves-effect waves-light primary" v-if="canCreateCollection(index)"
+            <router-link class="CollectionsList-createBtn btn waves-effect waves-light primary"
                v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
                :class="{unauthorized: !canCreateCollection(index)}"
-               :to="{name: 'DataCreateCollection', params: {index: index}}">
-              <i class="fa fa-plus-circle left"></i>Create a collection
+               :to="canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : ''"
+            ><i class="fa fa-plus-circle left"></i>Create a collection
             </router-link>
           </div>
 
@@ -125,6 +128,7 @@ import IndexDropdown from '../Indexes/Dropdown'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionBoxed from '../Collections/Boxed'
 import {
+  canDeleteIndex,
   canSearchIndex,
   canSearchCollection,
   canCreateCollection
@@ -143,6 +147,7 @@ export default {
     IndexDropdown
   },
   methods: {
+    canDeleteIndex,
     canSearchIndex,
     canSearchCollection,
     canCreateCollection
