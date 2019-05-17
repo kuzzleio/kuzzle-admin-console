@@ -9,20 +9,20 @@
           >
           <li>
             <a
-              v-bind:class="{'disabled': !canEdit}"
-              v-title="{active: !canDelete, title: 'You are not allowed to edit this document'}"
               @click="editDocument"
-              >
+              :disabled="!canEdit"
+              :class="{disabled: !canEdit}"
+            >
               Edit
             </a>
           </li>
           <li class="divider"></li>
           <li>
             <a
-              v-bind:class="{'disabled': !canDelete}"
-              v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
               @click="deleteDocument"
-              >
+              :disabled="!canDelete"
+              :class="{disabled: !canDelete}"
+            >
               Delete
             </a>
           </li>

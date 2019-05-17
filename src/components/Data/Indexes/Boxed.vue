@@ -20,7 +20,7 @@
       </div>
 
       <div class="card-action right-align">
-        <router-link class="btn btn-small" v-if="canCreateCollection(index)"
+        <router-link class="btn btn-small"
            v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
            :class="{unauthorized: !canCreateCollection(index)}"
            :to="{name: 'DataCreateCollection', params: {index: index}}">Create a collection</router-link>
