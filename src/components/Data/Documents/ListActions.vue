@@ -4,7 +4,7 @@
       <button
         class="btn btn-small waves-effect waves-light tertiary"
         :disabled="!displayToggleAll"
-        :class="!displayToggleAll ? 'disabled' : ''"
+        :class="{disabled: !displayToggleAll}"
         @click="$emit('toggle-all')">
         <i class="fa left"
           :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
@@ -13,20 +13,19 @@
       </button>
 
       <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
-        @click.prevent="$emit('create')"
         :disabled="!displayCreate"
-        :class="!displayCreate ? 'disabled' : ''"
-        :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
+        :class="{disabled: !displayCreate}"
+        @click.prevent="$emit('create')"
       >
         <i class="fa fa-plus-circle left"></i>
         Create
       </button>
 
-      <button class="btn btn-small waves-effect waves-light"
-        :class="displayBulkDelete ? 'red-color' : 'disabled'"
+      <button class="btn btn-small waves-effect waves-light red-color"
         :disabled="!displayBulkDelete"
+        :class="{disabled: !displayBulkDelete}"
         @click="$emit('bulk-delete')"
-        :title="displayBulkDelete ? '' : 'You need to select at least one element'">
+      >
         <i class="fa fa-minus-circle left"></i>
         Delete
       </button>

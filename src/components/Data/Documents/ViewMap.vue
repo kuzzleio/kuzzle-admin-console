@@ -21,9 +21,9 @@
             {{ currentDocument.id }}
           </div>
           <a
-            v-if="canEdit"
             href=""
-            :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
+            :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this document'"
+            :class="{unauthorized: !canEdit}"
             @click.prevent="editCurrentDocument">
             <i class="fa fa-pencil-alt pointer" :class="{'disabled': !canEdit}"></i>
           </a>
