@@ -10,6 +10,7 @@
             <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
               <div class="col s4">
                 <autocomplete
+                  class="BasicFilter--key"
                   input-class="validate"
                   placeholder="Attribute"
                   :items="attributeItems"
@@ -24,15 +25,15 @@
               </div>
               <div v-if="andBlock.operator !== 'range'">
                 <div class="col s3">
-                  <input placeholder="Value" type="text" class="validate" v-model="andBlock.value">
+                  <input placeholder="Value" type="text" class="BasicFilter--value validate" v-model="andBlock.value">
                 </div>
               </div>
               <div v-else>
                 <div class="col s1">
-                  <input placeholder="Value 1" type="text" class="validate" v-model="andBlock.gt_value">
+                  <input placeholder="Value 1" type="text" class="BasicFilter--gtValue validate" v-model="andBlock.gt_value">
                 </div>
                 <div class="col s1">
-                  <input placeholder="Value 2" type="text" class="validate" v-model="andBlock.lt_value">
+                  <input placeholder="Value 2" type="text" class="BasicFilter--ltValue validate" v-model="andBlock.lt_value">
                 </div>
               </div>
               <div class="col s2">

@@ -91,7 +91,7 @@
         </div>
 
         <div class="row">
-          <div :style="notifStyle" id="notification-container" ref="notificationContainer" class="col s8">
+          <div :style="notifStyle" id="notification-container" ref="notificationContainer" class="Watch--notifications col s8">
             <div v-if="notifications.length">
               <ul class="collapsible" v-collapsible data-collapsible="expandable">
                 <notification
