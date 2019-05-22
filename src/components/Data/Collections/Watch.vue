@@ -140,7 +140,6 @@ export default {
     return {
       subscribed: false,
       room: null,
-      filters: {},
       currentFilter: new filterManager.Filter(),
       realtimeFilterOperands: filterManager.realtimeFilterOperands,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
@@ -183,40 +182,19 @@ export default {
   methods: {
     canSubscribe,
     onFiltersUpdated(newFilters) {
+      this.currentFilter = newFilters
       filterManager.saveToRouter(
         filterManager.stripDefaultValuesFromFilter(newFilters),
         this.$router
       )
       this.toggleSubscription()
     },
-    // basicSearch(filters) {
-    //   if (!filters) {
-    //     this.$router.push({ query: { basicFilter: '' } })
-    //     return
-    //   }
-
-    //   let basicFilter = JSON.stringify(filters)
-    //   this.$router.push({ query: { basicFilter } })
-    // },
-    // rawSearch(filters) {
-    //   if (!filters) {
-    //     this.$router.push({ query: { rawFilter: '' } })
-    //     return
-    //   }
-
-    //   let rawFilter = JSON.stringify(filters)
-    //   this.$router.push({ query: { rawFilter } })
-    // },
-    // refreshSearch() {
-    //   this.$router.push({ query: { ...this.$route.query } })
-    // },
-    toggleSubscription() {
+    async toggleSubscription() {
       if (!this.subscribed) {
         window.Notification.requestPermission()
-        this.subscribe()
+        await this.subscribe()
       } else {
-        this.subscribed = false
-        this.unsubscribe(this.room)
+        await this.unsubscribe(this.room)
       }
     },
     notificationToMessage(notification) {
@@ -360,12 +338,13 @@ export default {
     },
     async subscribe() {
       try {
+        const realtimeQuery = filterManager.toRealtimeQuery(this.currentFilter)
         const room = await this.$kuzzle
           .realtime
           .subscribe(
             this.index,
             this.collection,
-            filterManager.toRealtimeQuery(this.filters),
+            realtimeQuery,
             this.handleMessage,
             this.subscribeOptions
           )
@@ -382,6 +361,7 @@ export default {
       this.warning.count = 0
 
       await this.$kuzzle.realtime.unsubscribe(room)
+      this.subscribed = false
       this.room = null
     },
     onReset(newFilters) {
