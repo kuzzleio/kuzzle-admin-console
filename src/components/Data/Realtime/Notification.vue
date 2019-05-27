@@ -1,10 +1,10 @@
 <template>
-  <li>
-    <div class="collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
+  <li class="Notification">
+    <div class="Notification--header collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
       <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
       <i class="fa" :class="notificationIcon"></i> {{notification.text}} - {{ago}}
     </div>
-    <div class="collapsible-body" v-if="!notification.empty">
+    <div class="Notification--body collapsible-body" v-if="!notification.empty">
       <p v-json-formatter="{content: notification.source, open: true}"/>
     </div>
   </li>
