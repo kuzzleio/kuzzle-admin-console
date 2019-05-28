@@ -17,7 +17,6 @@
     <div class="DocumentListItem-actions right">
       <a
         class="DocumentListItem-update"
-        v-if="canEdit"
         href=""
         :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
         @click.prevent="editDocument">
@@ -27,9 +26,10 @@
       <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black">
         <li>
           <a
-            v-bind:class="{'disabled': !canDelete}"
             @click="deleteDocument"
-            v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
+            :disabled="!canDelete"
+            :class="{disabled: !canDelete}"
+          >
             Delete
           </a>
         </li>
