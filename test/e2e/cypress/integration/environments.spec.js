@@ -64,7 +64,8 @@ describe('Environments', function() {
     cy.get(`.CreateEnvironment-colorBtns div:nth-child(3) div.color`)
       .as('colorEl')
       .click()
-
+    
+    cy.wait(500)
     cy.get('.Environment-SubmitButton').click()
     cy.get('.LoginAsAnonymous-Btn').click()
 
