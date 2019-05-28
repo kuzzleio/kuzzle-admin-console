@@ -127,9 +127,9 @@ export default {
       }
     },
     parseDocument(attr, doc) {
-      let ret = attr.includes('.') ? this.getNestedField(doc.content, attr) : doc.content[attr]
+      const ret = attr.includes('.') ? this.getNestedField(doc.content, attr) : doc.content[attr]
 
-      if (typeof ret === 'object') {
+      if (typeof ret === 'object' && ret !== null) {
         return {
           isObject: true,
           value: JSON.stringify(ret).substring(0, 10),

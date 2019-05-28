@@ -681,9 +681,6 @@ export default {
     height: 500px;
   }
 }
-.DocumentsPage-container {
-  // max-width: $container-width;
-}
 
 .DocumentsPage-filtersAndButtons {
   margin-bottom: 0;

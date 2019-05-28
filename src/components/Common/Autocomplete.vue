@@ -6,7 +6,7 @@
       :class="inputClass"
       :placeholder="placeholder"
       @input="onInput"
-      @change="evt => { if (this.notifyChange) { return changeResult(evt.target.value)}}"
+      @change="onChange"
       @focus="onInput"
       @keydown.down="onArrowDown"
       @keydown.up="onArrowUp"
@@ -72,10 +72,13 @@ export default {
     }
   },
   methods: {
-    onInput() {
-      if (this.results.length >= 0) {
-        this.isOpen = true
+    onChange(evt) {
+      if (this.notifyChange) { 
+        return this.changeResult(evt.target.value)
       }
+    },
+    onInput() {
+      this.isOpen = true
       this.filterResults()
     },
     filterResults() {
