@@ -1,20 +1,19 @@
 <template>
   <div>
     <Headline>Profile - Create</Headline>
-    <Notice></Notice>
+    <Notice />
     <create-or-update
+      v-model="document"
       title="Create a profile"
       :error="error"
+      :submitted="submitted"
+      :mandatory-id="true"
       @document-create::reset-error="error = ''"
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::error="setError"
       @change-id="updateId"
-      v-model="document"
-      :submitted="submitted"
-      :mandatory-id="true"
-    >
-    </create-or-update>
+    />
   </div>
 </template>
 
@@ -61,7 +60,7 @@ export default {
 
       try {
         await this.$kuzzle.security
-          .createProfile(this.id, {policies: profile.policies}, {
+          .createProfile(this.id, { policies: profile.policies }, {
             refresh: 'wait_for'
           })
       } catch (e) {

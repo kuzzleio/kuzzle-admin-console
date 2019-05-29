@@ -1,8 +1,18 @@
 <template>
   <div class="row input-field">
-    <label :class="{'active': value}">{{name}}</label>
-    <m-select :value="castedValue" @input="update" :options="options">
-      <option v-for="option in options" :key="option.id" :value="option.id">{{option.name}}</option>
+    <label :class="{'active': value}">{{ name }}</label>
+    <m-select
+      :value="castedValue"
+      :options="options"
+      @input="update"
+    >
+      <option
+        v-for="option in options"
+        :key="option.id"
+        :value="option.id"
+      >
+        {{ option.name }}
+      </option>
     </m-select>
   </div>
 </template>
@@ -15,6 +25,9 @@ const NULL_ID = '_NULL_'
 
 export default {
   name: 'JsonFormItemSelect',
+  components: {
+    MSelect
+  },
   props: {
     content: Object,
     name: String,
@@ -22,9 +35,6 @@ export default {
     step: Number,
     parent: String,
     schema: Object
-  },
-  components: {
-    MSelect
   },
   data() {
     return {
@@ -46,6 +56,12 @@ export default {
     castedValue() {
       return String(this.value)
     }
+  },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    this.initValue()
   },
   methods: {
     update(value) {
@@ -70,12 +86,6 @@ export default {
         this.value = this.content[this.name]
       }
     }
-  },
-  mounted() {
-    this.initValue()
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

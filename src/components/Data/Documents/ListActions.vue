@@ -5,35 +5,40 @@
         class="btn btn-small waves-effect waves-light tertiary"
         :disabled="!displayToggleAll"
         :class="{disabled: !displayToggleAll}"
-        @click="$emit('toggle-all')">
-        <i class="fa left"
+        @click="$emit('toggle-all')"
+      >
+        <i
+          class="fa left"
           :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
-        ></i>
+        />
         Toggle all
       </button>
 
-      <button class="btn btn-small waves-effect waves-light margin-right-5 primary"
+      <button
+        class="btn btn-small waves-effect waves-light margin-right-5 primary"
         :disabled="!displayCreate"
         :class="{disabled: !displayCreate}"
         @click.prevent="$emit('create')"
       >
-        <i class="fa fa-plus-circle left"></i>
+        <i class="fa fa-plus-circle left" />
         Create
       </button>
 
-      <button class="btn btn-small waves-effect waves-light red-color"
+      <button
+        class="btn btn-small waves-effect waves-light red-color"
         :disabled="!displayBulkDelete"
         :class="{disabled: !displayBulkDelete}"
         @click="$emit('bulk-delete')"
       >
-        <i class="fa fa-minus-circle left"></i>
+        <i class="fa fa-minus-circle left" />
         Delete
       </button>
 
-      <button class="btn btn-small waves-effect waves-light margin-right-5"
+      <button
+        class="btn btn-small waves-effect waves-light margin-right-5"
         @click.prevent="$emit('refresh')"
       >
-        <i class="fas fa-sync-alt left"></i>
+        <i class="fas fa-sync-alt left" />
         Refresh
       </button>
     </div>
@@ -42,8 +47,17 @@
         Selected geopoint
       </div>
       <div class="col s2">
-        <m-select v-model="selectedGeopoint" @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)">
-          <option v-for="geopoint in geopointList" :value="geopoint" v-bind:key="geopoint">{{ geopoint }}</option>
+        <m-select
+          v-model="selectedGeopoint"
+          @input="(selectedGeopoint) => $emit('select-geopoint', selectedGeopoint)"
+        >
+          <option
+            v-for="geopoint in geopointList"
+            :key="geopoint"
+            :value="geopoint"
+          >
+            {{ geopoint }}
+          </option>
         </m-select>
       </div>
     </div>

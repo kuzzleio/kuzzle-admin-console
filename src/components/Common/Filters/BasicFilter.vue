@@ -1,13 +1,23 @@
 <template>
-  <form class="BasicFilter" @submit.prevent="submitSearch">
+  <form
+    class="BasicFilter"
+    @submit.prevent="submitSearch"
+  >
     <div class="row">
       <div class="col s12">
-
         <div class="BasicFilter-query row">
-          <p><i class="fa fa-search"></i>Query</p>
+          <p><i class="fa fa-search" />Query</p>
 
-          <div v-for="(orBlock, groupIndex) in filters.basic" v-bind:key="`orBlock-${groupIndex}`" class="BasicFilter-orBlock row">
-            <div v-for="(andBlock, filterIndex) in orBlock" v-bind:key="`andBlock-${filterIndex}`" class="BasicFilter-andBlock row dots">
+          <div
+            v-for="(orBlock, groupIndex) in filters.basic"
+            :key="`orBlock-${groupIndex}`"
+            class="BasicFilter-orBlock row"
+          >
+            <div
+              v-for="(andBlock, filterIndex) in orBlock"
+              :key="`andBlock-${filterIndex}`"
+              class="BasicFilter-andBlock row dots"
+            >
               <div class="col s4">
                 <autocomplete
                   class="BasicFilter--key"
@@ -20,63 +30,117 @@
               </div>
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
-                  <option v-for="(label, identifiers) in availableOperands" :value="identifiers" v-bind:key="label">{{label}}</option>
+                  <option
+                    v-for="(label, identifiers) in availableOperands"
+                    :key="label"
+                    :value="identifiers"
+                  >
+                    {{ label }}
+                  </option>
                 </m-select>
               </div>
               <div v-if="andBlock.operator !== 'range'">
                 <div class="col s3">
-                  <input placeholder="Value" type="text" class="BasicFilter--value validate" v-model="andBlock.value">
+                  <input
+                    v-model="andBlock.value"
+                    placeholder="Value"
+                    type="text"
+                    class="BasicFilter--value validate"
+                  >
                 </div>
               </div>
               <div v-else>
                 <div class="col s1">
-                  <input placeholder="Value 1" type="text" class="BasicFilter--gtValue validate" v-model="andBlock.gt_value">
+                  <input
+                    v-model="andBlock.gt_value"
+                    placeholder="Value 1"
+                    type="text"
+                    class="BasicFilter--gtValue validate"
+                  >
                 </div>
                 <div class="col s1">
-                  <input placeholder="Value 2" type="text" class="BasicFilter--ltValue validate" v-model="andBlock.lt_value">
+                  <input
+                    v-model="andBlock.lt_value"
+                    placeholder="Value 2"
+                    type="text"
+                    class="BasicFilter--ltValue validate"
+                  >
                 </div>
               </div>
               <div class="col s2">
-                <i class="BasicFilter-removeBtn fa fa-times"
-                   @click="removeAndBasicFilter(groupIndex, filterIndex)"></i>
+                <i
+                  class="BasicFilter-removeBtn fa fa-times"
+                  @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                />
                 <a
                   v-if="filterIndex === orBlock.length - 1"
                   class="BasicFilter-andBtn inline btn btn-small waves-effect waves-light"
-                  @click="addAndBasicFilter(groupIndex)">
-                  <i class="fa fa-plus left"></i>And
+                  @click="addAndBasicFilter(groupIndex)"
+                >
+                  <i class="fa fa-plus left" />And
                 </a>
               </div>
             </div>
-            <p v-if="groupIndex < filters.basic.length - 1">Or</p>
+            <p v-if="groupIndex < filters.basic.length - 1">
+              Or
+            </p>
           </div>
         </div>
 
         <div class="BasicFilter-orBtn row">
-          <a class="btn btn-small waves-effect waves-light" @click="addGroupBasicFilter">
-            <i class="fa fa-plus left"></i>Or
+          <a
+            class="btn btn-small waves-effect waves-light"
+            @click="addGroupBasicFilter"
+          >
+            <i class="fa fa-plus left" />Or
           </a>
         </div>
 
-        <div class="BasicFilter-sortBlock row" v-if="sortingEnabled">
-          <p><i class="fa fa-sort-amount-asc"></i>Sorting</p>
-          <div class="row block-content" >
+        <div
+          v-if="sortingEnabled"
+          class="BasicFilter-sortBlock row"
+        >
+          <p><i class="fa fa-sort-amount-asc" />Sorting</p>
+          <div class="row block-content">
             <div class="col s4">
-              <input placeholder="Attribute" type="text" class="BasicFilter-sortingAttr validate" v-model="filters.sorting.attribute">
+              <input
+                v-model="filters.sorting.attribute"
+                placeholder="Attribute"
+                type="text"
+                class="BasicFilter-sortingAttr validate"
+              >
             </div>
             <div class="BasicFilter-sortingValue col s2">
               <m-select v-model="filters.sorting.order">
-                <option value="asc">asc</option>
-                <option value="desc">desc</option>
+                <option value="asc">
+                  asc
+                </option>
+                <option value="desc">
+                  desc
+                </option>
               </m-select>
             </div>
           </div>
         </div>
-
       </div>
     </div>
-    <div v-if="actionButtonsVisible" class="row card-action">
-      <button type="submit" class="BasicFilter-submitBtn btn waves-effect waves-light primary" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
-      <button class="BasicFilter-resetBtn btn-flat waves-effect waves-light" @click="resetSearch">Reset</button>
+    <div
+      v-if="actionButtonsVisible"
+      class="row card-action"
+    >
+      <button
+        type="submit"
+        class="BasicFilter-submitBtn btn waves-effect waves-light primary"
+        @click.prevent="submitSearch"
+      >
+        {{ submitButtonLabel }}
+      </button>
+      <button
+        class="BasicFilter-resetBtn btn-flat waves-effect waves-light"
+        @click="resetSearch"
+      >
+        Reset
+      </button>
     </div>
   </form>
 </template>
@@ -90,6 +154,10 @@ const emptySorting = { attribute: null, order: 'asc' }
 
 export default {
   name: 'BasicFilter',
+  components: {
+    MSelect,
+    Autocomplete
+  },
   props: {
     basicFilter: Array,
     sorting: Object,
@@ -117,10 +185,6 @@ export default {
       type: Object,
       required: true
     }
-  },
-  components: {
-    MSelect,
-    Autocomplete
   },
   data() {
     return {
@@ -150,6 +214,29 @@ export default {
       return true
     }
   },
+  watch: {
+    basicFilter: {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.filters.basic = value
+        } else {
+          this.filters.basic = [[{ ...emptyBasicFilter }]]
+        }
+      }
+    },
+    sorting: {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.filters.sorting = value
+        } else {
+          this.filters.sorting = { ...emptySorting }
+        }
+      }
+    }
+  },
+  mounted() {},
   methods: {
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
@@ -240,30 +327,7 @@ export default {
 
       return attributes
     }
-  },
-  watch: {
-    basicFilter: {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.filters.basic = value
-        } else {
-          this.filters.basic = [[{ ...emptyBasicFilter }]]
-        }
-      }
-    },
-    sorting: {
-      immediate: true,
-      handler(value) {
-        if (value) {
-          this.filters.sorting = value
-        } else {
-          this.filters.sorting = { ...emptySorting }
-        }
-      }
-    }
-  },
-  mounted() {}
+  }
 }
 </script>
 

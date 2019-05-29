@@ -1,41 +1,68 @@
 <template>
-  <form class="BasicFilter" @submit.prevent="search">
+  <form
+    class="BasicFilter"
+    @submit.prevent="search"
+  >
     <div class="col s7">
       <div class="BasicFilter-searchBar">
-        <i class="BasicFilter-searchIcon fa fa-search"></i>
+        <i class="BasicFilter-searchIcon fa fa-search" />
         <multiselect
           :options="[]"
           :taggable="true"
           tag-placeholder="Add filter on this controller"
-          @tag="addController"
-          @remove="removeController"
           :value="controllers"
           placeholder="Search by controller..."
-          :multiple="true">
-        </multiselect>
+          :multiple="true"
+          @tag="addController"
+          @remove="removeController"
+        />
       </div>
     </div>
     <div class="col s3 BasicFilter-actions">
-      <button type="submit" class="btn btn-small waves-effect waves-light">Search</button>
-      <button class="btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
+      <button
+        type="submit"
+        class="btn btn-small waves-effect waves-light"
+      >
+        Search
+      </button>
+      <button
+        class="btn-flat btn-small waves-effect waves-light"
+        @click="resetSearch"
+      >
+        reset
+      </button>
     </div>
   </form>
 </template>
 
 <script>
-import MSelect from '../../../Common/MSelect'
 import Multiselect from 'vue-multiselect'
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 
 export default {
   name: 'BasicFilter',
   components: {
-    MSelect,
     Multiselect
   },
   data() {
     return {
       controllers: []
+    }
+  },
+  mounted() {
+    const controllersInQuery = JSON.parse(
+      this.$store.state.route.query.basicFilter || '{}'
+    )
+
+    if (
+      controllersInQuery.controllers &&
+      controllersInQuery.controllers.length > 0
+    ) {
+      this.controllers = []
+
+      controllersInQuery.controllers.forEach(controller => {
+        this.controllers.push(controller)
+      })
     }
   },
   methods: {
@@ -61,22 +88,6 @@ export default {
       this.controllers = this.controllers.filter(
         value => value !== removedValue
       )
-    }
-  },
-  mounted() {
-    const controllersInQuery = JSON.parse(
-      this.$store.state.route.query.basicFilter || '{}'
-    )
-
-    if (
-      controllersInQuery.controllers &&
-      controllersInQuery.controllers.length > 0
-    ) {
-      this.controllers = []
-
-      controllersInQuery.controllers.forEach(controller => {
-        this.controllers.push(controller)
-      })
     }
   }
 }

@@ -1,28 +1,46 @@
 <template>
-  <div class="row collection-form-line valign-wrapper" :class="{odd: (index % 2) === 0}">
-    <p class="col s3 attribute-title truncate">{{name}}</p>
+  <div
+    class="row collection-form-line valign-wrapper"
+    :class="{odd: (index % 2) === 0}"
+  >
+    <p class="col s3 attribute-title truncate">
+      {{ name }}
+    </p>
     <div class="col s4 attribute-type">
       <div class="">
-        <m-select :value="value.id" @input="changeSchema" :options="optionsForAttribute">
-          <option v-for="option in optionsForAttribute" :key="option.id" :value="option.id">{{option.name}}</option>
+        <m-select
+          :value="value.id"
+          :options="optionsForAttribute"
+          @input="changeSchema"
+        >
+          <option
+            v-for="option in optionsForAttribute"
+            :key="option.id"
+            :value="option.id"
+          >
+            {{ option.name }}
+          </option>
         </m-select>
       </div>
     </div>
     <i
-      class="fa fa-question-circle info"
       v-if="type === 'force-json'"
-      v-title="{active: true, position: 'bottom', title: 'This object has too many levels, the view json is forced for this attribute.'}">
-    </i>
-    <div class="col s4" v-if="chooseValues">
+      v-title="{active: true, position: 'bottom', title: 'This object has too many levels, the view json is forced for this attribute.'}"
+      class="fa fa-question-circle info"
+    />
+    <div
+      v-if="chooseValues"
+      class="col s4"
+    >
       <multiselect
         :options="[]"
         :taggable="true"
         tag-placeholder="Add this as new value."
+        :value="values"
+        :multiple="true"
         @tag="addValue"
         @remove="removeValue"
-        :value="values"
-        :multiple="true">
-      </multiselect>
+      />
     </div>
   </div>
 </template>
@@ -40,6 +58,13 @@ import title from '../../../directives/title.directive'
 
 export default {
   name: 'CollectionFormLine',
+  components: {
+    Multiselect,
+    MSelect
+  },
+  directives: {
+    title
+  },
   props: {
     name: String,
     type: String,
@@ -47,13 +72,6 @@ export default {
     value: Object,
     values: Array,
     chooseValues: Boolean
-  },
-  components: {
-    Multiselect,
-    MSelect
-  },
-  directives: {
-    title
   },
   data() {
     return {

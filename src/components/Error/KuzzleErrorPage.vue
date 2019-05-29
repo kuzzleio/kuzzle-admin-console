@@ -5,15 +5,18 @@
         <environment-switch
           @environment::create="editEnvironment"
           @environment::delete="deleteEnvironment"
-          @environment::importEnv="importEnv">
-        </environment-switch>
+          @environment::importEnv="importEnv"
+        />
       </div>
     </div>
     <div class="row message-warning">
-      <h5>{{$store.state.kuzzle.errorFromKuzzle.message}}</h5>
-      <div class="divider"></div>
-      <div class="message" v-if="errorInternalStatus || errorInternalMessage">
-        <i class="fa fa-plug"></i>
+      <h5>{{ $store.state.kuzzle.errorFromKuzzle.message }}</h5>
+      <div class="divider" />
+      <div
+        v-if="errorInternalStatus || errorInternalMessage"
+        class="message"
+      >
+        <i class="fa fa-plug" />
         [{{ errorInternalStatus }}] {{ errorInternalMessage }}
       </div>
     </div>
@@ -23,42 +26,37 @@
       </div>
 
       <div class="col s1 offset-s5">
-        <p>
-          <div class="preloader-wrapper active valign-wrapper">
-            <div class="spinner-layer">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
+        <div class="preloader-wrapper active valign-wrapper">
+          <div class="spinner-layer">
+            <div class="circle-clipper left">
+              <div class="circle" />
+            </div>
+            <div class="gap-patch">
+              <div class="circle" />
+            </div>
+            <div class="circle-clipper right">
+              <div class="circle" />
             </div>
           </div>
-        </p>
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import Connecting from './Connecting'
 import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
 export default {
   name: 'KuzzleErrorPage',
+  components: {
+    EnvironmentSwitch
+  },
   data() {
     return {
       host: null,
       port: null
     }
-  },
-  components: {
-    Connecting,
-    EnvironmentSwitch
   },
   computed: {
     errorInternalStatus() {

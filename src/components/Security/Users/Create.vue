@@ -4,25 +4,25 @@
       User - Create
     </headline>
 
-    <Notice></Notice>
+    <Notice />
 
     <div class="wrapper collection-edit">
       <stepper
         :current-step="editionStep"
         :steps="['Basic', 'Credentials', 'Custom']"
         :disabled-steps="disabledSteps"
+        class="card-panel card-header"
         @changed-step="setEditionStep"
-        class="card-panel card-header">
-      </stepper>
+      />
 
       <div class="row card-panel card-body">
         <div class="col s12">
           <steps-content
-            :step="editionStep"
-            :is-update="false"
             ref="stepsContent"
             v-model="user"
-          ></steps-content>
+            :step="editionStep"
+            :is-update="false"
+          />
 
           <!-- Actions -->
           <div class="row">
@@ -36,12 +36,20 @@
                 type="submit"
                 class="btn primary waves-effect waves-light"
                 @click.prevent="submitStep"
-              >{{editionStep < 2 ? 'Next' : 'Save'}}</button>
+              >
+                {{ submitStepButtonName }}
+              </button>
             </div>
             <div class="col s9">
-              <div v-if="error" class="card error red-color white-text">
-                <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-                {{error}}
+              <div
+                v-if="error"
+                class="card error red-color white-text"
+              >
+                <i
+                  class="fa fa-times dismiss-error"
+                  @click="dismissError()"
+                />
+                {{ error }}
               </div>
             </div>
           </div>
@@ -50,7 +58,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import Headline from '../../Materialize/Headline'
@@ -84,6 +91,9 @@ export default {
     }
   },
   computed: {
+    submitStepButtonName() {
+      return this.editionStep < 2 ? 'Next' : 'Save'
+    },
     disabledSteps() {
       let disabled = []
       if (!this.hasBasicPayload) {

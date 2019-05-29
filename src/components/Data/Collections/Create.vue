@@ -2,15 +2,15 @@
   <div v-if="hasRights">
     <create-or-update
       headline="Create a new collection"
+      :error="error"
+      :index="index"
       @collection-create::create="create"
       @collection-create::reset-error="error = ''"
       @document-create::error="setError"
-      :error="error"
-      :index="index">
-    </create-or-update>
+    />
   </div>
   <div v-else>
-    <page-not-allowed></page-not-allowed>
+    <page-not-allowed />
   </div>
 </template>
 
@@ -23,6 +23,10 @@ import { CREATE_COLLECTION_IN_INDEX } from '../../../vuex/modules/index/mutation
 
 export default {
   name: 'CollectionCreate',
+  components: {
+    CreateOrUpdate,
+    PageNotAllowed
+  },
   props: {
     index: String
   },
@@ -36,9 +40,8 @@ export default {
       return canCreateCollection(this.index, this.collection)
     }
   },
-  components: {
-    CreateOrUpdate,
-    PageNotAllowed
+  mounted() {
+    this.$store.commit(RESET_COLLECTION_DETAIL)
   },
   methods: {
     create() {
@@ -63,9 +66,6 @@ export default {
     setError(payload) {
       this.error = payload
     }
-  },
-  mounted() {
-    this.$store.commit(RESET_COLLECTION_DETAIL)
   }
 }
 </script>

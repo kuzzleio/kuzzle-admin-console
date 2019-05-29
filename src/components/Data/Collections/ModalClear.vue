@@ -1,52 +1,69 @@
 <template>
-    <form @submit.prevent="tryClearCollection(index, collection)">
-        <modal :id="id" additional-class="left-align" :is-open="isOpen" :close="close">
-            <div class="row">
-                <div class="col s12">
-                    <h4>Clear <strong>{{collection}}</strong> collection</h4>
-                    <div class="divider"></div>
-                </div>
-            </div>
+  <form @submit.prevent="tryClearCollection(index, collection)">
+    <modal
+      :id="id"
+      additional-class="left-align"
+      :is-open="isOpen"
+      :close="close"
+    >
+      <div class="row">
+        <div class="col s12">
+          <h4>Clear <strong>{{ collection }}</strong> collection</h4>
+          <div class="divider" />
+        </div>
+      </div>
 
-            <div class="row">
-                <div class="col s7">
-                    <div class="input-field left-align">
-                        <label for="collection-name">Confirm collection name</label>
-                        <input id="collection-name" type="text" v-model="collectionConfirmation" :class="{'invalid': error}" v-focus>
-                    </div>
-                </div>
+      <div class="row">
+        <div class="col s7">
+          <div class="input-field left-align">
+            <label for="collection-name">Confirm collection name</label>
+            <input
+              id="collection-name"
+              v-model="collectionConfirmation"
+              v-focus
+              type="text"
+              :class="{'invalid': error}"
+            >
+          </div>
+        </div>
 
-                <div class="col s5 error" v-if="error">
-                    <div class="red-text">An error has occurred while deleting documents:</div>
-                    <span :class="{'truncate': errorTruncated}">
-                        {{error}}
-                    </span>
-                    <a @click.prevent="toggleTruncatedError()">
-                        <span v-if="errorTruncated"><a href="#">view more</a></span>
-                        <span v-if="!errorTruncated"><a href="#">view less</a></span>
-                    </a>
-                </div>
+        <div
+          v-if="error"
+          class="col s5 error"
+        >
+          <div class="red-text">
+            An error has occurred while deleting documents:
+          </div>
+          <span :class="{'truncate': errorTruncated}">
+            {{ error }}
+          </span>
+          <a @click.prevent="toggleTruncatedError()">
+            <span v-if="errorTruncated"><a href="#">view more</a></span>
+            <span v-if="!errorTruncated"><a href="#">view less</a></span>
+          </a>
+        </div>
+      </div>
 
-            </div>
-
-            <span slot="footer">
-                <button
-                        type="submit"
-                        :disabled="collection !== collectionConfirmation"
-                        v-title="{active: collection === collectionConfirmation, position: 'left', title: 'Be careful. This action cannot be undone'}"
-                        :class="{unauthorized: collection !== collectionConfirmation}"
-                        class="waves-effect btn">
-                    Delete
-                </button>
-                <button
-                        href="#!"
-                        class="btn-flat waves-effect waves-grey"
-                        @click.prevent="close">
-                    Cancel
-                </button>
-            </span>
-        </modal>
-    </form>
+      <span slot="footer">
+        <button
+          v-title="{active: collection === collectionConfirmation, position: 'left', title: 'Be careful. This action cannot be undone'}"
+          type="submit"
+          :disabled="collection !== collectionConfirmation"
+          :class="{unauthorized: collection !== collectionConfirmation}"
+          class="waves-effect btn"
+        >
+          Delete
+        </button>
+        <button
+          href="#!"
+          class="btn-flat waves-effect waves-grey"
+          @click.prevent="close"
+        >
+          Cancel
+        </button>
+      </span>
+    </modal>
+  </form>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -83,6 +100,13 @@ import Title from '../../../directives/title.directive'
 
 export default {
   name: 'ClearCollectionModal',
+  directives: {
+    Focus,
+    Title
+  },
+  components: {
+    Modal
+  },
   props: {
     id: String,
     index: String,
@@ -90,12 +114,12 @@ export default {
     isOpen: Boolean,
     close: Function
   },
-  directives: {
-    Focus,
-    Title
-  },
-  components: {
-    Modal
+  data() {
+    return {
+      error: '',
+      collectionConfirmation: '',
+      errorTruncated: true
+    }
   },
   methods: {
     refreshSearch() {
@@ -122,13 +146,6 @@ export default {
       } catch (err) {
         this.error = err.message
       }
-    }
-  },
-  data() {
-    return {
-      error: '',
-      collectionConfirmation: '',
-      errorTruncated: true
     }
   }
 }

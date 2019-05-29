@@ -1,35 +1,70 @@
 <template>
   <header class="MainMenu">
     <div class="navbar-fixed">
-      <nav :style="{backgroundColor: currentEnvironmentColor}" class="MainMenu-nav" id="mainnav">
+      <nav
+        id="mainnav"
+        :style="{backgroundColor: currentEnvironmentColor}"
+        class="MainMenu-nav"
+      >
         <ul>
           <li class="logo">
             <div class="logo-container">
-              <div class="version-container right-align" :style="{color: versionColor}">{{adminConsoleVersion}}</div>
+              <div
+                class="version-container right-align"
+                :style="{color: versionColor}"
+              >
+                {{ adminConsoleVersion }}
+              </div>
               <div>
-                <a href="#" class="">
-                  <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
+                <a
+                  href="#"
+                  class=""
+                >
+                  <img
+                    src="../../assets/logo-white.svg"
+                    alt="Kuzzle.io"
+                  >
                 </a>
               </div>
             </div>
           </li>
-          <router-link tag="li" class="nav" :to="{name: 'Data'}" active-class="active">
+          <router-link
+            tag="li"
+            class="nav"
+            :to="{name: 'Data'}"
+            active-class="active"
+          >
             <a>Data</a>
           </router-link>
-          <router-link v-if="hasSecurityRights()" tag="li" class="nav" :to="{name: 'Security'}" active-class="active">
+          <router-link
+            v-if="hasSecurityRights()"
+            tag="li"
+            class="nav"
+            :to="{name: 'Security'}"
+            active-class="active"
+          >
             <a>Security</a>
           </router-link>
         </ul>
 
         <ul class="right">
           <li>
-            <b>{{currentUserName}}</b> on
+            <b>{{ currentUserName }}</b> on
           </li>
           <li>
-            <environment-switch blend-color="true" style="display: inline-flex" @environment::importEnv="importEnv" @environment::create="editEnvironment" @environment::delete="deleteEnvironment"></environment-switch>
+            <environment-switch
+              blend-color="true"
+              style="display: inline-flex"
+              @environment::importEnv="importEnv"
+              @environment::create="editEnvironment"
+              @environment::delete="deleteEnvironment"
+            />
           </li>
           <li>
-            <a @click="doLogout" title="Logout"><i class="logout fa fa-power-off"></i></a>
+            <a
+              title="Logout"
+              @click="doLogout"
+            ><i class="logout fa fa-power-off" /></a>
           </li>
         </ul>
       </nav>
@@ -42,13 +77,11 @@ import { hasSecurityRights } from '../../services/userAuthorization'
 import { DO_LOGOUT } from '../../vuex/modules/auth/mutation-types'
 import { DEFAULT_COLOR } from '../../services/environment'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
-import WarningHeader from './WarningHeader'
 
 export default {
   name: 'MainMenu',
   components: {
-    EnvironmentSwitch,
-    WarningHeader
+    EnvironmentSwitch
   },
   computed: {
     currentEnvironmentColor() {
@@ -73,6 +106,7 @@ export default {
         }
         return this.$store.state.auth.user.id
       }
+      return ''
     },
 
     adminConsoleVersion() {

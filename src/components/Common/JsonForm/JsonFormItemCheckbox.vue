@@ -1,7 +1,13 @@
 <template>
   <label>
-    <input :id="name" type="checkbox" name="name" @change="update" :checked="value" />
-    <span>{{name}}</span>
+    <input
+      :id="name"
+      type="checkbox"
+      name="name"
+      :checked="value"
+      @change="update"
+    >
+    <span>{{ name }}</span>
   </label>
 </template>
 
@@ -19,6 +25,13 @@ export default {
       value: false
     }
   },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    this.initValue()
+    this.$emit('update-value', { name: this.name, value: this.value })
+  },
   methods: {
     initValue() {
       if (!this.content) {
@@ -34,13 +47,6 @@ export default {
     update(e) {
       this.$emit('update-value', { name: this.name, value: e.target.checked })
     }
-  },
-  mounted() {
-    this.initValue()
-    this.$emit('update-value', { name: this.name, value: this.value })
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

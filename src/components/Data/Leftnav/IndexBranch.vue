@@ -1,27 +1,62 @@
 <template>
-  <div :class="{ 'open': open || filter }" class="index-branch">
-    <i v-if="collectionCount" class="fa fa-caret-right tree-toggle" aria-hidden="true" @click="toggleBranch"></i>
-    <router-link :to="{name: 'DataIndexSummary', params: {index: indexName}}" class="tree-item truncate"
-       :class="{ 'active': isIndexActive(indexName) }">
-      <i class="fa fa-database" aria-hidden="true"></i>
-      <span v-html="highlight(indexName, filter)"></span> ({{collectionCount}})
+  <div
+    :class="{ 'open': open || filter }"
+    class="index-branch"
+  >
+    <i
+      v-if="collectionCount"
+      class="fa fa-caret-right tree-toggle"
+      aria-hidden="true"
+      @click="toggleBranch"
+    />
+    <router-link
+      :to="{name: 'DataIndexSummary', params: {index: indexName}}"
+      class="tree-item truncate"
+      :class="{ 'active': isIndexActive(indexName) }"
+    >
+      <i
+        class="fa fa-database"
+        aria-hidden="true"
+      />
+      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
     </router-link>
     <ul class="collections">
-      <li v-for="collectionName in orderedFilteredStoredCollections" :key="collectionName">
-        <router-link class="tree-item truncate"
-           :to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
-           :class="{ 'active': isCollectionActive(indexName, collectionName) }">
-           <i class="fa fa-th-list" aria-hidden="true" title="Persisted collection"></i>
-          <span v-html="highlight(collectionName, filter)"></span>
-         </router-link>
+      <li
+        v-for="collectionName in orderedFilteredStoredCollections"
+        :key="collectionName"
+      >
+        <router-link
+          class="tree-item truncate"
+          :to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
+          :class="{ 'active': isCollectionActive(indexName, collectionName) }"
+        >
+          <i
+            class="fa fa-th-list"
+            aria-hidden="true"
+            title="Persisted collection"
+          />
+          <span v-html="highlight(collectionName, filter)" />
+        </router-link>
       </li>
-      <li v-for="collectionName in orderedFilteredRealtimeCollections" :key="collectionName">
-        <router-link class="tree-item"
-           :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
-           :class="{ 'active': isCollectionActive(indexName, collectionName) }">
-          <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection"></i>
-          <span v-html="highlight(collectionName, filter)"></span>
-          <i class="fa fa-times right remove" @click.prevent="removeRealtimeCollection(indexName, collectionName)"></i>
+      <li
+        v-for="collectionName in orderedFilteredRealtimeCollections"
+        :key="collectionName"
+      >
+        <router-link
+          class="tree-item"
+          :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
+          :class="{ 'active': isCollectionActive(indexName, collectionName) }"
+        >
+          <i
+            class="fa fa-bolt"
+            aria-hidden="true"
+            title="Volatile collection"
+          />
+          <span v-html="highlight(collectionName, filter)" />
+          <i
+            class="fa fa-times right remove"
+            @click.prevent="removeRealtimeCollection(indexName, collectionName)"
+          />
         </router-link>
       </li>
     </ul>
@@ -79,6 +114,17 @@ export default {
     orderedFilteredRealtimeCollections() {
       return this.filteredRealtimeCollections.sort()
     }
+  },
+  watch: {
+    currentIndex() {
+      this.testOpen()
+    },
+    currentCollection() {
+      this.testOpen()
+    }
+  },
+  mounted() {
+    this.testOpen()
   },
   methods: {
     toggleBranch() {
@@ -140,17 +186,6 @@ export default {
         })
       }
     }
-  },
-  watch: {
-    currentIndex() {
-      this.testOpen()
-    },
-    currentCollection() {
-      this.testOpen()
-    }
-  },
-  mounted() {
-    this.testOpen()
   }
 }
 </script>

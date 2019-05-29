@@ -7,16 +7,38 @@
 
     <div class="row">
       <div class="col s12">
-        <a ref="export" class="btn" v-if="environmentId">Export</a>
-        <button v-else class="CreateEnvironment-import btn" @click.prevent="$emit('environment::importEnv')">Import a connection</button>
+        <a
+          v-if="environmentId"
+          ref="export"
+          class="btn"
+        >Export</a>
+        <button
+          v-else
+          class="CreateEnvironment-import btn"
+          @click.prevent="$emit('environment::importEnv')"
+        >
+          Import a connection
+        </button>
       </div>
     </div>
 
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
-          <input class="CreateEnvironment-name" id="env-name" type="text" v-model="environment.name" v-focus required :class="{invalid: errors.name || errors.environmentAlreadyExists}">
-          <label for="env-name" :class="{'active': environment.name}" data-error="Name is required and must be unique">Name</label>
+          <input
+            id="env-name"
+            v-model="environment.name"
+            v-focus
+            class="CreateEnvironment-name"
+            type="text"
+            required
+            :class="{invalid: errors.name || errors.environmentAlreadyExists}"
+          >
+          <label
+            for="env-name"
+            :class="{'active': environment.name}"
+            data-error="Name is required and must be unique"
+          >Name</label>
         </div>
       </div>
     </div>
@@ -24,8 +46,19 @@
     <div class="row">
       <div class="col s12">
         <div class="input-field left-align">
-          <input class="CreateEnvironment-host" id="host" type="text" v-model="environment.host" required :class="{invalid: errors.host}">
-          <label for="host" :class="{'active': environment.host}" data-error="The host must be something like 'mydomain.com'">Host</label>
+          <input
+            id="host"
+            v-model="environment.host"
+            class="CreateEnvironment-host"
+            type="text"
+            required
+            :class="{invalid: errors.host}"
+          >
+          <label
+            for="host"
+            :class="{'active': environment.host}"
+            data-error="The host must be something like 'mydomain.com'"
+          >Host</label>
         </div>
       </div>
     </div>
@@ -33,21 +66,37 @@
     <div class="row">
       <div class="col s6">
         <div class="input-field left-align">
-          <input class="CreateEnvironment-port" id="port" type="number" v-model="environment.port" required :class="{invalid: errors.port}">
-          <label for="port" :class="{'active': environment.port}" data-error="port number must be an integer">Port</label>
+          <input
+            id="port"
+            v-model="environment.port"
+            class="CreateEnvironment-port"
+            type="number"
+            required
+            :class="{invalid: errors.port}"
+          >
+          <label
+            for="port"
+            :class="{'active': environment.port}"
+            data-error="port number must be an integer"
+          >Port</label>
         </div>
       </div>
       <div class="col s6">
         <label>
-          <input class="CreateEnvironment-ssl" type="checkbox" id="usessl" :checked="environment.ssl" v-model="environment.ssl">
+          <input
+            id="usessl"
+            v-model="environment.ssl"
+            class="CreateEnvironment-ssl"
+            type="checkbox"
+            :checked="environment.ssl"
+          >
           <span>use SSL</span>
         </label>
       </div>
     </div>
 
     <div class="row">
-      <div class="col s12">
-      </div>
+      <div class="col s12" />
     </div>
 
     <div class="row color-picker">
@@ -58,11 +107,20 @@
       </div>
       <div class="col s12">
         <div class="CreateEnvironment-colorBtns row">
-          <div class="col s6 m3" v-for="(color, index) in colors" :key="color">
-            <div class="color card valign-wrapper"
-                 :style="{backgroundColor: color}"
-                 @click="selectColor(index)">
-              <span class="selected valign center-align" v-if="environment.color === color">Selected</span>
+          <div
+            v-for="(color, index) in colors"
+            :key="color"
+            class="col s6 m3"
+          >
+            <div
+              class="color card valign-wrapper"
+              :style="{backgroundColor: color}"
+              @click="selectColor(index)"
+            >
+              <span
+                v-if="environment.color === color"
+                class="selected valign center-align"
+              >Selected</span>
             </div>
           </div>
         </div>
@@ -88,31 +146,10 @@ export default {
   components: {
     WarningHeader
   },
-  props: ['environmentId'],
   directives: {
     Focus
   },
-  mounted () {
-    if (this.environmentId) {
-      const env = {}
-
-      env[this.$store.getters.currentEnvironment.name] = Object.assign({}, this.$store.getters.currentEnvironment)
-
-      delete env[this.$store.getters.currentEnvironment.name].token
-      const blob = new Blob([JSON.stringify(env)], {type: 'application/json'})
-
-      this.$refs.export.href = URL.createObjectURL(blob)
-      this.$refs.export.download = `${this.$store.getters.currentEnvironment.name}.json`
-    }
-  },
-  computed: {
-    environments() {
-      return this.$store.state.kuzzle.environments
-    },
-    useHttps() {
-      return useHttps
-    }
-  },
+  props: ['environmentId'],
   data() {
     return {
       errors: {
@@ -138,6 +175,42 @@ export default {
         '#d81b60'
       ],
       warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please ensure that your Kuzzle supports HTTPS/SSL connections.`
+    }
+  },
+  computed: {
+    environments() {
+      return this.$store.state.kuzzle.environments
+    },
+    useHttps() {
+      return useHttps
+    }
+  },
+  mounted () {
+    if (this.environmentId) {
+      const env = {}
+
+      env[this.$store.getters.currentEnvironment.name] = Object.assign({}, this.$store.getters.currentEnvironment)
+
+      delete env[this.$store.getters.currentEnvironment.name].token
+      const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
+
+      this.$refs.export.href = URL.createObjectURL(blob)
+      this.$refs.export.download = `${this.$store.getters.currentEnvironment.name}.json`
+    }
+  },
+  created() {
+    if (this.environmentId && this.environments[this.environmentId]) {
+      this.environment.name = this.environments[this.environmentId].name
+      this.environment.host = this.environments[this.environmentId].host
+      this.environment.port = this.environments[this.environmentId].port
+      this.environment.color = this.environments[this.environmentId].color
+      this.environment.ssl = this.environments[this.environmentId].ssl
+    } else {
+      this.environment.name = null
+      this.environment.host = null
+      this.environment.port = 7512
+      this.environment.color = DEFAULT_COLOR
+      this.environment.ssl = useHttps
     }
   },
   methods: {
@@ -192,21 +265,6 @@ export default {
     },
     selectColor(index) {
       this.environment.color = this.colors[index]
-    }
-  },
-  created() {
-    if (this.environmentId && this.environments[this.environmentId]) {
-      this.environment.name = this.environments[this.environmentId].name
-      this.environment.host = this.environments[this.environmentId].host
-      this.environment.port = this.environments[this.environmentId].port
-      this.environment.color = this.environments[this.environmentId].color
-      this.environment.ssl = this.environments[this.environmentId].ssl
-    } else {
-      this.environment.name = null
-      this.environment.host = null
-      this.environment.port = 7512
-      this.environment.color = DEFAULT_COLOR
-      this.environment.ssl = useHttps
     }
   }
 }

@@ -322,7 +322,7 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           }
         })
       } else if (filter.operator === 'range') {
-        const range = {range: {}}
+        const range = { range: {} }
         if (filter.gt_value && filter.lt_value) {
           range.range = {
             [filter.attribute]: {

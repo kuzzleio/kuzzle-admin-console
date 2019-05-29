@@ -6,7 +6,11 @@
           <div class="row">
             <div class="col s12">
               <h2 class="center-align logo">
-                <img src="../assets/logo.svg" alt="Welcome to the Kuzzle Backoffice" style="width: 70%" />
+                <img
+                  src="../assets/logo.svg"
+                  alt="Welcome to the Kuzzle Backoffice"
+                  style="width: 70%"
+                >
               </h2>
             </div>
           </div>
@@ -16,12 +20,11 @@
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
                 @environment::importEnv="importEnv"
-                >
-              </environment-switch>
+              />
             </div>
           </div>
           <div class="row">
-        	  <login-form :on-login="onLogin"></login-form>
+            <login-form :on-login="onLogin" />
           </div>
         </div>
       </div>

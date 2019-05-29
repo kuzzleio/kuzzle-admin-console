@@ -4,16 +4,34 @@
       <!-- For nested objects -->
       <fieldset>
         <legend>
-          {{name}}
+          {{ name }}
         </legend>
 
         <div class="input-field">
-          <input id="lat" type="number" v-model="value.lat" @input="updateLocation" step="0.0000001"/>
-          <label for="lat" :class="{'active': value.lat !== null}">latitude</label>
+          <input
+            id="lat"
+            v-model="value.lat"
+            type="number"
+            step="0.0000001"
+            @input="updateLocation"
+          >
+          <label
+            for="lat"
+            :class="{'active': value.lat !== null}"
+          >latitude</label>
         </div>
         <div class="input-field">
-          <input id="lng" type="number" v-model="value.lon" @input="updateLocation" step="0.0000001"/>
-          <label for="lng" :class="{'active': value.lon !== null}">longitude</label>
+          <input
+            id="lng"
+            v-model="value.lon"
+            type="number"
+            step="0.0000001"
+            @input="updateLocation"
+          >
+          <label
+            for="lng"
+            :class="{'active': value.lon !== null}"
+          >longitude</label>
         </div>
       </fieldset>
     </div>
@@ -21,13 +39,8 @@
 </template>
 
 <script>
-import JsonEditor from '../../Common/JsonEditor'
-
 export default {
   name: 'JsonFormItemGeopoint',
-  components: {
-    JsonEditor
-  },
   props: {
     content: Object,
     name: String,
@@ -41,6 +54,12 @@ export default {
         lon: null
       }
     }
+  },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    this.initValue()
   },
   methods: {
     updateLocation(v) {
@@ -63,12 +82,6 @@ export default {
         }
       }
     }
-  },
-  mounted() {
-    this.initValue()
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

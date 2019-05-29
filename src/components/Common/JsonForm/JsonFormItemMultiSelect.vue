@@ -1,17 +1,17 @@
 <template>
   <div class="row input-field">
-    <p>{{name}}</p>
+    <p>{{ name }}</p>
     <multiselect
       :options="options"
       :placeholder="name + ' values'"
       :value="valueAsArray"
-      @input="updateValue"
       :taggable="true"
       tag-placeholder="Add this as new value."
+      :multiple="true"
+      @input="updateValue"
       @tag="addValue"
       @remove="removeValue"
-      :multiple="true">
-    </multiselect>
+    />
   </div>
 </template>
 
@@ -22,6 +22,9 @@ import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 
 export default {
   name: 'JsonFormItemMultiSelect',
+  components: {
+    Multiselect
+  },
   props: {
     content: Object,
     name: String,
@@ -35,9 +38,6 @@ export default {
       values: null
     }
   },
-  components: {
-    Multiselect
-  },
   computed: {
     options() {
       return this.schema.values || []
@@ -49,6 +49,12 @@ export default {
 
       return this.values
     }
+  },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    this.initValue()
   },
   methods: {
     initValue() {
@@ -96,12 +102,6 @@ export default {
       let _values = this.values.filter(value => value !== castValue)
       this.$emit('update-value', { name: this.name, value: _values })
     }
-  },
-  mounted() {
-    this.initValue()
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

@@ -1,11 +1,12 @@
 <template>
   <div class="row input-field">
     <div class="row">
-        <p>{{name}}</p>
-        <quill-editor ref="richText"
-                      :config="config"
-                      v-model="value">
-        </quill-editor>
+      <p>{{ name }}</p>
+      <quill-editor
+        ref="richText"
+        v-model="value"
+        :config="config"
+      />
     </div>
   </div>
 </template>
@@ -15,15 +16,15 @@ import { quillEditor } from 'vue-quill-editor'
 
 export default {
   name: 'JsonFormItemRichEditor',
+  components: {
+    quillEditor
+  },
   props: {
     content: Object,
     name: String,
     type: String,
     step: Number,
     parent: String
-  },
-  components: {
-    quillEditor
   },
   data() {
     return {
@@ -44,6 +45,15 @@ export default {
       }
     }
   },
+  watch: {
+    content: 'initValue',
+    value() {
+      this.$emit('update-value', { name: this.name, value: this.value })
+    }
+  },
+  mounted() {
+    this.initValue()
+  },
   methods: {
     initValue() {
       if (this.parent) {
@@ -51,15 +61,6 @@ export default {
       } else {
         this.value = this.content[this.name]
       }
-    }
-  },
-  mounted() {
-    this.initValue()
-  },
-  watch: {
-    content: 'initValue',
-    value() {
-      this.$emit('update-value', { name: this.name, value: this.value })
     }
   }
 }

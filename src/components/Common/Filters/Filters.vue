@@ -1,6 +1,5 @@
 <template>
   <div class="Filters">
-
     <quick-filter
       :advanced-query-label="advancedQueryLabel"
       :submit-button-label="submitButtonLabel"
@@ -12,17 +11,44 @@
       @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
       @update-filter="onQuickFilterUpdated"
       @refresh="onRefresh"
-      @reset="onReset">
-    </quick-filter>
+      @reset="onReset"
+    />
 
+    <div
+      v-show="advancedFiltersVisible"
+      class="row card-panel Filters-advanced"
+    >
+      <i
+        class="Filters-btnClose fa fa-times close"
+        @click="advancedFiltersVisible = false"
+      />
+      <tabs
+        :active="complexFiltersSelectedTab"
+        :is-displayed="advancedFiltersVisible"
+        :object-tab-active="objectTabActive"
+        @tab-changed="switchComplexFilterTab"
+      >
+        <tab
+          id="basic"
+          name="basic"
+          tab-select="basic"
+          @tabs-on-select="setObjectTabActive"
+        >
+          <a href="">Basic Mode</a>
+        </tab>
+        <tab
+          id="raw"
+          name="raw"
+          tab-select="basic"
+          @tabs-on-select="setObjectTabActive"
+        >
+          <a href="">Raw JSON Mode</a>
+        </tab>
 
-    <div class="row card-panel Filters-advanced" v-show="advancedFiltersVisible">
-      <i class="Filters-btnClose fa fa-times close" @click="advancedFiltersVisible = false"></i>
-      <tabs @tab-changed="switchComplexFilterTab" :active="complexFiltersSelectedTab" :is-displayed="advancedFiltersVisible" :object-tab-active="objectTabActive">
-        <tab id="basic" @tabs-on-select="setObjectTabActive" name="basic" tab-select="basic"><a href="">Basic Mode</a></tab>
-        <tab id="raw" @tabs-on-select="setObjectTabActive" name="raw" tab-select="basic"><a href="">Raw JSON Mode</a></tab>
-
-        <div slot="contents" class="card">
+        <div
+          slot="contents"
+          class="card"
+        >
           <div class="col s12">
             <div v-show="complexFiltersSelectedTab === 'basic'">
               <basic-filter
@@ -34,8 +60,8 @@
                 :sorting="sorting"
                 :collection-mapping="collectionMapping"
                 @update-filter="onBasicFilterUpdated"
-                @reset="onReset">
-              </basic-filter>
+                @reset="onReset"
+              />
             </div>
 
             <div v-show="complexFiltersSelectedTab === 'raw'">
@@ -48,20 +74,21 @@
                 :current-filter="currentFilter"
                 :refresh-ace="refreshace"
                 @update-filter="onRawFilterUpdated"
-                @reset="onReset">
-              </raw-filter>
+                @reset="onReset"
+              />
             </div>
           </div>
         </div>
       </tabs>
     </div>
 
-    <div class="card-panel orange lighten-3" v-show="currentFilter.active">
+    <div
+      v-show="currentFilter.active"
+      class="card-panel orange lighten-3"
+    >
       <span>Warning: a filter has been set, some documents might be hidden.</span>
     </div>
-
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -204,6 +231,14 @@ export default {
       return this.currentFilter.sorting
     }
   },
+  mounted() {
+    Vue.nextTick(() => {
+      window.document.addEventListener('keydown', this.handleEsc)
+    })
+  },
+  destroyed() {
+    window.document.removeEventListener('keydown', this.handleEsc)
+  },
   methods: {
     onQuickFilterUpdated(term) {
       this.onFiltersUpdated(
@@ -252,14 +287,6 @@ export default {
     onFiltersUpdated(newFilters) {
       this.$emit('filters-updated', newFilters)
     }
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      window.document.addEventListener('keydown', this.handleEsc)
-    })
-  },
-  destroyed() {
-    window.document.removeEventListener('keydown', this.handleEsc)
   }
 }
 </script>

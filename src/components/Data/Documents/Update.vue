@@ -1,35 +1,50 @@
 <template>
-  <div class="wrapper" v-if="hasRights">
+  <div
+    v-if="hasRights"
+    class="wrapper"
+  >
     <headline>
-      Edit document - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
-      <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
+      Edit document - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
+      <collection-dropdown
+        class="icon-medium icon-black"
+        :index="index"
+        :collection="collection"
+      />
     </headline>
 
-    <collection-tabs></collection-tabs>
-    <div class="row" v-if="show">
+    <collection-tabs />
+    <div
+      v-if="show"
+      class="row"
+    >
       <div class="card horizontal tertiary col m5">
         <div class="card-content">
           <span class="card-title">Warning</span>
-          <p>This document has been edited while you were editing it. <a href="#" @click.prevent="refresh">Click here to refresh it</a></p>
+          <p>
+            This document has been edited while you were editing it. <a
+              href="#"
+              @click.prevent="refresh"
+            >Click here to refresh it</a>
+          </p>
         </div>
       </div>
     </div>
     <create-or-update
-      @document-create::create="update"
-      @document-create::cancel="cancel"
-      @document-create::reset-error="error = null"
-      @document-create::error="setError"
+      v-model="document"
       :error="error"
       :index="index"
       :collection="collection"
       :hide-id="true"
-      v-model="document"
       :get-mapping="getMappingDocument"
-      :submitted="submitted">
-    </create-or-update>
+      :submitted="submitted"
+      @document-create::create="update"
+      @document-create::cancel="cancel"
+      @document-create::reset-error="error = null"
+      @document-create::error="setError"
+    />
   </div>
   <div v-else>
-    <page-not-allowed></page-not-allowed>
+    <page-not-allowed />
   </div>
 </template>
 
@@ -65,17 +80,30 @@ export default {
     index: String,
     collection: String
   },
-  computed: {
-    hasRights() {
-      return canEditDocument(this.index, this.collection)
-    }
-  },
   data() {
     return {
       error: '',
       show: false,
       document: {},
       submitted: false
+    }
+  },
+  computed: {
+    hasRights() {
+      return canEditDocument(this.index, this.collection)
+    }
+  },
+  async mounted() {
+    this.fetch()
+    this.room = await this.$kuzzle.realtime.subscribe(this.index, this.collection,
+      { ids: { values: [decodeURIComponent(this.$route.params.id)] } },
+      () => {
+        this.show = true
+      })
+  },
+  destroyed() {
+    if (room) {
+      room.unsubscribe()
     }
   },
   methods: {
@@ -131,19 +159,6 @@ export default {
     },
     refresh() {
       this.$router.go()
-    }
-  },
-  async mounted() {
-    this.fetch()
-    this.room = await this.$kuzzle.realtime.subscribe(this.index, this.collection,
-      { ids: { values: [decodeURIComponent(this.$route.params.id)] } },
-      () => {
-        this.show = true
-      })
-  },
-  destroyed() {
-    if (room) {
-      room.unsubscribe()
     }
   }
 }

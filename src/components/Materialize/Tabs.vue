@@ -1,11 +1,14 @@
 <template>
   <div class="md-tabs">
     <ul class="tabs">
-      <slot></slot>
-      <div ref="indicator" class="indicator"></div>
+      <slot />
+      <div
+        ref="indicator"
+        class="indicator"
+      />
     </ul>
 
-    <slot name="contents"></slot>
+    <slot name="contents" />
   </div>
 </template>
 
@@ -16,6 +19,16 @@ import Vue from 'vue'
 // translated from http://appcomponents.org/material-components/#!/tabs/sources
 export default {
   props: ['active', 'isDisplayed', 'objectTabActive'],
+  data() {
+    return {
+      activeTab: null
+    }
+  },
+  computed: {
+    tabsCount() {
+      return this.$children.length
+    }
+  },
   watch: {
     isDisplayed() {
       if (this.isDisplayed) {
@@ -26,15 +39,13 @@ export default {
       this.select(tab)
     }
   },
-  data() {
-    return {
-      activeTab: null
-    }
+  mounted() {
+    Vue.nextTick(() => {
+      window.addEventListener('resize', this.resizeIndicator)
+    })
   },
-  computed: {
-    tabsCount() {
-      return this.$children.length
-    }
+  destroyed() {
+    window.removeEventListener('resize', this.resizeIndicator)
   },
   methods: {
     select(tab) {
@@ -74,14 +85,6 @@ export default {
         { duration: 300, queue: false, easing: 'easeOutQuad' }
       )
     }
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      window.addEventListener('resize', this.resizeIndicator)
-    })
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.resizeIndicator)
   }
 }
 </script>

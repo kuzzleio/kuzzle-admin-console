@@ -1,34 +1,50 @@
 <template>
-  <div class="DocumentListItem" :class="{ 'collapsed': collapsed }">
-    <i class="DocumentListItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div
+    class="DocumentListItem"
+    :class="{ 'collapsed': collapsed }"
+  >
+    <i
+      class="DocumentListItem-toggle fa fa-caret-down item-toggle"
+      aria-hidden="true"
+      @click="toggleCollapse()"
+    />
 
     <label>
       <input
+        :id="checkboxId"
         type="checkbox"
         class="filled-in"
-        :id="checkboxId"
         :value="document.id"
-        @click="notifyCheckboxClick" :checked="isChecked"/>
-      <span></span>
+        :checked="isChecked"
+        @click="notifyCheckboxClick"
+      >
+      <span />
     </label>
 
-    <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{ document.id }}</a></label>
 
     <div class="DocumentListItem-actions right">
       <a
         class="DocumentListItem-update"
         href=""
         :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
-        @click.prevent="editDocument">
-        <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
+        @click.prevent="editDocument"
+      >
+        <i
+          class="fa fa-pencil-alt"
+          :class="{'disabled': !canEdit}"
+        />
       </a>
 
-      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black">
+      <dropdown
+        :id="document.id"
+        myclass="DocumentListItem-dropdown icon-black"
+      >
         <li>
           <a
-            @click="deleteDocument"
             :disabled="!canDelete"
             :class="{disabled: !canDelete}"
+            @click="deleteDocument"
           >
             Delete
           </a>
@@ -37,9 +53,12 @@
     </div>
 
     <div class="DocumentListItem-content item-content">
-      <pre v-json-formatter="{content: document.content, open: true}"></pre>
-      <pre v-json-formatter="{content: document.meta, open: false}"></pre>
-      <pre v-if="document.aggregations" v-json-formatter="{content: document.aggregations, open: true}"></pre>
+      <pre v-json-formatter="{content: document.content, open: true}" />
+      <pre v-json-formatter="{content: document.meta, open: false}" />
+      <pre
+        v-if="document.aggregations"
+        v-json-formatter="{content: document.aggregations, open: true}"
+      />
     </div>
   </div>
 </template>
@@ -55,12 +74,6 @@ import title from '../../../directives/title.directive'
 
 export default {
   name: 'DocumentListItem',
-  props: {
-    index: String,
-    collection: String,
-    document: Object,
-    isChecked: Boolean
-  },
   directives: {
     JsonFormatter,
     title
@@ -68,9 +81,32 @@ export default {
   components: {
     Dropdown
   },
+  props: {
+    index: String,
+    collection: String,
+    document: Object,
+    isChecked: Boolean
+  },
   data() {
     return {
       collapsed: true
+    }
+  },
+  computed: {
+    canEdit() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canEditDocument(this.index, this.collection)
+    },
+    canDelete() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canDeleteDocument(this.index, this.collection)
+    },
+    checkboxId() {
+      return `checkbox-${this.document.id}`
     }
   },
   mounted() {
@@ -93,23 +129,6 @@ export default {
       if (this.canEdit) {
         this.$emit('edit', this.document.id)
       }
-    }
-  },
-  computed: {
-    canEdit() {
-      if (!this.index || !this.collection) {
-        return false
-      }
-      return canEditDocument(this.index, this.collection)
-    },
-    canDelete() {
-      if (!this.index || !this.collection) {
-        return false
-      }
-      return canDeleteDocument(this.index, this.collection)
-    },
-    checkboxId() {
-      return `checkbox-${this.document.id}`
     }
   }
 }

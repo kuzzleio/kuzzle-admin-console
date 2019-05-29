@@ -1,31 +1,75 @@
 <template>
-  <form class="col s10 offset-s1" id="loginForm" method="post" @submit.prevent="login()">
+  <form
+    id="loginForm"
+    class="col s10 offset-s1"
+    method="post"
+    @submit.prevent="login()"
+  >
     <div class="row">
       <div class="input-field col s12">
-        <input id="username" v-model="username" type="text" name="username" required tabindex="1"
-               class="validate" v-focus />
-        <label for="username" :class="{'active': username}">Login</label>
+        <input
+          id="username"
+          v-model="username"
+          v-focus
+          type="text"
+          name="username"
+          required
+          tabindex="1"
+          class="validate"
+        >
+        <label
+          for="username"
+          :class="{'active': username}"
+        >Login</label>
       </div>
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <input v-model="password" type="password" name="password" id="pass" required tabindex="2"
-               class="validate"/>
-        <label for="pass" :class="{'active': password}">Password</label>
+        <input
+          id="pass"
+          v-model="password"
+          type="password"
+          name="password"
+          required
+          tabindex="2"
+          class="validate"
+        >
+        <label
+          for="pass"
+          :class="{'active': password}"
+        >Password</label>
       </div>
     </div>
     <div class="row">
       <div class="col s4">
-        <p class="error card red-color white-text" v-if="error">
-          <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-          Login failed: <br />{{error}}
+        <p
+          v-if="error"
+          class="error card red-color white-text"
+        >
+          <i
+            class="fa fa-times dismiss-error"
+            @click="dismissError()"
+          />
+          Login failed: <br>{{ error }}
         </p>
-        <p v-if="!error">&nbsp;</p>
+        <p v-if="!error">
+&nbsp;
+        </p>
       </div>
       <div class="col s8">
         <p class="right">
-          <a class="LoginAsAnonymous-Btn btn-flat waves-effect waves-teal" @click="loginAsGuest">Login as Anonymous</a>
-          <button class="btn waves-effect waves-light" type="submit" name="action" tabindex="3">Login</button>
+          <a
+            class="LoginAsAnonymous-Btn btn-flat waves-effect waves-teal"
+            @click="loginAsGuest"
+          >Login as Anonymous</a>
+          <button
+            class="btn waves-effect waves-light"
+            type="submit"
+            name="action"
+            tabindex="3"
+          >
+            Login
+          </button>
         </p>
       </div>
     </div>
@@ -57,7 +101,6 @@
 }
 </style>
 
-
 <script>
 import Focus from '../../../directives/focus.directive'
 import {
@@ -67,11 +110,11 @@ import {
 
 export default {
   name: 'LoginForm',
-  props: {
-    onLogin: Function
-  },
   directives: {
     Focus
+  },
+  props: {
+    onLogin: Function
   },
   data() {
     return {

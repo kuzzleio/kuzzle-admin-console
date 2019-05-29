@@ -1,20 +1,20 @@
 <template>
   <div>
     <Headline>
-       Edit role - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
+      Edit role - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
     </Headline>
-    <Notice></Notice>
+    <Notice />
     <create-or-update
+      v-model="document"
       title="Update role"
       :update-id="id"
       :error="error"
+      :hide-id="true"
+      :submitted="submitted"
       @document-create::create="update"
       @document-create::cancel="cancel"
       @document-create::error="setError"
-      v-model="document"
-      :hide-id="true"
-      :submitted="submitted">
-    </create-or-update>
+    />
   </div>
 </template>
 
@@ -38,6 +38,16 @@ export default {
       id: null,
       document: {},
       submitted: false
+    }
+  },
+  async mounted() {
+    try {
+      const role = await this.$kuzzle.security
+        .getRole(this.$route.params.id)
+      this.id = role._id
+      this.document = { controllers: role.controllers }
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
     }
   },
   methods: {
@@ -73,16 +83,6 @@ export default {
     },
     setError(payload) {
       this.error = payload
-    }
-  },
-  async mounted() {
-    try {
-      const role = await this.$kuzzle.security
-        .getRole(this.$route.params.id)
-      this.id = role._id
-      this.document = {controllers: role.controllers}
-    } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
     }
   }
 }

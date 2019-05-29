@@ -24,11 +24,21 @@ env:
     - AWS_S3_BUCKET_DEV=next.console.kuzzle.io
 
 stages:
+  - lint
   - tests
   - build & deploy
 
 jobs:
   include:
+# ---------------------------------------
+# Linter
+# ---------------------------------------
+    - stage: lint
+      name: "Linter"
+      script:
+        - npm install
+        - npm run lint
+
 # ---------------------------------------
 # Unit Testing
 # ---------------------------------------

@@ -1,9 +1,15 @@
 <template>
   <span :class="myclass">
-    <a class="action dropdown-button fa fa-ellipsis-v" :data-target="parsedId"></a>
+    <a
+      class="action dropdown-button fa fa-ellipsis-v"
+      :data-target="parsedId"
+    />
 
-    <ul :id="parsedId" class='dropdown-content'>
-      <slot></slot>
+    <ul
+      :id="parsedId"
+      class="dropdown-content"
+    >
+      <slot />
     </ul>
   </span>
 </template>

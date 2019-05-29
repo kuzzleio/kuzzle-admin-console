@@ -10,22 +10,22 @@
       @set-custom-kuid="setCustomKuid"
       @profile-add="onProfileAdded"
       @profile-remove="onProfileRemoved"
-    ></basic>
+    />
 
     <credentials-selector
       v-show="step === 1"
-      @input="onCredentialsChanged"
       :credentials="credentials"
       :strategies="strategies"
       :credentials-mapping="credentialsMapping"
-    ></credentials-selector>
+      @input="onCredentialsChanged"
+    />
 
     <custom-data
       v-show="step === 2"
       :mapping="customContentMapping"
       :value="customContent"
       @input="onCustomContentChanged"
-    ></custom-data>
+    />
   </div>
 </template>
 
@@ -38,12 +38,12 @@ import CustomData from './CustomData'
 
 export default {
   name: 'StepsContent',
-  props: ['step', 'isUpdate'],
   components: {
     Basic,
     CredentialsSelector,
     CustomData
   },
+  props: ['step', 'isUpdate'],
   data() {
     return {
       kuid: null,
@@ -54,41 +54,6 @@ export default {
       credentialsMapping: {},
       customContent: {},
       customContentMapping: {}
-    }
-  },
-  methods: {
-    updateUser() {
-      this.$emit('input', {
-        kuid: this.kuid,
-        autoGenerateKuid: this.autoGenerateKuid,
-        addedProfiles: this.addedProfiles,
-        credentials: this.credentials,
-        customContent: this.customContent
-      })
-    },
-    onProfileAdded(profile) {
-      this.addedProfiles.push(profile)
-      this.updateUser()
-    },
-    onProfileRemoved(profile) {
-      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
-      this.updateUser()
-    },
-    setAutoGenerateKuid(value) {
-      this.autoGenerateKuid = value
-      this.updateUser()
-    },
-    setCustomKuid(value) {
-      this.kuid = value
-      this.updateUser()
-    },
-    onCredentialsChanged(payload) {
-      this.credentials[payload.strategy] = { ...payload.credentials }
-      this.updateUser()
-    },
-    onCustomContentChanged(value) {
-      this.customContent = value
-      this.updateUser()
     }
   },
   async mounted() {
@@ -147,6 +112,41 @@ export default {
       this.updateUser()
     } catch (e) {
       this.$store.commit(SET_TOAST, { text: e.message })
+    }
+  },
+  methods: {
+    updateUser() {
+      this.$emit('input', {
+        kuid: this.kuid,
+        autoGenerateKuid: this.autoGenerateKuid,
+        addedProfiles: this.addedProfiles,
+        credentials: this.credentials,
+        customContent: this.customContent
+      })
+    },
+    onProfileAdded(profile) {
+      this.addedProfiles.push(profile)
+      this.updateUser()
+    },
+    onProfileRemoved(profile) {
+      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+      this.updateUser()
+    },
+    setAutoGenerateKuid(value) {
+      this.autoGenerateKuid = value
+      this.updateUser()
+    },
+    setCustomKuid(value) {
+      this.kuid = value
+      this.updateUser()
+    },
+    onCredentialsChanged(payload) {
+      this.credentials[payload.strategy] = { ...payload.credentials }
+      this.updateUser()
+    },
+    onCustomContentChanged(value) {
+      this.customContent = value
+      this.updateUser()
     }
   }
 }

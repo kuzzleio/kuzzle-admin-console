@@ -3,18 +3,35 @@
     <div>
       <div
         v-for="role in addedRoles"
+        :key="role"
         class="RoleChips-role chip"
         title="Click to remove"
         @click="removeRole(role)"
-        :key="role">
-        {{role}}&nbsp;
-        <i class="fa fa-trash"></i>
+      >
+        {{ role }}&nbsp;
+        <i class="fa fa-trash" />
       </div>
     </div>
     <div>
-      <m-select :options="availableRoles" @input="onRoleSelected">
-        <option v-if="availableRoles.length" value="" disabled selected>Select the roles you want to search</option>
-        <option v-for="role in availableRoles" :value="role.id" :key="role.id">{{role.id}}</option>
+      <m-select
+        :options="availableRoles"
+        @input="onRoleSelected"
+      >
+        <option
+          v-if="availableRoles.length"
+          value=""
+          disabled
+          selected
+        >
+          Select the roles you want to search
+        </option>
+        <option
+          v-for="role in availableRoles"
+          :key="role.id"
+          :value="role.id"
+        >
+          {{ role.id }}
+        </option>
       </m-select>
     </div>
   </div>
@@ -46,6 +63,9 @@ export default {
       })
     }
   },
+  mounted() {
+    return this.fetchRoleList()
+  },
   methods: {
     fetchRoleList() {
       return performSearchRoles().then(result => {
@@ -60,9 +80,6 @@ export default {
     removeRole(role) {
       this.$emit('remove-role', role)
     }
-  },
-  mounted() {
-    return this.fetchRoleList()
   }
 }
 </script>

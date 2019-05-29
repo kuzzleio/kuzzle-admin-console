@@ -1,20 +1,19 @@
 <template>
   <div>
     <Headline>Role - Create</Headline>
-    <Notice></Notice>
+    <Notice />
     <create-or-update
+      v-model="document"
       title="Create a role"
       :error="error"
+      :submitted="submitted"
+      :mandatory-id="true"
       @document-create::reset-error="error = ''"
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::error="setError"
       @change-id="updateId"
-      v-model="document"
-      :submitted="submitted"
-      :mandatory-id="true"
-    >
-    </create-or-update>
+    />
   </div>
 </template>
 

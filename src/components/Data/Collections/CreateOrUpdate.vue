@@ -2,19 +2,19 @@
   <div class="CollectionCreateOrUpdate wrapper">
     <headline>
       <span class="CollectionCreateOrUpdate-index">
-        {{index}}
-        <i class="fa fa-angle-right"></i>
+        {{ index }}
+        <i class="fa fa-angle-right" />
       </span>
-      {{headline}}
+      {{ headline }}
     </headline>
 
     <stepper
       :current-step="editionStep"
       :disabled-steps="$store.getters.isRealtimeOnly ? [1] : []"
       :steps="['Mapping', 'Form']"
+      class="card-panel card-header"
       @changed-step="setEditionStep"
-      class="card-panel card-header">
-    </stepper>
+    />
 
     <div class="row card-panel card-body">
       <div class="col s12">
@@ -24,20 +24,26 @@
           @collection-create::create="create"
           @collection-create::next-step="setEditionStep(1)"
           @collection-create::error="showError"
-          @cancel="cancel">
-        </mapping>
+          @cancel="cancel"
+        />
         <collection-form
           v-show="editionStep === 1"
           :mapping="$store.state.collection.mapping"
           :step="editionStep"
           @collection-create::create="create"
-          @cancel="cancel">
-        </collection-form>
+          @cancel="cancel"
+        />
 
-        <div class="col s7 m8 l8" v-if="error || mappingError">
+        <div
+          v-if="error || mappingError"
+          class="col s7 m8 l8"
+        >
           <div class="card error red-color white-text">
-            <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-            An error occurred while {{$route.params.collection ? 'updating' : 'creating'}} collection: <br>{{error ? error : mappingError}}
+            <i
+              class="fa fa-times dismiss-error"
+              @click="dismissError()"
+            />
+            An error occurred while {{ $route.params.collection ? 'updating' : 'creating' }} collection: <br>{{ error ? error : mappingError }}
           </div>
         </div>
       </div>
@@ -63,16 +69,16 @@ export default {
   directives: {
     Focus
   },
+  props: {
+    error: String,
+    index: String,
+    headline: String
+  },
   data() {
     return {
       editionStep: 0,
       mappingError: null
     }
-  },
-  props: {
-    error: String,
-    index: String,
-    headline: String
   },
   watch: {
     '$store.state.collection.isRealtimeOnly'(value) {

@@ -7,15 +7,22 @@
         :collection-mapping="collectionMapping"
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
-      ></filters>
+      />
     </div>
     <div class="card-panel card-body">
-      <div class="row valign-center empty-set" v-show="!documents.length">
+      <div
+        v-show="!documents.length"
+        class="row valign-center empty-set"
+      >
         <div class="col s2 offset-s1">
-          <i class="fa fa-6x fa-search grey-text text-lighten-1" aria-hidden="true"></i>
+          <i
+            class="fa fa-6x fa-search grey-text text-lighten-1"
+            aria-hidden="true"
+          />
         </div>
         <div class="col s12">
-          <p>There is no result matching your query
+          <p>
+            There is no result matching your query
             <br>Please try with another filter.
           </p>
           <p>
@@ -30,21 +37,30 @@
         </div>
       </div>
 
-      <div class="BulkActions row actions" v-if="documents.length">
+      <div
+        v-if="documents.length"
+        class="BulkActions row actions"
+      >
         <div class="col s8">
-          <button class="btn btn-small waves-effect waves-light tertiary" @click="dispatchToggle">
-            <i class="fa left" :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"></i>
+          <button
+            class="btn btn-small waves-effect waves-light tertiary"
+            @click="dispatchToggle"
+          >
+            <i
+              class="fa left"
+              :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+            />
             Toggle all
           </button>
           
           <button
             class="btn btn-small waves-effect waves-light margin-right-5 primary"
-            @click.prevent="onCreateClicked"
             :class="!displayCreate ? 'disabled' : ''"
             :disabled="!displayCreate"
             :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
+            @click.prevent="onCreateClicked"
           >
-            <i class="fa fa-plus-circle left"></i>
+            <i class="fa fa-plus-circle left" />
             Create
           </button>
           
@@ -52,38 +68,52 @@
             class="btn btn-small waves-effect waves-light"
             :class="displayBulkDelete ? 'red-color' : 'disabled'"
             :disabled="!displayBulkDelete"
-            @click="deleteBulk"
             :title="displayBulkDelete ? '' : 'You need to select at least one element'"
+            @click="deleteBulk"
           >
-            <i class="fa fa-minus-circle left"></i>
+            <i class="fa fa-minus-circle left" />
             Delete
           </button>
         </div>
       </div>
 
-      <div class="row CrudlDocument-collection" v-show="documents.length">
+      <div
+        v-show="documents.length"
+        class="row CrudlDocument-collection"
+      >
         <div class="col s12">
-          <slot v-if="documents.length" @delete-document="deleteDocument"></slot>
+          <slot
+            v-if="documents.length"
+            @delete-document="deleteDocument"
+          />
         </div>
       </div>
 
-      <div class="row" v-show="documents.length">
+      <div
+        v-show="documents.length"
+        class="row"
+      >
         <div class="col s12">
           <pagination
-            @change-page="changePage"
             :total="totalDocuments"
             :from="paginationFrom"
             :size="paginationSize"
             :max-page="1000"
             :number-in-page="documents.length"
-          ></pagination>
+            @change-page="changePage"
+          />
         </div>
       </div>
     </div>
 
-    <modal id="bulk-delete" :is-open="bulkDeleteIsOpen" :close="close" :loading="isLoading">
+    <modal
+      id="bulk-delete"
+      :is-open="bulkDeleteIsOpen"
+      :close="close"
+      :loading="isLoading"
+    >
       <h4>Document deletion</h4>
-      <p>Do you really want to delete {{lengthDocument}} documents?</p>
+      <p>Do you really want to delete {{ lengthDocument }} documents?</p>
 
       <span slot="footer">
         <button
@@ -91,26 +121,33 @@
           class="waves-effect waves-green btn red-color"
           @click="confirmBulkDelete()"
         >I'm sure!</button>
-        <button href="#" class="btn-flat" @click.prevent="close">Cancel</button>
+        <button
+          href="#"
+          class="btn-flat"
+          @click.prevent="close"
+        >Cancel</button>
       </span>
     </modal>
 
     <modal
-      class="SingleDeleteModal"
       id="single-delete"
+      class="SingleDeleteModal"
       :is-open="singleDeleteIsOpen"
       :close="close"
       :loading="isLoading"
     >
       <h4>Delete element</h4>
-      <p>Do you really want to delete {{documentIdToDelete}}?</p>
+      <p>Do you really want to delete {{ documentIdToDelete }}?</p>
 
       <span slot="footer">
         <button
           class="SingleDeleteModal-confirmBtn waves-effect waves-green btn red-color"
           @click="confirmSingleDelete(documentIdToDelete)"
         >I'm sure!</button>
-        <button class="btn-flat" @click.prevent="close">Cancel</button>
+        <button
+          class="btn-flat"
+          @click.prevent="close"
+        >Cancel</button>
       </span>
     </modal>
   </div>
@@ -166,6 +203,12 @@ export default {
       isLoading: false
     }
   },
+  watch: {
+    documentToDelete(val) {
+      this.documentIdToDelete = val
+      this.singleDeleteIsOpen = true
+    }
+  },
   methods: {
     onCreateClicked() {
       this.$emit('create-clicked')
@@ -217,12 +260,6 @@ export default {
     },
     refreshSearch() {
       this.$emit('crudl-refresh-search')
-    }
-  },
-  watch: {
-    documentToDelete(val) {
-      this.documentIdToDelete = val
-      this.singleDeleteIsOpen = true
     }
   }
 }

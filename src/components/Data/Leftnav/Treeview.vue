@@ -1,23 +1,38 @@
 <template>
   <aside class="Treeview">
-    <ul v-if="!canSearchIndex()" class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
+    <ul
+      v-if="!canSearchIndex()"
+      class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
+    >
       <li class="Treeview-unauthorized">
         <ul class="indexes">
           <li>
-            <i class="fa fa-lock" aria-hidden="true"></i>
+            <i
+              class="fa fa-lock"
+              aria-hidden="true"
+            />
             <em>You are not allowed to list indexes</em>
           </li>
         </ul>
       </li>
     </ul>
-    <ul v-else class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
+    <ul
+      v-else
+      class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
+    >
       <li>
         <nav>
           <div class="nav-wrapper">
             <form>
               <div class="Treeview-searchField input-field">
-                <input type="search" v-model="filter" placeholder="Search index &amp; collection">
-                <div class="Treeview-searchIcon"><i class="fa fa-search"></i></div>
+                <input
+                  v-model="filter"
+                  type="search"
+                  placeholder="Search index &amp; collection"
+                >
+                <div class="Treeview-searchIcon">
+                  <i class="fa fa-search" />
+                </div>
               </div>
             </form>
           </div>
@@ -26,15 +41,17 @@
       <li>
         <ul class="Treeview-root">
           <li
-            v-for="indexName in orderedFilteredIndices" :key="indexName">
+            v-for="indexName in orderedFilteredIndices"
+            :key="indexName"
+          >
             <index-branch
               :index-name="indexName"
               :route-name="routeName"
               :collections="indexesAndCollections[indexName]"
               :current-index="index"
               :filter="filter"
-              :current-collection="collection">
-            </index-branch>
+              :current-collection="collection"
+            />
           </li>
         </ul>
       </li>
@@ -49,21 +66,18 @@ import { filterIndexesByKeyword } from '../../../services/data'
 
 export default {
   name: 'Treeview',
+  components: {
+    IndexBranch
+  },
   props: {
     index: String,
     collection: String,
     routeName: String
   },
-  components: {
-    IndexBranch
-  },
   data() {
     return {
       filter: ''
     }
-  },
-  methods: {
-    canSearchIndex
   },
   computed: {
     filteredIndices() {
@@ -83,6 +97,9 @@ export default {
         ? this.$store.state.index.indexesAndCollections
         : {}
     }
+  },
+  methods: {
+    canSearchIndex
   }
 }
 </script>
