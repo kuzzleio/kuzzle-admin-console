@@ -7,6 +7,12 @@
       @click="$emit('list')"
     />
     <a
+      class="ListViewButtons-btn fa fa-list rotate"
+      title="Display these items as column"
+      :class="{active: activeView === 'column'}"
+      @click="$emit('column')"
+    />
+    <a
       class="ListViewButtons-btn fa fa-th"
       :class="{disabled: !boxesEnabled, active: activeView === 'boxes'}"
       :title="boxesEnabled ? 'Display these items as boxes' : ''"
@@ -75,5 +81,8 @@ export default {
   &.disabled {
     color: $disabled-color;
   }
+}
+.rotate {
+  transform: rotate(90deg)
 }
 </style>
