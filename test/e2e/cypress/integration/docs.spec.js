@@ -149,7 +149,52 @@ describe('Document List', function() {
       .click()
       .contains('Delete')
   })
-})
+
+  it('should handle the column view properly', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+      jsonObject: {
+        "foo": "bar"
+      }
+    })
+
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('.ListViewButtons-btn[title~="column"]').click()
+    cy.url().should('contain', 'listViewType=column')
+    
+    cy.get('.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(2)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
+    cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
+    cy.get('.DocumentListViewColumn-jsonFormatter > .json-formatter-row > .json-formatter-toggler-link > .json-formatter-value > span > .json-formatter-constructor-name').click()
+    cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
+    cy.get('.centered > thead > tr > th:nth-child(7) > .fa').click()
+    cy.get('.centered > thead > tr > th:nth-child(6) > .fa').click()
+    cy.get('.centered > thead > tr > th:nth-child(5) > .fa').click()
+    cy.get('.centered > thead > tr > th:nth-child(4) > .fa').click()
+    cy.get('.centered > thead > tr > th > .fa').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
+  })
+}) 
 
 describe('Document update/replace', () => {
   const kuzzleUrl = 'http://localhost:7512'
