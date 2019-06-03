@@ -66,6 +66,7 @@ describe('Environments', function() {
       .click()
 
     cy.get('.Environment-SubmitButton').click()
+    cy.wait(1000)
     cy.get('.LoginAsAnonymous-Btn').click()
 
     cy.get('.navbar-fixed > nav').should($nav => {
