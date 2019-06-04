@@ -1,28 +1,50 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit user - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
+      Edit user - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
     </headline>
 
-    <Notice></Notice>
+    <Notice />
 
     <div class="card-panel card-body">
       <div class="col s12">
-        <tabs v-if="!loading" @tab-changed="switchTab" :active="activeTab" :object-tab-active="activeTabObject">
-          <tab @tabs-on-select="setActiveTabObject" name="basic" tab-select="basic"><a href="">Basic</a></tab>
-          <tab @tabs-on-select="setActiveTabObject" name="credentials" tab-select="basic"><a href="">Credentials</a></tab>
-          <tab @tabs-on-select="setActiveTabObject" name="custom" tab-select="basic"><a href="">Custom</a></tab>
+        <tabs
+          v-if="!loading"
+          :active="activeTab"
+          :object-tab-active="activeTabObject"
+          @tab-changed="switchTab"
+        >
+          <tab
+            name="basic"
+            tab-select="basic"
+            @tabs-on-select="setActiveTabObject"
+          >
+            <a href="">Basic</a>
+          </tab>
+          <tab
+            name="credentials"
+            tab-select="basic"
+            @tabs-on-select="setActiveTabObject"
+          >
+            <a href="">Credentials</a>
+          </tab>
+          <tab
+            name="custom"
+            tab-select="basic"
+            @tabs-on-select="setActiveTabObject"
+          >
+            <a href="">Custom</a>
+          </tab>
           <div slot="contents">
             <steps-content
-              :step="stepNumber"
-              :is-update="true"
               ref="stepsContent"
               v-model="user"
-            ></steps-content>
+              :step="stepNumber"
+              :is-update="true"
+            />
           </div>
         </tabs>
       </div>
-
 
       <!-- Actions -->
       <div class="row">
@@ -36,12 +58,20 @@
             type="submit"
             class="btn primary waves-effect waves-light"
             @click.prevent="save"
-          >Save</button>
+          >
+            Save
+          </button>
         </div>
         <div class="col s9">
-          <div v-if="error" class="card error red-color white-text">
-            <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-            {{error}}
+          <div
+            v-if="error"
+            class="card error red-color white-text"
+          >
+            <i
+              class="fa fa-times dismiss-error"
+              @click="dismissError()"
+            />
+            {{ error }}
           </div>
         </div>
       </div>
@@ -57,7 +87,6 @@
 
 <script>
 import Headline from '../../Materialize/Headline'
-import CredentialsEdit from '../Common/JsonWithMapping'
 import Tabs from '../../Materialize/Tabs'
 import Tab from '../../Materialize/Tab'
 import Notice from '../Common/Notice'
@@ -68,7 +97,6 @@ export default {
   name: 'UpdateUser',
   components: {
     Headline,
-    CredentialsEdit,
     Tabs,
     Tab,
     StepsContent,

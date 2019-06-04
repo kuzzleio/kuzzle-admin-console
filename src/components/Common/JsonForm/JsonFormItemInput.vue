@@ -1,7 +1,13 @@
 <template>
   <div class="row input-field">
-    <input :type="type" :value="value" @input="update" :step="step" @focus="display = true"/>
-    <label :class="{'active': value !== null}">{{name}}</label>
+    <input
+      :type="type"
+      :value="value"
+      :step="step"
+      @input="update"
+      @focus="display = true"
+    >
+    <label :class="{'active': value !== null}">{{ name }}</label>
   </div>
 </template>
 
@@ -21,6 +27,12 @@ export default {
       display: false
     }
   },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    this.initValue()
+  },
   methods: {
     update(e) {
       this.$emit('update-value', { name: this.name, value: e.target.value })
@@ -38,12 +50,6 @@ export default {
         this.value = this.content[this.name]
       }
     }
-  },
-  mounted() {
-    this.initValue()
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

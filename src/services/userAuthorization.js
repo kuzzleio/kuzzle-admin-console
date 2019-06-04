@@ -1,4 +1,4 @@
-import {isKuzzleActionAllowed} from '../services/kuzzleWrapper'
+import { isKuzzleActionAllowed } from '../services/kuzzleWrapper'
 import store from '../vuex/modules/auth/store'
 
 function isActionAllowed(

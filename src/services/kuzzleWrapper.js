@@ -1,4 +1,4 @@
-import {WebSocket} from 'kuzzle-sdk'
+import { WebSocket } from 'kuzzle-sdk'
 import Promise from 'bluebird'
 import Vue from 'vue'
 
@@ -174,7 +174,7 @@ export const performDeleteDocuments = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, {refresh: 'wait_for'})
+  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, { refresh: 'wait_for' })
 }
 
 // ### Security
@@ -235,7 +235,7 @@ export const performSearchUsers = async (
     users.push(object)
   }
 
-  return {documents: users, total: result.total}
+  return { documents: users, total: result.total }
 }
 
 export const getMappingUsers = () => {
@@ -245,7 +245,7 @@ export const getMappingUsers = () => {
 
 export const updateMappingUsers = newMapping => {
   return Vue.prototype.$kuzzle.security
-    .updateUserMapping({properties: newMapping})
+    .updateUserMapping({ properties: newMapping })
 }
 
 export const performDeleteUsers = async (index, collection, ids) => {
@@ -254,7 +254,7 @@ export const performDeleteUsers = async (index, collection, ids) => {
   }
 
   await Vue.prototype.$kuzzle.security
-    .mDeleteUsers(ids, {refresh: 'wait_for'})
+    .mDeleteUsers(ids, { refresh: 'wait_for' })
 }
 
 // Profiles related
@@ -264,7 +264,7 @@ export const performSearchProfiles = async (filters = {}, pagination = {}) => {
 
   const profiles = result.hits.map(document => {
     return {
-      content: {policies: document.policies},
+      content: { policies: document.policies },
       meta: new Meta(document.meta || {}),
       id: document._id
     }
@@ -287,7 +287,7 @@ export const performSearchRoles = async (controllers = {}, pagination = {}) => {
     .searchRoles(controllers, { ...pagination })
   let roles = result.hits.map(document => {
     let object = {
-      content: {controllers: document.controllers},
+      content: { controllers: document.controllers },
       meta: new Meta(document.meta || {}),
       id: document._id
     }
@@ -309,7 +309,7 @@ export const performDeleteRoles = async ids => {
   }
 
   await Vue.prototype.$kuzzle.security
-    .mDeleteRoles(ids, {refresh: 'wait_for'})
+    .mDeleteRoles(ids, { refresh: 'wait_for' })
 }
 
 export const isKuzzleActionAllowed = (rights, controller, action, index, collection) => {

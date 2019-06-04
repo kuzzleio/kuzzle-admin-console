@@ -2,33 +2,45 @@
   <div class="Watch">
     <div class="wrapper">
       <headline>
-        {{collection}}
+        {{ collection }}
         <collection-dropdown
           class="icon-medium icon-black"
           :index="index"
-          :collection="collection">
-        </collection-dropdown>
+          :collection="collection"
+        />
       </headline>
 
-      <collection-tabs></collection-tabs>
+      <collection-tabs />
 
-      <div class="card-panel" v-if="!canSubscribe(index, collection)">
+      <div
+        v-if="!canSubscribe(index, collection)"
+        class="card-panel"
+      >
         <div class="row valign-bottom empty-set">
           <div class="col s1">
-            <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
+            <i
+              class="fa fa-6x fa-lock grey-text text-lighten-1"
+              aria-hidden="true"
+            />
           </div>
           <div class="col s10">
             <p>
-              You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
+              You are not allowed to watch realtime messages on collection <strong>{{ collection }}</strong> of index <strong>{{ index }}</strong><br>
             </p>
             <p>
-              <em>Learn more about security &amp; permissions on <a href="https://docs.kuzzle.io/guide/1/essentials/security/" target="_blank">Kuzzle guide</a></em>
+              <em>Learn more about security &amp; permissions on <a
+                href="https://docs.kuzzle.io/guide/1/essentials/security/"
+                target="_blank"
+              >Kuzzle guide</a></em>
             </p>
           </div>
         </div>
       </div>
 
-      <div class="Watch-container" v-else>
+      <div
+        v-else
+        class="Watch-container"
+      >
         <filters
           submit-button-label="Subscribe"
           advanced-query-label="Click to open the filter builder"
@@ -40,74 +52,107 @@
           :collection-mapping="collectionMapping"
           @filters-updated="onFiltersUpdated"
           @reset="onReset"
-          >
-        </filters>
-        <div class="card-panel card-body" v-show="subscribed || notifications.length" ref="subscribeControl">
+        />
+        <div
+          v-show="subscribed || notifications.length"
+          ref="subscribeControl"
+          class="card-panel card-body"
+        >
           <!-- subscription controls in page flow -->
           <subscription-controls
-            @realtime-toggle-subscription="toggleSubscription"
-            @realtime-clear-messages="clear"
             :index="index"
             :collection="collection"
             :subscribed="subscribed"
             :warning="warning"
-            @scroll-down="setScrollDown">
-          </subscription-controls>
+            @realtime-toggle-subscription="toggleSubscription"
+            @realtime-clear-messages="clear"
+            @scroll-down="setScrollDown"
+          />
           <!-- /subscription controls in page flow  -->
         </div>
 
-        <div class="card-panel card-body" v-show="!subscribed && !notifications.length">
+        <div
+          v-show="!subscribed && !notifications.length"
+          class="card-panel card-body"
+        >
           <div class="row valign-bottom empty-set">
             <div class="col s1">
-              <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
+              <i
+                class="fa fa-6x fa-paper-plane grey-text text-lighten-1"
+                aria-hidden="true"
+              />
             </div>
             <div class="col s8 m9 l10">
               <p>
-                You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em>
+                You did not subscribe yet to the collection <strong>{{ collection }}</strong><br>
+                <em>Learn more about real-time filtering syntax on <a
+                  href="https://docs.kuzzle.io/koncorde/"
+                  target="_blank"
+                >Koncorde</a></em>
               </p>
-              <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
-                <i class="fa left fa-play"></i>
+              <button
+                class="btn primary waves-effect waves-light"
+                @click="toggleSubscription()"
+              >
+                <i class="fa left fa-play" />
                 subscribe
               </button>
             </div>
           </div>
         </div>
 
-        <div class="card-panel" v-show="subscribed && !notifications.length" id="wait-for-notif">
+        <div
+          v-show="subscribed && !notifications.length"
+          id="wait-for-notif"
+          class="card-panel"
+        >
           <div class="row valign-center empty-set empty-set-condensed">
             <div class="col s1">
-              <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
+              <i
+                class="fa fa-5x fa-hourglass-half grey-text text-lighten-1"
+                aria-hidden="true"
+              />
             </div>
             <div class="col s10">
               <p>
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Koncorde</a></em>
+                <em>Learn more about real-time filtering syntax on <a
+                  href="https://docs.kuzzle.io/koncorde/"
+                  target="_blank"
+                >Koncorde</a></em>
               </p>
             </div>
           </div>
         </div>
 
         <div class="row">
-          <div :style="notifStyle" id="notification-container" ref="notificationContainer" class="Watch--notifications col s8">
+          <div
+            id="notification-container"
+            ref="notificationContainer"
+            :style="notifStyle"
+            class="Watch--notifications col s8"
+          >
             <div v-if="notifications.length">
-              <ul class="collapsible" v-collapsible data-collapsible="expandable">
+              <ul
+                v-collapsible
+                class="collapsible"
+                data-collapsible="expandable"
+              >
                 <notification
                   v-for="(notification, i) in notifications"
                   :key="i"
-                  :notification="notification">
-                </notification>
+                  :notification="notification"
+                />
               </ul>
             </div>
           </div>
 
           <LastNotification
             v-if="notifications.length"
-            :lastNotification="lastNotification">
-          </LastNotification>
-
+            :last-notification="lastNotification"
+          />
         </div>
       </div>
     </div>
@@ -132,6 +177,18 @@ import Vue from 'vue'
 
 export default {
   name: 'CollectionWatch',
+  directives: {
+    collapsible
+  },
+  components: {
+    CollectionTabs,
+    Notification,
+    LastNotification,
+    CollectionDropdown,
+    SubscriptionControls,
+    Filters,
+    Headline
+  },
   props: {
     index: String,
     collection: String
@@ -152,6 +209,21 @@ export default {
       collectionMapping: {}
     }
   },
+  watch: {
+    index() {
+      this.reset()
+    },
+    collection() {
+      this.reset()
+    },
+    $route() {
+      this.reset()
+      this.currentFilter = filterManager.loadFromRoute(this.$route)
+    },
+    subscribed() {
+      this.computeNotifHeight()
+    }
+  },
   created() {
     window.addEventListener('scroll', this.handleScroll)
   },
@@ -166,18 +238,6 @@ export default {
       await this.$kuzzle.realtime.unsubscribe(this.room)
     }
     window.removeEventListener('scroll', this.handleScroll)
-  },
-  directives: {
-    collapsible
-  },
-  components: {
-    CollectionTabs,
-    Notification,
-    LastNotification,
-    CollectionDropdown,
-    SubscriptionControls,
-    Filters,
-    Headline
   },
   methods: {
     canSubscribe,
@@ -407,21 +467,6 @@ export default {
         icon: '/static/favicon/favicon-32x32.png'
       })
       setTimeout(notif.close.bind(notif), 5000)
-    }
-  },
-  watch: {
-    index() {
-      this.reset()
-    },
-    collection() {
-      this.reset()
-    },
-    $route() {
-      this.reset()
-      this.currentFilter = filterManager.loadFromRoute(this.$route)
-    },
-    subscribed() {
-      this.computeNotifHeight()
     }
   }
 }

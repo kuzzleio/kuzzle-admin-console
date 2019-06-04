@@ -1,11 +1,24 @@
 <template>
   <li class="Notification">
-    <div class="Notification--header collapsible-header unselectable" :class="notification.class" @click="toggleCollapse">
-      <i :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}" class="fa"></i>
-      <i class="fa" :class="notificationIcon"></i> {{notification.text}} - {{ago}}
+    <div
+      class="Notification--header collapsible-header unselectable"
+      :class="notification.class"
+      @click="toggleCollapse"
+    >
+      <i
+        :class="{'fa-caret-right': collapsed, 'fa-caret-down': !collapsed}"
+        class="fa"
+      />
+      <i
+        class="fa"
+        :class="notificationIcon"
+      /> {{ notification.text }} - {{ ago }}
     </div>
-    <div class="Notification--body collapsible-body" v-if="!notification.empty">
-      <p v-json-formatter="{content: notification.source, open: true}"/>
+    <div
+      v-if="!notification.empty"
+      class="Notification--body collapsible-body"
+    >
+      <p v-json-formatter="{content: notification.source, open: true}" />
     </div>
   </li>
 </template>
@@ -48,19 +61,14 @@ var moment = require('moment')
 
 export default {
   name: 'RealtimeNotification',
-  props: ['notification'],
   directives: {
     JsonFormatter
   },
+  props: ['notification'],
   data() {
     return {
       ago: moment(this.notification.timestamp).fromNow(),
       collapsed: true
-    }
-  },
-  methods: {
-    toggleCollapse: function() {
-      this.collapsed = !this.collapsed
     }
   },
   computed: {
@@ -72,6 +80,11 @@ export default {
     setInterval(() => {
       this.ago = moment(this.notification.timestamp).fromNow()
     }, 60000)
+  },
+  methods: {
+    toggleCollapse: function() {
+      this.collapsed = !this.collapsed
+    }
   }
 }
 </script>

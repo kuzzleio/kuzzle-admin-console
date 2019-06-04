@@ -1,26 +1,56 @@
 <template>
-<div>
   <div>
-    <div
-      v-for="profile in addedProfiles"
-      class="chip"
-      title="Click to remove"
-      @click="removeProfile(profile)">
-      {{profile}}&nbsp;
-      <i class="fa fa-trash"></i>
+    <div>
+      <div
+        v-for="(profile, index) in addedProfiles"
+        :key="index"
+        class="chip"
+        title="Click to remove"
+        @click="removeProfile(profile)"
+      >
+        {{ profile }}&nbsp;
+        <i class="fa fa-trash" />
+      </div>
+    </div>
+    <div v-if="profileList.length">
+      <m-select
+        :options="availableProfiles"
+        @input="onProfileSelected"
+      >
+        <option
+          v-if="availableProfiles.length"
+          value=""
+          disabled
+          selected
+        >
+          Select a Profile to add
+        </option>
+        <option
+          v-if="profileList.length && availableProfiles.length === 0"
+          value=""
+          disabled
+          selected
+        >
+          The user has all the profiles (are you sure?)
+        </option>
+        <option
+          v-for="(profile, index) in availableProfiles"
+          :key="index"
+          :value="profile.id"
+        >
+          {{ profile.id }}
+        </option>
+      </m-select>
+    </div>
+    <div v-else>
+      No profiles found (you should <router-link
+        :to="{name: 'SecurityProfilesCreate'}"
+        class="text-light-blue"
+      >
+        create one
+      </router-link> before creating a user)
     </div>
   </div>
-  <div v-if="profileList.length">
-    <m-select :options="availableProfiles" @input="onProfileSelected">
-      <option v-if="availableProfiles.length" value="" disabled selected>Select a Profile to add</option>
-      <option v-if="profileList.length && availableProfiles.length === 0" value="" disabled selected>The user has all the profiles (are you sure?)</option>
-      <option v-for="profile in availableProfiles" :value="profile.id">{{profile.id}}</option>
-    </m-select>
-  </div>
-  <div v-else>
-    No profiles found (you should <router-link :to="{name: 'SecurityProfilesCreate'}" class="text-light-blue">create one</router-link> before creating a user)
-  </div>
-</div>
 </template>
 
 <script type="text/javascript">
@@ -49,6 +79,9 @@ export default {
       })
     }
   },
+  mounted() {
+    return this.fetchProfileList()
+  },
   methods: {
     fetchProfileList() {
       return performSearchProfiles().then(result => {
@@ -63,9 +96,6 @@ export default {
     removeProfile(profile) {
       this.$emit('remove-profile', profile)
     }
-  },
-  mounted() {
-    return this.fetchProfileList()
   }
 }
 </script>

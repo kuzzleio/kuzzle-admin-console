@@ -2,18 +2,20 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <environment-switch @environment::create="editEnvironment"></environment-switch>
+        <environment-switch @environment::create="editEnvironment" />
       </div>
     </div>
     <div class="col s12">
-      <h4><i class="fa fa-plug"></i> Connecting to Kuzzle...</h4>
+      <h4><i class="fa fa-plug" /> Connecting to Kuzzle...</h4>
     </div>
     <div class="row">
       <div class="col s12">
-        <connecting :host="host" :port="port"></connecting>
+        <connecting
+          :host="host"
+          :port="port"
+        />
       </div>
     </div>
-
   </div>
 </template>
 
@@ -26,15 +28,15 @@ let idReconnect
 
 export default {
   name: 'KuzzleDisconnectedPage',
+  components: {
+    Connecting,
+    EnvironmentSwitch
+  },
   data() {
     return {
       host: null,
       port: null
     }
-  },
-  components: {
-    Connecting,
-    EnvironmentSwitch
   },
   mounted() {
     this.host = this.$kuzzle.protocol.host

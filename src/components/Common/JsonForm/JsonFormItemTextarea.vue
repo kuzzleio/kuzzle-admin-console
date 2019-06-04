@@ -1,8 +1,13 @@
 <template>
   <div class="row input-field">
     <div class="row">
-      <textarea @input="update" :id="name" class="materialize-textarea">{{value}}</textarea>
-      <label :for="name">{{name}}</label>
+      <textarea
+        :id="name"
+        v-model="value"
+        class="materialize-textarea"
+        @input="update"
+      />
+      <label :for="name">{{ name }}</label>
     </div>
   </div>
 </template>
@@ -23,6 +28,12 @@ export default {
       display: false
     }
   },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    this.initValue()
+  },
   methods: {
     update(e) {
       this.$emit('update-value', { name: this.name, value: e.target.value })
@@ -34,12 +45,6 @@ export default {
         this.value = this.content[this.name]
       }
     }
-  },
-  mounted() {
-    this.initValue()
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

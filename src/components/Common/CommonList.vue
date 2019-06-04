@@ -1,7 +1,11 @@
 <template>
   <div class="CommonList">
-    <slot name="emptySet" v-if="isCollectionEmpty"></slot>
-    <crudl-document v-else
+    <slot
+      v-if="isCollectionEmpty"
+      name="emptySet"
+    />
+    <crudl-document
+      v-else
       :search-filter-operands="searchFilterOperands"
       :pagination-from="paginationFrom"
       :pagination-size="paginationSize"
@@ -21,23 +25,27 @@
       @filters-updated="onFiltersUpdated"
       @create-clicked="create"
       @toggle-all="toggleAll"
-      @crudl-refresh-search="fetchDocuments">
-
-      <div class="CommonList-list collection"> <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
-        <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+      @crudl-refresh-search="fetchDocuments"
+    >
+      <div class="CommonList-list collection">
+        <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
+        <div
+          v-for="document in documents"
+          :key="document.id"
+          class="collection-item collection-transition"
+        >
           <component
             :is="itemName"
-            @checkbox-click="toggleSelectDocuments"
             :document="document"
             :is-checked="isChecked(document.id)"
             :index="index"
             :collection="collection"
+            @checkbox-click="toggleSelectDocuments"
             @common-list::edit-document="editDocument"
-            @delete-document="deleteDocument">
-          </component>
+            @delete-document="deleteDocument"
+          />
         </div>
       </div>
-
     </crudl-document>
   </div>
 </template>
@@ -111,6 +119,40 @@ export default {
     paginationSize() {
       return parseInt(this.currentFilter.size) || 10
     }
+  },
+  watch: {
+    $route: {
+      immediate: false,
+      handler(newValue, oldValue) {
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          newValue
+        )
+        filterManager.save(
+          this.currentFilter,
+          this.$router,
+          this.index,
+          this.collection
+        )
+      }
+    },
+    currentFilter() {
+      this.fetchDocuments()
+    }
+  },
+  mounted() {
+    this.currentFilter = filterManager.load(
+      this.index,
+      this.collection,
+      this.$route
+    )
+    filterManager.save(
+      this.currentFilter,
+      this.$router,
+      this.index,
+      this.collection
+    )
   },
   methods: {
     isChecked(id) {
@@ -201,40 +243,6 @@ export default {
     },
     create(route) {
       this.$router.push({ name: this.routeCreate })
-    }
-  },
-  mounted() {
-    this.currentFilter = filterManager.load(
-      this.index,
-      this.collection,
-      this.$route
-    )
-    filterManager.save(
-      this.currentFilter,
-      this.$router,
-      this.index,
-      this.collection
-    )
-  },
-  watch: {
-    $route: {
-      immediate: false,
-      handler(newValue, oldValue) {
-        this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
-          newValue
-        )
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.index,
-          this.collection
-        )
-      }
-    },
-    currentFilter() {
-      this.fetchDocuments()
     }
   }
 }

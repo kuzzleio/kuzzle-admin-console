@@ -1,7 +1,11 @@
 .<template>
   <div>
-    <slot name="emptySet" v-if="!(basicFilter || rawFilter || $route.query.searchTerm) && totalDocuments === 0"></slot>
-    <crudl-document v-else
+    <slot
+      v-if="!(basicFilter || rawFilter || $route.query.searchTerm) && totalDocuments === 0"
+      name="emptySet"
+    />
+    <crudl-document
+      v-else
       :available-filters="availableFilters"
       :pagination-from="paginationFrom"
       :basic-filter="basicFilter"
@@ -21,22 +25,26 @@
       :perform-delete="performDelete"
       @create-clicked="create"
       @toggle-all="toggleAll"
-      @crudl-refresh-search="fetchData">
-
-        <div class="collection">
-          <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
-            <component :is="itemName"
-                       @checkbox-click="toggleSelectDocuments"
-                       :document="document"
-                       :is-checked="isChecked(document.id)"
-                       :index="index"
-                       :collection="collection"
-                       @common-list::edit-document="editDocument"
-                       @delete-document="deleteDocument">
-            </component>
-          </div>
+      @crudl-refresh-search="fetchData"
+    >
+      <div class="collection">
+        <div
+          v-for="document in documents"
+          :key="document.id"
+          class="collection-item collection-transition"
+        >
+          <component
+            :is="itemName"
+            :document="document"
+            :is-checked="isChecked(document.id)"
+            :index="index"
+            :collection="collection"
+            @checkbox-click="toggleSelectDocuments"
+            @common-list::edit-document="editDocument"
+            @delete-document="deleteDocument"
+          />
         </div>
-
+      </div>
     </crudl-document>
   </div>
 </template>
@@ -58,6 +66,13 @@ import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'SecurityCommonList',
+  components: {
+    CrudlDocument,
+    UserItem,
+    RoleItem,
+    ProfileItem,
+    DocumentItem
+  },
   props: {
     index: String,
     collection: String,
@@ -70,13 +85,6 @@ export default {
     performDelete: Function,
     routeCreate: String,
     routeUpdate: String
-  },
-  components: {
-    CrudlDocument,
-    UserItem,
-    RoleItem,
-    ProfileItem,
-    DocumentItem
   },
   data() {
     return {
@@ -118,6 +126,14 @@ export default {
     paginationSize() {
       return parseInt(this.$route.query.size) || 10
     }
+  },
+  watch: {
+    $route() {
+      this.refreshSearch()
+    }
+  },
+  mounted() {
+    this.fetchData()
   },
   methods: {
     isChecked(id) {
@@ -184,14 +200,6 @@ export default {
     },
     create(route) {
       this.$router.push({ name: this.routeCreate })
-    }
-  },
-  mounted() {
-    this.fetchData()
-  },
-  watch: {
-    $route() {
-      this.refreshSearch()
     }
   }
 }

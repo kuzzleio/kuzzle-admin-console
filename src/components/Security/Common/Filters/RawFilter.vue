@@ -5,12 +5,25 @@
       ref="jsoneditor"
       myclass="pre_ace"
       :content="filters.raw"
-    >
-    </json-editor>
+    />
     <div class="row card-action">
-      <button type="submit" class="btn primary waves-effect waves-light" @click.prevent="rawSearch">{{labelSearchButton}}</button>
-      <button class="btn-flat waves-effect waves-light" @click="resetRawSearch">Reset</button>
-      <span class="error" v-if="jsonInvalid">Your JSON is not valid</span>
+      <button
+        type="submit"
+        class="btn primary waves-effect waves-light"
+        @click.prevent="rawSearch"
+      >
+        {{ labelSearchButton }}
+      </button>
+      <button
+        class="btn-flat waves-effect waves-light"
+        @click="resetRawSearch"
+      >
+        Reset
+      </button>
+      <span
+        v-if="jsonInvalid"
+        class="error"
+      >Your JSON is not valid</span>
     </div>
   </form>
 </template>
@@ -19,6 +32,9 @@
 import JsonEditor from '../../../Common/JsonEditor'
 
 export default {
+  components: {
+    JsonEditor
+  },
   props: {
     rawFilter: {
       type: Object,
@@ -38,9 +54,6 @@ export default {
       default: true
     }
   },
-  components: {
-    JsonEditor
-  },
   data() {
     return {
       filters: {
@@ -48,6 +61,9 @@ export default {
       },
       jsonInvalid: false
     }
+  },
+  mounted() {
+    this.filters.raw = this.rawFilter || {}
   },
   methods: {
     rawSearch() {
@@ -66,9 +82,6 @@ export default {
     resetRawSearch() {
       this.filters.raw = {}
     }
-  },
-  mounted() {
-    this.filters.raw = this.rawFilter || {}
   }
 }
 </script>

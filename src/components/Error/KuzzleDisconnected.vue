@@ -1,20 +1,20 @@
 <template>
   <div class="row kuzzle-disconnected">
     <div class="col s12">
-      <p>Unable to connect to Kuzzle server at <span class="host primary">{{host}}</span> with port <span class="host primary">{{port}}</span>. Waiting for connection to kuzzle.</p>
+      <p>Unable to connect to Kuzzle server at <span class="host primary">{{ host }}</span> with port <span class="host primary">{{ port }}</span>. Waiting for connection to kuzzle.</p>
     </div>
 
     <div class="col s1 offset-s5">
       <div class="preloader-wrapper active valign-wrapper">
         <div class="spinner-layer">
           <div class="circle-clipper left">
-            <div class="circle"></div>
+            <div class="circle" />
           </div>
           <div class="gap-patch">
-            <div class="circle"></div>
+            <div class="circle" />
           </div>
           <div class="circle-clipper right">
-            <div class="circle"></div>
+            <div class="circle" />
           </div>
         </div>
       </div>

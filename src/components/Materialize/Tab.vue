@@ -1,6 +1,10 @@
 <template>
-  <li @click.prevent="setAsSelected" class="tab col" :class="computedClasses">
-    <slot></slot>
+  <li
+    class="tab col"
+    :class="computedClasses"
+    @click.prevent="setAsSelected"
+  >
+    <slot />
   </li>
 </template>
 
@@ -15,6 +19,14 @@ export default {
       default: null
     }
   },
+  computed: {
+    computedClasses() {
+      return this.disabled ? ['disabled'] : []
+    },
+    index() {
+      return this.$parent.$children.indexOf(this)
+    }
+  },
   watch: {
     tabSelect(name) {
       if (!name) {
@@ -24,12 +36,9 @@ export default {
       this.select(name)
     }
   },
-  computed: {
-    computedClasses() {
-      return this.disabled ? ['disabled'] : []
-    },
-    index() {
-      return this.$parent.$children.indexOf(this)
+  mounted() {
+    if (this.tabSelect) {
+      this.select(this.tabSelect)
     }
   },
   methods: {
@@ -42,11 +51,6 @@ export default {
       if (this.name === name) {
         this.setAsSelected()
       }
-    }
-  },
-  mounted() {
-    if (this.tabSelect) {
-      this.select(this.tabSelect)
     }
   }
 }

@@ -1,17 +1,41 @@
 <template>
-  <div  v-if="Object.keys(schema).length">
-    <div class="json-form" v-for="(content, name) in schema" :key="name">
+  <div v-if="Object.keys(schema).length">
+    <div
+      v-for="(content, name) in schema"
+      :key="name"
+      class="json-form"
+    >
       <!-- For nested objects -->
       <fieldset v-if="isNested(content)">
         <legend>
-          {{name}}
+          {{ name }}
         </legend>
-        <json-form :schema="content.properties" :parent="name" :document="document" @update-value="updateNested"></json-form>
+        <json-form
+          :schema="content.properties"
+          :parent="name"
+          :document="document"
+          @update-value="updateNested"
+        />
       </fieldset>
 
       <!-- Root attributes -->
-      <div class="input-field" v-else>
-        <component :is="componentItem(content)" ref="myRef" :name="name" @json-changed="update" :content="document" :parent="parent" :type="content.type" :step="content.step" :schema="content" @update-value="update" :mapping="$store.state.collection.mapping"></component>
+      <div
+        v-else
+        class="input-field"
+      >
+        <component
+          :is="componentItem(content)"
+          ref="myRef"
+          :name="name"
+          :content="document"
+          :parent="parent"
+          :type="content.type"
+          :step="content.step"
+          :schema="content"
+          :mapping="$store.state.collection.mapping"
+          @json-changed="update"
+          @update-value="update"
+        />
       </div>
     </div>
   </div>
@@ -91,7 +115,6 @@ export default {
   }
 }
 </script>
-
 
 <style lang="scss" rel="stylesheet/scss">
 .pre_ace,

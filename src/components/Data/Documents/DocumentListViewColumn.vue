@@ -2,10 +2,16 @@
   <table class="centered highlight">
     <thead>
       <tr>
-        <th class="actions"></th>
+        <th class="actions" />
         <th>id</th>
-        <th v-for="(attr, k) in customFields" :key="k">
-          {{attr}}<i class="fa fa-times-circle ListViewColumn-remove" @click="removeColumn(k)"></i>
+        <th
+          v-for="(attr, k) in customFields"
+          :key="k"
+        >
+          {{ attr }}<i
+            class="fa fa-times-circle ListViewColumn-remove"
+            @click="removeColumn(k)"
+          />
         </th>
         <th>
           <form>
@@ -16,9 +22,9 @@
                   placeholder="Add column"
                   :items="mappingArray"
                   :value="newCustomField || ''"
-                  inputClass="ListViewColumnInput"
+                  input-class="ListViewColumnInput"
+                  :notify-change="false"
                   @autocomplete::change="attribute => { newCustomField = attribute; addCustomField(); }"
-                  :notifyChange="false"
                 />
               </div>
             </div>
@@ -27,43 +33,61 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(doc, kk) in documents" :key="kk">
+      <tr
+        v-for="(doc, kk) in documents"
+        :key="kk"
+      >
         <td class="actions">
           <dropdown
-            class="DocumentBoxItem-actions"
             :id="`document-dropdown-${doc.id}`"
-            >
+            class="DocumentBoxItem-actions"
+          >
             <li>
               <a
-                v-bind:class="{'disabled': !canEdit}"
                 v-title="{active: !canDelete, title: 'You are not allowed to edit this document'}"
+                :class="{'disabled': !canEdit}"
                 @click="editDocument(doc.id)"
-                >
+              >
                 Edit
               </a>
             </li>
-            <li class="divider"></li>
+            <li class="divider" />
             <li>
               <a
-                v-bind:class="{'disabled': !canDelete}"
                 v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
+                :class="{'disabled': !canDelete}"
                 @click="deleteDocument(doc.id)"
-                >
+              >
                 Delete
               </a>
             </li>
           </dropdown>
         </td>
         <td class="DocumentColumnItem">
-          {{doc.id}}
+          {{ doc.id }}
         </td>
-        <td v-for="(attr, k) in customFields" :key="k" class="DocumentColumnItem">
-          <span v-if="parseDocument(attr, doc).isObject" class="relative">
-            <a href="#" @click.prevent="toggleJsonFormatter(attr+doc.id)">{{parseDocument(attr, doc).value}} ...</a>
-            <pre :ref="attr+doc.id" class="DocumentListViewColumn-jsonFormatter" style="visibility: hidden;" v-json-formatter="{content: parseDocument(attr, doc).realValue, open: true}"></pre>
+        <td
+          v-for="(attr, k) in customFields"
+          :key="k"
+          class="DocumentColumnItem"
+        >
+          <span
+            v-if="parseDocument(attr, doc).isObject"
+            class="relative"
+          >
+            <a
+              href="#"
+              @click.prevent="toggleJsonFormatter(attr+doc.id)"
+            >{{ parseDocument(attr, doc).value }} ...</a>
+            <pre
+              :ref="attr+doc.id"
+              v-json-formatter="{content: parseDocument(attr, doc).realValue, open: true}"
+              class="DocumentListViewColumn-jsonFormatter"
+              style="visibility: hidden;"
+            />
           </span>
           <span v-else>
-            {{parseDocument(attr, doc).value}}
+            {{ parseDocument(attr, doc).value }}
           </span>
         </td>
       </tr>
@@ -84,13 +108,6 @@ import _ from 'lodash'
 
 export default {
   name: 'DocumentListViewColumn',
-  props: {
-    documents: Array,
-    index: String,
-    collection: String,
-    value: [Object, String, Array],
-    mapping: Object
-  },
   directives: {
     Title,
     JsonFormatter
@@ -98,6 +115,55 @@ export default {
   components: {
     Dropdown,
     Autocomplete
+  },
+  props: {
+    documents: Array,
+    index: String,
+    collection: String,
+    value: [Object, String, Array],
+    mapping: Object
+  },
+  data() {
+    return {
+      customFields: [],
+      newCustomField: null,
+      mappingArray: []
+    }
+  },
+  computed: {
+    canEdit() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canEditDocument(this.index, this.collection)
+    },
+    canDelete() {
+      if (!this.index || !this.collection) {
+        return false
+      }
+      return canDeleteDocument(this.index, this.collection)
+    },
+    checkboxId() {
+      return `checkbox-${this.document.id}`
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      const columnsConfig = JSON.parse(localStorage.getItem('columnViewConfig') || '{}')
+
+      this.customFields = []
+      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
+        this.customFields = columnsConfig[this.index][this.collection]
+      } else {
+        this.customFields = []
+      }
+    },
+    mapping () {
+      this.mappingArray = this.buildAttributeList(this.mapping)
+      for (const attr of this.customFields) {
+        this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
+      }
+    }
   },
   mounted () {
     const columnsConfig = JSON.parse(localStorage.getItem('columnViewConfig') || '{}')
@@ -109,13 +175,6 @@ export default {
     this.mappingArray = this.buildAttributeList(this.mapping)
     for (const attr of this.customFields) {
       this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
-    }
-  },
-  data() {
-    return {
-      customFields: [],
-      newCustomField: null,
-      mappingArray: []
     }
   },
   methods: {
@@ -197,41 +256,6 @@ export default {
       }
 
       return attributes
-    }
-  },
-  computed: {
-    canEdit() {
-      if (!this.index || !this.collection) {
-        return false
-      }
-      return canEditDocument(this.index, this.collection)
-    },
-    canDelete() {
-      if (!this.index || !this.collection) {
-        return false
-      }
-      return canDeleteDocument(this.index, this.collection)
-    },
-    checkboxId() {
-      return `checkbox-${this.document.id}`
-    }
-  },
-  watch: {
-    '$route' (to, from) {
-      const columnsConfig = JSON.parse(localStorage.getItem('columnViewConfig') || '{}')
-
-      this.customFields = []
-      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-        this.customFields = columnsConfig[this.index][this.collection]
-      } else {
-        this.customFields = []
-      }
-    },
-    mapping () {
-      this.mappingArray = this.buildAttributeList(this.mapping)
-      for (const attr of this.customFields) {
-        this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
-      }
     }
   }
 }

@@ -2,14 +2,18 @@
   <div class="CollectionBoxed col s12 m6 l4">
     <div class="card">
       <div class="card-title row">
-
         <div class="col s10 truncate">
           <!-- collection browse link -->
           <router-link
-             class="fluid-hover"
-             :to="collectionLink">
-            <i class="fa grey-text text-darken-1" :class="isRealtime ? 'fa-bolt' : 'fa-th-list'" aria-hidden="true" ></i>
-            <span class="name">{{collection}}</span>
+            class="fluid-hover"
+            :to="collectionLink"
+          >
+            <i
+              class="fa grey-text text-darken-1"
+              :class="isRealtime ? 'fa-bolt' : 'fa-th-list'"
+              aria-hidden="true"
+            />
+            <span class="name">{{ collection }}</span>
           </router-link>
         </div>
 
@@ -19,24 +23,28 @@
             class="icon-small icon-black"
             :collection="collection"
             :index="index"
-            :is-realtime="isRealtime">
-          </collection-dropdown>
+            :is-realtime="isRealtime"
+          />
         </div>
       </div>
 
       <div class="card-action right-align">
-        <router-link class="btn btn-small"
-           v-if="isRealtime"
-           v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
-           :class="{unauthorized: !canManageRealtime(index, collection)}"
-           :to="canManageRealtime(index, collection) ? {name: 'DataCollectionWatch', params: {index: index, collection: collection}} : ''">
+        <router-link
+          v-if="isRealtime"
+          v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
+          class="btn btn-small"
+          :class="{unauthorized: !canManageRealtime(index, collection)}"
+          :to="canManageRealtime(index, collection) ? {name: 'DataCollectionWatch', params: {index: index, collection: collection}} : ''"
+        >
           Watch messages
         </router-link>
-        <router-link class="btn btn-small"
-           v-else
-           v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
-           :class="{unauthorized: !canCreateDocument(index, collection)}"
-		       :to="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}}: ''">
+        <router-link
+          v-else
+          v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
+          class="btn btn-small"
+          :class="{unauthorized: !canCreateDocument(index, collection)}"
+          :to="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}}: ''"
+        >
           Create a document
         </router-link>
       </div>
@@ -54,10 +62,13 @@ import Title from '../../../directives/title.directive'
 
 export default {
   name: 'CollectionBoxed',
-  props: ['index', 'collection', 'isRealtime'],
   components: {
     CollectionDropdown
   },
+  directives: {
+    Title
+  },
+  props: ['index', 'collection', 'isRealtime'],
   computed: {
     collectionLink() {
       if (this.isRealtime) {
@@ -76,9 +87,6 @@ export default {
   methods: {
     canManageRealtime,
     canCreateDocument
-  },
-  directives: {
-    Title
   }
 }
 </script>

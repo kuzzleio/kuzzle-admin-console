@@ -2,7 +2,10 @@
   <div class="UsersCustomMappingWizard">
     <headline>Edit User Custom Data Mapping</headline>
 
-    <div v-show="!loading" class="wrapper collection-edit">
+    <div
+      v-show="!loading"
+      class="wrapper collection-edit"
+    >
       <div class="card">
         <div class="card-content">
           <p class="flow-text">
@@ -12,10 +15,20 @@
         </div>
       </div>
       <div class="card-panel card-body">
-        <mapping :mapping="mapping" @submit="onMappingSubmit" @cancel="onCancel"></mapping>
-        <div class="ErrorBox card error red-color" v-if="error">
-          <i class="ErrorBox-dismissBtn fa fa-times" @click="dismissError()"></i>
-          <p v-html="error"></p>
+        <mapping
+          :mapping="mapping"
+          @submit="onMappingSubmit"
+          @cancel="onCancel"
+        />
+        <div
+          v-if="error"
+          class="ErrorBox card error red-color"
+        >
+          <i
+            class="ErrorBox-dismissBtn fa fa-times"
+            @click="dismissError()"
+          />
+          <p v-html="error" />
         </div>
       </div>
     </div>
@@ -37,16 +50,13 @@
 }
 </style>
 
-
 <script type="text/javascript">
 /**
  * This feature is currently freezed.
  */
 
 import Headline from '../../Materialize/Headline'
-import Stepper from '../../Common/Stepper'
 import Mapping from './Steps/Mapping'
-import FormSchema from '../../Common/MappingForm/Form'
 import {
   getMappingUsers,
   updateMappingUsers
@@ -56,9 +66,7 @@ export default {
   name: 'UsersCustomMappingWizard',
   components: {
     Headline,
-    Stepper,
-    Mapping,
-    FormSchema
+    Mapping
   },
   data() {
     return {
@@ -66,6 +74,12 @@ export default {
       loading: false,
       error: ''
     }
+  },
+  async mounted() {
+    this.loading = true
+    const result = await getMappingUsers()
+    this.mapping = result.mapping || {}
+    this.loading = false
   },
   methods: {
     onMappingSubmit(mapping) {
@@ -87,12 +101,6 @@ export default {
     dismissError() {
       this.error = ''
     }
-  },
-  async mounted() {
-    this.loading = true
-    const result = await getMappingUsers()
-    this.mapping = result.mapping || {}
-    this.loading = false
   }
 }
 </script>

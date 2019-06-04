@@ -3,18 +3,55 @@
     <form>
       <div class="col s8 l8 xl8">
         <div class="QuickFilter-searchBar">
-          <i class="QuickFilter-searchIcon fa fa-search search"></i>
-          <div v-if="complexFilterActive || !enabled" class="QuickFilter-chip chip">
-            <span class="QuickFilter-chipLabel" @click.prevent="displayAdvancedFilters">{{advancedQueryLabel}}</span>
+          <i class="QuickFilter-searchIcon fa fa-search search" />
+          <div
+            v-if="complexFilterActive || !enabled"
+            class="QuickFilter-chip chip"
+          >
+            <span
+              class="QuickFilter-chipLabel"
+              @click.prevent="displayAdvancedFilters"
+            >{{ advancedQueryLabel }}</span>
           </div>
-          <input v-else type="text" placeholder="Search..." v-model="inputSearchTerm" v-focus @input="submitSearch">
-          <a class="QuickFilter-optionBtn fluid-hover" v-if="!advancedFiltersVisible" href="#" @click.prevent="displayAdvancedFilters">More query options</a>
-          <a class="QuickFilter-optionBtn fluid-hover" v-else href="#" @click.prevent="displayAdvancedFilters">Less query options</a>
+          <input
+            v-else
+            v-model="inputSearchTerm"
+            v-focus
+            type="text"
+            placeholder="Search..."
+            @input="submitSearch"
+          >
+          <a
+            v-if="!advancedFiltersVisible"
+            class="QuickFilter-optionBtn fluid-hover"
+            href="#"
+            @click.prevent="displayAdvancedFilters"
+          >More query options</a>
+          <a
+            v-else
+            class="QuickFilter-optionBtn fluid-hover"
+            href="#"
+            @click.prevent="displayAdvancedFilters"
+          >Less query options</a>
         </div>
       </div>
-      <div v-if="actionButtonsVisible" class="QuickFilter-actions col s4 l4 xl4">
-        <button type="submit" class="QuickFilter-submitBtn btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{submitButtonLabel}}</button>
-        <button class="QuickFilter-resetBtn btn-flat btn-small waves-effect waves-light" @click="resetSearch">reset</button>
+      <div
+        v-if="actionButtonsVisible"
+        class="QuickFilter-actions col s4 l4 xl4"
+      >
+        <button
+          type="submit"
+          class="QuickFilter-submitBtn btn btn-small waves-effect waves-light"
+          @click.prevent="submitSearch"
+        >
+          {{ submitButtonLabel }}
+        </button>
+        <button
+          class="QuickFilter-resetBtn btn-flat btn-small waves-effect waves-light"
+          @click="resetSearch"
+        >
+          reset
+        </button>
       </div>
     </form>
   </div>
@@ -25,6 +62,9 @@ import Focus from '../../../directives/focus.directive'
 
 export default {
   name: 'QuickFilter',
+  directives: {
+    Focus
+  },
   props: {
     searchTerm: String,
     advancedQueryLabel: {
@@ -46,14 +86,19 @@ export default {
     advancedFiltersVisible: Boolean,
     enabled: Boolean
   },
-  directives: {
-    Focus
-  },
   data() {
     return {
       inputSearchTerm: this.searchTerm,
       throttleSearch: false,
       lastThrottledSearch: null
+    }
+  },
+  watch: {
+    searchTerm: {
+      immediate: true,
+      handler(value) {
+        this.inputSearchTerm = value
+      }
     }
   },
   methods: {
@@ -86,14 +131,6 @@ export default {
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
-    }
-  },
-  watch: {
-    searchTerm: {
-      immediate: true,
-      handler(value) {
-        this.inputSearchTerm = value
-      }
     }
   }
 }

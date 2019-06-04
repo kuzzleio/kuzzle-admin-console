@@ -2,15 +2,15 @@
   <div v-if="hasRights">
     <create-or-update
       :headline="headline"
+      :error="error"
+      :index="index"
       @collection-create::create="update"
       @collection-create::reset-error="error = ''"
       @document-create::error="setError"
-      :error="error"
-      :index="index">
-    </create-or-update>
+    />
   </div>
   <div v-else>
-    <page-not-allowed></page-not-allowed>
+    <page-not-allowed />
   </div>
 </template>
 
@@ -28,6 +28,10 @@ import { LIST_INDEXES_AND_COLLECTION } from '../../../vuex/modules/index/mutatio
 
 export default {
   name: 'CollectionUpdate',
+  components: {
+    CreateOrUpdate,
+    PageNotAllowed
+  },
   props: {
     index: String
   },
@@ -36,16 +40,28 @@ export default {
       error: ''
     }
   },
-  components: {
-    CreateOrUpdate,
-    PageNotAllowed
-  },
   computed: {
     headline() {
       return 'Update ' + this.$route.params.collection
     },
     hasRights() {
       return canEditCollection(this.index, this.collection)
+    }
+  },
+  async mounted() {
+    try {
+      await this.$store
+        .dispatch(LIST_INDEXES_AND_COLLECTION)
+      await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        index: this.index,
+        collection: this.$route.params.collection
+      })
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$router.push({
+        name: 'DataIndexSummary',
+        params: { index: this.index }
+      })
     }
   },
   methods: {
@@ -65,22 +81,6 @@ export default {
     },
     setError(payload) {
       this.error = payload
-    }
-  },
-  async mounted() {
-    try {
-      await this.$store
-        .dispatch(LIST_INDEXES_AND_COLLECTION)
-      await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-        index: this.index,
-        collection: this.$route.params.collection
-      })
-    } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
-      this.$router.push({
-        name: 'DataIndexSummary',
-        params: { index: this.index }
-      })
     }
   }
 }

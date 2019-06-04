@@ -2,21 +2,48 @@
   <div>
     <aside>
       <ul class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
-        <router-link v-if="canManageUsers()" class="bold" tag="li" :to="{name: 'SecurityUsersList'}" active-class="active">
+        <router-link
+          v-if="canManageUsers()"
+          class="bold"
+          tag="li"
+          :to="{name: 'SecurityUsersList'}"
+          active-class="active"
+        >
           <a class="waves-effect">
-            <i class="fa fa-user" aria-hidden="true"></i>
+            <i
+              class="fa fa-user"
+              aria-hidden="true"
+            />
             <span>Users</span>
           </a>
         </router-link>
-        <router-link v-if="canManageProfiles()" class="bold" tag="li" :to="{name: 'SecurityProfilesList'}" active-class="active">
+        <router-link
+          v-if="canManageProfiles()"
+          class="bold"
+          tag="li"
+          :to="{name: 'SecurityProfilesList'}"
+          active-class="active"
+        >
           <a class="waves-effect">
-            <i class="fa fa-users" aria-hidden="true"></i>
+            <i
+              class="fa fa-users"
+              aria-hidden="true"
+            />
             <span>Profiles</span>
           </a>
         </router-link>
-        <router-link v-if="canManageRoles()" class="bold" tag="li" :to="{name: 'SecurityRolesList'}" active-class="active">
+        <router-link
+          v-if="canManageRoles()"
+          class="bold"
+          tag="li"
+          :to="{name: 'SecurityRolesList'}"
+          active-class="active"
+        >
           <a class="waves-effect">
-            <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+            <i
+              class="fa fa-unlock-alt"
+              aria-hidden="true"
+            />
             <span>Roles</span>
           </a>
         </router-link>
@@ -25,7 +52,7 @@
 
     <section class="view">
       <div class="wrapper">
-        <router-view></router-view>
+        <router-view />
       </div>
     </section>
   </div>
@@ -73,6 +100,14 @@ import {
 
 export default {
   name: 'SecurityLayout',
+  watch: {
+    $route(v) {
+      this.fetchMapping(v)
+    }
+  },
+  mounted() {
+    this.fetchMapping(this.$route)
+  },
   methods: {
     canManageUsers,
     canManageRoles,
@@ -92,14 +127,6 @@ export default {
           this.$store.dispatch(types.FETCH_ROLE_MAPPING)
           break
       }
-    }
-  },
-  mounted() {
-    this.fetchMapping(this.$route)
-  },
-  watch: {
-    $route(v) {
-      this.fetchMapping(v)
     }
   }
 }

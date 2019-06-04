@@ -2,11 +2,11 @@
   <div class="UsersManagement">
     <headline>
       User Management
-      <users-dropdown class="icon-medium icon-black"></users-dropdown>
+      <users-dropdown class="icon-medium icon-black" />
     </headline>
 
     <!-- Not allowed -->
-    <list-not-allowed v-if="!canSearchUser()"></list-not-allowed>
+    <list-not-allowed v-if="!canSearchUser()" />
 
     <common-list
       v-if="canSearchUser()"
@@ -20,17 +20,22 @@
       :perform-delete="performDeleteUsers"
       :collection-mapping="userMapping"
       @create-clicked="createUser"
+    >
+      <div
+        slot="emptySet"
+        class="card-panel"
       >
-
-      <div slot="emptySet" class="card-panel">
         <div class="row valign-bottom empty-set">
           <div class="col s1 offset-s1">
-            <i class="fa fa-6x fa-user grey-text text-lighten-1" aria-hidden="true"></i>
+            <i
+              class="fa fa-6x fa-user grey-text text-lighten-1"
+              aria-hidden="true"
+            />
           </div>
           <div class="col s10">
             <p>
               In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/1/essentials/user-authentication/">users</a>
-              defined in your Kuzzle server.<br/>
+              defined in your Kuzzle server.<br>
               <em>Currently, no user is defined. You can create one by pushing the "Create" button above.</em>
             </p>
             <router-link
@@ -38,8 +43,9 @@
               :class="!canCreateUser() ? 'disabled' : ''"
               :title="!canCreateUser() ? 'You are not allowed to create new users' : ''"
               :to="{name: 'SecurityUsersCreate'}"
-              class="btn primary waves-effect waves-light">
-              <i class="fa fa-plus-circle left"></i>
+              class="btn primary waves-effect waves-light"
+            >
+              <i class="fa fa-plus-circle left" />
               Create a user
             </router-link>
           </div>
@@ -77,6 +83,10 @@ export default {
       userMapping: {}
     }
   },
+  async mounted() {
+    const response = await getMappingUsers()
+    this.userMapping = response.mapping
+  },
   methods: {
     createUser() {
       this.$router.push({ name: 'SecurityUsersCreate' })
@@ -85,10 +95,6 @@ export default {
     canCreateUser,
     performSearchUsers,
     performDeleteUsers
-  },
-  async mounted() {
-    const response = await getMappingUsers()
-    this.userMapping = response.mapping
   }
 }
 </script>

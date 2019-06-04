@@ -1,22 +1,31 @@
 <template>
   <div>
-    <div v-if="isOpen" :id="id" class="modal" :class="computedClasses">
+    <div
+      v-if="isOpen"
+      :id="id"
+      class="modal"
+      :class="computedClasses"
+    >
       <slot name="content">
         <div class="modal-content">
-          <slot></slot>
+          <slot />
         </div>
-        <div class="modal-footer" :class="{grey: loading}" v-if="hasFooter">
-          <slot name="footer"></slot>
+        <div
+          v-if="hasFooter"
+          class="modal-footer"
+          :class="{grey: loading}"
+        >
+          <slot name="footer" />
         </div>
       </slot>
     </div>
 
     <div
       v-if="isOpen"
-      @click="canClose && close()"
       class="lean-overlay"
-      style="z-index: 1002; display: block; opacity: 0.5;">
-    </div>
+      style="z-index: 1002; display: block; opacity: 0.5;"
+      @click="canClose && close()"
+    />
   </div>
 </template>
 
@@ -54,23 +63,6 @@ export default {
     isOpen: Boolean,
     loading: Boolean
   },
-  watch: {
-    isOpen: function(active) {
-      if (active) {
-        window.document.body.style.overflow = 'hidden'
-      } else {
-        window.document.body.style.overflow = 'visible'
-      }
-    }
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      window.document.addEventListener('keydown', this.handleEsc)
-    })
-  },
-  destroyed() {
-    window.document.removeEventListener('keydown', this.handleEsc)
-  },
   computed: {
     computedClasses() {
       let cssClass = ''
@@ -102,6 +94,23 @@ export default {
     transition() {
       return this.bottom ? 'modal-bottom' : 'modal'
     }
+  },
+  watch: {
+    isOpen: function(active) {
+      if (active) {
+        window.document.body.style.overflow = 'hidden'
+      } else {
+        window.document.body.style.overflow = 'visible'
+      }
+    }
+  },
+  mounted() {
+    Vue.nextTick(() => {
+      window.document.addEventListener('keydown', this.handleEsc)
+    })
+  },
+  destroyed() {
+    window.document.removeEventListener('keydown', this.handleEsc)
   },
   methods: {
     handleEsc(evt) {

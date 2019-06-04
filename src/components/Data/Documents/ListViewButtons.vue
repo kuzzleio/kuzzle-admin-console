@@ -4,27 +4,26 @@
       class="ListViewButtons-btn fa fa-list"
       title="Display these items as a list"
       :class="{active: activeView === 'list'}"
-      @click="$emit('list')"></a>
+      @click="$emit('list')"
+    />
     <a
       class="ListViewButtons-btn fa fa-list rotate"
       title="Display these items as column"
       :class="{active: activeView === 'column'}"
-      @click="$emit('column')">
-      </a>
+      @click="$emit('column')"
+    />
     <a
       class="ListViewButtons-btn fa fa-th"
       :class="{disabled: !boxesEnabled, active: activeView === 'boxes'}"
       :title="boxesEnabled ? 'Display these items as boxes' : ''"
       @click="onBoxesClicked"
-      >
-    </a>
+    />
     <a
       class="ListViewButtons-btn fa fa-map-marked"
       :class="{disabled: !mapEnabled, active: activeView === 'map'}"
       :title="mapEnabled ? 'Display these items on a map' : ''"
       @click="onMapClicked"
-      >
-    </a>
+    />
   </div>
 </template>
 
@@ -64,7 +63,6 @@ export default {
   }
 }
 </script>
-
 
 <style lang="scss" scoped>
 .ListViewButtons {

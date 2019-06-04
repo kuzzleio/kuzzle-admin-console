@@ -1,5 +1,8 @@
 <template>
-  <div id="lastNotification-container" class="card-panel col s4">
+  <div
+    id="lastNotification-container"
+    class="card-panel col s4"
+  >
     <h5>Latest notification :</h5>
     <div class="lastNotification-body">
       <p
@@ -17,16 +20,15 @@
   </div>
 </template>
 
-
 <script>
 import JsonFormatter from '../../../directives/json-formatter.directive'
 
 export default {
   name: 'LastNotification',
-  props: ['lastNotification'],
   directives: {
     JsonFormatter
-  }
+  },
+  props: ['lastNotification']
 }
 </script>
 

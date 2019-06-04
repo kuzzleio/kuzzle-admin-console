@@ -1,8 +1,8 @@
 <template>
   <div class="Autocomplete">
     <input
-      type="text"
       v-model="inputValue"
+      type="text"
       :class="inputClass"
       :placeholder="placeholder"
       @input="onInput"
@@ -11,26 +11,28 @@
       @keydown.down="onArrowDown"
       @keydown.up="onArrowUp"
       @keydown.enter.prevent="onEnter"
-    />
+    >
 
-    <ul class="Autocomplete-results" v-show="isOpen">
+    <ul
+      v-show="isOpen"
+      class="Autocomplete-results"
+    >
       <li
         v-for="(result, i) in results"
-        class="Autocomplete-result"
         :key="result"
+        class="Autocomplete-result"
         :class="{ 'is-active': i === selectionCursor }"
         @click="setResult(result)"
       >
         {{ result }}
       </li>
     </ul>
-
   </div>
 </template>
 
 <script>
 export default {
-  name: 'autocomplete',
+  name: 'Autocomplete',
   props: {
     item: {
       type: String,
@@ -40,7 +42,9 @@ export default {
     items: {
       type: Array,
       required: false,
-      default: []
+      default: () => {
+        return []
+      }
     },
     inputClass: {
       type: String,
@@ -70,6 +74,20 @@ export default {
       isOpen: false,
       selectionCursor: -1
     }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(newValue) {
+        this.inputValue = newValue
+      }
+    }
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  destroyed() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
     onChange(evt) {
@@ -116,20 +134,6 @@ export default {
         this.selectionCursor = -1
       }
     }
-  },
-  watch: {
-    value: {
-      immediate: true,
-      handler(newValue) {
-        this.inputValue = newValue
-      }
-    }
-  },
-  mounted() {
-    document.addEventListener('click', this.handleClickOutside)
-  },
-  destroyed() {
-    document.removeEventListener('click', this.handleClickOutside)
   }
 }
 </script>

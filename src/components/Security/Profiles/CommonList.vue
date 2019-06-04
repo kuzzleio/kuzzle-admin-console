@@ -1,7 +1,11 @@
 <template>
   <div class="ProfileList">
-    <slot name="emptySet" v-if="currentFilter.basic && totalDocuments === 0"></slot>
-    <crudl-document v-else
+    <slot
+      v-if="currentFilter.basic && totalDocuments === 0"
+      name="emptySet"
+    />
+    <crudl-document
+      v-else
       :current-filter="currentFilter"
       :pagination-from="paginationFrom"
       :pagination-size="paginationSize"
@@ -19,23 +23,26 @@
       @filters-updated="onFiltersUpdated"
       @create-clicked="create"
       @toggle-all="toggleAll"
-      @crudl-refresh-search="fetchProfiles">
-
+      @crudl-refresh-search="fetchProfiles"
+    >
       <div class="ProfileList-list collection">
-        <div class="collection-item collection-transition" v-for="document in documents" :key="document.id">
+        <div
+          v-for="document in documents"
+          :key="document.id"
+          class="collection-item collection-transition"
+        >
           <component
             :is="itemName"
-            @checkbox-click="toggleSelectDocuments"
             :document="document"
             :is-checked="isChecked(document.id)"
             :index="index"
             :collection="collection"
+            @checkbox-click="toggleSelectDocuments"
             @common-list::edit-document="editDocument"
-            @delete-document="deleteDocument">
-          </component>
+            @delete-document="deleteDocument"
+          />
         </div>
       </div>
-
     </crudl-document>
   </div>
 </template>
@@ -51,6 +58,13 @@ import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'ProfileList',
+  components: {
+    CrudlDocument,
+    UserItem,
+    RoleItem,
+    ProfileItem,
+    DocumentItem
+  },
   props: {
     index: String,
     collection: String,
@@ -63,13 +77,6 @@ export default {
     performDelete: Function,
     routeCreate: String,
     routeUpdate: String
-  },
-  components: {
-    CrudlDocument,
-    UserItem,
-    RoleItem,
-    ProfileItem,
-    DocumentItem
   },
   data() {
     return {
@@ -97,6 +104,26 @@ export default {
     paginationSize() {
       return parseInt(this.currentFilter.size) || 10
     }
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.currentFilter = Object.assign(
+          new filterManager.Filter(),
+          filterManager.loadFromRoute(this.$route)
+        )
+      }
+    },
+    currentFilter() {
+      this.fetchProfiles()
+    }
+  },
+  mounted() {
+    this.currentFilter = Object.assign(
+      new filterManager.Filter(),
+      filterManager.loadFromRoute(this.$route)
+    )
   },
   methods: {
     isChecked(id) {
@@ -163,26 +190,6 @@ export default {
     },
     create(route) {
       this.$router.push({ name: this.routeCreate })
-    }
-  },
-  mounted() {
-    this.currentFilter = Object.assign(
-      new filterManager.Filter(),
-      filterManager.loadFromRoute(this.$route)
-    )
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler(newValue, oldValue) {
-        this.currentFilter = Object.assign(
-          new filterManager.Filter(),
-          filterManager.loadFromRoute(this.$route)
-        )
-      }
-    },
-    currentFilter() {
-      this.fetchProfiles()
     }
   }
 }
