@@ -55,6 +55,7 @@
 import Autocomplete from '../../../Common/Autocomplete'
 import TimeSeriesItem from './TimeSeriesItem'
 import { GChart } from 'vue-google-charts'
+import _ from 'lodash'
 
 const ES_NUMBER_DATA_TYPE = [
   'short',
@@ -64,7 +65,8 @@ const ES_NUMBER_DATA_TYPE = [
   'float',
   'half_float',
   'scaled_float',
-  'binary'
+  'binary',
+  'byte'
 ]
 
 export default {
@@ -139,11 +141,11 @@ export default {
     '$route' (to, from) {
       const columnsConfig = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}')
 
-      this.customDateField = []
+      this.customDateField = null
       if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
         this.customDateField = columnsConfig[this.index][this.collection].date
       } else {
-        this.customDateField = []
+        this.customDateField = null
       }
 
       this.customNumberFields = []
@@ -154,14 +156,16 @@ export default {
       }
     },
     mapping () {
-      this.mappingDateArray = this.buildAttributeListFromDate(this.mapping)
-      for (const attr of this.customDateField) {
-        this.mappingDateArray.splice(this.mappingDateArray.indexOf(attr), 1)
+      this.mappingDateArray = this.buildAttributeList(this.mapping, type => type === 'date')
+      if (this.customDateField) {
+        this.mappingDateArray.splice(this.mappingDateArray.indexOf(this.customDateField), 1)
       }
 
-      this.mappingNumberArray = this.buildAttributeListFromNumber(this.mapping)
-      for (const attr of this.customNumberFields) {
-        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr), 1)
+      this.mappingNumberArray = this.buildAttributeList(this.mapping, type => ES_NUMBER_DATA_TYPE.includes(type))
+      if (this.customNumberFields) {
+        for (const attr of this.customNumberFields) {
+          this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr), 1)
+        }
       }
     },
     customNumberFields () {
@@ -174,17 +178,15 @@ export default {
     if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
       this.customDateField = columnsConfig[this.index][this.collection].date
     }
-    this.mappingDateArray = this.buildAttributeListFromDate(this.mapping)
+    this.mappingDateArray = this.buildAttributeList(this.mapping, type => type === 'date')
     if (this.customDateField) {
-      for (const attr of this.customDateField) {
-        this.mappingDateArray.splice(this.mappingDateArray.indexOf(attr), 1)
-      }
+      this.mappingDateArray.splice(this.mappingDateArray.indexOf(this.customDateField), 1)
     }
 
     if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
       this.customNumberFields = columnsConfig[this.index][this.collection].numbers || []
     }
-    this.mappingNumberArray = this.buildAttributeListFromNumber(this.mapping)
+    this.mappingNumberArray = this.buildAttributeList(this.mapping, type => ES_NUMBER_DATA_TYPE.includes(type))
     
     if (this.customNumberFields) {
       for (const attr of this.customNumberFields) {
@@ -209,7 +211,7 @@ export default {
         const item = []
         item.push(doc.content[this.customDateField])
         for (const field of this.customNumberFields) {
-          item.push(parseInt(doc.content[field.name]))
+          item.push(parseInt(_.get(doc.content, field.name, '')))
         }
         this.chart.push(item)
       }
@@ -219,6 +221,8 @@ export default {
         const config = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}')
         if (!config[this.index]) {
           config[this.index] = {}
+        }
+        if (!config[this.index][this.collection]) {
           config[this.index][this.collection] = {}
         }
         config[this.index][this.collection].date = this.customDateField
@@ -226,36 +230,19 @@ export default {
         localStorage.setItem('timeSeriesViewConfig', JSON.stringify(config))
       }
     },
-    buildAttributeListFromDate(mapping, path = []) {
+    buildAttributeList(mapping, condition = () => true, path = []) {
       let attributes = []
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
         if (attributeValue.hasOwnProperty('properties')) {
           attributes = attributes.concat(
-            this.buildAttributeListFromDate(
+            this.buildAttributeList(
               attributeValue.properties,
+              condition,
               path.concat(attributeName)
             )
           )
-        } else if (attributeValue.hasOwnProperty('type') && attributeValue.type === 'date') {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
-        }
-      }
-
-      return attributes
-    },
-    buildAttributeListFromNumber(mapping, path = []) {
-      let attributes = []
-
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (attributeValue.hasOwnProperty('properties')) {
-          attributes = attributes.concat(
-            this.buildAttributeListFromDate(
-              attributeValue.properties,
-              path.concat(attributeName)
-            )
-          )
-        } else if (attributeValue.hasOwnProperty('type') && ES_NUMBER_DATA_TYPE.includes(attributeValue.type)) {
+        } else if (attributeValue.hasOwnProperty('type') && condition(attributeValue.type)) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }

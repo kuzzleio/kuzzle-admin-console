@@ -63,10 +63,7 @@
         v-if="!isCollectionEmpty"
         class="card-panel card-body"
       >
-        <div 
-          v-show="listViewType !== 'time-series'"
-          class="row"
-        >
+        <div class="row">
           <div class="col s12">
             Result per page: <span
               v-for="(v, i) in resultPerPage"
@@ -364,7 +361,7 @@ export default {
       collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
-      resultPerPage: [10, 25, 50, 100]
+      resultPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
