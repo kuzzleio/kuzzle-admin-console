@@ -204,7 +204,7 @@
 
           <div
             v-show="listViewType === 'time-series'"
-            class="DocumentList-column col s12"
+            class="DocumentList-timeseries col s12"
           >
             <div class="DocumentList-materializeCollection h-scroll">
               <TimeSeries

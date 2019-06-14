@@ -23,7 +23,7 @@
           :items="mappingDateArray"
           :value="customDateField || ''"
           :notify-change="false"
-          @autocomplete::change="attribute => { addDateField(attribute) }"
+          @autocomplete::change="item => { addDateField(item) }"
         />
       </div>
     </div>
@@ -108,25 +108,7 @@ export default {
         curveType: 'function',
         colors: [],
         height: 400,
-        backgroundColor: {
-          fill: '#505050'
-        },
-        hAxis: {
-          gridlineColor: 'grey',
-          textStyle: {
-            color: '#C8C8C8'
-          }
-        },
-        vAxis: {
-          gridlineColor: 'grey',
-          textStyle: {
-            color: '#C8C8C8'
-          }
-        },
         legend: {
-          textStyle: {
-            color: '#C8C8C8'
-          },
           position: 'top',
           alignment: 'center'
         },
@@ -164,11 +146,15 @@ export default {
       this.mappingNumberArray = this.buildAttributeList(this.mapping, type => ES_NUMBER_DATA_TYPE.includes(type))
       if (this.customNumberFields) {
         for (const attr of this.customNumberFields) {
-          this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr), 1)
+          this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr.name), 1)
         }
+        this.mappingNumberArray.sort()
       }
     },
     customNumberFields () {
+      this.updateChart()
+    },
+    documents () {
       this.updateChart()
     }
   },
@@ -190,8 +176,9 @@ export default {
     
     if (this.customNumberFields) {
       for (const attr of this.customNumberFields) {
-        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr), 1)
+        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr.name), 1)
       }
+      this.mappingNumberArray.sort()
     }
   },
   methods: {
@@ -211,7 +198,7 @@ export default {
         const item = []
         item.push(doc.content[this.customDateField])
         for (const field of this.customNumberFields) {
-          item.push(parseInt(_.get(doc.content, field.name, '')))
+          item.push(_.get(doc.content, field.name, ''))
         }
         this.chart.push(item)
       }
