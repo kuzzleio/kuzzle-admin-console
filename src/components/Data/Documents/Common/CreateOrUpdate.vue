@@ -1,35 +1,53 @@
 <template>
   <div class="DocumentCreateOrUpdate">
     <div class="card-panel">
-      <form class="wrapper" @submit.prevent="create">
-
-        <div class="row" v-if="$store.state.collection.allowForm">
-
-        </div>
+      <form
+        class="wrapper"
+        @submit.prevent="create"
+      >
+        <div
+          v-if="$store.state.collection.allowForm"
+          class="row"
+        />
 
         <div class="row input-id">
           <div class="col s6">
-            <div class="input-field" v-if="!hideId">
-              <input id="id" type="text" name="collection" @input="updateId" v-focus :required="mandatoryId" />
-              <label for="id">Document identifier {{!mandatoryId ? '(optional)' : ''}}</label>
+            <div
+              v-if="!hideId"
+              class="input-field"
+            >
+              <input
+                id="id"
+                v-focus
+                type="text"
+                name="collection"
+                :required="mandatoryId"
+                @input="updateId"
+              >
+              <label for="id">Document identifier {{ !mandatoryId ? '(optional)' : '' }}</label>
             </div>
           </div>
           <div class="col s6">
             <div
-              class="switch right"
               v-if="$store.state.collection.allowForm"
-              >
+              class="switch right"
+            >
               <label>
                 Form
-                <input :disabled="warningSwitch" type="checkbox" @change="switchView" :checked="$store.state.collection.defaultViewJson">
+                <input
+                  :disabled="warningSwitch"
+                  type="checkbox"
+                  :checked="$store.state.collection.defaultViewJson"
+                  @change="switchView"
+                >
                 <span
-                  class="lever"
                   v-title="{
-                  active: warningSwitch,
-                  position: 'bottom',
-                  title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
-                  }">
-                </span>
+                    active: warningSwitch,
+                    position: 'bottom',
+                    title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
+                  }"
+                  class="lever"
+                />
                 JSON
               </label>
             </div>
@@ -37,60 +55,126 @@
             <div
               v-if="!$store.state.collection.allowForm && index && collection"
               class="DocumentCreateOrUpdate-formDisabled"
-              >
-                <p>Document-creation form is not enabled for this collection</p>
-                <router-link :to="{name: 'DataCollectionEdit', params: {index, collection}}">Enable it</router-link>
+            >
+              <p>Document-creation form is not enabled for this collection</p>
+              <router-link :to="{name: 'DataCollectionEdit', params: {index, collection}}">
+                Enable it
+              </router-link>
             </div>
           </div>
         </div>
 
-        <div class="row" v-if="isFormView">
+        <div
+          v-if="isFormView"
+          class="row"
+        >
           <div class="col s12 card">
             <div class="card-content">
-              <json-form :schema="$store.getters.schemaMappingMerged" @update-value="updateValue" :document="value">
-              </json-form>
+              <json-form
+                :schema="$store.getters.schemaMappingMerged"
+                :document="value"
+                @update-value="updateValue"
+              />
             </div>
           </div>
         </div>
 
         <!-- Json view -->
-        <div class="row json-view" v-if="!isFormView">
-          <div class="col s6 card" :class="{s12: $store.state.collection.isRealtimeOnly}">
+        <div
+          v-if="!isFormView"
+          class="row json-view"
+        >
+          <div
+            class="col s6 card"
+            :class="{s12: $store.state.collection.isRealtimeOnly}"
+          >
             <div class="card-content">
-              <span class="card-title">{{hideId ? 'Document' : 'New document'}}</span>
-              <json-editor id="document" class="document-json" :content="jsonDocument" ref="jsoneditor" @changed="jsonChanged" :height="500"></json-editor>
+              <span class="card-title">{{ hideId ? 'Document' : 'New document' }}</span>
+              <json-editor
+                id="document"
+                ref="jsoneditor"
+                class="document-json"
+                :content="jsonDocument"
+                :height="500"
+                @changed="jsonChanged"
+              />
             </div>
           </div>
 
           <!-- Mapping -->
-          <div class="col s6 card" v-if="!$store.state.collection.isRealtimeOnly">
+          <div
+            v-if="!$store.state.collection.isRealtimeOnly"
+            class="col s6 card"
+          >
             <div class="card-content">
               <span class="card-title">Mapping</span>
 
-              <pre class="DocumentCreateOrUpdate-mapping" v-json-formatter="{content: $store.getters.simplifiedMapping, open: true}"></pre>
+              <pre
+                v-json-formatter="{content: $store.getters.simplifiedMapping, open: true}"
+                class="DocumentCreateOrUpdate-mapping"
+              />
             </div>
           </div>
         </div>
 
         <div class="row">
-          <div class="col s5 m4 l3">
-            <a @click.prevent="cancel" class="btn-flat waves-effect">
+          <div class="col s7 m6 l5">
+            <a
+              class="btn-flat waves-effect"
+              @click.prevent="cancel"
+            >
               Cancel
             </a>
-            <button type="submit" class="btn primary waves-effect waves-light" :disabled="submitted">
-              <i v-if="!hideId" class="fa fa-plus-circle left"></i>
-              <i v-else class="fa fa-pencil left"></i>
-              {{hideId ? 'Update' : 'Create'}}
+
+            <button
+              v-if="!hideId"
+              type="submit"
+              class="btn primary waves-effect waves-light"
+              :disabled="submitted"
+            >
+              <i class="fa fa-plus-circle left" />
+              Create
+            </button>
+
+            <button
+              v-if="hideId"
+              ref="update"
+              type="submit"
+              class="btn primary waves-effect waves-light DocumentUpdate"
+              data-position="top"
+              data-tooltip="Update some of a document's fields (does not remove unset attributes)."
+              :disabled="submitted"
+            >
+              <i class="fa fa-pencil-alt left" />
+              Update
+            </button>
+
+            <button
+              v-if="hideId"
+              ref="replace"
+              class="btn primary waves-effect waves-light DocumentReplace"
+              data-position="top"
+              data-tooltip="Replace the content of a document."
+              :disabled="submitted"
+              @click.prevent="create(true)"
+            >
+              <i class="fa fa-fire-alt left" />
+              Replace
             </button>
           </div>
-          <div class="col s7 m8 l9" v-if="error">
+          <div
+            v-if="error"
+            class="col s7 m8 l9"
+          >
             <div class="card error red-color">
-              <i class="fa fa-times dismiss-error" @click="dismissError()"></i>
-              <p v-html="error"></p>
+              <i
+                class="fa fa-times dismiss-error"
+                @click="dismissError()"
+              />
+              <p v-html="error" />
             </div>
           </div>
         </div>
-
       </form>
     </div>
   </div>
@@ -121,7 +205,7 @@
     }
   }
 
-  .DocumentCreateOrUpdate-formDisabled {
+  &-formDisabled {
     float: right;
     font-size: 0.9em;
     font-weight: 800;
@@ -130,9 +214,10 @@
     text-align: right;
   }
 
-  .DocumentCreateOrUpdate-mapping {
+  &-mapping {
     height: 500px;
     margin: 0;
+    overflow-y: scroll;
   }
 
   .input-id {
@@ -142,6 +227,7 @@
     position: relative;
     padding: 8px 12px;
     margin: 0;
+    color: #ffffff;
   }
   .dismiss-error {
     position: absolute;
@@ -176,6 +262,11 @@ export default {
     JsonForm,
     JsonEditor
   },
+  directives: {
+    Focus,
+    title,
+    JsonFormatter
+  },
   props: {
     error: String,
     index: String,
@@ -191,32 +282,45 @@ export default {
       default: false
     }
   },
-  directives: {
-    Focus,
-    title,
-    JsonFormatter
-  },
   data() {
     return {
       jsonDocument: {},
       warningSwitch: false
     }
   },
+  computed: {
+    isFormView() {
+      return (
+        !this.$store.state.collection.defaultViewJson &&
+        this.$store.state.collection.allowForm
+      )
+    }
+  },
+  watch: {
+    value: 'initJsonDocument'
+  },
+  mounted() {
+    jsonAlreadyInit = false
+    this.initJsonDocument()
+    /* eslint no-undef: 0 */
+    M.Tooltip.init(this.$refs.update)
+    M.Tooltip.init(this.$refs.replace)
+  },
   methods: {
     dismissError() {
       this.$emit('document-create::reset-error')
     },
-    create() {
+    create(replace = false) {
       if (this.submitted) {
         return
       }
 
       if (!this.$store.state.collection.defaultViewJson) {
-        return this.$emit('document-create::create', { ...this.value })
+        return this.$emit('document-create::create', { ...this.value }, replace)
       }
 
       if (this.$refs.jsoneditor.isValid()) {
-        this.$emit('document-create::create', { ...this.value })
+        this.$emit('document-create::create', { ...this.value }, replace)
       } else {
         this.$emit('document-create::error', 'Invalid JSON provided.')
       }
@@ -259,21 +363,6 @@ export default {
         }
       }
     }
-  },
-  computed: {
-    isFormView() {
-      return (
-        !this.$store.state.collection.defaultViewJson &&
-        this.$store.state.collection.allowForm
-      )
-    }
-  },
-  mounted() {
-    jsonAlreadyInit = false
-    this.initJsonDocument()
-  },
-  watch: {
-    value: 'initJsonDocument'
   }
 }
 </script>

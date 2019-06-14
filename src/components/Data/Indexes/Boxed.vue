@@ -1,29 +1,42 @@
 <template>
-  <div class="IndexBoxed col s12 m6 l5" :title="index">
+  <div
+    class="IndexBoxed col s12 m6 l5"
+    :title="index"
+  >
     <div class="card">
       <div class="card-title row">
-
         <div class="col s10 truncate">
           <!-- index browse link -->
           <router-link
             class="fluid-hover"
-            :to="{name: 'DataIndexSummary', params: {index: index}}" >
-            <i class="fa fa-database grey-text text-darken-1" aria-hidden="true" ></i>
-            <span class="IndexBoxed-name">{{index}}</span>
+            :to="{name: 'DataIndexSummary', params: {index: index}}"
+          >
+            <i
+              class="fa fa-database grey-text text-darken-1"
+              aria-hidden="true"
+            />
+            <span class="IndexBoxed-name">{{ index }}</span>
           </router-link>
         </div>
 
         <div class="col s2 right-align">
           <!-- actions related to the index -->
-          <index-dropdown :index="index" class="IndexBoxed-dropdown icon-small icon-black"></index-dropdown>
+          <index-dropdown
+            :index="index"
+            class="IndexBoxed-dropdown icon-small icon-black"
+          />
         </div>
       </div>
 
       <div class="card-action right-align">
-        <router-link class="btn btn-small" v-if="canCreateCollection(index)"
-           v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
-           :class="{unauthorized: !canCreateCollection(index)}"
-           :to="{name: 'DataCreateCollection', params: {index: index}}">Create a collection</router-link>
+        <router-link
+          v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+          class="btn btn-small"
+          :class="{unauthorized: !canCreateCollection(index)}"
+          :to="{name: 'DataCreateCollection', params: {index: index}}"
+        >
+          Create a collection
+        </router-link>
       </div>
     </div>
   </div>
@@ -36,17 +49,17 @@ import Title from '../../../directives/title.directive'
 
 export default {
   name: 'IndexBoxed',
-  props: {
-    index: String
-  },
-  methods: {
-    canCreateCollection
-  },
   directives: {
     Title
   },
   components: {
     IndexDropdown
+  },
+  props: {
+    index: String
+  },
+  methods: {
+    canCreateCollection
   }
 }
 </script>

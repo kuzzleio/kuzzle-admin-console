@@ -1,16 +1,19 @@
 <template>
-  <form class="UserCustomMappingEditor wrapper" @submit.prevent="submit">
+  <form
+    class="UserCustomMappingEditor wrapper"
+    @submit.prevent="submit"
+  >
     <div class="row">
       <div class="col s8">
         <div class="row">
           <p>Mapping:</p>
           <json-editor
             id="user-custom-data-mapping-editor"
-            tabindex="4"
             ref="jsoneditor"
+            tabindex="4"
             myclass="pre_ace"
-            :content="mapping">
-          </json-editor>
+            :content="mapping"
+          />
         </div>
       </div>
 
@@ -19,8 +22,11 @@
           <p class="help">
             Mapping is the process of defining how a document,
             and the fields it contains, are stored and indexed.
-            <a href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/" target="_blank">Read more about mapping</a>
-          </br>
+            <a
+              href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+              target="_blank"
+            >Read more about mapping</a>
+            <br>
             You should omit the root "properties" field in this form.
             <pre>
 {
@@ -36,8 +42,17 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="$emit('cancel')">Cancel</a>
-        <button type="submit" class="UserCustomMappingEditor-submit btn primary waves-effect waves-light">Save</button>
+        <a
+          tabindex="6"
+          class="btn-flat waves-effect"
+          @click.prevent="$emit('cancel')"
+        >Cancel</a>
+        <button
+          type="submit"
+          class="UserCustomMappingEditor-submit btn primary waves-effect waves-light"
+        >
+          Save
+        </button>
       </div>
     </div>
   </form>
@@ -62,14 +77,14 @@ export default {
       type: Number
     }
   },
-  methods: {
-    submit() {
+  watch: {
+    currentStep(value) {
       let newMapping = this.$refs.jsoneditor.getJson()
       this.$emit('submit', newMapping)
     }
   },
-  watch: {
-    currentStep(value) {
+  methods: {
+    submit() {
       let newMapping = this.$refs.jsoneditor.getJson()
       this.$emit('submit', newMapping)
     }

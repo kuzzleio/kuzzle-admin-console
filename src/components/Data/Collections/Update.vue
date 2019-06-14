@@ -2,15 +2,15 @@
   <div v-if="hasRights">
     <create-or-update
       :headline="headline"
+      :error="error"
+      :index="index"
       @collection-create::create="update"
       @collection-create::reset-error="error = ''"
       @document-create::error="setError"
-      :error="error"
-      :index="index">
-    </create-or-update>
+    />
   </div>
   <div v-else>
-    <page-not-allowed></page-not-allowed>
+    <page-not-allowed />
   </div>
 </template>
 
@@ -28,6 +28,10 @@ import { LIST_INDEXES_AND_COLLECTION } from '../../../vuex/modules/index/mutatio
 
 export default {
   name: 'CollectionUpdate',
+  components: {
+    CreateOrUpdate,
+    PageNotAllowed
+  },
   props: {
     index: String
   },
@@ -35,10 +39,6 @@ export default {
     return {
       error: ''
     }
-  },
-  components: {
-    CreateOrUpdate,
-    PageNotAllowed
   },
   computed: {
     headline() {
@@ -48,42 +48,40 @@ export default {
       return canEditCollection(this.index, this.collection)
     }
   },
-  methods: {
-    update() {
-      this.error = ''
-
-      return this.$store
-        .dispatch(UPDATE_COLLECTION, { index: this.index })
-        .then(() => {
-          this.$router.push({
-            name: 'DataIndexSummary',
-            params: { index: this.index }
-          })
-        })
-        .catch(e => {
-          this.error = e.message
-        })
-    },
-    setError(payload) {
-      this.error = payload
+  async mounted() {
+    try {
+      await this.$store
+        .dispatch(LIST_INDEXES_AND_COLLECTION)
+      await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        index: this.index,
+        collection: this.$route.params.collection
+      })
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$router.push({
+        name: 'DataIndexSummary',
+        params: { index: this.index }
+      })
     }
   },
-  mounted() {
-    this.$store
-      .dispatch(LIST_INDEXES_AND_COLLECTION)
-      .then(() =>
-        this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-          index: this.index,
-          collection: this.$route.params.collection
-        })
-      )
-      .catch(e => {
-        this.$store.commit(SET_TOAST, { text: e.message })
+  methods: {
+    async update() {
+      this.error = ''
+
+      try {
+        await this.$store
+          .dispatch(UPDATE_COLLECTION, { index: this.index })
         this.$router.push({
           name: 'DataIndexSummary',
           params: { index: this.index }
         })
-      })
+      } catch (e) {
+        this.error = e.message
+      }
+    },
+    setError(payload) {
+      this.error = payload
+    }
   }
 }
 </script>

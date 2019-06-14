@@ -8,27 +8,30 @@
       <div class="col s6">
         <input
           v-if="editKuid"
-          type="text"
           id="custom-kuid"
+          type="text"
           class="validate"
           placeholder="Custom KUID"
           :value="kuid"
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
-        />
+        >
         <span
           v-if="!editKuid"
-        >{{kuid}}</span>
+        >{{ kuid }}</span>
       </div>
-      <div class="col s3" v-if="editKuid">
+      <div
+        v-if="editKuid"
+        class="col s3"
+      >
         <label>
           <input
-            type="checkbox"
             id="user-auto-generate-kuid"
+            type="checkbox"
             class="filled-in"
             :checked="autoGenerateKuid"
             @change="setAutoGenerateKuid"
-          />
+          >
           <span>
             Auto-generate
           </span>
@@ -44,7 +47,7 @@
           :added-profiles="addedProfiles"
           @selected-profile="onProfileSelected"
           @remove-profile="removeProfile"
-        ></user-profile-list>
+        />
       </div>
     </div>
   </form>

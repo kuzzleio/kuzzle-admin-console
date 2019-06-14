@@ -1,10 +1,10 @@
 <template>
   <div class="Headline">
     <h1>
-      <slot>{{title}}</slot>
+      <slot>{{ title }}</slot>
     </h1>
 
-    <breadcrumb></breadcrumb>
+    <breadcrumb />
   </div>
 </template>
 
@@ -12,12 +12,12 @@
 import Breadcrumb from '../Common/Breadcrumb'
 
 export default {
-  name: 'eadline',
-  props: {
-    title: String
-  },
+  name: 'Eadline',
   components: {
     Breadcrumb
+  },
+  props: {
+    title: String
   }
 }
 </script>

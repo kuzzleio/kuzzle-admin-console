@@ -1,6 +1,10 @@
 <template>
-  <select ref="mselect" v-model="content" @blur="triggerBlur">
-    <slot></slot>
+  <select
+    ref="mselect"
+    v-model="content"
+    @blur="triggerBlur"
+  >
+    <slot />
   </select>
 </template>
 
@@ -17,13 +21,6 @@ export default {
   data() {
     return {
       content: this.value
-    }
-  },
-  methods: {
-    triggerBlur() {
-      if (this.onBlur) {
-        this.onBlur()
-      }
     }
   },
   watch: {
@@ -55,6 +52,13 @@ export default {
         }
       })
     })
+  },
+  methods: {
+    triggerBlur() {
+      if (this.onBlur) {
+        this.onBlur()
+      }
+    }
   }
 }
 </script>

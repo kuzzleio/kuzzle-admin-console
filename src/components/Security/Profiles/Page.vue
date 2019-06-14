@@ -1,29 +1,35 @@
 <template>
   <div class="ProfileManagement">
-    <headline title="Profile Management"></headline>
+    <headline title="Profile Management" />
 
     <!-- Not allowed -->
-    <list-not-allowed v-if="!canSearchProfile()"></list-not-allowed>
+    <list-not-allowed v-if="!canSearchProfile()" />
 
     <common-list
       v-if="canSearchProfile()"
       item-name="ProfileItem"
-      @create-clicked="createProfile"
       :display-create="canCreateProfile()"
       :perform-search="performSearchProfiles"
       :perform-delete="performDeleteProfiles"
       route-create="SecurityProfilesCreate"
-      route-update="SecurityProfilesUpdate">
-
-      <div slot="emptySet" class="card-panel">
+      route-update="SecurityProfilesUpdate"
+      @create-clicked="createProfile"
+    >
+      <div
+        slot="emptySet"
+        class="card-panel"
+      >
         <div class="row valign-bottom empty-set">
           <div class="col s1 offset-s1">
-            <i class="fa fa-6x fa-users grey-text text-lighten-1" aria-hidden="true"></i>
+            <i
+              class="fa fa-6x fa-users grey-text text-lighten-1"
+              aria-hidden="true"
+            />
           </div>
           <div class="col s10">
             <p>
               In this page, you'll be able to manage the <a href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-profiles">Security Profiles</a>
-              defined in your Kuzzle server.<br/>
+              defined in your Kuzzle server.<br>
               <em>Currently, no Profile is defined. You can create one by pushing the "Create" button above.</em>
             </p>
             <router-link
@@ -31,8 +37,9 @@
               :class="!canCreateProfile() ? 'disabled' : ''"
               :title="!canCreateProfile() ? 'You are not allowed to create new profiles' : ''"
               :to="{name: 'SecurityProfilesCreate'}"
-              class="btn primary waves-effect waves-light">
-              <i class="fa fa-plus-circle left"></i>
+              class="btn primary waves-effect waves-light"
+            >
+              <i class="fa fa-plus-circle left" />
               Create a profile
             </router-link>
           </div>

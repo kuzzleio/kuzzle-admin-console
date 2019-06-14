@@ -3,16 +3,16 @@
     <treeview
       :route-name="$route.name"
       :index="$route.params.index"
-      :collection="$route.params.collection">
-    </treeview>
+      :collection="$route.params.collection"
+    />
     <section>
       <section class="view">
         <router-view
           v-if="routeExist"
           :index="$route.params.index"
-          :collection="$route.params.collection">
-        </router-view>
-        <notFound v-else></notFound>
+          :collection="$route.params.collection"
+        />
+        <notFound v-else />
       </section>
     </section>
   </div>
@@ -37,6 +37,33 @@ export default {
       routeExist: true
     }
   },
+  watch: {
+    $route() {
+      if (canSearchIndex()) {
+        try {
+          this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
+          this.setRouteExist()
+          return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+            index: this.$route.params.index,
+            collection: this.$route.params.collection
+          })
+        } catch (err) {
+          this.$store.commit(SET_TOAST, { text: err.message })
+        }
+      }
+    }
+  },
+  mounted() {
+    if (canSearchIndex()) {
+      this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
+      this.setRouteExist()
+      
+      this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        index: this.$route.params.index,
+        collection: this.$route.params.collection
+      })
+    }
+  },
   methods: {
     setRouteExist() {
       this.routeExist = true
@@ -58,36 +85,6 @@ export default {
         ) {
           this.routeExist = false
         }
-      }
-    }
-  },
-  mounted() {
-    if (canSearchIndex()) {
-      this.$store
-        .dispatch(LIST_INDEXES_AND_COLLECTION)
-        .then(() => {
-          this.setRouteExist()
-          return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-            index: this.$route.params.index,
-            collection: this.$route.params.collection
-          })
-        })
-        .catch(error => console.error(error))
-    }
-  },
-  watch: {
-    $route() {
-      if (canSearchIndex()) {
-        this.$store
-          .dispatch(LIST_INDEXES_AND_COLLECTION)
-          .then(() => {
-            this.setRouteExist()
-            return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-              index: this.$route.params.index,
-              collection: this.$route.params.collection
-            })
-          })
-          .catch(err => this.$store.commit(SET_TOAST, { text: err.message }))
       }
     }
   }

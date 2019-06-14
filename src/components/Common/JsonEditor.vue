@@ -1,5 +1,10 @@
 <template>
-    <div :id="id" :class="classes" :style="style" ref="jsoneditor" ></div>
+  <div
+    :id="id"
+    ref="jsoneditor"
+    :class="classes"
+    :style="style"
+  />
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
@@ -38,6 +43,12 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      editor: {},
+      refresh: false
+    }
+  },
   computed: {
     classes() {
       return (this.readonly ? 'readonly ' : '') + this.myclass
@@ -47,29 +58,6 @@ export default {
         return { 'min-height': '250px' }
       } else {
         return { 'min-height': this.height + 'px!important' }
-      }
-    }
-  },
-  data() {
-    return {
-      editor: {},
-      refresh: false
-    }
-  },
-  methods: {
-    getJson() {
-      try {
-        return Object.freeze(JSON.parse(this.editor.getValue()))
-      } catch (e) {
-        return null
-      }
-    },
-    isValid() {
-      try {
-        JSON.parse(this.editor.getValue())
-        return true
-      } catch (e) {
-        return false
       }
     }
   },
@@ -112,6 +100,23 @@ export default {
         }
       })
     })
+  },
+  methods: {
+    getJson() {
+      try {
+        return Object.freeze(JSON.parse(this.editor.getValue()))
+      } catch (e) {
+        return null
+      }
+    },
+    isValid() {
+      try {
+        JSON.parse(this.editor.getValue())
+        return true
+      } catch (e) {
+        return false
+      }
+    }
   }
 }
 </script>

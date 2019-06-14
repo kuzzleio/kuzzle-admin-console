@@ -1,34 +1,51 @@
 <template>
-  <div class="DocumentListItem" :class="{ 'collapsed': collapsed }">
-    <i class="DocumentListItem-toggle fa fa-caret-down item-toggle" aria-hidden="true" @click="toggleCollapse()"></i>
+  <div
+    class="DocumentListItem"
+    :class="{ 'collapsed': collapsed }"
+  >
+    <i
+      class="DocumentListItem-toggle fa fa-caret-down item-toggle"
+      aria-hidden="true"
+      @click="toggleCollapse()"
+    />
 
     <label>
       <input
+        :id="checkboxId"
         type="checkbox"
         class="filled-in"
-        :id="checkboxId"
         :value="document.id"
-        @click="notifyCheckboxClick" :checked="isChecked"/>
-      <span></span>
+        :checked="isChecked"
+        @click="notifyCheckboxClick"
+      >
+      <span />
     </label>
 
-    <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{document.id}}</a></label>
+    <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{ document.id }}</a></label>
 
     <div class="DocumentListItem-actions right">
       <a
-        v-if="canEdit"
+        class="DocumentListItem-update"
         href=""
         :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
-        @click.prevent="editDocument">
-        <i class="fa fa-pencil-alt" :class="{'disabled': !canEdit}"></i>
+        @click.prevent="editDocument"
+      >
+        <i
+          class="fa fa-pencil-alt"
+          :class="{'disabled': !canEdit}"
+        />
       </a>
 
-      <dropdown :id="document.id" myclass="DocumentListItem-dropdown icon-black">
+      <dropdown
+        :id="document.id"
+        myclass="DocumentListItem-dropdown icon-black"
+      >
         <li>
           <a
-            v-bind:class="{'disabled': !canDelete}"
+            :disabled="!canDelete"
+            :class="{disabled: !canDelete}"
             @click="deleteDocument"
-            v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
+          >
             Delete
           </a>
         </li>
@@ -36,8 +53,12 @@
     </div>
 
     <div class="DocumentListItem-content item-content">
-      <pre v-json-formatter="{content: document.content, open: true}"></pre>
-      <pre v-json-formatter="{content: document.meta, open: false}"></pre>
+      <pre v-json-formatter="{content: document.content, open: true}" />
+      <pre v-json-formatter="{content: document.meta, open: false}" />
+      <pre
+        v-if="document.aggregations"
+        v-json-formatter="{content: document.aggregations, open: true}"
+      />
     </div>
   </div>
 </template>
@@ -53,12 +74,6 @@ import title from '../../../directives/title.directive'
 
 export default {
   name: 'DocumentListItem',
-  props: {
-    index: String,
-    collection: String,
-    document: Object,
-    isChecked: Boolean
-  },
   directives: {
     JsonFormatter,
     title
@@ -66,27 +81,15 @@ export default {
   components: {
     Dropdown
   },
+  props: {
+    index: String,
+    collection: String,
+    document: Object,
+    isChecked: Boolean
+  },
   data() {
     return {
       collapsed: true
-    }
-  },
-  methods: {
-    toggleCollapse() {
-      this.collapsed = !this.collapsed
-    },
-    notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id)
-    },
-    deleteDocument() {
-      if (this.canDelete) {
-        this.$emit('delete', this.document.id)
-      }
-    },
-    editDocument() {
-      if (this.canEdit) {
-        this.$emit('edit', this.document.id)
-      }
     }
   },
   computed: {
@@ -104,6 +107,28 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
+    }
+  },
+  mounted() {
+    const date = new Date(this.document.meta.createdAt)
+    this.document.meta.createdAt += ` (${date.toUTCString()})`
+  },
+  methods: {
+    toggleCollapse() {
+      this.collapsed = !this.collapsed
+    },
+    notifyCheckboxClick() {
+      this.$emit('checkbox-click', this.document.id)
+    },
+    deleteDocument() {
+      if (this.canDelete) {
+        this.$emit('delete', this.document.id)
+      }
+    },
+    editDocument() {
+      if (this.canEdit) {
+        this.$emit('edit', this.document.id)
+      }
     }
   }
 }

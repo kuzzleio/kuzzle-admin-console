@@ -1,31 +1,37 @@
 <template>
-  <div class="wrapper" v-if="hasRights">
+  <div
+    v-if="hasRights"
+    class="wrapper"
+  >
     <headline>
-      {{collection}}
-      <collection-dropdown class="icon-medium icon-black" :index="index" :collection="collection"></collection-dropdown>
+      {{ collection }}
+      <collection-dropdown
+        class="icon-medium icon-black"
+        :index="index"
+        :collection="collection"
+      />
     </headline>
 
-    <collection-tabs></collection-tabs>
+    <collection-tabs />
 
     <create-or-update
+      v-model="document"
+      :error="error"
+      :index="index"
+      :collection="collection"
+      :get-mapping="getMappingDocument"
+      :submitted="submitted"
       @document-create::create="create"
       @document-create::cancel="cancel"
       @document-create::reset-error="error = null"
       @document-create::error="setError"
-      :error="error"
-      :index="index"
-      :collection="collection"
-      v-model="document"
       @change-id="updateId"
-      :get-mapping="getMappingDocument"
-      :submitted="submitted">
-    </create-or-update>
+    />
   </div>
   <div v-else>
-    <page-not-allowed></page-not-allowed>
+    <page-not-allowed />
   </div>
 </template>
-
 
 <script>
 import { canCreateDocument } from '../../../services/userAuthorization'
@@ -33,7 +39,6 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
-import kuzzle from '../../../services/kuzzle'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import CollectionTabs from '../Collections/Tabs'
@@ -70,7 +75,7 @@ export default {
     updateId(id) {
       this.id = id
     },
-    create(document) {
+    async create(document) {
       this.error = ''
 
       if (!document) {
@@ -87,27 +92,22 @@ export default {
         delete document._id
       }
 
-      return kuzzle
-        .collection(this.collection, this.index)
-        .createDocumentPromise(id, document, { refresh: 'wait_for' })
-        .then(() =>
-          this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
-            index: this.index,
-            collection: this.collection
-          })
-        )
-        .then(() => {
-          this.$router.push({
-            name: 'DataDocumentsList',
-            params: { index: this.index, collection: this.collection }
-          })
+      try {
+        await this.$kuzzle.document.create(this.index, this.collection, document, id, { refresh: 'wait_for' })
+        await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+          index: this.index,
+          collection: this.collection
         })
-        .catch(err => {
-          this.error =
-            'An error occurred while trying to create the document: <br/> ' +
-            err.message
-          this.submitted = false
+        this.$router.push({
+          name: 'DataDocumentsList',
+          params: { index: this.index, collection: this.collection }
         })
+      } catch (err) {
+        this.error =
+          'An error occurred while trying to create the document: <br/> ' +
+          err.message
+        this.submitted = false
+      }
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {

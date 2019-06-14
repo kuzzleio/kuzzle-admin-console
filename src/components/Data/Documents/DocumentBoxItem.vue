@@ -2,38 +2,37 @@
   <div class="DocumentBoxItem card">
     <div class="card-content">
       <div class="DocumentBoxItem-title">
-        <span class="card-title">{{document.id}}</span>
+        <span class="card-title">{{ document.id }}</span>
         <dropdown
-          class="DocumentBoxItem-actions"
           :id="`document-dropdown-${document.id}`"
-          >
+          class="DocumentBoxItem-actions"
+        >
           <li>
             <a
-              v-bind:class="{'disabled': !canEdit}"
-              v-title="{active: !canDelete, title: 'You are not allowed to edit this document'}"
+              :disabled="!canEdit"
+              :class="{disabled: !canEdit}"
               @click="editDocument"
-              >
+            >
               Edit
             </a>
           </li>
-          <li class="divider"></li>
+          <li class="divider" />
           <li>
             <a
-              v-bind:class="{'disabled': !canDelete}"
-              v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
+              :disabled="!canDelete"
+              :class="{disabled: !canDelete}"
               @click="deleteDocument"
-              >
+            >
               Delete
             </a>
           </li>
         </dropdown>
       </div>
       <p
+        v-json-format="{content: documentContent, open: true}"
         class="DocumentBoxItem-content"
-        v-json-format="{content: documentContent, open: true}">
-      </p>
+      />
     </div>
-
   </div>
 </template>
 
@@ -48,11 +47,6 @@ import {
 
 export default {
   name: 'DocumentBoxItem',
-  props: {
-    document: Object,
-    index: String,
-    collection: String
-  },
   directives: {
     JsonFormat,
     Title
@@ -60,20 +54,13 @@ export default {
   components: {
     Dropdown
   },
+  props: {
+    document: Object,
+    index: String,
+    collection: String
+  },
   data() {
     return {}
-  },
-  methods: {
-    deleteDocument() {
-      if (this.canDelete) {
-        this.$emit('delete', this.document.id)
-      }
-    },
-    editDocument() {
-      if (this.canEdit) {
-        this.$emit('edit', this.document.id)
-      }
-    }
   },
   computed: {
     documentContent() {
@@ -95,6 +82,18 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
+    }
+  },
+  methods: {
+    deleteDocument() {
+      if (this.canDelete) {
+        this.$emit('delete', this.document.id)
+      }
+    },
+    editDocument() {
+      if (this.canEdit) {
+        this.$emit('edit', this.document.id)
+      }
     }
   }
 }

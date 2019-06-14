@@ -64,8 +64,9 @@ describe('Environments', function() {
     cy.get(`.CreateEnvironment-colorBtns div:nth-child(3) div.color`)
       .as('colorEl')
       .click()
-
+    
     cy.get('.Environment-SubmitButton').click()
+    cy.wait(1000)
     cy.get('.LoginAsAnonymous-Btn').click()
 
     cy.get('.navbar-fixed > nav').should($nav => {
@@ -114,5 +115,19 @@ describe('Environments', function() {
     cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`).click()
 
     cy.get('.App-connected')
+  })
+
+  it('should import environment', () => {
+    cy.visit('/')
+    cy.contains('Create a Connection')
+    cy.get('.CreateEnvironment-import').click({
+      force: true
+    })
+
+    cy.fixture('environment.json').then(fileContent => {
+      cy.get('input[type=file').upload(
+        { fileContent, fileName:'environment.json', mimeType: 'application/json' },
+        { subjectType: 'input' })
+    })
   })
 })

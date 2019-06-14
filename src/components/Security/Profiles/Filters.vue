@@ -6,23 +6,35 @@
           :added-roles="addedRoles"
           @selected-role="onRoleSelected"
           @remove-role="removeRole"
-        ></role-chips>
+        />
       </div>
       <div class="Filters-actions col s3">
-        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="submitSearch">{{labelSearchButton}}</button>
-        <button class="btn-flat btn-small waves-effect waves-light" @click="reset">Reset</button>
+        <button
+          type="submit"
+          class="btn btn-small waves-effect waves-light"
+          @click.prevent="submitSearch"
+        >
+          {{ labelSearchButton }}
+        </button>
+        <button
+          class="btn-flat btn-small waves-effect waves-light"
+          @click="reset"
+        >
+          Reset
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import QuickFilter from '../Common/Filters/QuickFilter'
 import RoleChips from './RoleChips'
-import MSelect from '../../Common/MSelect'
 
 export default {
   name: 'Filters',
+  components: {
+    RoleChips
+  },
   props: {
     labelSearchButton: {
       type: String,
@@ -31,14 +43,17 @@ export default {
     },
     currentFilter: Object
   },
-  components: {
-    QuickFilter,
-    RoleChips,
-    MSelect
-  },
   data() {
     return {
       addedRoles: []
+    }
+  },
+  watch: {
+    currentFilter: {
+      immediate: true,
+      handler(value) {
+        this.addedRoles = value && value.roles ? value.roles : []
+      }
     }
   },
   methods: {
@@ -59,14 +74,6 @@ export default {
     reset() {
       this.addedRoles = []
       this.$emit('reset', null)
-    }
-  },
-  watch: {
-    currentFilter: {
-      immediate: true,
-      handler(value) {
-        this.addedRoles = value && value.roles ? value.roles : []
-      }
     }
   }
 }

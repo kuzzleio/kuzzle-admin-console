@@ -2,14 +2,31 @@
   <div class="Stepper horizontal row">
     <div class="col s12 Stepper-content">
       <div class="Stepper-list row">
-        <div v-for="(step, index) of steps" :key="step">
-          <div class="Stepper-step col s1" :class="{disabled: disabledSteps.indexOf(index) != -1, 'offset-s4': index === 0 }">
-            <div class="left Stepper-stepContent" @click="changeStep(index)">
-              <div class="Stepper-circle" :class="{active: currentStep === index}">{{index + 1}}</div>
-              <p>{{step}}</p>
+        <div
+          v-for="(step, index) of steps"
+          :key="step"
+        >
+          <div
+            class="Stepper-step col s1"
+            :class="{disabled: disabledSteps.indexOf(index) != -1, 'offset-s4': index === 0 }"
+          >
+            <div
+              class="left Stepper-stepContent"
+              @click="changeStep(index)"
+            >
+              <div
+                class="Stepper-circle"
+                :class="{active: currentStep === index}"
+              >
+                {{ index + 1 }}
+              </div>
+              <p>{{ step }}</p>
             </div>
           </div>
-          <div v-if="index < steps.length - 1" class="col s1 line"></div>
+          <div
+            v-if="index < steps.length - 1"
+            class="col s1 line"
+          />
         </div>
       </div>
     </div>

@@ -1,12 +1,24 @@
 <template>
   <div class="row input-field">
     <div class="col s7">
-      <span class="">{{name}}</span>
-      <json-editor :id="name + 'json'" class="field-json" :content="value" ref="jsoneditor" @changed="jsonChanged"></json-editor>
+      <span class="">{{ name }}</span>
+      <json-editor
+        :id="name + 'json'"
+        ref="jsoneditor"
+        class="field-json"
+        :content="value"
+        @changed="jsonChanged"
+      />
     </div>
     <div class="col s5">
-      <span class="">{{name}} mapping</span>
-      <json-editor :id="name + 'mapping'" class="field-json" :content="attributeMapping" :readonly="true" ref="jsoneditor"></json-editor>
+      <span class="">{{ name }} mapping</span>
+      <json-editor
+        :id="name + 'mapping'"
+        ref="jsoneditor"
+        class="field-json"
+        :content="attributeMapping"
+        :readonly="true"
+      />
     </div>
   </div>
 </template>
@@ -49,6 +61,15 @@ export default {
       return _mapping
     }
   },
+  watch: {
+    content: 'initValue'
+  },
+  mounted() {
+    setTimeout(() => {
+      jsonAlreadyInit = false
+      this.initValue()
+    }, 0)
+  },
   methods: {
     getJsonValue() {
       return this.$refs.jsoneditor.getJson()
@@ -78,15 +99,6 @@ export default {
         jsonAlreadyInit = true
       }
     }
-  },
-  mounted() {
-    setTimeout(() => {
-      jsonAlreadyInit = false
-      this.initValue()
-    }, 0)
-  },
-  watch: {
-    content: 'initValue'
   }
 }
 </script>

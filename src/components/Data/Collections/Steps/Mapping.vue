@@ -1,20 +1,32 @@
 <template>
-  <form class="Mapping wrapper" @submit.prevent="next">
+  <form
+    class="Mapping wrapper"
+    @submit.prevent="next"
+  >
     <!-- Required fields -->
     <div v-if="!$route.params.collection">
       <div class="row">
         <!-- Collection name -->
         <div class="col s6">
           <div class="Mapping-name input-field">
-            <input id="collection-name" type="text" name="collection" required
-                   class="validate" tabindex="1" :value="$store.state.collection.name" @input="setName" v-focus />
+            <input
+              id="collection-name"
+              v-focus
+              type="text"
+              name="collection"
+              required
+              class="validate"
+              tabindex="1"
+              :value="$store.state.collection.name"
+              @input="setName"
+            >
             <label for="collection-name">Collection name</label>
           </div>
         </div>
       </div>
 
       <div class="row">
-        <div class="divider"></div>
+        <div class="divider" />
       </div>
     </div>
 
@@ -25,12 +37,13 @@
           <p class="Mapping-realtimeOnly">
             <label>
               <input
+                id="realtime-collection"
                 type="checkbox"
                 class="filled-in"
                 tabindex="3"
-                id="realtime-collection"
                 :checked="collectionIsRealtimeOnly"
-                @change="setRealtimeOnly"/>
+                @change="setRealtimeOnly"
+              >
               <span>
                 Real-time only
               </span>
@@ -39,26 +52,34 @@
         </div>
       </div>
 
-
-      <div class="col s8" v-show="!collectionIsRealtimeOnly">
+      <div
+        v-show="!collectionIsRealtimeOnly"
+        class="col s8"
+      >
         <div class="row">
           <p>Mapping:</p>
           <json-editor
             id="collection"
-            tabindex="4"
             ref="jsoneditor"
+            tabindex="4"
             myclass="pre_ace"
-            :content="$store.state.collection.mapping">
-          </json-editor>
+            :content="$store.state.collection.mapping"
+          />
         </div>
       </div>
 
-      <div class="col s4" v-show="!collectionIsRealtimeOnly">
+      <div
+        v-show="!collectionIsRealtimeOnly"
+        class="col s4"
+      >
         <div class="row">
           <p class="help">
             Mapping is the process of defining how a document,
             and the fields it contains, are stored and indexed.
-            <a href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/" target="_blank">Read more about mapping</a>
+            <a
+              href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+              target="_blank"
+            >Read more about mapping</a>
             <br>
             You should omit the root "properties" field in this form.
             <pre>
@@ -73,15 +94,22 @@
     </div>
 
     <div class="row">
-      <div class="divider"></div>
+      <div class="divider" />
     </div>
 
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel">Cancel</a>
-        <button type="submit" class="Mapping-submitBtn btn primary waves-effect waves-light">
-          {{collectionIsRealtimeOnly ? 'Save' : 'Next' }}
+        <a
+          tabindex="6"
+          class="btn-flat waves-effect"
+          @click.prevent="cancel"
+        >Cancel</a>
+        <button
+          type="submit"
+          class="Mapping-submitBtn btn primary waves-effect waves-light"
+        >
+          {{ collectionIsRealtimeOnly ? 'Save' : 'Next' }}
         </button>
       </div>
     </div>
@@ -114,6 +142,19 @@ export default {
       settingsOpen: false
     }
   },
+  computed: {
+    collectionIsRealtimeOnly() {
+      return this.$store.getters.isRealtimeOnly
+    }
+  },
+  watch: {
+    step() {
+      let mapping = this.$refs.jsoneditor.getJson()
+      if (mapping) {
+        this.$store.commit(SET_MAPPING, mapping)
+      }
+    }
+  },
   methods: {
     setName(e) {
       this.$store.commit(SET_COLLECTION_NAME, e.target.value.trim())
@@ -133,19 +174,6 @@ export default {
     },
     setRealtimeOnly(event) {
       this.$store.commit(SET_REALTIME_ONLY, event.target.checked)
-    }
-  },
-  computed: {
-    collectionIsRealtimeOnly() {
-      return this.$store.getters.isRealtimeOnly
-    }
-  },
-  watch: {
-    step() {
-      let mapping = this.$refs.jsoneditor.getJson()
-      if (mapping) {
-        this.$store.commit(SET_MAPPING, mapping)
-      }
     }
   }
 }

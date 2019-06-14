@@ -1,39 +1,65 @@
 <template>
   <div>
     <ul class="pagination">
-      <li @click.prevent="firstPage" :class="{disabled: currentPage == 1}" class="chevron">
+      <li
+        :class="{disabled: currentPage == 1}"
+        class="chevron"
+        @click.prevent="firstPage"
+      >
         <a href="#">
-          <i class="fa fa-angle-double-left fast-pagination waves-effect"></i>
-        </a>
-      </li>
-      <li @click.prevent="previousPage" :class="{disabled: currentPage == 1}" class="chevron">
-        <a href="#" class="waves-effect">
-          <i class="fa fa-chevron-left"></i>
-        </a>
-      </li>
-
-      <li v-for="(n, index) in pager"
-          :key="index"
-          :class="{active: currentPage === n}"
-          class="waves-effect" @click.prevent="setCurrentPage(n)">
-        <a href="#">{{n}}</a>
-      </li>
-
-      <li @click.prevent="nextPage" :class="{disabled: currentPage == pages}" class="chevron">
-        <a href="#">
-          <i class="fa fa-chevron-right waves-effect"></i>
+          <i class="fa fa-angle-double-left fast-pagination waves-effect" />
         </a>
       </li>
       <li
-        @click.prevent="lastPage" :class="{disabled: currentPage == pages}" class="chevron">
+        :class="{disabled: currentPage == 1}"
+        class="chevron"
+        @click.prevent="previousPage"
+      >
+        <a
+          href="#"
+          class="waves-effect"
+        >
+          <i class="fa fa-chevron-left" />
+        </a>
+      </li>
+
+      <li
+        v-for="(n, index) in pager"
+        :key="index"
+        :class="{active: currentPage === n}"
+        class="waves-effect"
+        @click.prevent="setCurrentPage(n)"
+      >
+        <a href="#">{{ n }}</a>
+      </li>
+
+      <li
+        :class="{disabled: currentPage == pages}"
+        class="chevron"
+        @click.prevent="nextPage"
+      >
         <a href="#">
-          <i class="fa fa-angle-double-right fast-pagination waves-effect"></i>
+          <i class="fa fa-chevron-right waves-effect" />
+        </a>
+      </li>
+      <li
+        :class="{disabled: currentPage == pages}"
+        class="chevron"
+        @click.prevent="lastPage"
+      >
+        <a href="#">
+          <i class="fa fa-angle-double-right fast-pagination waves-effect" />
         </a>
       </li>
     </ul>
-    <p class="pagination-info">{{ from + numberInPage }} / {{ total }}</p>
-    <p class="pagination-info" v-if="lastPageLimitation">
-      <span class="fa fa-info-circle"></span>
+    <p class="pagination-info">
+      {{ from + numberInPage }} / {{ total }}
+    </p>
+    <p
+      v-if="lastPageLimitation"
+      class="pagination-info"
+    >
+      <span class="fa fa-info-circle" />
       Due to a limitation, we can't display more than 1000 pages. Please, filter your search.
     </p>
   </div>

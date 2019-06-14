@@ -2,33 +2,45 @@
   <div class="Watch">
     <div class="wrapper">
       <headline>
-        {{collection}}
+        {{ collection }}
         <collection-dropdown
           class="icon-medium icon-black"
           :index="index"
-          :collection="collection">
-        </collection-dropdown>
+          :collection="collection"
+        />
       </headline>
 
-      <collection-tabs></collection-tabs>
+      <collection-tabs />
 
-      <div class="card-panel" v-if="!canSubscribe(index, collection)">
+      <div
+        v-if="!canSubscribe(index, collection)"
+        class="card-panel"
+      >
         <div class="row valign-bottom empty-set">
           <div class="col s1">
-            <i class="fa fa-6x fa-lock grey-text text-lighten-1" aria-hidden="true"></i>
+            <i
+              class="fa fa-6x fa-lock grey-text text-lighten-1"
+              aria-hidden="true"
+            />
           </div>
           <div class="col s10">
             <p>
-              You are not allowed to watch realtime messages on collection <strong>{{collection}}</strong> of index <strong>{{index}}</strong><br>
+              You are not allowed to watch realtime messages on collection <strong>{{ collection }}</strong> of index <strong>{{ index }}</strong><br>
             </p>
             <p>
-              <em>Learn more about security &amp; permissions on <a href="https://docs.kuzzle.io/guide/1/essentials/security/" target="_blank">Kuzzle guide</a></em>
+              <em>Learn more about security &amp; permissions on <a
+                href="https://docs.kuzzle.io/guide/1/essentials/security/"
+                target="_blank"
+              >Kuzzle guide</a></em>
             </p>
           </div>
         </div>
       </div>
 
-      <div class="Watch-container" v-else>
+      <div
+        v-else
+        class="Watch-container"
+      >
         <filters
           submit-button-label="Subscribe"
           advanced-query-label="Click to open the filter builder"
@@ -40,75 +52,107 @@
           :collection-mapping="collectionMapping"
           @filters-updated="onFiltersUpdated"
           @reset="onReset"
-          >
-        </filters>
-
-        <div class="card-panel card-body" v-show="subscribed || notifications.length" ref="subscribeControl">
+        />
+        <div
+          v-show="subscribed || notifications.length"
+          ref="subscribeControl"
+          class="card-panel card-body"
+        >
           <!-- subscription controls in page flow -->
           <subscription-controls
-            @realtime-toggle-subscription="toggleSubscription"
-            @realtime-clear-messages="clear"
             :index="index"
             :collection="collection"
             :subscribed="subscribed"
             :warning="warning"
-            @scroll-down="setScrollDown">
-          </subscription-controls>
+            @realtime-toggle-subscription="toggleSubscription"
+            @realtime-clear-messages="clear"
+            @scroll-down="setScrollDown"
+          />
           <!-- /subscription controls in page flow  -->
         </div>
 
-        <div class="card-panel card-body" v-show="!subscribed && !notifications.length">
+        <div
+          v-show="!subscribed && !notifications.length"
+          class="card-panel card-body"
+        >
           <div class="row valign-bottom empty-set">
             <div class="col s1">
-              <i class="fa fa-6x fa-paper-plane grey-text text-lighten-1" aria-hidden="true"></i>
+              <i
+                class="fa fa-6x fa-paper-plane grey-text text-lighten-1"
+                aria-hidden="true"
+              />
             </div>
             <div class="col s8 m9 l10">
               <p>
-                You did not subscribe yet to the collection <strong>{{collection}}</strong><br>
-                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Kuzzle DSL</a></em>
+                You did not subscribe yet to the collection <strong>{{ collection }}</strong><br>
+                <em>Learn more about real-time filtering syntax on <a
+                  href="https://docs.kuzzle.io/koncorde/"
+                  target="_blank"
+                >Koncorde</a></em>
               </p>
-              <button class="btn primary waves-effect waves-light" @click="toggleSubscription()">
-                <i class="fa left fa-play"></i>
+              <button
+                class="btn primary waves-effect waves-light"
+                @click="toggleSubscription()"
+              >
+                <i class="fa left fa-play" />
                 subscribe
               </button>
             </div>
           </div>
         </div>
 
-        <div class="card-panel" v-show="subscribed && !notifications.length" id="wait-for-notif">
+        <div
+          v-show="subscribed && !notifications.length"
+          id="wait-for-notif"
+          class="card-panel"
+        >
           <div class="row valign-center empty-set empty-set-condensed">
             <div class="col s1">
-              <i class="fa fa-5x fa-hourglass-half grey-text text-lighten-1" aria-hidden="true"></i>
+              <i
+                class="fa fa-5x fa-hourglass-half grey-text text-lighten-1"
+                aria-hidden="true"
+              />
             </div>
             <div class="col s10">
               <p>
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about real-time filtering syntax on <a href="https://docs.kuzzle.io/koncorde/" target="_blank">Kuzzle DSL</a></em>
+                <em>Learn more about real-time filtering syntax on <a
+                  href="https://docs.kuzzle.io/koncorde/"
+                  target="_blank"
+                >Koncorde</a></em>
               </p>
             </div>
           </div>
         </div>
 
         <div class="row">
-          <div :style="notifStyle" id="notification-container" ref="notificationContainer" class="col s8">
+          <div
+            id="notification-container"
+            ref="notificationContainer"
+            :style="notifStyle"
+            class="Watch--notifications col s8"
+          >
             <div v-if="notifications.length">
-              <ul class="collapsible" v-collapsible data-collapsible="expandable">
+              <ul
+                v-collapsible
+                class="collapsible"
+                data-collapsible="expandable"
+              >
                 <notification
                   v-for="(notification, i) in notifications"
                   :key="i"
-                  :notification="notification">
-                </notification>
+                  :notification="notification"
+                />
               </ul>
             </div>
           </div>
 
           <LastNotification
             v-if="notifications.length"
-            :lastNotification="lastNotification">
-          </LastNotification>
-
+            :last-notification="lastNotification"
+          />
         </div>
       </div>
     </div>
@@ -124,7 +168,6 @@ import LastNotification from '../Realtime/LastNotification'
 import SubscriptionControls from '../Realtime/SubscriptionControls'
 import CollectionDropdown from '../Collections/Dropdown'
 import Filters from '../../Common/Filters/Filters'
-import kuzzle from '../../../services/kuzzle'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
@@ -134,43 +177,6 @@ import Vue from 'vue'
 
 export default {
   name: 'CollectionWatch',
-  props: {
-    index: String,
-    collection: String
-  },
-  data() {
-    return {
-      subscribed: false,
-      room: null,
-      filters: {},
-      currentFilter: new filterManager.Filter(),
-      realtimeFilterOperands: filterManager.realtimeFilterOperands,
-      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
-      notifications: [],
-      notificationsLengthLimit: 50,
-      warning: { message: '', count: 0, lastTime: null, info: false },
-      notifStyle: {},
-      scrollDown: true,
-      lastNotification: {},
-      collectionMapping: {}
-    }
-  },
-  created() {
-    window.addEventListener('scroll', this.handleScroll)
-  },
-  mounted() {
-    this.notifications = []
-    getMappingDocument(this.collection, this.index).then(response => {
-      this.collectionMapping = response.mapping
-    })
-  },
-  destroyed() {
-    this.reset()
-    if (this.room) {
-      this.room.unsubscribe()
-    }
-    window.removeEventListener('scroll', this.handleScroll)
-  },
   directives: {
     collapsible
   },
@@ -183,49 +189,78 @@ export default {
     Filters,
     Headline
   },
+  props: {
+    index: String,
+    collection: String
+  },
+  data() {
+    return {
+      subscribed: false,
+      room: null,
+      currentFilter: new filterManager.Filter(),
+      realtimeFilterOperands: filterManager.realtimeFilterOperands,
+      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
+      notifications: [],
+      notificationsLengthLimit: 50,
+      warning: { message: '', count: 0, lastTime: null, info: false },
+      notifStyle: {},
+      scrollDown: true,
+      lastNotification: {},
+      collectionMapping: {}
+    }
+  },
+  watch: {
+    index() {
+      this.reset()
+    },
+    collection() {
+      this.reset()
+    },
+    $route() {
+      this.reset()
+      this.currentFilter = filterManager.loadFromRoute(this.$route)
+    },
+    subscribed() {
+      this.computeNotifHeight()
+    }
+  },
+  created() {
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  async mounted() {
+    this.notifications = []
+    const response = await getMappingDocument(this.collection, this.index)
+    this.collectionMapping = response[this.index].mappings[this.collection].properties
+  },
+  async destroyed() {
+    this.reset()
+    if (this.room) {
+      await this.$kuzzle.realtime.unsubscribe(this.room)
+    }
+    window.removeEventListener('scroll', this.handleScroll)
+  },
   methods: {
     canSubscribe,
     onFiltersUpdated(newFilters) {
+      this.currentFilter = newFilters
       filterManager.saveToRouter(
         filterManager.stripDefaultValuesFromFilter(newFilters),
         this.$router
       )
       this.toggleSubscription()
     },
-    // basicSearch(filters) {
-    //   if (!filters) {
-    //     this.$router.push({ query: { basicFilter: '' } })
-    //     return
-    //   }
-
-    //   let basicFilter = JSON.stringify(filters)
-    //   this.$router.push({ query: { basicFilter } })
-    // },
-    // rawSearch(filters) {
-    //   if (!filters) {
-    //     this.$router.push({ query: { rawFilter: '' } })
-    //     return
-    //   }
-
-    //   let rawFilter = JSON.stringify(filters)
-    //   this.$router.push({ query: { rawFilter } })
-    // },
-    // refreshSearch() {
-    //   this.$router.push({ query: { ...this.$route.query } })
-    // },
-    toggleSubscription() {
+    async toggleSubscription() {
       if (!this.subscribed) {
         window.Notification.requestPermission()
-        this.subscribe()
+        await this.subscribe()
       } else {
-        this.subscribed = false
-        this.unsubscribe(this.room)
+        await this.unsubscribe(this.room)
       }
     },
     notificationToMessage(notification) {
       const idText =
-        notification.type === 'document' && notification.document.id
-          ? `(${notification.document.id})`
+        notification.type === 'document' && notification.result._id
+          ? `(${notification.result._id})`
           : ''
       const messageItem = {
         text: '',
@@ -243,22 +278,22 @@ export default {
       }
 
       if (notification.type === 'document') {
-        if (notification.document.id) {
-          messageItem.source.id = notification.document.id
+        if (notification.result._id) {
+          messageItem.source.id = notification.result._id
         }
 
         if (
-          notification.document.meta &&
-          Object.keys(notification.document.meta).length > 0
+          notification.result._meta &&
+          Object.keys(notification.result._meta).length > 0
         ) {
-          messageItem.source.meta = notification.document.meta
+          messageItem.source.meta = notification.result._meta
         }
 
         if (
-          notification.document.content &&
-          Object.keys(notification.document.content).length > 0
+          notification.result._source &&
+          Object.keys(notification.result._source).length > 0
         ) {
-          messageItem.source.body = notification.document.content
+          messageItem.source.body = notification.result._source
         }
       } else {
         messageItem.source.users = notification.user.count
@@ -328,12 +363,7 @@ export default {
         }, 0)
       }
     },
-    handleMessage(error, result) {
-      if (error) {
-        this.warning.message = error.message
-        return
-      }
-
+    handleMessage(result) {
       if (this.notifications.length > this.notificationsLengthLimit) {
         if (this.warning.message === '') {
           this.warning.info = true
@@ -366,30 +396,33 @@ export default {
 
       this.makeAutoScroll()
     },
-    subscribe() {
-      return kuzzle
-        .collection(this.collection, this.index)
-        .subscribe(
-          filterManager.toRealtimeQuery(this.filters),
-          this.subscribeOptions,
-          this.handleMessage
-        )
-        .onDone((err, room) => {
-          if (err) {
-            this.room = null
-            this.subscribed = false
-            this.$store.commit(SET_TOAST, { text: err.message })
-          } else {
-            this.subscribed = true
-            this.room = room
-          }
-        })
+    async subscribe() {
+      try {
+        const realtimeQuery = filterManager.toRealtimeQuery(this.currentFilter)
+        const room = await this.$kuzzle
+          .realtime
+          .subscribe(
+            this.index,
+            this.collection,
+            realtimeQuery,
+            this.handleMessage,
+            this.subscribeOptions
+          )
+        this.subscribed = true
+        this.room = room
+      } catch (err) {
+        this.room = null
+        this.subscribed = false
+        this.$store.commit(SET_TOAST, { text: err.message })
+      }
     },
-    unsubscribe(room) {
+    async unsubscribe(room) {
       this.warning.message = ''
       this.warning.count = 0
 
-      room.unsubscribe()
+      await this.$kuzzle.realtime.unsubscribe(room)
+      this.subscribed = false
+      this.room = null
     },
     onReset(newFilters) {
       filterManager.saveToRouter(
@@ -434,21 +467,6 @@ export default {
         icon: '/static/favicon/favicon-32x32.png'
       })
       setTimeout(notif.close.bind(notif), 5000)
-    }
-  },
-  watch: {
-    index() {
-      this.reset()
-    },
-    collection() {
-      this.reset()
-    },
-    $route() {
-      this.reset()
-      this.currentFilter = filterManager.loadFromRoute(this.$route)
-    },
-    subscribed() {
-      this.computeNotifHeight()
     }
   }
 }

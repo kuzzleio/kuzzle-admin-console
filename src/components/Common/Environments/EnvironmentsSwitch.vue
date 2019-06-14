@@ -1,27 +1,61 @@
 <template>
-  <span class="EnvironmentsSwitch" ref="dropdown">
-    <a class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light" :style="{ backgroundColor: bgColor }"
-       :data-target='"environment-dropdown-" + _uid'>
-        <span v-if="$store.getters.currentEnvironment" class="current-environment-name truncate">
-          {{currentEnvironmentName}}
-        </span>
-        <span v-if="!$store.getters.currentEnvironment" class="current-environment-name truncate">
-          Choose Environment
-        </span>
-        <i class="fa fa-caret-down"></i>
+  <span
+    ref="dropdown"
+    class="EnvironmentsSwitch"
+  >
+    <a
+      class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
+      :style="{ backgroundColor: bgColor }"
+      :data-target="&quot;environment-dropdown-&quot; + _uid"
+    >
+      <span
+        v-if="$store.getters.currentEnvironment"
+        class="current-environment-name truncate"
+      >
+        {{ currentEnvironmentName }}
+      </span>
+      <span
+        v-if="!$store.getters.currentEnvironment"
+        class="current-environment-name truncate"
+      >
+        Choose Environment
+      </span>
+      <i class="fa fa-caret-down" />
     </a>
 
-    <ul :id='"environment-dropdown-" + _uid' class="EnvironmentsSwitch-envList dropdown-content environment-dropdown">
-      <li v-for="(env, index) in $store.state.kuzzle.environments" :key="env.name" :data-env="`env_${formatForDom(env.name)}`" class="EnvironmentsSwitch-env environment">
+    <ul
+      :id="&quot;environment-dropdown-&quot; + _uid"
+      class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
+    >
+      <li
+        v-for="(env, index) in $store.state.kuzzle.environments"
+        :key="env.name"
+        :data-env="`env_${formatForDom(env.name)}`"
+        class="EnvironmentsSwitch-env environment"
+      >
         <div @click="clickSwitch(index)">
-          <span class="name environment-attribute truncate">{{env.name}}</span>
-          <span class="host environment-attribute truncate">{{env.host}}</span>
+          <span class="name environment-attribute truncate">{{ env.name }}</span>
+          <span class="host environment-attribute truncate">{{ env.host }}</span>
         </div>
-        <i class="edit primary fa fa-pencil-alt" @click.prevent="$emit('environment::create', index)"></i>
-        <i class="delete error fa fa-trash" @click.prevent="$emit('environment::delete', index)"></i>
+        <i
+          class="edit primary fa fa-pencil-alt"
+          @click.prevent="$emit('environment::create', index)"
+        />
+        <i
+          class="delete error fa fa-trash"
+          @click.prevent="$emit('environment::delete', index)"
+        />
       </li>
-      <li class="divider"></li>
-      <li ><a href="" @click.prevent="$emit('environment::create')"><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle"></i> Create new connection</a></li>
+      <li class="divider" />
+      <li><a
+        href=""
+        @click.prevent="$emit('environment::create')"
+      ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" /> Create new connection</a></li>
+      <li><a ref="export"><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export all</a></li>
+      <li><a
+        href="#"
+        @click.prevent="$emit('environment::importEnv')"
+      ><i class="fa fa-file-import" />Import</a></li>
     </ul>
   </span>
 </template>
@@ -65,6 +99,22 @@ export default {
         .toString()
     }
   },
+  mounted() {
+    const env = {}
+    for (const name in this.$store.state.kuzzle.environments) {
+      env[name] = Object.assign({}, this.$store.state.kuzzle.environments[name])
+      delete env[name].token
+    }
+
+    const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
+
+    this.$refs.export.href = URL.createObjectURL(blob)
+    this.$refs.export.download = 'connections.json'
+
+    $(this.$refs.dropdown)
+      .find('.dropdown-button')
+      .dropdown({ constrain_width: false, belowOrigin: true })
+  },
   methods: {
     clickSwitch(id) {
       return this.$store
@@ -86,11 +136,6 @@ export default {
         })
     },
     formatForDom
-  },
-  mounted() {
-    $(this.$refs.dropdown)
-      .find('.dropdown-button')
-      .dropdown({ constrain_width: false, belowOrigin: true })
   }
 }
 </script>

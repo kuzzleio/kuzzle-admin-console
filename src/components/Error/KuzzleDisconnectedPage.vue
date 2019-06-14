@@ -2,23 +2,24 @@
   <div>
     <div class="row">
       <div class="col offset-s4 s2">
-        <environment-switch @environment::create="editEnvironment"></environment-switch>
+        <environment-switch @environment::create="editEnvironment" />
       </div>
     </div>
     <div class="col s12">
-      <h4><i class="fa fa-plug"></i> Connecting to Kuzzle...</h4>
+      <h4><i class="fa fa-plug" /> Connecting to Kuzzle...</h4>
     </div>
     <div class="row">
       <div class="col s12">
-        <connecting :host="host" :port="port"></connecting>
+        <connecting
+          :host="host"
+          :port="port"
+        />
       </div>
     </div>
-
   </div>
 </template>
 
 <script>
-import kuzzle from '../../services/kuzzle'
 import Connecting from './Connecting'
 import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
 
@@ -27,35 +28,35 @@ let idReconnect
 
 export default {
   name: 'KuzzleDisconnectedPage',
+  components: {
+    Connecting,
+    EnvironmentSwitch
+  },
   data() {
     return {
       host: null,
       port: null
     }
   },
-  components: {
-    Connecting,
-    EnvironmentSwitch
-  },
   mounted() {
-    this.host = kuzzle.host
-    this.port = kuzzle.port
+    this.host = this.$kuzzle.protocol.host
+    this.port = this.$kuzzle.protocol.port
 
-    idReconnect = kuzzle.addListener('reconnected', () => {
+    idReconnect = this.$kuzzle.on('reconnected', () => {
       this.$router.push({ name: 'Home' })
     })
 
-    idConnect = kuzzle.addListener('connected', () => {
+    idConnect = this.$kuzzle.on('connected', () => {
       this.$router.push({ name: 'Home' })
     })
 
-    if (kuzzle.state === 'connected' || kuzzle.state === 'reconnected') {
+    if (this.$kuzzle.protocol.state === 'connected' || this.$kuzzle.protocol.state === 'reconnected') {
       this.$router.push({ name: 'Login' })
     }
   },
   destroyed() {
-    kuzzle.removeListener('reconnected', idReconnect)
-    kuzzle.removeListener('connected', idConnect)
+    this.$kuzzle.removeListener('reconnected', idReconnect)
+    this.$kuzzle.removeListener('connected', idConnect)
   },
   methods: {
     editEnvironment(id) {

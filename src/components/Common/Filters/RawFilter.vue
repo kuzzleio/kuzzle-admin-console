@@ -1,6 +1,9 @@
 <template>
   <form class="RawFilter">
-    <div class="card-panel blue lighten-3" v-if="currentFilter.basic">
+    <div
+      v-if="currentFilter.basic"
+      class="card-panel blue lighten-3"
+    >
       A Basic filter is currently active. This shows your basic filter as raw filter.
       If you modify this raw filter it will not change the basic filter view and will reset this raw filter to the
       original content of the basic filter.
@@ -11,23 +14,27 @@
       myclass="pre_ace"
       :content="filters.raw"
       :refresh-ace="refreshAce"
-    >
-    </json-editor>
+    />
     <div class="row card-action">
       <button
         v-if="actionButtonsVisible"
         type="submit"
         class="RawFilter-submitBtn btn primary waves-effect waves-light"
-        @click.prevent="submitSearch">
-        {{submitButtonLabel}}
+        @click.prevent="submitSearch"
+      >
+        {{ submitButtonLabel }}
       </button>
       <button
         v-if="actionButtonsVisible"
         class="btn-flat waves-effect waves-light"
-        @click="resetSearch">
+        @click="resetSearch"
+      >
         Reset
       </button>
-      <span class="error" v-if="jsonInvalid">Your JSON is not valid</span>
+      <span
+        v-if="jsonInvalid"
+        class="error"
+      >Your JSON is not valid</span>
     </div>
   </form>
 </template>
@@ -37,6 +44,9 @@ import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 
 export default {
+  components: {
+    JsonEditor
+  },
   props: {
     rawFilter: {
       type: Object,
@@ -73,9 +83,6 @@ export default {
       default: false
     }
   },
-  components: {
-    JsonEditor
-  },
   data() {
     return {
       filters: {
@@ -84,8 +91,32 @@ export default {
       jsonInvalid: false
     }
   },
+  watch: {
+    rawFilter: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        if (newValue) {
+          this.filters.raw = newValue
+        } else {
+          this.filters.raw = {}
+        }
+      }
+    },
+    currentFilter: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        this.$set(this.filters, 'raw', filterManager.toSearchQuery(this.currentFilter))
+        if (this.currentFilter.raw && this.currentFilter.raw.sort) {
+          this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
+        }
+      }
+    }
+  },
   mounted () {
     this.filters.raw = filterManager.toSearchQuery(this.currentFilter)
+    if (this.currentFilter.raw && this.currentFilter.raw.sort) {
+      this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
+    }
   },
   methods: {
     submitSearch() {
@@ -104,24 +135,6 @@ export default {
     resetSearch() {
       this.filters.raw = null
       this.$emit('update-filter', this.filters.raw)
-    }
-  },
-  watch: {
-    rawFilter: {
-      immediate: true,
-      handler(newValue, oldValue) {
-        if (newValue) {
-          this.filters.raw = newValue
-        } else {
-          this.filters.raw = {}
-        }
-      }
-    },
-    currentFilter: {
-      immediate: true,
-      handler(newValue, oldValue) {
-        this.$set(this.filters, 'raw', filterManager.toSearchQuery(this.currentFilter))
-      }
     }
   }
 }

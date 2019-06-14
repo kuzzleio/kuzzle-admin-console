@@ -14,12 +14,7 @@ export default {
     dispatch(types.SET_LAST_CONNECTED_ENVIRONMENT, id)
   },
   [types.CREATE_ENVIRONMENT]({ commit, state, dispatch }, payload) {
-    try {
-      commit(types.CREATE_ENVIRONMENT, payload)
-    } catch (e) {
-      console.warn(`Unable to add ${payload.id}. Got the following error
-      ${e.message}`)
-    }
+    commit(types.CREATE_ENVIRONMENT, payload)
 
     localStorage.setItem(
       ENVIRONMENT_ITEM_NAME,
@@ -92,9 +87,9 @@ export default {
 
     return dispatch(types.SWITCH_ENVIRONMENT, lastConnectedEnv)
   },
-  [types.SWITCH_ENVIRONMENT]({ commit, state, dispatch }, id) {
+  async [types.SWITCH_ENVIRONMENT]({ commit, state, dispatch }, id) {
     if (!id) {
-      return Promise.reject(new Error('No id provided'))
+      throw new Error('No id provided')
     }
 
     let environment = state.environments[id]
@@ -107,15 +102,14 @@ export default {
     connectToEnvironment(environment)
     dispatch(types.SET_CONNECTION, id)
 
-    return waitForConnected(1000)
-      .then(() =>
-        dispatch(authTypes.LOGIN_BY_TOKEN, { token: environment.token })
-      )
-      .then(() => dispatch(authTypes.CHECK_FIRST_ADMIN))
-      .catch(e => {
-        commit(types.SET_ERROR_FROM_KUZZLE, e)
-        return Promise.reject(e)
-      })
+    try {
+      await waitForConnected(1000)
+      await dispatch(authTypes.LOGIN_BY_TOKEN, { token: environment.token })
+      return await dispatch(authTypes.CHECK_FIRST_ADMIN)
+    } catch (e) {
+      commit(types.SET_ERROR_FROM_KUZZLE, e)
+      return e
+    }
   },
   [types.LOAD_ENVIRONMENTS]({ commit }) {
     let loadedEnv

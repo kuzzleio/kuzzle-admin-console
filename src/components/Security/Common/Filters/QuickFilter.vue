@@ -3,15 +3,41 @@
     <form class="">
       <div class="col s7">
         <div class="QuickFilter-searchBar">
-          <i class="QuickFilter-searchIcon fa fa-search search"></i>
-          <input type="text" placeholder="Search..." v-model="filters.searchTerm" v-focus />
-          <a class="QuickFilter-optionBtn fluid-hover" v-if="!displayBlockFilter" href="#" @click.prevent="displayComplexSearch">More query options</a>
-          <a class="QuickFilter-optionBtn fluid-hover" v-else href="#" @click.prevent="displayComplexSearch">Less query options</a>
+          <i class="QuickFilter-searchIcon fa fa-search search" />
+          <input
+            v-model="filters.searchTerm"
+            v-focus
+            type="text"
+            placeholder="Search..."
+          >
+          <a
+            v-if="!displayBlockFilter"
+            class="QuickFilter-optionBtn fluid-hover"
+            href="#"
+            @click.prevent="displayComplexSearch"
+          >More query options</a>
+          <a
+            v-else
+            class="QuickFilter-optionBtn fluid-hover"
+            href="#"
+            @click.prevent="displayComplexSearch"
+          >Less query options</a>
         </div>
       </div>
       <div class="QuickFilter-actions col s3">
-        <button type="submit" class="btn btn-small waves-effect waves-light" @click.prevent="quickSearch">Search</button>
-        <button class="btn-flat btn-small waves-effect waves-light" @click="resetQuickSearch">reset</button>
+        <button
+          type="submit"
+          class="btn btn-small waves-effect waves-light"
+          @click.prevent="quickSearch"
+        >
+          Search
+        </button>
+        <button
+          class="btn-flat btn-small waves-effect waves-light"
+          @click="resetQuickSearch"
+        >
+          reset
+        </button>
       </div>
     </form>
   </div>
@@ -22,16 +48,19 @@ import Focus from '../../../../directives/focus.directive'
 
 export default {
   name: 'QuickFilter',
-  props: ['searchTerm', 'displayBlockFilter'],
   directives: {
     Focus
   },
+  props: ['searchTerm', 'displayBlockFilter'],
   data() {
     return {
       filters: {
         searchTerm: null
       }
     }
+  },
+  mounted() {
+    this.filters.searchTerm = this.searchTerm
   },
   methods: {
     quickSearch() {
@@ -44,9 +73,6 @@ export default {
     displayComplexSearch() {
       this.$emit('filters-display-block-filter')
     }
-  },
-  mounted() {
-    this.filters.searchTerm = this.searchTerm
   }
 }
 </script>

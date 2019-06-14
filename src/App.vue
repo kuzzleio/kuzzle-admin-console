@@ -1,70 +1,92 @@
 <template>
   <div class="App">
     <div
+      v-if="$store.state.kuzzle.errorFromKuzzle"
       class="App-errored"
-      v-if="$store.state.kuzzle.errorFromKuzzle">
+    >
       <error-layout>
         <kuzzle-error-page
           @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment">
-        </kuzzle-error-page>
+          @environment::delete="deleteEnvironment"
+          @environment::importEnv="importEnv"
+        />
       </error-layout>
     </div>
     <div v-else>
       <div
+        v-if="!$store.getters.hasEnvironment"
         class="App-noEnvironments"
-        v-if="!$store.getters.hasEnvironment">
-        <create-environment-page></create-environment-page>
+      >
+        <create-environment-page
+          @environment::importEnv="importEnv"
+        />
       </div>
       <div v-else>
         <div
+          v-if="!$store.getters.currentEnvironmentId"
           class="App-disconnected"
-          v-if="!$store.getters.currentEnvironmentId">
+        >
           <!-- This is not supposed to happen, see error case above -->
         </div>
         <div
-          class="App-connected"
           v-else
-          >
+          class="App-connected"
+        >
           <div
+            v-if="!$store.getters.isAuthenticated"
             class="App-loggedOut"
-            v-if="!$store.getters.isAuthenticated">
+          >
             <div
+              v-if="!$store.getters.adminAlreadyExists"
               class="App-noAdmin"
-              v-if="!$store.getters.adminAlreadyExists">
+            >
               <sign-up
                 @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment">
-              </sign-up>
+                @environment::delete="deleteEnvironment"
+                @environment::importEnv="importEnv"
+              />
             </div>
             <div
+              v-else
               class="App-hasAdmin"
-              v-else>
-               <login
+            >
+              <login
                 @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment">
-              </login>
+                @environment::delete="deleteEnvironment"
+                @environment::importEnv="importEnv"
+              />
             </div>
           </div>
           <div
+            v-else
             class="App-loggedIn"
-            v-else>
-             <router-view
+          >
+            <router-view
               @environment::create="editEnvironment"
-              @environment::delete="deleteEnvironment">
-            </router-view>
+              @environment::delete="deleteEnvironment"
+              @environment::importEnv="importEnv"
+            />
           </div>
         </div>
       </div>
     </div>
 
+    <modal-create
+      :is-open="isOpen"
+      :close="close"
+      :environment-id="environmentId"
+    />
+    <modal-delete
+      :environment-id="environmentId"
+      :close="close"
+      :is-open="deleteIsOpen"
+    />
+    <modal-import
+      :close="close"
+      :is-open="importIsOpen"
+    />
 
-
-
-    <modal-create :is-open="isOpen" :close="close" :environment-id="environmentId"></modal-create>
-    <modal-delete :environment-id="environmentId" :close="close" :is-open="deleteIsOpen"></modal-delete>
-
-    <toaster></toaster>
+    <toaster />
   </div>
 </template>
 
@@ -74,7 +96,6 @@ import {} from '../node_modules/ace-builds/src-min-noconflict/theme-tomorrow.js'
 import {} from '../node_modules/ace-builds/src-min-noconflict/mode-json.js'
 
 import {} from './assets/global.scss'
-import KuzzleDisconnectedPage from './components/Error/KuzzleDisconnectedPage'
 import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
 import ErrorLayout from './components/Error/Layout'
 import SignUp from './components/Signup'
@@ -83,8 +104,13 @@ import CreateEnvironmentPage from './components/Common/Environments/CreateEnviro
 
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
+import ModalImport from './components/Common/Environments/ModalImport'
 
 import Toaster from './components/Materialize/Toaster.vue'
+
+import * as types from './vuex/modules/auth/mutation-types'
+import * as kuzzleTypes from './vuex/modules/common/kuzzle/mutation-types'
+import { SET_TOAST } from './vuex/modules/common/toaster/mutation-types'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -96,10 +122,10 @@ require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
 export default {
   name: 'KuzzleBackOffice',
   components: {
-    KuzzleDisconnectedPage,
     ErrorLayout,
     ModalCreate,
     ModalDelete,
+    ModalImport,
     Toaster,
     KuzzleErrorPage,
     SignUp,
@@ -110,8 +136,38 @@ export default {
     return {
       environmentId: null,
       isOpen: false,
-      deleteIsOpen: false
+      deleteIsOpen: false,
+      importIsOpen: false
     }
+  },
+  mounted() {
+    this.$kuzzle.removeAllListeners()
+
+    this.$kuzzle.on('queryError', error => {
+      if (error && error.message) {
+        switch (error.message) {
+          case 'Token expired':
+          case 'Invalid token':
+          case 'Json Web Token Error':
+            this.$store.commit(types.SET_TOKEN_VALID, false)
+            this.$kuzzle.connect()
+            break
+        }
+      }
+    })
+    this.$kuzzle.on('networkError', error => {
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
+    })
+    this.$kuzzle.on('connected', () => {
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+    })
+    this.$kuzzle.on('reconnected', () => {
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+      this.$store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
+    })
+    this.$kuzzle.on('discarded', function(data) {
+      this.$store.commit(SET_TOAST, { text: data.message })
+    })
   },
   methods: {
     editEnvironment(id) {
@@ -122,9 +178,13 @@ export default {
       this.environmentId = id
       this.deleteIsOpen = true
     },
+    importEnv() {
+      this.importIsOpen = true
+    },
     close() {
       this.isOpen = false
       this.deleteIsOpen = false
+      this.importIsOpen = false
     }
   }
 }

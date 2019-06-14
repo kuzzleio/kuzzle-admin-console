@@ -2,38 +2,54 @@
   <div class="ViewMap">
     <div class="row">
       <div :class="getMapClass()">
-        <l-map ref="map" @click="onMapClick">
-          <l-tile-layer :url="url" :attribution="attribution"/>
+        <l-map
+          ref="map"
+          @click="onMapClick"
+        >
+          <l-tile-layer
+            :url="url"
+            :attribution="attribution"
+          />
           <l-marker
             v-for="document in documents"
-            v-bind:lat-lng="getCoordinates(document)"
             :key="document.id"
+            :lat-lng="getCoordinates(document)"
             :icon="getIcon(document)"
             @click="onMarkerClick(document)"
-          >
-          </l-marker>
+          />
         </l-map>
       </div>
 
-      <div v-if="currentDocument" class="col s2 viewMap-document-info">
+      <div
+        v-if="currentDocument"
+        class="col s2 viewMap-document-info"
+      >
         <div class="row">
           <div class="col s9">
             {{ currentDocument.id }}
           </div>
           <a
-            v-if="canEdit"
             href=""
-            :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
-            @click.prevent="editCurrentDocument">
-            <i class="fa fa-pencil-alt pointer" :class="{'disabled': !canEdit}"></i>
+            :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this document'"
+            :class="{unauthorized: !canEdit}"
+            @click.prevent="editCurrentDocument"
+          >
+            <i
+              class="fa fa-pencil-alt pointer"
+              :class="{'disabled': !canEdit}"
+            />
           </a>
 
-          <dropdown :id="currentDocument.id" myclass="icon-black">
+          <dropdown
+            :id="currentDocument.id"
+            myclass="icon-black"
+          >
             <li>
               <a
-                v-bind:class="{'disabled': !canDelete}"
+                v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
+                :class="{'disabled': !canDelete}"
                 @click="deleteCurrentDocument()"
-                v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}">
+              >
                 Delete
               </a>
             </li>
@@ -48,14 +64,14 @@
             },
             open: true
           }"
-          />
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup, LIconDefault } from 'vue2-leaflet'
+import { LMap, LTileLayer, LMarker } from 'vue2-leaflet'
 import L from 'leaflet'
 import Dropdown from '../../Materialize/Dropdown'
 import '../../../../src/assets/leaflet.css'
@@ -72,9 +88,11 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    LPopup,
-    LIconDefault,
     Dropdown
+  },
+  directives: {
+    JsonFormatter,
+    title
   },
   props: {
     documents: {
@@ -87,10 +105,6 @@ export default {
     },
     index: String,
     collection: String
-  },
-  directives: {
-    JsonFormatter,
-    title
   },
   data() {
     return {
@@ -136,6 +150,16 @@ export default {
       return canDeleteDocument(this.index, this.collection)
     }
   },
+  watch: {},
+  created() {},
+  mounted() {
+    this.$nextTick(() => {
+      this.map = this.$refs.map.mapObject
+
+      this.map.fitBounds(this.coordinates)
+    })
+  },
+  updated() {},
   methods: {
     onMarkerClick(document) {
       if (this.currentDocument === document) {
@@ -174,17 +198,7 @@ export default {
         this.$emit('edit', this.currentDocument.id)
       }
     }
-  },
-  created() {},
-  mounted() {
-    this.$nextTick(() => {
-      this.map = this.$refs.map.mapObject
-
-      this.map.fitBounds(this.coordinates)
-    })
-  },
-  watch: {},
-  updated() {}
+  }
 }
 </script>
 

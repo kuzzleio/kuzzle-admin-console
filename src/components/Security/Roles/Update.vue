@@ -1,20 +1,20 @@
 <template>
   <div>
     <Headline>
-       Edit role - <span class="bold">{{decodeURIComponent($route.params.id)}}</span>
+      Edit role - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
     </Headline>
-    <Notice></Notice>
+    <Notice />
     <create-or-update
+      v-model="document"
       title="Update role"
       :update-id="id"
       :error="error"
+      :hide-id="true"
+      :submitted="submitted"
       @document-create::create="update"
       @document-create::cancel="cancel"
       @document-create::error="setError"
-      v-model="document"
-      :hide-id="true"
-      :submitted="submitted">
-    </create-or-update>
+    />
   </div>
 </template>
 
@@ -22,7 +22,6 @@
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Notice from '../Common/Notice'
-import kuzzle from '../../../services/kuzzle'
 import { getMappingRoles } from '../../../services/kuzzleWrapper'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
@@ -41,9 +40,19 @@ export default {
       submitted: false
     }
   },
+  async mounted() {
+    try {
+      const role = await this.$kuzzle.security
+        .getRole(this.$route.params.id)
+      this.id = role._id
+      this.document = { controllers: role.controllers }
+    } catch (e) {
+      this.$store.commit(SET_TOAST, { text: e.message })
+    }
+  },
   methods: {
     getMappingRoles,
-    update(role) {
+    async update(role) {
       this.error = ''
 
       if (!role) {
@@ -53,18 +62,17 @@ export default {
 
       this.submitted = true
 
-      kuzzle.security
-        .createRolePromise(this.id, role, { replaceIfExist: true })
-        .then(() => {
-          setTimeout(() => {
-            // we can't perform refresh index on %kuzzle
-            this.$router.push({ name: 'SecurityRolesList' })
-          }, 1000)
-        })
-        .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
-          this.submitted = false
-        })
+      try {
+        this.$kuzzle.security
+          .updateRole(this.id, role)
+        setTimeout(() => {
+          // we can't perform refresh index on %kuzzle
+          this.$router.push({ name: 'SecurityRolesList' })
+        }, 1000)
+      } catch (e) {
+        this.$store.commit(SET_TOAST, { text: e.message })
+        this.submitted = false
+      }
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -76,18 +84,6 @@ export default {
     setError(payload) {
       this.error = payload
     }
-  },
-  mounted() {
-    kuzzle.security
-      .fetchRolePromise(this.$route.params.id)
-      .then(role => {
-        this.id = role.id
-        this.document = role.content
-      })
-      .catch(e => {
-        this.$store.commit(SET_TOAST, { text: e.message })
-        this.$router.push({ name: 'SecurityRolesCreate' })
-      })
   }
 }
 </script>

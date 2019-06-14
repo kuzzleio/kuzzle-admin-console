@@ -6,13 +6,13 @@
         <div class="card-content">
           <span class="card-title">Credentials</span>
           <json-editor
-            class="document-json"
-            ref="jsoneditor"
             :id="idContent"
+            ref="jsoneditor"
+            class="document-json"
             :content="jsonDocument"
             :height="300"
             @changed="jsonChanged"
-          ></json-editor>
+          />
         </div>
       </div>
 
@@ -21,12 +21,12 @@
         <div class="card-content">
           <span class="card-title">Fields</span>
           <json-editor
-            class="document-json"
             :id="idMapping"
+            class="document-json"
             :content="mapping"
             :readonly="true"
             :height="300"
-          ></json-editor>
+          />
         </div>
       </div>
     </div>
@@ -56,13 +56,11 @@
 </style>
 
 <script>
-import JsonForm from '../../Common/JsonForm/JsonForm'
 import JsonEditor from '../../Common/JsonEditor'
 
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
-    JsonForm,
     JsonEditor
   },
   props: {
@@ -87,13 +85,13 @@ export default {
       jsonDocument: {}
     }
   },
+  mounted() {
+    this.jsonDocument = this.value || {}
+  },
   methods: {
     jsonChanged(json) {
       this.$emit('input', json)
     }
-  },
-  mounted() {
-    this.jsonDocument = this.value || {}
   }
 }
 </script>

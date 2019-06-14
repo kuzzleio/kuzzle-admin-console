@@ -1,5 +1,5 @@
 <template>
-    <div class="toast-error"></div>
+  <div class="toast-error" />
 </template>
 
 <script>

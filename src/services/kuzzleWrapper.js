@@ -1,22 +1,21 @@
-import kuzzle from './kuzzle'
+import { WebSocket } from 'kuzzle-sdk'
 import Promise from 'bluebird'
-// import * as actions from '../vuex/modules/auth/actions'
-import * as types from '../vuex/modules/auth/mutation-types'
-import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
-import { SET_TOAST } from '../vuex/modules/common/toaster/mutation-types'
+import Vue from 'vue'
+
+// ### Environment
 
 export const waitForConnected = (timeout = 1000) => {
-  if (kuzzle.state !== 'connected') {
+  if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
     return new Promise((resolve, reject) => {
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
       let timeoutId = setTimeout(() => {
-        kuzzle.removeListener('connected', id)
+        Vue.prototype.$kuzzle.removeListener('connected', id)
         reject(new Error('Kuzzle does not respond'))
       }, timeout)
 
-      let id = kuzzle.addListener('connected', () => {
+      let id = Vue.prototype.$kuzzle.addListener('connected', () => {
         clearTimeout(timeoutId)
-        kuzzle.removeListener('connected', id)
+        Vue.prototype.$kuzzle.removeListener('connected', id)
         resolve()
       })
     })
@@ -30,50 +29,19 @@ export const connectToEnvironment = environment => {
   if (environment.port === undefined) environment.port = 7512
   if (typeof environment.ssl !== 'boolean') environment.ssl = false
 
-  if (kuzzle.state === 'connected') {
-    kuzzle.disconnect()
+  if (Vue.prototype.$kuzzle.protocol.state === 'connected') {
+    Vue.prototype.$kuzzle.disconnect()
   }
 
-  kuzzle.host = environment.host
-  kuzzle.port = environment.port
-  kuzzle.sslConnection = environment.ssl
-  kuzzle.connect()
+  Vue.prototype.$kuzzle.protocol = new WebSocket(environment.host, {
+    port: parseInt(environment.port),
+    sslConnection: environment.ssl
+  })
+  
+  Vue.prototype.$kuzzle.connect()
 }
 
-export const initStoreWithKuzzle = store => {
-  kuzzle.off('tokenExpired')
-  kuzzle.off('queryError')
-  kuzzle.off('networkError')
-  kuzzle.off('connected')
-  kuzzle.off('reconnected')
-  kuzzle.off('discarded')
-
-  kuzzle.on('queryError', error => {
-    if (error && error.message) {
-      switch (error.message) {
-        case 'Token expired':
-        case 'Invalid token':
-        case 'Json Web Token Error':
-          store.commit(types.SET_TOKEN_VALID, false)
-          kuzzle.connect()
-          break
-      }
-    }
-  })
-  kuzzle.on('networkError', error => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
-  })
-  kuzzle.on('connected', () => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
-  })
-  kuzzle.on('reconnected', () => {
-    store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
-    store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
-  })
-  kuzzle.on('discarded', function(data) {
-    store.commit(SET_TOAST, { text: data.message })
-  })
-}
+// ### Data
 
 // Helper for performSearch
 let getValueAdditionalAttribute = (content, attributePath) => {
@@ -94,7 +62,9 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 class Content {
   constructor(content) {
     Object.keys(content).forEach(key => {
-      this[key] = content[key]
+      if (key !== '_kuzzle_info') {
+        this[key] = content[key]
+      }
     })
   }
 }
@@ -125,7 +95,20 @@ class Credentials {
   }
 }
 
-export const performSearchDocuments = (
+/**
+ * Constructor only used for displaying the constructor name in the list
+ * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
+ * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
+ */
+class Aggregations {
+  constructor(aggregations) {
+    Object.keys(aggregations).forEach(key => {
+      this[key] = aggregations[key]
+    })
+  }
+}
+
+export const performSearchDocuments = async (
   collection,
   index,
   filters = {},
@@ -133,182 +116,51 @@ export const performSearchDocuments = (
   sort = []
 ) => {
   if (!collection || !index) {
-    return Promise.reject(new Error('Missing collection or index'))
+    throw new Error('Missing collection or index')
   }
 
-  return kuzzle
-    .collection(collection, index)
-    .searchPromise({ ...filters, sort }, { ...pagination })
-    .then(result => {
-      let additionalAttributeName = null
+  const result = await Vue.prototype.$kuzzle
+    .document
+    .search(index, collection, { ...filters, sort }, { ...pagination })
 
-      if (sort.length > 0) {
-        if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
-          additionalAttributeName = sort[0]
-        } else {
-          additionalAttributeName = Object.keys(sort[0])[0]
-        }
+  let additionalAttributeName = null
+
+  if (sort.length > 0) {
+    if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
+      additionalAttributeName = sort[0]
+    } else {
+      additionalAttributeName = Object.keys(sort[0])[0]
+    }
+  }
+
+  const documents = result.hits.map(document => {
+    const object = {
+      content: new Content(document._source),
+      id: document._id,
+      meta: new Meta(document._meta)
+    }
+
+    if (result.aggregations) {
+      object.aggregations = new Aggregations(result.aggregations)
+    }
+
+    if (additionalAttributeName) {
+      object.additionalAttribute = {
+        name: additionalAttributeName,
+        value: getValueAdditionalAttribute(
+          document._source,
+          additionalAttributeName.split('.')
+        )
       }
+    }
 
-      const documents = result.documents.map(document => {
-        const object = {
-          content: new Content(document.content),
-          id: document.id,
-          meta: new Meta(document.meta)
-        }
-
-        if (additionalAttributeName) {
-          object.additionalAttribute = {
-            name: additionalAttributeName,
-            value: getValueAdditionalAttribute(
-              document.content,
-              additionalAttributeName.split('.')
-            )
-          }
-        }
-
-        return object
-      })
-
-      return { documents, total: result.total }
-    })
+    return object
+  })
+  return { documents, total: result.total }
 }
 
 export const getMappingDocument = (collection, index) => {
-  return kuzzle.collection(collection, index).getMappingPromise()
-}
-
-export const performSearchUsers = (
-  collection,
-  index,
-  filters = {},
-  pagination = {},
-  sort = []
-) => {
-  let strategies
-  return kuzzle
-    .queryPromise({ controller: 'auth', action: 'getStrategies' }, {})
-    .then(res => {
-      strategies = res.result
-
-      return kuzzle.security
-        .searchUsersPromise({ ...filters, sort }, { ...pagination })
-        .then(result => {
-          let additionalAttributeName = null
-          let users = []
-          const promises = []
-
-          if (sort.length > 0) {
-            if (typeof sort[0] === 'string') {
-              additionalAttributeName = sort[0]
-            } else {
-              additionalAttributeName = Object.keys(sort[0])[0]
-            }
-          }
-
-          result.users.forEach(document => {
-            let object = {
-              content: new Content(document.content),
-              id: document.id,
-              credentials: new Credentials({}),
-              meta: new Meta(document.meta || {})
-            }
-
-            if (additionalAttributeName) {
-              object.additionalAttribute = {
-                name: additionalAttributeName,
-                value: getValueAdditionalAttribute(
-                  document.content,
-                  additionalAttributeName.split('.')
-                )
-              }
-            }
-
-            strategies.forEach(strategy => {
-              promises.push(
-                kuzzle.security
-                  .getCredentialsPromise(strategy, document.id)
-                  .then(res => {
-                    object.credentials[strategy] = res
-                  })
-                  .catch(() => {})
-              )
-            })
-            users.push(object)
-          })
-
-          return Promise.all(promises).then(() => {
-            return { documents: users, total: result.total }
-          })
-        })
-    })
-}
-
-export const getMappingUsers = () => {
-  return kuzzle
-    .queryPromise({ controller: 'security', action: 'getUserMapping' }, {})
-    .then(res => res.result)
-}
-
-export const updateMappingUsers = newMapping => {
-  return kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'updateUserMapping' },
-      {
-        body: {
-          properties: newMapping
-        }
-      }
-    )
-    .then(res => res.result)
-}
-
-export const performSearchProfiles = (filters = {}, pagination = {}) => {
-  return kuzzle.security
-    .searchProfilesPromise({ ...filters }, { size: 100, ...pagination })
-    .then(result => {
-      let profiles = result.profiles.map(document => {
-        let object = {
-          content: document.content,
-          meta: new Meta(document.meta || {}),
-          id: document.id
-        }
-
-        return object
-      })
-
-      return { documents: profiles, total: result.total }
-    })
-}
-
-export const getMappingProfiles = () => {
-  return kuzzle
-    .queryPromise({ controller: 'security', action: 'getProfileMapping' }, {})
-    .then(res => res.result)
-}
-
-export const performSearchRoles = (controllers = {}, pagination = {}) => {
-  return kuzzle.security
-    .searchRolesPromise(controllers, { ...pagination })
-    .then(result => {
-      let roles = result.roles.map(document => {
-        let object = {
-          content: document.content,
-          meta: new Meta(document.meta || {}),
-          id: document.id
-        }
-
-        return object
-      })
-
-      return { documents: roles, total: result.total }
-    })
-}
-
-export const getMappingRoles = () => {
-  return kuzzle
-    .queryPromise({ controller: 'security', action: 'getRoleMapping' }, {})
-    .then(res => res.result)
+  return Vue.prototype.$kuzzle.collection.getMapping(index, collection)
 }
 
 export const performDeleteDocuments = (index, collection, ids) => {
@@ -322,63 +174,180 @@ export const performDeleteDocuments = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle.queryPromise(
-    { controller: 'document', action: 'mDelete', collection, index },
-    { body: { ids } },
-    { refresh: 'wait_for' }
-  )
+  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, { refresh: 'wait_for' })
 }
 
-export const performDeleteUsers = (index, collection, ids) => {
+// ### Security
+
+// Users related
+export const performSearchUsers = async (
+  collection,
+  index,
+  filters = {},
+  pagination = {},
+  sort = []
+) => {
+  const strategies = await Vue.prototype.$kuzzle.auth
+    .getStrategies()
+
+  const result = await Vue.prototype.$kuzzle.security
+    .searchUsers({ ...filters, sort }, { ...pagination })
+  let additionalAttributeName = null
+  let users = []
+
+  if (sort.length > 0) {
+    if (typeof sort[0] === 'string') {
+      additionalAttributeName = sort[0]
+    } else {
+      additionalAttributeName = Object.keys(sort[0])[0]
+    }
+  }
+
+  for (const document of result.hits) {
+    let object = {
+      content: new Content(document.content),
+      id: document._id,
+      credentials: new Credentials({}),
+      meta: new Meta(document.meta || {})
+    }
+
+    if (result.aggregations) {
+      object.aggregations = result.aggregations
+    }
+
+    if (additionalAttributeName) {
+      object.additionalAttribute = {
+        name: additionalAttributeName,
+        value: getValueAdditionalAttribute(
+          document.content,
+          additionalAttributeName.split('.')
+        )
+      }
+    }
+
+    for (const strategy of strategies) {
+      try {
+        const res = await Vue.prototype.$kuzzle.security
+          .getCredentials(strategy, document._id)
+        object.credentials[strategy] = res
+      } catch (e) {}
+    }
+    users.push(object)
+  }
+
+  return { documents: users, total: result.total }
+}
+
+export const getMappingUsers = () => {
+  return Vue.prototype.$kuzzle.security
+    .getUserMapping()
+}
+
+export const updateMappingUsers = newMapping => {
+  return Vue.prototype.$kuzzle.security
+    .updateUserMapping({ properties: newMapping })
+}
+
+export const performDeleteUsers = async (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'mDeleteUsers' },
-      { body: { ids } }
-    )
-    .then(() =>
-      kuzzle.queryPromise(
-        { controller: 'index', action: 'refreshInternal' },
-        {}
-      )
-    )
+  await Vue.prototype.$kuzzle.security
+    .mDeleteUsers(ids, { refresh: 'wait_for' })
 }
 
-export const performDeleteRoles = ids => {
+// Profiles related
+export const performSearchProfiles = async (filters = {}, pagination = {}) => {
+  const result = await Vue.prototype.$kuzzle.security
+    .searchProfiles({ ...filters }, { size: 100, ...pagination })
+
+  const profiles = result.hits.map(document => {
+    return {
+      content: { policies: document.policies },
+      meta: new Meta(document.meta || {}),
+      id: document._id
+    }
+  })
+  return { documents: profiles, total: result.total }
+}
+
+export const performDeleteProfiles = async (index, collection, ids) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'mDeleteRoles' },
-      { body: { ids } }
-    )
-    .then(() =>
-      kuzzle.queryPromise(
-        { controller: 'index', action: 'refreshInternal' },
-        {}
-      )
-    )
+  await Vue.prototype.$kuzzle.security
+    .mDeleteProfiles(ids, { refresh: 'wait_for' })
 }
 
-export const performDeleteProfiles = (index, collection, ids) => {
+// Roles related
+export const performSearchRoles = async (controllers = {}, pagination = {}) => {
+  const result = await Vue.prototype.$kuzzle.security
+    .searchRoles(controllers, { ...pagination })
+  let roles = result.hits.map(document => {
+    let object = {
+      content: { controllers: document.controllers },
+      meta: new Meta(document.meta || {}),
+      id: document._id
+    }
+
+    return object
+  })
+
+  return { documents: roles, total: result.total }
+}
+
+export const getMappingRoles = async () => {
+  return Vue.prototype.$kuzzle.security
+    .getRoleMapping()
+}
+
+export const performDeleteRoles = async ids => {
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return kuzzle
-    .queryPromise(
-      { controller: 'security', action: 'mDeleteProfiles' },
-      { body: { ids } }
-    )
-    .then(() =>
-      kuzzle.queryPromise(
-        { controller: 'index', action: 'refreshInternal' },
-        {}
-      )
-    )
+  await Vue.prototype.$kuzzle.security
+    .mDeleteRoles(ids, { refresh: 'wait_for' })
+}
+
+export const isKuzzleActionAllowed = (rights, controller, action, index, collection) => {
+  var filteredRights
+
+  if (!rights || typeof rights !== 'object') {
+    throw new Error('rights parameter is mandatory for isActionAllowed function')
+  }
+  if (!controller || typeof controller !== 'string') {
+    throw new Error('controller parameter is mandatory for isActionAllowed function')
+  }
+  if (!action || typeof action !== 'string') {
+    throw new Error('action parameter is mandatory for isActionAllowed function')
+  }
+
+  // We filter in all the rights that match the request (including wildcards).
+  filteredRights = rights
+    .filter(function (right) {
+      return right.controller === controller || right.controller === '*'
+    })
+    .filter(function (right) {
+      return right.action === action || right.action === '*'
+    })
+    .filter(function (right) {
+      return right.index === index || right.index === '*'
+    })
+    .filter(function (right) {
+      return right.collection === collection || right.collection === '*'
+    })
+
+  // Then, if at least one right allows the action, we return 'allowed'
+  if (filteredRights.some(function (item) { return item.value === 'allowed' })) {
+    return 'allowed'
+  }
+  // If no right allows the action, we check for conditionals.
+  if (filteredRights.some(function (item) { return item.value === 'conditional' })) {
+    return 'conditional'
+  }
+  // Otherwise we return 'denied'.
+  return 'denied'
 }

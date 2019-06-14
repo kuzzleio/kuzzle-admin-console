@@ -1,47 +1,66 @@
 <template>
   <div class="document-create-update">
-    <form class="wrapper" @submit.prevent="submit">
+    <form
+      class="wrapper"
+      @submit.prevent="submit"
+    >
       <div class="row">
         <div class="switch right">
           <label>
             Form
-            <input type="checkbox" @change="switchView" :checked="!isFormView">
-            <span class="lever"></span>
+            <input
+              type="checkbox"
+              :checked="!isFormView"
+              @change="switchView"
+            >
+            <span class="lever" />
             JSON
           </label>
         </div>
       </div>
 
-      <div class="row" v-if="isFormView">
+      <div
+        v-if="isFormView"
+        class="row"
+      >
         <div class="col s12 card">
           <div class="card-content">
             <json-form
               :schema="schema"
-              @update-value="updateValue"
               :document="value"
-            ></json-form>
+              @update-value="updateValue"
+            />
           </div>
         </div>
       </div>
 
       <!-- Json view -->
-      <div class="row json-view" v-if="!isFormView">
-        <div class="col s6 card" :class="{s12: $store.state.collection.isRealtimeOnly}">
+      <div
+        v-if="!isFormView"
+        class="row json-view"
+      >
+        <div
+          class="col s6 card"
+          :class="{s12: $store.state.collection.isRealtimeOnly}"
+        >
           <div class="card-content">
             <span class="card-title">Custom content</span>
             <json-editor
               id="document"
-              class="document-json"
               ref="jsoneditor"
+              class="document-json"
               :content="newContent"
               :height="300"
               @changed="jsonChanged"
-            ></json-editor>
+            />
           </div>
         </div>
 
         <!-- Mapping -->
-        <div class="col s6 card" v-if="!$store.state.collection.isRealtimeOnly">
+        <div
+          v-if="!$store.state.collection.isRealtimeOnly"
+          class="col s6 card"
+        >
           <div class="card-content">
             <span class="card-title">Mapping</span>
             <json-editor
@@ -50,7 +69,7 @@
               :content="mapping"
               :readonly="true"
               :height="300"
-            ></json-editor>
+            />
           </div>
         </div>
       </div>

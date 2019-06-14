@@ -1,39 +1,27 @@
-import kuzzle from '../../../services/kuzzle'
 import * as types from './mutation-types'
 import Promise from 'bluebird'
 import { mergeMetaAttributes } from '../../../services/collectionHelper'
+import Vue from 'vue'
 
 export default {
   [types.CREATE_COLLECTION]({ state }, { index }) {
-    return kuzzle.queryPromise(
-      {
-        controller: 'collection',
-        action: 'create',
-        collection: state.name,
-        index
-      },
-      {
-        collection: state.name,
-        index,
-        body: mergeMetaAttributes({
-          mapping: state.mapping,
-          schema: state.schema,
-          allowForm: state.allowForm
-        })
-      }
-    )
+    return Vue.prototype.$kuzzle
+      .collection
+      .create(index, state.name, mergeMetaAttributes({
+        mapping: state.mapping,
+        schema: state.schema,
+        allowForm: state.allowForm
+      }))
   },
-  [types.UPDATE_COLLECTION]({ commit, state }, { index }) {
+  [types.UPDATE_COLLECTION]({ state }, { index }) {
     if (state.isRealtimeOnly) {
       return Promise.resolve()
     }
 
-    return kuzzle.queryPromise(
+    return Vue.prototype.$kuzzle.query(
       {
         controller: 'collection',
-        action: 'updateMapping'
-      },
-      {
+        action: 'updateMapping',
         collection: state.name,
         index,
         body: mergeMetaAttributes({
@@ -44,51 +32,38 @@ export default {
       }
     )
   },
-  [types.FETCH_COLLECTION_DETAIL](
-    { commit, getters, state, dispatch },
+  async [types.FETCH_COLLECTION_DETAIL](
+    { commit, getters, dispatch },
     { index, collection }
   ) {
     if (!collection) {
       commit(types.RESET_COLLECTION_DETAIL)
-      return Promise.resolve
+      return
     }
 
     if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
-      return kuzzle
-        .queryPromise(
-          {
-            controller: 'collection',
-            action: 'getMapping'
-          },
-          {
-            collection: collection,
-            index: index
-          }
-        )
-        .then(response => {
-          let result = response.result[index].mappings[collection]
-          let schema = {}
-          let allowForm = false
+      const response = await Vue.prototype.$kuzzle.collection.getMapping(index, collection)
+      let result = response[index].mappings[collection]
+      let schema = {}
+      let allowForm = false
 
-          if (result._meta) {
-            schema = result._meta.schema || {}
-            allowForm = result._meta.allowForm || false
-          }
+      if (result._meta) {
+        schema = result._meta.schema || {}
+        allowForm = result._meta.allowForm || false
+      }
 
-          dispatch(types.GET_COLLECTION_DEFAULT_VIEW_JSON, {
-            index,
-            collection
-          })
+      dispatch(types.GET_COLLECTION_DEFAULT_VIEW_JSON, {
+        index,
+        collection
+      })
 
-          commit(types.RECEIVE_COLLECTION_DETAIL, {
-            name: collection,
-            mapping: result.properties || {},
-            schema,
-            allowForm,
-            isRealtimeOnly: false
-          })
-        })
-        .catch(error => Promise.reject(new Error(error.message)))
+      commit(types.RECEIVE_COLLECTION_DETAIL, {
+        name: collection,
+        mapping: result.properties || {},
+        schema,
+        allowForm,
+        isRealtimeOnly: false
+      })
     }
 
     if (getters.indexCollections(index).realtime.indexOf(collection) !== -1) {
@@ -99,13 +74,10 @@ export default {
         schema: {},
         allowForm: false
       })
-      return Promise.resolve()
     }
-
-    return Promise.reject(new Error(`Unknown collection ${collection}`))
   },
   [types.GET_COLLECTION_DEFAULT_VIEW_JSON](
-    { commit, dispatch },
+    { dispatch },
     { index, collection }
   ) {
     let indexes = JSON.parse(localStorage.getItem('defaultJsonView') || '{}')
@@ -137,22 +109,16 @@ export default {
     localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
     return commit(types.SET_COLLECTION_DEFAULT_VIEW_JSON, { jsonView })
   },
-  [types.CLEAR_COLLECTION]({ state }, { index, collection }) {
-    return kuzzle
-      .queryPromise(
+  async [types.CLEAR_COLLECTION]({ state }, { index }) {
+    await Vue.prototype.$kuzzle
+      .query(
         {
           controller: 'collection',
-          action: 'truncate'
-        },
-        {
+          action: 'truncate',
           index,
-          collection: state.name
-        },
-        {
+          collection: state.name,
           refresh: 'wait_for'
         }
       )
-      .then(res => Promise.resolve)
-      .catch(error => Promise.reject(new Error(error.message)))
   }
 }
