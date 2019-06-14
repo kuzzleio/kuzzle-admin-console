@@ -186,7 +186,7 @@ describe('Document List', function() {
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
     cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click({ force: true })
     cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
     cy.get('.DocumentListViewColumn-jsonFormatter > .json-formatter-row > .json-formatter-toggler-link > .json-formatter-value > span > .json-formatter-constructor-name').click()
     cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
@@ -204,7 +204,7 @@ describe('Document List', function() {
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
     cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click({ force: true })
   })
 
   it('should handle the time series view properly', function() {
@@ -256,9 +256,8 @@ describe('Document update/replace', () => {
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`, {
-      jsonObject: {
-        foo: 'bar'
-      }
+      foo: 'bar',
+      more: 'moar'
     })
 
     const validEnvName = 'valid'
