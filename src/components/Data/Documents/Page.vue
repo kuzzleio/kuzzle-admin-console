@@ -486,6 +486,7 @@ export default {
         this.deleteModalIsLoading = false
       } catch (e) {
         this.$store.commit(SET_TOAST, { text: e.message })
+        console.error(e)
       }
     },
     closeDeleteModal() {
@@ -518,11 +519,12 @@ export default {
           this.collection
         )
         await this.fetchDocuments()
-      } catch (error) {
+      } catch (e) {
         this.$store.commit(SET_TOAST, {
           text:
-            'An error occurred while updating filters: <br />' + error.message
+            'An error occurred while updating filters: <br />' + e.message
         })
+        console.error(e)
       }
     },
     async fetchDocuments() {
@@ -560,6 +562,7 @@ export default {
           text:
             'An error occurred while performing search: <br />' + e.message
         })
+        console.error(e)
       }
     },
 
