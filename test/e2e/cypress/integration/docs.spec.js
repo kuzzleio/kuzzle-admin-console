@@ -186,7 +186,7 @@ describe('Document List', function() {
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
     cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click({ force: true })
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click({ multiple: true })
     cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
     cy.get('.DocumentListViewColumn-jsonFormatter > .json-formatter-row > .json-formatter-toggler-link > .json-formatter-value > span > .json-formatter-constructor-name').click()
     cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
