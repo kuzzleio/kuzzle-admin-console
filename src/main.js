@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueKuzzle from './plugins/kuzzle'
+import './plugins/logger'
 
 import App from './App'
 import store from './vuex/store'
