@@ -17,7 +17,8 @@
       </div>
     </div>
     <div class="col s2">
-      <div class="col s12">
+      <div class="col s12 bordered">
+        <span>Date</span>
         <autocomplete
           placeholder="Date field"
           :items="mappingDateArray"
@@ -26,27 +27,28 @@
           @autocomplete::change="item => { addDateField(item) }"
         />
       </div>
-    </div>
-    <div class="col s2">
-      <form class="TimeSeriesValueSelector">
-        <time-series-item
-          v-for="(number, key) of customNumberFields"
-          :key="key"
-          :value="customNumberFields[key].name"
-          :color="customNumberFields[key].color"
-          :is-updatable="true"
-          :index="key"
-          @update-color="updateColor"
-          @timeseriesitem::remove="removeItem"
-        />
+      <div class="col s12">
+        <form class="TimeSeriesValueSelector">
+          <span>Values</span>
+          <time-series-item
+            v-for="(number, key) of customNumberFields"
+            :key="key"
+            :value="customNumberFields[key].name"
+            :color="customNumberFields[key].color"
+            :is-updatable="true"
+            :index="key"
+            @update-color="updateColor"
+            @timeseriesitem::remove="removeItem"
+          />
 
-        <time-series-item
-          :items="mappingNumberArray"
-          :new-value="newCustomNumberField || ''"
-          @update-color="updateColor"
-          @autocomplete::change="item => { addNumberField(item) }"
-        />
-      </form>
+          <time-series-item
+            :items="mappingNumberArray"
+            :new-value="newCustomNumberField || ''"
+            @update-color="updateColor"
+            @autocomplete::change="item => { addNumberField(item) }"
+          />
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -269,8 +271,8 @@ export default {
 </script>
 
 <style>
-.TimeSeriesValueSelector {
-  padding: 0px 10px 0px 10px;
-  margin: 0px 10px 0px 10px;
+.bordered {
+  border: .5px solid grey;
+  margin-bottom: 10px;
 }
 </style>
