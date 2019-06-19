@@ -140,11 +140,6 @@ export default {
       }
     },
     mapping () {
-      this.mappingDateArray = this.buildAttributeList(this.mapping, type => type === 'date')
-      if (this.customDateField) {
-        this.mappingDateArray.splice(this.mappingDateArray.indexOf(this.customDateField), 1)
-      }
-
       this.mappingNumberArray = this.buildAttributeList(this.mapping, type => ES_NUMBER_DATA_TYPE.includes(type))
       if (this.customNumberFields) {
         for (const attr of this.customNumberFields) {
@@ -167,9 +162,6 @@ export default {
       this.customDateField = columnsConfig[this.index][this.collection].date
     }
     this.mappingDateArray = this.buildAttributeList(this.mapping, type => type === 'date')
-    if (this.customDateField) {
-      this.mappingDateArray.splice(this.mappingDateArray.indexOf(this.customDateField), 1)
-    }
 
     if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
       this.customNumberFields = columnsConfig[this.index][this.collection].numbers || []
