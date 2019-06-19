@@ -29,7 +29,7 @@
         :items="items"
         :value="newValue"
         :notify-change="false"
-        @autocomplete::change="attribute => { $emit('autocomplete::change', { name: attribute, color: newColor }) }"
+        @autocomplete::change="attribute => addItem(attribute)"
       />
       <input
         v-else
@@ -44,6 +44,16 @@
 import Autocomplete from '../../../Common/Autocomplete'
 import { Chrome as ColorPicker } from 'vue-color'
 
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
+}
+
 export default {
   name: 'TimeSeriesItem',
   components: {
@@ -57,7 +67,7 @@ export default {
     },
     color: {
       type: String,
-      default: '#1D90E0'
+      default: getRandomColor()
     },
     isUpdatable: {
       type: Boolean,
@@ -81,7 +91,7 @@ export default {
   data () {
     return {
       showColorPicker: false,
-      newColor: '#1D90E0'
+      newColor: this.color
     }
   },
   mounted () {
@@ -106,6 +116,11 @@ export default {
       if (this.isUpdatable) {
         this.$emit('update-color', { color: this.newColor, index: this.index })
       }
+      this.newColor = this.getColor()
+    },
+    addItem (attr) { 
+      this.$emit('autocomplete::change', { name: attr, color: this.newColor })
+      this.newColor = getRandomColor()
     }
   }
 }
