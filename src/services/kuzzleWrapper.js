@@ -76,6 +76,9 @@ class Content {
  */
 class Meta {
   constructor(meta) {
+    if (!meta) {
+      return
+    }
     Object.keys(meta).forEach(key => {
       this[key] = meta[key]
     })
