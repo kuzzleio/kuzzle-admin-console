@@ -19,6 +19,12 @@
       @click="onBoxesClicked"
     />
     <a
+      title="Display a time series view"
+      class="ListViewButtons-btn fas fa-chart-line"
+      :class="{active: activeView === 'time-series'}"
+      @click="onTimeSeriesClicked"
+    />
+    <a
       class="ListViewButtons-btn fa fa-map-marked"
       :class="{disabled: !mapEnabled, active: activeView === 'map'}"
       :title="mapEnabled ? 'Display these items on a map' : ''"
@@ -45,20 +51,28 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    timeSeriesEnabled: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   methods: {
     onBoxesClicked() {
-      if (!this.boxesEnabled) {
-        return
+      if (this.boxesEnabled) {
+        this.$emit('boxes')
       }
-      this.$emit('boxes')
     },
     onMapClicked() {
-      if (!this.mapEnabled) {
-        return
+      if (this.mapEnabled) {
+        this.$emit('map')
       }
-      this.$emit('map')
+    },
+    onTimeSeriesClicked() {
+      if (this.timeSeriesEnabled) {
+        this.$emit('time-series')
+      }
     }
   }
 }

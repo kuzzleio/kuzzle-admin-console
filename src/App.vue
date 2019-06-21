@@ -166,7 +166,9 @@ export default {
       this.$store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
     })
     this.$kuzzle.on('discarded', function(data) {
-      this.$store.commit(SET_TOAST, { text: data.message })
+      if (this.$store) {
+        this.$store.commit(SET_TOAST, { text: data.message })
+      }
     })
   },
   methods: {

@@ -34,7 +34,7 @@
       <div v-if="!isCollectionEmpty">
         <div class="card-panel card-header">
           <div class="DocumentsPage-filtersAndButtons row">
-            <div class="col s10 xl10">
+            <div class="col s9 xl9">
               <filters
                 :available-operands="searchFilterOperands"
                 :current-filter="currentFilter"
@@ -43,7 +43,7 @@
                 @reset="onFiltersUpdated"
               />
             </div>
-            <div class="col s2 xl2">
+            <div class="col s3 xl3">
               <list-view-buttons
                 :active-view="listViewType"
                 :boxes-enabled="true"
@@ -52,13 +52,17 @@
                 @boxes="onBoxesViewClicked"
                 @map="onMapViewClicked"
                 @column="onColumnViewClicked"
+                @time-series="onTimeSeriesClicked"
               />
             </div>
           </div>
         </div>
       </div>
 
-      <div class="card-panel card-body">
+      <div 
+        v-if="!isCollectionEmpty"
+        class="card-panel card-body"
+      >
         <div class="row">
           <div class="col s12">
             Result per page: <span
@@ -75,7 +79,7 @@
         <no-results-empty-state v-show="!documents.length" />
 
         <list-actions
-          v-if="documents.length"
+          v-if="documents.length && listViewType !== 'time-series'"
           :all-checked="allChecked"
           :display-bulk-delete="hasSelectedDocuments && canDeleteDocument(index, collection) && listViewType !== 'map'"
           :geopoint-list="mappingGeopoints"
@@ -138,7 +142,7 @@
             class="DocumentList-column col s12"
           >
             <div class="DocumentList-materializeCollection h-scroll">
-              <DocumentListViewColumn 
+              <Column 
                 :documents="documents"
                 :mapping="collectionMapping"
                 :index="index"
@@ -176,6 +180,38 @@
                 :collection="collection"
                 :index="index"
                 :document="document"
+                @edit="onEditDocumentClicked"
+                @delete="onDeleteClicked"
+              />
+            </div>
+
+            <div
+              v-show="documents.length"
+              class="row"
+            >
+              <div class="col s12">
+                <pagination
+                  :from="paginationFrom"
+                  :max-page="1000"
+                  :number-in-page="documents.length"
+                  :size="paginationSize"
+                  :total="totalDocuments"
+                  @change-page="changePage"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-show="listViewType === 'time-series'"
+            class="DocumentList-timeseries col s12"
+          >
+            <div class="DocumentList-materializeCollection h-scroll">
+              <TimeSeries
+                :documents="documents"
+                :mapping="collectionMapping"
+                :index="index"
+                :collection="collection"
                 @edit="onEditDocumentClicked"
                 @delete="onDeleteClicked"
               />
@@ -248,7 +284,8 @@ import _ from 'lodash'
 
 import DocumentListItem from './DocumentListItem'
 import DocumentBoxItem from './DocumentBoxItem'
-import DocumentListViewColumn from './DocumentListViewColumn'
+import Column from './Views/Column'
+import TimeSeries from './Views/TimeSeries'
 import DeleteModal from './DeleteModal'
 import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
@@ -282,6 +319,7 @@ const LIST_VIEW_LIST = 'list'
 const LIST_VIEW_BOXES = 'boxes'
 const LIST_VIEW_MAP = 'map'
 const LIST_VIEW_COLUMN = 'column'
+const LIST_VIEW_TIME_SERIES = 'time-series'
 
 export default {
   name: 'DocumentsPage',
@@ -291,7 +329,8 @@ export default {
     DeleteModal,
     DocumentBoxItem,
     DocumentListItem,
-    DocumentListViewColumn,
+    Column,
+    TimeSeries,
     EmptyState,
     Headline,
     Filters,
@@ -322,7 +361,7 @@ export default {
       collectionMapping: {},
       mappingGeopoints: [],
       selectedGeopoint: null,
-      resultPerPage: [10, 25, 50, 100]
+      resultPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
@@ -627,6 +666,10 @@ export default {
     },
     onBoxesViewClicked() {
       this.listViewType = LIST_VIEW_BOXES
+      this.saveListView()
+    },
+    onTimeSeriesClicked() {
+      this.listViewType = LIST_VIEW_TIME_SERIES
       this.saveListView()
     },
     onMapViewClicked() {
