@@ -24,7 +24,6 @@ import { LIST_INDEXES_AND_COLLECTION } from '../../vuex/modules/index/mutation-t
 import { FETCH_COLLECTION_DETAIL } from '../../vuex/modules/collection/mutation-types'
 import Treeview from './Leftnav/Treeview'
 import NotFound from '../404'
-// import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'DataLayout',
