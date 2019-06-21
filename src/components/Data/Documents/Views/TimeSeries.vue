@@ -63,7 +63,7 @@ const ES_NUMBER_DATA_TYPE = [
   'short',
   'integer',
   'long',
-  'doube',
+  'double',
   'float',
   'half_float',
   'scaled_float',
