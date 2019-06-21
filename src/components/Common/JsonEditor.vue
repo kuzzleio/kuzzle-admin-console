@@ -82,9 +82,10 @@ export default {
 
       this.editor = ace.edit(this.$refs.jsoneditor)
       this.editor.setTheme('ace/theme/tomorrow')
-      this.editor.getSession().setMode('ace/mode/json')
+      // this.editor.getSession().setMode('ace/mode/json')
       this.editor.setFontSize(13)
       this.editor.getSession().setTabSize(2)
+      this.editor.getSession().setMode('ace/mode/javascript')
       this.editor.setReadOnly(this.readonly)
       this.editor.$blockScrolling = Infinity
 
@@ -104,8 +105,10 @@ export default {
   methods: {
     getJson() {
       try {
-        return Object.freeze(JSON.parse(this.editor.getValue()))
+        // return Object.freeze(JSON.parse(this.editor.getValue()))
+        return JSON.parse(this.editor.getValue())
       } catch (e) {
+        console.log(e)
         return null
       }
     },
