@@ -38,7 +38,7 @@ export default {
         return
       }
 
-      if (this.parent) {
+      if (this.parent && this.content[this.parent]) {
         this.value = this.content[this.parent][this.name] || false
       } else {
         this.value = this.content[this.name] || false
