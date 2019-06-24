@@ -82,10 +82,9 @@ export default {
 
       this.editor = ace.edit(this.$refs.jsoneditor)
       this.editor.setTheme('ace/theme/tomorrow')
-      // this.editor.getSession().setMode('ace/mode/json')
+      this.editor.getSession().setMode('ace/mode/json')
       this.editor.setFontSize(13)
       this.editor.getSession().setTabSize(2)
-      this.editor.getSession().setMode('ace/mode/javascript')
       this.editor.setReadOnly(this.readonly)
       this.editor.$blockScrolling = Infinity
 
