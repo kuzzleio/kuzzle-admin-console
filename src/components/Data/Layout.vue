@@ -41,7 +41,6 @@ export default {
     $route() {
       if (canSearchIndex()) {
         try {
-          this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
           this.setRouteExist()
           return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
             index: this.$route.params.index,
