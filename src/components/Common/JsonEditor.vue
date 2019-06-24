@@ -105,10 +105,8 @@ export default {
   methods: {
     getJson() {
       try {
-        // return Object.freeze(JSON.parse(this.editor.getValue()))
-        return JSON.parse(this.editor.getValue())
+        return Object.freeze(JSON.parse(this.editor.getValue()))
       } catch (e) {
-        console.log(e)
         return null
       }
     },
