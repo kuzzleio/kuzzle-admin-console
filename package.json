@@ -134,7 +134,7 @@
     "vue2-leaflet": "^1.0.2",
     "vuex": "^2.5.0",
     "webpack": "^2.7.0",
-    "webpack-bundle-analyzer": "^2.13.1",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-dev-middleware": "^1.12.2",
     "webpack-hot-middleware": "^2.22.2",
     "webpack-merge": "^2.6.1"
