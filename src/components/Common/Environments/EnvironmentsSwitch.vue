@@ -120,12 +120,7 @@ export default {
       return this.$store
         .dispatch(SWITCH_ENVIRONMENT, id)
         .then(() => {
-          /* Ugly hack in order to force Vue to refresh and pass in router.beforeEach and let check if user is auth */
-          this.$router.push({ path: '/fake-route' })
-          setTimeout(() => {
-            this.$router.push({ path: '/' })
-            return Promise.resolve()
-          }, 0)
+          this.$router.push({ path: '/' })
         })
         .catch(e => {
           this.$store.commit(
