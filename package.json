@@ -127,7 +127,7 @@
     "vue-google-charts": "^0.3.2",
     "vue-loader": "^13.0.0",
     "vue-multiselect": "2.0.0-beta.15",
-    "vue-quill-editor": "^1.1.1",
+    "vue-quill-editor": "^3.0.6",
     "vue-router": "^2.8.1",
     "vue-style-loader": "^2.0.0",
     "vue-template-compiler": "^2.5.16",
