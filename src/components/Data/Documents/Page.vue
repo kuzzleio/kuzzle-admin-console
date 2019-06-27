@@ -677,23 +677,23 @@ export default {
       const dateFields = []
 
       const findDateFields = (mapping, previousKey) => {
-        for (const [key, value] of Object.entries(mapping)) {
+        for (const [field, value] of Object.entries(mapping)) {
           if (typeof value === 'object') {
-            findDateFields(value, key)
-          } else if (key === 'type' && value === 'date') {
+            findDateFields(value, field)
+          } else if (field === 'type' && value === 'date') {
             dateFields.push(previousKey)
           }
         }
       }
 
-      const changeField = (document, dateFields) => {
+      const changeField = document => {
         for (const [field, value] of Object.entries(document)) {
           if (dateFields.includes(field) && Number.isInteger(value)) {
             const date = `${value}`.length === 13 ? new Date(value) : new Date(value * 1000)
 
             document[field] += ` (${date.toUTCString()})`
           } else if (value && typeof value === 'object') {
-            changeField(value, dateFields)
+            changeField(value)
           }
         }
       }
@@ -701,7 +701,7 @@ export default {
       findDateFields(this.collectionMapping, null)
 
       this.documents.forEach(document => {
-        changeField(document, dateFields)
+        changeField(document)
       })
     }
   }
