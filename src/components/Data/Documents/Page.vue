@@ -700,9 +700,7 @@ export default {
 
       findDateFields(this.collectionMapping, null)
 
-      this.documents.forEach(document => {
-        changeField(document)
-      })
+      this.documents.forEach(changeField)
     }
   }
 }
