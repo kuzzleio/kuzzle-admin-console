@@ -138,7 +138,7 @@
             class="DocumentList-column col s12"
           >
             <div class="DocumentList-materializeCollection h-scroll">
-              <DocumentListViewColumn 
+              <DocumentListViewColumn
                 :documents="documents"
                 :mapping="collectionMapping"
                 :index="index"
@@ -674,30 +674,33 @@ export default {
       this.$router.push({ query: mergedQuery })
     },
     addHumanReadableDateFields() {
-      const keys = []
+      const dateFields = []
+
       const findDateFields = (mapping, previousKey) => {
-        for (const key of Object.keys(mapping)) {
-          if (typeof mapping[key] === 'object') {
-            findDateFields(mapping[key], key)
-          } else if (key === 'type' && mapping[key] === 'date') {
-            keys.push(previousKey)
+        for (const [field, value] of Object.entries(mapping)) {
+          if (typeof value === 'object') {
+            findDateFields(value, field)
+          } else if (field === 'type' && value === 'date') {
+            dateFields.push(previousKey)
           }
         }
       }
-      const changeField = (document, keys) => {
-        for (const field of Object.keys(document)) {
-          if (keys.includes(field) && Number.isInteger(document[field])) {
-            const date = new Date(document[field])
+
+      const changeField = document => {
+        for (const [field, value] of Object.entries(document)) {
+          if (dateFields.includes(field) && Number.isInteger(value)) {
+            const date = `${value}`.length === 13 ? new Date(value) : new Date(value * 1000)
+
             document[field] += ` (${date.toUTCString()})`
-          } else if (document[field] && typeof document[field] === 'object') {
-            changeField(document[field], keys)
+          } else if (value && typeof value === 'object') {
+            changeField(value)
           }
         }
       }
+
       findDateFields(this.collectionMapping, null)
-      this.documents.forEach(document => {
-        changeField(document, keys)
-      })
+
+      this.documents.forEach(changeField)
     }
   }
 }
