@@ -96,18 +96,18 @@
 </template>
 
 <script>
-import Dropdown from '../../Materialize/Dropdown'
-import Title from '../../../directives/title.directive'
-import JsonFormatter from '../../../directives/json-formatter.directive'
+import Dropdown from '../../../Materialize/Dropdown'
+import Title from '../../../../directives/title.directive'
+import JsonFormatter from '../../../../directives/json-formatter.directive'
 import {
   canEditDocument,
   canDeleteDocument
-} from '../../../services/userAuthorization'
-import Autocomplete from '../../Common/Autocomplete'
+} from '../../../../services/userAuthorization'
+import Autocomplete from '../../../Common/Autocomplete'
 import _ from 'lodash'
 
 export default {
-  name: 'DocumentListViewColumn',
+  name: 'Column',
   directives: {
     Title,
     JsonFormatter

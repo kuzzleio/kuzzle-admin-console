@@ -7,7 +7,19 @@ describe('Document List', function() {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
-    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
+      properties: {
+        date: {
+          type: 'date'
+        },
+        value: {
+          type: 'integer'
+        },
+        value2: {
+          type: 'integer'
+        }
+      }
+    })
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
@@ -164,37 +176,58 @@ describe('Document List', function() {
     cy.get('.ListViewButtons-btn[title~="column"]').click()
     cy.url().should('contain', 'listViewType=column')
     
-    cy.get('.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(2)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(4)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
-    cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
-    cy.get('.DocumentListViewColumn-jsonFormatter > .json-formatter-row > .json-formatter-toggler-link > .json-formatter-value > span > .json-formatter-constructor-name').click()
-    cy.get('tbody > tr > .DocumentColumnItem > .relative > a').click()
-    cy.get('.centered > thead > tr > th:nth-child(7) > .fa').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)').click()
     cy.get('.centered > thead > tr > th:nth-child(6) > .fa').click()
     cy.get('.centered > thead > tr > th:nth-child(5) > .fa').click()
     cy.get('.centered > thead > tr > th:nth-child(4) > .fa').click()
     cy.get('.centered > thead > tr > th > .fa').click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
   })
-}) 
+
+  it('should handle the time series view properly', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`, {
+      date: '2019-01',
+      value: 10,
+      value2: 4
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId2/_create`, {
+      date: '2019-02',
+      value: 24,
+      value2: 56
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId3/_create`, {
+      date: '2019-03',
+      value: 20,
+      value2: 10
+    })
+  
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.contains('Indexes')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+  
+    cy.get('.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(4)').click()
+    cy.get('.col > .col > .col > .Autocomplete > input').click()
+    cy.get('.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
+    cy.get('.TimeSeriesValueSelector > .row > .col > .Autocomplete > input').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.TimeSeriesColorPickerBtn').click({ force: true, multiple: true })
+    cy.get('.TimeSeriesColorPicker:nth-child(3) > .vc-chrome-body > .vc-chrome-controls > .vc-chrome-sliders > .vc-chrome-hue-wrap > .vc-hue > .vc-hue-container').click({ force: true })
+    cy.get('.card-panel > .row > .DocumentList-timeseries > .DocumentList-materializeCollection > .col').click()
+    cy.get('.TimeSeriesValueSelector > .row > .col > .Autocomplete > input').click()
+    cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
+    cy.get('.TimeSeriesValueSelector > .row > .col > .Autocomplete > input').click()
+    cy.get('.card-panel > .row > .DocumentList-timeseries > .DocumentList-materializeCollection > .col').click()
+    cy.get('.col > .TimeSeriesValueSelector > .row:nth-child(2) > .col > .far').click()
+    cy.get('.col > .TimeSeriesValueSelector > .row > .col > .far').click()
+  })
+})
 
 describe('Document update/replace', () => {
   const kuzzleUrl = 'http://localhost:7512'
