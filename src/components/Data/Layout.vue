@@ -53,6 +53,18 @@ export default {
     }
   },
   mounted() {
+    this.$store.watch((state) => state.index.indexes, (n) => {
+      if (n.indexOf(this.$route.params.index) !== -1) {
+        this.routeExist = true
+      }
+    })
+    this.$store.watch((_, getters) => getters.indexCollections(this.$route.params.index), (n) => {
+      if (n.stored.indexOf(this.$route.params.collection) !== -1) {
+        this.routeExist = true
+      } else if (n.realtime.indexOf(this.$route.params.collection) !== -1) {
+        this.routeExist = true
+      }
+    })
     if (canSearchIndex()) {
       this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
       this.setRouteExist()
