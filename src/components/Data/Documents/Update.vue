@@ -4,7 +4,7 @@
     class="wrapper"
   >
     <headline>
-      Edit document - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
+      Edit document - <span class="bold">{{ $route.params.id }}</span>
       <collection-dropdown
         class="icon-medium icon-black"
         :index="index"
@@ -96,7 +96,7 @@ export default {
   async mounted() {
     this.fetch()
     this.room = await this.$kuzzle.realtime.subscribe(this.index, this.collection,
-      { ids: { values: [decodeURIComponent(this.$route.params.id)] } },
+      { ids: { values: [this.$route.params.id] } },
       () => {
         this.show = true
       })
