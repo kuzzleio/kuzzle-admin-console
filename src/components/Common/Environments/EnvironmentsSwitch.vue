@@ -6,7 +6,7 @@
     <a
       class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
       :style="{ backgroundColor: bgColor }"
-      :data-target="&quot;environment-dropdown-&quot; + _uid"
+      :data-target="&quot;environment-dropdown-&quot; + _id"
     >
       <span
         v-if="$store.getters.currentEnvironment"
@@ -24,7 +24,7 @@
     </a>
 
     <ul
-      :id="&quot;environment-dropdown-&quot; + _uid"
+      :id="&quot;environment-dropdown-&quot; + _id"
       class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
     >
       <li
