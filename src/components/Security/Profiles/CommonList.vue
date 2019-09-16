@@ -182,7 +182,7 @@ export default {
     editDocument(route, id) {
       this.$router.push({
         name: this.routeUpdate,
-        params: { id: encodeURIComponent(id) }
+        params: { id }
       })
     },
     deleteDocument(id) {

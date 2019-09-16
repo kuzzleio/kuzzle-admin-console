@@ -509,7 +509,7 @@ export default {
     onEditDocumentClicked(id) {
       this.$router.push({
         name: 'DataUpdateDocument',
-        params: { id: encodeURIComponent(id) }
+        params: { id }
       })
     },
 

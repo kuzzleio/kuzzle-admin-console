@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <headline>
-      Edit user - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
+      Edit user - <span class="bold">{{ $route.params.id }}</span>
     </headline>
 
     <Notice />

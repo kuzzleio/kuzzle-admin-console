@@ -78,7 +78,7 @@ export default {
       }
 
       if (this.isUpdate) {
-        this.kuid = decodeURIComponent(this.$route.params.id)
+        this.kuid = this.$route.params.id
 
         await Promise.all(
           this.strategies.map(async strategy => {

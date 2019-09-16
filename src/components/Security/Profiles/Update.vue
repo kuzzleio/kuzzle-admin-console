@@ -1,7 +1,7 @@
 <template>
   <div>
     <Headline>
-      Edit profile - <span class="bold">{{ decodeURIComponent($route.params.id) }}</span>
+      Edit profile - <span class="bold">{{ $route.params.id }}</span>
     </Headline>
     <Notice />
     <create-or-update
