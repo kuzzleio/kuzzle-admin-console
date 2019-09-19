@@ -37,7 +37,7 @@ export const connectToEnvironment = environment => {
     port: parseInt(environment.port),
     sslConnection: environment.ssl
   })
-
+  
   Vue.prototype.$kuzzle.connect()
 }
 
@@ -129,7 +129,7 @@ export const performSearchDocuments = async (
   let additionalAttributeName = null
 
   if (sort.length > 0) {
-    if (typeof sort[0] === 'string' && sort[0] !== '_id') {
+    if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
       additionalAttributeName = sort[0]
     } else {
       additionalAttributeName = Object.keys(sort[0])[0]

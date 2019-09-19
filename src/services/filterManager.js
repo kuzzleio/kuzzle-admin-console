@@ -262,24 +262,24 @@ export const rawFilterToSearchQuery = rawFilter => {
 export const toSort = filter => {
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return ['_id']
+      return ['_uid']
     case ACTIVE_BASIC:
-      return filter.sorting ? formatSort(filter.sorting) : ['_id']
+      return filter.sorting ? formatSort(filter.sorting) : ['_uid']
     case ACTIVE_RAW:
-      return filter.raw ? rawFilterToSort(filter.raw) : ['_id']
+      return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
     case NO_ACTIVE:
     default:
-      return ['_id']
+      return ['_uid']
   }
 }
 
 export const rawFilterToSort = rawFilter => {
-  return rawFilter.sort || ['_id']
+  return rawFilter.sort || ['_uid']
 }
 
 export const formatSort = sorting => {
   if (!sorting.attribute) {
-    return ['_id']
+    return ['_uid']
   }
   return [{ [sorting.attribute]: { order: sorting.order } }]
 }
