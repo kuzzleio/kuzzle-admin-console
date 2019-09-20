@@ -382,8 +382,8 @@ describe('filterManager tests', () => {
   })
 
   describe('toSort tests', () => {
-    it('should sort by `_id` if no attribute is in sorting', () => {
-      expect(filterManager.toSort({})).to.deep.equals(['_id'])
+    it('should sort by `_uid` if no attribute is in sorting', () => {
+      expect(filterManager.toSort({})).to.deep.equals(['_uid'])
     })
 
     it('should return a formatted object when provided a basic filter', () => {

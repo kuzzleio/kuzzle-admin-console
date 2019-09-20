@@ -59,7 +59,7 @@ export default {
         return null
       }
 
-      let parsed = this.id + this._id
+      let parsed = this.id + this._uid
 
       return formatForDom(parsed)
     }
