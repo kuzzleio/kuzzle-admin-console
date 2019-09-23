@@ -1,8 +1,8 @@
-version: '2'
+version: '3'
 
 services:
   kuzzle:
-    image: kuzzleio/kuzzle
+    image: kuzzleio/kuzzle:1.10.2
     ports:
       - '7512:7512'
     cap_add:
@@ -17,10 +17,10 @@ services:
       - NODE_ENV=production
 
   redis:
-    image: redis:3.2
+    image: redis:5
 
   elasticsearch:
-    image: kuzzleio/elasticsearch:5.4.1
+    image: kuzzleio/elasticsearch:5.6.10
     ulimits:
       nofile: 65536
     environment:
