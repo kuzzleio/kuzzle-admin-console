@@ -122,13 +122,13 @@ jobs:
 
       deploy:
         provider: script
-        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV --delete
+        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/kuzzle-v2 --delete
         skip_cleanup: true
         on:
           all_branches: true
 
       after_deploy:
-        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/*"
+        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/kuzzle-v2/*"
 
 # ---------------------------------------
 # Github release and s3 deployment
