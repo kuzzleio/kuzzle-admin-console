@@ -21,7 +21,7 @@ services:
     image: redis:5
 
   elasticsearch:
-    image: kuzzleio/elasticsearch:7.3
+    image: kuzzleio/elasticsearch:7.3.0
     ulimits:
       nofile: 65536
     environment:
