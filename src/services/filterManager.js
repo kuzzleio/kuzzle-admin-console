@@ -230,10 +230,10 @@ export const formatFromQuickSearch = searchTerm => {
       bool: {
         should: [
           {
-            match_phrase_prefix: {
-              _all: {
-                query: searchTerm
-              }
+            multi_match: {
+              query: searchTerm,
+              type: 'phrase_prefix',
+              fields: ['*']
             }
           },
           {

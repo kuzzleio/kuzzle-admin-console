@@ -59,7 +59,7 @@
         </div>
       </div>
 
-      <div 
+      <div
         v-if="!isCollectionEmpty"
         class="card-panel card-body"
       >
@@ -142,7 +142,7 @@
             class="DocumentList-column col s12"
           >
             <div class="DocumentList-materializeCollection h-scroll">
-              <Column 
+              <Column
                 :documents="documents"
                 :mapping="collectionMapping"
                 :index="index"
@@ -578,6 +578,7 @@ export default {
 
       let searchQuery = null
       searchQuery = filterManager.toSearchQuery(this.currentFilter)
+      console.log(searchQuery)
       if (!searchQuery) {
         searchQuery = {}
       }
@@ -679,8 +680,8 @@ export default {
     // Collection Metadata management
     // =========================================================================
     async loadMappingInfo() {
-      const response = await getMappingDocument(this.collection, this.index)
-      this.collectionMapping = response[this.index].mappings[this.collection].properties
+      const { properties } = await getMappingDocument(this.collection, this.index)
+      this.collectionMapping = properties
 
       this.mappingGeopoints = this.listMappingGeopoints(
         this.collectionMapping
