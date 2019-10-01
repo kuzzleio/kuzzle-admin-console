@@ -296,7 +296,7 @@ describe('Search', function() {
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function() {
+  it('sorts the results when sorting is specified in the raw filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -334,14 +334,14 @@ describe('Search', function() {
     .should('be.visible')
     .clear({force: true})
     .type(`{
-    "query": { 
+    "query": {
     "bool": {
     "must": {
     "match_phrase_prefix": {
     "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
     "sort": {
     "lastName": "desc"
-    }`, {
+    `, {
       force: true
     })
 
@@ -359,12 +359,12 @@ describe('Search', function() {
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-  
+
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo')
     cy.get('.BasicFilter-query input[placeholder=Value]').type('bar')
     cy.get('.BasicFilter-submitBtn').click()
-  
+
     cy.get('#raw').click()
     cy.get('.ace_content')
       .should('contain', 'query')

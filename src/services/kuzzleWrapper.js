@@ -37,7 +37,7 @@ export const connectToEnvironment = environment => {
     port: parseInt(environment.port),
     sslConnection: environment.ssl
   })
-  
+
   Vue.prototype.$kuzzle.connect()
 }
 
@@ -129,7 +129,7 @@ export const performSearchDocuments = async (
   let additionalAttributeName = null
 
   if (sort.length > 0) {
-    if (typeof sort[0] === 'string' && sort[0] !== '_uid') {
+    if (typeof sort[0] === 'string' && sort[0] !== '_id') {
       additionalAttributeName = sort[0]
     } else {
       additionalAttributeName = Object.keys(sort[0])[0]
@@ -166,7 +166,7 @@ export const getMappingDocument = (collection, index) => {
   return Vue.prototype.$kuzzle.collection.getMapping(index, collection)
 }
 
-export const performDeleteDocuments = (index, collection, ids) => {
+export const performDeleteDocuments = async (index, collection, ids) => {
   if (
     !ids ||
     !Array.isArray(ids) ||
@@ -174,10 +174,16 @@ export const performDeleteDocuments = (index, collection, ids) => {
     !index ||
     !collection
   ) {
-    return Promise.reject(new Error('ids<Array> parameter is required'))
+    throw new Error('ids<Array> parameter is required')
   }
+  const { deleted } = await Vue.prototype.$kuzzle.document.mDelete(
+    index,
+    collection,
+    ids,
+    { refresh: 'wait_for' }
+  )
 
-  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, { refresh: 'wait_for' })
+  return deleted
 }
 
 // ### Security
@@ -347,10 +353,7 @@ export const isKuzzleActionAllowed = (rights, controller, action, index, collect
   if (filteredRights.some(function (item) { return item.value === 'allowed' })) {
     return 'allowed'
   }
-  // If no right allows the action, we check for conditionals.
-  if (filteredRights.some(function (item) { return item.value === 'conditional' })) {
-    return 'conditional'
-  }
+
   // Otherwise we return 'denied'.
   return 'denied'
 }

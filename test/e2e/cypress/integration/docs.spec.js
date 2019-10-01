@@ -175,7 +175,7 @@ describe('Document List', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="column"]').click()
     cy.url().should('contain', 'listViewType=column')
-    
+
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
     cy.get('.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
@@ -192,26 +192,26 @@ describe('Document List', function() {
 
   it('should handle the time series view properly', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`, {
-      date: '2019-01',
+      date: '2019-01-21',
       value: 10,
       value2: 4
     })
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId2/_create`, {
-      date: '2019-02',
+      date: '2019-02-21',
       value: 24,
       value2: 56
     })
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/myId3/_create`, {
-      date: '2019-03',
+      date: '2019-03-21',
       value: 20,
       value2: 10
     })
-  
+
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-  
+
     cy.get('.card-panel > .DocumentsPage-filtersAndButtons > .col > .ListViewButtons > .ListViewButtons-btn:nth-child(4)').click()
     cy.get('.col > .col > .col > .Autocomplete > input').click()
     cy.get('.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result').click()
@@ -276,7 +276,7 @@ describe('Document update/replace', () => {
     cy.get('.col > .card-content > #document > .ace_scroller > .ace_content')
     .should('be.visible')
     cy.wait(2000)
-    
+
     cy.get('textarea.ace_text-input')
     .type('{selectall}{backspace}', {delay: 200, force: true})
     .type(`{
@@ -313,7 +313,7 @@ describe('Document update/replace', () => {
     cy.get('textarea.ace_text-input')
     .should('be.visible')
     cy.wait(2000)
-    
+
     cy.get('textarea.ace_text-input')
     .type('{selectall}{backspace}', {delay: 200, force: true})
     .type(`{
