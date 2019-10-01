@@ -151,10 +151,8 @@ export default {
 
       try {
         await this.$kuzzle.security
-          .createUser(this.user.kuid, userObject)
-        this.$kuzzle.query(
-          { controller: 'index', action: 'refreshInternal' }
-        )
+          .createUser(this.user.kuid, userObject, { refresh: 'wait_for' })
+
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (err) {
         this.error = err.message
