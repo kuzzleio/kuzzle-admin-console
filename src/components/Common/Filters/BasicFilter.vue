@@ -103,12 +103,14 @@
           <p><i class="fa fa-sort-amount-asc" />Sorting</p>
           <div class="row block-content">
             <div class="col s4">
-              <input
-                v-model="filters.sorting.attribute"
+              <autocomplete
+                class="BasicFilter-sortingAttr"
+                input-class="validate"
                 placeholder="Attribute"
-                type="text"
-                class="BasicFilter-sortingAttr validate"
-              >
+                :items="attributeItems"
+                :value="filters.sorting.attribute || ''"
+                @autocomplete::change="(attribute) => setSortAttr(attribute)"
+              />
             </div>
             <div class="BasicFilter-sortingValue col s2">
               <m-select v-model="filters.sorting.order">
@@ -238,6 +240,9 @@ export default {
   },
   mounted() {},
   methods: {
+    setSortAttr(attribute) {
+      this.filters.sorting.attribute = attribute
+    },
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
