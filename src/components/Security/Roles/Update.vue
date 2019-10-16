@@ -52,9 +52,9 @@ export default {
   },
   methods: {
     getMappingRoles,
-    async update(role) {
+    async update(role, replace) {
       this.error = ''
-
+      console.log(replace)
       if (!role) {
         this.error = 'The document is invalid, please review it'
         return
@@ -63,8 +63,11 @@ export default {
       this.submitted = true
 
       try {
-        this.$kuzzle.security
-          .updateRole(this.id, role)
+        if (replace) {
+          this.$kuzzle.security.createOrReplaceRole(this.id, role)
+        } else {
+          this.$kuzzle.security.updateRole(this.id, role)
+        }
         setTimeout(() => {
           // we can't perform refresh index on %kuzzle
           this.$router.push({ name: 'SecurityRolesList' })
