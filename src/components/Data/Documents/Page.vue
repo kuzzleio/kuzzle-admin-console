@@ -595,7 +595,6 @@ export default {
           sorting
         )
         this.documents = res.documents
-        console.log(res.documents)
         this.totalDocuments = res.total
       } catch (e) {
         this.$store.commit(SET_TOAST, {
