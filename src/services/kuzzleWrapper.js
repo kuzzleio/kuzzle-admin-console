@@ -167,16 +167,7 @@ export const getMappingDocument = (collection, index) => {
 }
 
 export const performDeleteDocuments = async (index, collection, ids) => {
-  if (
-    !ids ||
-    !Array.isArray(ids) ||
-    ids.length === 0 ||
-    !index ||
-    !collection
-  ) {
-    throw new Error('ids<Array> parameter is required')
-  }
-  const { deleted } = await Vue.prototype.$kuzzle.document.mDelete(
+  const deleted = await Vue.prototype.$kuzzle.document.mDelete(
     index,
     collection,
     ids,

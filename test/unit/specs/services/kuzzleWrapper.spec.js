@@ -209,6 +209,7 @@ describe('Kuzzle wrapper service', () => {
         .then(() => {
           done()
         })
+        .catch(error => done(error))
     })
   })
 

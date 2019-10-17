@@ -67,7 +67,7 @@ describe('Watch', () => {
     cy.get('.QuickFilter-chipLabel').click()
     cy.get('.BasicFilter-andBlock .BasicFilter--key input')
       .click()
-      .type('firstName{downarrow}{enter}')
+      .type('firstName')
     cy.get('.BasicFilter-andBlock .BasicFilter--value')
       .click()
       .type(firstName)

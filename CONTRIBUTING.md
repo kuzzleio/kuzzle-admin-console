@@ -436,7 +436,7 @@ npm test
 This executes both unit and end-to-end tests. To run only the unit-tests, run
 
 ```
-npm run unit
+npm run unit-testing
 ```
 
 ### End-to-end

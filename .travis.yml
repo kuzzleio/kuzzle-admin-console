@@ -47,7 +47,7 @@ jobs:
       name: "Unit Tests"
       script:
         - npm install
-        - npm run unit
+        - npm run unit-testing
 
       after_script:
         - npm run codecov

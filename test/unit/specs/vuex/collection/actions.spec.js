@@ -73,15 +73,9 @@ describe('Collections module', () => {
             prototype: {
               $kuzzle: {
                 collection: {
-                  getMapping: (index, collection) => {
+                  getMapping: () => {
                     return Promise.resolve({
-                      [index]: {
-                        mappings: {
-                          [collection]: {
-                            properties: {toto: 'tutu'}
-                          }
-                        }
-                      }
+                      properties: { toto: 'tutu' }
                     })
                   }
                 }
