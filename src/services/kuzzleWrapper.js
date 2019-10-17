@@ -140,7 +140,7 @@ export const performSearchDocuments = async (
     const object = {
       content: new Content(document._source),
       id: document._id,
-      meta: new Meta(document._meta)
+      meta: new Meta(document._source._kuzzle_info)
     }
 
     if (result.aggregations) {
