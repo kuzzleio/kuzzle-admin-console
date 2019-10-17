@@ -16,17 +16,12 @@ services:
       - kuzzle_services__storageEngine__internalIndex__collections__users__dynamic=true
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
-      - NODE_ENV=production
+      - NODE_ENV=development
 
   redis:
     image: redis:5
 
   elasticsearch:
-    image: kuzzleio/elasticsearch:7.3.0
+    image: kuzzleio/elasticsearch:7.4.0
     ulimits:
       nofile: 65536
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - node.name=alyx
-      - cluster.name=kuzzle
-      - discovery.type=single-node
