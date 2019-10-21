@@ -89,7 +89,7 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.url().should('contain', 'active=basic')
@@ -162,7 +162,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
@@ -195,7 +196,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
@@ -244,7 +246,7 @@ describe('Search', function() {
 
     cy.get('.QuickFilter-optionBtn').click()
     cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentBoxItem').should('have.length', 1)
@@ -281,7 +283,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
 
     cy.get('.BasicFilter-sortingAttr').type('lastName')
