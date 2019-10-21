@@ -65,7 +65,7 @@ export default {
           })
         setTimeout(() => {
           // we can't perform refresh index on %kuzzle
-          this.$router.push({ name: 'SecurityRolesList' })
+          this.$router.push({ name: 'SecurityProfilesList' })
         }, 1000)
       } catch (e) {
         this.error =
