@@ -88,15 +88,9 @@ describe('Search', function() {
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)'
-    ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
-      delay: 60
-    })
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
@@ -168,8 +162,9 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -201,8 +196,9 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -249,12 +245,8 @@ describe('Search', function() {
     cy.get('.DocumentBoxItem').should('have.length', 2)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)'
-    ).click()
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentBoxItem').should('have.length', 1)
@@ -291,8 +283,9 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
 
     cy.get('.BasicFilter-sortingAttr').type('lastName')
     cy.get('.BasicFilter-sortingValue')
