@@ -65,15 +65,14 @@ describe('Watch', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.CollectionTabs--watch').click()
     cy.get('.QuickFilter-chipLabel').click()
-    cy.get('.BasicFilter-andBlock .BasicFilter--key input')
-      .click()
-      .type('firstName{downarrow}{enter}')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
     cy.get('.BasicFilter-andBlock .BasicFilter--value')
       .click()
       .type(firstName)
     cy.get('.BasicFilter-submitBtn').click()
 
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Keylogger as a Service'
@@ -81,7 +80,7 @@ describe('Watch', () => {
 
     cy.get('.Notification').should('not.exist')
 
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
       job: 'Blockchain as a Service'
