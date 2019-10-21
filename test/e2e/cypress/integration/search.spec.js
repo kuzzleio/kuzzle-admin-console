@@ -88,8 +88,8 @@ describe('Search', function() {
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
@@ -161,8 +161,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -194,8 +194,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -279,8 +279,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
 
     cy.get('.BasicFilter-sortingAttr').type('lastName')
     cy.get('.BasicFilter-sortingValue')
@@ -360,8 +360,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
   
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar')
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
   
     cy.get('#raw').click()
