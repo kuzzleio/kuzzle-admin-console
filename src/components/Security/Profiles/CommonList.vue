@@ -19,7 +19,7 @@
       :selected-documents="selectedDocuments"
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
-      :perform-delete="performDelete"
+      :perform-delete="deleteProfiles"
       @filters-updated="onFiltersUpdated"
       @create-clicked="create"
       @toggle-all="toggleAll"
@@ -126,6 +126,15 @@ export default {
     )
   },
   methods: {
+    async deleteProfiles(index, collection, ids) {
+      try {
+        await this.performDelete(index, collection, ids)
+        this.$set(this.selectedDocuments, this.selectedDocuments.splice(0, this.selectedDocuments.length))
+        this.fetchProfiles()
+      } catch (e) {
+        return Promise.reject(e)
+      }
+    },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     },
