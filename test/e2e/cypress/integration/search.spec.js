@@ -287,7 +287,8 @@ describe('Search', function() {
     cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
 
-    cy.get('.BasicFilter-sortingAttr').type('lastName')
+    cy.get('.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate').click()
+    cy.get('.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
     cy.get('.BasicFilter-sortingValue')
       .click()
       .contains('desc')
