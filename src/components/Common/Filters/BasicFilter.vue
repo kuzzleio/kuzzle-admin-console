@@ -241,11 +241,7 @@ export default {
   },
   methods: {
     setSortAttr(attribute) {
-<<<<<<< HEAD
-      this.filters.sorting.attribute = attribute
-=======
       this.$set(this.filters.sorting, 'attribute', attribute)
->>>>>>> 792bed42... fix sorting
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
