@@ -260,7 +260,7 @@ describe('Search', function() {
     cy.get('.DocumentBoxItem').should('have.length', 2)
   })
 
-  it('sorts the results when sorting is selected in the basic filter', function() {
+  it.only('sorts the results when sorting is selected in the basic filter', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
@@ -288,7 +288,7 @@ describe('Search', function() {
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
 
     cy.get('.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate').click()
-    cy.get('.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)').click()
+    cy.get('.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)').click()
     cy.get('.BasicFilter-sortingValue')
       .click()
       .contains('desc')

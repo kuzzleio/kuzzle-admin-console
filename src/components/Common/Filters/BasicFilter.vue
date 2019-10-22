@@ -191,6 +191,7 @@ export default {
   data() {
     return {
       filters: {
+        active: 'basic',
         basic: null,
         sorting: { ...emptySorting }
       }
@@ -238,11 +239,9 @@ export default {
       }
     }
   },
-  mounted() {},
   methods: {
     setSortAttr(attribute) {
       this.$set(this.filters.sorting, 'attribute', attribute)
-      console.log(this.filters)
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute

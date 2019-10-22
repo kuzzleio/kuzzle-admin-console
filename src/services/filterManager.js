@@ -263,13 +263,12 @@ export const toSort = filter => {
   switch (filter.active) {
     case ACTIVE_QUICK:
       return ['_uid']
-    case ACTIVE_BASIC:
-      return filter.sorting ? formatSort(filter.sorting) : ['_uid']
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
     case NO_ACTIVE:
     default:
-      return ['_uid']
+    case ACTIVE_BASIC:
+      return filter.sorting ? formatSort(filter.sorting) : ['_uid']
   }
 }
 
