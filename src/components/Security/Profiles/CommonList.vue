@@ -127,13 +127,11 @@ export default {
   },
   methods: {
     async deleteProfiles(index, collection, ids) {
-      try {
-        await this.performDelete(index, collection, ids)
-        this.$set(this.selectedDocuments, this.selectedDocuments.splice(0, this.selectedDocuments.length))
-        this.fetchProfiles()
-      } catch (e) {
-        return Promise.reject(e)
-      }
+      await this.performDelete(index, collection, ids)
+      this.$set(
+        this.selectedDocuments,
+        this.selectedDocuments.splice(0, this.selectedDocuments.length))
+      this.fetchProfiles()
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1

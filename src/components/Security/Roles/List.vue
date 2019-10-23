@@ -120,13 +120,11 @@ export default {
   },
   methods: {
     async deleteRoles(index, collection, ids) {
-      try {
-        await this.performDelete(index, collection, ids)
-        this.$set(this.selectedDocuments, this.selectedDocuments.splice(0, this.selectedDocuments.length))
-        this.fetchRoles()
-      } catch (e) {
-        return Promise.reject(e)
-      }
+      await this.performDelete(index, collection, ids)
+      this.$set(
+        this.selectedDocuments,
+        this.selectedDocuments.splice(0, this.selectedDocuments.length))
+      this.fetchRoles()
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
