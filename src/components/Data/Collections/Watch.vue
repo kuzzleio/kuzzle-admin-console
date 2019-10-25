@@ -49,6 +49,7 @@
           :available-operands="realtimeFilterOperands"
           :quick-filter-enabled="false"
           :sorting-enabled="false"
+          :toggle-auto-complete="false"
           :collection-mapping="collectionMapping"
           @filters-updated="onFiltersUpdated"
           @reset="onReset"
@@ -171,7 +172,6 @@ import Filters from '../../Common/Filters/Filters'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
 
 import Vue from 'vue'
 
@@ -229,8 +229,6 @@ export default {
   },
   async mounted() {
     this.notifications = []
-    const response = await getMappingDocument(this.collection, this.index)
-    this.collectionMapping = response[this.index].mappings[this.collection].properties
   },
   async destroyed() {
     this.reset()
