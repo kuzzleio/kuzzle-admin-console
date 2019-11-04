@@ -130,7 +130,7 @@ describe('Collections module', () => {
               type: RECEIVE_COLLECTION_DETAIL,
               payload: {
                 name: 'tutu',
-                mapping: { toto: 'tutu' },
+                mapping: {},
                 schema: {},
                 isRealtimeOnly: false,
                 allowForm: false
