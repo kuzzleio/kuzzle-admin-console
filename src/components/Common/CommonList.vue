@@ -207,7 +207,7 @@ export default {
         searchQuery = {}
       }
 
-      let sorting = ['_id'] // by default, sort on _id: prevent random order
+      let sorting = ['_uid'] // by default, sort on _id: prevent random order
       if (this.currentFilter.sorting) {
         sorting = filterManager.toSort(this.currentFilter)
       }

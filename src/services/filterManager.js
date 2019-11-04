@@ -264,7 +264,7 @@ export const toSort = filter => {
     case ACTIVE_QUICK:
       return ['_uid']
     case ACTIVE_RAW:
-      return filter.raw ? rawFilterToSort(filter.raw) : ['_id']
+      return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
     case NO_ACTIVE:
     default:
     case ACTIVE_BASIC:
@@ -273,12 +273,12 @@ export const toSort = filter => {
 }
 
 export const rawFilterToSort = rawFilter => {
-  return rawFilter.sort || ['_id']
+  return rawFilter.sort || ['_uid']
 }
 
 export const formatSort = sorting => {
   if (!sorting.attribute) {
-    return ['_id']
+    return ['_uid']
   }
   return [{ [sorting.attribute]: { order: sorting.order } }]
 }

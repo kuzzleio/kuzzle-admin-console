@@ -256,7 +256,7 @@ describe('Search', function() {
     cy.get('.DocumentBoxItem').should('have.length', 2)
   })
 
-  it.only('sorts the results when sorting is selected in the basic filter', function() {
+  it('sorts the results when sorting is selected in the basic filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
