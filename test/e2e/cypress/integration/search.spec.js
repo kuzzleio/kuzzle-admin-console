@@ -323,17 +323,15 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
     cy.wait(1000)
 
-    cy.get('#rawsearch .ace_line')
-      .click({ force: true })
+    cy.get('#rawsearch .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-    .should('be.visible')
-    .clear({force: true})
-    .type(`{
+      .should('be.visible')
+      .clear({ force: true })
+      .type(
+        `{
     "query": {
     "bool": {
     "must": {
@@ -341,9 +339,11 @@ describe('Search', function() {
     "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
     "sort": {
     "lastName": "desc"
-    `, {
-      force: true
-    })
+    `,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -388,24 +388,25 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .type('{selectall}{backspace}', {delay: 200, force: true})
-    .type(`{
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
     "query": {},
     "aggregations": {
       "my_aggs": {
         "terms": {
           "field": "firstName"
-        `, {
-      force: true
-    })
+        `,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -429,19 +430,20 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{
-      "query": {}`, {
-      force: true
-    })
+      .clear({ force: true })
+      .type(
+        `{
+      "query": {}`,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 

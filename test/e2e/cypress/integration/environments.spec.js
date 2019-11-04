@@ -64,7 +64,7 @@ describe('Environments', function() {
     cy.get(`.CreateEnvironment-colorBtns div:nth-child(3) div.color`)
       .as('colorEl')
       .click()
-    
+
     cy.get('.Environment-SubmitButton').click()
     cy.wait(1000)
     cy.get('.LoginAsAnonymous-Btn').click()
@@ -126,8 +126,13 @@ describe('Environments', function() {
 
     cy.fixture('environment.json').then(fileContent => {
       cy.get('input[type=file').upload(
-        { fileContent, fileName:'environment.json', mimeType: 'application/json' },
-        { subjectType: 'input' })
+        {
+          fileContent,
+          fileName: 'environment.json',
+          mimeType: 'application/json'
+        },
+        { subjectType: 'input' }
+      )
     })
   })
 })

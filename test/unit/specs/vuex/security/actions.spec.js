@@ -16,7 +16,7 @@ describe('Security module', () => {
 
   beforeEach(() => {
     actions = actionsInjector({
-      'vue': {
+      vue: {
         prototype: {
           $kuzzle: {
             query: () => {
