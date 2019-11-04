@@ -17,7 +17,7 @@
       :selected-documents="selectedDocuments"
       :length-document="selectedDocuments.length"
       :document-to-delete="documentToDelete"
-      :perform-delete="performDelete"
+      :perform-delete="deleteRoles"
       @filters-updated="onFiltersUpdated"
       @create-clicked="create"
       @toggle-all="toggleAll"
@@ -119,6 +119,13 @@ export default {
     )
   },
   methods: {
+    async deleteRoles(index, collection, ids) {
+      await this.performDelete(index, collection, ids)
+      this.$set(
+        this.selectedDocuments,
+        this.selectedDocuments.splice(0, this.selectedDocuments.length))
+      this.fetchRoles()
+    },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     },
