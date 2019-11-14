@@ -1,4 +1,3 @@
-require('cypress-plugin-retries')
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -52,3 +51,5 @@ import './commands'
 //       return Promise.all(promises)
 //     })
 // })
+
+require('cypress-plugin-retries')

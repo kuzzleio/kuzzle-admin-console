@@ -380,7 +380,7 @@ describe('Document update/replace', () => {
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
         expect(res.body.result._source.foo).to.be.equals('changed')
-        expect(res.body.result._source.more).to.be.undefined
+        expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
       }
     )
   })
