@@ -63,7 +63,7 @@ export default {
       this.submitted = true
 
       try {
-        if (replace) {
+        if (forceCreation) {
           this.$kuzzle.security.createOrReplaceRole(this.id, role)
         } else {
           this.$kuzzle.security.updateRole(this.id, role)
