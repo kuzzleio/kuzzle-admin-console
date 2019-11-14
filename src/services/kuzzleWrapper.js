@@ -31,6 +31,7 @@ export const connectToEnvironment = environment => {
 
   if (Vue.prototype.$kuzzle.protocol.state === 'connected') {
     Vue.prototype.$kuzzle.disconnect()
+    Vue.prototype.$kuzzle.jwt = null
   }
 
   Vue.prototype.$kuzzle.protocol = new WebSocket(environment.host, {
@@ -163,7 +164,7 @@ export const performSearchDocuments = async (
 }
 
 export const getMappingDocument = (collection, index) => {
-  return Vue.prototype.$kuzzle.collection.getMapping(index, collection)
+  return Vue.prototype.$kuzzle.collection.getMapping(index, collection, { includeKuzzleMeta: true })
 }
 
 export const performDeleteDocuments = async (index, collection, ids) => {
