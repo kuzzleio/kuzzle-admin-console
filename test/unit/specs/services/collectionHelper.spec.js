@@ -4,29 +4,37 @@ import { config, elements } from '../../../../src/config/schemaMapping'
 describe('CollectionHelper', () => {
   describe('mergeSchemaMapping', () => {
     it('should return target if target is not an object', () => {
-      expect(collectionHelper.mergeSchemaMapping('toto', {toto: 'tata'})).be.eql('toto')
+      expect(
+        collectionHelper.mergeSchemaMapping('toto', { toto: 'tata' })
+      ).be.eql('toto')
     })
 
     it('should return target if source is not an object', () => {
-      expect(collectionHelper.mergeSchemaMapping({toto: 'tata'}, 'tata')).deep.eql({toto: 'tata'})
+      expect(
+        collectionHelper.mergeSchemaMapping({ toto: 'tata' }, 'tata')
+      ).deep.eql({ toto: 'tata' })
     })
 
     it('should add the default schema from mapping', () => {
       let target = {}
       let source = {
-        toto: {type: 'text'}
+        toto: { type: 'text' }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({toto: config['text'].default})
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+        toto: config['text'].default
+      })
     })
 
     it('should set the tag json if there is no element for the type', () => {
       let target = {}
       let source = {
-        toto: {type: 'toto'}
+        toto: { type: 'toto' }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({toto: elements['json']})
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+        toto: elements['json']
+      })
     })
 
     it('should do nothing when the schema is already configured', () => {
@@ -34,10 +42,12 @@ describe('CollectionHelper', () => {
         toto: elements['textarea']
       }
       let source = {
-        toto: {type: 'text'}
+        toto: { type: 'text' }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({toto: elements['textarea']})
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+        toto: elements['textarea']
+      })
     })
 
     it('should loop on properties', () => {
@@ -45,8 +55,8 @@ describe('CollectionHelper', () => {
       let source = {
         name: {
           properties: {
-            first: {type: 'text'},
-            last: {type: 'text'}
+            first: { type: 'text' },
+            last: { type: 'text' }
           }
         }
       }
@@ -73,7 +83,7 @@ describe('CollectionHelper', () => {
               properties: {
                 name: {
                   properties: {
-                    name: {type: 'text'}
+                    name: { type: 'text' }
                   }
                 }
               }
@@ -104,20 +114,25 @@ describe('CollectionHelper', () => {
     })
 
     it('should return attribute with type if there is no depth', () => {
-      expect(collectionHelper.flattenObjectMapping({toto: {type: 'text'}})).deep.eql({toto: 'text'})
+      expect(
+        collectionHelper.flattenObjectMapping({ toto: { type: 'text' } })
+      ).deep.eql({ toto: 'text' })
     })
 
     it('should loop in properties', () => {
       let mapping = {
         name: {
           properties: {
-            first: {type: 'text'},
-            last: {type: 'text'}
+            first: { type: 'text' },
+            last: { type: 'text' }
           }
         }
       }
 
-      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eql({'name.first': 'text', 'name.last': 'text'})
+      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eql({
+        'name.first': 'text',
+        'name.last': 'text'
+      })
     })
 
     it('should loop in properties with max depth 2', () => {
@@ -128,8 +143,8 @@ describe('CollectionHelper', () => {
               properties: {
                 name: {
                   properties: {
-                    first: {type: 'text'},
-                    last: {type: 'text'}
+                    first: { type: 'text' },
+                    last: { type: 'text' }
                   }
                 }
               }
@@ -138,7 +153,9 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eql({'person.identity': 'force-json'})
+      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eql({
+        'person.identity': 'force-json'
+      })
     })
   })
 
@@ -148,20 +165,25 @@ describe('CollectionHelper', () => {
     })
 
     it('should return schema if there is no depth', () => {
-      expect(collectionHelper.flattenObjectSchema({toto: {tag: 'input'}})).deep.eql({toto: {tag: 'input'}})
+      expect(
+        collectionHelper.flattenObjectSchema({ toto: { tag: 'input' } })
+      ).deep.eql({ toto: { tag: 'input' } })
     })
 
     it('should loop in properties', () => {
       let mapping = {
         name: {
           properties: {
-            first: {tag: 'input'},
-            last: {tag: 'input'}
+            first: { tag: 'input' },
+            last: { tag: 'input' }
           }
         }
       }
 
-      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eql({'name.first': {tag: 'input'}, 'name.last': {tag: 'input'}})
+      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eql({
+        'name.first': { tag: 'input' },
+        'name.last': { tag: 'input' }
+      })
     })
 
     it('should loop in properties with max depth 2', () => {
@@ -172,8 +194,8 @@ describe('CollectionHelper', () => {
               properties: {
                 name: {
                   properties: {
-                    first: {tag: 'input'},
-                    last: {tag: 'input'}
+                    first: { tag: 'input' },
+                    last: { tag: 'input' }
                   }
                 }
               }
@@ -182,13 +204,17 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eql({'person.identity': {...elements['json']}})
+      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eql({
+        'person.identity': { ...elements['json'] }
+      })
     })
   })
 
   describe('getSchemaForType', () => {
     it('should return an array with json schema if type does not exist', () => {
-      expect(collectionHelper.getSchemaForType('notexist')).deep.eql([{...elements['json']}])
+      expect(collectionHelper.getSchemaForType('notexist')).deep.eql([
+        { ...elements['json'] }
+      ])
     })
 
     it('should return the whole list of available elements plus the json element', () => {
@@ -207,10 +233,14 @@ describe('CollectionHelper', () => {
 
   describe('getDefaultSchemaForType', () => {
     it('should return element json if type does not exist', () => {
-      expect(collectionHelper.getDefaultSchemaForType('notexist')).deep.eql({...elements['json']})
+      expect(collectionHelper.getDefaultSchemaForType('notexist')).deep.eql({
+        ...elements['json']
+      })
     })
     it('should return the default element for the specified type', () => {
-      expect(collectionHelper.getDefaultSchemaForType('text')).deep.eql(elements['input:text'])
+      expect(collectionHelper.getDefaultSchemaForType('text')).deep.eql(
+        elements['input:text']
+      )
     })
   })
 
@@ -252,11 +282,13 @@ describe('CollectionHelper', () => {
 
   describe('mergeMetaAttributes', () => {
     it('should merge meta attributes and mapping', () => {
-      let mapping = {mapping: 'mapping'}
-      let schema = {schema: 'schema'}
+      let mapping = { mapping: 'mapping' }
+      let schema = { schema: 'schema' }
       let allowForm = true
 
-      expect(collectionHelper.mergeMetaAttributes({mapping, schema, allowForm})).deep.eql({
+      expect(
+        collectionHelper.mergeMetaAttributes({ mapping, schema, allowForm })
+      ).deep.eql({
         properties: mapping,
         _meta: {
           schema,
@@ -271,8 +303,8 @@ describe('CollectionHelper', () => {
       let mapping = {
         name: {
           properties: {
-            first: {type: 'text'},
-            last: {type: 'text'}
+            first: { type: 'text' },
+            last: { type: 'text' }
           }
         }
       }
@@ -291,8 +323,8 @@ describe('CollectionHelper', () => {
       let schema = {
         name: {
           properties: {
-            first: {type: 'text'},
-            last: {type: 'text'}
+            first: { type: 'text' },
+            last: { type: 'text' }
           }
         }
       }
@@ -310,8 +342,8 @@ describe('CollectionHelper', () => {
       let schema = {
         name: {
           properties: {
-            first: {type: 'text'},
-            last: {type: 'text'}
+            first: { type: 'text' },
+            last: { type: 'text' }
           }
         }
       }

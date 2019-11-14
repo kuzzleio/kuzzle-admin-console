@@ -4,7 +4,7 @@ import {
   CLEAR_COLLECTION
 } from '../../../../../src/vuex/modules/collection/mutation-types'
 import actionsInjector from 'inject-loader!../../../../../src/vuex/modules/collection/actions'
-import {testActionPromise} from '../../helper'
+import { testActionPromise } from '../../helper'
 
 describe('Collections module', () => {
   describe('Create collection', () => {
@@ -19,9 +19,9 @@ describe('Collections module', () => {
     })
 
     describe('fetchCollectionDetail', () => {
-      it('should do nothing if collection is not in stored and not in realtime', (done) => {
+      it('should do nothing if collection is not in stored and not in realtime', done => {
         let actions = actionsInjector({
-          'vue': {
+          vue: {
             prototype: {
               $kuzzle: {
                 collection: {
@@ -32,21 +32,30 @@ describe('Collections module', () => {
           }
         })
 
-        testActionPromise(actions.default[FETCH_COLLECTION_DETAIL], {
-          index: 'myindex',
-          collection: 'toto'
-        }, state, [], done, null, {indexCollections: () => {
-          return {realtime: [], stored: ['tutu']}
-        }})
-          .catch(e => {
-            expect(e.message).to.equals('Unknown collection toto')
-            done()
-          })
+        testActionPromise(
+          actions.default[FETCH_COLLECTION_DETAIL],
+          {
+            index: 'myindex',
+            collection: 'toto'
+          },
+          state,
+          [],
+          done,
+          null,
+          {
+            indexCollections: () => {
+              return { realtime: [], stored: ['tutu'] }
+            }
+          }
+        ).catch(e => {
+          expect(e.message).to.equals('Unknown collection toto')
+          done()
+        })
       })
 
-      it('should dispatch event with collection and realtime', (done) => {
+      it('should dispatch event with collection and realtime', done => {
         let actions = actionsInjector({
-          'vue': {
+          vue: {
             prototype: {
               $kuzzle: {
                 collection: {
@@ -57,19 +66,38 @@ describe('Collections module', () => {
           }
         })
 
-        testActionPromise(actions.default[FETCH_COLLECTION_DETAIL], {
-          index: 'myindex',
-          collection: 'toto'
-        }, state, [
-          {type: RECEIVE_COLLECTION_DETAIL, payload: {name: 'toto', mapping: {}, isRealtimeOnly: true, schema: {}, allowForm: false}}
-        ], done, null, {indexCollections: () => {
-          return {realtime: ['toto'], stored: ['tutu']}
-        }})
+        testActionPromise(
+          actions.default[FETCH_COLLECTION_DETAIL],
+          {
+            index: 'myindex',
+            collection: 'toto'
+          },
+          state,
+          [
+            {
+              type: RECEIVE_COLLECTION_DETAIL,
+              payload: {
+                name: 'toto',
+                mapping: {},
+                isRealtimeOnly: true,
+                schema: {},
+                allowForm: false
+              }
+            }
+          ],
+          done,
+          null,
+          {
+            indexCollections: () => {
+              return { realtime: ['toto'], stored: ['tutu'] }
+            }
+          }
+        )
       })
 
-      it('should get mapping if collection is stored', (done) => {
+      it('should get mapping if collection is stored', done => {
         let actions = actionsInjector({
-          'vue': {
+          vue: {
             prototype: {
               $kuzzle: {
                 collection: {
@@ -78,7 +106,7 @@ describe('Collections module', () => {
                       [index]: {
                         mappings: {
                           [collection]: {
-                            properties: {toto: 'tutu'}
+                            properties: { toto: 'tutu' }
                           }
                         }
                       }
@@ -90,14 +118,33 @@ describe('Collections module', () => {
           }
         })
 
-        testActionPromise(actions.default[FETCH_COLLECTION_DETAIL], {
-          index: 'myindex',
-          collection: 'tutu'
-        }, state, [
-          {type: RECEIVE_COLLECTION_DETAIL, payload: {name: 'tutu', mapping: {toto: 'tutu'}, schema: {}, isRealtimeOnly: false, allowForm: false}}
-        ], done, null, {indexCollections: () => {
-          return {realtime: ['toto'], stored: ['tutu']}
-        }})
+        testActionPromise(
+          actions.default[FETCH_COLLECTION_DETAIL],
+          {
+            index: 'myindex',
+            collection: 'tutu'
+          },
+          state,
+          [
+            {
+              type: RECEIVE_COLLECTION_DETAIL,
+              payload: {
+                name: 'tutu',
+                mapping: {},
+                schema: {},
+                isRealtimeOnly: false,
+                allowForm: false
+              }
+            }
+          ],
+          done,
+          null,
+          {
+            indexCollections: () => {
+              return { realtime: ['toto'], stored: ['tutu'] }
+            }
+          }
+        )
       })
     })
   })
@@ -105,7 +152,7 @@ describe('Collections module', () => {
   describe('Truncate collection', () => {
     let triggerError = true
     let actions = actionsInjector({
-      'vue': {
+      vue: {
         prototype: {
           $kuzzle: {
             query: () => {
@@ -120,23 +167,31 @@ describe('Collections module', () => {
       }
     })
 
-    it('should not dispatch the deleted index if kuzzle reject', (done) => {
+    it('should not dispatch the deleted index if kuzzle reject', done => {
       triggerError = true
-      testActionPromise(actions.default[CLEAR_COLLECTION], ['myindex', 'toto'], {}, [], done)
-        .catch(error => {
-          expect(error.message).to.be.equal('error')
-          done()
-        })
+      testActionPromise(
+        actions.default[CLEAR_COLLECTION],
+        ['myindex', 'toto'],
+        {},
+        [],
+        done
+      ).catch(error => {
+        expect(error.message).to.be.equal('error')
+        done()
+      })
     })
 
-    it('should dispatch the deleted index if success', (done) => {
+    it('should dispatch the deleted index if success', done => {
       triggerError = false
-      testActionPromise(actions.default[CLEAR_COLLECTION], ['myindex', 'toto'], {}, [
-        {type: CLEAR_COLLECTION, payload: ['myindex', 'toto']}
-      ], done)
-        .then(() => {
-          done()
-        })
+      testActionPromise(
+        actions.default[CLEAR_COLLECTION],
+        ['myindex', 'toto'],
+        {},
+        [{ type: CLEAR_COLLECTION, payload: ['myindex', 'toto'] }],
+        done
+      ).then(() => {
+        done()
+      })
     })
   })
 })

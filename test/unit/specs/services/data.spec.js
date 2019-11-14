@@ -21,52 +21,58 @@ describe('Data services', () => {
       let nothingToDedupe = {
         stored: ['foo']
       }
-      expect(dedupeRealtimeCollections(nothingToDedupe)).to.deep.equals(nothingToDedupe)
+      expect(dedupeRealtimeCollections(nothingToDedupe)).to.deep.equals(
+        nothingToDedupe
+      )
     })
   })
 
   describe('splitRealtimeStoredCollections', () => {
     it('should correctly split realtime and stored collections', () => {
       let collectionsToSplit = [
-        {name: 'bar', type: 'realtime'},
-        {name: 'foo', type: 'realtime'},
-        {name: 'foobar', type: 'stored'}
+        { name: 'bar', type: 'realtime' },
+        { name: 'foo', type: 'realtime' },
+        { name: 'foobar', type: 'stored' }
       ]
-      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
-        realtime: ['bar', 'foo'],
-        stored: ['foobar']
-      })
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals(
+        {
+          realtime: ['bar', 'foo'],
+          stored: ['foobar']
+        }
+      )
     })
 
     it('should correctly split an empty collections result', () => {
       let collectionsToSplit = []
 
-      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
-        realtime: [],
-        stored: []
-      })
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals(
+        {
+          realtime: [],
+          stored: []
+        }
+      )
     })
 
     it('should correctly split an empty stored collections result', () => {
-      let collectionsToSplit = [
-        {name: 'bar', type: 'realtime'}
-      ]
+      let collectionsToSplit = [{ name: 'bar', type: 'realtime' }]
 
-      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
-        realtime: ['bar'],
-        stored: []
-      })
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals(
+        {
+          realtime: ['bar'],
+          stored: []
+        }
+      )
     })
 
     it('should correctly split an empty realtime collections result', () => {
-      let collectionsToSplit = [
-        {name: 'foobar', type: 'stored'}
-      ]
+      let collectionsToSplit = [{ name: 'foobar', type: 'stored' }]
 
-      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals({
-        realtime: [],
-        stored: ['foobar']
-      })
+      expect(splitRealtimeStoredCollections(collectionsToSplit)).to.deep.equals(
+        {
+          realtime: [],
+          stored: ['foobar']
+        }
+      )
     })
   })
 
@@ -94,29 +100,49 @@ describe('Data services', () => {
     let indexes = Object.keys(indexesAndCollections)
 
     it('should not hide content if filter is empty', () => {
-      let filtered = filterIndexesByKeyword(indexes, indexesAndCollections, null)
+      let filtered = filterIndexesByKeyword(
+        indexes,
+        indexesAndCollections,
+        null
+      )
       expect(filtered).to.equals(indexes)
       filtered = filterIndexesByKeyword(indexes, indexesAndCollections, '')
       expect(filtered).to.equals(indexes)
     })
 
     it('should not hide content if filter is contained in the name of index tree', () => {
-      let filtered = filterIndexesByKeyword(indexes, indexesAndCollections, 'to')
-      expect(filtered).to.deep.equals([ indexes[0] ])
+      let filtered = filterIndexesByKeyword(
+        indexes,
+        indexesAndCollections,
+        'to'
+      )
+      expect(filtered).to.deep.equals([indexes[0]])
     })
 
     it('should not hide content if filter is contained in the stored collections of index tree', () => {
-      let filtered = filterIndexesByKeyword(indexes, indexesAndCollections, 'ca')
-      expect(filtered).to.deep.equals([ indexes[0] ])
+      let filtered = filterIndexesByKeyword(
+        indexes,
+        indexesAndCollections,
+        'ca'
+      )
+      expect(filtered).to.deep.equals([indexes[0]])
     })
 
     it('should not hide content if filter is contained in the realtime collections of index tree', () => {
-      let filtered = filterIndexesByKeyword(indexes, indexesAndCollections, 'pa')
-      expect(filtered).to.deep.equals([ indexes[0] ])
+      let filtered = filterIndexesByKeyword(
+        indexes,
+        indexesAndCollections,
+        'pa'
+      )
+      expect(filtered).to.deep.equals([indexes[0]])
     })
 
     it('should hide content if filter is not found', () => {
-      let filtered = filterIndexesByKeyword(indexes, indexesAndCollections, 'tu')
+      let filtered = filterIndexesByKeyword(
+        indexes,
+        indexesAndCollections,
+        'tu'
+      )
       expect(filtered).to.deep.equals([])
     })
   })
