@@ -257,11 +257,15 @@ describe('Search', function() {
   })
 
   it('sorts the results when sorting is selected in the basic filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
-      firstName: 'Adrien',
-      lastName: 'Maret',
-      job: 'Blockchain Keylogger as a Service'
-    })
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service'
+      }
+    )
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
@@ -282,7 +286,12 @@ describe('Search', function() {
     cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
 
-    cy.get('.BasicFilter-sortingAttr').type('lastName')
+    cy.get(
+      '.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate'
+    ).click()
+    cy.get(
+      '.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)'
+    ).click()
     cy.get('.BasicFilter-sortingValue')
       .click()
       .contains('desc')
@@ -323,17 +332,15 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
     cy.wait(1000)
 
-    cy.get('#rawsearch .ace_line')
-      .click({ force: true })
+    cy.get('#rawsearch .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
-    .should('be.visible')
-    .clear({force: true})
-    .type(`{
+      .should('be.visible')
+      .clear({ force: true })
+      .type(
+        `{
     "query": {
     "bool": {
     "must": {
@@ -341,9 +348,11 @@ describe('Search', function() {
     "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
     "sort": {
     "lastName": "desc"
-    `, {
-      force: true
-    })
+    `,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -388,24 +397,25 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .type('{selectall}{backspace}', {delay: 200, force: true})
-    .type(`{
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
     "query": {},
     "aggregations": {
       "my_aggs": {
         "terms": {
           "field": "firstName"
-        `, {
-      force: true
-    })
+        `,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -429,19 +439,20 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{
-      "query": {}`, {
-      force: true
-    })
+      .clear({ force: true })
+      .type(
+        `{
+      "query": {}`,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
