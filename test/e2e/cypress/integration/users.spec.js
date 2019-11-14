@@ -132,6 +132,6 @@ describe('Users', function() {
       force: true
     })
     cy.get('.UserCustomMappingEditor-submit').click()
-    cy.contains('Field "name" already has a mapping, and it cannot be changed')
+    cy.contains('Field "name" already has a mapping and it cannot be changed')
   })
 })
