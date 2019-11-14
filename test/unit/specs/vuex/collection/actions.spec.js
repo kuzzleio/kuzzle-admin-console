@@ -101,15 +101,9 @@ describe('Collections module', () => {
             prototype: {
               $kuzzle: {
                 collection: {
-                  getMapping: (index, collection) => {
+                  getMapping: () => {
                     return Promise.resolve({
-                      [index]: {
-                        mappings: {
-                          [collection]: {
-                            properties: { toto: 'tutu' }
-                          }
-                        }
-                      }
+                      properties: { toto: 'tutu' }
                     })
                   }
                 }
@@ -130,7 +124,9 @@ describe('Collections module', () => {
               type: RECEIVE_COLLECTION_DETAIL,
               payload: {
                 name: 'tutu',
-                mapping: {},
+                mapping: {
+                  toto: 'tutu'
+                },
                 schema: {},
                 isRealtimeOnly: false,
                 allowForm: false

@@ -12,12 +12,12 @@ describe('Kuzzle wrapper service', () => {
           _source: {
             name: {
               first: 'toto'
+            },
+            _kuzzle_info: {
+              createdAt: 10101101
             }
           },
-          _id: 'id',
-          _meta: {
-            createdAt: 10101101
-          }
+          _id: 'id'
         }
       ]
     }
@@ -208,6 +208,7 @@ describe('Kuzzle wrapper service', () => {
         .then(() => {
           done()
         })
+        .catch(error => done(error))
     })
   })
 
