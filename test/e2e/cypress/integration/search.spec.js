@@ -62,7 +62,7 @@ describe('Search', function() {
     )
   })
 
-  it('perists the Quick Search query in the URL', function() {
+  it('persists the Quick Search query in the URL', function() {
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',

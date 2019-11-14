@@ -193,7 +193,7 @@ export default {
     },
     toggleAutoComplete: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {

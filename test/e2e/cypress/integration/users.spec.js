@@ -116,7 +116,7 @@ describe('Users', function() {
     cy.contains('User Management')
   })
 
-  it('receives an error when trying to update the mapping for an existing field', function() {
+  it.only('receives an error when trying to update the mapping for an existing field', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')
@@ -132,6 +132,6 @@ describe('Users', function() {
       force: true
     })
     cy.get('.UserCustomMappingEditor-submit').click()
-    cy.contains('Field "name" already has a mapping and it cannot be changed')
+    cy.contains('Field "name" already has a mapping, and it cannot be changed')
   })
 })
