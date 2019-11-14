@@ -76,8 +76,6 @@ export const testActionPromise = (
   return action({ commit, state, getters, dispatch }, payload)
     .then(res => {
       if (expectedResultFromPromise) {
-        console.log(JSON.stringify(res))
-        console.log(JSON.stringify(expectedResultFromPromise))
         expect(res).to.deep.equals(expectedResultFromPromise)
       }
       // check if no mutations should have been dispatched
