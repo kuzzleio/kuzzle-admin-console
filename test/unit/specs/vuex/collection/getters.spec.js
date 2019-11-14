@@ -1,10 +1,12 @@
 import * as collectionGetters from '../../../../../src/vuex/modules/collection/getters'
-import {elements} from '../../../../../src/config/schemaMapping'
+import { elements } from '../../../../../src/config/schemaMapping'
 
 describe('Vuex collection getters', () => {
   describe('flattenSchemaWithType', () => {
     it('should return empty object if flattenMapping is empty', () => {
-      expect(collectionGetters.flattenSchemaWithType({}, {flattenMapping: {}})).deep.eql({})
+      expect(
+        collectionGetters.flattenSchemaWithType({}, { flattenMapping: {} })
+      ).deep.eql({})
     })
     it('should get the schema from flattenSchema', () => {
       let getters = {

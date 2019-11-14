@@ -83,7 +83,7 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users')
 
-    cy.get('[id="checkbox-dummy"]').click({force: true})
+    cy.get('[id="checkbox-dummy"]').click({ force: true })
     cy.get('.BulkActions')
       .contains('Delete')
       .click()
@@ -101,18 +101,16 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users/custom-mapping')
 
-    cy
-    .get('#user-custom-data-mapping-editor .ace_line')
-    .should('be.visible')
+    cy.get('#user-custom-data-mapping-editor .ace_line').should('be.visible')
 
     cy.get('#user-custom-data-mapping-editor .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{{}"address": {{}"type": "text"},`, {
-      force: true
-    })
+      .clear({ force: true })
+      .type(`{{}"address": {{}"type": "text"},`, {
+        force: true
+      })
 
     cy.get('.UserCustomMappingEditor-submit').click()
     cy.contains('User Management')

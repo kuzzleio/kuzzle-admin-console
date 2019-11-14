@@ -18,16 +18,27 @@
               :key="`andBlock-${filterIndex}`"
               class="BasicFilter-andBlock row dots"
             >
-              <div class="col s4">
-                <autocomplete
+              <div
+                v-if="!toggleAutoComplete"
+                class="col s4"
+              >
+                <input 
+                  v-model="filters.basic[groupIndex][filterIndex].attribute"
+                  placeholder="key"
+                  type="text"
                   class="BasicFilter--key"
-                  input-class="validate"
-                  placeholder="Attribute"
-                  :items="attributeItems"
-                  :value="filters.basic[groupIndex][filterIndex].attribute || ''"
-                  @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
-                />
+                >
               </div>
+              <autocomplete
+                v-else
+                class="BasicFilter--key"
+                input-class="validate"
+                placeholder="Attribute"
+                :items="attributeItems"
+                :value="filters.basic[groupIndex][filterIndex].attribute || ''"
+                @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
+              />
+              
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
                   <option
@@ -103,12 +114,14 @@
           <p><i class="fa fa-sort-amount-asc" />Sorting</p>
           <div class="row block-content">
             <div class="col s4">
-              <input
-                v-model="filters.sorting.attribute"
+              <autocomplete
+                class="BasicFilter-sortingAttr"
+                input-class="validate"
                 placeholder="Attribute"
-                type="text"
-                class="BasicFilter-sortingAttr validate"
-              >
+                :items="attributeItems"
+                :value="filters.sorting.attribute || ''"
+                @autocomplete::change="(attribute) => setSortAttr(attribute)"
+              />
             </div>
             <div class="BasicFilter-sortingValue col s2">
               <m-select v-model="filters.sorting.order">
@@ -184,11 +197,16 @@ export default {
     collectionMapping: {
       type: Object,
       required: true
+    },
+    toggleAutoComplete: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       filters: {
+        active: 'basic',
         basic: null,
         sorting: { ...emptySorting }
       }
@@ -236,8 +254,10 @@ export default {
       }
     }
   },
-  mounted() {},
   methods: {
+    setSortAttr(attribute) {
+      this.$set(this.filters.sorting, 'attribute', attribute)
+    },
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },

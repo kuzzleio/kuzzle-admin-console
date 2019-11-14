@@ -1,7 +1,14 @@
 import Vue from 'vue'
 
 // helper for testing action with expected mutations
-export const testAction = (action, payload, state, expectedMutations, done, getters) => {
+export const testAction = (
+  action,
+  payload,
+  state,
+  expectedMutations,
+  done,
+  getters
+) => {
   let count = 0
 
   // mock commit
@@ -27,13 +34,25 @@ export const testAction = (action, payload, state, expectedMutations, done, gett
   }
 }
 
-export const mockedComponent = Vue.extend({template: '<div></div>', name: 'Toto'})
+export const mockedComponent = Vue.extend({
+  name: 'Toto',
+  template: '<div></div>'
+})
 
-export const mockedDirective = function (id) {
-  return {id}
+export const mockedDirective = function(id) {
+  return { id }
 }
 
-export const testActionPromise = (action, payload, state, expectedMutations, done, expectedResultFromPromise, getters, dispatch) => {
+export const testActionPromise = (
+  action,
+  payload,
+  state,
+  expectedMutations,
+  done,
+  expectedResultFromPromise,
+  getters,
+  dispatch
+) => {
   let count = 0
 
   // mock commit
@@ -54,16 +73,20 @@ export const testActionPromise = (action, payload, state, expectedMutations, don
   }
 
   // call the action with mocked store and arguments
-  return action({ commit, state, getters, dispatch }, payload).then((res) => {
-    if (expectedResultFromPromise) {
-      expect(res).to.deep.equals(expectedResultFromPromise)
-    }
-    // check if no mutations should have been dispatched
-    if (expectedMutations.length === 0) {
-      expect(count, 'too much mutation was called').to.equal(0)
-      done()
-    }
-  }).catch(e => {
-    return Promise.reject(new Error(e.message))
-  })
+  return action({ commit, state, getters, dispatch }, payload)
+    .then(res => {
+      if (expectedResultFromPromise) {
+        console.log(JSON.stringify(res))
+        console.log(JSON.stringify(expectedResultFromPromise))
+        expect(res).to.deep.equals(expectedResultFromPromise)
+      }
+      // check if no mutations should have been dispatched
+      if (expectedMutations.length === 0) {
+        expect(count, 'too much mutation was called').to.equal(0)
+        done()
+      }
+    })
+    .catch(e => {
+      return Promise.reject(new Error(e.message))
+    })
 }

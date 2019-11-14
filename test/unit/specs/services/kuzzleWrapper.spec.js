@@ -54,7 +54,7 @@ describe('Kuzzle wrapper service', () => {
 
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               document: {
@@ -139,7 +139,7 @@ describe('Kuzzle wrapper service', () => {
 
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               protocol: {
@@ -167,7 +167,7 @@ describe('Kuzzle wrapper service', () => {
 
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               document: {
@@ -175,7 +175,7 @@ describe('Kuzzle wrapper service', () => {
                   if (triggerError) {
                     return Promise.reject(new Error('error'))
                   } else {
-                    return Promise.resolve()
+                    return Promise.resolve({ deleted: true })
                   }
                 }
               }
@@ -186,10 +186,9 @@ describe('Kuzzle wrapper service', () => {
     })
 
     it('should reject a promise if no ids are given', done => {
-      kuzzleWrapper.performDeleteDocuments()
-        .catch(() => {
-          done()
-        })
+      kuzzleWrapper.performDeleteDocuments().catch(() => {
+        done()
+      })
     })
 
     it('should reject a promise', done => {
@@ -219,7 +218,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should resolve if kuzzle is connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               protocol: {
@@ -238,7 +237,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should resolve if kuzzle trigger event connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               protocol: {
@@ -264,7 +263,7 @@ describe('Kuzzle wrapper service', () => {
 
     it('should reject if kuzzle never trigger event connected', done => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               protocol: {
@@ -301,7 +300,7 @@ describe('Kuzzle wrapper service', () => {
     }
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               auth: {
@@ -368,7 +367,7 @@ describe('Kuzzle wrapper service', () => {
     }
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               security: {
@@ -393,7 +392,9 @@ describe('Kuzzle wrapper service', () => {
         expect(res.documents.length).to.be.equal(1)
         expect(res.documents[0].id).to.be.equal(profileExample._id)
         expect(res.documents[0].meta).to.eql(profileExample.meta)
-        expect(res.documents[0].content.policies).to.eql(profileExample.policies)
+        expect(res.documents[0].content.policies).to.eql(
+          profileExample.policies
+        )
       })
     })
   })
@@ -409,7 +410,7 @@ describe('Kuzzle wrapper service', () => {
     }
     beforeEach(() => {
       kuzzleWrapper = kuzzleWrapperInjector({
-        'vue': {
+        vue: {
           prototype: {
             $kuzzle: {
               security: {
@@ -434,7 +435,9 @@ describe('Kuzzle wrapper service', () => {
         expect(res.documents.length).to.be.equal(1)
         expect(res.documents[0].id).to.be.equal(roleExample._id)
         expect(res.documents[0].meta).to.eql(roleExample.meta)
-        expect(res.documents[0].content.controllers).to.eql(roleExample.controllers)
+        expect(res.documents[0].content.controllers).to.eql(
+          roleExample.controllers
+        )
       })
     })
   })
@@ -442,7 +445,7 @@ describe('Kuzzle wrapper service', () => {
   describe('performDeleteUsers', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
     let kuzzleWrapper = kuzzleWrapperInjector({
-      'vue': {
+      vue: {
         prototype: {
           $kuzzle: {
             security: {
@@ -474,7 +477,7 @@ describe('Kuzzle wrapper service', () => {
   describe('performDeleteProfiles', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
     let kuzzleWrapper = kuzzleWrapperInjector({
-      'vue': {
+      vue: {
         prototype: {
           $kuzzle: {
             security: {
@@ -506,7 +509,7 @@ describe('Kuzzle wrapper service', () => {
   describe('performDeleteRoles', () => {
     const queryStub = sinon.stub().returns(Promise.resolve())
     let kuzzleWrapper = kuzzleWrapperInjector({
-      'vue': {
+      vue: {
         prototype: {
           $kuzzle: {
             security: {
