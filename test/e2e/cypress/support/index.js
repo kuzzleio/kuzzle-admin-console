@@ -51,3 +51,5 @@ import './commands'
 //       return Promise.all(promises)
 //     })
 // })
+
+require('cypress-plugin-retries')
