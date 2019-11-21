@@ -76,7 +76,7 @@ jobs:
     - stage: build & deploy
       name: "Build & Deploy to console.kuzzle.io"
 
-      if: type != pull_request && branch = master
+      if: type != pull_request && branch =~ ^([0-9]+-stable|master)$
 
       addons:
         apt:
@@ -93,19 +93,19 @@ jobs:
 
       deploy:
         provider: script
-        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_PROD --delete
+        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_PROD/kuzzle-v2 --delete
         skip_cleanup: true
 
       after_deploy:
-        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "/*"
+        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "/kuzzle-v2/*"
 
 # ---------------------------------------
 # next.console.kuzzle.io
 # ---------------------------------------
     - stage: build & deploy
-      name: "Build & Deploy to next.console.kuzzle.io"
+      name: "Build & Deploy to next-console.kuzzle.io"
 
-      if: type != pull_request && branch =~ ^.[1-9]*-dev$
+      if: type != pull_request && branch =~ ^.[0-9]+-dev$
 
       addons:
         apt:
@@ -122,13 +122,13 @@ jobs:
 
       deploy:
         provider: script
-        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/kuzzle-v1 --delete
+        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/kuzzle-v2 --delete
         skip_cleanup: true
         on:
           all_branches: true
 
       after_deploy:
-        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/kuzzle-v1/*"
+        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/kuzzle-v2/*"
 
 # ---------------------------------------
 # Github release and s3 deployment
@@ -136,7 +136,7 @@ jobs:
     - stage: build & deploy
       name: "Package and Share release"
 
-      if: type != pull_request && branch = master
+      if: type != pull_request && branch =~ ^([0-9]+-stable|master)$
 
       addons:
         apt:
@@ -168,7 +168,7 @@ jobs:
         bucket: $AWS_S3_BUCKET_DL
         region: us-west-2
         skip_cleanup: true
-        upload-dir: admin-console
+        upload-dir: admin-console/kuzzle-v2
         local-dir: deploy
 
       after_deploy:

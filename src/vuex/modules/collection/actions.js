@@ -42,14 +42,13 @@ export default {
     }
 
     if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
-      const response = await Vue.prototype.$kuzzle.collection.getMapping(index, collection)
-      let result = response[index].mappings[collection]
+      let mappings = await Vue.prototype.$kuzzle.collection.getMapping(index, collection)
       let schema = {}
       let allowForm = false
 
-      if (result._meta) {
-        schema = result._meta.schema || {}
-        allowForm = result._meta.allowForm || false
+      if (mappings._meta) {
+        schema = mappings._meta.schema || {}
+        allowForm = mappings._meta.allowForm || false
       }
 
       dispatch(types.GET_COLLECTION_DEFAULT_VIEW_JSON, {
@@ -59,7 +58,7 @@ export default {
 
       commit(types.RECEIVE_COLLECTION_DETAIL, {
         name: collection,
-        mapping: result.properties || {},
+        mapping: mappings.properties || {},
         schema,
         allowForm,
         isRealtimeOnly: false

@@ -40,8 +40,8 @@ describe('Indexes', () => {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.get('.IndexesPage-createBtn')
-    .should('be.visible')
-    .click()
+      .should('be.visible')
+      .click()
     cy.get('.CreateIndexModal-name').type(indexName, {
       force: true
     })

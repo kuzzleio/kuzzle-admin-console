@@ -159,7 +159,7 @@ export default {
       }
 
       try {
-        await this.$kuzzle.security.replaceUser(this.user.kuid, userObject)
+        await this.$kuzzle.security.replaceUser(this.user.kuid, userObject, { refresh: 'wait_for' })
         await Promise.all(
           Object.keys(this.user.credentials).map(async strategy => {
             const credentialsExists = await this.$kuzzle.security.hasCredentials(strategy, this.user.kuid)
@@ -178,9 +178,6 @@ export default {
               )
             }
           })
-        )
-        await this.$kuzzle.query(
-          { controller: 'index', action: 'refreshInternal' }
         )
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (err) {

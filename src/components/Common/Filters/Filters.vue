@@ -52,6 +52,7 @@
           <div class="col s12">
             <div v-show="complexFiltersSelectedTab === 'basic'">
               <basic-filter
+                :toggle-auto-complete="toggleAutoComplete"
                 :basic-filter="basicFilter"
                 :sorting-enabled="sortingEnabled"
                 :available-operands="availableOperands"
@@ -189,6 +190,10 @@ export default {
     collectionMapping: {
       type: Object,
       required: true
+    },
+    toggleAutoComplete: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
