@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset=utf-8>
+  <title>Kuzzle Admin Console</title>
+  <style>
+    .app-loading {
+      text-align: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      padding-top: 50px;
+      height: 100%;
+      overflow: auto
+    }
+
+    h1 {
+      font-family: Ubuntu;
+      color: #002835;
+    }
+
+    html {
+      background-color: white
+    }
+
+    .app-loading>.card {
+      display: inline-block;
+      margin-left: 20px;
+      box-sizing: border-box;
+      font-family: Ubuntu;
+      padding: 30px 40px;
+      width: 400px;
+      text-align: center;
+      font-weight: 400;
+      left: 50%;
+      right: 50%;
+      display: inline-block;
+      background-color: #fff;
+      transition: box-shadow .25s;
+      text-transform: none;
+      text-decoration: none;
+      color: #002835;
+      border-radius: 2px;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+      font-size: 20px
+    }
+
+    .card:hover {
+      color: #e94e77;
+    }
+  </style>
+</head>
+
+<body>
+  <div class=app-loading id=app>
+    <img
+      src="data:image/png;base64,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"
+      alt="">
+    <h1>Choose your Kuzzle version</h1>
+    <br>
+    <a href="/kuzzle-v1" class="card"><span>Kuzzle v1.x</span>
+    </a>
+    <a href="/kuzzle-v2" class="card"><span>Kuzzle v2.x</span>
+    </a>
+  </div>
+</body>
