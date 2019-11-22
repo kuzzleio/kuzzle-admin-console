@@ -65,7 +65,7 @@ describe('Watch', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.CollectionTabs--watch').click()
     cy.get('.QuickFilter-chipLabel').click()
-    cy.get('.BasicFilter-andBlock .BasicFilter--key input')
+    cy.get('.BasicFilter-andBlock .BasicFilter--key')
       .click()
       .type('firstName{downarrow}{enter}')
     cy.get('.BasicFilter-andBlock .BasicFilter--value')
