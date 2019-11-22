@@ -54,7 +54,6 @@ export default {
     getMappingRoles,
     async update(role, forceCreation) {
       this.error = ''
-
       if (!role) {
         this.error = 'The document is invalid, please review it'
         return

@@ -20,7 +20,7 @@ describe('Document List', function() {
         }
       }
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
       job: 'Blockchain as a Service'
@@ -89,7 +89,7 @@ describe('Document List', function() {
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -121,7 +121,7 @@ describe('Document List', function() {
     const nicoID = 'nico_juelle'
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${adrienID}/_create`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/${adrienID}/_create?refresh=wait_for`,
       {
         firstName: 'Adrien',
         lastName: 'Maret',
@@ -130,7 +130,7 @@ describe('Document List', function() {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${nicoID}/_create`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/${nicoID}/_create?refresh=wait_for`,
       {
         firstName: 'Nico',
         lastName: 'Juelle',
@@ -163,7 +163,7 @@ describe('Document List', function() {
   })
 
   it('should handle the column view properly', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       jsonObject: {
         foo: 'bar'
       }

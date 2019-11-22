@@ -29,7 +29,7 @@ describe('Users', function() {
 
   it('deletes a user successfully via the dropdown menu', function() {
     const kuid = 'dummy'
-    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
         profileIds: ['default'],
         name: 'Dummy User'
@@ -65,7 +65,7 @@ describe('Users', function() {
 
   it('deletes a user successfully via the checkbox and bulk delete button', function() {
     const kuid = 'dummy'
-    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
         profileIds: ['default'],
         name: 'Dummy User'

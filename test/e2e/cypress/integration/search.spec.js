@@ -6,7 +6,7 @@ describe('Search', function() {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/_create?refresh=wait_for`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
       properties: {
         firstName: {
@@ -39,7 +39,7 @@ describe('Search', function() {
         }
       }
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
       job: 'Blockchain as a Service'
@@ -63,7 +63,7 @@ describe('Search', function() {
   })
 
   it('perists the Quick Search query in the URL', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -78,7 +78,7 @@ describe('Search', function() {
   })
 
   it('persists the Basic Search query in the URL', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -99,19 +99,19 @@ describe('Search', function() {
   })
 
   it('remembers the Quick Search query across collections', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
 
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -137,19 +137,19 @@ describe('Search', function() {
   })
 
   it('remembers the Basic Search query across collections', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
 
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -199,7 +199,7 @@ describe('Search', function() {
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -211,7 +211,7 @@ describe('Search', function() {
   })
 
   it('resets the search query but not the list view type, when the RESET button is hit', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -271,7 +271,7 @@ describe('Search', function() {
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -311,12 +311,12 @@ describe('Search', function() {
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -357,7 +357,6 @@ describe('Search', function() {
     cy.get('.RawFilter-submitBtn').click()
 
     cy.get('.DocumentListItem').should(function($el) {
-      console.log($el.first())
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
@@ -383,7 +382,7 @@ describe('Search', function() {
   })
 
   it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'bar'
     })
 
@@ -425,7 +424,7 @@ describe('Search', function() {
   })
 
   it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'bar'
     })
 

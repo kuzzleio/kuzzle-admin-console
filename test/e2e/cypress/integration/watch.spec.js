@@ -73,7 +73,7 @@ describe('Watch', () => {
       .type(firstName)
     cy.get('.BasicFilter-submitBtn').click()
 
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Keylogger as a Service'
@@ -81,7 +81,7 @@ describe('Watch', () => {
 
     cy.get('.Notification').should('not.exist')
 
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
       job: 'Blockchain as a Service'
