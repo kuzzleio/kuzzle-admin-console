@@ -141,7 +141,7 @@ export const performSearchDocuments = async (
     const object = {
       content: new Content(document._source),
       id: document._id,
-      meta: new Meta(document._meta)
+      meta: new Meta(document._source._kuzzle_info)
     }
 
     if (result.aggregations) {
@@ -177,7 +177,8 @@ export const performDeleteDocuments = async (index, collection, ids) => {
   ) {
     throw new Error('ids<Array> parameter is required')
   }
-  const { deleted } = await Vue.prototype.$kuzzle.document.mDelete(
+
+  const deleted = await Vue.prototype.$kuzzle.document.mDelete(
     index,
     collection,
     ids,

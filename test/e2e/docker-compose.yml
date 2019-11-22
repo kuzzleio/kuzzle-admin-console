@@ -16,7 +16,7 @@ services:
       - kuzzle_services__storageEngine__internalIndex__collections__users__dynamic=true
       - kuzzle_services__internalCache__node__host=redis
       - kuzzle_services__memoryStorage__node__host=redis
-      - NODE_ENV=production
+      - NODE_ENV=development
 
   redis:
     image: redis:5

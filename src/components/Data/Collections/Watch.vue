@@ -281,10 +281,11 @@ export default {
         }
 
         if (
-          notification.result._meta &&
-          Object.keys(notification.result._meta).length > 0
+          notification.result._source &&
+          notification.result._source._kuzzle_info &&
+          Object.keys(notification.result._source._kuzzle_info).length > 0
         ) {
-          messageItem.source.meta = notification.result._meta
+          messageItem.source.meta = notification.result._source._kuzzle_info
         }
 
         if (
