@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     getMappingRoles,
-    async update(role, replace) {
+    async update(role, forceCreation) {
       this.error = ''
       if (!role) {
         this.error = 'The document is invalid, please review it'
@@ -62,7 +62,7 @@ export default {
       this.submitted = true
 
       try {
-        if (replace) {
+        if (forceCreation) {
           this.$kuzzle.security.createOrReplaceRole(this.id, role)
         } else {
           this.$kuzzle.security.updateRole(this.id, role)

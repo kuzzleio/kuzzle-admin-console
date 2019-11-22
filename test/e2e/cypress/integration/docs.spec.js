@@ -201,27 +201,27 @@ describe('Document List', function() {
   it('should handle the time series view properly', function() {
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
       {
-        date: '2019-01',
+        date: '2019-01-21',
         value: 10,
         value2: 4
       }
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId2/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/myId2/_create`,
       {
-        date: '2019-02',
+        date: '2019-02-21',
         value: 24,
         value2: 56
       }
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId3/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/myId3/_create`,
       {
-        date: '2019-03',
+        date: '2019-03-21',
         value: 20,
         value2: 10
       }
@@ -282,7 +282,7 @@ describe('Document update/replace', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
       {
         foo: 'bar',
         more: 'moar'
@@ -380,7 +380,7 @@ describe('Document update/replace', () => {
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
         expect(res.body.result._source.foo).to.be.equals('changed')
-        expect(res.body.result._source.more).to.be.equals(undefined)
+        expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
       }
     )
   })

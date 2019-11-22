@@ -230,10 +230,10 @@ export const formatFromQuickSearch = searchTerm => {
       bool: {
         should: [
           {
-            match_phrase_prefix: {
-              _all: {
-                query: searchTerm
-              }
+            multi_match: {
+              query: searchTerm,
+              type: 'phrase_prefix',
+              fields: ['*']
             }
           },
           {
@@ -262,23 +262,23 @@ export const rawFilterToSearchQuery = rawFilter => {
 export const toSort = filter => {
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return ['_uid']
+      return ['_id']
     case ACTIVE_RAW:
-      return filter.raw ? rawFilterToSort(filter.raw) : ['_uid']
+      return filter.raw ? rawFilterToSort(filter.raw) : ['_id']
     case NO_ACTIVE:
     default:
     case ACTIVE_BASIC:
-      return filter.sorting ? formatSort(filter.sorting) : ['_uid']
+      return filter.sorting ? formatSort(filter.sorting) : ['_id']
   }
 }
 
 export const rawFilterToSort = rawFilter => {
-  return rawFilter.sort || ['_uid']
+  return rawFilter.sort || ['_id']
 }
 
 export const formatSort = sorting => {
   if (!sorting.attribute) {
-    return ['_uid']
+    return ['_id']
   }
   return [{ [sorting.attribute]: { order: sorting.order } }]
 }

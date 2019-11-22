@@ -28,7 +28,6 @@ describe('Collection management', function() {
   it('is able to create a realtime collection and access it', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    cy.contains('testindex')
     cy.visit(`/#/data/${indexName}/create`)
 
     cy.get('.Mapping-name')

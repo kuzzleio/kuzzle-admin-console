@@ -18,16 +18,27 @@
               :key="`andBlock-${filterIndex}`"
               class="BasicFilter-andBlock row dots"
             >
-              <div class="col s4">
-                <autocomplete
+              <div
+                v-if="!toggleAutoComplete"
+                class="col s4"
+              >
+                <input 
+                  v-model="filters.basic[groupIndex][filterIndex].attribute"
+                  placeholder="key"
+                  type="text"
                   class="BasicFilter--key"
-                  input-class="validate"
-                  placeholder="Attribute"
-                  :items="attributeItems"
-                  :value="filters.basic[groupIndex][filterIndex].attribute || ''"
-                  @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
-                />
+                >
               </div>
+              <autocomplete
+                v-else
+                class="BasicFilter--key"
+                input-class="validate"
+                placeholder="Attribute"
+                :items="attributeItems"
+                :value="filters.basic[groupIndex][filterIndex].attribute || ''"
+                @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
+              />
+              
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
                   <option
@@ -186,6 +197,10 @@ export default {
     collectionMapping: {
       type: Object,
       required: true
+    },
+    toggleAutoComplete: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

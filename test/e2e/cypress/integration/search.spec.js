@@ -88,9 +88,8 @@ describe('Search', function() {
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=key]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
     cy.get('.BasicFilter-submitBtn').click()
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
@@ -162,9 +161,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=key]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -179,7 +177,7 @@ describe('Search', function() {
       .click()
     cy.url().should('contain', 'Keylogger')
     cy.get('.DocumentListItem').should('have.length', 1)
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').should(
+    cy.get('.BasicFilter-query input[placeholder=key]').should(
       'have.value',
       'job'
     )
@@ -196,9 +194,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=key]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -245,8 +242,7 @@ describe('Search', function() {
     cy.get('.DocumentBoxItem').should('have.length', 2)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=key]').type('job')
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentBoxItem').should('have.length', 1)
@@ -261,12 +257,16 @@ describe('Search', function() {
   })
 
   it('sorts the results when sorting is selected in the basic filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
-      firstName: 'Adrien',
-      lastName: 'Maret',
-      job: 'Blockchain Keylogger as a Service'
-    })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service'
+      }
+    )
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
@@ -283,12 +283,15 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
-    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=key]').type('job')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
 
-    cy.get('.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate').click()
-    cy.get('.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)').click()
+    cy.get(
+      '.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate'
+    ).click()
+    cy.get(
+      '.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)'
+    ).click()
     cy.get('.BasicFilter-sortingValue')
       .click()
       .contains('desc')
@@ -302,8 +305,8 @@ describe('Search', function() {
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
+  it('sorts the results when sorting is specified in the raw filter', function() {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -329,27 +332,27 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-      .get('#rawsearch .ace_line')
-      .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
     cy.wait(1000)
 
-    cy.get('#rawsearch .ace_line')
-      .click({ force: true })
+    cy.get('#rawsearch .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
       .should('be.visible')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
-      .type(`{
-      "query": { 
-      "bool": {
-      "must": {
-      "match_phrase_prefix": {
-      "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-      "sort": {
-      "lastName": "desc"
-      }`, {
-        force: true
-      })
+      .clear({ force: true })
+      .type(
+        `{
+    "query": {
+    "bool": {
+    "must": {
+    "match_phrase_prefix": {
+    "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+    "sort": {
+    "lastName": "desc"
+    `,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -364,12 +367,12 @@ describe('Search', function() {
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-  
+
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo', { delay: 60 })
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=key]').type('foo')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar')
     cy.get('.BasicFilter-submitBtn').click()
-  
+
     cy.get('#raw').click()
     cy.get('.ace_content')
       .should('contain', 'query')
@@ -393,24 +396,25 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-      .get('#rawsearch .ace_line')
-      .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
       .type('{selectall}{backspace}', { delay: 200, force: true })
-      .type(`{
-      "query": {},
-      "aggregations": {
-        "my_aggs": {
-          "terms": {
-            "field": "firstName"
-          `, {
-        force: true
-      })
+      .type(
+        `{
+    "query": {},
+    "aggregations": {
+      "my_aggs": {
+        "terms": {
+          "field": "firstName"
+        `,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -434,19 +438,20 @@ describe('Search', function() {
       .contains('JSON')
       .click()
 
-    cy
-      .get('#rawsearch .ace_line')
-      .should('be.visible')
+    cy.get('#rawsearch .ace_line').should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
-      .type(`{
-        "query": {}`, {
-        force: true
-      })
+      .clear({ force: true })
+      .type(
+        `{
+      "query": {}`,
+        {
+          force: true
+        }
+      )
 
     cy.get('.RawFilter-submitBtn').click()
 

@@ -1,6 +1,6 @@
-import {mutations} from '../../../../../../src/vuex/modules/common/routing/store'
+import { mutations } from '../../../../../../src/vuex/modules/common/routing/store'
 
-const {SET_ROUTE_BEFORE_REDIRECT} = mutations
+const { SET_ROUTE_BEFORE_REDIRECT } = mutations
 
 describe('toaster mutations', () => {
   it('SET_ROUTE_BEFORE_REDIRECT', () => {
