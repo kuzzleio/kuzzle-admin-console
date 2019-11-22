@@ -6,7 +6,7 @@ describe('Search', function() {
   beforeEach(() => {
     // reset database and setup
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
+    cy.request('POST', `${kuzzleUrl}/${indexName}/_create?refresh=wait_for`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
       properties: {
         firstName: {
@@ -39,7 +39,7 @@ describe('Search', function() {
         }
       }
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Luca',
       lastName: 'Marchesini',
       job: 'Blockchain as a Service'
@@ -63,7 +63,7 @@ describe('Search', function() {
   })
 
   it('perists the Quick Search query in the URL', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -78,7 +78,7 @@ describe('Search', function() {
   })
 
   it('persists the Basic Search query in the URL', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -88,8 +88,9 @@ describe('Search', function() {
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
@@ -99,19 +100,19 @@ describe('Search', function() {
   })
 
   it('remembers the Quick Search query across collections', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
 
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -137,19 +138,19 @@ describe('Search', function() {
   })
 
   it('remembers the Basic Search query across collections', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
 
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/anothercollection/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -161,8 +162,9 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
@@ -194,12 +196,13 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentListItem').should('have.length', 1)
 
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -211,7 +214,7 @@ describe('Search', function() {
   })
 
   it('resets the search query but not the list view type, when the RESET button is hit', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
@@ -242,7 +245,8 @@ describe('Search', function() {
     cy.get('.DocumentBoxItem').should('have.length', 2)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentBoxItem').should('have.length', 1)
@@ -257,17 +261,17 @@ describe('Search', function() {
   })
 
   it('sorts the results when sorting is selected in the basic filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -279,10 +283,12 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('job')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain')
+    cy.get('.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate').click()
+    cy.get('.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)').click()
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', { delay: 60 })
 
-    cy.get('.BasicFilter-sortingAttr').type('lastName')
+    cy.get('.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate').click()
+    cy.get('.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)').click()
     cy.get('.BasicFilter-sortingValue')
       .click()
       .contains('desc')
@@ -297,17 +303,17 @@ describe('Search', function() {
   })
 
   it('sorts the results when sorting is specfied in the raw filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Adrien',
       lastName: 'Maret',
       job: 'Blockchain Keylogger as a Service'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Nicolas',
       lastName: 'Juelle',
       job: 'CSS Level: Expert !important'
     })
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'Alexandre',
       lastName: 'Bouthinon',
       job: 'From scratch All the Things!'
@@ -324,31 +330,30 @@ describe('Search', function() {
       .click()
 
     cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+      .get('#rawsearch .ace_line')
+      .should('be.visible')
     cy.wait(1000)
 
     cy.get('#rawsearch .ace_line')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .should('be.visible')
-    .clear({force: true})
-    .type(`{
-    "query": { 
-    "bool": {
-    "must": {
-    "match_phrase_prefix": {
-    "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-    "sort": {
-    "lastName": "desc"
-    }`, {
-      force: true
-    })
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(`{
+      "query": { 
+      "bool": {
+      "must": {
+      "match_phrase_prefix": {
+      "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+      "sort": {
+      "lastName": "desc"
+      }`, {
+        force: true
+      })
 
     cy.get('.RawFilter-submitBtn').click()
 
     cy.get('.DocumentListItem').should(function($el) {
-      console.log($el.first())
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
@@ -361,8 +366,8 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
   
     cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo')
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar')
+    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo', { delay: 60 })
+    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar', { delay: 60 })
     cy.get('.BasicFilter-submitBtn').click()
   
     cy.get('#raw').click()
@@ -374,7 +379,7 @@ describe('Search', function() {
   })
 
   it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'bar'
     })
 
@@ -389,23 +394,23 @@ describe('Search', function() {
       .click()
 
     cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+      .get('#rawsearch .ace_line')
+      .should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .type('{selectall}{backspace}', {delay: 200, force: true})
-    .type(`{
-    "query": {},
-    "aggregations": {
-      "my_aggs": {
-        "terms": {
-          "field": "firstName"
-        `, {
-      force: true
-    })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(`{
+      "query": {},
+      "aggregations": {
+        "my_aggs": {
+          "terms": {
+            "field": "firstName"
+          `, {
+        force: true
+      })
 
     cy.get('.RawFilter-submitBtn').click()
 
@@ -415,7 +420,7 @@ describe('Search', function() {
   })
 
   it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
-    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`, {
       firstName: 'bar'
     })
 
@@ -430,18 +435,18 @@ describe('Search', function() {
       .click()
 
     cy
-    .get('#rawsearch .ace_line')
-    .should('be.visible')
+      .get('#rawsearch .ace_line')
+      .should('be.visible')
 
     cy.get('#rawsearch .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{
-      "query": {}`, {
-      force: true
-    })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(`{
+        "query": {}`, {
+        force: true
+      })
 
     cy.get('.RawFilter-submitBtn').click()
 

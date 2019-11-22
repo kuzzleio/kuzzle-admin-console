@@ -160,6 +160,7 @@ export default {
     })
     this.$kuzzle.on('connected', () => {
       this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
+      this.$store.dispatch(types.CHECK_FIRST_ADMIN)
     })
     this.$kuzzle.on('reconnected', () => {
       this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)

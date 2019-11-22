@@ -243,7 +243,7 @@ export default {
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
         if (attributeValue.hasOwnProperty('properties')) {
-          attributes = attributes.concat(attributeName)
+          attributes = attributes.concat(path.concat(attributeName).join('.'))
           attributes = attributes.concat(
             this.buildAttributeList(
               attributeValue.properties,

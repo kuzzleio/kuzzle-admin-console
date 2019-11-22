@@ -29,7 +29,7 @@ describe('Users', function() {
 
   it('deletes a user successfully via the dropdown menu', function() {
     const kuid = 'dummy'
-    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
         profileIds: ['default'],
         name: 'Dummy User'
@@ -65,7 +65,7 @@ describe('Users', function() {
 
   it('deletes a user successfully via the checkbox and bulk delete button', function() {
     const kuid = 'dummy'
-    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create`, {
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
         profileIds: ['default'],
         name: 'Dummy User'
@@ -83,7 +83,7 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users')
 
-    cy.get('[id="checkbox-dummy"]').click({force: true})
+    cy.get('[id="checkbox-dummy"]').click({ force: true })
     cy.get('.BulkActions')
       .contains('Delete')
       .click()
@@ -101,18 +101,16 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users/custom-mapping')
 
-    cy
-    .get('#user-custom-data-mapping-editor .ace_line')
-    .should('be.visible')
+    cy.get('#user-custom-data-mapping-editor .ace_line').should('be.visible')
 
     cy.get('#user-custom-data-mapping-editor .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-    .clear({force: true})
-    .type(`{{}"address": {{}"type": "text"},`, {
-      force: true
-    })
+      .clear({ force: true })
+      .type(`{{}"address": {{}"type": "text"},`, {
+        force: true
+      })
 
     cy.get('.UserCustomMappingEditor-submit').click()
     cy.contains('User Management')
@@ -134,6 +132,7 @@ describe('Users', function() {
       force: true
     })
     cy.get('.UserCustomMappingEditor-submit').click()
-    cy.contains('Can not change type of field')
+    cy.wait(2000)
+    cy.contains('Field "name" already has a mapping, and it cannot be changed')
   })
 })
