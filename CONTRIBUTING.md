@@ -436,7 +436,7 @@ npm test
 This executes both unit and end-to-end tests. To run only the unit-tests, run
 
 ```
-npm run unit
+npm run test:unit
 ```
 
 ### End-to-end
@@ -444,14 +444,14 @@ npm run unit
 To run the end-to-end tests in headless mode, run
 
 ```
-npm run e2e
+npm run test:e2e
 ```
 
 To run the end-to-end tests in headful mode, run
 
 ```
 npm run dev
-npm run e2e-local
+npm run test:e2e-local
 ```
 
 We use Cypress.io to e2e test the UI. You can use it locally (via the local dashboard) or in the CI (using the cloud-hosted dashboard). Cypress is an awesome tool, but this has a price. They had to re-invent a little bit the wheel so, even if writing and running tests looks extremely smooth, it is still recommended to understand _how_ this magic is achieved. Before writing tests, you are encouraged to read the following docs:
