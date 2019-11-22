@@ -132,6 +132,7 @@ describe('Users', function() {
       force: true
     })
     cy.get('.UserCustomMappingEditor-submit').click()
+    cy.wait(2000)
     cy.contains('Can not change type of field')
   })
 })
