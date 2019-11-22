@@ -116,7 +116,7 @@ describe('Users', function() {
     cy.contains('User Management')
   })
 
-  it.only('receives an error when trying to update the mapping for an existing field', function() {
+  it('receives an error when trying to update the mapping for an existing field', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')

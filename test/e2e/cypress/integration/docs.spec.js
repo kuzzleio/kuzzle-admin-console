@@ -343,7 +343,7 @@ describe('Document update/replace', () => {
     )
   })
 
-  it.only('should replace a document', () => {
+  it('should replace a document', () => {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')
