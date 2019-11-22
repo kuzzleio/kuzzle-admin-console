@@ -133,6 +133,6 @@ describe('Users', function() {
     })
     cy.get('.UserCustomMappingEditor-submit').click()
     cy.wait(2000)
-    cy.contains('Can not change type of field')
+    cy.contains('Field "name" already has a mapping, and it cannot be changed')
   })
 })
