@@ -127,7 +127,7 @@ export default {
     }
   },
   watch: {
-    $route(to, from) {
+    $route() {
       const columnsConfig = JSON.parse(
         localStorage.getItem('timeSeriesViewConfig') || '{}'
       )

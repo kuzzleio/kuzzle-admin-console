@@ -205,7 +205,8 @@ export default {
             (!andBlock.attribute && andBlock.value) ||
             (andBlock.attribute &&
               !andBlock.value &&
-              !andBlock.lt_value && !andBlock.gt_value)
+              !andBlock.lt_value &&
+              !andBlock.gt_value)
           ) {
             return false
           }

@@ -51,7 +51,9 @@ export default {
       try {
         this.$refs.createEnvironmentComponent.createEnvironment()
         this.close()
-      } catch (e) {}
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 }

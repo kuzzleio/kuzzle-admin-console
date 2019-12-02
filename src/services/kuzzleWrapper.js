@@ -244,7 +244,9 @@ export const performSearchUsers = async (
           document._id
         )
         object.credentials[strategy] = res
-      } catch (e) {}
+      } catch (e) {
+        console.error(e)
+      }
     }
     users.push(object)
   }

@@ -226,21 +226,15 @@ export default {
 
       return this.$store.state.index.indexesAndCollections[this.index].realtime
     },
-    filteredStoredCollections() {
-      return this.storedCollections.filter(
-        col => col.indexOf(this.filter) !== -1
-      )
-    },
-    filteredRealtimeCollections() {
-      return this.realtimeCollections.filter(
-        col => col.indexOf(this.filter) !== -1
-      )
-    },
     orderedFilteredStoredCollections() {
-      return this.filteredStoredCollections.sort()
+      return this.storedCollections
+        .filter(col => col.indexOf(this.filter) !== -1)
+        .sort()
     },
     orderedFilteredRealtimeCollections() {
-      return this.filteredRealtimeCollections.sort()
+      return this.realtimeCollections
+        .filter(col => col.indexOf(this.filter) !== -1)
+        .sort()
     }
   },
   methods: {

@@ -60,7 +60,7 @@ export default {
     this.initValue()
   },
   methods: {
-    updateLocation(v) {
+    updateLocation() {
       this.$emit('update-value', { name: this.name, value: this.value })
     },
     initValue() {

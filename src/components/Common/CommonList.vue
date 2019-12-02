@@ -120,7 +120,7 @@ export default {
   watch: {
     $route: {
       immediate: false,
-      handler(newValue, oldValue) {
+      handler(newValue) {
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
@@ -238,7 +238,7 @@ export default {
     deleteDocument(id) {
       this.documentToDelete = id
     },
-    create(route) {
+    create() {
       this.$router.push({ name: this.routeCreate })
     }
   }

@@ -92,27 +92,21 @@ export default {
 
       return this.collections.realtime.length + this.collections.stored.length
     },
-    filteredStoredCollections() {
-      if (this.collections) {
-        return this.collections.stored.filter(
-          col => col.indexOf(this.filter) !== -1
-        )
-      }
-      return []
-    },
-    filteredRealtimeCollections() {
-      if (this.collections) {
-        return this.collections.realtime.filter(
-          col => col.indexOf(this.filter) !== -1
-        )
-      }
-      return []
-    },
     orderedFilteredStoredCollections() {
-      return this.filteredStoredCollections.sort()
+      if (this.collections) {
+        return this.collections.stored
+          .filter(col => col.indexOf(this.filter) !== -1)
+          .sort()
+      }
+      return []
     },
     orderedFilteredRealtimeCollections() {
-      return this.filteredRealtimeCollections.sort()
+      if (this.collections) {
+        return this.collections.realtime
+          .filter(col => col.indexOf(this.filter) !== -1)
+          .sort()
+      }
+      return []
     }
   },
   watch: {

@@ -163,13 +163,10 @@ export default {
     }
   },
   computed: {
-    filteredIndices() {
-      return this.$store.state.index.indexes.filter(
-        indexName => indexName.indexOf(this.filter) !== -1
-      )
-    },
     orderedFilteredIndices() {
-      return this.filteredIndices.sort()
+      return this.$store.state.index.indexes
+        .filter(indexName => indexName.indexOf(this.filter) !== -1)
+        .sort()
     }
   },
   methods: {

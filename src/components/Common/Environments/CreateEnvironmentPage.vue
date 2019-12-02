@@ -56,7 +56,9 @@ export default {
           .createEnvironment()
           .then(() => this.$router.push({ name: 'Home' }))
           .catch(e => console.error(e))
-      } catch (e) {}
+      } catch (e) {
+        console.error(e)
+      }
     },
     importEnv() {
       this.$emit('environment::importEnv')

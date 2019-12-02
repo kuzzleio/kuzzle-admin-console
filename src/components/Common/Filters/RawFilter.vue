@@ -89,7 +89,7 @@ export default {
   watch: {
     rawFilter: {
       immediate: true,
-      handler(newValue, oldValue) {
+      handler(newValue) {
         if (newValue) {
           this.filters.raw = newValue
         } else {
@@ -99,7 +99,7 @@ export default {
     },
     currentFilter: {
       immediate: true,
-      handler(newValue, oldValue) {
+      handler() {
         this.$set(
           this.filters,
           'raw',

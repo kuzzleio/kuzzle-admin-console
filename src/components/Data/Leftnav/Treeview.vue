@@ -74,17 +74,14 @@ export default {
     }
   },
   computed: {
-    filteredIndices() {
+    orderedFilteredIndices() {
       return [
         ...filterIndexesByKeyword(
           this.$store.state.index.indexes,
           this.$store.state.index.indexesAndCollections,
           this.filter
         )
-      ]
-    },
-    orderedFilteredIndices() {
-      return this.filteredIndices.sort()
+      ].sort()
     },
     indexesAndCollections() {
       return Object.keys(this.$store.state.index.indexesAndCollections).length

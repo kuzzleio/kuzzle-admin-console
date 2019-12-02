@@ -71,7 +71,7 @@ export default {
     upload(event) {
       var reader = new FileReader()
 
-      reader.onload = (file => {
+      reader.onload = (() => {
         return e => {
           this.errors = []
           this.env = JSON.parse(e.target.result)
