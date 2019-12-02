@@ -3,7 +3,7 @@ import {
   splitRealtimeStoredCollections,
   getRealtimeCollectionFromStorage
 } from '../../../services/data'
-import { removeIndex } from 'services/localStore'
+import { removeIndex } from '../../../services/localStore'
 import Promise from 'bluebird'
 import * as types from './mutation-types'
 import * as collectionTypes from '../collection/mutation-types'
