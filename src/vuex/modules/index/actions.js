@@ -11,29 +11,23 @@ import Vue from 'vue'
 
 export default {
   async [types.CREATE_INDEX]({ commit }, index) {
-    await Vue.prototype.$kuzzle
-      .index.create(index)
+    await Vue.prototype.$kuzzle.index.create(index)
     commit(types.ADD_INDEX, index)
   },
   async [types.DELETE_INDEX]({ commit }, index) {
-    await Vue.prototype.$kuzzle
-      .index.delete(index)
+    await Vue.prototype.$kuzzle.index.delete(index)
     removeIndex(index)
     commit(types.DELETE_INDEX, index)
   },
   async [types.LIST_INDEXES_AND_COLLECTION]({ commit }) {
-    let result = await Vue.prototype.$kuzzle
-      .index
-      .list()
+    let result = await Vue.prototype.$kuzzle.index.list()
 
     let indexesAndCollections = {}
     result = result.filter(index => index !== '%kuzzle')
     for (const index of result) {
       try {
-        const res = await Vue.prototype.$kuzzle
-          .collection
-          .list(index)
-      
+        const res = await Vue.prototype.$kuzzle.collection.list(index)
+
         let collections = splitRealtimeStoredCollections(res.collections)
 
         if (!collections.realtime) {
