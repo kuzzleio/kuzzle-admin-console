@@ -2,14 +2,8 @@
   <div class="ViewMap">
     <div class="row">
       <div :class="getMapClass()">
-        <l-map
-          ref="map"
-          @click="onMapClick"
-        >
-          <l-tile-layer
-            :url="url"
-            :attribution="attribution"
-          />
+        <l-map ref="map" @click="onMapClick">
+          <l-tile-layer :url="url" :attribution="attribution" />
           <l-marker
             v-for="document in documents"
             :key="document.id"
@@ -20,34 +14,35 @@
         </l-map>
       </div>
 
-      <div
-        v-if="currentDocument"
-        class="col s2 viewMap-document-info"
-      >
+      <div v-if="currentDocument" class="col s2 viewMap-document-info">
         <div class="row">
           <div class="col s9">
             {{ currentDocument.id }}
           </div>
           <a
             href=""
-            :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this document'"
-            :class="{unauthorized: !canEdit}"
+            :title="
+              canEdit
+                ? 'Edit Document'
+                : 'You are not allowed to edit this document'
+            "
+            :class="{ unauthorized: !canEdit }"
             @click.prevent="editCurrentDocument"
           >
             <i
               class="fa fa-pencil-alt pointer"
-              :class="{'disabled': !canEdit}"
+              :class="{ disabled: !canEdit }"
             />
           </a>
 
-          <dropdown
-            :id="currentDocument.id"
-            myclass="icon-black"
-          >
+          <dropdown :id="currentDocument.id" myclass="icon-black">
             <li>
               <a
-                v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
-                :class="{'disabled': !canDelete}"
+                v-title="{
+                  active: !canDelete,
+                  title: 'You are not allowed to delete this document'
+                }"
+                :class="{ disabled: !canDelete }"
                 @click="deleteCurrentDocument()"
               >
                 Delete
@@ -55,7 +50,7 @@
             </li>
           </dropdown>
         </div>
-        <hr>
+        <hr />
         <p
           v-json-formatter="{
             content: {
@@ -204,7 +199,6 @@ export default {
 
 <style scoped lang="scss">
 .ViewMap {
-
   .viewMap-document-map {
     height: 500px;
   }
@@ -212,6 +206,5 @@ export default {
   .viewMap-document-info {
     overflow-x: scroll;
   }
-
 }
 </style>

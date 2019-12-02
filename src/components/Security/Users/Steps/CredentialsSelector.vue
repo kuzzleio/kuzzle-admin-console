@@ -1,12 +1,9 @@
 <template>
   <div>
     <h5>Available strategies</h5>
-    <hr>
+    <hr />
     <m-select v-model="currentStrategy">
-      <option 
-        v-for="(strategy, index) in strategies"
-        :key="index"  
-      >
+      <option v-for="(strategy, index) in strategies" :key="index">
         {{ strategy }}
       </option>
     </m-select>
@@ -25,11 +22,12 @@
               :type="fieldType(fieldName)"
               :name="fieldName"
               @input="onFieldChange"
-            >
+            />
             <label
               :for="fieldName"
-              :class="{'active': credentialsForStrategy[fieldName]}"
-            >{{ fieldName }}</label>
+              :class="{ active: credentialsForStrategy[fieldName] }"
+              >{{ fieldName }}</label
+            >
           </div>
         </div>
       </div>

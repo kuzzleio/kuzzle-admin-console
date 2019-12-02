@@ -8,7 +8,7 @@
           class="filled-in"
           :checked="allowFormProp"
           @change="changeAllowForm"
-        >
+        />
         <span class="allow-form">Associate mapping to form.</span>
       </label>
     </div>
@@ -34,11 +34,9 @@
     <!-- Actions -->
     <div class="row">
       <div class="col s12">
-        <a
-          tabindex="6"
-          class="btn-flat waves-effect"
-          @click.prevent="cancel"
-        >Cancel</a>
+        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel"
+          >Cancel</a
+        >
         <button
           type="submit"
           class="btn primary waves-effect waves-light"

@@ -38,7 +38,7 @@ export const connectToEnvironment = environment => {
     port: parseInt(environment.port),
     sslConnection: environment.ssl
   })
-  
+
   Vue.prototype.$kuzzle.connect()
 }
 
@@ -123,9 +123,12 @@ export const performSearchDocuments = async (
     throw new Error('Missing collection or index')
   }
 
-  const result = await Vue.prototype.$kuzzle
-    .document
-    .search(index, collection, { ...filters, sort }, { ...pagination })
+  const result = await Vue.prototype.$kuzzle.document.search(
+    index,
+    collection,
+    { ...filters, sort },
+    { ...pagination }
+  )
 
   let additionalAttributeName = null
 
@@ -164,7 +167,9 @@ export const performSearchDocuments = async (
 }
 
 export const getMappingDocument = (collection, index) => {
-  return Vue.prototype.$kuzzle.collection.getMapping(index, collection, { includeKuzzleMeta: true })
+  return Vue.prototype.$kuzzle.collection.getMapping(index, collection, {
+    includeKuzzleMeta: true
+  })
 }
 
 export const performDeleteDocuments = (index, collection, ids) => {
@@ -178,7 +183,9 @@ export const performDeleteDocuments = (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, { refresh: 'wait_for' })
+  return Vue.prototype.$kuzzle.document.mDelete(index, collection, ids, {
+    refresh: 'wait_for'
+  })
 }
 
 // ### Security
@@ -191,11 +198,12 @@ export const performSearchUsers = async (
   pagination = {},
   sort = []
 ) => {
-  const strategies = await Vue.prototype.$kuzzle.auth
-    .getStrategies()
+  const strategies = await Vue.prototype.$kuzzle.auth.getStrategies()
 
-  const result = await Vue.prototype.$kuzzle.security
-    .searchUsers({ ...filters, sort }, { ...pagination })
+  const result = await Vue.prototype.$kuzzle.security.searchUsers(
+    { ...filters, sort },
+    { ...pagination }
+  )
   let additionalAttributeName = null
   let users = []
 
@@ -231,8 +239,10 @@ export const performSearchUsers = async (
 
     for (const strategy of strategies) {
       try {
-        const res = await Vue.prototype.$kuzzle.security
-          .getCredentials(strategy, document._id)
+        const res = await Vue.prototype.$kuzzle.security.getCredentials(
+          strategy,
+          document._id
+        )
         object.credentials[strategy] = res
       } catch (e) {}
     }
@@ -243,13 +253,13 @@ export const performSearchUsers = async (
 }
 
 export const getMappingUsers = () => {
-  return Vue.prototype.$kuzzle.security
-    .getUserMapping()
+  return Vue.prototype.$kuzzle.security.getUserMapping()
 }
 
 export const updateMappingUsers = newMapping => {
-  return Vue.prototype.$kuzzle.security
-    .updateUserMapping({ properties: newMapping })
+  return Vue.prototype.$kuzzle.security.updateUserMapping({
+    properties: newMapping
+  })
 }
 
 export const performDeleteUsers = async (index, collection, ids) => {
@@ -257,14 +267,17 @@ export const performDeleteUsers = async (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  await Vue.prototype.$kuzzle.security
-    .mDeleteUsers(ids, { refresh: 'wait_for' })
+  await Vue.prototype.$kuzzle.security.mDeleteUsers(ids, {
+    refresh: 'wait_for'
+  })
 }
 
 // Profiles related
 export const performSearchProfiles = async (filters = {}, pagination = {}) => {
-  const result = await Vue.prototype.$kuzzle.security
-    .searchProfiles({ ...filters }, { size: 100, ...pagination })
+  const result = await Vue.prototype.$kuzzle.security.searchProfiles(
+    { ...filters },
+    { size: 100, ...pagination }
+  )
 
   const profiles = result.hits.map(document => {
     return {
@@ -281,14 +294,16 @@ export const performDeleteProfiles = async (index, collection, ids) => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  await Vue.prototype.$kuzzle.security
-    .mDeleteProfiles(ids, { refresh: 'wait_for' })
+  await Vue.prototype.$kuzzle.security.mDeleteProfiles(ids, {
+    refresh: 'wait_for'
+  })
 }
 
 // Roles related
 export const performSearchRoles = async (controllers = {}, pagination = {}) => {
-  const result = await Vue.prototype.$kuzzle.security
-    .searchRoles(controllers, { ...pagination })
+  const result = await Vue.prototype.$kuzzle.security.searchRoles(controllers, {
+    ...pagination
+  })
   let roles = result.hits.map(document => {
     let object = {
       content: { controllers: document.controllers },
@@ -303,8 +318,7 @@ export const performSearchRoles = async (controllers = {}, pagination = {}) => {
 }
 
 export const getMappingRoles = async () => {
-  return Vue.prototype.$kuzzle.security
-    .getRoleMapping()
+  return Vue.prototype.$kuzzle.security.getRoleMapping()
 }
 
 export const performDeleteRoles = async ids => {
@@ -312,44 +326,65 @@ export const performDeleteRoles = async ids => {
     return Promise.reject(new Error('ids<Array> parameter is required'))
   }
 
-  await Vue.prototype.$kuzzle.security
-    .mDeleteRoles(ids, { refresh: 'wait_for' })
+  await Vue.prototype.$kuzzle.security.mDeleteRoles(ids, {
+    refresh: 'wait_for'
+  })
 }
 
-export const isKuzzleActionAllowed = (rights, controller, action, index, collection) => {
+export const isKuzzleActionAllowed = (
+  rights,
+  controller,
+  action,
+  index,
+  collection
+) => {
   var filteredRights
 
   if (!rights || typeof rights !== 'object') {
-    throw new Error('rights parameter is mandatory for isActionAllowed function')
+    throw new Error(
+      'rights parameter is mandatory for isActionAllowed function'
+    )
   }
   if (!controller || typeof controller !== 'string') {
-    throw new Error('controller parameter is mandatory for isActionAllowed function')
+    throw new Error(
+      'controller parameter is mandatory for isActionAllowed function'
+    )
   }
   if (!action || typeof action !== 'string') {
-    throw new Error('action parameter is mandatory for isActionAllowed function')
+    throw new Error(
+      'action parameter is mandatory for isActionAllowed function'
+    )
   }
 
   // We filter in all the rights that match the request (including wildcards).
   filteredRights = rights
-    .filter(function (right) {
+    .filter(function(right) {
       return right.controller === controller || right.controller === '*'
     })
-    .filter(function (right) {
+    .filter(function(right) {
       return right.action === action || right.action === '*'
     })
-    .filter(function (right) {
+    .filter(function(right) {
       return right.index === index || right.index === '*'
     })
-    .filter(function (right) {
+    .filter(function(right) {
       return right.collection === collection || right.collection === '*'
     })
 
   // Then, if at least one right allows the action, we return 'allowed'
-  if (filteredRights.some(function (item) { return item.value === 'allowed' })) {
+  if (
+    filteredRights.some(function(item) {
+      return item.value === 'allowed'
+    })
+  ) {
     return 'allowed'
   }
   // If no right allows the action, we check for conditionals.
-  if (filteredRights.some(function (item) { return item.value === 'conditional' })) {
+  if (
+    filteredRights.some(function(item) {
+      return item.value === 'conditional'
+    })
+  ) {
     return 'conditional'
   }
   // Otherwise we return 'denied'.

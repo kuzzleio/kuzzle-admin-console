@@ -4,11 +4,9 @@
       <tr>
         <th class="actions" />
         <th>id</th>
-        <th
-          v-for="(attr, k) in customFields"
-          :key="k"
-        >
-          {{ attr }}<i
+        <th v-for="(attr, k) in customFields" :key="k">
+          {{ attr
+          }}<i
             class="fa fa-times-circle ListViewColumn-remove"
             @click="removeColumn(k)"
           />
@@ -24,7 +22,12 @@
                   :value="newCustomField || ''"
                   input-class="ListViewColumnInput"
                   :notify-change="false"
-                  @autocomplete::change="attribute => { newCustomField = attribute; addCustomField(); }"
+                  @autocomplete::change="
+                    attribute => {
+                      newCustomField = attribute
+                      addCustomField()
+                    }
+                  "
                 />
               </div>
             </div>
@@ -33,10 +36,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-for="(doc, kk) in documents"
-        :key="kk"
-      >
+      <tr v-for="(doc, kk) in documents" :key="kk">
         <td class="actions">
           <dropdown
             :id="`document-dropdown-${doc.id}`"
@@ -44,8 +44,11 @@
           >
             <li>
               <a
-                v-title="{active: !canDelete, title: 'You are not allowed to edit this document'}"
-                :class="{'disabled': !canEdit}"
+                v-title="{
+                  active: !canDelete,
+                  title: 'You are not allowed to edit this document'
+                }"
+                :class="{ disabled: !canEdit }"
                 @click="editDocument(doc.id)"
               >
                 Edit
@@ -54,8 +57,11 @@
             <li class="divider" />
             <li>
               <a
-                v-title="{active: !canDelete, title: 'You are not allowed to delete this document'}"
-                :class="{'disabled': !canDelete}"
+                v-title="{
+                  active: !canDelete,
+                  title: 'You are not allowed to delete this document'
+                }"
+                :class="{ disabled: !canDelete }"
                 @click="deleteDocument(doc.id)"
               >
                 Delete
@@ -71,17 +77,16 @@
           :key="k"
           class="DocumentColumnItem"
         >
-          <span
-            v-if="parseDocument(attr, doc).isObject"
-            class="relative"
-          >
-            <a
-              href="#"
-              @click.prevent="toggleJsonFormatter(attr+doc.id)"
-            >{{ parseDocument(attr, doc).value }} ...</a>
+          <span v-if="parseDocument(attr, doc).isObject" class="relative">
+            <a href="#" @click.prevent="toggleJsonFormatter(attr + doc.id)"
+              >{{ parseDocument(attr, doc).value }} ...</a
+            >
             <pre
-              :ref="attr+doc.id"
-              v-json-formatter="{content: parseDocument(attr, doc).realValue, open: true}"
+              :ref="attr + doc.id"
+              v-json-formatter="{
+                content: parseDocument(attr, doc).realValue,
+                open: true
+              }"
               class="DocumentListViewColumn-jsonFormatter"
               style="visibility: hidden;"
             />
@@ -148,27 +153,37 @@ export default {
     }
   },
   watch: {
-    '$route' (to, from) {
-      const columnsConfig = JSON.parse(localStorage.getItem('columnViewConfig') || '{}')
+    $route(to, from) {
+      const columnsConfig = JSON.parse(
+        localStorage.getItem('columnViewConfig') || '{}'
+      )
 
       this.customFields = []
-      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
+      if (
+        columnsConfig[this.index] &&
+        columnsConfig[this.index][this.collection]
+      ) {
         this.customFields = columnsConfig[this.index][this.collection]
       } else {
         this.customFields = []
       }
     },
-    mapping () {
+    mapping() {
       this.mappingArray = this.buildAttributeList(this.mapping)
       for (const attr of this.customFields) {
         this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
       }
     }
   },
-  mounted () {
-    const columnsConfig = JSON.parse(localStorage.getItem('columnViewConfig') || '{}')
+  mounted() {
+    const columnsConfig = JSON.parse(
+      localStorage.getItem('columnViewConfig') || '{}'
+    )
 
-    if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
+    if (
+      columnsConfig[this.index] &&
+      columnsConfig[this.index][this.collection]
+    ) {
       this.customFields = columnsConfig[this.index][this.collection]
     }
 
@@ -186,7 +201,9 @@ export default {
       }
     },
     parseDocument(attr, doc) {
-      const ret = attr.includes('.') ? this.getNestedField(doc.content, attr) : doc.content[attr]
+      const ret = attr.includes('.')
+        ? this.getNestedField(doc.content, attr)
+        : doc.content[attr]
 
       if (typeof ret === 'object' && ret !== null) {
         return {
@@ -203,7 +220,9 @@ export default {
     },
     saveToLocalStorage() {
       if (this.index && this.collection) {
-        const config = JSON.parse(localStorage.getItem('columnViewConfig') || '{}')
+        const config = JSON.parse(
+          localStorage.getItem('columnViewConfig') || '{}'
+        )
         if (!config[this.index]) {
           config[this.index] = {}
         }
@@ -223,7 +242,10 @@ export default {
     addCustomField() {
       if (this.newCustomField) {
         this.customFields.push(this.newCustomField)
-        this.mappingArray.splice(this.mappingArray.indexOf(this.newCustomField), 1)
+        this.mappingArray.splice(
+          this.mappingArray.indexOf(this.newCustomField),
+          1
+        )
         this.newCustomField = null
         this.saveToLocalStorage()
       }
@@ -266,7 +288,7 @@ export default {
   padding: 0px 0px;
   white-space: pre;
   word-wrap: break-word;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 td {
@@ -275,7 +297,7 @@ td {
 
 .ListViewColumnInput {
   width: 300px;
-  float: left,
+  float: left;
 }
 
 .ListViewColumn-remove {
@@ -303,7 +325,7 @@ td {
 .DocumentListViewColumn-jsonFormatter {
   position: absolute;
   background-color: #fff;
-  border: .3px solid grey;
+  border: 0.3px solid grey;
   z-index: 999;
   left: 0;
   bottom: 0;
@@ -312,6 +334,6 @@ td {
 
 <style>
 .Autocomplete-results {
-  height: 200px!important;
+  height: 200px !important;
 }
 </style>

@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="{ 'open': open || filter }"
-    class="index-branch"
-  >
+  <div :class="{ open: open || filter }" class="index-branch">
     <i
       v-if="collectionCount"
       class="fa fa-caret-right tree-toggle"
@@ -10,14 +7,11 @@
       @click="toggleBranch"
     />
     <router-link
-      :to="{name: 'DataIndexSummary', params: {index: indexName}}"
+      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
       class="tree-item truncate"
-      :class="{ 'active': isIndexActive(indexName) }"
+      :class="{ active: isIndexActive(indexName) }"
     >
-      <i
-        class="fa fa-database"
-        aria-hidden="true"
-      />
+      <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
     </router-link>
     <ul class="collections">
@@ -27,8 +21,11 @@
       >
         <router-link
           class="tree-item truncate"
-          :to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
-          :class="{ 'active': isCollectionActive(indexName, collectionName) }"
+          :to="{
+            name: 'DataDocumentsList',
+            params: { index: indexName, collection: collectionName }
+          }"
+          :class="{ active: isCollectionActive(indexName, collectionName) }"
         >
           <i
             class="fa fa-th-list"
@@ -44,8 +41,11 @@
       >
         <router-link
           class="tree-item"
-          :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
-          :class="{ 'active': isCollectionActive(indexName, collectionName) }"
+          :to="{
+            name: 'DataCollectionWatch',
+            params: { index: indexName, collection: collectionName }
+          }"
+          :class="{ active: isCollectionActive(indexName, collectionName) }"
         >
           <i
             class="fa fa-bolt"

@@ -2,11 +2,7 @@
   <div class="row input-field">
     <div class="row">
       <p>{{ name }}</p>
-      <quill-editor
-        ref="richText"
-        v-model="value"
-        :config="config"
-      />
+      <quill-editor ref="richText" v-model="value" :config="config" />
     </div>
   </div>
 </template>

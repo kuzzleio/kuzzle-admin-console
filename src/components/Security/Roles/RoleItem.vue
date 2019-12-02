@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="RoleItem"
-    :class="{ 'collapsed': collapsed }"
-  >
+  <div class="RoleItem" :class="{ collapsed: collapsed }">
     <i
       class="RoleItem-toggle fa fa-caret-down item-toggle"
       aria-hidden="true"
@@ -17,49 +14,53 @@
         :value="document.id"
         :checked="isChecked"
         @click="notifyCheckboxClick"
-      >
+      />
 
       <span />
     </label>
     <!-- The following anchor will go to the profile details page -->
-    <label class="RoleItem-title item-title"><a @click="toggleCollapse">{{ document.id }}</a></label>
+    <label class="RoleItem-title item-title"
+      ><a @click="toggleCollapse">{{ document.id }}</a></label
+    >
 
     <label
       v-if="document.additionalAttribute && document.additionalAttribute.value"
       class="RoleItem-additionalAttribute"
     >
-      ({{ document.additionalAttribute.name }}: {{ document.additionalAttribute.value }})
+      ({{ document.additionalAttribute.name }}:
+      {{ document.additionalAttribute.value }})
     </label>
 
     <div class="RoleItem-actions right">
       <a
-        v-title="{active: !canEditRole(), title: 'You are not allowed to edit this role'}"
+        v-title="{
+          active: !canEditRole(),
+          title: 'You are not allowed to edit this role'
+        }"
         href="#"
         @click.prevent="update"
       >
-        <i
-          class="fa fa-pencil-alt"
-          :class="{'disabled': !canEditRole()}"
-        />
+        <i class="fa fa-pencil-alt" :class="{ disabled: !canEditRole() }" />
       </a>
-      <dropdown
-        :id="document.id"
-        myclass="icon-black"
-      >
+      <dropdown :id="document.id" myclass="icon-black">
         <li>
           <a
-            v-title="{active: !canDeleteRole(), title: 'You are not allowed to delete this role'}"
-            :class="{'disabled': !canDeleteRole()}"
+            v-title="{
+              active: !canDeleteRole(),
+              title: 'You are not allowed to delete this role'
+            }"
+            :class="{ disabled: !canDeleteRole() }"
             @click="deleteDocument(document.id)"
           >
-            Delete</a>
+            Delete</a
+          >
         </li>
       </dropdown>
     </div>
 
     <div class="RoleItem-content item-content">
-      <pre v-json-formatter="{content: document.content, open: true}" />
-      <pre v-json-formatter="{content: document.meta, open: true}" />
+      <pre v-json-formatter="{ content: document.content, open: true }" />
+      <pre v-json-formatter="{ content: document.meta, open: true }" />
     </div>
   </div>
 </template>

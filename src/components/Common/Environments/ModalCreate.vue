@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="EnvironmentsCreateModal"
-    @submit.prevent="createEnvironment"
-  >
+  <form class="EnvironmentsCreateModal" @submit.prevent="createEnvironment">
     <modal
       id="create-env"
       :footer-fixed="true"
@@ -28,10 +25,7 @@
         >
           {{ environmentId ? 'Update' : 'Create' }}
         </button>
-        <button
-          class="btn-flat waves-effect waves-grey"
-          @click.prevent="close"
-        >
+        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
           Cancel
         </button>
       </span>
@@ -39,8 +33,7 @@
   </form>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-</style>
+<style lang="scss" rel="stylesheet/scss" scoped></style>
 
 <script>
 import Modal from '../../Materialize/Modal'

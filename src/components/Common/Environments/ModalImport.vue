@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="EnvironmentsImportModal"
-    @submit.prevent="importEnv"
-  >
+  <form class="EnvironmentsImportModal" @submit.prevent="importEnv">
     <modal
       id="create-env"
       :footer-fixed="true"
@@ -16,31 +13,21 @@
         </div>
       </div>
 
-      <input
-        type="file"
-        @change="upload($event)"
-      >
+      <input type="file" @change="upload($event)" />
 
-      <div
-        v-for="(err, k) in errors"
-        :key="k"
-        class="card-panel red lighten-3"
-      >
+      <div v-for="(err, k) in errors" :key="k" class="card-panel red lighten-3">
         <span>Error: {{ err }}</span>
       </div>
 
       <span slot="footer">
         <button
-          :class="{disabled: !canSubmit}"
+          :class="{ disabled: !canSubmit }"
           type="submit"
           class="EnvironmentsCreateModal-import Environment-SubmitButton waves-effect btn"
         >
           Import
         </button>
-        <button
-          class="btn-flat waves-effect waves-grey"
-          @click.prevent="close"
-        >
+        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
           Cancel
         </button>
       </span>
@@ -50,9 +37,7 @@
 
 <script>
 import Modal from '../../Materialize/Modal'
-import {
-  CREATE_ENVIRONMENT
-} from '../../../vuex/modules/common/kuzzle/mutation-types'
+import { CREATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 
 export default {
   name: 'ModalImport',
@@ -60,7 +45,7 @@ export default {
     Modal
   },
   props: ['environmentId', 'isOpen', 'close'],
-  data () {
+  data() {
     return {
       env: {},
       canSubmit: false,
@@ -100,6 +85,4 @@ export default {
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

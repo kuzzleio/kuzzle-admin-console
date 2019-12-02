@@ -18,7 +18,7 @@
             </div>
             <div class="col s9">
               <p>
-                Here you'll see the kuzzle's indexes<br>
+                Here you'll see the kuzzle's indexes<br />
                 <em>Currently there is no index.</em>
               </p>
               <button
@@ -33,15 +33,15 @@
           </div>
         </div>
 
-        <div
-          v-if="$store.state.index.indexes.length"
-          class="row actions"
-        >
+        <div v-if="$store.state.index.indexes.length" class="row actions">
           <div class="col s9">
             <button
-              v-title="{active: !canCreateIndex(), title: 'You are not allowed to create new indexes.'}"
+              v-title="{
+                active: !canCreateIndex(),
+                title: 'You are not allowed to create new indexes.'
+              }"
               class="IndexesPage-createBtn btn waves-effect waves-light primary"
-              :class="{unauthorized: !canCreateIndex()}"
+              :class="{ unauthorized: !canCreateIndex() }"
               @click.prevent="openModal"
             >
               <i class="fa fa-plus-circle left" />
@@ -56,28 +56,17 @@
               class="input-field left-align"
             >
               <label for="filter"><i class="fa fa-search" /> Filter</label>
-              <input
-                id="filter"
-                v-model="filter"
-                type="text"
-                tabindex="1"
-              >
+              <input id="filter" v-model="filter" type="text" tabindex="1" />
             </div>
           </div>
         </div>
 
         <div class="row list">
           <!-- Not allowed -->
-          <div
-            v-if="!canSearchIndex"
-            class="col s12"
-          >
+          <div v-if="!canSearchIndex" class="col s12">
             <div class="card-panel unauthorized">
               <div class="card-content">
-                <i
-                  class="fa fa-lock left "
-                  aria-hidden="true"
-                />
+                <i class="fa fa-lock left " aria-hidden="true" />
                 <em>You are not allowed to list indexes</em>
               </div>
             </div>
@@ -97,7 +86,7 @@
               </div>
               <div class="col s12">
                 <p>
-                  There is no index matching your filter.<br>
+                  There is no index matching your filter.<br />
                   Please try with another one.
                 </p>
               </div>

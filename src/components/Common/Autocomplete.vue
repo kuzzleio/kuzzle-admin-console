@@ -11,12 +11,9 @@
       @keydown.down="onArrowDown"
       @keydown.up="onArrowUp"
       @keydown.enter.prevent="onEnter"
-    >
+    />
 
-    <ul
-      v-show="isOpen"
-      class="Autocomplete-results"
-    >
+    <ul v-show="isOpen" class="Autocomplete-results">
       <li
         v-for="(result, i) in results"
         :key="result"
@@ -91,7 +88,7 @@ export default {
   },
   methods: {
     onChange(evt) {
-      if (this.notifyChange) { 
+      if (this.notifyChange) {
         return this.changeResult(evt.target.value)
       }
     },

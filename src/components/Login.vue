@@ -10,7 +10,7 @@
                   src="../assets/logo.svg"
                   alt="Welcome to the Kuzzle Backoffice"
                   style="width: 70%"
-                >
+                />
               </h2>
             </div>
           </div>

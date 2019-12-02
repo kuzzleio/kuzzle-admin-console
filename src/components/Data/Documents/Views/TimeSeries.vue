@@ -7,12 +7,9 @@
         :data="chart"
         :options="chartOptions"
         :resize-debounce="1"
-        :settings="{'packages':['corechart'], 'language': 'en'}"
+        :settings="{ packages: ['corechart'], language: 'en' }"
       />
-      <div
-        v-else
-        class="row col s12"
-      >
+      <div v-else class="row col s12">
         No data to display
       </div>
     </div>
@@ -24,7 +21,11 @@
           :items="mappingDateArray"
           :value="customDateField || ''"
           :notify-change="false"
-          @autocomplete::change="item => { addDateField(item) }"
+          @autocomplete::change="
+            item => {
+              addDateField(item)
+            }
+          "
         />
       </div>
       <div class="col s12">
@@ -45,7 +46,11 @@
             :items="mappingNumberArray"
             :new-value="newCustomNumberField || ''"
             @update-color="updateColor"
-            @autocomplete::change="item => { addNumberField(item) }"
+            @autocomplete::change="
+              item => {
+                addNumberField(item)
+              }
+            "
           />
         </form>
       </div>
@@ -98,7 +103,7 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       customDateField: null,
       customNumberFields: [],
@@ -122,66 +127,97 @@ export default {
     }
   },
   watch: {
-    '$route' (to, from) {
-      const columnsConfig = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}')
+    $route(to, from) {
+      const columnsConfig = JSON.parse(
+        localStorage.getItem('timeSeriesViewConfig') || '{}'
+      )
 
       this.customDateField = null
-      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
+      if (
+        columnsConfig[this.index] &&
+        columnsConfig[this.index][this.collection]
+      ) {
         this.customDateField = columnsConfig[this.index][this.collection].date
       } else {
         this.customDateField = null
       }
 
       this.customNumberFields = []
-      if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-        this.customNumberFields = columnsConfig[this.index][this.collection].numbers || []
+      if (
+        columnsConfig[this.index] &&
+        columnsConfig[this.index][this.collection]
+      ) {
+        this.customNumberFields =
+          columnsConfig[this.index][this.collection].numbers || []
       } else {
         this.customNumberFields = []
       }
     },
-    mapping () {
-      this.mappingNumberArray = this.buildAttributeList(this.mapping, type => ES_NUMBER_DATA_TYPE.includes(type))
+    mapping() {
+      this.mappingNumberArray = this.buildAttributeList(this.mapping, type =>
+        ES_NUMBER_DATA_TYPE.includes(type)
+      )
       if (this.customNumberFields) {
         for (const attr of this.customNumberFields) {
-          this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr.name), 1)
+          this.mappingNumberArray.splice(
+            this.mappingNumberArray.indexOf(attr.name),
+            1
+          )
         }
         this.mappingNumberArray.sort()
       }
     },
-    customNumberFields () {
+    customNumberFields() {
       this.updateChart()
     },
-    documents () {
+    documents() {
       this.updateChart()
     }
   },
-  mounted () {
-    const columnsConfig = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}')
+  mounted() {
+    const columnsConfig = JSON.parse(
+      localStorage.getItem('timeSeriesViewConfig') || '{}'
+    )
 
-    if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
+    if (
+      columnsConfig[this.index] &&
+      columnsConfig[this.index][this.collection]
+    ) {
       this.customDateField = columnsConfig[this.index][this.collection].date
     }
-    this.mappingDateArray = this.buildAttributeList(this.mapping, type => type === 'date')
+    this.mappingDateArray = this.buildAttributeList(
+      this.mapping,
+      type => type === 'date'
+    )
 
-    if (columnsConfig[this.index] && columnsConfig[this.index][this.collection]) {
-      this.customNumberFields = columnsConfig[this.index][this.collection].numbers || []
+    if (
+      columnsConfig[this.index] &&
+      columnsConfig[this.index][this.collection]
+    ) {
+      this.customNumberFields =
+        columnsConfig[this.index][this.collection].numbers || []
     }
-    this.mappingNumberArray = this.buildAttributeList(this.mapping, type => ES_NUMBER_DATA_TYPE.includes(type))
-    
+    this.mappingNumberArray = this.buildAttributeList(this.mapping, type =>
+      ES_NUMBER_DATA_TYPE.includes(type)
+    )
+
     if (this.customNumberFields) {
       for (const attr of this.customNumberFields) {
-        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(attr.name), 1)
+        this.mappingNumberArray.splice(
+          this.mappingNumberArray.indexOf(attr.name),
+          1
+        )
       }
       this.mappingNumberArray.sort()
     }
   },
   methods: {
-    updateChart () {
+    updateChart() {
       this.chartOptions.colors = []
       this.chart = []
       const chartTitles = []
       chartTitles.push(this.customDateField)
-  
+
       for (const item of this.customNumberFields) {
         this.chartOptions.colors.push(item.color)
         chartTitles.push(item.name)
@@ -199,7 +235,9 @@ export default {
     },
     saveToLocalStorage() {
       if (this.index && this.collection) {
-        const config = JSON.parse(localStorage.getItem('timeSeriesViewConfig') || '{}')
+        const config = JSON.parse(
+          localStorage.getItem('timeSeriesViewConfig') || '{}'
+        )
         if (!config[this.index]) {
           config[this.index] = {}
         }
@@ -223,7 +261,10 @@ export default {
               path.concat(attributeName)
             )
           )
-        } else if (attributeValue.hasOwnProperty('type') && condition(attributeValue.type)) {
+        } else if (
+          attributeValue.hasOwnProperty('type') &&
+          condition(attributeValue.type)
+        ) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
@@ -247,7 +288,10 @@ export default {
     addNumberField(item) {
       if (item.name) {
         this.customNumberFields.push({ name: item.name, color: item.color })
-        this.mappingNumberArray.splice(this.mappingNumberArray.indexOf(item.name), 1)
+        this.mappingNumberArray.splice(
+          this.mappingNumberArray.indexOf(item.name),
+          1
+        )
         this.saveToLocalStorage()
         this.updateChart()
       }
@@ -264,7 +308,7 @@ export default {
 
 <style>
 .bordered {
-  border: .5px solid grey;
+  border: 0.5px solid grey;
   margin-bottom: 10px;
 }
 </style>

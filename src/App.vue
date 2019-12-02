@@ -1,9 +1,6 @@
 <template>
   <div class="App">
-    <div
-      v-if="$store.state.kuzzle.errorFromKuzzle"
-      class="App-errored"
-    >
+    <div v-if="$store.state.kuzzle.errorFromKuzzle" class="App-errored">
       <error-layout>
         <kuzzle-error-page
           @environment::create="editEnvironment"
@@ -13,13 +10,8 @@
       </error-layout>
     </div>
     <div v-else>
-      <div
-        v-if="!$store.getters.hasEnvironment"
-        class="App-noEnvironments"
-      >
-        <create-environment-page
-          @environment::importEnv="importEnv"
-        />
+      <div v-if="!$store.getters.hasEnvironment" class="App-noEnvironments">
+        <create-environment-page @environment::importEnv="importEnv" />
       </div>
       <div v-else>
         <div
@@ -28,28 +20,16 @@
         >
           <!-- This is not supposed to happen, see error case above -->
         </div>
-        <div
-          v-else
-          class="App-connected"
-        >
-          <div
-            v-if="!$store.getters.isAuthenticated"
-            class="App-loggedOut"
-          >
-            <div
-              v-if="!$store.getters.adminAlreadyExists"
-              class="App-noAdmin"
-            >
+        <div v-else class="App-connected">
+          <div v-if="!$store.getters.isAuthenticated" class="App-loggedOut">
+            <div v-if="!$store.getters.adminAlreadyExists" class="App-noAdmin">
               <sign-up
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
                 @environment::importEnv="importEnv"
               />
             </div>
-            <div
-              v-else
-              class="App-hasAdmin"
-            >
+            <div v-else class="App-hasAdmin">
               <login
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
@@ -57,10 +37,7 @@
               />
             </div>
           </div>
-          <div
-            v-else
-            class="App-loggedIn"
-          >
+          <div v-else class="App-loggedIn">
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
@@ -81,10 +58,7 @@
       :close="close"
       :is-open="deleteIsOpen"
     />
-    <modal-import
-      :close="close"
-      :is-open="importIsOpen"
-    />
+    <modal-import :close="close" :is-open="importIsOpen" />
 
     <toaster />
   </div>

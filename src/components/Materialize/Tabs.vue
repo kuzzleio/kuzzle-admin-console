@@ -2,10 +2,7 @@
   <div class="md-tabs">
     <ul class="tabs">
       <slot />
-      <div
-        ref="indicator"
-        class="indicator"
-      />
+      <div ref="indicator" class="indicator" />
     </ul>
 
     <slot name="contents" />

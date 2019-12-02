@@ -1,9 +1,6 @@
 <template>
   <div class="ProfileList">
-    <slot
-      v-if="currentFilter.basic && totalDocuments === 0"
-      name="emptySet"
-    />
+    <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <crudl-document
       v-else
       :current-filter="currentFilter"
@@ -130,7 +127,8 @@ export default {
       await this.performDelete(index, collection, ids)
       this.$set(
         this.selectedDocuments,
-        this.selectedDocuments.splice(0, this.selectedDocuments.length))
+        this.selectedDocuments.splice(0, this.selectedDocuments.length)
+      )
       this.fetchProfiles()
     },
     isChecked(id) {

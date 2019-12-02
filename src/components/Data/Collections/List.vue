@@ -2,24 +2,27 @@
   <div class="CollectionsList wrapper">
     <headline>
       {{ index }}
-      <index-dropdown 
-        :index="index"
-        class="icon-medium icon-black"
-      />
+      <index-dropdown :index="index" class="icon-medium icon-black" />
     </headline>
 
     <div class="row">
       <div class="col s12 m10 l8">
-        <div
-          v-if="collectionCount"
-          class="row actions"
-        >
+        <div v-if="collectionCount" class="row actions">
           <div class="col s9">
             <router-link
-              v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+              v-title="{
+                active: !canCreateCollection(index),
+                title:
+                  'Your rights disallow you to create collections on index ' +
+                  index
+              }"
               class="CollectionsList-createBtn btn waves-effect waves-light primary"
-              :class="{unauthorized: !canCreateCollection(index)}"
-              :to="canCreateCollection(index) ? {name: 'DataCreateCollection', params: {index: index}} : ''"
+              :class="{ unauthorized: !canCreateCollection(index) }"
+              :to="
+                canCreateCollection(index)
+                  ? { name: 'DataCreateCollection', params: { index: index } }
+                  : ''
+              "
             >
               <i class="fa fa-plus-circle left" />Create a collection
             </router-link>
@@ -27,17 +30,9 @@
 
           <!-- filter must be hidden when there is no indexes -->
           <div class="col s3">
-            <div
-              v-if="collectionCount > 1"
-              class="input-field left-align"
-            >
+            <div v-if="collectionCount > 1" class="input-field left-align">
               <label for="filter"><i class="fa fa-search" /> Filter</label>
-              <input
-                id="filter"
-                v-model="filter"
-                type="text"
-                tabindex="1"
-              >
+              <input id="filter" v-model="filter" type="text" tabindex="1" />
             </div>
           </div>
         </div>
@@ -60,13 +55,22 @@
               </div>
               <div class="col s9">
                 <p>
-                  Here you can view collections in <strong>{{ index }}</strong>. <br>
+                  Here you can view collections in <strong>{{ index }}</strong
+                  >. <br />
                   <em>There are currently no collections in this index.</em>
                 </p>
                 <router-link
-                  v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
-                  :to="{name: 'DataCreateCollection', params: {index: index}}"
-                  :class="{unauthorized: !canCreateCollection(index)}"
+                  v-title="{
+                    active: !canCreateCollection(index),
+                    title:
+                      'Your rights disallow you to create collections on index ' +
+                      index
+                  }"
+                  :to="{
+                    name: 'DataCreateCollection',
+                    params: { index: index }
+                  }"
+                  :class="{ unauthorized: !canCreateCollection(index) }"
                   class="btn primary waves-effect waves-light"
                 >
                   <i class="fa fa-plus-circle left" />
@@ -90,7 +94,7 @@
               </div>
               <div class="col s12">
                 <p>
-                  There is no collection matching your filter.<br>
+                  There is no collection matching your filter.<br />
                   Please try with another one.
                 </p>
               </div>
@@ -197,9 +201,9 @@ export default {
       }
 
       return (
-        this.$store.state.index.indexesAndCollections[this.index].stored.filter(
-          col => col.indexOf(this.filter !== -1)
-        ).length > 0 ||
+        this.$store.state.index.indexesAndCollections[
+          this.index
+        ].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
         // prettier-ignore
         this.$store.state.index
           .indexesAndCollections[this.index]

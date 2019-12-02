@@ -63,15 +63,13 @@ export default {
       this.submitted = true
 
       try {
-        await this.$kuzzle.security
-          .createRole(this.id, role)
+        await this.$kuzzle.security.createRole(this.id, role)
         setTimeout(() => {
           // we can't perform refresh index on %kuzzle
           this.$router.push({ name: 'SecurityRolesList' })
         }, 1000)
       } catch (e) {
-        this.error =
-          'An error occurred while creating role: <br />' + e.message
+        this.error = 'An error occurred while creating role: <br />' + e.message
         this.submitted = false
       }
     },
