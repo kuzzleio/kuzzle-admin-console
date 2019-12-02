@@ -6,6 +6,7 @@
   "private": false,
   "bin": "./bin/kuzzle-admin-console",
   "scripts": {
+    "reset-cache": "rm -rf node_modules/.cache/*",
     "dev": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
