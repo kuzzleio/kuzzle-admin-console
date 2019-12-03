@@ -1,0 +1,20 @@
+{
+  "editor.formatOnSave": true,
+  "vetur.format.defaultFormatter.html": "prettier",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "language": "vue",
+      "autoFix": true
+    }
+  ],
+  "eslint.autoFixOnSave": true,
+  "editor.tabSize": 2,
+  "json.schemas": [
+    {
+      "fileMatch": ["cypress.json"],
+      "url": "https://on.cypress.io/cypress.schema.json"
+    }
+  ]
+}
