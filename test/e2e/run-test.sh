@@ -1,8 +1,9 @@
 #!/bin/bash
 
+
 adminConsoleHost="localhost"
 kuzzleHost="localhost"
-adminConsolePort="3000"
+adminConsolePort="8080"
 kuzzlePort="7512"
 
 # Cypress can't be installed as a dev dependency since it
@@ -16,6 +17,11 @@ echo
 echo " ### Kuzzle Admin Console End to End tests ###"
 echo "     ====================================="
 echo
+
+if [ -z $e2eLocal ]; then
+  echo " Launching Kuzzle"
+  docker-compose -f test/e2e/docker-compose.yml up -d
+fi
 
 echo " Waiting for Kuzzle to be up at http://$kuzzleHost:$kuzzlePort"
 echo
