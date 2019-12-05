@@ -17,7 +17,7 @@
               </div>
               <div>
                 <a href="#" class="">
-                  <img src="../../assets/logo-white.svg" alt="Kuzzle.io" />
+                  <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
                 </a>
               </div>
             </div>
@@ -56,7 +56,7 @@
           </li>
           <li>
             <a title="Logout" @click="doLogout"
-              ><i class="logout fa fa-power-off"
+              ><i class="logout fas fa-power-off"
             /></a>
           </li>
         </ul>

@@ -5,7 +5,7 @@
         <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
           <h2 class="center-align logo">
             <img
-              src="../../../assets/logo.svg"
+              src="/src/assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
               style="width: 70%"
             />

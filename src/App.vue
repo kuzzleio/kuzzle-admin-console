@@ -86,9 +86,6 @@ import * as types from './vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from './vuex/modules/common/kuzzle/mutation-types'
 import { SET_TOAST } from './vuex/modules/common/toaster/mutation-types'
 
-// @TODO we'll have to import FA from global.scss one day...
-import '@fortawesome/fontawesome-free/css/all.css'
-
 window.jQuery = window.$ = require('jquery')
 // eslint-disable-next-line
 require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
@@ -166,3 +163,8 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+$fa-font-path: '~font-awesome/fonts/';
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
+</style>

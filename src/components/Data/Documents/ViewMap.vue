@@ -111,16 +111,16 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       currentDocument: null,
       defaultIcon: new L.Icon({
-        iconUrl: 'static/images/marker-icon-2x-blue.png',
-        shadowUrl: 'static/images/marker-shadow.png',
+        iconUrl: '/images/marker-icon-2x-blue.png',
+        shadowUrl: '/images/marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
       }),
       selectedIcon: new L.Icon({
-        iconUrl: 'static/images/marker-icon-2x-green.png',
-        shadowUrl: 'static/images/marker-shadow.png',
+        iconUrl: '/images/marker-icon-2x-green.png',
+        shadowUrl: '/images/marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
