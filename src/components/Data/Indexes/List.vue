@@ -74,7 +74,7 @@
 
           <!-- No index for filter -->
           <div
-            v-if="!filteredIndices.length && filter"
+            v-if="!orderedFilteredIndices.length && filter"
             class="card-panel card-body"
           >
             <div class="row valign-center empty-set">

@@ -685,7 +685,7 @@ export default {
         { listViewType: this.listViewType },
         otherQueryParams
       )
-      this.$router.push({ query: mergedQuery })
+      this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
       const dateFields = []

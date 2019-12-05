@@ -49,7 +49,7 @@ npm run e2e
 To run the end-to-end tests in headful mode, run
 
 ```
-npm run dev
+npm run serve
 npm run e2e-local
 ```
 

@@ -129,7 +129,7 @@ export default {
       return this.$store
         .dispatch(SWITCH_ENVIRONMENT, id)
         .then(() => {
-          this.$router.push({ path: '/' })
+          this.$router.push({ path: '/' }).catch(() => {})
         })
         .catch(e => {
           this.$store.commit(
