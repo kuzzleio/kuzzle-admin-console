@@ -130,9 +130,6 @@ describe('Kuzzle wrapper service', () => {
           expect(res).to.deep.equals(formattedResponseWithAdditionalAttr)
           done()
         })
-        .catch(err => {
-          console.error(err)
-        })
     })
   })
 

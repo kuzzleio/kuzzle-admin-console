@@ -193,8 +193,6 @@ export default {
         this.$store.commit(types.SET_ADMIN_EXISTS, true)
         this.$router.push({ name: 'Login' })
       } catch (err) {
-        // TODO manage this on the UI
-        console.error('An error occurred while creating the first admin', err)
         this.$router.push({ name: 'Login' })
       }
     },

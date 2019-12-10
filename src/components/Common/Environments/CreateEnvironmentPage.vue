@@ -51,14 +51,9 @@ export default {
   },
   methods: {
     createEnvironment() {
-      try {
-        this.$refs.createEnvironmentComponent
-          .createEnvironment()
-          .then(() => this.$router.push({ name: 'Home' }))
-          .catch(e => console.error(e))
-      } catch (e) {
-        console.error(e)
-      }
+      this.$refs.createEnvironmentComponent
+        .createEnvironment()
+        .then(() => this.$router.push({ name: 'Home' }))
     },
     importEnv() {
       this.$emit('environment::importEnv')

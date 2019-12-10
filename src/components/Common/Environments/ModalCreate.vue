@@ -48,12 +48,8 @@ export default {
   props: ['environmentId', 'isOpen', 'close'],
   methods: {
     createEnvironment() {
-      try {
-        this.$refs.createEnvironmentComponent.createEnvironment()
-        this.close()
-      } catch (e) {
-        console.error(e)
-      }
+      this.$refs.createEnvironmentComponent.createEnvironment()
+      this.close()
     }
   }
 }
