@@ -11,7 +11,7 @@
     "lint": "vue-cli-service lint",
     "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "dev": "vue-cli-service serve",
-    "test:e2e": "vue-cli-service test:e2e",
+    "test:e2e": "docker-compose -f test/e2e/docker-compose.yml up -d && vue-cli-service test:e2e",
     "test:e2e-local": "e2eLocal=1 ./tests/e2e/run-test.sh",
     "install_deps": "npm i --unsafe-perm",
     "prepublishOnly": "npm run build",
