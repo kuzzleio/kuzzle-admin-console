@@ -1,4 +1,4 @@
-import { WebSocket } from 'kuzzle-sdk'
+import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
 
@@ -7,13 +7,14 @@ import Vue from 'vue'
 export const waitForConnected = (timeout = 1000) => {
   if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
     return new Promise((resolve, reject) => {
+      let id
       // Timeout, if kuzzle doesn't respond in 1s (default) -> reject
       let timeoutId = setTimeout(() => {
         Vue.prototype.$kuzzle.removeListener('connected', id)
         reject(new Error('Kuzzle does not respond'))
       }, timeout)
 
-      let id = Vue.prototype.$kuzzle.addListener('connected', () => {
+      id = Vue.prototype.$kuzzle.addListener('connected', () => {
         clearTimeout(timeoutId)
         Vue.prototype.$kuzzle.removeListener('connected', id)
         resolve()
