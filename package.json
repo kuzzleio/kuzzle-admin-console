@@ -11,15 +11,14 @@
     "lint": "vue-cli-service lint",
     "codecov": "cat test/unit/coverage/lcov.info | ./node_modules/.bin/codecov",
     "dev": "vue-cli-service serve",
-    "e2e": "./test/e2e/run-test.sh",
-    "e2e-local": "e2eLocal=1 ./test/e2e/run-test.sh",
+    "test:e2e": "./test/e2e/run-test.sh",
+    "test:e2e-local": "e2eLocal=1 ./test/e2e/run-test.sh",
     "install_deps": "npm i --unsafe-perm",
     "prepublishOnly": "npm run build",
     "reset-cache": "rm -rf node_modules/.cache/*",
     "start": "http-server dist -p 3000",
     "tar_dist": "bash .ci/release_package.sh",
-    "test": "npm run unit && npm run codecov && npm run e2e",
-    "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run"
+    "test": "npm run unit && npm run codecov && npm run e2e"
   },
   "dependencies": {
     "chromium": "^1.0.2",
