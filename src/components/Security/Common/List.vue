@@ -201,7 +201,7 @@ export default {
     refreshSearch() {
       this.fetchData()
     },
-    create(route) {
+    create() {
       this.$router.push({ name: this.routeCreate })
     }
   }

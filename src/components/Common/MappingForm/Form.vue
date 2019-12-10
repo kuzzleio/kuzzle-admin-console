@@ -106,7 +106,7 @@ export default {
     }
   },
   watch: {
-    currentStep(value) {
+    currentStep() {
       this.$emit('change-step', this.gatherData)
     }
   },
