@@ -15,13 +15,6 @@ describe('Environments', function() {
       force: true
     })
     cy.get('.Environment-SubmitButton').click()
-    // cy.get('.LoginAsAnonymous-Btn').click()
-    // cy.get('.IndexesPage-createBtn').click()
-    // cy.get('.CreateIndexModal-name').type('test', {
-    //   force: true
-    // })
-    // cy.get('.CreateIndexModal-createBtn').click()
-    // cy.contains('test')
     cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`)
   })
 
@@ -42,14 +35,14 @@ describe('Environments', function() {
     )
     localStorage.setItem('lastConnectedEnv', envToDeleteName)
     cy.visit('/')
-    cy.get('.EnvironmentsSwitch > .btn-flat').click()
+    cy.get('.row > .col > .EnvironmentsSwitch > .btn-flat > .fa').click()
+
     cy.get(
-      `.EnvironmentsSwitch-env[data-env=env_${fmt(
-        envToDeleteName
-      )}] > i.fa-trash`
-    ).click()
+      '.col > .EnvironmentsSwitch > #environment-dropdown-5 > .EnvironmentsSwitch-env:nth-child(1) > .delete'
+    ).click({ force: true })
+
     cy.get('.EnvironmentDeleteModal-envName').type(envToDeleteName)
-    cy.get('.EnvironmentDeleteModal-submit').click()
+    cy.get('.EnvironmentDeleteModal-submit').click({ force: true })
     cy.contains('Create a Connection')
   })
 
