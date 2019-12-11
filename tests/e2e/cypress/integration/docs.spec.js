@@ -336,8 +336,15 @@ describe('Document update/replace', () => {
     ).should('be.visible')
     cy.wait(2000)
 
+    cy.get('.ace_line')
+      .contains('{')
+      .click({ force: true })
+
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(`{selectall}{backspace}`, {
+        delay: 400,
+        force: true
+      })
       .type(
         `{
       "foo":"changed"`,
@@ -376,8 +383,14 @@ describe('Document update/replace', () => {
     cy.get('textarea.ace_text-input').should('be.visible')
     cy.wait(2000)
 
+    cy.get('.ace_line')
+      .contains('{')
+      .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(`{selectall}{backspace}`, {
+        delay: 400,
+        force: true
+      })
       .type(
         `{
       "foo":"changed"`,
