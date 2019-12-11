@@ -49,8 +49,8 @@ npm run test:e2e
 To run the end-to-end tests in headful mode, run
 
 ```
-npm run dev
-npm run test:e2e-local
+npm run serve
+npm run e2e-local
 ```
 
 Please refer to the CONTRIBUTING file to learn more about how to write code and tests for this project.

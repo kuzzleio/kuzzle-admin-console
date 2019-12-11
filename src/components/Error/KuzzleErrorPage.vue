@@ -12,10 +12,7 @@
     <div class="row message-warning">
       <h5>{{ $store.state.kuzzle.errorFromKuzzle.message }}</h5>
       <div class="divider" />
-      <div
-        v-if="errorInternalStatus || errorInternalMessage"
-        class="message"
-      >
+      <div v-if="errorInternalStatus || errorInternalMessage" class="message">
         <i class="fa fa-plug" />
         [{{ errorInternalStatus }}] {{ errorInternalMessage }}
       </div>

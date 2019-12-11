@@ -10,7 +10,7 @@
           <li>
             <a
               :disabled="!canEdit"
-              :class="{disabled: !canEdit}"
+              :class="{ disabled: !canEdit }"
               @click="editDocument"
             >
               Edit
@@ -20,7 +20,7 @@
           <li>
             <a
               :disabled="!canDelete"
-              :class="{disabled: !canDelete}"
+              :class="{ disabled: !canDelete }"
               @click="deleteDocument"
             >
               Delete
@@ -29,7 +29,7 @@
         </dropdown>
       </div>
       <p
-        v-json-format="{content: documentContent, open: true}"
+        v-json-format="{ content: documentContent, open: true }"
         class="DocumentBoxItem-content"
       />
     </div>

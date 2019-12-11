@@ -11,7 +11,9 @@
     >
       <div class="row">
         <div class="col s12">
-          <h4>Environment <strong>{{ environmentName }}</strong> deletion</h4>
+          <h4>
+            Environment <strong>{{ environmentName }}</strong> deletion
+          </h4>
           <div class="divider" />
         </div>
       </div>
@@ -26,7 +28,7 @@
               v-focus
               class="EnvironmentDeleteModal-envName"
               type="text"
-            >
+            />
           </div>
         </div>
       </div>
@@ -35,7 +37,7 @@
         <button
           type="submit"
           :disabled="environmentName !== envConfirmation"
-          :class="{unauthorized: environmentName !== envConfirmation}"
+          :class="{ unauthorized: environmentName !== envConfirmation }"
           class="EnvironmentDeleteModal-submit waves-effect btn"
         >
           Delete

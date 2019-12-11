@@ -1,21 +1,12 @@
 <template>
   <div class="DocumentCreateOrUpdate">
     <div class="card-panel">
-      <form
-        class="wrapper"
-        @submit.prevent="create"
-      >
-        <div
-          v-if="$store.state.collection.allowForm"
-          class="row"
-        />
+      <form class="wrapper" @submit.prevent="create">
+        <div v-if="$store.state.collection.allowForm" class="row" />
 
         <div class="row input-id">
           <div class="col s6">
-            <div
-              v-if="!hideId"
-              class="input-field"
-            >
+            <div v-if="!hideId" class="input-field">
               <input
                 id="id"
                 v-focus
@@ -23,15 +14,15 @@
                 name="collection"
                 :required="mandatoryId"
                 @input="updateId"
+              />
+              <label for="id"
+                >Document identifier
+                {{ !mandatoryId ? '(optional)' : '' }}</label
               >
-              <label for="id">Document identifier {{ !mandatoryId ? '(optional)' : '' }}</label>
             </div>
           </div>
           <div class="col s6">
-            <div
-              v-if="$store.state.collection.allowForm"
-              class="switch right"
-            >
+            <div v-if="$store.state.collection.allowForm" class="switch right">
               <label>
                 Form
                 <input
@@ -39,12 +30,13 @@
                   type="checkbox"
                   :checked="$store.state.collection.defaultViewJson"
                   @change="switchView"
-                >
+                />
                 <span
                   v-title="{
                     active: warningSwitch,
                     position: 'bottom',
-                    title: 'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
+                    title:
+                      'You have unspecified custom attribute(s). Please edit the collection definition, or remove them.'
                   }"
                   class="lever"
                 />
@@ -57,17 +49,19 @@
               class="DocumentCreateOrUpdate-formDisabled"
             >
               <p>Document-creation form is not enabled for this collection</p>
-              <router-link :to="{name: 'DataCollectionEdit', params: {index, collection}}">
+              <router-link
+                :to="{
+                  name: 'DataCollectionEdit',
+                  params: { index, collection }
+                }"
+              >
                 Enable it
               </router-link>
             </div>
           </div>
         </div>
 
-        <div
-          v-if="isFormView"
-          class="row"
-        >
+        <div v-if="isFormView" class="row">
           <div class="col s12 card">
             <div class="card-content">
               <json-form
@@ -80,16 +74,15 @@
         </div>
 
         <!-- Json view -->
-        <div
-          v-if="!isFormView"
-          class="row json-view"
-        >
+        <div v-if="!isFormView" class="row json-view">
           <div
             class="col s6 card"
-            :class="{s12: $store.state.collection.isRealtimeOnly}"
+            :class="{ s12: $store.state.collection.isRealtimeOnly }"
           >
             <div class="card-content">
-              <span class="card-title">{{ hideId ? 'Document' : 'New document' }}</span>
+              <span class="card-title">{{
+                hideId ? 'Document' : 'New document'
+              }}</span>
               <json-editor
                 id="document"
                 ref="jsoneditor"
@@ -110,7 +103,10 @@
               <span class="card-title">Mapping</span>
 
               <pre
-                v-json-formatter="{content: $store.getters.simplifiedMapping, open: true}"
+                v-json-formatter="{
+                  content: $store.getters.simplifiedMapping,
+                  open: true
+                }"
                 class="DocumentCreateOrUpdate-mapping"
               />
             </div>
@@ -119,10 +115,7 @@
 
         <div class="row">
           <div class="col s7 m6 l5">
-            <a
-              class="btn-flat waves-effect"
-              @click.prevent="cancel"
-            >
+            <a class="btn-flat waves-effect" @click.prevent="cancel">
               Cancel
             </a>
 
@@ -162,15 +155,9 @@
               Replace
             </button>
           </div>
-          <div
-            v-if="error"
-            class="col s7 m8 l9"
-          >
+          <div v-if="error" class="col s7 m8 l9">
             <div class="card error red-color">
-              <i
-                class="fa fa-times dismiss-error"
-                @click="dismissError()"
-              />
+              <i class="fa fa-times dismiss-error" @click="dismissError()" />
               <p v-html="error" />
             </div>
           </div>

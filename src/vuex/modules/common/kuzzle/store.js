@@ -28,9 +28,7 @@ export const mutations = {
   },
   [types.UPDATE_ENVIRONMENT](state, payload) {
     if (Object.keys(state.environments).indexOf(payload.id) === -1) {
-      throw new Error(`The given id ${
-        payload.id
-      } does not correspond to any existing
+      throw new Error(`The given id ${payload.id} does not correspond to any existing
         environment.`)
     }
     state.environments = {

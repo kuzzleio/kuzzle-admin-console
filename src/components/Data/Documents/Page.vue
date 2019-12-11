@@ -1,4 +1,3 @@
-
 <template>
   <div class="DocumentsPage">
     <headline>
@@ -15,20 +14,13 @@
     <list-not-allowed v-if="!canSearchDocument(index, collection)" />
 
     <div class="DocumentsPage-container">
-      <div
-        v-if="isCollectionEmpty"
-        class="card-panel"
-      >
+      <div v-if="isCollectionEmpty" class="card-panel">
         <realtime-only-empty-state
           v-if="isRealtimeCollection"
           :index="index"
           :collection="collection"
         />
-        <empty-state
-          v-else
-          :index="index"
-          :collection="collection"
-        />
+        <empty-state v-else :index="index" :collection="collection" />
       </div>
 
       <div v-if="!isCollectionEmpty">
@@ -59,20 +51,18 @@
         </div>
       </div>
 
-      <div
-        v-if="!isCollectionEmpty"
-        class="card-panel card-body"
-      >
+      <div v-if="!isCollectionEmpty" class="card-panel card-body">
         <div class="row">
           <div class="col s12">
-            Result per page: <span
-              v-for="(v, i) in resultPerPage"
-              :key="i"
-            ><a
-              href="#"
-              :class="{active: v === paginationSize}"
-              @click.prevent="changePaginationSize(v)"
-            >{{ v }}</a>{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span>
+            Result per page:
+            <span v-for="(v, i) in resultPerPage" :key="i"
+              ><a
+                href="#"
+                :class="{ active: v === paginationSize }"
+                @click.prevent="changePaginationSize(v)"
+                >{{ v }}</a
+              >{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span
+            >
           </div>
         </div>
 
@@ -81,12 +71,19 @@
         <list-actions
           v-if="documents.length && listViewType !== 'time-series'"
           :all-checked="allChecked"
-          :display-bulk-delete="hasSelectedDocuments && canDeleteDocument(index, collection) && listViewType !== 'map'"
+          :display-bulk-delete="
+            hasSelectedDocuments &&
+              canDeleteDocument(index, collection) &&
+              listViewType !== 'map'
+          "
           :geopoint-list="mappingGeopoints"
           :view-type="listViewType"
           :display-create="canCreateDocument(index, collection)"
           :display-geopoint-select="listViewType === 'map'"
-          :display-toggle-all="listViewType !== 'map' && canCreateDocument(index, collection) || canDeleteDocument(index, collection)"
+          :display-toggle-all="
+            (listViewType !== 'map' && canCreateDocument(index, collection)) ||
+              canDeleteDocument(index, collection)
+          "
           @create="onCreateClicked"
           @bulk-delete="onBulkDeleteClicked"
           @toggle-all="onToggleAllClicked"
@@ -94,10 +91,7 @@
           @refresh="onRefreshClicked"
         />
 
-        <div
-          v-show="documents.length"
-          class="row"
-        >
+        <div v-show="documents.length" class="row">
           <div
             v-show="listViewType === 'list'"
             class="DocumentList-list col s12"
@@ -120,10 +114,7 @@
               </div>
             </div>
 
-            <div
-              v-show="documents.length"
-              class="row"
-            >
+            <div v-show="documents.length" class="row">
               <div class="col s12">
                 <pagination
                   :from="paginationFrom"
@@ -152,10 +143,7 @@
               />
             </div>
 
-            <div
-              v-show="documents.length"
-              class="row"
-            >
+            <div v-show="documents.length" class="row">
               <div class="col s12">
                 <pagination
                   :from="paginationFrom"
@@ -169,10 +157,7 @@
             </div>
           </div>
 
-          <div
-            v-show="listViewType === 'boxes'"
-            class="col s12"
-          >
+          <div v-show="listViewType === 'boxes'" class="col s12">
             <div class="DocumentList-boxes">
               <document-box-item
                 v-for="document in documents"
@@ -185,10 +170,7 @@
               />
             </div>
 
-            <div
-              v-show="documents.length"
-              class="row"
-            >
+            <div v-show="documents.length" class="row">
               <div class="col s12">
                 <pagination
                   :from="paginationFrom"
@@ -217,10 +199,7 @@
               />
             </div>
 
-            <div
-              v-show="documents.length"
-              class="row"
-            >
+            <div v-show="documents.length" class="row">
               <div class="col s12">
                 <pagination
                   :from="paginationFrom"
@@ -234,10 +213,7 @@
             </div>
           </div>
 
-          <div
-            v-if="listViewType === 'map'"
-            class="DocumentList-map col s12"
-          >
+          <div v-if="listViewType === 'map'" class="DocumentList-map col s12">
             <view-map
               :documents="geoDocuments"
               :get-coordinates="getCoordinates"
@@ -248,14 +224,8 @@
               @delete="onDeleteClicked"
             />
           </div>
-          <div
-            v-show="documents.length"
-            class="row"
-          >
-            <div
-              v-if="listViewType === 'map'"
-              class="col s12"
-            >
+          <div v-show="documents.length" class="row">
+            <div v-if="listViewType === 'map'" class="col s12">
               <pagination
                 :from="paginationFrom"
                 :max-page="1000"
@@ -519,7 +489,11 @@ export default {
     async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
       try {
-        await this.performDeleteDocuments(this.index, this.collection, documentsToDelete)
+        await this.performDeleteDocuments(
+          this.index,
+          this.collection,
+          documentsToDelete
+        )
         this.closeDeleteModal()
         this.fetchDocuments()
         this.deleteModalIsLoading = false
@@ -560,8 +534,7 @@ export default {
         await this.fetchDocuments()
       } catch (e) {
         this.$store.commit(SET_TOAST, {
-          text:
-            'An error occurred while updating filters: <br />' + e.message
+          text: 'An error occurred while updating filters: <br />' + e.message
         })
         this.$log.error(e)
       }
@@ -598,8 +571,7 @@ export default {
         this.totalDocuments = res.total
       } catch (e) {
         this.$store.commit(SET_TOAST, {
-          text:
-            'An error occurred while performing search: <br />' + e.message
+          text: 'An error occurred while performing search: <br />' + e.message
         })
         this.$log.error(e)
       }
@@ -679,12 +651,13 @@ export default {
     // Collection Metadata management
     // =========================================================================
     async loadMappingInfo() {
-      const { properties } = await getMappingDocument(this.collection, this.index)
+      const { properties } = await getMappingDocument(
+        this.collection,
+        this.index
+      )
       this.collectionMapping = properties
 
-      this.mappingGeopoints = this.listMappingGeopoints(
-        this.collectionMapping
-      )
+      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
       this.selectedGeopoint = this.mappingGeopoints[0]
     },
     loadListView() {
@@ -714,7 +687,7 @@ export default {
         { listViewType: this.listViewType },
         otherQueryParams
       )
-      this.$router.push({ query: mergedQuery })
+      this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
       const dateFields = []
@@ -732,7 +705,10 @@ export default {
       const changeField = document => {
         for (const [field, value] of Object.entries(document)) {
           if (dateFields.includes(field) && Number.isInteger(value)) {
-            const date = `${value}`.length === 13 ? new Date(value) : new Date(value * 1000)
+            const date =
+              `${value}`.length === 13
+                ? new Date(value)
+                : new Date(value * 1000)
 
             document[field] += ` (${date.toUTCString()})`
           } else if (value && typeof value === 'object') {
@@ -789,6 +765,6 @@ export default {
   padding: 3px 5px;
   white-space: pre;
   word-wrap: break-word;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 </style>

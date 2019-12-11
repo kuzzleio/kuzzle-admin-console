@@ -5,7 +5,6 @@ export default {
     $options.attr('selected', 'selected')
   },
   bind(el) {
-    /* eslint no-undef: 0 */
     let $el = $(el)
     setTimeout(() => {
       $el.material_select()

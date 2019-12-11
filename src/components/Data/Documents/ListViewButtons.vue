@@ -3,30 +3,30 @@
     <a
       class="ListViewButtons-btn fa fa-list"
       title="Display these items as a list"
-      :class="{active: activeView === 'list'}"
+      :class="{ active: activeView === 'list' }"
       @click="$emit('list')"
     />
     <a
       class="ListViewButtons-btn fa fa-list rotate"
       title="Display these items as column"
-      :class="{active: activeView === 'column'}"
+      :class="{ active: activeView === 'column' }"
       @click="$emit('column')"
     />
     <a
       class="ListViewButtons-btn fa fa-th"
-      :class="{disabled: !boxesEnabled, active: activeView === 'boxes'}"
+      :class="{ disabled: !boxesEnabled, active: activeView === 'boxes' }"
       :title="boxesEnabled ? 'Display these items as boxes' : ''"
       @click="onBoxesClicked"
     />
     <a
       title="Display a time series view"
       class="ListViewButtons-btn fas fa-chart-line"
-      :class="{active: activeView === 'time-series'}"
+      :class="{ active: activeView === 'time-series' }"
       @click="onTimeSeriesClicked"
     />
     <a
       class="ListViewButtons-btn fa fa-map-marked"
-      :class="{disabled: !mapEnabled, active: activeView === 'map'}"
+      :class="{ disabled: !mapEnabled, active: activeView === 'map' }"
       :title="mapEnabled ? 'Display these items on a map' : ''"
       @click="onMapClicked"
     />
@@ -97,6 +97,6 @@ export default {
   }
 }
 .rotate {
-  transform: rotate(90deg)
+  transform: rotate(90deg);
 }
 </style>

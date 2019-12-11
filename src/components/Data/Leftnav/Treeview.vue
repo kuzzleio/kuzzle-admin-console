@@ -7,10 +7,7 @@
       <li class="Treeview-unauthorized">
         <ul class="indexes">
           <li>
-            <i
-              class="fa fa-lock"
-              aria-hidden="true"
-            />
+            <i class="fa fa-lock" aria-hidden="true" />
             <em>You are not allowed to list indexes</em>
           </li>
         </ul>
@@ -29,7 +26,7 @@
                   v-model="filter"
                   type="search"
                   placeholder="Search index &amp; collection"
-                >
+                />
                 <div class="Treeview-searchIcon">
                   <i class="fa fa-search" />
                 </div>
@@ -40,10 +37,7 @@
       </li>
       <li>
         <ul class="Treeview-root">
-          <li
-            v-for="indexName in orderedFilteredIndices"
-            :key="indexName"
-          >
+          <li v-for="indexName in orderedFilteredIndices" :key="indexName">
             <index-branch
               :index-name="indexName"
               :route-name="routeName"
@@ -80,17 +74,14 @@ export default {
     }
   },
   computed: {
-    filteredIndices() {
+    orderedFilteredIndices() {
       return [
         ...filterIndexesByKeyword(
           this.$store.state.index.indexes,
           this.$store.state.index.indexesAndCollections,
           this.filter
         )
-      ]
-    },
-    orderedFilteredIndices() {
-      return this.filteredIndices.sort()
+      ].sort()
     },
     indexesAndCollections() {
       return Object.keys(this.$store.state.index.indexesAndCollections).length
@@ -162,6 +153,6 @@ li {
 }
 
 .sidenav {
-    transform: translateX(0%) !important;
+  transform: translateX(0%) !important;
 }
 </style>

@@ -10,10 +10,7 @@
     </div>
     <div class="row">
       <div class="col s12">
-        <connecting
-          :host="host"
-          :port="port"
-        />
+        <connecting :host="host" :port="port" />
       </div>
     </div>
   </div>
@@ -50,7 +47,10 @@ export default {
       this.$router.push({ name: 'Home' })
     })
 
-    if (this.$kuzzle.protocol.state === 'connected' || this.$kuzzle.protocol.state === 'reconnected') {
+    if (
+      this.$kuzzle.protocol.state === 'connected' ||
+      this.$kuzzle.protocol.state === 'reconnected'
+    ) {
       this.$router.push({ name: 'Login' })
     }
   },

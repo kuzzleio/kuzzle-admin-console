@@ -1,10 +1,6 @@
 <template>
   <div v-if="Object.keys(schema).length">
-    <div
-      v-for="(content, name) in schema"
-      :key="name"
-      class="json-form"
-    >
+    <div v-for="(content, name) in schema" :key="name" class="json-form">
       <!-- For nested objects -->
       <fieldset v-if="isNested(content)">
         <legend>
@@ -19,10 +15,7 @@
       </fieldset>
 
       <!-- Root attributes -->
-      <div
-        v-else
-        class="input-field"
-      >
+      <div v-else class="input-field">
         <component
           :is="componentItem(content)"
           ref="myRef"
@@ -40,7 +33,8 @@
     </div>
   </div>
   <p v-else>
-    Current collection has no mapping specified. You can specify it by editing its properties.
+    Current collection has no mapping specified. You can specify it by editing
+    its properties.
   </p>
 </template>
 

@@ -109,7 +109,7 @@ export const saveToRouter = (filter, router) => {
   )
   const mergedQuery = _.merge(formattedFilter, otherQueryParams)
 
-  router.push({ query: mergedQuery })
+  router.push({ query: mergedQuery }).catch(() => {})
 }
 
 export const saveToLocalStorage = (filter, index, collection) => {

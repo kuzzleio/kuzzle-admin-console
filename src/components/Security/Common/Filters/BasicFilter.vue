@@ -22,7 +22,7 @@
                   class="validate"
                   value="roles"
                   disabled="true"
-                >
+                />
               </div>
               <div class="col s2">
                 <m-select v-model="filter.operator">
@@ -41,7 +41,7 @@
                   placeholder="Value"
                   type="text"
                   class="validate"
-                >
+                />
               </div>
               <div class="col s2">
                 <i
@@ -72,10 +72,7 @@
           </a>
         </div>
 
-        <div
-          v-if="sortingEnabled"
-          class="row block-sort"
-        >
+        <div v-if="sortingEnabled" class="row block-sort">
           <p><i class="fa fa-sort-amount-asc" />Sorting</p>
           <div class="row block-content">
             <div class="col s4">
@@ -84,7 +81,7 @@
                 placeholder="Attribute"
                 type="text"
                 class="validate"
-              >
+              />
             </div>
             <div class="col s2">
               <m-select v-model="filters.sorting.order">

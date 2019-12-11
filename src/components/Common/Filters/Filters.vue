@@ -8,7 +8,9 @@
       :advanced-filters-visible="advancedFiltersVisible"
       :enabled="quickFilterEnabled"
       :action-buttons-visible="actionButtonsVisible"
-      @display-advanced-filters="advancedFiltersVisible = !advancedFiltersVisible"
+      @display-advanced-filters="
+        advancedFiltersVisible = !advancedFiltersVisible
+      "
       @update-filter="onQuickFilterUpdated"
       @refresh="onRefresh"
       @reset="onReset"
@@ -45,10 +47,7 @@
           <a href="">Raw JSON Mode</a>
         </tab>
 
-        <div
-          slot="contents"
-          class="card"
-        >
+        <div slot="contents" class="card">
           <div class="col s12">
             <div v-show="complexFiltersSelectedTab === 'basic'">
               <basic-filter
@@ -83,11 +82,10 @@
       </tabs>
     </div>
 
-    <div
-      v-show="currentFilter.active"
-      class="card-panel orange lighten-3"
-    >
-      <span>Warning: a filter has been set, some documents might be hidden.</span>
+    <div v-show="currentFilter.active" class="card-panel orange lighten-3">
+      <span
+        >Warning: a filter has been set, some documents might be hidden.</span
+      >
     </div>
   </div>
 </template>

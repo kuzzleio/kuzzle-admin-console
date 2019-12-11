@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="DocumentListItem"
-    :class="{ 'collapsed': collapsed }"
-  >
+  <div class="DocumentListItem" :class="{ collapsed: collapsed }">
     <i
       class="DocumentListItem-toggle fa fa-caret-down item-toggle"
       aria-hidden="true"
@@ -17,23 +14,26 @@
         :value="document.id"
         :checked="isChecked"
         @click="notifyCheckboxClick"
-      >
+      />
       <span />
     </label>
 
-    <label class="DocumentListItem-title item-title "><a @click="toggleCollapse">{{ document.id }}</a></label>
+    <label class="DocumentListItem-title item-title "
+      ><a @click="toggleCollapse">{{ document.id }}</a></label
+    >
 
     <div class="DocumentListItem-actions right">
       <a
         class="DocumentListItem-update"
         href=""
-        :title="canEdit ? 'Edit Document' : 'You are not allowed to edit this Document'"
+        :title="
+          canEdit
+            ? 'Edit Document'
+            : 'You are not allowed to edit this Document'
+        "
         @click.prevent="editDocument"
       >
-        <i
-          class="fa fa-pencil-alt"
-          :class="{'disabled': !canEdit}"
-        />
+        <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
       </a>
 
       <dropdown
@@ -43,7 +43,7 @@
         <li>
           <a
             :disabled="!canDelete"
-            :class="{disabled: !canDelete}"
+            :class="{ disabled: !canDelete }"
             @click="deleteDocument"
           >
             Delete
@@ -53,11 +53,11 @@
     </div>
 
     <div class="DocumentListItem-content item-content">
-      <pre v-json-formatter="{content: document.content, open: true}" />
-      <pre v-json-formatter="{content: document.meta, open: false}" />
+      <pre v-json-formatter="{ content: document.content, open: true }" />
+      <pre v-json-formatter="{ content: document.meta, open: false }" />
       <pre
         v-if="document.aggregations"
-        v-json-formatter="{content: document.aggregations, open: true}"
+        v-json-formatter="{ content: document.aggregations, open: true }"
       />
     </div>
   </div>

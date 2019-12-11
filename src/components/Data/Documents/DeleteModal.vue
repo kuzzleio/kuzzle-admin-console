@@ -22,11 +22,7 @@
       >
         I'm sure!
       </button>
-      <button
-        href="#"
-        class="btn-flat"
-        @click.prevent="onClose"
-      >
+      <button href="#" class="btn-flat" @click.prevent="onClose">
         Cancel
       </button>
     </span>

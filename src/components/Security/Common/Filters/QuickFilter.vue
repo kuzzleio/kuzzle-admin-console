@@ -9,19 +9,21 @@
             v-focus
             type="text"
             placeholder="Search..."
-          >
+          />
           <a
             v-if="!displayBlockFilter"
             class="QuickFilter-optionBtn fluid-hover"
             href="#"
             @click.prevent="displayComplexSearch"
-          >More query options</a>
+            >More query options</a
+          >
           <a
             v-else
             class="QuickFilter-optionBtn fluid-hover"
             href="#"
             @click.prevent="displayComplexSearch"
-          >Less query options</a>
+            >Less query options</a
+          >
         </div>
       </div>
       <div class="QuickFilter-actions col s3">
