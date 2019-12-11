@@ -53,7 +53,3 @@ if [[ -z "$e2eLocal" ]]; then
 else
   $(npm bin)/cypress open
 fi
-
-if [ -z $e2eLocal ]; then
-  pkill -f "dev-server.js"
-fi
