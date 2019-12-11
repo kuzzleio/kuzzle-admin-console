@@ -2,7 +2,8 @@
 node_modules/
 npm-debug.log
 selenium-debug.log
-tests/unit/coverage
+coverage
+.nyc_output
 tests/e2e/reports
 .idea
 dump/
