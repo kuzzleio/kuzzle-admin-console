@@ -38,7 +38,7 @@ jobs:
       name: "Linter"
       script:
         - npm install
-        - npm run test:lint
+        - npm run lint
 
 # ---------------------------------------
 # Unit Testing
