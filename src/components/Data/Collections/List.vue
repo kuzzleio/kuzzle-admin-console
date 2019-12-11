@@ -104,7 +104,7 @@
           <div v-if="canSearchCollection(index)">
             <collection-boxed
               v-for="(collection, i) in orderedFilteredStoredCollections"
-              :key="i"
+              :key="collection + i"
               :index="index"
               :collection="collection"
               :is-realtime="false"
@@ -112,7 +112,7 @@
 
             <collection-boxed
               v-for="(collection, i) in orderedFilteredRealtimeCollections"
-              :key="i"
+              :key="collection + i"
               :index="index"
               :collection="collection"
               :is-realtime="true"
