@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "nyc --reporter=lcov vue-cli-service test:unit",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "codecov": "cat coverage/lcov.info | ./node_modules/.bin/codecov",
     "dev": "vue-cli-service serve",
