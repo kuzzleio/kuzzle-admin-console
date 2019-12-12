@@ -3,7 +3,7 @@ module.exports = {
   'per-file': true,
   'skip-full': true,
   all: true,
-  include: ['src/**/*.{js,vue}'],
+  include: ['src/services/*.js', 'src/vuex/*.js'],
   exclude: ['src/*.js', '**/index.js'],
   reporter: ['lcov', 'text', 'text-summary'],
   extension: ['.js', '.vue']
