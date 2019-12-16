@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="BasicFilter"
-    @submit.prevent="search"
-  >
+  <form class="BasicFilter" @submit.prevent="search">
     <div class="col s7">
       <div class="BasicFilter-searchBar">
         <i class="BasicFilter-searchIcon fa fa-search" />
@@ -19,10 +16,7 @@
       </div>
     </div>
     <div class="col s3 BasicFilter-actions">
-      <button
-        type="submit"
-        class="btn btn-small waves-effect waves-light"
-      >
+      <button type="submit" class="btn btn-small waves-effect waves-light">
         Search
       </button>
       <button

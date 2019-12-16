@@ -11,7 +11,8 @@
             <span
               class="QuickFilter-chipLabel"
               @click.prevent="displayAdvancedFilters"
-            >{{ advancedQueryLabel }}</span>
+              >{{ advancedQueryLabel }}</span
+            >
           </div>
           <input
             v-else
@@ -20,19 +21,21 @@
             type="text"
             placeholder="Search..."
             @input="submitSearch"
-          >
+          />
           <a
             v-if="!advancedFiltersVisible"
             class="QuickFilter-optionBtn fluid-hover"
             href="#"
             @click.prevent="displayAdvancedFilters"
-          >More query options</a>
+            >More query options</a
+          >
           <a
             v-else
             class="QuickFilter-optionBtn fluid-hover"
             href="#"
             @click.prevent="displayAdvancedFilters"
-          >Less query options</a>
+            >Less query options</a
+          >
         </div>
       </div>
       <div

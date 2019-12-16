@@ -50,8 +50,7 @@ export default {
   },
   async mounted() {
     try {
-      await this.$store
-        .dispatch(LIST_INDEXES_AND_COLLECTION)
+      await this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
       await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
         index: this.index,
         collection: this.$route.params.collection
@@ -69,8 +68,7 @@ export default {
       this.error = ''
 
       try {
-        await this.$store
-          .dispatch(UPDATE_COLLECTION, { index: this.index })
+        await this.$store.dispatch(UPDATE_COLLECTION, { index: this.index })
         this.$router.push({
           name: 'DataIndexSummary',
           params: { index: this.index }

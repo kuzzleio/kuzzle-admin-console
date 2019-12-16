@@ -2,13 +2,24 @@
   <div class="valign-center">
     <div class="col s5 m5 l4">
       <button
-        v-title="{active: !canSubscribe(index, collection), title: 'You are not allowed to watch realtime messages on collection ' + collection + ' of index ' + index}"
+        v-title="{
+          active: !canSubscribe(index, collection),
+          title:
+            'You are not allowed to watch realtime messages on collection ' +
+            collection +
+            ' of index ' +
+            index
+        }"
         class="btn btn-small waves-effect waves-light"
-        :class="{unauthorized: !canSubscribe(index, collection), 'tertiary': subscribed, 'primary': !subscribed}"
+        :class="{
+          unauthorized: !canSubscribe(index, collection),
+          tertiary: subscribed,
+          primary: !subscribed
+        }"
         @click.prevent="canSubscribe(index, collection) && toggleSubscription()"
       >
         <i
-          :class="{'fa-play': !subscribed, 'fa-pause': subscribed}"
+          :class="{ 'fa-play': !subscribed, 'fa-pause': subscribed }"
           class="fa left"
         />
         {{ subscribed ? 'Unsubscribe' : 'Subscribe' }}
@@ -25,14 +36,19 @@
     <div class="col s4 m4 l6 right-align truncate">
       <i
         v-if="warning.message"
-        :class="warning.info ? 'fa-info-circle blue-text' : 'fa-exclamation-triangle text-warning'"
+        :class="
+          warning.info
+            ? 'fa-info-circle blue-text'
+            : 'fa-exclamation-triangle text-warning'
+        "
         class="fa"
         aria-hidden="true"
       />
       <span
         v-if="warning.message"
         :class="warning.info ? 'blue-text' : 'text-warning'"
-      >{{ warning.message }}</span>
+        >{{ warning.message }}</span
+      >
       &nbsp;
     </div>
 
@@ -43,7 +59,7 @@
           v-model="scrollDown"
           type="checkbox"
           class="filled-in"
-        >
+        />
         <span>Scroll on new messages</span>
       </label>
     </div>

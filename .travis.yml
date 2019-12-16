@@ -38,7 +38,7 @@ jobs:
       name: "Linter"
       script:
         - npm install
-        - npm run test:lint
+        - npm run lint
 
 # ---------------------------------------
 # Unit Testing
@@ -48,9 +48,6 @@ jobs:
       script:
         - npm install
         - npm run test:unit
-
-      after_script:
-        - npm run codecov
 
 # ---------------------------------------
 # Functionnal Testing

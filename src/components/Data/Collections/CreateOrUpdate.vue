@@ -34,16 +34,12 @@
           @cancel="cancel"
         />
 
-        <div
-          v-if="error || mappingError"
-          class="col s7 m8 l8"
-        >
+        <div v-if="error || mappingError" class="col s7 m8 l8">
           <div class="card error red-color white-text">
-            <i
-              class="fa fa-times dismiss-error"
-              @click="dismissError()"
-            />
-            An error occurred while {{ $route.params.collection ? 'updating' : 'creating' }} collection: <br>{{ error ? error : mappingError }}
+            <i class="fa fa-times dismiss-error" @click="dismissError()" />
+            An error occurred while
+            {{ $route.params.collection ? 'updating' : 'creating' }} collection:
+            <br />{{ error ? error : mappingError }}
           </div>
         </div>
       </div>

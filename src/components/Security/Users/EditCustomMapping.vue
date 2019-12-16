@@ -2,10 +2,7 @@
   <div class="UsersCustomMappingWizard">
     <headline>Edit User Custom Data Mapping</headline>
 
-    <div
-      v-show="!loading"
-      class="wrapper collection-edit"
-    >
+    <div v-show="!loading" class="wrapper collection-edit">
       <div class="card">
         <div class="card-content">
           <p class="flow-text">
@@ -20,14 +17,8 @@
           @submit="onMappingSubmit"
           @cancel="onCancel"
         />
-        <div
-          v-if="error"
-          class="ErrorBox card error red-color"
-        >
-          <i
-            class="ErrorBox-dismissBtn fa fa-times"
-            @click="dismissError()"
-          />
+        <div v-if="error" class="ErrorBox card error red-color">
+          <i class="ErrorBox-dismissBtn fa fa-times" @click="dismissError()" />
           <p v-html="error" />
         </div>
       </div>

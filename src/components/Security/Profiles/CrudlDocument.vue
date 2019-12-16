@@ -7,10 +7,7 @@
     />
 
     <div class="card-panel card-body">
-      <div
-        v-show="!documents.length"
-        class="row valign-center empty-set"
-      >
+      <div v-show="!documents.length" class="row valign-center empty-set">
         <div class="col s2 offset-s1">
           <i
             class="fa fa-6x fa-search grey-text text-lighten-1"
@@ -19,22 +16,23 @@
         </div>
         <div class="col s12">
           <p>
-            There is no result matching your query<br>
+            There is no result matching your query<br />
             Please try with another filters.
           </p>
           <p>
-            <em>Learn more about filtering syntax on <a
-              href="https://docs.kuzzle.io/guide/1/elasticsearch/"
-              target="_blank"
-            >Kuzzle Elasticsearch Cookbook</a></em>
+            <em
+              >Learn more about filtering syntax on
+              <a
+                href="https://docs.kuzzle.io/guide/1/elasticsearch/"
+                target="_blank"
+                >Kuzzle Elasticsearch Cookbook</a
+              ></em
+            >
           </p>
         </div>
       </div>
 
-      <div
-        v-if="documents.length"
-        class="row actions"
-      >
+      <div v-if="documents.length" class="row actions">
         <div class="col s8">
           <button
             class="btn btn-small waves-effect waves-light tertiary"
@@ -51,7 +49,11 @@
             class="btn btn-small waves-effect waves-light margin-right-5 primary"
             :class="!displayCreate ? 'disabled' : ''"
             :disabled="!displayCreate"
-            :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
+            :title="
+              displayCreate
+                ? ''
+                : 'You are not allowed to create a document in this collection'
+            "
             @click.prevent="create"
           >
             <i class="fa fa-plus-circle left" />
@@ -62,7 +64,9 @@
             class="btn btn-small waves-effect waves-light"
             :class="displayBulkDelete ? 'red-color' : 'disabled'"
             :disabled="!displayBulkDelete"
-            :title="displayBulkDelete ? '' : 'You need to select at least one element'"
+            :title="
+              displayBulkDelete ? '' : 'You need to select at least one element'
+            "
             @click="deleteBulk"
           >
             <i class="fa fa-minus-circle left" />
@@ -76,17 +80,11 @@
         class="CrudlDocument-collection row collection-wrapper"
       >
         <div class="col s12">
-          <slot
-            v-if="documents.length"
-            @delete-document="deleteDocument"
-          />
+          <slot v-if="documents.length" @delete-document="deleteDocument" />
         </div>
       </div>
 
-      <div
-        v-show="documents.length"
-        class="row"
-      >
+      <div v-show="documents.length" class="row">
         <div class="col s12">
           <pagination
             :total="totalDocuments"
@@ -117,11 +115,7 @@
         >
           I'm sure!
         </button>
-        <button
-          href="#"
-          class="btn-flat"
-          @click.prevent="close"
-        >
+        <button href="#" class="btn-flat" @click.prevent="close">
           Cancel
         </button>
       </span>
@@ -143,10 +137,7 @@
         >
           I'm sure!
         </button>
-        <button
-          class="btn-flat"
-          @click.prevent="close"
-        >
+        <button class="btn-flat" @click.prevent="close">
           Cancel
         </button>
       </span>

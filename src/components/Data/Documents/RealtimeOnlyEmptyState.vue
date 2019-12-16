@@ -8,14 +8,22 @@
     </div>
     <div class="col s8 m9 l10">
       <p>
-        There is no persistent document in here because the collection <strong>{{ collection }}</strong> is currently realtime-only.<br>
+        There is no persistent document in here because the collection
+        <strong>{{ collection }}</strong> is currently realtime-only.<br />
         <em>You can edit the collection and persist it.</em>
       </p>
       <router-link
         :disabled="!canEditCollection(index, collection)"
-        :title="!canEditCollection(index, collection) ? 'You are not allowed to edit this collection' : ''"
+        :title="
+          !canEditCollection(index, collection)
+            ? 'You are not allowed to edit this collection'
+            : ''
+        "
         :class="!canEditCollection(index, collection) ? 'disabled' : ''"
-        :to="{name: 'DataCollectionEdit', params: {index: index, collection: collection}}"
+        :to="{
+          name: 'DataCollectionEdit',
+          params: { index: index, collection: collection }
+        }"
         class="btn primary waves-effect waves-light"
       >
         <i class="fa fa-pencil left" />

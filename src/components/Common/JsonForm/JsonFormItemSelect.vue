@@ -1,16 +1,8 @@
 <template>
   <div class="row input-field">
-    <label :class="{'active': value}">{{ name }}</label>
-    <m-select
-      :value="castedValue"
-      :options="options"
-      @input="update"
-    >
-      <option
-        v-for="option in options"
-        :key="option.id"
-        :value="option.id"
-      >
+    <label :class="{ active: value }">{{ name }}</label>
+    <m-select :value="castedValue" :options="options" @input="update">
+      <option v-for="option in options" :key="option.id" :value="option.id">
         {{ option.name }}
       </option>
     </m-select>

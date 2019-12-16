@@ -13,16 +13,8 @@
       </div>
     </div>
     <div v-if="profileList.length">
-      <m-select
-        :options="availableProfiles"
-        @input="onProfileSelected"
-      >
-        <option
-          v-if="availableProfiles.length"
-          value=""
-          disabled
-          selected
-        >
+      <m-select :options="availableProfiles" @input="onProfileSelected">
+        <option v-if="availableProfiles.length" value="" disabled selected>
           Select a Profile to add
         </option>
         <option
@@ -43,12 +35,14 @@
       </m-select>
     </div>
     <div v-else>
-      No profiles found (you should <router-link
-        :to="{name: 'SecurityProfilesCreate'}"
+      No profiles found (you should
+      <router-link
+        :to="{ name: 'SecurityProfilesCreate' }"
         class="text-light-blue"
       >
         create one
-      </router-link> before creating a user)
+      </router-link>
+      before creating a user)
     </div>
   </div>
 </template>

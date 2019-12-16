@@ -31,7 +31,8 @@
                 tabindex="6"
                 class="btn-flat waves-effect"
                 @click.prevent="cancel"
-              >Cancel</a>
+                >Cancel</a
+              >
               <button
                 type="submit"
                 class="btn primary waves-effect waves-light"
@@ -41,14 +42,8 @@
               </button>
             </div>
             <div class="col s9">
-              <div
-                v-if="error"
-                class="card error red-color white-text"
-              >
-                <i
-                  class="fa fa-times dismiss-error"
-                  @click="dismissError()"
-                />
+              <div v-if="error" class="card error red-color white-text">
+                <i class="fa fa-times dismiss-error" @click="dismissError()" />
                 {{ error }}
               </div>
             </div>
@@ -150,8 +145,9 @@ export default {
       }
 
       try {
-        await this.$kuzzle.security
-          .createUser(this.user.kuid, userObject, { refresh: 'wait_for' })
+        await this.$kuzzle.security.createUser(this.user.kuid, userObject, {
+          refresh: 'wait_for'
+        })
 
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (err) {

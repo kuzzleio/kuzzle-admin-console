@@ -5,10 +5,7 @@
       :data-target="parsedId"
     />
 
-    <ul
-      :id="parsedId"
-      class="dropdown-content"
-    >
+    <ul :id="parsedId" class="dropdown-content">
       <slot />
     </ul>
   </span>

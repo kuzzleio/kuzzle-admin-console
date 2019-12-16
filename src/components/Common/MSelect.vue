@@ -1,9 +1,5 @@
 <template>
-  <select
-    ref="mselect"
-    v-model="content"
-    @blur="triggerBlur"
-  >
+  <select ref="mselect" v-model="content" @blur="triggerBlur">
     <slot />
   </select>
 </template>
@@ -46,7 +42,7 @@ export default {
       this.content = this.value
       /* eslint no-undef: 0 */
       $el.formSelect()
-      $el.on('change', e => {
+      $el.on('change', () => {
         if ($el[0].value) {
           this.$emit('input', $el[0].value)
         }

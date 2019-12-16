@@ -1,12 +1,9 @@
 <template>
-  <span
-    ref="dropdown"
-    class="EnvironmentsSwitch"
-  >
+  <span ref="dropdown" class="EnvironmentsSwitch">
     <a
       class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
       :style="{ backgroundColor: bgColor }"
-      :data-target="&quot;environment-dropdown-&quot; + _uid"
+      :data-target="'environment-dropdown-' + _uid"
     >
       <span
         v-if="$store.getters.currentEnvironment"
@@ -24,7 +21,7 @@
     </a>
 
     <ul
-      :id="&quot;environment-dropdown-&quot; + _uid"
+      :id="'environment-dropdown-' + _uid"
       class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
     >
       <li
@@ -34,8 +31,12 @@
         class="EnvironmentsSwitch-env environment"
       >
         <div @click="clickSwitch(index)">
-          <span class="name environment-attribute truncate">{{ env.name }}</span>
-          <span class="host environment-attribute truncate">{{ env.host }}</span>
+          <span class="name environment-attribute truncate">{{
+            env.name
+          }}</span>
+          <span class="host environment-attribute truncate">{{
+            env.host
+          }}</span>
         </div>
         <i
           class="edit primary fa fa-pencil-alt"
@@ -47,15 +48,23 @@
         />
       </li>
       <li class="divider" />
-      <li><a
-        href=""
-        @click.prevent="$emit('environment::create')"
-      ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" /> Create new connection</a></li>
-      <li><a ref="export"><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export all</a></li>
-      <li><a
-        href="#"
-        @click.prevent="$emit('environment::importEnv')"
-      ><i class="fa fa-file-import" />Import</a></li>
+      <li>
+        <a href="" @click.prevent="$emit('environment::create')"
+          ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" />
+          Create new connection</a
+        >
+      </li>
+      <li>
+        <a ref="export"
+          ><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export
+          all</a
+        >
+      </li>
+      <li>
+        <a href="#" @click.prevent="$emit('environment::importEnv')"
+          ><i class="fa fa-file-import" />Import</a
+        >
+      </li>
     </ul>
   </span>
 </template>
@@ -120,7 +129,7 @@ export default {
       return this.$store
         .dispatch(SWITCH_ENVIRONMENT, id)
         .then(() => {
-          this.$router.push({ path: '/' })
+          this.$router.push({ path: '/' }).catch(() => {})
         })
         .catch(e => {
           this.$store.commit(

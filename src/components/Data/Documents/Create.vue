@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="hasRights"
-    class="wrapper"
-  >
+  <div v-if="hasRights" class="wrapper">
     <headline>
       {{ collection }}
       <collection-dropdown
@@ -93,7 +90,13 @@ export default {
       }
 
       try {
-        await this.$kuzzle.document.create(this.index, this.collection, document, id, { refresh: 'wait_for' })
+        await this.$kuzzle.document.create(
+          this.index,
+          this.collection,
+          document,
+          id,
+          { refresh: 'wait_for' }
+        )
         await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
           index: this.index,
           collection: this.collection

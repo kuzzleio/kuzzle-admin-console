@@ -42,8 +42,7 @@ export default {
   },
   async mounted() {
     try {
-      const role = await this.$kuzzle.security
-        .getRole(this.$route.params.id)
+      const role = await this.$kuzzle.security.getRole(this.$route.params.id)
       this.id = role._id
       this.document = { controllers: role.controllers }
     } catch (e) {
