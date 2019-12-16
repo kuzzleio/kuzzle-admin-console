@@ -1,20 +1,11 @@
 <template>
   <div>
-    <div
-      v-if="isOpen"
-      :id="id"
-      class="modal"
-      :class="computedClasses"
-    >
+    <div v-if="isOpen" :id="id" class="modal" :class="computedClasses">
       <slot name="content">
         <div class="modal-content">
           <slot />
         </div>
-        <div
-          v-if="hasFooter"
-          class="modal-footer"
-          :class="{grey: loading}"
-        >
+        <div v-if="hasFooter" class="modal-footer" :class="{ grey: loading }">
           <slot name="footer" />
         </div>
       </slot>

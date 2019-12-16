@@ -1,12 +1,10 @@
 <template>
   <form class="RawFilter">
-    <div
-      v-if="currentFilter.basic"
-      class="card-panel blue lighten-3"
-    >
-      A Basic filter is currently active. This shows your basic filter as raw filter.
-      If you modify this raw filter it will not change the basic filter view and will reset this raw filter to the
-      original content of the basic filter.
+    <div v-if="currentFilter.basic" class="card-panel blue lighten-3">
+      A Basic filter is currently active. This shows your basic filter as raw
+      filter. If you modify this raw filter it will not change the basic filter
+      view and will reset this raw filter to the original content of the basic
+      filter.
     </div>
     <json-editor
       id="rawsearch"
@@ -31,10 +29,7 @@
       >
         Reset
       </button>
-      <span
-        v-if="jsonInvalid"
-        class="error"
-      >Your JSON is not valid</span>
+      <span v-if="jsonInvalid" class="error">Your JSON is not valid</span>
     </div>
   </form>
 </template>
@@ -94,7 +89,7 @@ export default {
   watch: {
     rawFilter: {
       immediate: true,
-      handler(newValue, oldValue) {
+      handler(newValue) {
         if (newValue) {
           this.filters.raw = newValue
         } else {
@@ -104,15 +99,19 @@ export default {
     },
     currentFilter: {
       immediate: true,
-      handler(newValue, oldValue) {
-        this.$set(this.filters, 'raw', filterManager.toSearchQuery(this.currentFilter))
+      handler() {
+        this.$set(
+          this.filters,
+          'raw',
+          filterManager.toSearchQuery(this.currentFilter)
+        )
         if (this.currentFilter.raw && this.currentFilter.raw.sort) {
           this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)
         }
       }
     }
   },
-  mounted () {
+  mounted() {
     this.filters.raw = filterManager.toSearchQuery(this.currentFilter)
     if (this.currentFilter.raw && this.currentFilter.raw.sort) {
       this.$set(this.filters.raw, 'sort', this.currentFilter.raw.sort)

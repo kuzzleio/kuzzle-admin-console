@@ -1,15 +1,12 @@
 <template>
-  <div
-    class="IndexBoxed col s12 m6 l5"
-    :title="index"
-  >
+  <div class="IndexBoxed col s12 m6 l5" :title="index">
     <div class="card">
       <div class="card-title row">
         <div class="col s10 truncate">
           <!-- index browse link -->
           <router-link
             class="fluid-hover"
-            :to="{name: 'DataIndexSummary', params: {index: index}}"
+            :to="{ name: 'DataIndexSummary', params: { index: index } }"
           >
             <i
               class="fa fa-database grey-text text-darken-1"
@@ -30,10 +27,14 @@
 
       <div class="card-action right-align">
         <router-link
-          v-title="{active: !canCreateCollection(index), title: 'Your rights disallow you to create collections on index ' + index}"
+          v-title="{
+            active: !canCreateCollection(index),
+            title:
+              'Your rights disallow you to create collections on index ' + index
+          }"
           class="btn btn-small"
-          :class="{unauthorized: !canCreateCollection(index)}"
-          :to="{name: 'DataCreateCollection', params: {index: index}}"
+          :class="{ unauthorized: !canCreateCollection(index) }"
+          :to="{ name: 'DataCreateCollection', params: { index: index } }"
         >
           Create a collection
         </router-link>

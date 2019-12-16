@@ -1,7 +1,10 @@
 .<template>
   <div>
     <slot
-      v-if="!(basicFilter || rawFilter || $route.query.searchTerm) && totalDocuments === 0"
+      v-if="
+        !(basicFilter || rawFilter || $route.query.searchTerm) &&
+          totalDocuments === 0
+      "
       name="emptySet"
     />
     <crudl-document
@@ -198,7 +201,7 @@ export default {
     refreshSearch() {
       this.fetchData()
     },
-    create(route) {
+    create() {
       this.$router.push({ name: this.routeCreate })
     }
   }

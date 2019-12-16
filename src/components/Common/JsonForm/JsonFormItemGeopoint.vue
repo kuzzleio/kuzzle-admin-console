@@ -14,11 +14,10 @@
             type="number"
             step="0.0000001"
             @input="updateLocation"
+          />
+          <label for="lat" :class="{ active: value.lat !== null }"
+            >latitude</label
           >
-          <label
-            for="lat"
-            :class="{'active': value.lat !== null}"
-          >latitude</label>
         </div>
         <div class="input-field">
           <input
@@ -27,11 +26,10 @@
             type="number"
             step="0.0000001"
             @input="updateLocation"
+          />
+          <label for="lng" :class="{ active: value.lon !== null }"
+            >longitude</label
           >
-          <label
-            for="lng"
-            :class="{'active': value.lon !== null}"
-          >longitude</label>
         </div>
       </fieldset>
     </div>
@@ -62,7 +60,7 @@ export default {
     this.initValue()
   },
   methods: {
-    updateLocation(v) {
+    updateLocation() {
       this.$emit('update-value', { name: this.name, value: this.value })
     },
     initValue() {

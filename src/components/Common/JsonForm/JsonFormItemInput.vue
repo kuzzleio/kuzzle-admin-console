@@ -6,8 +6,8 @@
       :step="step"
       @input="update"
       @focus="display = true"
-    >
-    <label :class="{'active': value !== null}">{{ name }}</label>
+    />
+    <label :class="{ active: value !== null }">{{ name }}</label>
   </div>
 </template>
 

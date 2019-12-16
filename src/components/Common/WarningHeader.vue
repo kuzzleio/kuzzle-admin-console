@@ -1,6 +1,6 @@
 <template>
   <div class="WarningHeader">
-    <span v-html="text" />    
+    <span v-html="text" />
   </div>
 </template>
 

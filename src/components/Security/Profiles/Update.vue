@@ -41,8 +41,9 @@ export default {
   },
   async mounted() {
     try {
-      const profile = await this.$kuzzle.security
-        .getProfile(this.$route.params.id)
+      const profile = await this.$kuzzle.security.getProfile(
+        this.$route.params.id
+      )
       this.id = profile._id
       this.document = { policies: profile.policies }
     } catch (e) {
@@ -61,8 +62,9 @@ export default {
       this.submitted = true
 
       try {
-        await this.$kuzzle.security
-          .updateProfile(this.id, { policies: this.document.policies })
+        await this.$kuzzle.security.updateProfile(this.id, {
+          policies: this.document.policies
+        })
         setTimeout(() => {
           // we can't perform refresh index on %kuzzle
           this.$router.push({ name: 'SecurityProfilesList' })

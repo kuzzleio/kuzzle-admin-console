@@ -12,10 +12,7 @@
 
       <collection-tabs />
 
-      <div
-        v-if="!canSubscribe(index, collection)"
-        class="card-panel"
-      >
+      <div v-if="!canSubscribe(index, collection)" class="card-panel">
         <div class="row valign-bottom empty-set">
           <div class="col s1">
             <i
@@ -25,22 +22,26 @@
           </div>
           <div class="col s10">
             <p>
-              You are not allowed to watch realtime messages on collection <strong>{{ collection }}</strong> of index <strong>{{ index }}</strong><br>
+              You are not allowed to watch realtime messages on collection
+              <strong>{{ collection }}</strong> of index
+              <strong>{{ index }}</strong
+              ><br />
             </p>
             <p>
-              <em>Learn more about security &amp; permissions on <a
-                href="https://docs.kuzzle.io/guide/1/essentials/security/"
-                target="_blank"
-              >Kuzzle guide</a></em>
+              <em
+                >Learn more about security &amp; permissions on
+                <a
+                  href="https://docs.kuzzle.io/guide/1/essentials/security/"
+                  target="_blank"
+                  >Kuzzle guide</a
+                ></em
+              >
             </p>
           </div>
         </div>
       </div>
 
-      <div
-        v-else
-        class="Watch-container"
-      >
+      <div v-else class="Watch-container">
         <filters
           submit-button-label="Subscribe"
           advanced-query-label="Click to open the filter builder"
@@ -84,11 +85,15 @@
             </div>
             <div class="col s8 m9 l10">
               <p>
-                You did not subscribe yet to the collection <strong>{{ collection }}</strong><br>
-                <em>Learn more about real-time filtering syntax on <a
-                  href="https://docs.kuzzle.io/koncorde/"
-                  target="_blank"
-                >Koncorde</a></em>
+                You did not subscribe yet to the collection
+                <strong>{{ collection }}</strong
+                ><br />
+                <em
+                  >Learn more about real-time filtering syntax on
+                  <a href="https://docs.kuzzle.io/koncorde/" target="_blank"
+                    >Koncorde</a
+                  ></em
+                >
               </p>
               <button
                 class="btn primary waves-effect waves-light"
@@ -118,10 +123,12 @@
                 Waiting for notifications matching your filters ...
               </p>
               <p>
-                <em>Learn more about real-time filtering syntax on <a
-                  href="https://docs.kuzzle.io/koncorde/"
-                  target="_blank"
-                >Koncorde</a></em>
+                <em
+                  >Learn more about real-time filtering syntax on
+                  <a href="https://docs.kuzzle.io/koncorde/" target="_blank"
+                    >Koncorde</a
+                  ></em
+                >
               </p>
             </div>
           </div>
@@ -230,7 +237,8 @@ export default {
   async mounted() {
     this.notifications = []
     const response = await getMappingDocument(this.collection, this.index)
-    this.collectionMapping = response[this.index].mappings[this.collection].properties
+    this.collectionMapping =
+      response[this.index].mappings[this.collection].properties
   },
   async destroyed() {
     this.reset()
@@ -399,15 +407,13 @@ export default {
     async subscribe() {
       try {
         const realtimeQuery = filterManager.toRealtimeQuery(this.currentFilter)
-        const room = await this.$kuzzle
-          .realtime
-          .subscribe(
-            this.index,
-            this.collection,
-            realtimeQuery,
-            this.handleMessage,
-            this.subscribeOptions
-          )
+        const room = await this.$kuzzle.realtime.subscribe(
+          this.index,
+          this.collection,
+          realtimeQuery,
+          this.handleMessage,
+          this.subscribeOptions
+        )
         this.subscribed = true
         this.room = room
       } catch (err) {

@@ -3,37 +3,79 @@
     <ul>
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
-        :class="{active: isRouteActive('DataDocumentsList')}"
+        :class="{ active: isRouteActive('DataDocumentsList') }"
       >
         <router-link
           class="CollectionTabs--browse"
-          :to="{name: 'DataDocumentsList', params: {index: $route.params.index, collection: $route.params.collection}}"
+          :to="{
+            name: 'DataDocumentsList',
+            params: {
+              index: $route.params.index,
+              collection: $route.params.collection
+            }
+          }"
         >
           Browse
         </router-link>
       </li>
-      <li
-        :class="{active: isRouteActive('DataCollectionWatch')}"
-      >
+      <li :class="{ active: isRouteActive('DataCollectionWatch') }">
         <router-link
           href="#!"
-          class="CollectionTabs--watch" 
-          :title="canSubscribe($route.params.index, $route.params.collection) ? '' : 'You are not allowed to subscribe to this collection'"
-          :class="{disabled: !canSubscribe($route.params.index, $route.params.collection)}"
-          :to="canSubscribe($route.params.index, $route.params.collection) ? {name: 'DataCollectionWatch', params: {index: $route.params.index, collection: $route.params.collection}} : ''"
+          class="CollectionTabs--watch"
+          :title="
+            canSubscribe($route.params.index, $route.params.collection)
+              ? ''
+              : 'You are not allowed to subscribe to this collection'
+          "
+          :class="{
+            disabled: !canSubscribe(
+              $route.params.index,
+              $route.params.collection
+            )
+          }"
+          :to="
+            canSubscribe($route.params.index, $route.params.collection)
+              ? {
+                  name: 'DataCollectionWatch',
+                  params: {
+                    index: $route.params.index,
+                    collection: $route.params.collection
+                  }
+                }
+              : ''
+          "
         >
           Watch
         </router-link>
       </li>
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
-        :class="{active: isRouteActive('DataCreateDocument')}"
+        :class="{ active: isRouteActive('DataCreateDocument') }"
       >
         <router-link
-          class="CollectionTabs--createDocument" 
-          :title="canCreateDocument($route.params.index, $route.params.collection) ? '' : 'You are not allowed to create a document in this collection'"
-          :class="{disabled: !canCreateDocument($route.params.index, $route.params.collection)}"
-          :to="canCreateDocument($route.params.index, $route.params.collection) ? {name: 'DataCreateDocument', params: {index: $route.params.index, collection: $route.params.collection}} : ''"
+          class="CollectionTabs--createDocument"
+          :title="
+            canCreateDocument($route.params.index, $route.params.collection)
+              ? ''
+              : 'You are not allowed to create a document in this collection'
+          "
+          :class="{
+            disabled: !canCreateDocument(
+              $route.params.index,
+              $route.params.collection
+            )
+          }"
+          :to="
+            canCreateDocument($route.params.index, $route.params.collection)
+              ? {
+                  name: 'DataCreateDocument',
+                  params: {
+                    index: $route.params.index,
+                    collection: $route.params.collection
+                  }
+                }
+              : ''
+          "
         >
           Create a document
         </router-link>

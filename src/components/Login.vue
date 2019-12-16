@@ -8,9 +8,9 @@
               <h2 class="center-align logo">
                 <img
                   src="../assets/logo.svg"
-                  alt="Welcome to the Kuzzle Backoffice"
+                  alt="Welcome to the Kuzzle Admin Console"
                   style="width: 70%"
-                >
+                />
               </h2>
             </div>
           </div>

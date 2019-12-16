@@ -47,10 +47,7 @@ jobs:
       name: "Unit Tests"
       script:
         - npm install
-        - npm run unit
-
-      after_script:
-        - npm run codecov
+        - npm run test:unit
 
 # ---------------------------------------
 # Functionnal Testing
@@ -66,7 +63,7 @@ jobs:
 
       script:
         - npm install
-        - CYPRESS_RETRIES=5 npm run e2e
+        - CYPRESS_RETRIES=5 npm run test:e2e
 
 # ---------------------------------------
 # Regular Build & Deploy

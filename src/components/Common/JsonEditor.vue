@@ -1,10 +1,5 @@
 <template>
-  <div
-    :id="id"
-    ref="jsoneditor"
-    :class="classes"
-    :style="style"
-  />
+  <div :id="id" ref="jsoneditor" :class="classes" :style="style" />
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
