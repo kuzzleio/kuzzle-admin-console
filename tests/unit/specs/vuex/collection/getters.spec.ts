@@ -7,7 +7,7 @@ describe('Vuex collection getters', () => {
     it('should return empty object if flattenMapping is empty', () => {
       expect(
         collectionGetters.flattenSchemaWithType({}, { flattenMapping: {} })
-      ).deep.eql({})
+      ).deep.eq({})
     })
     it('should get the schema from flattenSchema', () => {
       let getters = {
@@ -21,7 +21,7 @@ describe('Vuex collection getters', () => {
         }
       }
 
-      expect(collectionGetters.flattenSchemaWithType({}, getters)).deep.eql({
+      expect(collectionGetters.flattenSchemaWithType({}, getters)).deep.eq({
         'name.first': elements['input:text'],
         'name.last': elements['input:text']
       })
@@ -37,7 +37,7 @@ describe('Vuex collection getters', () => {
         }
       }
 
-      expect(collectionGetters.flattenSchemaWithType({}, getters)).deep.eql({
+      expect(collectionGetters.flattenSchemaWithType({}, getters)).deep.eq({
         'name.first': elements['input:text'],
         'name.last': elements['input:text']
       })

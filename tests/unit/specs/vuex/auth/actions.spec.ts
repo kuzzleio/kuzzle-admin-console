@@ -244,7 +244,7 @@ describe('loginByToken action', () => {
       {},
       {},
       [
-        { type: SET_CURRENT_USER, payload: SessionUser() },
+        { type: SET_CURRENT_USER, payload: new SessionUser() },
         { type: SET_TOKEN_VALID, payload: false }
       ],
       done
@@ -258,7 +258,7 @@ describe('loginByToken action', () => {
       { token: 'a-token' },
       {},
       [
-        { type: SET_CURRENT_USER, payload: SessionUser() },
+        { type: SET_CURRENT_USER, payload: new SessionUser() },
         { type: SET_TOKEN_VALID, payload: false }
       ]
     ).catch(e => {
@@ -274,7 +274,7 @@ describe('loginByToken action', () => {
       { token: 'a-token' },
       {},
       [
-        { type: SET_CURRENT_USER, payload: SessionUser() },
+        { type: SET_CURRENT_USER, payload: new SessionUser() },
         { type: SET_TOKEN_VALID, payload: false }
       ],
       done
@@ -372,7 +372,7 @@ describe('logout action', () => {
       {},
       {},
       [
-        { type: SET_CURRENT_USER, payload: SessionUser() },
+        { type: SET_CURRENT_USER, payload: new SessionUser() },
         { type: SET_TOKEN_VALID, payload: false }
       ],
       done

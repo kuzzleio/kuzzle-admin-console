@@ -5,12 +5,12 @@ export default {
     $options.attr('selected', 'selected')
   },
   bind(el) {
-    let $el = $(el)
+    let $el: any = $(el)
     setTimeout(() => {
       $el.material_select()
-      $el.on('change', () => {
-        this.set(el.value)
-      })
+      // $el.on('change', () => {
+        // this.set(el.value)
+      // })
     }, 0)
   }
 }

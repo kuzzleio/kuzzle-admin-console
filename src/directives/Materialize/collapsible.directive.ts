@@ -2,7 +2,8 @@ export default {
   id: 'collapsible',
   bind: () => {
     setTimeout(() => {
-      $('.collapsible').collapsible({
+      const collapsible: any = $('.collapsible')
+      collapsible.collapsible({
         accordion: false
       })
     }, 0)

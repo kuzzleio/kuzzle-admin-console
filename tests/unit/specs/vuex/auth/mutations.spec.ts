@@ -6,7 +6,7 @@ const { SET_CURRENT_USER, SET_TOKEN_VALID, SET_ADMIN_EXISTS } = mutations
 
 describe('auth mutations test', () => {
   it('should set the user status', () => {
-    let state = { user: SessionUser() }
+    let state = { user: new SessionUser() }
 
     SET_CURRENT_USER(state, 'foo')
     expect(state.user).to.equals('foo')

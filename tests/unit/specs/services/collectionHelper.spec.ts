@@ -13,7 +13,7 @@ describe('CollectionHelper', () => {
     it('should return target if source is not an object', () => {
       expect(
         collectionHelper.mergeSchemaMapping({ toto: 'tata' }, 'tata')
-      ).deep.eql({ toto: 'tata' })
+      ).deep.eq({ toto: 'tata' })
     })
 
     it('should add the default schema from mapping', () => {
@@ -22,7 +22,7 @@ describe('CollectionHelper', () => {
         toto: { type: 'text' }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eq({
         toto: config['text'].default
       })
     })
@@ -33,7 +33,7 @@ describe('CollectionHelper', () => {
         toto: { type: 'toto' }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eq({
         toto: elements['json']
       })
     })
@@ -46,7 +46,7 @@ describe('CollectionHelper', () => {
         toto: { type: 'text' }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eq({
         toto: elements['textarea']
       })
     })
@@ -62,7 +62,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eq({
         name: {
           tag: 'fieldset',
           properties: {
@@ -93,7 +93,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eql({
+      expect(collectionHelper.mergeSchemaMapping(target, source)).deep.eq({
         person: {
           tag: 'fieldset',
           properties: {
@@ -111,13 +111,13 @@ describe('CollectionHelper', () => {
 
   describe('flattenObjectMapping', () => {
     it('should return empty object if mapping is empty', () => {
-      expect(collectionHelper.flattenObjectMapping({})).deep.eql({})
+      expect(collectionHelper.flattenObjectMapping({})).deep.eq({})
     })
 
     it('should return attribute with type if there is no depth', () => {
       expect(
         collectionHelper.flattenObjectMapping({ toto: { type: 'text' } })
-      ).deep.eql({ toto: 'text' })
+      ).deep.eq({ toto: 'text' })
     })
 
     it('should loop in properties', () => {
@@ -130,7 +130,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eql({
+      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eq({
         'name.first': 'text',
         'name.last': 'text'
       })
@@ -154,7 +154,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eql({
+      expect(collectionHelper.flattenObjectMapping(mapping)).deep.eq({
         'person.identity': 'force-json'
       })
     })
@@ -162,13 +162,13 @@ describe('CollectionHelper', () => {
 
   describe('flattenObjectSchema', () => {
     it('should return empty object if schema is empty', () => {
-      expect(collectionHelper.flattenObjectSchema({})).deep.eql({})
+      expect(collectionHelper.flattenObjectSchema({})).deep.eq({})
     })
 
     it('should return schema if there is no depth', () => {
       expect(
         collectionHelper.flattenObjectSchema({ toto: { tag: 'input' } })
-      ).deep.eql({ toto: { tag: 'input' } })
+      ).deep.eq({ toto: { tag: 'input' } })
     })
 
     it('should loop in properties', () => {
@@ -181,7 +181,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eql({
+      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eq({
         'name.first': { tag: 'input' },
         'name.last': { tag: 'input' }
       })
@@ -205,7 +205,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eql({
+      expect(collectionHelper.flattenObjectSchema(mapping)).deep.eq({
         'person.identity': { ...elements['json'] }
       })
     })
@@ -213,7 +213,7 @@ describe('CollectionHelper', () => {
 
   describe('getSchemaForType', () => {
     it('should return an array with json schema if type does not exist', () => {
-      expect(collectionHelper.getSchemaForType('notexist')).deep.eql([
+      expect(collectionHelper.getSchemaForType('notexist')).deep.eq([
         { ...elements['json'] }
       ])
     })
@@ -228,18 +228,18 @@ describe('CollectionHelper', () => {
         elements['json']
       ]
 
-      expect(collectionHelper.getSchemaForType('text')).deep.eql(expected)
+      expect(collectionHelper.getSchemaForType('text')).deep.eq(expected)
     })
   })
 
   describe('getDefaultSchemaForType', () => {
     it('should return element json if type does not exist', () => {
-      expect(collectionHelper.getDefaultSchemaForType('notexist')).deep.eql({
+      expect(collectionHelper.getDefaultSchemaForType('notexist')).deep.eq({
         ...elements['json']
       })
     })
     it('should return the default element for the specified type', () => {
-      expect(collectionHelper.getDefaultSchemaForType('text')).deep.eql(
+      expect(collectionHelper.getDefaultSchemaForType('text')).deep.eq(
         elements['input:text']
       )
     })
@@ -269,7 +269,7 @@ describe('CollectionHelper', () => {
         'name.last': elements['input:text']
       }
 
-      expect(collectionHelper.formatSchema(schema)).deep.eql({
+      expect(collectionHelper.formatSchema(schema)).deep.eq({
         age: elements['integer'],
         name: {
           properties: {
@@ -289,7 +289,7 @@ describe('CollectionHelper', () => {
 
       expect(
         collectionHelper.mergeMetaAttributes({ mapping, schema, allowForm })
-      ).deep.eql({
+      ).deep.eq({
         properties: mapping,
         _meta: {
           schema,
@@ -310,7 +310,7 @@ describe('CollectionHelper', () => {
         }
       }
 
-      expect(collectionHelper.cleanMapping(mapping)).deep.eql({
+      expect(collectionHelper.cleanMapping(mapping)).deep.eq({
         name: {
           first: 'text',
           last: 'text'

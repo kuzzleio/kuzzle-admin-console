@@ -8,7 +8,7 @@ export const testAction = (
   state,
   expectedMutations,
   done,
-  getters
+  getters = null
 ) => {
   let count = 0
 
@@ -50,9 +50,9 @@ export const testActionPromise = (
   state,
   expectedMutations,
   done,
-  expectedResultFromPromise,
-  getters,
-  dispatch
+  expectedResultFromPromise = null,
+  getters = null,
+  dispatch = () => {}
 ) => {
   let count = 0
 

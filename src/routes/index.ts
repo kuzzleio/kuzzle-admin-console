@@ -1,5 +1,5 @@
-import Login from '../components/Login'
-import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage'
+import Login from '../components/Login.vue'
+import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue'
 import store from '../vuex/store'
 import { hasSecurityRights } from '../services/userAuthorization'
 import SecuritySubRoutes from './children/security'

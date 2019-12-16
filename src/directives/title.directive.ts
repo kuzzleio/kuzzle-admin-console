@@ -8,9 +8,10 @@ export default {
       el.setAttribute('data-tooltip', binding.value.title)
 
       /* eslint no-undef: 0 */
-      $(el).tooltip()
-      $(el).on('click', () => {
-        $(el).tooltip('destroy')
+      const $el: any = $(el)
+      $el.tooltip()
+      $el.on('click', () => {
+        $el.tooltip('destroy')
       })
     }
   }

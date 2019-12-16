@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import VueKuzzle from './plugins/kuzzle'
 import './plugins/logger'
 
-import App from './App'
+import App from './App.vue'
 import store from './vuex/store'
 import * as types from './vuex/modules/common/kuzzle/mutation-types'
 
