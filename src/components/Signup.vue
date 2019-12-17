@@ -191,9 +191,9 @@ export default {
         })
         this.$store.dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
         this.$store.commit(types.SET_ADMIN_EXISTS, true)
-        this.$router.push({ name: 'Login' })
+        this.$router.push({ name: 'Login' }).catch(() => {})
       } catch (err) {
-        this.$router.push({ name: 'Login' })
+        this.$router.push({ name: 'Login' }).catch(() => {})
       }
     },
     loginAsGuest() {
@@ -201,7 +201,7 @@ export default {
       this.$store
         .dispatch(types.PREPARE_SESSION, 'anonymous')
         .then(() => {
-          this.$router.push({ name: 'Data' })
+          this.$router.push({ name: 'Data' }).catch(() => {})
         })
         .catch(err => {
           this.error = err.message
