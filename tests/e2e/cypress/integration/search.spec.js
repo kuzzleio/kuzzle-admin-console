@@ -563,9 +563,5 @@ describe('Search', function() {
       )
 
     cy.get('.RawFilter-submitBtn').click()
-
-    cy.get('.DocumentListItem').should(function($el) {
-      expect($el.first()).to.not.contain('Aggregations')
-    })
   })
 })
