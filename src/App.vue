@@ -65,9 +65,9 @@
 </template>
 
 <script>
-import {} from '../node_modules/ace-builds/src-min-noconflict/ace.js'
-import {} from '../node_modules/ace-builds/src-min-noconflict/theme-tomorrow.js'
-import {} from '../node_modules/ace-builds/src-min-noconflict/mode-json.js'
+require('ace-builds')
+require('ace-builds/webpack-resolver')
+
 import {} from './assets/global.scss'
 import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
 import ErrorLayout from './components/Error/Layout'
