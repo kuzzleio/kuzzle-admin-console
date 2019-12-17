@@ -113,6 +113,15 @@ class Aggregations {
   }
 }
 
+interface IKuzzleDocument {
+  content: Content
+  id: string
+  meta: Meta
+  credentials: Credentials
+  aggregations: Aggregations
+  additionalAttribute: any
+}
+
 export const performSearchDocuments = async (
   collection,
   index,
@@ -131,7 +140,7 @@ export const performSearchDocuments = async (
     { ...pagination }
   )
 
-  let additionalAttributeName = null
+  let additionalAttributeName: any = null
 
   if (sort.length > 0) {
     if (typeof sort[0] === 'string' && sort[0] !== '_id') {
@@ -142,10 +151,13 @@ export const performSearchDocuments = async (
   }
 
   const documents = result.hits.map(document => {
-    const object = {
+    const object: IKuzzleDocument = {
       content: new Content(document._source),
       id: document._id,
-      meta: new Meta(document._source._kuzzle_info)
+      meta: new Meta(document._source._kuzzle_info),
+      credentials: new Credentials({}),
+      aggregations: new Aggregations({}),
+      additionalAttribute: null
     }
 
     if (result.aggregations) {
@@ -210,8 +222,8 @@ export const performSearchUsers = async (
     { ...filters, sort },
     { ...pagination }
   )
-  let additionalAttributeName = null
-  let users = []
+  let additionalAttributeName: any = null
+  let users: any = []
 
   if (sort.length > 0) {
     if (typeof sort[0] === 'string') {
@@ -222,11 +234,13 @@ export const performSearchUsers = async (
   }
 
   for (const document of result.hits) {
-    let object = {
+    let object: IKuzzleDocument = {
       content: new Content(document.content),
       id: document._id,
       credentials: new Credentials({}),
-      meta: new Meta(document.meta || {})
+      meta: new Meta(document.meta || {}),
+      aggregations: new Aggregations({}),
+      additionalAttribute: null
     }
 
     if (result.aggregations) {

@@ -1,5 +1,5 @@
 export const isAuthenticated = state => {
-  return state.user.id !== undefined
+  return !!state.user.id
 }
 
 export const user = state => {

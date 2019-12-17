@@ -8,7 +8,7 @@ import actions from './actions'
 import * as getters from './getters'
 
 const state = {
-  user: SessionUser(),
+  user: new SessionUser(),
   tokenValid: false,
   adminAlreadyExists: false
 }

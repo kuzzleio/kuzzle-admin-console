@@ -39,16 +39,7 @@ jobs:
       script:
         - npm install
         - npm run lint
-
-# ---------------------------------------
-# Unit Testing
-# ---------------------------------------
-    - stage: tests
-      name: "Unit Tests"
-      script:
-        - npm install
-        - npm run test:unit
-
+  
 # ---------------------------------------
 # Functionnal Testing
 # ---------------------------------------

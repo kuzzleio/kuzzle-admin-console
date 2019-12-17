@@ -1,5 +1,8 @@
-const fmt = require('../../../../src/utils').formatForDom
 const hexrgb = require('hex-rgb')
+
+const fmt = word => {
+  return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
+}
 
 describe('Environments', function() {
   this.beforeEach(() => {})

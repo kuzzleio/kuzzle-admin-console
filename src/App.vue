@@ -74,21 +74,18 @@ import ErrorLayout from './components/Error/Layout'
 import SignUp from './components/Signup'
 import Login from './components/Login'
 import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
-
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
-
 import Toaster from './components/Materialize/Toaster.vue'
-
 import * as types from './vuex/modules/auth/mutation-types'
 import * as kuzzleTypes from './vuex/modules/common/kuzzle/mutation-types'
 import { SET_TOAST } from './vuex/modules/common/toaster/mutation-types'
-
+// @TODO we'll have to import FA from global.scss one day...
+import '@fortawesome/fontawesome-free/css/all.css'
 window.jQuery = window.$ = require('jquery')
 // eslint-disable-next-line
 require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
-
 export default {
   name: 'KuzzleBackOffice',
   components: {
@@ -111,12 +108,7 @@ export default {
     }
   },
   mounted() {
-    window.ace.config.set(
-      'workerPath',
-      '../node_modules/ace-builds/src-min-noconflict/'
-    )
     this.$kuzzle.removeAllListeners()
-
     this.$kuzzle.on('queryError', error => {
       if (error && error.message) {
         switch (error.message) {
@@ -166,8 +158,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-$fa-font-path: '~font-awesome/fonts/';
-@import '~@fortawesome/fontawesome-free/css/all.min.css';
-</style>

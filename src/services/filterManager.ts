@@ -8,7 +8,7 @@ export const SORT_ASC = 'asc'
 export const SORT_DESC = 'desc'
 export const DEFAULT_QUICK = ''
 
-export function Filter() {
+export function Filter(this: any) {
   this.active = NO_ACTIVE
   this.quick = DEFAULT_QUICK
   this.basic = null
@@ -188,14 +188,14 @@ export const realtimeFilterOperands = {
 }
 
 export const basicFilterToRealtimeQuery = (groups = [[]]) => {
-  let or = []
+  let or: any = []
 
   groups.forEach(function(filters) {
     let and = filters
-      .filter(filter => {
+      .filter((filter: any) => {
         return filter.attribute !== null
       })
-      .map(function(filter) {
+      .map(function(filter: any) {
         switch (filter.operator) {
           case 'match':
             return { equals: { [filter.attribute]: filter.value } }
@@ -285,11 +285,11 @@ export const formatSort = sorting => {
 
 // TODO rename to basicFilterToSearchQuery
 export const formatFromBasicSearch = (groups = [[]]) => {
-  let bool = {}
+  let bool: any = {}
 
   bool.should = groups.map(filters => {
-    let formattedFilter = { bool: { must: [], must_not: [] } }
-    filters.forEach(filter => {
+    let formattedFilter: any = { bool: { must: [], must_not: [] } }
+    filters.forEach((filter: any) => {
       if (filter.attribute === null) {
         return
       }

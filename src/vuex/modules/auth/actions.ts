@@ -12,7 +12,7 @@ export default {
     return dispatch(types.PREPARE_SESSION, jwt)
   },
   async [types.PREPARE_SESSION]({ commit, dispatch }, token) {
-    const sessionUser = SessionUser()
+    const sessionUser = new SessionUser()
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, token)
     dispatch(LIST_INDEXES_AND_COLLECTION)
     const user = await Vue.prototype.$kuzzle.auth.getCurrentUser()
@@ -27,14 +27,14 @@ export default {
     return sessionUser
   },
   async [types.LOGIN_BY_TOKEN]({ commit, dispatch }, data) {
-    const user = SessionUser()
+    const user = new SessionUser()
 
     if (data.token === 'anonymous') {
       return dispatch(types.PREPARE_SESSION, data.token)
     }
 
     if (!data.token) {
-      commit(types.SET_CURRENT_USER, SessionUser())
+      commit(types.SET_CURRENT_USER, new SessionUser())
       commit(types.SET_TOKEN_VALID, false)
       Vue.prototype.$kuzzle.jwt = null
       dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
@@ -43,11 +43,11 @@ export default {
 
     const res = await Vue.prototype.$kuzzle.auth.checkToken(data.token)
     if (!res.valid) {
-      commit(types.SET_CURRENT_USER, SessionUser())
+      commit(types.SET_CURRENT_USER, new SessionUser())
       commit(types.SET_TOKEN_VALID, false)
       dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
       Vue.prototype.$kuzzle.jwt = null
-      return SessionUser()
+      return new SessionUser()
     }
 
     Vue.prototype.$kuzzle.jwt = data.token
@@ -74,7 +74,7 @@ export default {
     }
     Vue.prototype.$kuzzle.jwt = null
     dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
-    commit(types.SET_CURRENT_USER, SessionUser())
+    commit(types.SET_CURRENT_USER, new SessionUser())
     commit(types.SET_TOKEN_VALID, false)
     return dispatch(types.CHECK_FIRST_ADMIN)
   }

@@ -257,7 +257,6 @@ export default {
       this.$set(this.filters.sorting, 'attribute', attribute)
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
-      console.log('LOL')
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {

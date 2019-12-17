@@ -1,4 +1,4 @@
-import KuzzleDisconnectedPage from '../../components/Error/KuzzleDisconnectedPage'
+import KuzzleDisconnectedPage from '../../components/Error/KuzzleDisconnectedPage.vue'
 
 export default [
   {
