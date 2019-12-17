@@ -155,7 +155,7 @@ export const performSearchDocuments = async (
       content: new Content(document._source),
       id: document._id,
       meta: new Meta(document._source._kuzzle_info),
-      credentials: new  Credentials({}),
+      credentials: new Credentials({}),
       aggregations: new Aggregations({}),
       additionalAttribute: null
     }
