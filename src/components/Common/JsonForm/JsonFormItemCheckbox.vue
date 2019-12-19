@@ -51,7 +51,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .JsonFormItemCheckbox {
   position: relative !important;
 }
