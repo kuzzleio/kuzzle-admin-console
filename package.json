@@ -90,6 +90,7 @@
     "semver": "^5.5.0",
     "shelljs": "^0.7.7",
     "sinon": "^2.4.1",
+    "sort-json": "^2.0.0",
     "tinycolor2": "^1.4.1",
     "ts-mock-imports": "^1.2.6",
     "typescript": "~3.5.3",

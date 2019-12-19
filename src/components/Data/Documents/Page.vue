@@ -251,6 +251,7 @@
 
 <script>
 import _ from 'lodash'
+import sortJson from 'sort-json'
 
 import DocumentListItem from './DocumentListItem'
 import DocumentBoxItem from './DocumentBoxItem'
@@ -567,7 +568,7 @@ export default {
           pagination,
           sorting
         )
-        this.documents = res.documents
+        this.documents = sortJson(res.documents)
         this.totalDocuments = res.total
       } catch (e) {
         this.$store.commit(SET_TOAST, {
