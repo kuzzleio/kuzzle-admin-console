@@ -258,11 +258,15 @@ export const performSearchUsers = async (
     }
 
     for (const strategy of strategies) {
-      const res = await Vue.prototype.$kuzzle.security.getCredentials(
-        strategy,
-        document._id
-      )
-      object.credentials[strategy] = res
+      try {
+        const res = await Vue.prototype.$kuzzle.security.getCredentials(
+          strategy,
+          document._id
+        )
+        object.credentials[strategy] = res
+      } catch (e) {
+        object.credentials[strategy] = {}
+      }
     }
     users.push(object)
   }

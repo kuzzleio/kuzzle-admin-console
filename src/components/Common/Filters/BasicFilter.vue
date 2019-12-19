@@ -51,7 +51,13 @@
                   </option>
                 </m-select>
               </div>
-              <div v-if="andBlock.operator !== 'range'">
+              <div
+                v-if="andBlock.operator !== 'range'"
+                v-show="
+                  andBlock.operator !== 'exists' &&
+                    andBlock.operator !== 'not_exists'
+                "
+              >
                 <div class="col s3">
                   <input
                     v-model="andBlock.value"
@@ -215,6 +221,13 @@ export default {
       // For each andBlocks in orBlocks, check if attribute and value field are filled
       for (const orBlock of this.filters.basic) {
         for (const andBlock of orBlock) {
+          if (
+            (andBlock.operator === 'exists' ||
+              andBlock.operator === 'not_exists') &&
+            andBlock.attribute
+          ) {
+            return true
+          }
           if (
             (!andBlock.attribute && andBlock.value) ||
             (andBlock.attribute &&
