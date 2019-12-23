@@ -340,6 +340,8 @@ td {
   z-index: 999;
   left: 0;
   bottom: 0;
+  padding: 5px;
+  text-align: left;
 }
 
 .Column-view-title {
