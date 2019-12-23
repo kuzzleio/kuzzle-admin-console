@@ -122,7 +122,7 @@ export default {
       }
     })
     this.$kuzzle.on('networkError', error => {
-      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
+      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error.message)
     })
     this.$kuzzle.on('connected', () => {
       this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)

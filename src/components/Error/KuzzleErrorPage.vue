@@ -10,12 +10,7 @@
       </div>
     </div>
     <div class="row message-warning">
-      <h5>{{ $store.state.kuzzle.errorFromKuzzle.message }}</h5>
-      <div class="divider" />
-      <div v-if="errorInternalStatus || errorInternalMessage" class="message">
-        <i class="fa fa-plug" />
-        [{{ errorInternalStatus }}] {{ errorInternalMessage }}
-      </div>
+      <h5>{{ $store.state.kuzzle.errorFromKuzzle }}</h5>
     </div>
     <div class="row kuzzle-disconnected">
       <div class="col s12">
@@ -56,23 +51,8 @@ export default {
     }
   },
   computed: {
-    errorInternalStatus() {
-      if (
-        !this.$store.state.kuzzle.errorFromKuzzle ||
-        !this.$store.state.kuzzle.errorFromKuzzle.internal
-      ) {
-        return null
-      }
-      return this.$store.state.kuzzle.errorFromKuzzle.internal.status
-    },
     errorInternalMessage() {
-      if (
-        !this.$store.state.kuzzle.errorFromKuzzle ||
-        !this.$store.state.kuzzle.errorFromKuzzle.internal
-      ) {
-        return null
-      }
-      return this.$store.state.kuzzle.errorFromKuzzle.internal.message
+      return this.$store.state.kuzzle.errorFromKuzzle
     }
   },
   methods: {
