@@ -1,5 +1,5 @@
 <template>
-  <label>
+  <label class="JsonFormItemCheckbox">
     <input
       :id="name"
       type="checkbox"
@@ -50,3 +50,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.JsonFormItemCheckbox {
+  position: relative !important;
+}
+</style>
