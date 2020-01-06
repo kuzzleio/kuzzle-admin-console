@@ -28,19 +28,11 @@ describe('Collection management', function() {
   it('is able to create a realtime collection and access it', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
-    // cy.get('#data-layout > section > section > div > div.row > div > div.row.actions > div.col.s9 > button').click()
     cy.visit(`/#/data/${indexName}/create`)
 
     cy.get(
-      '.IndexBoxed:nth-child(1) > .card > .card-title > .col > .fluid-hover > .IndexBoxed-name'
-    ).click({ force: true })
-    cy.get('.row > .card-panel > .row > .col > .btn').click({ force: true })
-    cy.get('.col > .row > .Mapping-realtimeOnly > label > span').click({
-      force: true
-    })
-    cy.get(
       '.col > .row > .Mapping-realtimeOnly > label > #realtime-collection'
-    ).check('on')
+    ).check('on', { force: true })
     cy.get('div > .row > .col > .Mapping-name > label').click({ force: true })
     cy.get('div > .row > .col > .Mapping-name > #collection-name').type(
       'testcollection'
