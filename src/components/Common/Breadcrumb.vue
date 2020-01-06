@@ -120,14 +120,16 @@ export default {
     canSearchIndex,
     isCollectionRealtime() {
       if (
-        !this.$store.state.index.indexesAndCollections[this.$route.params.index]
+        !this.$store.direct.state.index.indexesAndCollections[
+          this.$route.params.index
+        ]
       ) {
         return false
       }
 
       return (
         // prettier-ignore
-        this.$store.state.index
+        this.$store.direct.state.index
           .indexesAndCollections[this.$route.params.index]
           .realtime
           .indexOf(this.$route.params.collection) !== -1

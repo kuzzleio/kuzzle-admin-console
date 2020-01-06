@@ -92,7 +92,6 @@ button {
 <script>
 import Modal from '../../Materialize/Modal'
 import Focus from '../../../directives/focus.directive'
-import { CREATE_INDEX } from '../../../vuex/modules/index/mutation-types'
 
 export default {
   name: 'CreateIndexModal',
@@ -120,7 +119,7 @@ export default {
       }
 
       try {
-        await this.$store.dispatch(CREATE_INDEX, index)
+        await this.$store.dispatch.index.createIndex(index)
         this.index = ''
         this.error = ''
         this.close()

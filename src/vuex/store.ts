@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { createDirectStore } from 'direct-vuex'
 import auth from './modules/auth/store'
 import realtime from './modules/realtime/store'
 import crudlDocument from './modules/common/crudlDocument/store'
@@ -12,7 +13,7 @@ import security from './modules/security/store'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const { store, rootActionContext, moduleActionContext } = createDirectStore({
   modules: {
     auth,
     realtime,
@@ -26,3 +27,15 @@ export default new Vuex.Store({
   },
   strict: process.env.NODE_ENV !== 'production'
 })
+
+// export default new Vuex.Store(store)
+export default store
+
+export { rootActionContext, moduleActionContext }
+
+export type AppStore = typeof store
+declare module "vuex" {
+  interface Store<S> {
+    direct: AppStore
+  }
+}

@@ -1,4 +1,4 @@
-export default class {
+export class SessionUser {
   id: any = null
   token: any = null
   params: any = {}

@@ -5,14 +5,13 @@ import './plugins/logger'
 
 import App from './App.vue'
 import store from './vuex/store'
-import * as types from './vuex/modules/common/kuzzle/mutation-types'
 
 Vue.use(VueRouter)
 Vue.use(VueKuzzle)
 
-store.dispatch(types.LOAD_ENVIRONMENTS)
+store.dispatch.kuzzle.loadEnvironments(null)
 store
-  .dispatch(types.SWITCH_LAST_ENVIRONMENT)
+  .dispatch.kuzzle.switchLastEnvironment(null)
   .then(() => {
     let router = require('./services/router').default
 
@@ -20,7 +19,7 @@ store
     new Vue({
       el: '#app',
       router,
-      store,
+      store: store.original,
       render: h => h(App)
     })
   })
@@ -31,7 +30,7 @@ store
     new Vue({
       el: '#app',
       router,
-      store,
+      store: store.original,
       render: h => h(App)
     })
   })

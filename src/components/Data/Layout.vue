@@ -20,8 +20,6 @@
 
 <script>
 import { canSearchIndex } from '../../services/userAuthorization'
-import { LIST_INDEXES_AND_COLLECTION } from '../../vuex/modules/index/mutation-types'
-import { FETCH_COLLECTION_DETAIL } from '../../vuex/modules/collection/mutation-types'
 import Treeview from './Leftnav/Treeview'
 import NotFound from '../404'
 import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
@@ -42,7 +40,7 @@ export default {
       if (canSearchIndex()) {
         try {
           this.setRouteExist()
-          return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+          return this.$store.dispatch.collection.fetchCollectionDetail({
             index: this.$route.params.index,
             collection: this.$route.params.collection
           })
@@ -75,10 +73,10 @@ export default {
       }
     )
     if (canSearchIndex()) {
-      this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
+      this.$store.dispatch.index.listIndexesAndCollection()
       this.setRouteExist()
 
-      this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+      this.$store.dispatch.collection.fetchCollectionDetail({
         index: this.$route.params.index,
         collection: this.$route.params.collection
       })

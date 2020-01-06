@@ -63,7 +63,6 @@
 
 <script>
 import Dropdown from '../../Materialize/Dropdown'
-import { REMOVE_REALTIME_COLLECTION } from '../../../vuex/modules/index/mutation-types'
 import ModalClear from './ModalClear.vue'
 import {
   canEditCollection,
@@ -98,7 +97,7 @@ export default {
     canSubscribe,
     canTruncateCollection,
     removeRealtimeCollection() {
-      this.$store.dispatch(REMOVE_REALTIME_COLLECTION, {
+      this.$store.dispatch.collection.removeRealtimeCollection({
         index: this.index,
         collection: this.collection
       })

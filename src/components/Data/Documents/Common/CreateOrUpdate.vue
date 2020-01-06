@@ -236,7 +236,6 @@ import JsonEditor from '../../../Common/JsonEditor'
 import Focus from '../../../../directives/focus.directive'
 import title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
-import { SET_COLLECTION_DEFAULT_VIEW_JSON } from '../../../../vuex/modules/collection/mutation-types'
 import { hasSameSchema } from '../../../../services/collectionHelper'
 
 // We have to init the JSON only if the data comes from the server.
@@ -319,7 +318,7 @@ export default {
       this.$emit('input', { ...this.value, [e.name]: e.value })
     },
     switchView(e) {
-      this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
+      this.$store.dispatch.collection.setCollectionDefaultViewJson({
         index: this.$route.params.index,
         collection: this.$route.params.collection,
         jsonView: e.target.checked

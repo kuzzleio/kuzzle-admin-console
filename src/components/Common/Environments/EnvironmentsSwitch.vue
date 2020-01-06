@@ -6,13 +6,13 @@
       :data-target="'environment-dropdown-' + _uid"
     >
       <span
-        v-if="$store.getters.currentEnvironment"
+        v-if="$store.direct.getters.currentEnvironment"
         class="current-environment-name truncate"
       >
         {{ currentEnvironmentName }}
       </span>
       <span
-        v-if="!$store.getters.currentEnvironment"
+        v-if="!$store.direct.getters.currentEnvironment"
         class="current-environment-name truncate"
       >
         Choose Environment
@@ -25,7 +25,7 @@
       class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
     >
       <li
-        v-for="(env, index) in $store.state.kuzzle.environments"
+        v-for="(env, index) in $store.direct.state.kuzzle.environments"
         :key="env.name"
         :data-env="`env_${formatForDom(env.name)}`"
         class="EnvironmentsSwitch-env environment"
@@ -71,7 +71,6 @@
 
 <script>
 import { DEFAULT_COLOR } from '../../../services/environment'
-import { SWITCH_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 import tinycolor from 'tinycolor2/tinycolor'
 import Promise from 'bluebird'
 import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
@@ -82,11 +81,11 @@ export default {
   props: ['blendColor'],
   computed: {
     currentEnvironmentName() {
-      if (!this.$store.getters.currentEnvironment) {
+      if (!this.$store.direct.getters.currentEnvironment) {
         return null
       }
 
-      return this.$store.getters.currentEnvironment.name
+      return this.$store.direct.getters.currentEnvironment.name
     },
     bgColor() {
       if (!this.blendColor) {
@@ -126,8 +125,8 @@ export default {
   },
   methods: {
     clickSwitch(id) {
-      return this.$store
-        .dispatch(SWITCH_ENVIRONMENT, id)
+      return this.$store.direct.dispatch.kuzzle
+        .switchEnvironment(id)
         .then(() => {
           this.$router.push({ path: '/' }).catch(() => {})
         })

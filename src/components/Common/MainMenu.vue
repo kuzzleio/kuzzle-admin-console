@@ -67,7 +67,6 @@
 
 <script>
 import { hasSecurityRights } from '../../services/userAuthorization'
-import { DO_LOGOUT } from '../../vuex/modules/auth/mutation-types'
 import { DEFAULT_COLOR } from '../../services/environment'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
@@ -109,7 +108,7 @@ export default {
 
   methods: {
     doLogout() {
-      return this.$store.dispatch(DO_LOGOUT).then(() => {
+      return this.$store.direct.dispatch.kuzzle.doLogout().then(() => {
         this.$router.push({ name: 'Login' })
       })
     },

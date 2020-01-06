@@ -1,15 +1,18 @@
-export const isAuthenticated = state => {
-  return !!state.user.id
-}
+import { AuthState } from './types';
+import { SessionUser } from '@/models/SessionUser';
+import { createGetters } from "direct-vuex"
 
-export const user = state => {
-  return state.user
-}
-
-export const tokenValid = state => {
-  return state.tokenValid
-}
-
-export const adminAlreadyExists = state => {
-  return state.adminAlreadyExists
-}
+export const getters = createGetters<AuthState>()({
+  isAuthenticated(state): boolean {
+    return !!state?.user?.id
+  },
+  user(state): SessionUser {
+    return state.user
+  },
+  tokenValid(state): boolean {
+    return state.tokenValid
+  },
+  adminAlreadyExists(state): boolean {
+    return state.adminAlreadyExists
+  }
+})

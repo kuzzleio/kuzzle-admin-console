@@ -92,11 +92,6 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
-import {
-  DO_LOGIN,
-  PREPARE_SESSION
-} from '../../../vuex/modules/auth/mutation-types'
-
 export default {
   name: 'LoginForm',
   directives: {
@@ -119,10 +114,10 @@ export default {
     async login() {
       this.error = ''
       try {
-        await this.$store.dispatch(DO_LOGIN, {
-          username: this.username,
-          password: this.password
-        })
+        // await this.$store.dispatch(DO_LOGIN, {
+        //   username: this.username,
+        //   password: this.password
+        // })
         this.onLogin()
       } catch (err) {
         this.error = err.message
@@ -131,14 +126,14 @@ export default {
     loginAsGuest() {
       this.error = ''
       this.$kuzzle.jwt = null
-      this.$store
-        .dispatch(PREPARE_SESSION, 'anonymous')
-        .then(() => {
-          this.onLogin()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      // this.$store
+      //   .dispatch(PREPARE_SESSION, 'anonymous')
+      //   .then(() => {
+      //     this.onLogin()
+      //   })
+      //   .catch(err => {
+      //     this.error = err.message
+      //   })
     }
   }
 }

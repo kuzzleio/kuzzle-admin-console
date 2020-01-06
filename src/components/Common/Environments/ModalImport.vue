@@ -37,7 +37,6 @@
 
 <script>
 import Modal from '../../Materialize/Modal'
-import { CREATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 
 export default {
   name: 'ModalImport',
@@ -54,19 +53,19 @@ export default {
   },
   methods: {
     importEnv() {
-      for (const name in this.env) {
-        try {
-          this.$store.dispatch(CREATE_ENVIRONMENT, {
-            id: name,
-            environment: this.env[name]
-          })
-        } catch (e) {
-          this.errors.push(e)
-        }
-        if (!this.errors.length) {
-          this.close()
-        }
-      }
+      // for (const name in this.env) {
+      //   try {
+      //     this.$store.dispatch(CREATE_ENVIRONMENT, {
+      //       id: name,
+      //       environment: this.env[name]
+      //     })
+      //   } catch (e) {
+      //     this.errors.push(e)
+      //   }
+      //   if (!this.errors.length) {
+      //     this.close()
+      //   }
+      // }
     },
     upload(event) {
       var reader = new FileReader()
