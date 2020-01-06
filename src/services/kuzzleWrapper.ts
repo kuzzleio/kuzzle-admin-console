@@ -1,6 +1,7 @@
 import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
+import sortJson from 'sort-json'
 
 // ### Environment
 
@@ -151,10 +152,11 @@ export const performSearchDocuments = async (
   }
 
   const documents = result.hits.map(document => {
+    const sorted = sortJson(document)
     const object: IKuzzleDocument = {
-      content: new Content(document._source),
+      content: new Content(sorted._source),
       id: document._id,
-      meta: new Meta(document._source._kuzzle_info),
+      meta: new Meta(sorted._kuzzle_info),
       credentials: new Credentials({}),
       aggregations: new Aggregations({}),
       additionalAttribute: null
@@ -168,7 +170,7 @@ export const performSearchDocuments = async (
       object.additionalAttribute = {
         name: additionalAttributeName,
         value: getValueAdditionalAttribute(
-          document._source,
+          sorted._source,
           additionalAttributeName.split('.')
         )
       }
@@ -258,11 +260,15 @@ export const performSearchUsers = async (
     }
 
     for (const strategy of strategies) {
-      const res = await Vue.prototype.$kuzzle.security.getCredentials(
-        strategy,
-        document._id
-      )
-      object.credentials[strategy] = res
+      try {
+        const res = await Vue.prototype.$kuzzle.security.getCredentials(
+          strategy,
+          document._id
+        )
+        object.credentials[strategy] = res
+      } catch (e) {
+        object.credentials[strategy] = {}
+      }
     }
     users.push(object)
   }

@@ -176,7 +176,9 @@ export const searchFilterOperands = {
   not_match: 'Not Match',
   equal: 'Equal',
   not_equal: 'Not equal',
-  range: 'Range'
+  range: 'Range',
+  exists: 'Exists',
+  not_exists: 'Not exists'
 }
 
 export const realtimeFilterOperands = {
@@ -343,6 +345,20 @@ export const formatFromBasicSearch = (groups = [[]]) => {
           }
         }
         formattedFilter.bool.must.push(range)
+      } else if (filter.operator === 'exists') {
+        const exists = {
+          exists: {
+            field: filter.attribute
+          }
+        }
+        formattedFilter.bool.must.push(exists)
+      } else if (filter.operator === 'not_exists') {
+        const exists = {
+          exists: {
+            field: filter.attribute
+          }
+        }
+        formattedFilter.bool.must_not.push(exists)
       }
     })
 

@@ -1,17 +1,21 @@
 <template>
-  <table class="centered highlight">
+  <table class="centered highlight striped">
     <thead>
       <tr>
         <th class="actions" />
         <th>id</th>
-        <th v-for="(attr, k) in customFields" :key="k">
+        <th
+          v-for="(attr, k) in customFields"
+          :key="k"
+          class="Column-view-title"
+        >
           {{ attr
           }}<i
             class="fa fa-times-circle ListViewColumn-remove"
             @click="removeColumn(k)"
           />
         </th>
-        <th>
+        <th v-if="mappingArray.length">
           <form>
             <div class="row">
               <div class="col s12">
@@ -78,10 +82,14 @@
           class="DocumentColumnItem"
         >
           <span v-if="parseDocument(attr, doc).isObject" class="relative">
-            <a href="#" @click.prevent="toggleJsonFormatter(attr + doc.id)"
+            <a
+              href="#"
+              @click.prevent="toggleJsonFormatter(attr + doc.id)"
+              @blur="onBlur(attr + doc.id)"
               >{{ parseDocument(attr, doc).value }} ...</a
             >
             <pre
+              tabindex="1"
               :ref="attr + doc.id"
               v-json-formatter="{
                 content: parseDocument(attr, doc).realValue,
@@ -193,6 +201,9 @@ export default {
     }
   },
   methods: {
+    onBlur(id) {
+      this.$refs[id][0].style.visibility = 'hidden'
+    },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
         this.$refs[id][0].style.visibility = 'visible'
@@ -333,6 +344,12 @@ td {
   z-index: 999;
   left: 0;
   bottom: 0;
+  padding: 5px;
+  text-align: left;
+}
+
+.Column-view-title {
+  white-space: nowrap;
 }
 </style>
 
