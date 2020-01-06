@@ -19,7 +19,6 @@ import { canEditCollection } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 
 import CreateOrUpdate from './CreateOrUpdate'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'CollectionUpdate',
@@ -45,13 +44,13 @@ export default {
   },
   async mounted() {
     try {
-      await this.$store.dispatch.index.listIndexesAndCollection()
-      await this.$store.dispatch.collection.fetchCollectionDetail({
+      await this.$store.direct.dispatch.index.listIndexesAndCollections()
+      await this.$store.direct.dispatch.collection.fetchCollectionDetail({
         index: this.index,
         collection: this.$route.params.collection
       })
     } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$store.direct.commit.toaster.setToast({ text: e.message })
       this.$router.push({
         name: 'DataIndexSummary',
         params: { index: this.index }
@@ -63,7 +62,7 @@ export default {
       this.error = ''
 
       try {
-        await this.$store.dispatch.collection.updateCollection({
+        await this.$store.direct.dispatch.collection.updateCollection({
           index: this.index
         })
         this.$router.push({

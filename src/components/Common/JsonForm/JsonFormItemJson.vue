@@ -53,9 +53,13 @@ export default {
 
       if (this.parent) {
         _mapping =
-          this.$store.getters.simplifiedMapping[this.parent][this.name] || {}
+          this.$store.direct.getters.collection.simplifiedMapping[this.parent][
+            this.name
+          ] || {}
       } else {
-        _mapping = this.$store.getters.simplifiedMapping[this.name] || {}
+        _mapping =
+          this.$store.direct.getters.collection.simplifiedMapping[this.name] ||
+          {}
       }
 
       return _mapping

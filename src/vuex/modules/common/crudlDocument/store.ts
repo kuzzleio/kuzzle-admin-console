@@ -1,16 +1,20 @@
-import * as types from './mutation-types'
+import { CrudlDocumentState } from './types'
+import { createMutations, createModule } from 'direct-vuex'
 
-const state = {
-  basicFilter: null
+export const state: CrudlDocumentState = {
+  basicFilter: {}
 }
 
-export const mutations = {
-  [types.SET_BASIC_FILTER](state, value) {
+export const mutations = createMutations<CrudlDocumentState>()({
+  setBasicFilter(state, value) {
     state.basicFilter = value
   }
-}
+})
 
-export default {
+const crudlDocument = createModule({
+  namespaced: true,
   state,
   mutations
-}
+})
+
+export default crudlDocument

@@ -136,7 +136,7 @@ export default {
       }
 
       try {
-        await this.$store.dispatch.collection.clearCollection({
+        await this.$store.direct.dispatch.collection.clearCollection({
           index: this.index,
           collection: this.collection
         })

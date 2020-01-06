@@ -55,7 +55,6 @@ import Headline from '../../Materialize/Headline'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import CollectionTabs from '../Collections/Tabs'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 let room
 
@@ -156,7 +155,7 @@ export default {
         this.document = res._source
         this.$emit('document-create::fill', res._source)
       } catch (err) {
-        this.$store.commit(SET_TOAST, { text: err.message })
+        this.$store.direct.commit.toaster.setToast({ text: err.message })
       }
     },
     setError(payload) {

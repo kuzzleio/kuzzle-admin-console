@@ -8,7 +8,7 @@
 
     <main class="loader">
       <warning-header
-        v-if="!$store.getters.adminAlreadyExists"
+        v-if="!$store.direct.getters.auth.adminAlreadyExists"
         :text="warningHeaderText"
       />
       <div class="wrapper">
@@ -39,8 +39,8 @@
     >
       <h5><i class="fa fa-warning red-color" /> Can't connect to Kuzzle</h5>
       <kuzzle-disconnected
-        :host="$store.state.kuzzle.host"
-        :port="$store.state.kuzzle.port"
+        :host="$store.direct.state.kuzzle.host"
+        :port="$store.direct.state.kuzzle.port"
       />
     </modal>
   </div>

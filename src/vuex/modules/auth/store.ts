@@ -1,5 +1,5 @@
-import { createMutations, createModule } from "direct-vuex"
-import { createActions } from "direct-vuex"
+import { createMutations, createModule } from 'direct-vuex'
+import { createActions } from 'direct-vuex'
 
 import Vue from 'vue'
 
@@ -27,12 +27,12 @@ const mutations = createMutations<AuthState>()({
 })
 
 const actions = createActions({
-  async PrepareSession(context, token) {
-    const { rootDispatch, dispatch, commit } = authActionContext(context)
+  async prepareSession(context, token) {
+    const { rootDispatch, commit } = authActionContext(context)
 
     const sessionUser = new SessionUser()
     rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
-    dispatch.listIndexesAndCollection()
+    rootDispatch.index.listIndexesAndCollections()
     const user = await Vue.prototype.$kuzzle.auth.getCurrentUser()
 
     sessionUser.id = user._id
@@ -97,13 +97,13 @@ const actions = createActions({
     }
   },
   async doLogout(context) {
-    const { commit, dispatch } = authActionContext(context)
+    const { commit, dispatch, rootDispatch } = authActionContext(context)
 
     if (Vue.prototype.$kuzzle.jwt) {
       await Vue.prototype.$kuzzle.auth.logout()
     }
     Vue.prototype.$kuzzle.jwt = null
-    dispatch.updateTokenCurrentEnvironment(null)
+    rootDispatch.kuzzle.updateTokenCurrentEnvironment(null)
     commit.setCurrentUser(new SessionUser())
     commit.setTokenValid(false)
     return dispatch.checkFirstAdmin()
@@ -119,4 +119,5 @@ const auth = createModule({
 })
 
 export default auth
-export const authActionContext = (context: any) => moduleActionContext(context, auth)
+export const authActionContext = (context: any) =>
+  moduleActionContext(context, auth)

@@ -1,6 +1,6 @@
 import Login from '../components/Login.vue'
 import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue'
-import store from '../vuex/store'
+import store from '@/vuex/store'
 import { hasSecurityRights } from '../services/userAuthorization'
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
@@ -92,9 +92,9 @@ export default function createRoutes(VueRouter) {
     )
 
     if (
-      (to.name === 'CreateEnv' && store.getters.hasEnvironment) ||
-      (to.name === 'Signup' && store.getters.adminAlreadyExists) ||
-      (to.name === 'Login' && store.getters.isAuthenticated)
+      (to.name === 'CreateEnv' && store.getters.kuzzle.hasEnvironment) ||
+      (to.name === 'Signup' && store.getters.auth.adminAlreadyExists) ||
+      (to.name === 'Login' && store.getters.auth.isAuthenticated)
     ) {
       next('/')
     } else {

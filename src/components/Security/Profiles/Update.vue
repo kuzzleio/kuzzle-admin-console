@@ -22,7 +22,6 @@
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'SecurityUpdate',
@@ -47,7 +46,7 @@ export default {
       this.id = profile._id
       this.document = { policies: profile.policies }
     } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$store.direct.commit.toaster.setToast({ text: e.message })
     }
   },
   methods: {
@@ -70,7 +69,7 @@ export default {
           this.$router.push({ name: 'SecurityProfilesList' })
         }, 1000)
       } catch (e) {
-        this.$store.commit(SET_TOAST, { text: e.message })
+        this.$store.direct.commit.toaster.setToast({ text: e.message })
         this.submitted = false
       }
     },

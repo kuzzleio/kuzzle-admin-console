@@ -119,7 +119,7 @@ export default {
       }
 
       try {
-        await this.$store.dispatch.index.createIndex(index)
+        await this.$store.direct.dispatch.index.createIndex(index)
         this.index = ''
         this.error = ''
         this.close()

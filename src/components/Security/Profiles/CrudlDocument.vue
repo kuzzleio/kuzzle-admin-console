@@ -149,13 +149,11 @@
 import Pagination from '../../Materialize/Pagination'
 import Modal from '../../Materialize/Modal'
 import Filters from './Filters'
-import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
 import {
   formatFromBasicSearch,
   ACTIVE_BASIC,
   NO_ACTIVE
 } from '../../../services/filterManager'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'CrudlDocument',
@@ -231,7 +229,7 @@ export default {
           return null
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
+          this.$store.direct.commit.toaster.setToast({ text: e.message })
         })
     },
     confirmSingleDelete(id) {
@@ -242,7 +240,7 @@ export default {
           return null
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
+          this.$store.direct.commit.toaster.setToast({ text: e.message })
         })
     },
     onFiltersUpdated(newFilters) {
@@ -261,7 +259,7 @@ export default {
       this.$emit('toggle-all')
     },
     setBasicFilter(value) {
-      this.$store.commit(SET_BASIC_FILTER, value)
+      this.$store.direct.commit.crudlDocument.setBasicFilter(value)
     },
     deleteBulk() {
       this.bulkDeleteIsOpen = true

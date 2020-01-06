@@ -39,13 +39,13 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit.collection.resetCollectionDetail()
+    this.$store.direct.commit.collection.resetCollectionDetail()
   },
   methods: {
     create() {
       this.error = ''
 
-      this.$store.dispatch.collection
+      this.$store.direct.dispatch.index
         .createCollectionInIndex({
           index: this.index,
           collection: this.$store.state.collection.name,

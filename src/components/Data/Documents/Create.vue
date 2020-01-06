@@ -96,7 +96,7 @@ export default {
           id,
           { refresh: 'wait_for' }
         )
-        await this.$store.dispatch.collection.fetchCollectionDetail({
+        await this.$store.direct.dispatch.collection.fetchCollectionDetail({
           index: this.index,
           collection: this.collection
         })

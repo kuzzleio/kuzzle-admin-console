@@ -25,11 +25,11 @@
         </div>
         <div v-else class="App-connected">
           <div
-            v-if="!$store.direct.getters.kuzzle.isAuthenticated"
+            v-if="!$store.direct.getters.auth.isAuthenticated"
             class="App-loggedOut"
           >
             <div
-              v-if="!$store.direct.getters.kuzzle.adminAlreadyExists"
+              v-if="!$store.direct.getters.auth.adminAlreadyExists"
               class="App-noAdmin"
             >
               <sign-up
@@ -87,7 +87,7 @@ import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
 import Toaster from './components/Materialize/Toaster.vue'
-import { SET_TOAST } from './vuex/modules/common/toaster/mutation-types'
+
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
 window.jQuery = window.$ = require('jquery')
@@ -143,7 +143,7 @@ export default {
     })
     this.$kuzzle.on('discarded', function(data) {
       if (this.$store) {
-        this.$store.commit(SET_TOAST, { text: data.message })
+        this.$store.direct.commit.toaster.setToast({ text: data.message })
       }
     })
   },

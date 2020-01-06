@@ -164,7 +164,7 @@ export default {
       return value
     },
     removeRealtimeCollection(indexName, collectionName) {
-      this.$store.dispatch.index.removeRealtimeCollection({
+      this.$store.direct.dispatch.index.removeRealtimeCollection({
         index: indexName,
         collection: collectionName
       })

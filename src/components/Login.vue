@@ -51,7 +51,6 @@
 <script>
 import LoginForm from './Common/Login/Form'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
-import * as types from '../vuex/modules/common/routing/mutation-types'
 
 export default {
   name: 'Login',
@@ -78,7 +77,7 @@ export default {
         this.$router.push({ name: 'Home' }).catch(() => {})
       }
 
-      this.$store.commit(types.SET_ROUTE_BEFORE_REDIRECT, null)
+      this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
     },
     editEnvironment(id) {
       this.$emit('environment::create', id)

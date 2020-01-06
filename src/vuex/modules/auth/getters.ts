@@ -1,6 +1,6 @@
-import { AuthState } from './types';
-import { SessionUser } from '@/models/SessionUser';
-import { createGetters } from "direct-vuex"
+import { AuthState } from './types'
+import { SessionUser } from '@/models/SessionUser'
+import { createGetters } from 'direct-vuex'
 
 export const getters = createGetters<AuthState>()({
   isAuthenticated(state): boolean {

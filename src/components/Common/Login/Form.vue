@@ -114,10 +114,10 @@ export default {
     async login() {
       this.error = ''
       try {
-        // await this.$store.dispatch(DO_LOGIN, {
-        //   username: this.username,
-        //   password: this.password
-        // })
+        await this.$store.direct.dispatch.auth.doLogin({
+          username: this.username,
+          password: this.password
+        })
         this.onLogin()
       } catch (err) {
         this.error = err.message
@@ -126,14 +126,14 @@ export default {
     loginAsGuest() {
       this.error = ''
       this.$kuzzle.jwt = null
-      // this.$store
-      //   .dispatch(PREPARE_SESSION, 'anonymous')
-      //   .then(() => {
-      //     this.onLogin()
-      //   })
-      //   .catch(err => {
-      //     this.error = err.message
-      //   })
+      this.$store.direct.dispatch.auth
+        .prepareSession('anonymous')
+        .then(() => {
+          this.onLogin()
+        })
+        .catch(err => {
+          this.error = err.message
+        })
     }
   }
 }

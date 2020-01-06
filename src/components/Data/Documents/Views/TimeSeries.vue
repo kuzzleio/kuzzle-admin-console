@@ -253,7 +253,9 @@ export default {
       let attributes = []
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (attributeValue.hasOwnProperty('properties')) {
+        if (
+          Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
+        ) {
           attributes = attributes.concat(
             this.buildAttributeList(
               attributeValue.properties,
@@ -262,7 +264,7 @@ export default {
             )
           )
         } else if (
-          attributeValue.hasOwnProperty('type') &&
+          Object.prototype.hasOwnProperty.call(attributeValue, 'type') &&
           condition(attributeValue.type)
         ) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))

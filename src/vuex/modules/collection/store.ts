@@ -2,8 +2,13 @@ import Promise from 'bluebird'
 import { mergeMetaAttributes } from '../../../services/collectionHelper'
 import Vue from 'vue'
 import { formatSchema } from '../../../services/collectionHelper'
-import { CollectionState } from './types'
-import { createModule, createMutations, createActions } from 'direct-vuex'
+import { CollectionState, CollectionActions } from './types'
+import {
+  createModule,
+  createMutations,
+  createActions,
+  ActionImpl
+} from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
 
@@ -48,6 +53,9 @@ export const mutations = createMutations<CollectionState>()({
   },
   setCollectionDefaultView(state, { jsonView }) {
     state.defaultViewJson = jsonView
+  },
+  setCollectionDefaultViewJson(state, json) {
+    state.defaultViewJson = json
   }
 })
 
@@ -85,14 +93,17 @@ const actions = createActions({
     })
   },
   async fetchCollectionDetail(context, { index, collection }) {
-    const { commit, dispatch, getters } = collectionActionContext(context)
+    const { commit, dispatch, rootGetters } = collectionActionContext(context)
 
     if (!collection) {
       commit.resetCollectionDetail()
       return
     }
 
-    if (getters.indexCollections(index).stored.indexOf(collection) !== -1) {
+    if (
+      rootGetters.index.indexCollections(index).stored.indexOf(collection) !==
+      -1
+    ) {
       let mappings = await Vue.prototype.$kuzzle.collection.getMapping(
         index,
         collection
@@ -119,7 +130,10 @@ const actions = createActions({
       })
     }
 
-    if (getters.indexCollections(index).realtime.indexOf(collection) !== -1) {
+    if (
+      rootGetters.index.indexCollections(index).realtime.indexOf(collection) !==
+      -1
+    ) {
       commit.receiveCollectionDetail({
         name: collection,
         mapping: {},

@@ -97,7 +97,7 @@ export default {
     canSubscribe,
     canTruncateCollection,
     removeRealtimeCollection() {
-      this.$store.dispatch.collection.removeRealtimeCollection({
+      this.$store.direct.dispatch.collection.removeRealtimeCollection({
         index: this.index,
         collection: this.collection
       })

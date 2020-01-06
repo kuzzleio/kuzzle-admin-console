@@ -6,3 +6,7 @@ export interface CollectionState {
   allowForm: boolean,
   defaultViewJson: boolean
 }
+
+export interface CollectionActions {
+  createCollection: Function
+}

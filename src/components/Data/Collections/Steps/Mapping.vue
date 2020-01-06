@@ -129,23 +129,25 @@ export default {
   },
   computed: {
     collectionIsRealtimeOnly() {
-      return this.$store.getters.isRealtimeOnly
+      return this.$store.direct.getters.collection.isRealtimeOnly
     }
   },
   watch: {
     step() {
       let mapping = this.$refs.jsoneditor.getJson()
       if (mapping) {
-        this.$store.commit.collection.setMapping(mapping)
+        this.$store.direct.commit.collection.setMapping(mapping)
       }
     }
   },
   methods: {
     setName(e) {
-      this.$store.commit.collection.setCollectionName(e.target.value.trim())
+      this.$store.direct.commit.collection.setCollectionName(
+        e.target.value.trim()
+      )
     },
     next() {
-      if (!this.$store.state.collection.name) {
+      if (!this.$store.direct.state.collection.name) {
         return this.$emit('collection-create::error', 'Invalid collection name')
       }
       if (this.collectionIsRealtimeOnly) {
@@ -158,7 +160,7 @@ export default {
       this.$emit('cancel')
     },
     setRealtimeOnly(event) {
-      this.$store.commit.collection.setRealtimeOnly(event.target.checked)
+      this.$store.direct.commit.collection.setRealtimeOnly(event.target.checked)
     }
   }
 }

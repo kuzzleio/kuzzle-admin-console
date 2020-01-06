@@ -161,7 +161,9 @@ const actions = createActions({
     return dispatch.switchEnvironment(lastConnectedEnv)
   },
   async switchEnvironment(context, id) {
-    const { rootDispatch, commit, dispatch, state } = kuzzleActionContext(context)
+    const { rootDispatch, commit, dispatch, state } = kuzzleActionContext(
+      context
+    )
     if (!id) {
       throw new Error('No id provided')
     }

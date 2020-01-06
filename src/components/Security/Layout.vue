@@ -84,7 +84,6 @@ aside {
 </style>
 
 <script>
-import * as types from '../../vuex/modules/security/mutation-types'
 import {
   canManageUsers,
   canManageRoles,
@@ -111,13 +110,13 @@ export default {
       }
       switch (v.meta.section) {
         case 'users':
-          this.$store.dispatch(types.FETCH_USER_MAPPING)
+          this.$store.direct.dispatch.security.fetchUserMapping()
           break
         case 'profiles':
-          this.$store.dispatch(types.FETCH_PROFILE_MAPPING)
+          this.$store.direct.dispatch.security.fetchProfileMapping()
           break
         case 'roles':
-          this.$store.dispatch(types.FETCH_ROLE_MAPPING)
+          this.$store.direct.dispatch.security.fetchRoleMapping()
           break
       }
     }

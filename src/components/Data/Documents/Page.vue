@@ -282,7 +282,6 @@ import {
   performDeleteDocuments,
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -498,7 +497,7 @@ export default {
         this.fetchDocuments()
         this.deleteModalIsLoading = false
       } catch (e) {
-        this.$store.commit(SET_TOAST, { text: e.message })
+        this.$store.direct.commit.toaster.setToast({ text: e.message })
         this.$log.error(e)
       }
     },
@@ -533,7 +532,7 @@ export default {
         )
         await this.fetchDocuments()
       } catch (e) {
-        this.$store.commit(SET_TOAST, {
+        this.$store.direct.commit.toaster.setToast({
           text: 'An error occurred while updating filters: <br />' + e.message
         })
         this.$log.error(e)
@@ -570,7 +569,7 @@ export default {
         this.documents = res.documents
         this.totalDocuments = res.total
       } catch (e) {
-        this.$store.commit(SET_TOAST, {
+        this.$store.direct.commit.toaster.setToast({
           text: 'An error occurred while performing search: <br />' + e.message
         })
         this.$log.error(e)

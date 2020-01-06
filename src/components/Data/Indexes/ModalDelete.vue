@@ -130,7 +130,7 @@ export default {
         return
       }
 
-      this.$store.dispatch.index
+      this.$store.direct.dispatch.index
         .deleteIndex(index)
         .then(() => {
           this.indexConfirmation = ''

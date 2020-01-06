@@ -1,16 +1,22 @@
-import { SET_ROUTE_BEFORE_REDIRECT } from './mutation-types'
+import { RoutingState } from './types'
+import { createMutations, createModule } from 'direct-vuex'
+import { getters } from './getters'
 
-const state = {
-  routeBeforeRedirect: null
+const state: RoutingState = {
+  routeBeforeRedirect: undefined
 }
 
-export const mutations = {
-  [SET_ROUTE_BEFORE_REDIRECT](state, value) {
+export const mutations = createMutations<RoutingState>()({
+  setRouteBeforeRedirect(state, value) {
     state.routeBeforeRedirect = value
   }
-}
+})
 
-export default {
+const routing = createModule({
+  namespaced: true,
   state,
-  mutations
-}
+  mutations,
+  getters
+})
+
+export default routing

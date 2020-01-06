@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import { SET_TOAST } from '../../../../vuex/modules/common/toaster/mutation-types'
 import { getMappingUsers } from '../../../../services/kuzzleWrapper'
 import Basic from './Basic'
 import CredentialsSelector from './CredentialsSelector'
@@ -114,7 +113,7 @@ export default {
       this.loading = false
       this.updateUser()
     } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$store.direct.commit.toaster.setToast({ text: e.message })
     }
   },
   methods: {

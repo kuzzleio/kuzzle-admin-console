@@ -10,8 +10,8 @@ Vue.use(VueRouter)
 Vue.use(VueKuzzle)
 
 store.dispatch.kuzzle.loadEnvironments(null)
-store
-  .dispatch.kuzzle.switchLastEnvironment(null)
+store.dispatch.kuzzle
+  .switchLastEnvironment(null)
   .then(() => {
     let router = require('./services/router').default
 

@@ -187,8 +187,8 @@ export default {
             }
           }
         })
-        this.$store.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
-        this.$store.commit.auth.setAdminExits(true)
+        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
+        this.$store.direct.commit.auth.setAdminExits(true)
         this.$router.push({ name: 'Login' }).catch(() => {})
       } catch (err) {
         this.$router.push({ name: 'Login' }).catch(() => {})
@@ -196,10 +196,10 @@ export default {
     },
     loginAsGuest() {
       this.error = ''
-      this.$store.dispatch.auth
+      this.$store.direct.dispatch.auth
         .prepareSession('anonymous')
         .then(() => {
-          this.$router.push({ name: 'Data' }).catch(() => {})
+          this.$router.go({ name: 'Data' })
         })
         .catch(err => {
           this.error = err.message

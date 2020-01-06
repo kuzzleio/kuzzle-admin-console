@@ -27,9 +27,12 @@ export const getters = createGetters<KuzzleState>()({
     if (!state.environments[getters.currentEnvironmentId]) {
       return null
     }
-  
+
     return /^2/.test(
       state.environments[getters.currentEnvironmentId].storageEngineVersion
     )
+  },
+  environments(state) {
+    return state.environments
   }
 })

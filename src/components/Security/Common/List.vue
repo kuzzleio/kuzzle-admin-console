@@ -65,7 +65,6 @@ import RoleItem from '../Roles/RoleItem'
 import ProfileItem from '../Profiles/ProfileItem'
 import DocumentItem from '../../Data/Documents/DocumentItem'
 import { availableFilters } from '../../../services/filterManager'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'SecurityCommonList',
@@ -183,7 +182,7 @@ export default {
           this.totalDocuments = res.total
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, {
+          this.$store.direct.commit.toaster.setToast({
             text:
               'An error occurred while performing search: <br />' + e.message
           })
