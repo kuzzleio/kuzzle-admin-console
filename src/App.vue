@@ -131,7 +131,7 @@ export default {
       }
     })
     this.$kuzzle.on('networkError', error => {
-      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error)
+      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
     })
     this.$kuzzle.on('connected', () => {
       this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
