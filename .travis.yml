@@ -105,12 +105,14 @@ jobs:
         - pip install awscli --upgrade --user
 
       script:
-        - npm install
-        - npm run build
+        - npm ci
+        - $(npm build)/vue-cli-service build --dest dist/kuzzle-v2
 
       deploy:
         provider: script
-        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/kuzzle-v2 --delete
+        script: 
+          - ~/.local/bin/aws s3 delete-object --bucket $AWS_S3_BUCKET_DEV --key kuzzle-v2
+          - ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/
         skip_cleanup: true
         on:
           all_branches: true
