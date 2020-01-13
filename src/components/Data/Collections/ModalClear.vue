@@ -96,7 +96,6 @@ button {
 </style>
 
 <script>
-import { CLEAR_COLLECTION } from '../../../vuex/modules/collection/mutation-types'
 import Modal from '../../Materialize/Modal'
 import Focus from '../../../directives/focus.directive'
 import Title from '../../../directives/title.directive'
@@ -137,7 +136,7 @@ export default {
       }
 
       try {
-        await this.$store.dispatch(CLEAR_COLLECTION, {
+        await this.$store.direct.dispatch.collection.clearCollection({
           index: this.index,
           collection: this.collection
         })

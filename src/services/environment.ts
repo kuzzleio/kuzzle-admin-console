@@ -1,13 +1,11 @@
 import store from '../vuex/store'
-import * as authTypes from '../vuex/modules/auth/mutation-types'
-import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 
 export const DEFAULT_COLOR = '#002835'
 
 export const deleteEnvironment = id => {
-  if (store.getters.currentEnvironmentId === id) {
-    store.dispatch(authTypes.DO_LOGOUT)
+  if (store.getters.kuzzle.currentEnvironmentId === id) {
+    store.dispatch.auth.doLogout(store)
   }
 
-  store.dispatch(kuzzleTypes.DELETE_ENVIRONMENT, id)
+  store.dispatch.kuzzle.deleteEnvironment(id)
 }

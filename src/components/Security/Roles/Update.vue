@@ -23,7 +23,6 @@ import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Notice from '../Common/Notice'
 import { getMappingRoles } from '../../../services/kuzzleWrapper'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'RolesUpdate',
@@ -46,7 +45,7 @@ export default {
       this.id = role._id
       this.document = { controllers: role.controllers }
     } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$store.direct.commit.toaster.setToast({ text: e.message })
     }
   },
   methods: {
@@ -71,7 +70,7 @@ export default {
           this.$router.push({ name: 'SecurityRolesList' })
         }, 1000)
       } catch (e) {
-        this.$store.commit(SET_TOAST, { text: e.message })
+        this.$store.direct.commit.toaster.setToast({ text: e.message })
         this.submitted = false
       }
     },

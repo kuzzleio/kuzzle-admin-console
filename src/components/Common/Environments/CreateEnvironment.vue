@@ -130,10 +130,6 @@ import WarningHeader from '../WarningHeader'
 
 import Focus from '../../../directives/focus.directive'
 import { DEFAULT_COLOR } from '../../../services/environment'
-import {
-  UPDATE_ENVIRONMENT,
-  CREATE_ENVIRONMENT
-} from '../../../vuex/modules/common/kuzzle/mutation-types'
 
 const useHttps = window.location.protocol === 'https:'
 
@@ -175,7 +171,7 @@ export default {
   },
   computed: {
     environments() {
-      return this.$store.state.kuzzle.environments
+      return this.$store.direct.state.kuzzle.environments
     },
     useHttps() {
       return useHttps
@@ -185,16 +181,18 @@ export default {
     if (this.environmentId) {
       const env = {}
 
-      env[this.$store.getters.currentEnvironment.name] = Object.assign(
+      env[
+        this.$store.direct.getters.kuzzle.currentEnvironment.name
+      ] = Object.assign(
         {},
-        this.$store.getters.currentEnvironment
+        this.$store.direct.getters.kuzzle.currentEnvironment
       )
 
-      delete env[this.$store.getters.currentEnvironment.name].token
+      delete env[this.$store.direct.getters.currentEnvironment.name].token
       const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
 
       this.$refs.export.href = URL.createObjectURL(blob)
-      this.$refs.export.download = `${this.$store.getters.currentEnvironment.name}.json`
+      this.$refs.export.download = `${this.$store.direct.getters.currentEnvironment.name}.json`
     }
   },
   created() {
@@ -225,7 +223,7 @@ export default {
 
       if (!this.environmentId || this.environmentId !== _name) {
         this.errors.environmentAlreadyExists =
-          this.$store.state.kuzzle.environments[_name] !== undefined
+          this.$store.direct.state.kuzzle.environments[_name] !== undefined
       } else {
         this.errors.environmentAlreadyExists = false
       }
@@ -239,7 +237,7 @@ export default {
       }
 
       if (this.environmentId) {
-        return this.$store.dispatch(UPDATE_ENVIRONMENT, {
+        return this.$store.direct.dispatch.kuzzle.updateEnvironment({
           id: this.environmentId,
           environment: {
             name: _name,
@@ -250,7 +248,7 @@ export default {
           }
         })
       } else {
-        return this.$store.dispatch(CREATE_ENVIRONMENT, {
+        return this.$store.direct.dispatch.kuzzle.createEnvironment({
           id: _name,
           environment: {
             name: _name,

@@ -17,5 +17,6 @@
       "fileMatch": ["cypress.json"],
       "url": "https://on.cypress.io/cypress.schema.json"
     }
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

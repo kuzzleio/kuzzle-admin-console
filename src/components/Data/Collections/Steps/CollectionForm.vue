@@ -111,10 +111,6 @@
 
 <script>
 import title from '../../../../directives/title.directive'
-import {
-  SET_SCHEMA,
-  SET_ALLOW_FORM
-} from '../../../../vuex/modules/collection/mutation-types'
 import CollectionFormLine from './CollectionFormLine'
 
 export default {
@@ -137,10 +133,10 @@ export default {
   },
   computed: {
     flattenMapping() {
-      return this.$store.getters.flattenMapping
+      return this.$store.direct.getters.collection.flattenMapping
     },
     flattenSchemaWithType() {
-      return this.$store.getters.flattenSchemaWithType
+      return this.$store.direct.getters.collection.flattenSchemaWithType
     }
   },
   watch: {
@@ -154,23 +150,23 @@ export default {
     },
     flattenMapping(newMapping) {
       if (Object.keys(newMapping).length === 0) {
-        this.$store.commit(SET_ALLOW_FORM, false)
+        this.$store.direct.commit.collection.setAllowForm(false)
       }
     }
   },
   methods: {
     next() {
-      this.$store.commit(SET_SCHEMA, this.schema)
+      this.$store.direct.commit.collection.setSchema(this.schema)
       this.$emit('collection-create::create')
     },
     cancel() {
       this.$emit('cancel')
     },
     changeAllowForm(e) {
-      this.$store.commit(SET_ALLOW_FORM, e.target.checked)
+      this.$store.direct.commit.collection.setAllowForm(e.target.checked)
     },
     changeSchema(event) {
-      this.$store.commit(SET_SCHEMA, {
+      this.$store.direct.commit.collection.setSchema({
         ...this.schema,
         [event.name]: event.element
       })

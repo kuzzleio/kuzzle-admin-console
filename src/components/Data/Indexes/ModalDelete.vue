@@ -95,7 +95,6 @@ button {
 </style>
 
 <script>
-import { DELETE_INDEX } from '../../../vuex/modules/index/mutation-types'
 import Modal from '../../Materialize/Modal'
 import Focus from '../../../directives/focus.directive'
 import Title from '../../../directives/title.directive'
@@ -131,8 +130,8 @@ export default {
         return
       }
 
-      this.$store
-        .dispatch(DELETE_INDEX, index)
+      this.$store.direct.dispatch.index
+        .deleteIndex(index)
         .then(() => {
           this.indexConfirmation = ''
           this.error = ''

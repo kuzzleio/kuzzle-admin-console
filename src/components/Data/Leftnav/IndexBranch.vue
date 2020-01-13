@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import { REMOVE_REALTIME_COLLECTION } from '../../../vuex/modules/index/mutation-types'
-
 export default {
   props: {
     forceOpen: {
@@ -166,7 +164,7 @@ export default {
       return value
     },
     removeRealtimeCollection(indexName, collectionName) {
-      this.$store.dispatch(REMOVE_REALTIME_COLLECTION, {
+      this.$store.direct.dispatch.index.removeRealtimeCollection({
         index: indexName,
         collection: collectionName
       })

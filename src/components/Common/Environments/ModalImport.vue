@@ -37,7 +37,6 @@
 
 <script>
 import Modal from '../../Materialize/Modal'
-import { CREATE_ENVIRONMENT } from '../../../vuex/modules/common/kuzzle/mutation-types'
 
 export default {
   name: 'ModalImport',
@@ -56,7 +55,7 @@ export default {
     importEnv() {
       for (const name in this.env) {
         try {
-          this.$store.dispatch(CREATE_ENVIRONMENT, {
+          this.$store.direct.dispatch.kuzzle.createEnvurinlent({
             id: name,
             environment: this.env[name]
           })

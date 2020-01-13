@@ -19,12 +19,6 @@ import { canEditCollection } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 
 import CreateOrUpdate from './CreateOrUpdate'
-import {
-  FETCH_COLLECTION_DETAIL,
-  UPDATE_COLLECTION
-} from '../../../vuex/modules/collection/mutation-types'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
-import { LIST_INDEXES_AND_COLLECTION } from '../../../vuex/modules/index/mutation-types'
 
 export default {
   name: 'CollectionUpdate',
@@ -50,13 +44,13 @@ export default {
   },
   async mounted() {
     try {
-      await this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
-      await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+      await this.$store.direct.dispatch.index.listIndexesAndCollections()
+      await this.$store.direct.dispatch.collection.fetchCollectionDetail({
         index: this.index,
         collection: this.$route.params.collection
       })
     } catch (e) {
-      this.$store.commit(SET_TOAST, { text: e.message })
+      this.$store.direct.commit.toaster.setToast({ text: e.message })
       this.$router.push({
         name: 'DataIndexSummary',
         params: { index: this.index }
@@ -68,7 +62,9 @@ export default {
       this.error = ''
 
       try {
-        await this.$store.dispatch(UPDATE_COLLECTION, { index: this.index })
+        await this.$store.direct.dispatch.collection.updateCollection({
+          index: this.index
+        })
         this.$router.push({
           name: 'DataIndexSummary',
           params: { index: this.index }

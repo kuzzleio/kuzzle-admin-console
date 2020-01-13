@@ -67,7 +67,6 @@
 
 <script>
 import { hasSecurityRights } from '../../services/userAuthorization'
-import { DO_LOGOUT } from '../../vuex/modules/auth/mutation-types'
 import { DEFAULT_COLOR } from '../../services/environment'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
@@ -78,11 +77,11 @@ export default {
   },
   computed: {
     currentEnvironmentColor() {
-      if (!this.$store.getters.currentEnvironment) {
+      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
         return DEFAULT_COLOR
       }
 
-      return this.$store.getters.currentEnvironment.color
+      return this.$store.direct.getters.kuzzle.currentEnvironment.color
     },
 
     versionColor() {
@@ -90,14 +89,14 @@ export default {
     },
 
     currentUserName() {
-      if (this.$store.state.auth.user) {
+      if (this.$store.direct.state.auth.user) {
         if (
-          this.$store.state.auth.user.params &&
-          this.$store.state.auth.user.params.name
+          this.$store.direct.state.auth.user.params &&
+          this.$store.direct.state.auth.user.params.name
         ) {
-          return this.$store.state.auth.user.params.name
+          return this.$store.direct.state.auth.user.params.name
         }
-        return this.$store.state.auth.user.id
+        return this.$store.direct.state.auth.user.id
       }
       return ''
     },
@@ -109,7 +108,7 @@ export default {
 
   methods: {
     doLogout() {
-      return this.$store.dispatch(DO_LOGOUT).then(() => {
+      return this.$store.direct.dispatch.auth.doLogout().then(() => {
         this.$router.push({ name: 'Login' })
       })
     },

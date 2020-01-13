@@ -8,7 +8,7 @@
 
     <main class="loader">
       <warning-header
-        v-if="!$store.getters.adminAlreadyExists"
+        v-if="!$store.direct.getters.auth.adminAlreadyExists"
         :text="warningHeaderText"
       />
       <div class="wrapper">
@@ -39,8 +39,8 @@
     >
       <h5><i class="fa fa-warning red-color" /> Can't connect to Kuzzle</h5>
       <kuzzle-disconnected
-        :host="$store.state.kuzzle.host"
-        :port="$store.state.kuzzle.port"
+        :host="$store.direct.state.kuzzle.host"
+        :port="$store.direct.state.kuzzle.port"
       />
     </modal>
   </div>
@@ -52,7 +52,6 @@ import WarningHeader from './Common/WarningHeader'
 import LoginForm from './Common/Login/Form'
 import Modal from './Materialize/Modal'
 import KuzzleDisconnected from './Error/KuzzleDisconnected'
-import * as types from '../vuex/modules/auth/mutation-types'
 
 export default {
   name: 'Home',
@@ -73,12 +72,12 @@ export default {
     }
   },
   watch: {
-    '$store.state.auth.tokenValid'(valid) {
+    '$store.direct.state.auth.tokenValid'(valid) {
       if (!valid) {
         this.tokenExpiredIsOpen = true
       }
     },
-    '$store.state.kuzzle.connectedTo'(isConnected) {
+    '$store.direct.state.kuzzle.connectedTo'(isConnected) {
       if (!isConnected) {
         this.kuzzleDisconnectedIsOpen = true
         return
@@ -104,7 +103,7 @@ export default {
       this.$emit('environment::importEnv')
     },
     onTokenExpired() {
-      this.$store.commit(types.SET_TOKEN_VALID, false)
+      this.$store.direct.commit.auth.setTokenValid(false)
     },
     noop() {}
   }

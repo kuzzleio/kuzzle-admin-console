@@ -178,7 +178,6 @@ import CollectionDropdown from '../Collections/Dropdown'
 import Filters from '../../Common/Filters/Filters'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 import Vue from 'vue'
 
@@ -417,7 +416,7 @@ export default {
       } catch (err) {
         this.room = null
         this.subscribed = false
-        this.$store.commit(SET_TOAST, { text: err.message })
+        this.$store.direct.commit.toaster.setToast({ text: err.message })
       }
     },
     async unsubscribe(room) {

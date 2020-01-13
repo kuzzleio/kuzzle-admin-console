@@ -1,5 +1,5 @@
 import { isKuzzleActionAllowed } from '../services/kuzzleWrapper'
-import store from '../vuex/modules/auth/store'
+import { state } from '@/vuex/modules/auth/store'
 
 function isActionAllowed(
   sessionUser,
@@ -22,7 +22,7 @@ function isActionAllowed(
 // Index CRUDL
 
 export const canSearchIndex = () => {
-  const indexListRight = store.state.user.rights.filter(
+  const indexListRight = state.user.rights.filter(
     rights =>
       (rights.action === 'list' || rights.action === '*') &&
       (rights.controller === 'index' || rights.controller === '*')
@@ -31,23 +31,23 @@ export const canSearchIndex = () => {
   return indexListRight[0] && indexListRight[0].value === 'allowed'
 }
 export const canCreateIndex = () => {
-  return isActionAllowed(store.state.user, 'index', 'create')
+  return isActionAllowed(state.user, 'index', 'create')
 }
 export const canDeleteIndex = index => {
-  return isActionAllowed(store.state.user, 'index', 'delete', index)
+  return isActionAllowed(state.user, 'index', 'delete', index)
 }
 
 // Collection CRUDL
 
 export const canSearchCollection = index => {
-  return isActionAllowed(store.state.user, 'collection', 'list', index)
+  return isActionAllowed(state.user, 'collection', 'list', index)
 }
 export const canCreateCollection = index => {
-  return isActionAllowed(store.state.user, 'collection', 'create', index)
+  return isActionAllowed(state.user, 'collection', 'create', index)
 }
 export const canEditCollection = (index, collection) => {
   return isActionAllowed(
-    store.state.user,
+    state.user,
     'collection',
     'updateMapping',
     index,
@@ -56,7 +56,7 @@ export const canEditCollection = (index, collection) => {
 }
 export const canTruncateCollection = (index, collection) => {
   return isActionAllowed(
-    store.state.user,
+    state.user,
     'collection',
     'truncate',
     index,
@@ -67,29 +67,17 @@ export const canTruncateCollection = (index, collection) => {
 // Documents CRUDL
 
 export const canReadDocument = (index, collection) => {
-  return isActionAllowed(store.state.user, 'document', 'get', index, collection)
+  return isActionAllowed(state.user, 'document', 'get', index, collection)
 }
 export const canSearchDocument = (index, collection) => {
-  return isActionAllowed(
-    store.state.user,
-    'document',
-    'search',
-    index,
-    collection
-  )
+  return isActionAllowed(state.user, 'document', 'search', index, collection)
 }
 export const canCreateDocument = (index, collection) => {
-  return isActionAllowed(
-    store.state.user,
-    'document',
-    'create',
-    index,
-    collection
-  )
+  return isActionAllowed(state.user, 'document', 'create', index, collection)
 }
 export const canEditDocument = (index, collection) => {
   return isActionAllowed(
-    store.state.user,
+    state.user,
     'document',
     'createOrReplace',
     index,
@@ -97,97 +85,73 @@ export const canEditDocument = (index, collection) => {
   )
 }
 export const canDeleteDocument = (index, collection) => {
-  return isActionAllowed(
-    store.state.user,
-    'document',
-    'delete',
-    index,
-    collection
-  )
+  return isActionAllowed(state.user, 'document', 'delete', index, collection)
 }
 
 // Realtime
 
 export const canSubscribe = (index, collection) => {
   return (
-    isActionAllowed(
-      store.state.user,
-      'realtime',
-      'subscribe',
-      index,
-      collection
-    ) &&
-    isActionAllowed(
-      store.state.user,
-      'realtime',
-      'unsubscribe',
-      index,
-      collection
-    )
+    isActionAllowed(state.user, 'realtime', 'subscribe', index, collection) &&
+    isActionAllowed(state.user, 'realtime', 'unsubscribe', index, collection)
   )
 }
 export const canPublish = (index, collection) => {
-  return isActionAllowed(
-    store.state.user,
-    'realtime',
-    'publish',
-    index,
-    collection
-  )
+  return isActionAllowed(state.user, 'realtime', 'publish', index, collection)
 }
 
 // Security roles CRUDL
 
 export const canReadRole = () => {
-  return isActionAllowed(store.state.user, 'security', 'getRole')
+  return isActionAllowed(state.user, 'security', 'getRole')
 }
 export const canSearchRole = () => {
-  return isActionAllowed(store.state.user, 'security', 'searchRoles')
+  return isActionAllowed(state.user, 'security', 'searchRoles')
 }
 export const canEditRole = () => {
-  return isActionAllowed(store.state.user, 'security', 'createOrReplaceRole')
+  return isActionAllowed(state.user, 'security', 'createOrReplaceRole')
 }
 export const canCreateRole = () => {
-  return isActionAllowed(store.state.user, 'security', 'createRole')
+  return isActionAllowed(state.user, 'security', 'createRole')
 }
 export const canDeleteRole = () => {
-  return isActionAllowed(store.state.user, 'security', 'deleteRole')
+  return isActionAllowed(state.user, 'security', 'deleteRole')
 }
 
 // Security profiles CRUDL
 
 export const canReadProfile = () => {
-  return isActionAllowed(store.state.user, 'security', 'getProfile')
+  return isActionAllowed(state.user, 'security', 'getProfile')
 }
 export const canSearchProfile = () => {
-  return isActionAllowed(store.state.user, 'security', 'searchProfiles')
+  return isActionAllowed(state.user, 'security', 'searchProfiles')
 }
 export const canEditProfile = () => {
-  return isActionAllowed(store.state.user, 'security', 'createOrReplaceProfile')
+  return isActionAllowed(state.user, 'security', 'createOrReplaceProfile')
 }
 export const canCreateProfile = () => {
-  return isActionAllowed(store.state.user, 'security', 'createProfile')
+  return isActionAllowed(state.user, 'security', 'createProfile')
 }
 export const canDeleteProfile = () => {
-  return isActionAllowed(store.state.user, 'security', 'deleteProfile')
+  return isActionAllowed(state.user, 'security', 'deleteProfile')
 }
 
 // Security users CRUDL
 
 export const canReadUser = () => {
-  return isActionAllowed(store.state.user, 'security', 'getUser')
+  return isActionAllowed(state.user, 'security', 'getUser')
 }
 export const canSearchUser = () => {
-  return isActionAllowed(store.state.user, 'security', 'searchUsers')
+  return isActionAllowed(state.user, 'security', 'searchUsers')
 }
 export const canEditUser = () => {
-  return isActionAllowed(store.state.user, 'security', 'createOrReplaceUser')
+  return isActionAllowed(state.user, 'security', 'createOrReplaceUser')
 }
 export const canCreateUser = () => {
-  return isActionAllowed(store.state.user, 'security', 'createUser')
+  return isActionAllowed(state.user, 'security', 'createUser')
 }
 export const canDeleteUser = () => {
-  return isActionAllowed(store.state.user, 'security', 'deleteUser')
+  return isActionAllowed(state.user, 'security', 'deleteUser')
 }
 
 // Security access

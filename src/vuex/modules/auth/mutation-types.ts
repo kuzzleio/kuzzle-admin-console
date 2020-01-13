@@ -1,8 +1,0 @@
-export const SET_CURRENT_USER = 'SET_CURRENT_USER'
-export const SET_TOKEN_VALID = 'SET_TOKEN_VALID'
-export const SET_ADMIN_EXISTS = 'SET_ADMIN_EXISTS'
-export const DO_LOGIN = 'action/DO_LOGIN'
-export const PREPARE_SESSION = 'action/PREPARE_SESSION'
-export const LOGIN_BY_TOKEN = 'action/LOGIN_BY_TOKEN'
-export const CHECK_FIRST_ADMIN = 'action/CHECK_FIRST_ADMIN'
-export const DO_LOGOUT = 'action/DO_LOGOUT'

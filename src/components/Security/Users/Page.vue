@@ -74,7 +74,6 @@ import {
 } from '../../../services/userAuthorization'
 import {
   performSearchUsers,
-  getAllCredentialFields,
   performDeleteUsers,
   getMappingUsers
 } from '../../../services/kuzzleWrapper'
@@ -95,8 +94,6 @@ export default {
   async mounted() {
     const mapping = await getMappingUsers()
     this.userMapping = mapping.mapping
-    const credentialsField = await getAllCredentialFields()
-    console.log(credentialsField)
   },
   methods: {
     createUser() {

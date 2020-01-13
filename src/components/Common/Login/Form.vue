@@ -92,11 +92,6 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
-import {
-  DO_LOGIN,
-  PREPARE_SESSION
-} from '../../../vuex/modules/auth/mutation-types'
-
 export default {
   name: 'LoginForm',
   directives: {
@@ -119,7 +114,7 @@ export default {
     async login() {
       this.error = ''
       try {
-        await this.$store.dispatch(DO_LOGIN, {
+        await this.$store.direct.dispatch.auth.doLogin({
           username: this.username,
           password: this.password
         })
@@ -131,8 +126,8 @@ export default {
     loginAsGuest() {
       this.error = ''
       this.$kuzzle.jwt = null
-      this.$store
-        .dispatch(PREPARE_SESSION, 'anonymous')
+      this.$store.direct.dispatch.auth
+        .prepareSession('anonymous')
         .then(() => {
           this.onLogin()
         })

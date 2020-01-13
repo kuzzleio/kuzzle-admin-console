@@ -2,7 +2,7 @@
   <div class="DocumentCreateOrUpdate">
     <div class="card-panel">
       <form class="wrapper" @submit.prevent="create">
-        <div v-if="$store.state.collection.allowForm" class="row" />
+        <div v-if="$store.direct.state.collection.allowForm" class="row" />
 
         <div class="row input-id">
           <div class="col s6">
@@ -22,13 +22,16 @@
             </div>
           </div>
           <div class="col s6">
-            <div v-if="$store.state.collection.allowForm" class="switch right">
+            <div
+              v-if="$store.direct.state.collection.allowForm"
+              class="switch right"
+            >
               <label>
                 Form
                 <input
                   :disabled="warningSwitch"
                   type="checkbox"
-                  :checked="$store.state.collection.defaultViewJson"
+                  :checked="$store.direct.state.collection.defaultViewJson"
                   @change="switchView"
                 />
                 <span
@@ -45,7 +48,9 @@
             </div>
 
             <div
-              v-if="!$store.state.collection.allowForm && index && collection"
+              v-if="
+                !$store.direct.state.collection.allowForm && index && collection
+              "
               class="DocumentCreateOrUpdate-formDisabled"
             >
               <p>Document-creation form is not enabled for this collection</p>
@@ -65,7 +70,7 @@
           <div class="col s12 card">
             <div class="card-content">
               <json-form
-                :schema="$store.getters.schemaMappingMerged"
+                :schema="$store.direct.getters.collection.schemaMappingMerged"
                 :document="value"
                 @update-value="updateValue"
               />
@@ -77,7 +82,7 @@
         <div v-if="!isFormView" class="row json-view">
           <div
             class="col s6 card"
-            :class="{ s12: $store.state.collection.isRealtimeOnly }"
+            :class="{ s12: $store.direct.state.collection.isRealtimeOnly }"
           >
             <div class="card-content">
               <span class="card-title">{{
@@ -96,7 +101,7 @@
 
           <!-- Mapping -->
           <div
-            v-if="!$store.state.collection.isRealtimeOnly"
+            v-if="!$store.direct.state.collection.isRealtimeOnly"
             class="col s6 card"
           >
             <div class="card-content">
@@ -104,7 +109,7 @@
 
               <pre
                 v-json-formatter="{
-                  content: $store.getters.simplifiedMapping,
+                  content: $store.direct.getters.collection.simplifiedMapping,
                   open: true
                 }"
                 class="DocumentCreateOrUpdate-mapping"
@@ -236,7 +241,6 @@ import JsonEditor from '../../../Common/JsonEditor'
 import Focus from '../../../../directives/focus.directive'
 import title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
-import { SET_COLLECTION_DEFAULT_VIEW_JSON } from '../../../../vuex/modules/collection/mutation-types'
 import { hasSameSchema } from '../../../../services/collectionHelper'
 
 // We have to init the JSON only if the data comes from the server.
@@ -278,8 +282,8 @@ export default {
   computed: {
     isFormView() {
       return (
-        !this.$store.state.collection.defaultViewJson &&
-        this.$store.state.collection.allowForm
+        !this.$store.direct.state.collection.defaultViewJson &&
+        this.$store.direct.state.collection.allowForm
       )
     }
   },
@@ -302,7 +306,7 @@ export default {
         return
       }
 
-      if (!this.$store.state.collection.defaultViewJson) {
+      if (!this.$store.direct.state.collection.defaultViewJson) {
         return this.$emit('document-create::create', { ...this.value }, replace)
       }
 
@@ -319,7 +323,7 @@ export default {
       this.$emit('input', { ...this.value, [e.name]: e.value })
     },
     switchView(e) {
-      this.$store.dispatch(SET_COLLECTION_DEFAULT_VIEW_JSON, {
+      this.$store.direct.dispatch.collection.setCollectionDefaultViewJson({
         index: this.$route.params.index,
         collection: this.$route.params.collection,
         jsonView: e.target.checked
@@ -332,7 +336,7 @@ export default {
     jsonChanged(json) {
       this.warningSwitch = !hasSameSchema(
         json,
-        this.$store.state.collection.schema
+        this.$store.direct.state.collection.schema
       )
       this.$emit('input', json)
       jsonAlreadyInit = true

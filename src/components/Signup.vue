@@ -135,8 +135,6 @@
 </template>
 
 <script>
-import * as types from '../vuex/modules/auth/mutation-types'
-import * as kuzzleTypes from '../vuex/modules/common/kuzzle/mutation-types'
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
 
 export default {
@@ -189,8 +187,8 @@ export default {
             }
           }
         })
-        this.$store.dispatch(kuzzleTypes.UPDATE_TOKEN_CURRENT_ENVIRONMENT, null)
-        this.$store.commit(types.SET_ADMIN_EXISTS, true)
+        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
+        this.$store.direct.commit.auth.setAdminExits(true)
         this.$router.push({ name: 'Login' }).catch(() => {})
       } catch (err) {
         this.$router.push({ name: 'Login' }).catch(() => {})
@@ -198,10 +196,10 @@ export default {
     },
     loginAsGuest() {
       this.error = ''
-      this.$store
-        .dispatch(types.PREPARE_SESSION, 'anonymous')
+      this.$store.direct.dispatch.auth
+        .prepareSession('anonymous')
         .then(() => {
-          this.$router.push({ name: 'Data' }).catch(() => {})
+          this.$router.go({ name: 'Data' })
         })
         .catch(err => {
           this.error = err.message
