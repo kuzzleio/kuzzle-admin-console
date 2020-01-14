@@ -100,10 +100,10 @@ jobs:
         apt:
           packages:
           - python
-          - python-pip
+          - python3-pip
 
       install:
-        - pip install awscli --upgrade --user
+        - pip3 install awscli --upgrade --user
 
       script:
         - npm ci
