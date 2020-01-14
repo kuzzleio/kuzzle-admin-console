@@ -100,19 +100,10 @@ jobs:
       script:
         - npm ci
         - npm run build
-
-      deploy:
-        provider: script
-        script: 
-          - aws s3 rm s3://$AWS_S3_BUCKET_DEV$DEPLOY_PATH --recursive
-          - aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/
-        skip_cleanup: true
-        on:
-          all_branches: true
-
-      after_deploy:
+        - aws s3 rm s3://$AWS_S3_BUCKET_DEV$DEPLOY_PATH --recursive
+        - aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/
         - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "$DEPLOY_PATH*"
-
+        
 # ---------------------------------------
 # Github release and s3 deployment
 # ---------------------------------------
