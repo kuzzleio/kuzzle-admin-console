@@ -1,54 +1,29 @@
 <template>
-  <form class="EnvironmentsImportModal" @submit.prevent="importEnv">
-    <modal
-      id="create-env"
-      :footer-fixed="true"
-      :is-open="isOpen"
-      :close="close"
+  <b-modal id="create-env" title="Import Connection" @ok="importEnv">
+    <b-form-file @change="upload($event)" />
+
+    <b-alert
+      v-for="(err, k) in errors"
+      class="mt-3"
+      dismissible
+      show
+      variant="danger"
+      :key="k"
+      >Error: {{ err }}</b-alert
     >
-      <div class="row">
-        <div class="col s12">
-          <h4>Import Connection</h4>
-          <div class="divider" />
-        </div>
-      </div>
-
-      <input type="file" @change="upload($event)" />
-
-      <div v-for="(err, k) in errors" :key="k" class="card-panel red lighten-3">
-        <span>Error: {{ err }}</span>
-      </div>
-
-      <span slot="footer">
-        <button
-          :class="{ disabled: !canSubmit }"
-          type="submit"
-          class="EnvironmentsCreateModal-import Environment-SubmitButton waves-effect btn"
-        >
-          Import
-        </button>
-        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
-          Cancel
-        </button>
-      </span>
-    </modal>
-  </form>
+  </b-modal>
 </template>
 
 <script>
-import Modal from '../../Materialize/Modal'
-
 export default {
   name: 'ModalImport',
-  components: {
-    Modal
-  },
+  components: {},
   props: ['environmentId', 'isOpen', 'close'],
   data() {
     return {
       env: {},
       canSubmit: false,
-      errors: []
+      errors: ['TOTO', 'titi']
     }
   },
   methods: {

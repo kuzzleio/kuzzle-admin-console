@@ -12,7 +12,7 @@
         v-else
         class="CreateEnvironment-import btn"
         variant="outline-info"
-        @click.prevent="$emit('environment::importEnv')"
+        v-b-modal.create-env
       >
         Import a connection
       </b-button>
