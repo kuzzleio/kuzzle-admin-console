@@ -106,7 +106,7 @@ jobs:
 
       script:
         - npm ci
-        - $(npm build)/vue-cli-service build --dest dist/kuzzle-v2
+        - $(npm bin)/vue-cli-service build --dest dist/kuzzle-v2
 
       deploy:
         provider: script
