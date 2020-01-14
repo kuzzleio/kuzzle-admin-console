@@ -23,7 +23,6 @@ env:
     - AWS_S3_BUCKET_PROD=console.kuzzle.io
     - AWS_S3_BUCKET_DEV=next.console.kuzzle.io
     - AWS_S3_REGION=us-west-2
-    - DEPLOY_PATH=/kuzzle-v2/
 
 stages:
   # - lint
@@ -67,22 +66,37 @@ jobs:
 
       if: type != pull_request && branch = master
 
+      env:
+        - DEPLOY_PATH=/kuzzle-v1/
       addons:
         apt:
           packages:
-            - awscli
+            - python
+            - python-pip
+
+      install:
+        - pip install awscli --upgrade --user
 
       script:
         - npm install
-        - $(npm bin)/vuepress-cli-service build --dest dist$DEPLOY_PATH
+        - npm run build
+
+      before_deploy:
+        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_PROD$DEPLOY_PATH --recursive --region $AWS_S3_REGION
 
       deploy:
-        provider: script
-        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_PROD$DEPLOY_PATH --delete
+        provider: s3
+        access_key_id: $AWS_ACCESS_KEY_ID
+        secret_access_key: $AWS_SECRET_ACCESS_KEY
+        bucket: $AWS_S3_BUCKET_PROD
         skip_cleanup: true
+        local-dir: dist
+        region: $AWS_S3_REGION
+        on:
+          all_branches: true
 
       after_deploy:
-        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "$DEPLOY_PATH*"
+        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "$DEPLOY_PATH*"
 
     # ---------------------------------------
     # next.console.kuzzle.io
@@ -92,6 +106,8 @@ jobs:
 
       if: type != pull_request && branch = 3-dev
 
+      env:
+        - DEPLOY_PATH=/kuzzle-v2/
       addons:
         apt:
           packages:
@@ -118,7 +134,6 @@ jobs:
         region: $AWS_S3_REGION
         on:
           all_branches: true
-        # - aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/ --region $AWS_S3_REGION
 
       after_deploy:
         - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "$DEPLOY_PATH*"
