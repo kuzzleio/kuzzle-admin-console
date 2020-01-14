@@ -25,8 +25,8 @@ env:
     - DEPLOY_PATH=/kuzzle-v2/
 
 stages:
-  - lint
-  - tests
+  # - lint
+  # - tests
   - build & deploy
 
 jobs:
