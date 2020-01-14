@@ -12,7 +12,7 @@ module.exports = {
     disableHostCheck: true
   },
 
-  publicPath: '/kuzzle-v2',
+  publicPath: process.env.DEPLOY_PATH,
 
   configureWebpack: {
     devtool: 'source-map'

@@ -22,6 +22,7 @@ env:
     - AWS_S3_BUCKET_DL=dl.kuzzle.io
     - AWS_S3_BUCKET_PROD=console.kuzzle.io
     - AWS_S3_BUCKET_DEV=next.console.kuzzle.io
+    - DEPLOY_PATH=/kuzzle-v2/
 
 stages:
   - lint
@@ -81,11 +82,11 @@ jobs:
 
       deploy:
         provider: script
-        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_PROD/kuzzle-v2 --delete
+        script: ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_PROD$DEPLOY_PATH --delete
         skip_cleanup: true
 
       after_deploy:
-        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "/kuzzle-v2/*"
+        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "$DEPLOY_PATH*"
 
 # ---------------------------------------
 # next.console.kuzzle.io
@@ -106,19 +107,19 @@ jobs:
 
       script:
         - npm ci
-        - $(npm bin)/vue-cli-service build --dest dist/kuzzle-v2
+        - npm run build
 
       deploy:
         provider: script
         script: 
-          - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_DEV/kuzzle-v2 --recursive
+          - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_DEV$DEPLOY_PATH --recursive
           - ~/.local/bin/aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/
         skip_cleanup: true
         on:
           all_branches: true
 
       after_deploy:
-        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/kuzzle-v2/*"
+        - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "$DEPLOY_PATH*"
 
 # ---------------------------------------
 # Github release and s3 deployment
