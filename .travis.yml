@@ -70,11 +70,7 @@ jobs:
       addons:
         apt:
           packages:
-          - python
-          - python-pip
-
-      install:
-        - pip install awscli --upgrade --user
+          - awscli
 
       script:
         - npm install
@@ -100,10 +96,11 @@ jobs:
         apt:
           packages:
           - python
-          - python3-pip
+          - python-pip
 
       install:
-        - pip3 install awscli --upgrade --user
+        - pip install urllib3[secure]
+        - pip install awscli --upgrade --user
 
       script:
         - npm ci
