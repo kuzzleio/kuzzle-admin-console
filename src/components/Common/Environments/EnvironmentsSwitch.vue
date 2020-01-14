@@ -4,6 +4,8 @@
       :text="currentEnvironmentName"
       ref="dropdown"
       class="EnvironmentsSwitch"
+      variant="outline-secondary"
+      block
     >
       <b-dropdown-item
         v-for="(env, index) in $store.direct.getters.kuzzle.environments"

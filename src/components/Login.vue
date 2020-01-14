@@ -6,16 +6,21 @@
           <img
             src="../assets/logo.svg"
             alt="Welcome to the Kuzzle Admin Console"
-            class="mb-4"
+            class="mb-5"
           />
+        </div>
+        <b-form-group
+          :state="state"
+          label="Environment"
+          label-cols-sm="4"
+          label-cols-lg="3"
+        >
           <environment-switch
-            class="mb-4"
             @environment::create="editEnvironment"
             @environment::delete="deleteEnvironment"
             @environment::importEnv="importEnv"
           />
-        </div>
-
+        </b-form-group>
         <login-form :on-login="onLogin" />
       </b-card-body>
     </b-card>

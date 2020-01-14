@@ -2,11 +2,11 @@
   <form id="loginForm" method="post" @submit.prevent="login()">
     <div class="loginForm-inputs">
       <b-form-group
+        :state="state"
         label="Login"
         label-for="username"
-        :invalid-feedback="invalidFeedback"
-        :valid-feedback="validFeedback"
-        :state="state"
+        label-cols-sm="4"
+        label-cols-lg="3"
       >
         <b-form-input
           id="username"
@@ -20,11 +20,11 @@
         />
       </b-form-group>
       <b-form-group
+        :state="state"
         label="Password"
         label-for="pass"
-        :invalid-feedback="invalidFeedback"
-        :valid-feedback="validFeedback"
-        :state="state"
+        label-cols-sm="4"
+        label-cols-lg="3"
       >
         <b-form-input
           id="pass"
@@ -57,6 +57,7 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
+
 export default {
   name: 'LoginForm',
   directives: {
