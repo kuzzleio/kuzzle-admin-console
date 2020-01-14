@@ -95,12 +95,7 @@ jobs:
       addons:
         apt:
           packages:
-          - python
-          - python-pip
-
-      install:
-        - pip install urllib3[secure]
-        - pip install awscli --upgrade --user
+          - awscli
 
       script:
         - npm ci
