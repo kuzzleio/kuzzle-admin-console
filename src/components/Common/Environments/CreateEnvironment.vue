@@ -1,133 +1,109 @@
 <template>
   <div class="CreateEnvironment environment">
-    <warning-header
-      v-if="useHttps && !environment.ssl"
-      :text="warningHeaderText"
-    />
+    <b-alert :show="useHttps && !environment.ssl">
+      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are
+      using the HTTPS/SSL version of the Admin Console. Please ensure that your
+      Kuzzle supports HTTPS/SSL connections.
+    </b-alert>
 
-    <div class="row">
-      <div class="col s12">
-        <a v-if="environmentId" ref="export" class="btn">Export</a>
-        <button
-          v-else
-          class="CreateEnvironment-import btn"
-          @click.prevent="$emit('environment::importEnv')"
-        >
-          Import a connection
-        </button>
-      </div>
+    <div class="mb-3 text-right">
+      <a v-if="environmentId" ref="export" class="btn">Export</a>
+      <b-button
+        v-else
+        class="CreateEnvironment-import btn"
+        variant="outline-info"
+        @click.prevent="$emit('environment::importEnv')"
+      >
+        Import a connection
+      </b-button>
     </div>
 
-    <div class="row">
-      <div class="col s12">
-        <div class="input-field left-align">
-          <input
-            id="env-name"
-            v-model="environment.name"
-            v-focus
-            class="CreateEnvironment-name"
-            type="text"
-            required
-            :class="{ invalid: errors.name || errors.environmentAlreadyExists }"
-          />
-          <label
-            for="env-name"
-            :class="{ active: environment.name }"
-            data-error="Name is required and must be unique"
-            >Name</label
-          >
-        </div>
-      </div>
-    </div>
+    <b-form>
+      <b-form-group
+        id="env-name"
+        description="A friendly name for the connection"
+        label="Connection name"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        label-for="input-env-name"
+      >
+        <b-form-input
+          id="input-env-name"
+          v-model="environment.name"
+          trim
+          required
+        ></b-form-input>
+      </b-form-group>
 
-    <div class="row">
-      <div class="col s12">
-        <div class="input-field left-align">
-          <input
-            id="host"
-            v-model="environment.host"
-            class="CreateEnvironment-host"
-            type="text"
-            required
-            :class="{ invalid: errors.host }"
-          />
-          <label
-            for="host"
-            :class="{ active: environment.host }"
-            data-error="The host must be something like 'mydomain.com'"
-            >Host</label
-          >
-        </div>
-      </div>
-    </div>
+      <b-form-group
+        id="env-host"
+        label="Hostname"
+        description="The host where your Kuzzle is running"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        label-for="input-env-host"
+      >
+        <b-form-input
+          id="input-env-host"
+          v-model="environment.host"
+          trim
+          required
+        ></b-form-input>
+      </b-form-group>
 
-    <div class="row">
-      <div class="col s6">
-        <div class="input-field left-align">
-          <input
-            id="port"
-            v-model="environment.port"
-            class="CreateEnvironment-port"
-            type="number"
-            required
-            :class="{ invalid: errors.port }"
-          />
-          <label
-            for="port"
-            :class="{ active: environment.port }"
-            data-error="port number must be an integer"
-            >Port</label
-          >
-        </div>
-      </div>
-      <div class="col s6">
-        <label>
-          <input
-            id="usessl"
-            v-model="environment.ssl"
-            class="CreateEnvironment-ssl"
-            type="checkbox"
-            :checked="environment.ssl"
-          />
-          <span>use SSL</span>
-        </label>
-      </div>
-    </div>
+      <b-form-group
+        id="env-port"
+        label="Port"
+        description="The port where your Kuzzle is listening for connections"
+        label-cols-sm="4"
+        label-cols-lg="3"
+        label-for="input-env-port"
+      >
+        <b-form-input
+          id="input-env-port"
+          v-model="environment.port"
+          type="number"
+          trim
+          required
+        ></b-form-input>
+      </b-form-group>
+      <b-form-group label="Use SSL" label-cols-sm="4" label-cols-lg="3">
+        <b-form-checkbox
+          id="env-ssl"
+          v-model="environment.ssl"
+          name="env-use-ssl"
+          :value="true"
+          :unchecked-value="false"
+        ></b-form-checkbox>
+      </b-form-group>
 
-    <div class="row">
-      <div class="col s12" />
-    </div>
-
-    <div class="row color-picker">
-      <div class="col s12">
-        <div class="input-field left-align">
-          <p>Color</p>
-        </div>
-      </div>
-      <div class="col s12">
-        <div class="CreateEnvironment-colorBtns row">
-          <div v-for="(color, index) in colors" :key="color" class="col s6 m3">
-            <div
-              class="color card valign-wrapper"
-              :style="{ backgroundColor: color }"
-              @click="selectColor(index)"
-            >
-              <span
-                v-if="environment.color === color"
-                class="selected valign center-align"
-                >Selected</span
+      <b-row>
+        <b-col sm="4" lg="3">
+          <p>Pick a color</p>
+        </b-col>
+        <b-col>
+          <b-row>
+            <b-col sm="6" md="3" v-for="(color, index) in colors" :key="color">
+              <div
+                class="CreateEnvironment-color"
+                :style="{ backgroundColor: color }"
+                @click="selectColor(index)"
               >
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+                <span
+                  class="CreateEnvironment-color--selected"
+                  v-if="environment.color === color"
+                  >Selected</span
+                >
+              </div>
+            </b-col>
+          </b-row>
+        </b-col>
+      </b-row>
+    </b-form>
   </div>
 </template>
 
 <script>
-import WarningHeader from '../WarningHeader'
-
 import Focus from '../../../directives/focus.directive'
 import { DEFAULT_COLOR } from '../../../services/environment'
 
@@ -135,9 +111,7 @@ const useHttps = window.location.protocol === 'https:'
 
 export default {
   name: 'CreateEnvironment',
-  components: {
-    WarningHeader
-  },
+  components: {},
   directives: {
     Focus
   },
@@ -166,7 +140,7 @@ export default {
         '#546e7a',
         '#d81b60'
       ],
-      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> You are using the HTTPS/SSL version of the Admin Console.<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> </br>Please ensure that your Kuzzle supports HTTPS/SSL connections.`
+      warningHeaderText: ``
     }
   },
   computed: {
@@ -266,3 +240,16 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.CreateEnvironment-color {
+  margin-bottom: 10px;
+  color: #fff;
+  border-radius: 5px;
+  line-height: 40px;
+  min-height: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+</style>

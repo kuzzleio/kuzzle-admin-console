@@ -92,7 +92,7 @@ import Toaster from './components/Materialize/Toaster.vue'
 import '@fortawesome/fontawesome-free/css/all.css'
 
 export default {
-  name: 'KuzzleBackOffice',
+  name: 'KuzzleAdminConsole',
   components: {
     ErrorLayout,
     ModalCreate,

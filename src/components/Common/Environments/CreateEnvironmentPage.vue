@@ -3,14 +3,13 @@
     <b-container>
       <b-card>
         <b-jumbotron
-          header=""
           lead="Please provide the details below to connect to your Kuzzle instance."
         >
           <template v-slot:header
             ><img
               src="../../../assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
-              class="mb-3"
+              height="60"
             />
             <h1>Create a Connection</h1>
           </template>
