@@ -102,7 +102,7 @@ jobs:
         - npm ci
         - npm run build
         - aws s3 rm s3://$AWS_S3_BUCKET_DEV$DEPLOY_PATH --recursive --region $AWS_S3_REGION
-        - aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/
+        - aws s3 sync dist s3://$AWS_S3_BUCKET_DEV/ --region $AWS_S3_REGION
         - aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "$DEPLOY_PATH*"
 
 # ---------------------------------------
