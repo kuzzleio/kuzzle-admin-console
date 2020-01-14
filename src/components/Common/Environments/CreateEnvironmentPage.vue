@@ -1,43 +1,36 @@
 <template>
-  <form class="CreateEnvironmentPage login" @submit.prevent="createEnvironment">
-    <div class="container">
-      <div class="row">
-        <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
-          <h2 class="center-align logo">
-            <img
-              src="/src/assets/logo.svg"
+  <form class="CreateEnvironmentPage" @submit.prevent="createEnvironment">
+    <b-container>
+      <b-card>
+        <b-jumbotron
+          header=""
+          lead="Please provide the details below to connect to your Kuzzle instance."
+        >
+          <template v-slot:header
+            ><img
+              src="../../../assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
-              style="width: 70%"
+              class="mb-3"
             />
-          </h2>
-          <div class="row message-warning">
-            <h5>Create a Connection</h5>
-            <div class="divider" />
-            <p class="message">
-              Please provide the details below to connect to your Kuzzle
-              instance.
-            </p>
-          </div>
+            <h1>Create a Connection</h1>
+          </template>
+        </b-jumbotron>
 
-          <create-environment
-            ref="createEnvironmentComponent"
-            :environment-id="null"
-            @environment::importEnv="importEnv"
-          />
+        <create-environment
+          ref="createEnvironmentComponent"
+          :environment-id="null"
+          @environment::importEnv="importEnv"
+        />
 
-          <div class="row">
-            <div class="col s4 right">
-              <button
-                type="submit"
-                class="CreateEnvironmentPage-createBtn Environment-SubmitButton waves-effect btn"
-              >
-                Create connection
-              </button>
-            </div>
+        <template v-slot:footer>
+          <div class="text-right">
+            <b-button variant="primary" type="submit">
+              Create connection
+            </b-button>
           </div>
-        </div>
-      </div>
-    </div>
+        </template>
+      </b-card>
+    </b-container>
   </form>
 </template>
 
@@ -61,3 +54,11 @@ export default {
   }
 }
 </script>
+
+<style lang="sass">
+.CreateEnvironmentPage
+  height: 100vh
+  display: flex
+  flex-direction: column
+  justify-content: center
+</style>
