@@ -1,72 +1,51 @@
 <template>
-  <span ref="dropdown" class="EnvironmentsSwitch">
-    <a
-      class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
-      :style="{ backgroundColor: bgColor }"
-      :data-target="'environment-dropdown-' + _uid"
+  <div>
+    <b-dropdown
+      :text="currentEnvironmentName"
+      ref="dropdown"
+      class="EnvironmentsSwitch"
     >
-      <span
-        v-if="$store.direct.getters.kuzzle.currentEnvironment"
-        class="current-environment-name truncate"
-      >
-        {{ currentEnvironmentName }}
-      </span>
-      <span
-        v-if="!$store.direct.getters.kuzzle.currentEnvironment"
-        class="current-environment-name truncate"
-      >
-        Choose Environment
-      </span>
-      <i class="fa fa-caret-down" />
-    </a>
-
-    <ul
-      :id="'environment-dropdown-' + _uid"
-      class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
-    >
-      <li
+      <b-dropdown-item
         v-for="(env, index) in $store.direct.getters.kuzzle.environments"
         :key="env.name"
         :data-env="`env_${formatForDom(env.name)}`"
         class="EnvironmentsSwitch-env environment"
       >
         <div @click="clickSwitch(index)">
-          <span class="name environment-attribute truncate">{{
-            env.name
-          }}</span>
-          <span class="host environment-attribute truncate">{{
-            env.host
-          }}</span>
+          <div class="EnvironmentsSwitch-env-name">
+            {{ env.name }}
+            <span class="text-muted ml-2 mr-5">{{ env.host }}</span>
+          </div>
+          <div class="EnvironmentsSwitch-env-inputs">
+            <i
+              class="edit primary fa fa-pencil-alt mr-3"
+              @click.prevent="$emit('environment::create', index)"
+            />
+            <i
+              class="delete error fa fa-trash"
+              @click.prevent="$emit('environment::delete', index)"
+            />
+          </div>
         </div>
-        <i
-          class="edit primary fa fa-pencil-alt"
-          @click.prevent="$emit('environment::create', index)"
-        />
-        <i
-          class="delete error fa fa-trash"
-          @click.prevent="$emit('environment::delete', index)"
-        />
-      </li>
-      <li class="divider" />
-      <li>
-        <a href="" @click.prevent="$emit('environment::create')"
-          ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" />
-          Create new connection</a
-        >
-      </li>
-      <li>
-        <a ref="export"
-          ><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export
-          all</a
-        >
-      </li>
-      <li>
-        <a href="#" @click.prevent="$emit('environment::importEnv')"
-          ><i class="fa fa-file-import" />Import</a
-        >
-      </li>
-    </ul>
-  </span>
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item>
+        <a href="" @click.prevent="$emit('environment::create')">
+          Create new connection
+        </a>
+      </b-dropdown-item>
+      <b-dropdown-item>
+        <a ref="export">
+          Export all
+        </a>
+      </b-dropdown-item>
+      <b-dropdown-item>
+        <a href="" @click.prevent="$emit('environment::importEnv')">
+          Import
+        </a>
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
 </template>
 
 <script>
@@ -146,58 +125,15 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.current-environment {
-  background-color: #002835;
-  transition: 0.25s ease;
-  margin-top: 7px;
-  .truncate {
-    display: inline-block;
-  }
-  .current-environment-name {
-    width: 150px;
-  }
-  i {
-    position: absolute;
-    top: 0;
-    right: 7px;
-  }
-}
+.EnvironmentsSwitch-env {
+  display: table;
 
-.environment-dropdown {
-  width: 280px;
-  .environment {
-    position: relative;
-    border-bottom: 1px solid #eaeaea;
-    line-height: 1.2rem;
+  &-name {
+    display: table-cell;
+  }
 
-    .environment-attribute {
-      display: block;
-      width: 80%;
-      &.name {
-        color: #002835;
-        padding: 14px 14px 0 14px;
-        font-size: 1.2em;
-      }
-      &.host {
-        font-size: 0.8em;
-        color: #2a2a2a;
-        padding: 0 0 10px 14px;
-      }
-    }
-  }
-  .edit {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    font-size: 1em;
-  }
-  .delete {
-    position: absolute;
-    top: 20px;
-    right: 10px;
-    padding: 0;
-    margin: 0;
-    font-size: 1em;
+  &-inputs {
+    display: table-cell;
   }
 }
 </style>
