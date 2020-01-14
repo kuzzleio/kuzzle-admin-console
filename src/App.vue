@@ -90,9 +90,6 @@ import Toaster from './components/Materialize/Toaster.vue'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
-window.jQuery = window.$ = require('jquery')
-// eslint-disable-next-line
-require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
 
 export default {
   name: 'KuzzleBackOffice',

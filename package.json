@@ -18,6 +18,7 @@
     "test:e2e-local": "e2eLocal=1 ./tests/e2e/run-test.sh"
   },
   "dependencies": {
+    "bootstrap-vue": "^2.2.1",
     "chromium": "^1.0.2",
     "commander": "^2.15.1",
     "core-js": "^3.4.3",
@@ -82,7 +83,6 @@
     "kuzzle-sdk": "7.0.0-beta.1",
     "lodash": "^4.17.11",
     "lolex": "^1.5.2",
-    "materialize-css": "^1.0.0",
     "moment": "^2.22.1",
     "node-sass": "^4.12.0",
     "opn": "^4.0.2",

@@ -1,11 +1,11 @@
 @import './variables';
 @import './fonts';
-@import '../../node_modules/materialize-css/sass/materialize';
 @import './layout';
 @import './animations.scss';
 @import './realtime.scss';
-@import './materialize-extends.scss';
 @import './index-branch.scss';
 @import './pages.scss';
 @import './environment.scss';
 @import './utility.scss';
+@import '../../node_modules/bootstrap/dist/css/bootstrap.css';
+@import '../../node_modules/bootstrap-vue/dist/bootstrap-vue.css';
