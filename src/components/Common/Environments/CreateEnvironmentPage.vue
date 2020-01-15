@@ -43,9 +43,10 @@ export default {
   },
   methods: {
     createEnvironment() {
-      this.$refs.createEnvironmentComponent
-        .createEnvironment()
-        .then(() => this.$router.push({ name: 'Home' }))
+      const submitted = this.$refs.createEnvironmentComponent.createEnvironment()
+      if (submitted) {
+        this.$router.push({ name: 'Home' })
+      }
     },
     importEnv() {
       this.$emit('environment::importEnv')

@@ -6,13 +6,11 @@
       Kuzzle supports HTTPS/SSL connections.
     </b-alert>
 
-    <div class="mb-3 text-right">
-      <a v-if="environmentId" ref="export" class="btn">Export</a>
+    <div v-if="!environmentId" class="mb-3 text-right">
       <b-button
-        v-else
         class="CreateEnvironment-import btn"
         variant="outline-info"
-        v-b-modal.create-env
+        @click="$emit('environment::importEnv')"
       >
         Import a connection
       </b-button>
@@ -20,12 +18,14 @@
 
     <b-form>
       <b-form-group
-        id="env-name"
         description="A friendly name for the connection"
+        id="env-name"
         label="Connection name"
         label-cols-sm="4"
         label-cols-lg="3"
         label-for="input-env-name"
+        :invalid-feedback="nameFeedback"
+        :state="nameState"
       >
         <b-form-input
           id="input-env-name"
@@ -36,12 +36,14 @@
       </b-form-group>
 
       <b-form-group
+        description="The host where your Kuzzle is running"
         id="env-host"
         label="Hostname"
-        description="The host where your Kuzzle is running"
         label-cols-sm="4"
         label-cols-lg="3"
         label-for="input-env-host"
+        :invalid-feedback="hostFeedback"
+        :state="hostState"
       >
         <b-form-input
           id="input-env-host"
@@ -58,6 +60,8 @@
         label-cols-sm="4"
         label-cols-lg="3"
         label-for="input-env-port"
+        :invalid-feedback="portFeedback"
+        :state="portState"
       >
         <b-form-input
           id="input-env-port"
@@ -99,6 +103,15 @@
           </b-row>
         </b-col>
       </b-row>
+      <b-alert :show="errors.environmentAlreadyExists" variant="danger">
+        An environment with the same name exists already
+      </b-alert>
+      <b-alert :show="errors.host" variant="danger">
+        The hostname is invalid
+      </b-alert>
+      <b-alert :show="errors.name" variant="danger">
+        The hostname is invalid
+      </b-alert>
     </b-form>
   </div>
 </template>
@@ -149,27 +162,57 @@ export default {
     },
     useHttps() {
       return useHttps
+    },
+    nameState() {
+      return (
+        this.environment.name != null &&
+        this.environment.name != '' &&
+        (this.environmentId !== null ||
+          this.environments[this.environment.name] === undefined)
+      )
+    },
+    nameFeedback() {
+      if (this.environment.name == '') {
+        return 'You must enter a non-empty name'
+      }
+      if (
+        !this.environmentId &&
+        this.environments[this.environment.name] !== undefined
+      ) {
+        return 'An environment with the same name already exists'
+      }
+      return ''
+    },
+    hostState() {
+      return (
+        this.environment.host != null &&
+        this.environment.host != '' &&
+        !/^(http|ws):\/\//.test(this.environment.host)
+      )
+    },
+    hostFeedback() {
+      if (this.environment.host == '') {
+        return 'You must enter a non-empty host name'
+      }
+      if (/^(http|ws):\/\//.test(this.environment.host)) {
+        return 'Do not include the protocol in your host name'
+      }
+      return ''
+    },
+    portState() {
+      return this.environment.port !== null && this.environment.port !== ''
+    },
+    portFeedback() {
+      if (this.environment.port !== '') {
+        return 'You must enter a non-empty port'
+      }
+      return ''
+    },
+    canSubmit() {
+      return this.hostState && this.nameState && this.portState
     }
   },
   mounted() {
-    if (this.environmentId) {
-      const env = {}
-
-      env[
-        this.$store.direct.getters.kuzzle.currentEnvironment.name
-      ] = Object.assign(
-        {},
-        this.$store.direct.getters.kuzzle.currentEnvironment
-      )
-
-      delete env[this.$store.direct.getters.currentEnvironment.name].token
-      const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
-
-      this.$refs.export.href = URL.createObjectURL(blob)
-      this.$refs.export.download = `${this.$store.direct.getters.currentEnvironment.name}.json`
-    }
-  },
-  created() {
     if (this.environmentId && this.environments[this.environmentId]) {
       this.environment.name = this.environments[this.environmentId].name
       this.environment.host = this.environments[this.environmentId].host
@@ -186,52 +229,35 @@ export default {
   },
   methods: {
     createEnvironment() {
-      this.errors.name = !this.environment.name
-      // this.errors.port = (!this.environment.port || typeof this.environment.port !== 'number')
-      // Host is required and must be something like 'mydomain.com/toto'
-      this.errors.host =
-        !this.environment.host || /^(http|ws):\/\//.test(this.environment.host)
-
-      let _host = this.environment.host.trim()
-      let _name = this.environment.name.trim()
-
-      if (!this.environmentId || this.environmentId !== _name) {
-        this.errors.environmentAlreadyExists =
-          this.$store.direct.state.kuzzle.environments[_name] !== undefined
-      } else {
-        this.errors.environmentAlreadyExists = false
+      if (!this.canSubmit) {
+        return false
       }
-
-      if (
-        this.errors.name ||
-        this.errors.host ||
-        this.errors.environmentAlreadyExists
-      ) {
-        throw new Error('Name or host invalid')
-      }
-
-      if (this.environmentId) {
-        return this.$store.direct.dispatch.kuzzle.updateEnvironment({
-          id: this.environmentId,
-          environment: {
-            name: _name,
-            color: this.environment.color,
-            host: _host,
-            port: this.environment.port,
-            ssl: this.environment.ssl
-          }
-        })
-      } else {
-        return this.$store.direct.dispatch.kuzzle.createEnvironment({
-          id: _name,
-          environment: {
-            name: _name,
-            color: this.environment.color,
-            host: _host,
-            port: this.environment.port,
-            ssl: this.environment.ssl
-          }
-        })
+      try {
+        if (this.environmentId) {
+          return this.$store.direct.dispatch.kuzzle.updateEnvironment({
+            id: this.environmentId,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: this.environment.port,
+              ssl: this.environment.ssl
+            }
+          })
+        } else {
+          return this.$store.direct.dispatch.kuzzle.createEnvironment({
+            id: this.environment.name,
+            environment: {
+              name: this.environment.name,
+              color: this.environment.color,
+              host: this.environment.host,
+              port: this.environment.port,
+              ssl: this.environment.ssl
+            }
+          })
+        }
+      } catch (error) {
+        console.error(error)
       }
     },
     selectColor(index) {

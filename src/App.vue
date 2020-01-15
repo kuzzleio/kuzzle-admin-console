@@ -5,7 +5,6 @@
         <kuzzle-error-page
           @environment::create="editEnvironment"
           @environment::delete="deleteEnvironment"
-          @environment::importEnv="importEnv"
         />
       </error-layout>
     </div>
@@ -14,7 +13,7 @@
         v-if="!$store.direct.getters.kuzzle.hasEnvironment"
         class="App-noEnvironments"
       >
-        <create-environment-page @environment::importEnv="importEnv" />
+        <create-environment-page @environment::importEnv="importEnvironment" />
       </div>
       <div v-else>
         <div
@@ -35,14 +34,13 @@
               <sign-up
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnv"
+                @environment::importEnv="importEnvironment"
               />
             </div>
             <div v-else class="App-hasAdmin">
               <login
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnv"
               />
             </div>
           </div>
@@ -50,24 +48,19 @@
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
-              @environment::importEnv="importEnv"
             />
           </div>
         </div>
       </div>
     </div>
 
-    <modal-create
-      :is-open="isOpen"
-      :close="close"
+    <modal-create-or-update
+      id="modal-env-create-or-update"
       :environment-id="environmentId"
+      @environment::importEnv="importEnvironment"
     />
-    <modal-delete
-      :environment-id="environmentId"
-      :close="close"
-      :is-open="deleteIsOpen"
-    />
-    <modal-import :close="close" :is-open="importIsOpen" />
+    <modal-delete id="modal-env-delete" :environment-id="environmentId" />
+    <modal-import id="modal-env-import" />
 
     <toaster />
   </div>
@@ -83,7 +76,7 @@ import ErrorLayout from './components/Error/Layout'
 import SignUp from './components/Signup'
 import Login from './components/Login'
 import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
-import ModalCreate from './components/Common/Environments/ModalCreate'
+import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
 import Toaster from './components/Materialize/Toaster.vue'
@@ -95,7 +88,7 @@ export default {
   name: 'KuzzleAdminConsole',
   components: {
     ErrorLayout,
-    ModalCreate,
+    ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
     Toaster,
@@ -106,10 +99,7 @@ export default {
   },
   data() {
     return {
-      environmentId: null,
-      isOpen: false,
-      deleteIsOpen: false,
-      importIsOpen: false
+      environmentId: null
     }
   },
   mounted() {
@@ -147,19 +137,14 @@ export default {
   methods: {
     editEnvironment(id) {
       this.environmentId = id
-      this.isOpen = true
+      this.$bvModal.show('modal-env-create-or-update')
     },
     deleteEnvironment(id) {
       this.environmentId = id
-      this.deleteIsOpen = true
+      this.$bvModal.show('modal-env-delete')
     },
-    importEnv() {
-      this.importIsOpen = true
-    },
-    close() {
-      this.isOpen = false
-      this.deleteIsOpen = false
-      this.importIsOpen = false
+    importEnvironment() {
+      this.$bvModal.show('modal-env-import')
     }
   }
 }
