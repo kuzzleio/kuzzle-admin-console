@@ -5,7 +5,7 @@
       ref="dropdown"
       class="EnvironmentsSwitch"
       variant="outline-secondary"
-      block
+      :block="block"
     >
       <b-dropdown-item
         v-for="(env, index) in $store.direct.getters.kuzzle.environments"
@@ -59,7 +59,16 @@ import { formatForDom } from '../../../utils'
 
 export default {
   name: 'EnvironmentsSwitch',
-  props: ['blendColor'],
+  props: {
+    blendColor: {
+      type: Boolean,
+      default: false
+    },
+    block: {
+      type: Boolean,
+      default: true
+    }
+  },
   computed: {
     currentEnvironmentName() {
       if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
