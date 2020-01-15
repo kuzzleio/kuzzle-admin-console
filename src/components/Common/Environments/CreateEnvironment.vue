@@ -9,6 +9,7 @@
     <div v-if="!environmentId" class="mb-3 text-right">
       <b-button
         class="CreateEnvironment-import btn"
+        data-cy="CreateEnvironment-import"
         variant="outline-info"
         @click="$emit('environment::importEnv')"
       >
@@ -32,6 +33,7 @@
           v-model="environment.name"
           trim
           required
+          data-cy="CreateEnvironment-name"
         ></b-form-input>
       </b-form-group>
 
@@ -50,6 +52,7 @@
           v-model="environment.host"
           trim
           required
+          data-cy="CreateEnvironment-host"
         ></b-form-input>
       </b-form-group>
 
@@ -89,7 +92,8 @@
           <b-row>
             <b-col sm="6" md="3" v-for="(color, index) in colors" :key="color">
               <div
-                :class="`CreateEnvironment-box Envbox-${color}`"
+                :class="`CreateEnvironment-box EnvColor--${color}`"
+                :data-cy="`EnvColor--${color}`"
                 @click="selectColor(index)"
               >
                 <span v-if="environment.color === color">Selected</span>

@@ -1,12 +1,5 @@
 <template>
-  <b-modal
-    :id="id"
-    :ok-disabled="!confirmationOk"
-    @cancel="reset"
-    @close="reset"
-    @hide="reset"
-    @ok="confirmDeleteEnvironment"
-  >
+  <b-modal :id="id" @cancel="reset" @close="reset" @hide="reset">
     <template v-slot:modal-header>
       <h4>
         Environment <strong>{{ environmentName }}</strong> deletion
@@ -21,29 +14,26 @@
     >
       <b-form-input
         id="env-to-delete-name"
+        data-cy="EnvironmentDeleteModal-envName"
         trim
         v-model="envConfirmation"
         @keydown.enter="confirmDeleteEnvironment"
       ></b-form-input>
     </b-form-group>
 
-    <span slot="footer">
-      <button
-        type="submit"
-        :disabled="environmentName !== envConfirmation"
-        :class="{ unauthorized: environmentName !== envConfirmation }"
-        class="EnvironmentDeleteModal-submit waves-effect btn"
-      >
-        Delete
-      </button>
-      <button
-        href="#!"
-        class="btn-flat waves-effect waves-grey"
-        @click.prevent="close"
-      >
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="$bvModal.hide(id)">
         Cancel
-      </button>
-    </span>
+      </b-button>
+      <b-button
+        data-cy="EnvironmentDeleteModal-submit"
+        variant="primary"
+        :disabled="!confirmationOk"
+        @click="confirmDeleteEnvironment"
+      >
+        OK
+      </b-button>
+    </template>
   </b-modal>
 </template>
 

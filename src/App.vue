@@ -22,7 +22,7 @@
         >
           <!-- This is not supposed to happen, see error case above -->
         </div>
-        <div v-else class="App-connected">
+        <div v-else data-cy="App-connected">
           <div
             v-if="!$store.direct.getters.auth.isAuthenticated"
             class="App-loggedOut"

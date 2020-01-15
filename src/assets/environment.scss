@@ -62,7 +62,7 @@ $colors: (
 );
 
 @each $name, $value in $colors {
-  .Envbox-#{$name} {
+  .EnvColor--#{$name} {
     background-color: $value;
   }
 }

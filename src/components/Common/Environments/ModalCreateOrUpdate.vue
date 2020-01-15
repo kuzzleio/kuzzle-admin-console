@@ -4,7 +4,6 @@
     ref="modal-create-env"
     :id="id"
     :title="`${environmentId ? 'Update' : 'Create'} Connection`"
-    @ok.prevent="submit"
   >
     <create-environment
       ref="createEnvironmentComponent"
@@ -12,17 +11,18 @@
       @environment::importEnv="importEnv"
     />
 
-    <span slot="footer">
-      <button
-        type="submit"
-        class="EnvironmentsCreateModal-submit Environment-SubmitButton waves-effect btn"
-      >
-        {{ environmentId ? 'Update' : 'Create' }}
-      </button>
-      <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="$bvModal.hide(id)">
         Cancel
-      </button>
-    </span>
+      </b-button>
+      <b-button
+        data-cy="EnvironmentCreateModal-submit"
+        variant="primary"
+        @click="submit"
+      >
+        OK
+      </b-button>
+    </template>
   </b-modal>
 </template>
 

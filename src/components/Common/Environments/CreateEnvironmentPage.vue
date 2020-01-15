@@ -23,7 +23,11 @@
 
         <template v-slot:footer>
           <div class="text-right">
-            <b-button variant="primary" type="submit">
+            <b-button
+              data-cy="Environment-SubmitButton"
+              variant="primary"
+              type="submit"
+            >
               Create connection
             </b-button>
           </div>
