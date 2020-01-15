@@ -89,15 +89,10 @@
           <b-row>
             <b-col sm="6" md="3" v-for="(color, index) in colors" :key="color">
               <div
-                class="CreateEnvironment-color"
-                :style="{ backgroundColor: color }"
+                :class="`CreateEnvironment-box Envbox-${color}`"
                 @click="selectColor(index)"
               >
-                <span
-                  class="CreateEnvironment-color--selected"
-                  v-if="environment.color === color"
-                  >Selected</span
-                >
+                <span v-if="environment.color === color">Selected</span>
               </div>
             </b-col>
           </b-row>
@@ -118,9 +113,9 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
-import { DEFAULT_COLOR } from '../../../services/environment'
 
 const useHttps = window.location.protocol === 'https:'
+const DEFAULT_COLOR = 'darkblue'
 
 export default {
   name: 'CreateEnvironment',
@@ -145,13 +140,13 @@ export default {
       },
       colors: [
         DEFAULT_COLOR,
-        '#0277bd',
-        '#8e24aa',
-        '#689f38',
-        '#f57c00',
-        '#e53935',
-        '#546e7a',
-        '#d81b60'
+        'lightblue',
+        'purple',
+        'green',
+        'orange',
+        'red',
+        'grey',
+        'magenta'
       ],
       warningHeaderText: ``
     }
@@ -268,7 +263,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.CreateEnvironment-color {
+.CreateEnvironment-box {
   margin-bottom: 10px;
   color: #fff;
   border-radius: 5px;
