@@ -1,51 +1,42 @@
 <template>
-  <header class="MainMenu">
-    <div class="navbar-fixed">
-      <nav
-        id="mainnav"
-        :style="{ backgroundColor: currentEnvironmentColor }"
-        class="MainMenu-nav"
-      >
-        <ul>
-          <li class="logo">
-            <div class="logo-container">
-              <div
-                class="version-container right-align"
-                :style="{ color: versionColor }"
-              >
-                {{ adminConsoleVersion }}
-              </div>
-              <div>
-                <a href="#" class="">
-                  <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
-                </a>
-              </div>
-            </div>
-          </li>
-          <router-link
-            tag="li"
-            class="nav"
-            :to="{ name: 'Data' }"
-            active-class="active"
-          >
-            <a>Data</a>
-          </router-link>
-          <router-link
-            v-if="hasSecurityRights()"
-            tag="li"
-            class="nav"
-            :to="{ name: 'Security' }"
-            active-class="active"
-          >
-            <a>Security</a>
-          </router-link>
-        </ul>
-
-        <ul class="right">
-          <li>
+  <div>
+    <b-navbar
+      toggleable="lg"
+      :style="{ backgroundColor: currentEnvironmentColor }"
+    >
+      <b-navbar-brand href="#" class="logo">
+        <div class="version-container right-align">
+          {{ adminConsoleVersion }}
+        </div>
+        <div>
+          <a href="#" class="">
+            <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
+          </a>
+        </div>
+      </b-navbar-brand>
+      <b-navbar-toggle target="nav-collapse" type="light"></b-navbar-toggle>
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav>
+          <b-nav-item href="#">
+            <router-link tag="li" :to="{ name: 'Data' }" active-class="active">
+              <a>Data</a>
+            </router-link>
+          </b-nav-item>
+          <b-nav-item href="#">
+            <router-link
+              v-if="hasSecurityRights()"
+              tag="li"
+              :to="{ name: 'Security' }"
+            >
+              <a>Security</a>
+            </router-link>
+          </b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item href="#">
             <b>{{ currentUserName }}</b> on
-          </li>
-          <li>
+          </b-nav-item>
+          <b-nav-item>
             <environment-switch
               blend-color="true"
               style="display: inline-flex"
@@ -53,16 +44,81 @@
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
             />
-          </li>
-          <li>
+          </b-nav-item>
+          <b-nav-item href="#">
             <a title="Logout" @click="doLogout"
               ><i class="logout fas fa-power-off"
             /></a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+          </b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+
+    <!-- <header class="MainMenu">
+      <div class="navbar-fixed">
+        <nav
+          id="mainnav"
+          :style="{ backgroundColor: currentEnvironmentColor }"
+          class="MainMenu-nav"
+        >
+          <ul>
+            <li class="logo">
+              <div class="logo-container">
+                <div
+                  class="version-container right-align"
+                  :style="{ color: versionColor }"
+                >
+                  {{ adminConsoleVersion }}
+                </div>
+                <div>
+                  <a href="#" class="">
+                    <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
+                  </a>
+                </div>
+              </div>
+            </li>
+            <router-link
+              tag="li"
+              class="nav"
+              :to="{ name: 'Data' }"
+              active-class="active"
+            >
+              <a>Data</a>
+            </router-link>
+            <router-link
+              v-if="hasSecurityRights()"
+              tag="li"
+              class="nav"
+              :to="{ name: 'Security' }"
+              active-class="active"
+            >
+              <a>Security</a>
+            </router-link>
+          </ul>
+
+          <ul class="right">
+            <li>
+              <b>{{ currentUserName }}</b> on
+            </li>
+            <li>
+              <environment-switch
+                blend-color="true"
+                style="display: inline-flex"
+                @environment::importEnv="importEnv"
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment"
+              />
+            </li>
+            <li>
+              <a title="Logout" @click="doLogout"
+                ><i class="logout fas fa-power-off"
+              /></a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header> -->
+  </div>
 </template>
 
 <script>
@@ -178,6 +234,7 @@ nav {
 .logo,
 .logo a {
   height: 50px;
+  padding: 0px;
 }
 
 .logo-container {

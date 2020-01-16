@@ -1,34 +1,24 @@
 <template>
-  <span ref="dropdown" class="EnvironmentsSwitch">
-    <a
-      class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
-      :style="{ backgroundColor: bgColor }"
-      :data-target="'environment-dropdown-' + _uid"
-    >
-      <span
-        v-if="$store.direct.getters.kuzzle.currentEnvironment"
-        class="current-environment-name truncate"
-      >
-        {{ currentEnvironmentName }}
-      </span>
-      <span
-        v-if="!$store.direct.getters.kuzzle.currentEnvironment"
-        class="current-environment-name truncate"
-      >
-        Choose Environment
-      </span>
-      <i class="fa fa-caret-down" />
-    </a>
-
-    <ul
-      :id="'environment-dropdown-' + _uid"
-      class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
-    >
-      <li
+  <div>
+    <b-dropdown class="dropdownSelector">
+      <template v-slot:button-content>
+        <span
+          v-if="$store.direct.getters.kuzzle.currentEnvironment"
+          class="current-environment-name truncate"
+        >
+          {{ currentEnvironmentName }}
+        </span>
+        <span
+          v-if="!$store.direct.getters.kuzzle.currentEnvironment"
+          class="current-environment-name truncate"
+        >
+          Choose Environment
+        </span>
+      </template>
+      <b-dropdown-item
         v-for="(env, index) in $store.direct.getters.kuzzle.environments"
         :key="env.name"
         :data-env="`env_${formatForDom(env.name)}`"
-        class="EnvironmentsSwitch-env environment"
       >
         <div @click="clickSwitch(index)">
           <span class="name environment-attribute truncate">{{
@@ -46,27 +36,95 @@
           class="delete error fa fa-trash"
           @click.prevent="$emit('environment::delete', index)"
         />
-      </li>
-      <li class="divider" />
-      <li>
+      </b-dropdown-item>
+      <b-dropdown-divider></b-dropdown-divider>
+      <b-dropdown-item>
         <a href="" @click.prevent="$emit('environment::create')"
           ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" />
           Create new connection</a
         >
-      </li>
-      <li>
+      </b-dropdown-item>
+      <b-dropdown-item>
         <a ref="export"
           ><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export
           all</a
         >
-      </li>
-      <li>
+      </b-dropdown-item>
+      <b-dropdown-item>
         <a href="#" @click.prevent="$emit('environment::importEnv')"
           ><i class="fa fa-file-import" />Import</a
         >
-      </li>
-    </ul>
-  </span>
+      </b-dropdown-item>
+    </b-dropdown>
+    <!-- <span ref="dropdown" class="EnvironmentsSwitch">
+      <a
+        class="btn-flat dropdown-button current-environment grey-text text-lighten-5 waves-effect waves-light"
+        :style="{ backgroundColor: bgColor }"
+        :data-target="'environment-dropdown-' + _uid"
+      >
+        <span
+          v-if="$store.direct.getters.kuzzle.currentEnvironment"
+          class="current-environment-name truncate"
+        >
+          {{ currentEnvironmentName }}
+        </span>
+        <span
+          v-if="!$store.direct.getters.kuzzle.currentEnvironment"
+          class="current-environment-name truncate"
+        >
+          Choose Environment
+        </span>
+        <i class="fa fa-caret-down" />
+      </a>
+
+      <ul
+        :id="'environment-dropdown-' + _uid"
+        class="EnvironmentsSwitch-envList dropdown-content environment-dropdown"
+      > -->
+    <!-- <li
+          v-for="(env, index) in $store.direct.getters.kuzzle.environments"
+          :key="env.name"
+          :data-env="`env_${formatForDom(env.name)}`"
+          class="EnvironmentsSwitch-env environment"
+        >
+          <div @click="clickSwitch(index)">
+            <span class="name environment-attribute truncate">{{
+              env.name
+            }}</span>
+            <span class="host environment-attribute truncate">{{
+              env.host
+            }}</span>
+          </div>
+          <i
+            class="edit primary fa fa-pencil-alt"
+            @click.prevent="$emit('environment::create', index)"
+          />
+          <i
+            class="delete error fa fa-trash"
+            @click.prevent="$emit('environment::delete', index)"
+          />
+        </li> -->
+    <!-- <li class="divider" />
+        <li>
+          <a href="" @click.prevent="$emit('environment::create')"
+            ><i class="EnvironmentsSwitch-newConnectionBtn fa fa-plus-circle" />
+            Create new connection</a
+          >
+        </li>
+        <li>
+          <a ref="export"
+            ><i class="EnvironmentsSwitch-export-all fa fa-file-export" />Export
+            all</a
+          >
+        </li>
+        <li>
+          <a href="#" @click.prevent="$emit('environment::importEnv')"
+            ><i class="fa fa-file-import" />Import</a
+          >
+        </li> -->
+    <!-- </ul> -->
+    <!-- </span> -->
+  </div>
 </template>
 
 <script>
@@ -145,7 +203,12 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
+<style lang="scss" rel="stylesheet/scss">
+.dropdownSelector {
+  .dropdown-toggle {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+  }
+}
 .current-environment {
   background-color: #002835;
   transition: 0.25s ease;
