@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-dropdown class="dropdownSelector">
+    <b-dropdown right :class="blendColor ? 'EnvironmentSwitch--inHeader' : ''">
       <template v-slot:button-content>
         <span
           v-if="$store.direct.getters.kuzzle.currentEnvironment"
@@ -136,7 +136,12 @@ import { formatForDom } from '../../../utils'
 
 export default {
   name: 'EnvironmentsSwitch',
-  props: ['blendColor'],
+  props: {
+    blendColor: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     currentEnvironmentName() {
       if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
@@ -204,9 +209,10 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.dropdownSelector {
+.EnvironmentSwitch--inHeader {
   .dropdown-toggle {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
   }
 }
 .current-environment {

@@ -2,14 +2,15 @@
   <div>
     <b-navbar
       toggleable="lg"
+      type="dark"
       :style="{ backgroundColor: currentEnvironmentColor }"
     >
       <b-navbar-brand href="#" class="logo">
-        <div class="version-container right-align">
+        <div class="version-container">
           {{ adminConsoleVersion }}
         </div>
         <div>
-          <a href="#" class="">
+          <a href="/" class="">
             <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
           </a>
         </div>
@@ -17,25 +18,19 @@
       <b-navbar-toggle target="nav-collapse" type="light"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#">
-            <router-link tag="li" :to="{ name: 'Data' }" active-class="active">
-              <a>Data</a>
-            </router-link>
-          </b-nav-item>
-          <b-nav-item href="#">
-            <router-link
-              v-if="hasSecurityRights()"
-              tag="li"
-              :to="{ name: 'Security' }"
-            >
-              <a>Security</a>
-            </router-link>
+          <b-nav-item :to="{ name: 'Data' }">Data</b-nav-item>
+          <b-nav-item
+            v-if="hasSecurityRights()"
+            tag="li"
+            :to="{ name: 'Security' }"
+          >
+            Security
           </b-nav-item>
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
-          <b-nav-item href="#">
+        <b-navbar-nav class="">
+          <b-nav-text>
             <b>{{ currentUserName }}</b> on
-          </b-nav-item>
+          </b-nav-text>
           <b-nav-item>
             <environment-switch
               blend-color="true"
@@ -45,7 +40,7 @@
               @environment::delete="deleteEnvironment"
             />
           </b-nav-item>
-          <b-nav-item href="#">
+          <b-nav-item>
             <a title="Logout" @click="doLogout"
               ><i class="logout fas fa-power-off"
             /></a>
