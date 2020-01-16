@@ -59,10 +59,11 @@ export default {
 }
 </script>
 
-<style lang="sass">
-.CreateEnvironmentPage
-  height: 100vh
-  display: flex
-  flex-direction: column
-  justify-content: center
+<style lang="scss">
+.CreateEnvironmentPage {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 </style>
