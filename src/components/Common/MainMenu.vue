@@ -3,8 +3,7 @@
     <div class="navbar-fixed">
       <nav
         id="mainnav"
-        :style="{ backgroundColor: currentEnvironmentColor }"
-        class="MainMenu-nav"
+        :class="`MainMenu-nav EnvColor--${currentEnvironmentColor}`"
       >
         <ul>
           <li class="logo">

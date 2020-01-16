@@ -1,57 +1,40 @@
 <template>
-  <form
-    class="EnvironmentDeleteModal"
-    @submit.prevent="confirmDeleteEnvironment"
-  >
-    <modal
-      id="delete-env"
-      additional-class="left-align"
-      :close="close"
-      :is-open="isOpen"
+  <b-modal :id="id" @cancel="reset" @close="reset" @hide="reset">
+    <template v-slot:modal-header>
+      <h4>
+        Environment <strong>{{ environmentName }}</strong> deletion
+      </h4>
+    </template>
+
+    <b-form-group
+      id="fieldset-1"
+      description="This operation is not undoable."
+      label="Confirm environment name"
+      label-for="env-to-delete-name"
     >
-      <div class="row">
-        <div class="col s12">
-          <h4>
-            Environment <strong>{{ environmentName }}</strong> deletion
-          </h4>
-          <div class="divider" />
-        </div>
-      </div>
+      <b-form-input
+        id="env-to-delete-name"
+        data-cy="EnvironmentDeleteModal-envName"
+        trim
+        v-model="envConfirmation"
+        @keydown.enter="confirmDeleteEnvironment"
+      ></b-form-input>
+    </b-form-group>
 
-      <div class="row">
-        <div class="col s7">
-          <div class="input-field left-align">
-            <label for="env-to-delete-name">Confirm environment name</label>
-            <input
-              id="env-to-delete-name"
-              v-model="envConfirmation"
-              v-focus
-              class="EnvironmentDeleteModal-envName"
-              type="text"
-            />
-          </div>
-        </div>
-      </div>
-
-      <span slot="footer">
-        <button
-          type="submit"
-          :disabled="environmentName !== envConfirmation"
-          :class="{ unauthorized: environmentName !== envConfirmation }"
-          class="EnvironmentDeleteModal-submit waves-effect btn"
-        >
-          Delete
-        </button>
-        <button
-          href="#!"
-          class="btn-flat waves-effect waves-grey"
-          @click.prevent="close"
-        >
-          Cancel
-        </button>
-      </span>
-    </modal>
-  </form>
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="$bvModal.hide(id)">
+        Cancel
+      </b-button>
+      <b-button
+        data-cy="EnvironmentDeleteModal-submit"
+        variant="primary"
+        :disabled="!confirmationOk"
+        @click="confirmDeleteEnvironment"
+      >
+        OK
+      </b-button>
+    </template>
+  </b-modal>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
@@ -75,7 +58,6 @@ button {
 </style>
 
 <script>
-import Modal from '../../Materialize/Modal'
 import Focus from '../../../directives/focus.directive'
 import { deleteEnvironment } from '../../../services/environment'
 
@@ -84,37 +66,39 @@ export default {
   directives: {
     Focus
   },
-  components: {
-    Modal
-  },
-  props: ['environmentId', 'isOpen', 'close'],
+  components: {},
+  props: ['environmentId', 'id'],
   data() {
     return {
-      environmentName: null,
       envConfirmation: null
     }
   },
   computed: {
     environments() {
       return this.$store.state.kuzzle.environments
-    }
-  },
-  watch: {
-    environmentId() {
-      if (this.environmentId && this.environments[this.environmentId]) {
-        this.environmentName = this.environments[this.environmentId].name
-      }
     },
-    isOpen() {
-      this.envConfirmation = null
+    confirmationOk() {
+      return (
+        this.environmentName !== null &&
+        this.environmentName === this.envConfirmation
+      )
+    },
+    environmentName() {
+      if (this.environmentId && this.environments[this.environmentId]) {
+        return this.environments[this.environmentId].name
+      }
+      return null
     }
   },
   methods: {
+    reset() {
+      this.envConfirmation = null
+    },
     confirmDeleteEnvironment() {
-      if (this.environmentName === this.envConfirmation) {
+      if (this.confirmationOk) {
         deleteEnvironment(this.environmentId)
 
-        this.close()
+        this.$bvModal.hide(this.id)
       }
     }
   }

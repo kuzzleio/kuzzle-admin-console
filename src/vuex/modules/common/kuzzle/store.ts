@@ -93,7 +93,7 @@ const actions = createActions({
       JSON.stringify(state.environments)
     )
 
-    return dispatch.switchEnvironment(payload.id)
+    dispatch.switchEnvironment(payload.id)
   },
   deleteEnvironment(context, id) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -140,10 +140,8 @@ const actions = createActions({
       getters.currentEnvironment.name &&
       getters.currentEnvironment.name !== payload.id
     ) {
-      return dispatch.switchEnvironment(payload.id)
+      dispatch.switchEnvironment(payload.id)
     }
-
-    return Promise.resolve()
   },
   switchLastEnvironment(context) {
     const { dispatch, state } = kuzzleActionContext(context)
@@ -178,14 +176,10 @@ const actions = createActions({
     connectToEnvironment(environment)
     dispatch.setConnection(id)
 
-    try {
-      await waitForConnected(1000)
-      await rootDispatch.auth.loginByToken({ token: environment.token })
-      return await rootDispatch.auth.checkFirstAdmin()
-    } catch (e) {
-      commit.setErrorFromKuzzle(e)
-      return e
-    }
+    await waitForConnected(1000)
+    await rootDispatch.auth.loginByToken({ token: environment.token })
+    await rootDispatch.auth.checkFirstAdmin()
+    return true
   },
   loadEnvironments(context) {
     let loadedEnv
