@@ -2,8 +2,8 @@
   <div>
     <b-navbar
       toggleable="lg"
+      :class="`EnvColor--${currentEnvironmentColor}`"
       type="dark"
-      :style="{ backgroundColor: currentEnvironmentColor }"
     >
       <b-navbar-brand href="#" class="logo">
         <div class="version-container">
@@ -19,20 +19,16 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item :to="{ name: 'Data' }">Data</b-nav-item>
-          <b-nav-item
-            v-if="hasSecurityRights()"
-            tag="li"
-            :to="{ name: 'Security' }"
-          >
+          <b-nav-item v-if="hasSecurityRights()" :to="{ name: 'Security' }">
             Security
           </b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
-          <b-nav-text class="mr-2">
+          <b-nav-text class="mr-2 text-white">
             <b>{{ currentUserName }}</b> on
           </b-nav-text>
           <environment-switch
-            blend-color="true"
+            :blend-color="true"
             style="display: inline-flex"
             @environment::importEnv="importEnv"
             @environment::create="editEnvironment"

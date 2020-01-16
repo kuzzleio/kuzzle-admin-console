@@ -6,6 +6,7 @@
     :text="currentEnvironmentName"
     :block="block"
     :right="right"
+    :class="blendColor ? 'EnvironmentsSwitch--blendColor' : ''"
   >
     <b-dropdown-item
       v-for="(env, index) in $store.direct.getters.kuzzle.environments"
@@ -134,7 +135,21 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
+<style lang="scss" rel="stylesheet/scss">
+.EnvironmentsSwitch--blendColor {
+  .dropdown-toggle {
+    background-color: rgba(255, 255, 255, 0.4);
+    border: none;
+    color: white;
+  }
+
+  &.show {
+    .dropdown-toggle {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+}
+
 .EnvironmentsSwitch-env {
   display: table;
 
