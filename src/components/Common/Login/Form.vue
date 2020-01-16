@@ -2,7 +2,6 @@
   <form id="loginForm" method="post" @submit.prevent="login()">
     <div class="loginForm-inputs">
       <b-form-group
-        :state="state"
         label="Login"
         label-for="username"
         label-cols-sm="4"
@@ -10,6 +9,7 @@
       >
         <b-form-input
           id="username"
+          data-cy="Login-username"
           v-model="username"
           v-focus
           type="text"
@@ -20,13 +20,13 @@
         />
       </b-form-group>
       <b-form-group
-        :state="state"
         label="Password"
         label-for="pass"
         label-cols-sm="4"
         label-cols-lg="3"
       >
         <b-form-input
+          data-cy="Login-password"
           id="pass"
           v-model="password"
           type="password"
@@ -45,10 +45,19 @@
     </div>
 
     <div class="LoginForm-buttons float-right mt-3">
-      <b-button variant="link" @click="loginAsAnonymous" class="mr-3"
+      <b-button
+        class="mr-3"
+        data-cy="LoginAsAnonymous-Btn"
+        variant="link"
+        @click="loginAsAnonymous"
         >Login as Anonymous</b-button
       >
-      <b-button variant="primary" type="submit" name="action" tabindex="3"
+      <b-button
+        variant="primary"
+        data-cy="Login-submitBtn"
+        type="submit"
+        name="action"
+        tabindex="3"
         >Login</b-button
       >
     </div>

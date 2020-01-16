@@ -111,10 +111,6 @@ export default {
 
     this.$refs.export.href = URL.createObjectURL(blob)
     this.$refs.export.download = 'connections.json'
-
-    $(this.$refs.dropdown)
-      .find('.dropdown-button')
-      .dropdown({ constrain_width: false, belowOrigin: true })
   },
   methods: {
     clickSwitch(id) {

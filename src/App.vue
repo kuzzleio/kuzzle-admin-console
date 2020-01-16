@@ -38,7 +38,7 @@
                 @environment::importEnv="importEnv"
               />
             </div>
-            <div v-else class="App-hasAdmin">
+            <div v-else class="App-hasAdmin" data-cy="App-hasAdmin">
               <login
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
@@ -46,7 +46,7 @@
               />
             </div>
           </div>
-          <div v-else class="App-loggedIn">
+          <div v-else class="App-loggedIn" data-cy="App-loggedIn">
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"

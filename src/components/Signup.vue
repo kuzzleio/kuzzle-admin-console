@@ -31,7 +31,7 @@
           </b-row>
         </b-jumbotron>
         <div class="text-center"></div>
-        <v-alert variant="danger" :show="error">{{ error }}</v-alert>
+        <b-alert variant="danger" :show="error">{{ error }}</b-alert>
 
         <b-form-group
           description="The name of the user that will administrate this instance"
@@ -41,6 +41,7 @@
           label-for="username"
         >
           <input
+            data-cy="Signup-username"
             id="username"
             v-model="username"
             type="text"
@@ -56,6 +57,7 @@
           label-for="pass1"
         >
           <input
+            data-cy="Signup-password1"
             id="pass1"
             v-model="password1"
             type="password"
@@ -71,6 +73,7 @@
           label-for="pass2"
         >
           <input
+            data-cy="Signup-password2"
             id="pass2"
             v-model="password2"
             type="password"
@@ -101,11 +104,18 @@
           <div class="text-right">
             <b-button
               class="mr-3"
+              data-cy="LoginAsAnonymous-Btn"
               variant="outline-secondary"
               @click="loginAsGuest"
               >Login as Anonymous</b-button
             >
-            <b-button type="submit" variant="primary" :disabled="waiting">
+            <b-button
+              data-cy="Signup-submitBtn"
+              type="submit"
+              variant="primary"
+              :disabled="waiting"
+              @click="signup"
+            >
               Create Admin Account
             </b-button>
           </div>
@@ -134,7 +144,7 @@ export default {
     }
   },
   methods: {
-    async Signup() {
+    async signup() {
       if (
         this.username === '' ||
         this.password1 === '' ||
@@ -145,35 +155,36 @@ export default {
       }
 
       if (this.password1 !== this.password2) {
-        this.error = 'Password does not match'
+        this.error = 'Confirmation does not match password'
         return
       }
 
       this.error = null
       this.waiting = true
 
-      try {
-        await this.$kuzzle.query({
-          controller: 'security',
-          action: 'createFirstAdmin',
-          _id: this.username,
-          reset: this.reset,
-          body: {
-            content: {},
-            credentials: {
-              local: {
-                username: this.username,
-                password: this.password1
-              }
+      // try {
+      await this.$kuzzle.query({
+        controller: 'security',
+        action: 'createFirstAdmin',
+        _id: this.username,
+        reset: this.reset,
+        body: {
+          content: {},
+          credentials: {
+            local: {
+              username: this.username,
+              password: this.password1
             }
           }
-        })
-        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
-        this.$store.direct.commit.auth.setAdminExits(true)
-        this.$router.push({ name: 'Login' }).catch(() => {})
-      } catch (err) {
-        this.$router.push({ name: 'Login' }).catch(() => {})
-      }
+        }
+      })
+      this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
+      this.$store.direct.commit.auth.setAdminExists(true)
+      this.$router.push({ name: 'Login' })
+      // } catch (err) {
+      //   console.error(err)
+      //   // this.$router.push({ name: 'Login' }).catch(() => {})
+      // }
     },
     loginAsGuest() {
       this.error = ''

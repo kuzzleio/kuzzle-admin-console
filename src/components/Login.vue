@@ -1,29 +1,32 @@
 <template>
   <div class="LoginPage">
-    <b-card class="w-25">
-      <b-card-body>
-        <div class="text-center">
-          <img
-            src="../assets/logo.svg"
-            alt="Welcome to the Kuzzle Admin Console"
-            class="mb-5"
-          />
-        </div>
-        <b-form-group
-          :state="state"
-          label="Environment"
-          label-cols-sm="4"
-          label-cols-lg="3"
-        >
-          <environment-switch
-            @environment::create="editEnvironment"
-            @environment::delete="deleteEnvironment"
-            @environment::importEnv="importEnv"
-          />
-        </b-form-group>
-        <login-form :on-login="onLogin" />
-      </b-card-body>
-    </b-card>
+    <b-row align-h="center" class="w-100">
+      <b-col xl="5" lg="7" md="8" sm="10">
+        <b-card>
+          <b-card-body>
+            <div class="text-center">
+              <img
+                src="../assets/logo.svg"
+                alt="Welcome to the Kuzzle Admin Console"
+                class="mb-5 img-fluid"
+              />
+            </div>
+            <b-form-group
+              label="Environment"
+              label-cols-sm="4"
+              label-cols-lg="3"
+            >
+              <environment-switch
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment"
+                @environment::importEnv="importEnv"
+              />
+            </b-form-group>
+            <login-form :on-login="onLogin" />
+          </b-card-body>
+        </b-card>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
