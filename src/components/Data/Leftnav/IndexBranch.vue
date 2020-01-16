@@ -123,6 +123,7 @@ export default {
       // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
     },
+    // TODO get rid of this ESTEBAAAAAAAAN
     getRelativeLink(isRealtime) {
       switch (this.routeName) {
         case 'DataCollectionWatch':
