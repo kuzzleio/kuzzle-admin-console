@@ -162,29 +162,38 @@ export default {
       this.error = null
       this.waiting = true
 
-      // try {
-      await this.$kuzzle.query({
-        controller: 'security',
-        action: 'createFirstAdmin',
-        _id: this.username,
-        reset: this.reset,
-        body: {
-          content: {},
-          credentials: {
-            local: {
-              username: this.username,
-              password: this.password1
+      try {
+        await this.$kuzzle.query({
+          controller: 'security',
+          action: 'createFirstAdmin',
+          _id: this.username,
+          reset: this.reset,
+          body: {
+            content: {},
+            credentials: {
+              local: {
+                username: this.username,
+                password: this.password1
+              }
             }
           }
-        }
-      })
-      this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
-      this.$store.direct.commit.auth.setAdminExists(true)
-      this.$router.push({ name: 'Login' })
-      // } catch (err) {
-      //   console.error(err)
-      //   // this.$router.push({ name: 'Login' }).catch(() => {})
-      // }
+        })
+        this.$store.direct.dispatch.kuzzle.updateTokenCurrentEnvironment(null)
+        this.$store.direct.commit.auth.setAdminExists(true)
+        this.$router.push({ name: 'Login' })
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while creating the administrator.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
     },
     loginAsGuest() {
       this.error = ''
