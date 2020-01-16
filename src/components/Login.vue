@@ -12,7 +12,7 @@
               />
             </div>
             <b-form-group
-              label="Environment"
+              label="Connection"
               label-cols-sm="4"
               label-cols-lg="3"
             >
