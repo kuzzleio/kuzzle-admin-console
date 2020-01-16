@@ -1,80 +1,94 @@
 <template>
-  <form class="EnvironmentsImportModal" @submit.prevent="importEnv">
-    <modal
-      id="create-env"
-      :footer-fixed="true"
-      :is-open="isOpen"
-      :close="close"
+  <b-modal
+    ref="modal-import-env"
+    title="Import Connection"
+    :id="id"
+    @cancel="reset"
+    @close="reset"
+    @hide="reset"
+  >
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="$bvModal.hide(id)">
+        Cancel
+      </b-button>
+      <b-button
+        variant="primary"
+        :disabled="envNames.length === 0"
+        @click="importEnv"
+      >
+        OK
+      </b-button>
+    </template>
+
+    <b-form-file ref="file-input" @change="upload($event)" />
+
+    <p class="mt-3">Found {{ envNames.length }} connections</p>
+
+    <b-alert
+      v-for="(err, k) in errors"
+      class="mt-3"
+      dismissible
+      show
+      variant="danger"
+      :key="k"
+      >Error: {{ err }}</b-alert
     >
-      <div class="row">
-        <div class="col s12">
-          <h4>Import Connection</h4>
-          <div class="divider" />
-        </div>
-      </div>
-
-      <input type="file" @change="upload($event)" />
-
-      <div v-for="(err, k) in errors" :key="k" class="card-panel red lighten-3">
-        <span>Error: {{ err }}</span>
-      </div>
-
-      <span slot="footer">
-        <button
-          :class="{ disabled: !canSubmit }"
-          type="submit"
-          class="EnvironmentsCreateModal-import Environment-SubmitButton waves-effect btn"
-        >
-          Import
-        </button>
-        <button class="btn-flat waves-effect waves-grey" @click.prevent="close">
-          Cancel
-        </button>
-      </span>
-    </modal>
-  </form>
+  </b-modal>
 </template>
 
 <script>
-import Modal from '../../Materialize/Modal'
-
 export default {
   name: 'ModalImport',
-  components: {
-    Modal
-  },
-  props: ['environmentId', 'isOpen', 'close'],
+  props: ['id'],
+  components: {},
   data() {
     return {
       env: {},
-      canSubmit: false,
       errors: []
     }
   },
+  computed: {
+    envNames() {
+      return Object.keys(this.env)
+    }
+  },
   methods: {
+    clearFiles() {
+      this.$refs['file-input'].reset()
+    },
+    reset() {
+      this.clearFiles()
+      this.errors = []
+      this.env = {}
+    },
     importEnv() {
       for (const name in this.env) {
         try {
-          this.$store.direct.dispatch.kuzzle.createEnvurinlent({
+          this.$store.direct.dispatch.kuzzle.createEnvironment({
             id: name,
             environment: this.env[name]
           })
         } catch (e) {
           this.errors.push(e)
         }
-        if (!this.errors.length) {
-          this.close()
-        }
+      }
+      if (!this.errors.length) {
+        this.$bvModal.hide(this.id)
       }
     },
     upload(event) {
+      this.errors = []
+      this.env = {}
       var reader = new FileReader()
 
       reader.onload = (() => {
         return e => {
-          this.errors = []
-          this.env = JSON.parse(e.target.result)
-          this.canSubmit = true
+          try {
+            this.env = JSON.parse(e.target.result)
+            this.canSubmit = true
+          } catch (error) {
+            this.errors.push(error)
+          }
         }
       })(event.target.files[0])
 

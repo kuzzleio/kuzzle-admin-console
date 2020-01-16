@@ -27,19 +27,17 @@
             Security
           </b-nav-item>
         </b-navbar-nav>
-        <b-navbar-nav class="">
-          <b-nav-text>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-text class="mr-2">
             <b>{{ currentUserName }}</b> on
           </b-nav-text>
-          <b-nav-item>
-            <environment-switch
-              blend-color="true"
-              style="display: inline-flex"
-              @environment::importEnv="importEnv"
-              @environment::create="editEnvironment"
-              @environment::delete="deleteEnvironment"
-            />
-          </b-nav-item>
+          <environment-switch
+            blend-color="true"
+            style="display: inline-flex"
+            @environment::importEnv="importEnv"
+            @environment::create="editEnvironment"
+            @environment::delete="deleteEnvironment"
+          />
           <b-nav-item>
             <a title="Logout" @click="doLogout"
               ><i class="logout fas fa-power-off"
