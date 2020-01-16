@@ -28,7 +28,7 @@ describe('Login', function () {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it.only('is able to login as an existing user', () => {
+  it('is able to login as an existing user', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
       content: {},
