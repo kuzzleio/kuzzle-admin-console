@@ -22,9 +22,7 @@
 
     <b-form-file ref="file-input" @change="upload($event)" />
 
-    <p v-if="envNames.length > 0" class="mt-3">
-      Found {{ envNames.length }} connections
-    </p>
+    <p class="mt-3">Found {{ envNames.length }} connections</p>
 
     <b-alert
       v-for="(err, k) in errors"
@@ -41,7 +39,7 @@
 <script>
 export default {
   name: 'ModalImport',
-  props: ['id', 'isOpen'],
+  props: ['id'],
   components: {},
   data() {
     return {
@@ -79,13 +77,18 @@ export default {
       }
     },
     upload(event) {
+      this.errors = []
+      this.env = {}
       var reader = new FileReader()
 
       reader.onload = (() => {
         return e => {
-          this.errors = []
-          this.env = JSON.parse(e.target.result)
-          this.canSubmit = true
+          try {
+            this.env = JSON.parse(e.target.result)
+            this.canSubmit = true
+          } catch (error) {
+            this.errors.push(error)
+          }
         }
       })(event.target.files[0])
 

@@ -41,6 +41,7 @@
               <login
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
+                @environment::importEnv="importEnvironment"
               />
             </div>
           </div>
