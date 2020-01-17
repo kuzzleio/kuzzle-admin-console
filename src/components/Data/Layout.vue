@@ -1,21 +1,21 @@
 <template>
   <b-container fluid class="p-0 h-100">
     <b-row no-gutters class="h-100">
-      <b-col cols="2">
+      <div class="sidebar">
         <treeview
           :route-name="$route.name"
           :index="$route.params.index"
           :collection="$route.params.collection"
         />
-      </b-col>
-      <b-col cols="10">
+      </div>
+      <div>
         <router-view
           v-if="routeExist"
           :index="$route.params.index"
           :collection="$route.params.collection"
         />
         <notFound v-else />
-      </b-col>
+      </div>
     </b-row>
   </b-container>
 </template>
@@ -106,3 +106,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.sidebar {
+  width: $sidebar-width;
+}
+</style>
