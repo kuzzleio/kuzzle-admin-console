@@ -122,10 +122,6 @@ h6 {
   margin-bottom: 40px;
 }
 
-// .wrapper {
-// height: calc(98vh - 106px); // 66px = topBar, 40px = warning
-// }
-
 .loader {
   transition: opacity 0.5s ease-out;
   opacity: 1;

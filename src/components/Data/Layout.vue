@@ -8,7 +8,7 @@
           :collection="$route.params.collection"
         />
       </div>
-      <div>
+      <div class="content">
         <router-view
           v-if="routeExist"
           :index="$route.params.index"
@@ -23,7 +23,7 @@
 <script>
 import { canSearchIndex } from '../../services/userAuthorization'
 import Treeview from './Leftnav/Treeview'
-import NotFound from '../404'
+import NotFound from './Data404'
 
 export default {
   name: 'DataLayout',
@@ -110,5 +110,9 @@ export default {
 <style lang="scss" scoped>
 .sidebar {
   width: $sidebar-width;
+}
+
+.content {
+  width: calc(100% - #{$sidebar-width});
 }
 </style>
