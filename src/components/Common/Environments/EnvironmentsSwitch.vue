@@ -51,8 +51,6 @@
 </template>
 
 <script>
-import { DEFAULT_COLOR } from '../../../services/environment'
-import tinycolor from 'tinycolor2/tinycolor'
 import Promise from 'bluebird'
 
 import { formatForDom } from '../../../utils'
@@ -80,25 +78,6 @@ export default {
       }
 
       return this.$store.direct.getters.kuzzle.currentEnvironment.name
-    },
-    bgColor() {
-      if (!this.blendColor) {
-        return DEFAULT_COLOR
-      }
-
-      let color
-      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        color = DEFAULT_COLOR
-      } else {
-        color = this.$store.direct.getters.kuzzle.currentEnvironment.color
-      }
-      if (!color) {
-        color = DEFAULT_COLOR
-      }
-
-      return tinycolor(color)
-        .lighten(10)
-        .toString()
     }
   },
   mounted() {

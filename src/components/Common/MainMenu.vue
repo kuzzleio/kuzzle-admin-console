@@ -34,7 +34,7 @@
             @environment::create="editEnvironment"
             @environment::delete="deleteEnvironment"
           />
-          <b-nav-item>
+          <b-nav-item class="ml-1">
             <a title="Logout" @click="doLogout"
               ><i class="logout fas fa-power-off"
             /></a>
