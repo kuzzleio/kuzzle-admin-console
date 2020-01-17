@@ -1,5 +1,5 @@
 <template>
-  <div class="fourOhFourPage">
+  <div class="fourOhFourPage h-100">
     <b-container fluid class="h-100">
       <b-row class="justify-content-center h-100" align-v="center">
         <b-col cols="6">
@@ -21,11 +21,6 @@
           </b-card>
         </b-col>
       </b-row>
-      <b-row>
-        <b-col>
-          nique
-        </b-col>
-      </b-row>
     </b-container>
   </div>
 </template>
@@ -38,7 +33,6 @@ export default {
 
 <style scoped>
 .fourOhFourPage {
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;

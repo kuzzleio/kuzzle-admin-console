@@ -19,9 +19,7 @@
         <div
           v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
           class="App-disconnected"
-        >
-          <!-- This is not supposed to happen, see error case above -->
-        </div>
+        ></div>
         <div v-else data-cy="App-connected">
           <div
             v-if="!$store.direct.getters.auth.isAuthenticated"
@@ -150,3 +148,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.App {
+  height: 100vh;
+  overflow-x: hidden;
+  background-color: #f5f5f5;
+}
+</style>

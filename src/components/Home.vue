@@ -6,16 +6,13 @@
       @environment::importEnv="importEnv"
     />
 
-    <main class="loader">
-      <warning-header
-        v-if="!$store.direct.getters.auth.adminAlreadyExists"
-        :text="warningHeaderText"
-      />
-      <div class="wrapper">
-        <router-view />
-      </div>
-    </main>
-
+    <warning-header
+      v-if="!$store.direct.getters.auth.adminAlreadyExists"
+      :text="warningHeaderText"
+    />
+    <div class="wrapper" :style="`height: calc(100vh - ${topOffset}px)`">
+      <router-view />
+    </div>
     <modal
       id="tokenExpired"
       class="small-modal"
@@ -61,6 +58,16 @@ export default {
     Modal,
     KuzzleDisconnected,
     WarningHeader
+  },
+  computed: {
+    topOffset() {
+      const topBarHeight = 66
+      const warningBarHeight = !this.$store.direct.getters.auth
+        .adminAlreadyExists
+        ? 40
+        : 0
+      return topBarHeight + warningBarHeight
+    }
   },
   data() {
     return {
@@ -115,13 +122,9 @@ h6 {
   margin-bottom: 40px;
 }
 
-main {
-  padding-left: $sidebar-width;
-
-  .wrapper {
-    padding: 20px;
-  }
-}
+// .wrapper {
+// height: calc(98vh - 106px); // 66px = topBar, 40px = warning
+// }
 
 .loader {
   transition: opacity 0.5s ease-out;

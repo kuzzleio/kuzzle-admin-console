@@ -1,31 +1,23 @@
 <template>
-  <div id="data-layout">
-    <b-container fluid>
-      <b-row>
-        <b-col cols="4">
-          <treeview
-            :route-name="$route.name"
-            :index="$route.params.index"
-            :collection="$route.params.collection"
-          />
-        </b-col>
-        <b-col cols="8">
-          <router-view
-            v-if="routeExist"
-            :index="$route.params.index"
-            :collection="$route.params.collection"
-          />
-          <notFound v-else />
-        </b-col>
-      </b-row>
-    </b-container>
-
-    <!-- <section>
-      <section class="view">
-
-      </section>
-    </section> -->
-  </div>
+  <b-container fluid class="p-0 h-100">
+    <b-row no-gutters class="h-100">
+      <b-col cols="2">
+        <treeview
+          :route-name="$route.name"
+          :index="$route.params.index"
+          :collection="$route.params.collection"
+        />
+      </b-col>
+      <b-col cols="10">
+        <router-view
+          v-if="routeExist"
+          :index="$route.params.index"
+          :collection="$route.params.collection"
+        />
+        <notFound v-else />
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>

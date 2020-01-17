@@ -1,20 +1,17 @@
 <template>
-  <aside class="sidenav">
-    <b-nav vertical class="w-25">
+  <aside class="sidenav h-100">
+    <b-nav vertical>
       <b-nav-item v-if="!canSearchIndex()">
         <i class="fa fa-lock" aria-hidden="true" />
         <em>You are not allowed to list indexes</em>
       </b-nav-item>
       <b-nav-item v-else>
-        <div class="Treeview-searchField input-field">
-          <input
-            v-model="filter"
+        <div class="">
+          <b-form-input
             type="search"
+            v-model="filter"
             placeholder="Search index &amp; collection"
-          />
-          <div class="Treeview-searchIcon">
-            <i class="fa fa-search" />
-          </div>
+          ></b-form-input>
         </div>
       </b-nav-item>
       <b-nav-item v-for="indexName in orderedFilteredIndices" :key="indexName">
@@ -28,57 +25,6 @@
         />
       </b-nav-item>
     </b-nav>
-    <!-- <aside class="Treeview"> -->
-    <!-- <ul
-        v-if="!canSearchIndex()"
-        class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
-      >
-        <li class="Treeview-unauthorized">
-          <ul class="indexes">
-            <li>
-              <i class="fa fa-lock" aria-hidden="true" />
-              <em>You are not allowed to list indexes</em>
-            </li>
-          </ul>
-        </li>
-      </ul> -->
-    <!-- <ul
-        v-else
-        class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
-      >
-        <li>
-          <nav>
-            <div class="nav-wrapper">
-              <form>
-                <div class="Treeview-searchField input-field">
-                  <input
-                    v-model="filter"
-                    type="search"
-                    placeholder="Search index &amp; collection"
-                  />
-                  <div class="Treeview-searchIcon">
-                    <i class="fa fa-search" />
-                  </div>
-                </div>
-              </form>
-            </div>
-          </nav>
-        </li>
-        <li>
-          <ul class="Treeview-root">
-            <li v-for="indexName in orderedFilteredIndices" :key="indexName">
-              <index-branch
-                :index-name="indexName"
-                :route-name="routeName"
-                :collections="indexesAndCollections[indexName]"
-                :current-index="index"
-                :filter="filter"
-                :current-collection="collection"
-              />
-            </li>
-          </ul>
-        </li>
-      </ul>-->
   </aside>
 </template>
 
@@ -182,6 +128,7 @@ li {
 }
 
 .sidenav {
+  background-color: #ffffff;
   transform: translateX(0%) !important;
 }
 </style>

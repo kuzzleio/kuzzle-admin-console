@@ -14,52 +14,42 @@
       <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
     </router-link>
-    <ul class="collections">
-      <li
+    <b-nav vertical class="collections">
+      <b-nav-item
         v-for="collectionName in orderedFilteredStoredCollections"
         :key="collectionName"
+        :to="{
+          name: 'DataDocumentsList',
+          params: { index: indexName, collection: collectionName }
+        }"
+        class="tree-item truncate"
+        :class="{ active: isCollectionActive(indexName, collectionName) }"
       >
-        <router-link
-          class="tree-item truncate"
-          :to="{
-            name: 'DataDocumentsList',
-            params: { index: indexName, collection: collectionName }
-          }"
-          :class="{ active: isCollectionActive(indexName, collectionName) }"
-        >
-          <i
-            class="fa fa-th-list"
-            aria-hidden="true"
-            title="Persisted collection"
-          />
-          <span v-html="highlight(collectionName, filter)" />
-        </router-link>
-      </li>
-      <li
+        <i
+          class="fa fa-th-list"
+          aria-hidden="true"
+          title="Persisted collection"
+        />
+        <span v-html="highlight(collectionName, filter)" />
+      </b-nav-item>
+      <b-nav-item
         v-for="collectionName in orderedFilteredRealtimeCollections"
         :key="collectionName"
+        class="tree-item"
+        :to="{
+          name: 'DataCollectionWatch',
+          params: { index: indexName, collection: collectionName }
+        }"
+        :class="{ active: isCollectionActive(indexName, collectionName) }"
       >
-        <router-link
-          class="tree-item"
-          :to="{
-            name: 'DataCollectionWatch',
-            params: { index: indexName, collection: collectionName }
-          }"
-          :class="{ active: isCollectionActive(indexName, collectionName) }"
-        >
-          <i
-            class="fa fa-bolt"
-            aria-hidden="true"
-            title="Volatile collection"
-          />
-          <span v-html="highlight(collectionName, filter)" />
-          <i
-            class="fa fa-times right remove"
-            @click.prevent="removeRealtimeCollection(indexName, collectionName)"
-          />
-        </router-link>
-      </li>
-    </ul>
+        <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection" />
+        <span v-html="highlight(collectionName, filter)" />
+        <i
+          class="fa fa-times right remove"
+          @click.prevent="removeRealtimeCollection(indexName, collectionName)"
+        />
+      </b-nav-item>
+    </b-nav>
   </div>
 </template>
 
@@ -183,11 +173,16 @@ export default {
 }
 </script>
 
-<style scoped lang="css">
+<style scoped lang="scss">
 ul.collections {
   padding-left: 15px;
   overflow-y: hidden;
   max-height: 0;
+}
+
+.open ul.collections {
+  max-height: 2000px;
+  transition: max-height 0.5s ease-out;
 }
 
 li {
@@ -200,24 +195,29 @@ i.tree-toggle {
   height: 32px;
 }
 
+.nav-item a {
+  color: #002835;
+  .active {
+    font-weight: bold;
+  }
+}
+
 a.tree-item {
   padding: 0 5px;
   margin: 0 15px;
-}
-
-a.tree-item.active {
-  font-weight: bold;
-  color: #3498db;
+  color: #002835;
+  &.active {
+    font-weight: bold;
+  }
 }
 
 i.fa {
   margin-right: 5px;
   color: rgb(100, 100, 100);
-}
-
-i.fa:hover {
-  margin-right: 5px;
-  color: rgb(50, 50, 50);
+  &:hover {
+    margin-right: 5px;
+    color: rgb(50, 50, 50);
+  }
 }
 
 i.tree-toggle {
@@ -229,15 +229,8 @@ i.tree-toggle {
   transform-origin: 50% 50%;
 }
 
-/** open-closed state **/
-
 .open i.tree-toggle {
   transform: rotate(90deg);
-}
-
-.open ul.collections {
-  max-height: 2000px;
-  transition: max-height 0.5s ease-out;
 }
 
 /* webkit adjacent element selector bugfix */
