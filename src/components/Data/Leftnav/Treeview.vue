@@ -74,15 +74,7 @@ export default {
 .Treeview-container {
   z-index: 900;
   top: $navbar-height;
-  height: 95%;
   width: $sidebar-width;
-
-  @media (max-width: $medium-screen) {
-    // @HACK this is nasty, but we need it to override the default
-    // MaterializeCSS behavior, hiding the side menu whenever the
-    // screen is less than medium-width.
-    transform: translateX(0);
-  }
 }
 
 .Treeview-searchField {

@@ -1,9 +1,10 @@
 <template>
   <div>
     <b-navbar
+      fixed="top"
       toggleable="lg"
-      :class="`EnvColor--${currentEnvironmentColor}`"
       type="dark"
+      :class="`EnvColor--${currentEnvironmentColor}`"
     >
       <b-navbar-brand href="#" class="logo">
         <div class="version-container">

@@ -8,19 +8,19 @@
         />
       </error-layout>
     </div>
-    <div v-else>
+    <template v-else>
       <div
         v-if="!$store.direct.getters.kuzzle.hasEnvironment"
         class="App-noEnvironments"
       >
         <create-environment-page @environment::importEnv="importEnvironment" />
       </div>
-      <div v-else>
+      <template v-else>
         <div
           v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
           class="App-disconnected"
         ></div>
-        <div v-else data-cy="App-connected">
+        <div v-else data-cy="App-connected" style="height: 100%">
           <div
             v-if="!$store.direct.getters.auth.isAuthenticated"
             class="App-loggedOut"
@@ -43,15 +43,20 @@
               />
             </div>
           </div>
-          <div v-else class="App-loggedIn" data-cy="App-loggedIn">
+          <div
+            v-else
+            class="App-loggedIn"
+            data-cy="App-loggedIn"
+            style="height: 100%"
+          >
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
             />
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </template>
 
     <modal-create-or-update
       id="modal-env-create-or-update"

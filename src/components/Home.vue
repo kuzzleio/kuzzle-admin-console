@@ -1,16 +1,25 @@
 <template>
-  <div class="Main">
+  <div class="Home">
     <main-menu
       @environment::create="editEnvironment"
       @environment::delete="deleteEnvironment"
       @environment::importEnv="importEnv"
     />
+    <b-alert
+      class="position-fixed fixed-bottom m-0 rounded-0 text-center"
+      dismissible
+      fade
+      style="z-index: 2000;"
+      variant="info"
+      :show="!$store.direct.getters.auth.adminAlreadyExists"
+    >
+      <i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>
+      <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly
+      recommended <a href="#/signup" class="alert-link"> that you create one.</a
+      ><i class="fa fa-exclamation-triangle ml-2" aria-hidden="true"></i>
+    </b-alert>
 
-    <warning-header
-      v-if="!$store.direct.getters.auth.adminAlreadyExists"
-      :text="warningHeaderText"
-    />
-    <div class="wrapper" :style="`height: calc(100vh - ${topOffset}px)`">
+    <div class="Home-routeWrapper">
       <router-view />
     </div>
     <modal
@@ -45,7 +54,6 @@
 
 <script>
 import MainMenu from './Common/MainMenu'
-import WarningHeader from './Common/WarningHeader'
 import LoginForm from './Common/Login/Form'
 import Modal from './Materialize/Modal'
 import KuzzleDisconnected from './Error/KuzzleDisconnected'
@@ -56,8 +64,7 @@ export default {
     LoginForm,
     MainMenu,
     Modal,
-    KuzzleDisconnected,
-    WarningHeader
+    KuzzleDisconnected
   },
   computed: {
     topOffset() {
@@ -74,8 +81,7 @@ export default {
       host: null,
       port: null,
       tokenExpiredIsOpen: false,
-      kuzzleDisconnectedIsOpen: false,
-      warningHeaderText: `<i class="fa fa-exclamation-triangle" aria-hidden="true"></i> <b>Warning!</b> Your Kuzzle has no administrator user. It is strongly recommended <a href="#/signup"> that you create one.</a><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>`
+      kuzzleDisconnectedIsOpen: false
     }
   },
   watch: {
@@ -118,26 +124,12 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-h6 {
-  margin-bottom: 40px;
+.Home {
+  height: 100%;
 }
 
-.loader {
-  transition: opacity 0.5s ease-out;
-  opacity: 1;
-
-  &.loading {
-    opacity: 0.3;
-    z-index: 10;
-
-    &:before {
-      content: 'loading ...';
-      position: fixed;
-      text-align: center;
-      left: 0;
-      right: 0;
-      bottom: 10px;
-    }
-  }
+.Home-routeWrapper {
+  padding-top: $navbar-height;
+  height: 100%;
 }
 </style>
