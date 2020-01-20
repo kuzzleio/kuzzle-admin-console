@@ -125,11 +125,11 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .Home {
-  height: 100%;
+  height: calc(100% - #{$navbar-height});
 }
 
 .Home-routeWrapper {
-  padding-top: $navbar-height;
+  margin-top: $navbar-height;
   height: 100%;
 }
 </style>

@@ -120,6 +120,7 @@ export default {
 
 .content {
   width: calc(100% - #{$sidebar-width});
-  padding-left: $sidebar-width;
+  margin-left: $sidebar-width;
+  padding: $content-gutter;
 }
 </style>
