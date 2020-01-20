@@ -109,6 +109,7 @@ export default {
 
 <style lang="scss" scoped>
 .sidebar {
+  background: #fff;
   width: $sidebar-width;
   position: fixed;
   top: 0;

@@ -1,5 +1,5 @@
 <template>
-  <aside class="sidenav h-100">
+  <aside class="h-100">
     <b-nav vertical>
       <b-nav-item v-if="!canSearchIndex()">
         <i class="fa fa-lock" aria-hidden="true" />
@@ -69,57 +69,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" rel="stylesheet/scss" scoped>
-.Treeview-container {
-  z-index: 900;
-  top: $navbar-height;
-  width: $sidebar-width;
-}
-
-.Treeview-searchField {
-  height: 100%;
-  background-color: #ffffff;
-  color: #000000;
-
-  .Treeview-searchIcon {
-    position: absolute;
-    top: 0;
-    left: 20px;
-  }
-  input {
-    padding-left: 3rem;
-
-    &::-webkit-input-placeholder {
-      font-size: 1rem;
-    }
-    &::-moz-placeholder {
-      font-size: 1rem;
-    }
-    &:-ms-input-placeholder,
-    &:-moz-placeholder {
-      font-size: 1rem;
-    }
-  }
-}
-
-.Treeview-unauthorized {
-  li {
-    line-height: 24px;
-  }
-}
-
-.Treeview-root {
-  margin-top: 16px;
-  padding-left: 15px;
-  list-style: none;
-}
-
-li {
-  position: relative;
-}
-
-.sidenav {
-  background-color: #ffffff;
-}
-</style>
