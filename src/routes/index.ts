@@ -10,6 +10,13 @@ export default function createRoutes(VueRouter) {
     {
       routes: [
         {
+          path: '*',
+          name: '404',
+          component(resolve) {
+            require(['../components/404'], resolve)
+          }
+        },
+        {
           path: '/',
           name: 'Home',
           redirect: '/data',

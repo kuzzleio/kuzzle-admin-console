@@ -1,27 +1,29 @@
 <template>
-  <div id="data-layout">
-    <treeview
-      :route-name="$route.name"
-      :index="$route.params.index"
-      :collection="$route.params.collection"
-    />
-    <section>
-      <section class="view">
+  <b-container fluid class="p-0 h-100">
+    <b-row no-gutters class="h-100">
+      <div class="sidebar">
+        <treeview
+          :route-name="$route.name"
+          :index="$route.params.index"
+          :collection="$route.params.collection"
+        />
+      </div>
+      <div class="content">
         <router-view
           v-if="routeExist"
           :index="$route.params.index"
           :collection="$route.params.collection"
         />
         <notFound v-else />
-      </section>
-    </section>
-  </div>
+      </div>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
 import { canSearchIndex } from '../../services/userAuthorization'
 import Treeview from './Leftnav/Treeview'
-import NotFound from '../404'
+import NotFound from './Data404'
 
 export default {
   name: 'DataLayout',
@@ -104,3 +106,20 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.sidebar {
+  background: #fff;
+  width: $sidebar-width;
+  position: fixed;
+  top: 0;
+  padding-top: $navbar-height;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.content {
+  width: calc(100% - #{$sidebar-width});
+  padding-left: $sidebar-width;
+}
+</style>

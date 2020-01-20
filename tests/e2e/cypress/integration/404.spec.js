@@ -19,7 +19,7 @@ describe('404 page', function() {
 
   it('shows when browsing to an unexisting collection and has a valid link to the home page', function() {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/foo/bar`)
     cy.contains('404 not found')
