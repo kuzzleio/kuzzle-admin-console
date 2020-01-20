@@ -7,20 +7,34 @@
       :class="`EnvColor--${currentEnvironmentColor}`"
     >
       <b-navbar-brand href="#" class="logo">
-        <div class="version-container">
-          {{ adminConsoleVersion }}
-        </div>
-        <div>
-          <a href="/" class="">
-            <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
-          </a>
-        </div>
+        <img
+          alt="Kuzzle.io"
+          src="~../../assets/logo-white.svg"
+          v-b-tooltip.hover
+          :title="`Admin Console v${adminConsoleVersion}`"
+        />
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse" type="light"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item :to="{ name: 'Data' }">Data</b-nav-item>
-          <b-nav-item v-if="hasSecurityRights()" :to="{ name: 'Security' }">
+          <b-nav-item
+            :active="
+              $route.path.match('/data')
+                ? $route.path.match('/data').length > 0
+                : false
+            "
+            :to="{ name: 'Data' }"
+            >Data</b-nav-item
+          >
+          <b-nav-item
+            :active="
+              $route.path.match('/security')
+                ? $route.path.match('/security').length > 0
+                : false
+            "
+            v-if="hasSecurityRights()"
+            :to="{ name: 'Security' }"
+          >
             Security
           </b-nav-item>
         </b-navbar-nav>
@@ -130,55 +144,11 @@ function shadeColor2(color, percent) {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-nav {
-  padding-right: 20px;
-
-  li.nav {
-    font-family: 'Ubuntu', sans-serif;
+.logo {
+  padding: 0;
+  img {
+    height: 50px;
+    padding: 4px 50px 6px 39px;
   }
-
-  li {
-    .logout {
-      font-size: 1.2em;
-      height: 18px;
-    }
-
-    &.nav {
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 400;
-
-      &.active,
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-    }
-  }
-}
-.logo,
-.logo a {
-  height: 50px;
-  padding: 0px;
-}
-
-.logo-container {
-  position: relative;
-}
-
-.version-container {
-  position: absolute;
-  top: 12px;
-  left: 0;
-  color: white;
-  width: 100%;
-  height: 100%;
-  padding-right: 5px;
-  z-index: -1;
-  font-size: 0.8em;
-}
-.logo img {
-  height: 50px;
-  padding: 4px 50px 6px 39px;
 }
 </style>
