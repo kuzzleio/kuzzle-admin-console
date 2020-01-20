@@ -121,6 +121,5 @@ li {
 
 .sidenav {
   background-color: #ffffff;
-  transform: translateX(0%) !important;
 }
 </style>

@@ -20,7 +20,7 @@
           v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
           class="App-disconnected"
         ></div>
-        <div v-else data-cy="App-connected" style="height: 100%">
+        <div v-else data-cy="App-connected" class="h-100">
           <div
             v-if="!$store.direct.getters.auth.isAuthenticated"
             class="App-loggedOut"
@@ -43,12 +43,7 @@
               />
             </div>
           </div>
-          <div
-            v-else
-            class="App-loggedIn"
-            data-cy="App-loggedIn"
-            style="height: 100%"
-          >
+          <div v-else class="App-loggedIn h-100" data-cy="App-loggedIn">
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"

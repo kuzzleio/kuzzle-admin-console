@@ -110,9 +110,15 @@ export default {
 <style lang="scss" scoped>
 .sidebar {
   width: $sidebar-width;
+  position: fixed;
+  top: 0;
+  padding-top: $navbar-height;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .content {
   width: calc(100% - #{$sidebar-width});
+  padding-left: $sidebar-width;
 }
 </style>
