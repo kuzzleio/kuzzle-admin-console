@@ -146,9 +146,10 @@ function shadeColor2(color, percent) {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .logo {
   padding: 0;
+
   img {
     height: 50px;
-    padding: 4px 50px 6px 39px;
+    padding: 5px 50px;
   }
 }
 </style>
