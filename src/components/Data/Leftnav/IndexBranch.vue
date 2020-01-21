@@ -7,9 +7,10 @@
       @click="toggleBranch"
     />
     <router-link
-      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
+      data-cy="Treeview-item"
       class="tree-item truncate"
       :class="{ active: isIndexActive(indexName) }"
+      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
@@ -17,13 +18,14 @@
     <b-nav vertical class="collections">
       <b-nav-item
         v-for="collectionName in orderedFilteredStoredCollections"
+        class="tree-item truncate"
+        data-cy="Treeview-item"
+        :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
         :to="{
           name: 'DataDocumentsList',
           params: { index: indexName, collection: collectionName }
         }"
-        class="tree-item truncate"
-        :class="{ active: isCollectionActive(indexName, collectionName) }"
       >
         <i
           class="fa fa-th-list"
@@ -34,13 +36,14 @@
       </b-nav-item>
       <b-nav-item
         v-for="collectionName in orderedFilteredRealtimeCollections"
-        :key="collectionName"
         class="tree-item"
+        data-cy="Treeview-item"
+        :class="{ active: isCollectionActive(indexName, collectionName) }"
+        :key="collectionName"
         :to="{
           name: 'DataCollectionWatch',
           params: { index: indexName, collection: collectionName }
         }"
-        :class="{ active: isCollectionActive(indexName, collectionName) }"
       >
         <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection" />
         <span v-html="highlight(collectionName, filter)" />

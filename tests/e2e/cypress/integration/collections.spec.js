@@ -1,4 +1,4 @@
-describe('Collection management', function() {
+describe('Collection management', function () {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -25,9 +25,9 @@ describe('Collection management', function() {
     )
   })
 
-  it('is able to create a realtime collection and access it', function() {
+  it('is able to create a realtime collection and access it', function () {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.visit(`/#/data/${indexName}/create`)
 
     cy.get(

@@ -1,4 +1,4 @@
-describe('Document List', function() {
+describe('Document List', function () {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -37,7 +37,7 @@ describe('Document List', function() {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -47,17 +47,17 @@ describe('Document List', function() {
     )
   })
 
-  it('sets and persists the listViewType param accessing a collection', function() {
+  it('sets and persists the listViewType param accessing a collection', function () {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.url().should('contain', 'listViewType=list')
   })
 
-  it('shows list items when viewType is set to list', function() {
+  it('shows list items when viewType is set to list', function () {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.DocumentList-list .collection-item')
@@ -65,9 +65,9 @@ describe('Document List', function() {
       .should('have.class', 'DocumentListItem')
   })
 
-  it('sets and persists the listViewType param when switching the list view', function() {
+  it('sets and persists the listViewType param when switching the list view', function () {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
@@ -76,9 +76,9 @@ describe('Document List', function() {
     cy.url().should('contain', 'listViewType=list')
   })
 
-  it('shows boxed items when viewType is set to boxes', function() {
+  it('shows boxed items when viewType is set to boxes', function () {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
@@ -87,10 +87,10 @@ describe('Document List', function() {
       .should('have.class', 'DocumentBoxItem')
   })
 
-  it('remembers the list view settings when navigating from one collection to another', function() {
+  it('remembers the list view settings when navigating from one collection to another', function () {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.request(
@@ -103,11 +103,11 @@ describe('Document List', function() {
       }
     )
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
-    cy.get('.Treeview-root .tree-item')
+    cy.get('[data-cy="Treeview-item"]')
       .contains('anothercollection')
       .click()
 
-    cy.get('.Treeview-root .tree-item')
+    cy.get('[data-cy="Treeview-item"]')
       .contains(collectionName)
       .click()
     cy.url().should('contain', 'listViewType=boxes')
@@ -115,7 +115,7 @@ describe('Document List', function() {
       .children()
       .should('have.class', 'DocumentBoxItem')
 
-    cy.get('.Treeview-root .tree-item')
+    cy.get('[data-cy="Treeview-item"]')
       .contains('anothercollection')
       .click()
     cy.url().should('contain', 'listViewType=list')
@@ -124,7 +124,7 @@ describe('Document List', function() {
       .should('have.class', 'DocumentListItem')
   })
 
-  it('has items with working dropdowns (even if the ID contains weird characters)', function() {
+  it('has items with working dropdowns (even if the ID contains weird characters)', function () {
     const adrienID = 'adrien maret'
     const nicoID = 'nico_juelle'
     cy.request(
@@ -147,7 +147,7 @@ describe('Document List', function() {
     )
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -170,7 +170,7 @@ describe('Document List', function() {
       .contains('Delete')
   })
 
-  it('should handle the column view properly', function() {
+  it('should handle the column view properly', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -182,7 +182,7 @@ describe('Document List', function() {
     )
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="column"]').click()
@@ -210,7 +210,7 @@ describe('Document List', function() {
     cy.get('.centered > thead > tr > th > .fa').click()
   })
 
-  it('should handle the time series view properly', function() {
+  it('should handle the time series view properly', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
@@ -240,7 +240,7 @@ describe('Document List', function() {
     )
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -319,7 +319,7 @@ describe('Document update/replace', () => {
 
   it('should update a document', () => {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -364,7 +364,7 @@ describe('Document update/replace', () => {
 
   it('should replace a document', () => {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 

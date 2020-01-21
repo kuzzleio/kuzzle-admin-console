@@ -18,16 +18,16 @@
       <template v-else>
         <div
           v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
-          class="App-disconnected"
+          data-cy="App-disconnected"
         ></div>
-        <template v-else data-cy="App-connected" class="h-100">
+        <template v-else>
           <div
+            data-cy="App-connected"
             v-if="!$store.direct.getters.auth.isAuthenticated"
-            class="App-loggedOut"
           >
             <div
               v-if="!$store.direct.getters.auth.adminAlreadyExists"
-              class="App-noAdmin"
+              data-cy="App-noAdmin"
             >
               <sign-up
                 @environment::create="editEnvironment"
@@ -35,16 +35,18 @@
                 @environment::importEnv="importEnvironment"
               />
             </div>
-            <div v-else class="App-hasAdmin" data-cy="App-hasAdmin">
+            <div v-else>
               <login
+                data-cy="App-hasAdmin"
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
                 @environment::importEnv="importEnvironment"
               />
             </div>
           </div>
-          <template v-else class="App-loggedIn h-100" data-cy="App-loggedIn">
+          <template v-else>
             <router-view
+              data-cy="App-loggedIn"
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
             />
