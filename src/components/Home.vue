@@ -24,7 +24,7 @@
     <div class="Home-routeWrapper">
       <router-view />
     </div>
-    <!-- <modal
+    <b-modal
       id="tokenExpired"
       class="small-modal"
       :has-footer="false"
@@ -35,9 +35,9 @@
       <h5>Your session has expired</h5>
       <h6>Please, relogin</h6>
       <login-form :on-login="onLogin" />
-    </modal>
+    </b-modal>
 
-    <modal
+    <b-modal
       id="kuzzleDisconnected"
       class="small-modal"
       :has-footer="false"
@@ -50,7 +50,7 @@
         :host="$store.direct.state.kuzzle.host"
         :port="$store.direct.state.kuzzle.port"
       />
-    </modal> -->
+    </b-modal>
   </div>
 </template>
 

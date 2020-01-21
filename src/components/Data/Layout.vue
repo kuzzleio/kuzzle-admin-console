@@ -13,7 +13,7 @@
         :index="$route.params.index"
         :collection="$route.params.collection"
       />
-      <!--<notFound v-else /> -->
+      <notFound v-else />
     </div>
   </div>
 </template>
@@ -21,13 +21,13 @@
 <script>
 import { canSearchIndex } from '../../services/userAuthorization'
 import Treeview from './Leftnav/Treeview'
-// import NotFound from './Data404'
+import NotFound from './Data404'
 
 export default {
   name: 'DataLayout',
   components: {
-    Treeview
-    // NotFound
+    Treeview,
+    NotFound
   },
   data() {
     return {
