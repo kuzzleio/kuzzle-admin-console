@@ -20,7 +20,7 @@
           v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
           class="App-disconnected"
         ></div>
-        <div v-else data-cy="App-connected" class="h-100">
+        <template v-else data-cy="App-connected" class="h-100">
           <div
             v-if="!$store.direct.getters.auth.isAuthenticated"
             class="App-loggedOut"
@@ -43,13 +43,13 @@
               />
             </div>
           </div>
-          <div v-else class="App-loggedIn h-100" data-cy="App-loggedIn">
+          <template v-else class="App-loggedIn h-100" data-cy="App-loggedIn">
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
             />
-          </div>
-        </div>
+          </template>
+        </template>
       </template>
     </template>
 
@@ -61,7 +61,7 @@
     <modal-delete id="modal-env-delete" :environment-id="environmentId" />
     <modal-import id="modal-env-import" />
 
-    <toaster />
+    <!-- <toaster /> -->
   </div>
 </template>
 
@@ -78,7 +78,7 @@ import CreateEnvironmentPage from './components/Common/Environments/CreateEnviro
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
-import Toaster from './components/Materialize/Toaster.vue'
+// import Toaster from './components/Materialize/Toaster.vue'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -90,7 +90,7 @@ export default {
     ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
-    Toaster,
+    // Toaster,
     KuzzleErrorPage,
     SignUp,
     Login,
@@ -151,8 +151,6 @@ export default {
 
 <style lang="scss" scoped>
 .App {
-  height: 100vh;
-  overflow-x: hidden;
-  background-color: $page-background-color;
+  height: 100%;
 }
 </style>

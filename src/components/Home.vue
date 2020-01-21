@@ -1,10 +1,12 @@
 <template>
   <div class="Home">
-    <main-menu
-      @environment::create="editEnvironment"
-      @environment::delete="deleteEnvironment"
-      @environment::importEnv="importEnv"
-    />
+    <div class="Home-menuWrapper">
+      <main-menu
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment"
+        @environment::importEnv="importEnv"
+      />
+    </div>
     <b-alert
       class="position-fixed fixed-bottom m-0 rounded-0 text-center"
       dismissible
@@ -22,7 +24,7 @@
     <div class="Home-routeWrapper">
       <router-view />
     </div>
-    <modal
+    <!-- <modal
       id="tokenExpired"
       class="small-modal"
       :has-footer="false"
@@ -48,23 +50,23 @@
         :host="$store.direct.state.kuzzle.host"
         :port="$store.direct.state.kuzzle.port"
       />
-    </modal>
+    </modal> -->
   </div>
 </template>
 
 <script>
 import MainMenu from './Common/MainMenu'
-import LoginForm from './Common/Login/Form'
-import Modal from './Materialize/Modal'
-import KuzzleDisconnected from './Error/KuzzleDisconnected'
+// import LoginForm from './Common/Login/Form'
+// import Modal from './Materialize/Modal'
+// import KuzzleDisconnected from './Error/KuzzleDisconnected'
 
 export default {
   name: 'Home',
   components: {
-    LoginForm,
-    MainMenu,
-    Modal,
-    KuzzleDisconnected
+    // LoginForm,
+    MainMenu
+    // Modal,
+    // KuzzleDisconnected
   },
   computed: {
     topOffset() {
@@ -125,11 +127,20 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .Home {
-  height: calc(100% - #{$navbar-height});
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-items: stretch;
+}
+
+.Home-menuWrapper {
+  flex-basis: 66px;
 }
 
 .Home-routeWrapper {
-  margin-top: $navbar-height;
-  height: 100%;
+  flex-grow: 1;
+  flex-basis: 300px;
+  overflow: hidden;
 }
 </style>
