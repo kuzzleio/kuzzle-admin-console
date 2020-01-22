@@ -56,17 +56,15 @@
 
 <script>
 import MainMenu from './Common/MainMenu'
-// import LoginForm from './Common/Login/Form'
-// import Modal from './Materialize/Modal'
-// import KuzzleDisconnected from './Error/KuzzleDisconnected'
+import LoginForm from './Common/Login/Form'
+import KuzzleDisconnected from './Error/KuzzleDisconnected'
 
 export default {
   name: 'Home',
   components: {
-    // LoginForm,
-    MainMenu
-    // Modal,
-    // KuzzleDisconnected
+    LoginForm,
+    MainMenu,
+    KuzzleDisconnected
   },
   computed: {
     topOffset() {

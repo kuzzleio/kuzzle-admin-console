@@ -62,8 +62,6 @@
     />
     <modal-delete id="modal-env-delete" :environment-id="environmentId" />
     <modal-import id="modal-env-import" />
-
-    <!-- <toaster /> -->
   </div>
 </template>
 
@@ -80,7 +78,6 @@ import CreateEnvironmentPage from './components/Common/Environments/CreateEnviro
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
-// import Toaster from './components/Materialize/Toaster.vue'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -92,7 +89,6 @@ export default {
     ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
-    // Toaster,
     KuzzleErrorPage,
     SignUp,
     Login,
