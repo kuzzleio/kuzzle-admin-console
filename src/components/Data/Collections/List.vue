@@ -30,13 +30,13 @@
             <template v-slot:prepend>
               <b-input-group-text>Filter</b-input-group-text>
             </template>
-            <b-form-input></b-form-input>
+            <b-form-input v-model="filter"></b-form-input>
           </b-input-group>
         </b-col>
       </b-row>
 
       <!-- Index is empty -->
-      <b-card v-if="true">
+      <b-card v-if="collectionCount.length === 0">
         <b-row>
           <b-col sm="3">
             <i class="fa fa-6x fa-th-list text-secondary" aria-hidden="true" />
@@ -49,80 +49,104 @@
       </b-card>
     </template>
 
-    <!-- Not Collection for filter -->
-    <div v-if="!isCollectionForFilter && filter" class="card-panel card-body">
-      <div class="row valign-center empty-set">
-        <div class="col s2 offset-s1">
+    <!-- No Collection for filter -->
+    <b-card
+      v-if="!isCollectionForFilter && filter"
+      class="card-panel card-body"
+    >
+      <b-row>
+        <b-col sm="3">
+          <i class="fa fa-6x fa-search text-secondary" aria-hidden="true" />
+        </b-col>
+        <b-col>
+          <h2>
+            There is no collection matching your filter.
+          </h2>
+        </b-col>
+      </b-row>
+    </b-card>
+
+    <template v-if="canSearchCollection(index) && isCollectionForFilter">
+      <b-table
+        striped
+        outlined
+        sticky-header
+        :items="collections"
+        :fields="tableFields"
+      >
+        <template v-slot:cell(type)="type">
           <i
-            class="fa fa-6x fa-search grey-text text-lighten-1"
-            aria-hidden="true"
-          />
-        </div>
-        <div class="col s12">
-          <p>
-            There is no collection matching your filter.<br />
-            Please try with another one.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="canSearchCollection(index)">
-      <collection-boxed
-        v-for="(collection, i) in orderedFilteredStoredCollections"
-        :key="collection + i"
-        :index="index"
-        :collection="collection"
-        :is-realtime="false"
-      />
-
-      <collection-boxed
-        v-for="(collection, i) in orderedFilteredRealtimeCollections"
-        :key="collection + i"
-        :index="index"
-        :collection="collection"
-        :is-realtime="true"
-      />
-    </div>
+            class="fa fa-2x"
+            :class="{
+              'fa-bolt': type.value === 'realtime',
+              'fa-server': type.value === 'stored'
+            }"
+            :title="type.value === 'realtime' ? 'Realtime' : 'Persisted'"
+          ></i>
+        </template>
+        <template v-slot:cell(name)="name">
+          <b-link
+            class="code"
+            :to="
+              name.item.type === 'realtime'
+                ? {
+                    name: 'DataCollectionWatch',
+                    params: { index, collection: name.value }
+                  }
+                : {
+                    name: 'DataDocumentsList',
+                    params: { index, collection: name.value }
+                  }
+            "
+            >{{ name.value }}</b-link
+          >
+        </template>
+        <template v-slot:cell(actions)="row">
+          <b-button
+            class="mx-1"
+            variant="outline-info"
+            title="Edit collection"
+            :disabled="!canEditCollection(index, row.item.name)"
+            :to="
+              canEditCollection(index, row.item.name)
+                ? {
+                    name: 'DataCollectionEdit',
+                    params: { collection: row.item.name, index }
+                  }
+                : ''
+            "
+            ><i class="fa fa-pencil-alt"></i
+          ></b-button>
+          <b-button
+            class="mx-1"
+            variant="outline-secondary"
+            title="Delete collection"
+            ><i class="fa fa-trash"></i
+          ></b-button>
+        </template>
+      </b-table>
+    </template>
   </b-container>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-// .switch {
-//   label {
-//     .lever {
-//       margin: 0;
-//     }
-//   }
-// }
-// .actions {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: flex-end;
-// }
-// .input-field {
-//   margin-top: 0;
-//   label {
-//     left: 0;
-//   }
-//   input {
-//     margin-bottom: 0;
-//   }
-// }
-// .list {
-//   margin-top: 25px;
-// }
+<style lang="scss" rel="stylesheet/scss">
+.CollectionList-type {
+  width: 2em;
+}
+.CollectionList-actions {
+  width: 8em;
+}
 </style>
 
 <script>
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionBoxed from '../Collections/Boxed'
 import {
   canDeleteIndex,
   canSearchIndex,
   canSearchCollection,
-  canCreateCollection
+  canCreateCollection,
+  canEditCollection
 } from '../../../services/userAuthorization'
 import Title from '../../../directives/title.directive'
 
@@ -130,8 +154,7 @@ export default {
   name: 'CollectionList',
   components: {
     Headline,
-    ListNotAllowed,
-    CollectionBoxed
+    ListNotAllowed
   },
   directives: {
     Title
@@ -145,16 +168,27 @@ export default {
     }
   },
   computed: {
+    tableFields() {
+      return [
+        {
+          class: 'CollectionList-type align-middle',
+          key: 'type',
+          label: 'Type'
+        },
+        {
+          key: 'name',
+          label: 'Name',
+          class: 'align-middle'
+        },
+        {
+          class: 'CollectionList-actions align-middle text-right',
+          key: 'actions',
+          label: ''
+        }
+      ]
+    },
     collectionCount() {
-      if (!this.$store.state.index.indexesAndCollections[this.index]) {
-        return 0
-      }
-      return (
-        this.$store.state.index.indexesAndCollections[this.index].stored
-          .length +
-        this.$store.state.index.indexesAndCollections[this.index].realtime
-          .length
-      )
+      return this.storedCollections.length + this.realtimeCollections.length
     },
     isCollectionForFilter() {
       if (!this.$store.state.index.indexesAndCollections[this.index]) {
@@ -162,15 +196,8 @@ export default {
       }
 
       return (
-        this.$store.state.index.indexesAndCollections[
-          this.index
-        ].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
-        // prettier-ignore
-        this.$store.state.index
-          .indexesAndCollections[this.index]
-          .realtime
-          .filter(col => col.indexOf(this.filter !== -1))
-          .length > 0
+        this.orderedFilteredStoredCollections.length > 0 ||
+        this.orderedFilteredRealtimeCollections.length > 0
       )
     },
     storedCollections() {
@@ -187,22 +214,35 @@ export default {
 
       return this.$store.state.index.indexesAndCollections[this.index].realtime
     },
+    collections() {
+      return [
+        ...this.orderedFilteredRealtimeCollections.map(c => ({
+          name: c,
+          type: 'realtime'
+        })),
+        ...this.orderedFilteredStoredCollections.map(c => ({
+          name: c,
+          type: 'stored'
+        }))
+      ].sort((a, b) => (a.name < b.name ? -1 : 1))
+    },
     orderedFilteredStoredCollections() {
-      return this.storedCollections
-        .filter(col => col.indexOf(this.filter) !== -1)
-        .sort()
+      return this.storedCollections.filter(
+        col => col.indexOf(this.filter) !== -1
+      )
     },
     orderedFilteredRealtimeCollections() {
-      return this.realtimeCollections
-        .filter(col => col.indexOf(this.filter) !== -1)
-        .sort()
+      return this.realtimeCollections.filter(
+        col => col.indexOf(this.filter) !== -1
+      )
     }
   },
   methods: {
     canDeleteIndex,
     canSearchIndex,
     canSearchCollection,
-    canCreateCollection
+    canCreateCollection,
+    canEditCollection
   }
 }
 </script>
