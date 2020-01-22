@@ -116,6 +116,7 @@ export default {
   flex-basis: $sidebar-width;
   height: 100%;
   overflow: auto;
+  box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
 }
 
 .DataLayout-contentWrapper {
