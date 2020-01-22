@@ -1,7 +1,7 @@
 <template>
   <span>
-    <dropdown :id="'collection-' + collection" :myclass="myclass">
-      <li>
+    <b-dropdown :id="'collection-' + collection" :myclass="myclass">
+      <b-dropdown-item>
         <router-link
           :class="{ disabled: !canEditCollection(index, collection) }"
           :to="
@@ -11,14 +11,14 @@
           "
           >Edit collection</router-link
         >
-      </li>
-      <li v-if="isRealtime">
+      </b-dropdown-item>
+      <b-dropdown-item v-if="isRealtime">
         <a class="remove" @click="removeRealtimeCollection"
           >Remove collection</a
         >
-      </li>
-      <li class="divider" />
-      <li v-if="!isRealtime && !isList">
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <b-dropdown-item v-if="!isRealtime && !isList">
         <router-link
           :to="{
             name: 'DataDocumentsList',
@@ -26,8 +26,8 @@
           }"
           >Browse documents</router-link
         >
-      </li>
-      <li>
+      </b-dropdown-item>
+      <b-dropdown-item>
         <router-link
           :class="{ disabled: !canSubscribe(index, collection) }"
           :to="
@@ -37,9 +37,9 @@
           "
           >Watch messages</router-link
         >
-      </li>
-      <li class="divider" />
-      <li v-if="!isRealtime && isList">
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <b-dropdown-item v-if="!isRealtime && isList">
         <a
           :class="{
             'red-text': canTruncateCollection(index, collection),
@@ -48,8 +48,8 @@
           @click.prevent="openModal"
           >Clear documents</a
         >
-      </li>
-    </dropdown>
+      </b-dropdown-item>
+    </b-dropdown>
 
     <modal-clear
       :id="'collection-clear-' + collection"
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import Dropdown from '../../Materialize/Dropdown'
+// import Dropdown from '../../Materialize/Dropdown'
 import ModalClear from './ModalClear.vue'
 import {
   canEditCollection,
@@ -73,7 +73,7 @@ import {
 export default {
   name: 'CollectionDropdown',
   components: {
-    Dropdown,
+    // Dropdown,
     ModalClear
   },
   props: {

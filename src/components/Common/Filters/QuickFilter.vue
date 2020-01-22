@@ -1,7 +1,7 @@
 <template>
-  <div class="QuickFilter row">
-    <form>
-      <div class="col s8 l8 xl8">
+  <b-container fluid>
+    <b-row>
+      <b-col cols="8">
         <div class="QuickFilter-searchBar">
           <i class="QuickFilter-searchIcon fa fa-search search" />
           <div
@@ -14,11 +14,11 @@
               >{{ advancedQueryLabel }}</span
             >
           </div>
-          <input
+          <b-form-input
             v-else
             v-model="inputSearchTerm"
             v-focus
-            type="text"
+            type="search"
             placeholder="Search..."
             @input="submitSearch"
           />
@@ -37,27 +37,26 @@
             >Less query options</a
           >
         </div>
-      </div>
-      <div
-        v-if="actionButtonsVisible"
-        class="QuickFilter-actions col s4 l4 xl4"
-      >
-        <button
+      </b-col>
+      <b-col v-if="actionButtonsVisible" cols="4">
+        <b-button
           type="submit"
-          class="QuickFilter-submitBtn btn btn-small waves-effect waves-light"
+          class="QuickFilter-submitBtn"
+          variant="primary"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
-        </button>
-        <button
-          class="QuickFilter-resetBtn btn-flat btn-small waves-effect waves-light"
+        </b-button>
+        <b-button
+          class="QuickFilter-resetBtn"
+          variant="outline-primary"
           @click="resetSearch"
         >
           reset
-        </button>
-      </div>
-    </form>
-  </div>
+        </b-button>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>

@@ -1,71 +1,78 @@
 <template>
-  <div class="DocumentListItem" :class="{ collapsed: collapsed }">
-    <i
-      class="DocumentListItem-toggle fa fa-caret-down item-toggle"
-      aria-hidden="true"
-      @click="toggleCollapse()"
-    />
-
-    <label>
-      <input
-        :id="checkboxId"
-        type="checkbox"
-        class="filled-in"
-        :value="document.id"
-        :checked="isChecked"
-        @click="notifyCheckboxClick"
-      />
-      <span />
-    </label>
-
-    <label class="DocumentListItem-title item-title "
-      ><a @click="toggleCollapse">{{ document.id }}</a></label
-    >
-
-    <div class="DocumentListItem-actions right">
-      <a
-        class="DocumentListItem-update"
-        href=""
-        :title="
-          canEdit
-            ? 'Edit Document'
-            : 'You are not allowed to edit this Document'
-        "
-        @click.prevent="editDocument"
-      >
-        <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-      </a>
-
-      <dropdown
-        :id="document.id"
-        myclass="DocumentListItem-dropdown icon-black"
-      >
-        <li>
+  <b-container fluid>
+    <b-row align-h="between" no-gutters>
+      <b-col cols="10" v-b-toggle="`collapse-${document.id}`">
+        <b-row no-gutters>
+          <i
+            :class="
+              `align-middle fa fa-caret-${collapsed ? 'right' : 'down'} mr-2`
+            "
+            aria-hidden="true"
+          />
+          <b-form-checkbox
+            class="align-middle"
+            :id="checkboxId"
+            type="checkbox"
+            value="true"
+            unchecked-value="false"
+            v-model="checked"
+            @change="notifyCheckboxClick"
+          />
+          <a class="align-middle" @click="toggleCollapse">{{ document.id }}</a>
+        </b-row>
+      </b-col>
+      <b-col cols="2">
+        <div class="float-right">
           <a
-            :disabled="!canDelete"
-            :class="{ disabled: !canDelete }"
-            @click="deleteDocument"
+            class="DocumentListItem-update"
+            href=""
+            :title="
+              canEdit
+                ? 'Edit Document'
+                : 'You are not allowed to edit this Document'
+            "
+            @click.prevent="editDocument"
           >
-            Delete
+            <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
           </a>
-        </li>
-      </dropdown>
-    </div>
 
-    <div class="DocumentListItem-content item-content">
-      <pre v-json-formatter="{ content: document.content, open: true }" />
-      <pre v-json-formatter="{ content: document.meta, open: false }" />
-      <pre
-        v-if="document.aggregations"
-        v-json-formatter="{ content: document.aggregations, open: true }"
-      />
-    </div>
-  </div>
+          <b-dropdown
+            :id="document.id"
+            toggle-class="text-decoration-none"
+            no-caret
+            variant="link"
+            size="sm"
+          >
+            <template v-slot:button-content>
+              <i class="fas fa-ellipsis-v" />
+            </template>
+            <!-- myclass="DocumentListItem-dropdown icon-black" -->
+            <b-dropdown-item
+              :disabled="!canDelete"
+              :class="{ disabled: !canDelete }"
+              @click="deleteDocument"
+            >
+              Delete
+            </b-dropdown-item>
+          </b-dropdown>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-collapse :id="`collapse-${document.id}`" class="ml-5">
+        <pre v-json-formatter="{ content: document.content, open: true }" />
+        <pre v-json-formatter="{ content: document.meta, open: false }" />
+        <pre
+          v-if="document.aggregations"
+          v-json-formatter="{ content: document.aggregations, open: true }"
+        />
+      </b-collapse>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import Dropdown from '../../Materialize/Dropdown'
 import {
   canEditDocument,
   canDeleteDocument
@@ -78,9 +85,6 @@ export default {
     JsonFormatter,
     title
   },
-  components: {
-    Dropdown
-  },
   props: {
     index: String,
     collection: String,
@@ -89,7 +93,16 @@ export default {
   },
   data() {
     return {
-      collapsed: true
+      collapsed: true,
+      checked: false
+    }
+  },
+  watch: {
+    isChecked: {
+      handler(value) {
+        this.checked = value
+        console.log('setChecked')
+      }
     }
   },
   computed: {
@@ -134,54 +147,4 @@ export default {
 }
 </script>
 
-<style type="scss" rel="stylesheet/scss" scoped>
-.DocumentListItem-toggle {
-  padding: 0 10px;
-  margin-left: -10px;
-  cursor: pointer;
-  transition-duration: 0.2s;
-}
-
-.collapsed .DocumentListItem-toggle {
-  transform: rotate(-90deg);
-}
-
-.DocumentListItem-title {
-  color: black;
-  line-height: 21px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: 'AnonymousPro';
-}
-
-.DocumentListItem-content {
-  transition-duration: 0.2s;
-  max-height: 300px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 10px 10px 0 0;
-
-  pre {
-    margin: 0;
-    width: 70%;
-    display: inline-block;
-  }
-}
-
-.collapsed .DocumentListItem-content {
-  max-height: 0;
-  transition-duration: 0;
-  padding: 0 10px 0 0;
-}
-
-.DocumentListItem-actions {
-  margin-top: 1px;
-  font-size: 1em;
-}
-
-/* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + span:not(.lever) {
-  height: 15px;
-  padding-left: 30px;
-}
-</style>
+<style type="scss" rel="stylesheet/scss" scoped></style>
