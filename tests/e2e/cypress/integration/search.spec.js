@@ -41,7 +41,7 @@ describe('Search', function () {
     })
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/marchesini/_create?refresh=wait_for`,
       {
         firstName: 'Luca',
         lastName: 'Marchesini',
@@ -326,10 +326,10 @@ describe('Search', function () {
     cy.get('.DocumentBoxItem').should('have.length', 2)
   })
 
-  it.only('sorts the results when sorting is selected in the basic filter', function () {
+  it('sorts the results when sorting is selected in the basic filter', function () {
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/maret/_create?refresh=wait_for`,
       {
         firstName: 'Adrien',
         lastName: 'Maret',
@@ -338,7 +338,7 @@ describe('Search', function () {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/juelle/_create?refresh=wait_for`,
       {
         firstName: 'Nicolas',
         lastName: 'Juelle',
@@ -347,7 +347,7 @@ describe('Search', function () {
     )
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/bouthinon/_create?refresh=wait_for`,
       {
         firstName: 'Alexandre',
         lastName: 'Bouthinon',
@@ -382,8 +382,8 @@ describe('Search', function () {
     cy.get('.BasicFilter-submitBtn').click()
 
     cy.get('.DocumentListItem').should(function ($el) {
-      expect($el.first()).to.contain('Maret')
-      expect($el.last()).to.contain('Marchesini')
+      expect($el.first()).to.contain('maret')
+      expect($el.last()).to.contain('marchesini')
     })
   })
 
