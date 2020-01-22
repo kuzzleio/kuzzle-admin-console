@@ -129,6 +129,9 @@ export default {
 }
 
 .Home-routeWrapper {
+  display: flex;
+  justify-content: center;
+  // align-items: center;
   margin-top: $navbar-height;
   height: 100%;
 }
