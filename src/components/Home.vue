@@ -24,32 +24,14 @@
     <div class="Home-routeWrapper">
       <router-view />
     </div>
-    <b-modal
-      id="tokenExpired"
-      class="small-modal"
-      :has-footer="false"
-      :can-close="false"
-      :is-open="tokenExpiredIsOpen"
-      :close="noop"
-    >
-      <h5>Your session has expired</h5>
-      <h6>Please, relogin</h6>
-      <login-form :on-login="onLogin" />
-    </b-modal>
 
     <b-modal
-      id="kuzzleDisconnected"
-      class="small-modal"
-      :has-footer="false"
-      :can-close="false"
-      :close="noop"
-      :is-open="kuzzleDisconnectedIsOpen"
+      id="tokenExpired"
+      hide-footer
+      title="Your session has expired"
+      v-model="tokenExpiredIsOpen"
     >
-      <h5><i class="fa fa-warning red-color" /> Can't connect to Kuzzle</h5>
-      <kuzzle-disconnected
-        :host="$store.direct.state.kuzzle.host"
-        :port="$store.direct.state.kuzzle.port"
-      />
+      <login-form :on-login="onLogin" />
     </b-modal>
   </div>
 </template>
@@ -57,31 +39,18 @@
 <script>
 import MainMenu from './Common/MainMenu'
 import LoginForm from './Common/Login/Form'
-import KuzzleDisconnected from './Error/KuzzleDisconnected'
 
 export default {
   name: 'Home',
   components: {
     LoginForm,
-    MainMenu,
-    KuzzleDisconnected
-  },
-  computed: {
-    topOffset() {
-      const topBarHeight = 66
-      const warningBarHeight = !this.$store.direct.getters.auth
-        .adminAlreadyExists
-        ? 40
-        : 0
-      return topBarHeight + warningBarHeight
-    }
+    MainMenu
   },
   data() {
     return {
       host: null,
       port: null,
-      tokenExpiredIsOpen: false,
-      kuzzleDisconnectedIsOpen: false
+      tokenExpiredIsOpen: false
     }
   },
   watch: {
@@ -89,13 +58,6 @@ export default {
       if (!valid) {
         this.tokenExpiredIsOpen = true
       }
-    },
-    '$store.direct.state.kuzzle.connectedTo'(isConnected) {
-      if (!isConnected) {
-        this.kuzzleDisconnectedIsOpen = true
-        return
-      }
-      this.kuzzleDisconnectedIsOpen = false
     }
   },
   mounted() {
