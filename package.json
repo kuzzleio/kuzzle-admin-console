@@ -18,6 +18,7 @@
     "test:e2e-local": "e2eLocal=1 ./tests/e2e/run-test.sh"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "bootstrap-vue": "^2.2.1",
     "chromium": "^1.0.2",
     "commander": "^2.15.1",

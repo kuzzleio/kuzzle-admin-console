@@ -23,6 +23,11 @@ export const getters = createGetters<KuzzleState>()({
   kuzzlePort(state) {
     return state.port
   },
+  currentHttpUrl(state, getters) {
+    return `${getters.currentEnvironment.ssl ? 'https' : 'http'}://${
+      getters.currentEnvironment.host
+      }:${getters.currentEnvironment.port}`
+  },
   oldMappingSupport(state, getters) {
     if (!state.environments[getters.currentEnvironmentId]) {
       return null
