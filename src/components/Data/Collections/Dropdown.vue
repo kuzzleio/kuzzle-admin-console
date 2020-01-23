@@ -1,6 +1,14 @@
 <template>
   <span>
-    <b-dropdown :id="'collection-' + collection" :myclass="myclass">
+    <b-dropdown
+      :id="'collection-' + collection"
+      no-caret
+      toggle-class="collectionDropdown"
+      variant="light"
+    >
+      <template v-slot:button-content>
+        <i class="fas fa-ellipsis-v" />
+      </template>
       <b-dropdown-item>
         <router-link
           :class="{ disabled: !canEditCollection(index, collection) }"
@@ -115,3 +123,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+::v-deep .collectionDropdown {
+  background-color: $page-background-color;
+  border: none;
+}
+
+::v-deep .show .collectionDropdown i {
+  transform: rotate(90deg);
+}
+</style>

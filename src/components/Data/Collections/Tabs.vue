@@ -1,6 +1,6 @@
 <template>
   <div class="nav CollectionTabs">
-    <ul>
+    <ul class="pl-0">
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
         :class="{ active: isRouteActive('DataDocumentsList') }"

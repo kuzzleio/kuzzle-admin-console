@@ -1,166 +1,177 @@
 <template>
   <form class="BasicFilter" @submit.prevent="submitSearch">
-    <div class="row">
-      <div class="col s12">
-        <div class="BasicFilter-query row">
-          <p><i class="fa fa-search" />Query</p>
-
-          <div
+    <b-container fluid>
+      <b-row no-gutters>
+        <b-col cols="12">
+          <b-row no-gutters class="BasicFilter-query">
+            <p><i class="fa fa-search" />Query</p>
+          </b-row>
+          <b-row
+            no-gutters
             v-for="(orBlock, groupIndex) in filters.basic"
             :key="`orBlock-${groupIndex}`"
-            class="BasicFilter-orBlock row"
+            class="BasicFilter-orBlock"
           >
-            <div
-              v-for="(andBlock, filterIndex) in orBlock"
-              :key="`andBlock-${filterIndex}`"
-              class="BasicFilter-andBlock row dots"
-            >
-              <div class="col s4">
-                <input
-                  v-if="!toggleAutoComplete"
-                  v-model="filters.basic[groupIndex][filterIndex].attribute"
-                  placeholder="key"
-                  type="text"
-                  class="BasicFilter--key"
-                />
-
-                <autocomplete
-                  v-else
-                  class="BasicFilter--key"
-                  input-class="validate"
-                  placeholder="Attribute"
-                  :items="attributeItems"
-                  :value="
-                    filters.basic[groupIndex][filterIndex].attribute || ''
-                  "
-                  @autocomplete::change="
-                    attribute =>
-                      selectAttribute(attribute, groupIndex, filterIndex)
-                  "
-                />
-              </div>
-
-              <div class="col s3">
-                <m-select v-model="andBlock.operator">
-                  <option
-                    v-for="(label, identifiers) in availableOperands"
-                    :key="label"
-                    :value="identifiers"
-                  >
-                    {{ label }}
-                  </option>
-                </m-select>
-              </div>
-              <div
-                v-if="andBlock.operator !== 'range'"
-                v-show="
-                  andBlock.operator !== 'exists' &&
-                    andBlock.operator !== 'not_exists'
-                "
-              >
-                <div class="col s3">
-                  <input
-                    v-model="andBlock.value"
-                    placeholder="Value"
-                    type="text"
-                    class="BasicFilter--value validate"
-                  />
-                </div>
-              </div>
-              <div v-else>
-                <div class="col s1">
-                  <input
-                    v-model="andBlock.gt_value"
-                    placeholder="Value 1"
-                    type="text"
-                    class="BasicFilter--gtValue validate"
-                  />
-                </div>
-                <div class="col s1">
-                  <input
-                    v-model="andBlock.lt_value"
-                    placeholder="Value 2"
-                    type="text"
-                    class="BasicFilter--ltValue validate"
-                  />
-                </div>
-              </div>
-              <div class="col s2">
-                <i
-                  class="BasicFilter-removeBtn fa fa-times"
-                  @click="removeAndBasicFilter(groupIndex, filterIndex)"
-                />
-                <a
-                  v-if="filterIndex === orBlock.length - 1"
-                  class="BasicFilter-andBtn inline btn btn-small waves-effect waves-light"
-                  @click="addAndBasicFilter(groupIndex)"
+            <b-col cols="12">
+              <b-card>
+                <b-col
+                  v-for="(andBlock, filterIndex) in orBlock"
+                  :key="`andBlock-${filterIndex}`"
+                  cols="12"
                 >
-                  <i class="fa fa-plus left" />And
-                </a>
-              </div>
-            </div>
-            <p v-if="groupIndex < filters.basic.length - 1">
-              Or
-            </p>
-          </div>
-        </div>
+                  <b-row>
+                    <b-col cols="4">
+                      <b-form-input
+                        v-if="!toggleAutoComplete"
+                        v-model="
+                          filters.basic[groupIndex][filterIndex].attribute
+                        "
+                        placeholder="key"
+                        type="text"
+                        class="BasicFilter--key"
+                      />
 
-        <div class="BasicFilter-orBtn row">
-          <a
-            class="btn btn-small waves-effect waves-light"
-            @click="addGroupBasicFilter"
-          >
-            <i class="fa fa-plus left" />Or
-          </a>
-        </div>
+                      <autocomplete
+                        v-else
+                        class="BasicFilter--key"
+                        input-class="validate"
+                        placeholder="Attribute"
+                        :items="attributeItems"
+                        :value="
+                          filters.basic[groupIndex][filterIndex].attribute || ''
+                        "
+                        @autocomplete::change="
+                          attribute =>
+                            selectAttribute(attribute, groupIndex, filterIndex)
+                        "
+                      />
+                    </b-col>
 
-        <div v-if="sortingEnabled" class="BasicFilter-sortBlock row">
-          <p><i class="fa fa-sort-amount-asc" />Sorting</p>
-          <div class="row block-content">
-            <div class="col s4">
-              <autocomplete
-                class="BasicFilter-sortingAttr"
-                input-class="validate"
-                placeholder="Attribute"
-                :items="attributeItems"
-                :value="filters.sorting.attribute || ''"
-                @autocomplete::change="attribute => setSortAttr(attribute)"
-              />
-            </div>
-            <div class="BasicFilter-sortingValue col s2">
-              <m-select v-model="filters.sorting.order">
-                <option value="asc">
-                  asc
-                </option>
-                <option value="desc">
-                  desc
-                </option>
-              </m-select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div v-if="actionButtonsVisible" class="row card-action">
-      <button
-        type="submit"
-        class="BasicFilter-submitBtn btn waves-effect waves-light primary"
-        @click.prevent="submitSearch"
-      >
-        {{ submitButtonLabel }}
-      </button>
-      <button
-        class="BasicFilter-resetBtn btn-flat waves-effect waves-light"
-        @click="resetSearch"
-      >
-        Reset
-      </button>
-    </div>
+                    <b-col cols="3">
+                      <b-form-select
+                        v-model="andBlock.operator"
+                        :options="availableOperandsFormatted"
+                      />
+                    </b-col>
+                    <b-col
+                      cols="4"
+                      v-if="andBlock.operator !== 'range'"
+                      v-show="
+                        andBlock.operator !== 'exists' &&
+                          andBlock.operator !== 'not_exists'
+                      "
+                    >
+                      <b-form-input
+                        v-model="andBlock.value"
+                        placeholder="Value"
+                        type="text"
+                        class="BasicFilter--value validate"
+                      />
+                    </b-col>
+                    <div v-else>
+                      <b-col cols="1">
+                        <b-form-input
+                          v-model="andBlock.gt_value"
+                          placeholder="Value 1"
+                          type="text"
+                          class="BasicFilter--gtValue validate"
+                        />
+                      </b-col>
+                      <b-col cols="1">
+                        <b-form-input
+                          v-model="andBlock.lt_value"
+                          placeholder="Value 2"
+                          type="text"
+                          class="BasicFilter--ltValue validate"
+                        />
+                      </b-col>
+                    </div>
+                    <b-col cols="1">
+                      <i
+                        class="fa fa-times"
+                        @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col cols="12" class="mt-2">
+                  <b-row no-gutters class="justify-content-md-center">
+                    <b-button
+                      variant="primary"
+                      @click="addAndBasicFilter(groupIndex)"
+                    >
+                      <i class="fa fa-plus left" />And
+                    </b-button>
+                  </b-row>
+                </b-col>
+              </b-card>
+            </b-col>
+            <b-col cols="12">
+              <b-row no-gutters class="justify-content-md-center">
+                <p v-if="groupIndex < filters.basic.length - 1">
+                  Or
+                </p>
+              </b-row>
+            </b-col>
+          </b-row>
+          <b-row no-gutters class="mt-4 ml-1">
+            <b-button @click="addGroupBasicFilter" variant="primary">
+              <i class="fa fa-plus left" />Or
+            </b-button>
+          </b-row>
+
+          <b-row no-gutters v-if="sortingEnabled" class="BasicFilter-sortBlock">
+            <b-col cols="12">
+              <b-row no-gutters>
+                <p><i class="fa fa-sort-amount-asc" />Sorting</p>
+              </b-row>
+              <b-row class="block-content">
+                <b-col cols="4">
+                  <autocomplete
+                    class="BasicFilter-sortingAttr"
+                    input-class="validate"
+                    placeholder="Attribute"
+                    :items="attributeItems"
+                    :value="filters.sorting.attribute || ''"
+                    @autocomplete::change="attribute => setSortAttr(attribute)"
+                  />
+                </b-col>
+                <b-col cols="2" class="BasicFilter-sortingValue">
+                  <b-select
+                    v-model="filters.sorting.order"
+                    :options="[
+                      { value: 'asc', text: 'asc' },
+                      { value: 'desc', text: 'desc' }
+                    ]"
+                  />
+                </b-col>
+              </b-row>
+            </b-col>
+          </b-row>
+        </b-col>
+      </b-row>
+      <b-row no-gutters v-if="actionButtonsVisible">
+        <b-button
+          variant="primary"
+          class="BasicFilter-submitBtn m-2"
+          @click.prevent="submitSearch"
+        >
+          {{ submitButtonLabel }}
+        </b-button>
+        <b-button
+          variant="outline-primary"
+          class="BasicFilter-resetBtn m-2"
+          @click="resetSearch"
+        >
+          Reset
+        </b-button>
+      </b-row>
+    </b-container>
   </form>
 </template>
 
 <script>
-import MSelect from '../../Common/MSelect'
+// import MSelect from '../../Common/MSelect'
 import Autocomplete from '../Autocomplete'
 
 const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
@@ -169,7 +180,7 @@ const emptySorting = { attribute: null, order: 'asc' }
 export default {
   name: 'BasicFilter',
   components: {
-    MSelect,
+    // MSelect,
     Autocomplete
   },
   props: {
@@ -213,7 +224,14 @@ export default {
       }
     }
   },
+
   computed: {
+    availableOperandsFormatted() {
+      return Object.keys(this.availableOperands).map(e => ({
+        value: e,
+        text: this.availableOperands[e]
+      }))
+    },
     attributeItems() {
       return this.buildAttributeList(this.collectionMapping)
     },

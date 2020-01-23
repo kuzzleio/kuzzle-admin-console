@@ -26,7 +26,7 @@
       <template fluid v-if="!isCollectionEmpty" v-slot:header>
         <b-container fluid>
           <b-row>
-            <b-col cols="9">
+            <b-col cols="10">
               <filters
                 :available-operands="searchFilterOperands"
                 :current-filter="currentFilter"
@@ -35,7 +35,7 @@
                 @reset="onFiltersUpdated"
               />
             </b-col>
-            <b-col cols="3">
+            <b-col cols="2">
               <list-view-buttons
                 :active-view="listViewType"
                 :boxes-enabled="true"
@@ -57,7 +57,10 @@
           <span v-for="(v, i) in resultPerPage" :key="i"
             ><a
               href="#"
-              :class="{ active: v === paginationSize }"
+              variant="warning"
+              :class="
+                `ResultPerPage--${v === paginationSize ? 'active' : 'link'}`
+              "
               @click.prevent="changePaginationSize(v)"
               >{{ v }}</a
             >{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span
@@ -89,7 +92,7 @@
             @refresh="onRefreshClicked"
           />
 
-          <b-container fluid v-show="documents.length">
+          <b-container fluid v-show="documents.length" class="p-0 mt-2">
             <b-row
               v-show="listViewType === 'list'"
               class="DocumentList-list"
@@ -171,9 +174,9 @@
                 @delete="onDeleteClicked"
               />
             </b-row>
-            <b-row v-show="documents.length" align-h="center">
+            <b-row v-show="totalDocuments > paginationSize" align-h="center">
               <b-pagination
-                class="m-2"
+                class="m-2 mt-4"
                 v-model="currentPage"
                 :total-rows="totalDocuments"
                 :per-page="paginationSize"
@@ -674,4 +677,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.ResultPerPage {
+  &--active {
+    color: 'primary';
+  }
+  &--link {
+    color: grey;
+  }
+}
 </style>

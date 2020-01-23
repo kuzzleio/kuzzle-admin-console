@@ -1,57 +1,62 @@
 <template>
   <b-container fluid>
     <b-row>
-      <b-col cols="8">
+      <b-col cols="6">
         <div class="QuickFilter-searchBar">
-          <i class="QuickFilter-searchIcon fa fa-search search" />
-          <div
-            v-if="complexFilterActive || !enabled"
-            class="QuickFilter-chip chip"
-          >
-            <span
-              class="QuickFilter-chipLabel"
-              @click.prevent="displayAdvancedFilters"
-              >{{ advancedQueryLabel }}</span
+          <b-input-group>
+            <b-input-group-prepend is-text>
+              <i class="fa fa-search search" />
+            </b-input-group-prepend>
+
+            <div
+              v-if="complexFilterActive || !enabled"
+              class="QuickFilter-chip chip"
             >
-          </div>
-          <b-form-input
-            v-else
-            v-model="inputSearchTerm"
-            v-focus
-            type="search"
-            placeholder="Search..."
-            @input="submitSearch"
-          />
-          <a
-            v-if="!advancedFiltersVisible"
-            class="QuickFilter-optionBtn fluid-hover"
-            href="#"
-            @click.prevent="displayAdvancedFilters"
-            >More query options</a
-          >
-          <a
-            v-else
-            class="QuickFilter-optionBtn fluid-hover"
-            href="#"
-            @click.prevent="displayAdvancedFilters"
-            >Less query options</a
-          >
+              <span
+                class="QuickFilter-chipLabel"
+                @click.prevent="displayAdvancedFilters"
+                >{{ advancedQueryLabel }}</span
+              >
+            </div>
+            <b-form-input
+              v-else
+              v-model="inputSearchTerm"
+              v-focus
+              type="search"
+              placeholder="Search..."
+              @input="submitSearch"
+            >
+            </b-form-input>
+          </b-input-group>
         </div>
       </b-col>
+      <b-col cols="2">
+        <a
+          v-if="!advancedFiltersVisible"
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >More query options</a
+        >
+        <a
+          v-else
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >Less query options</a
+        >
+      </b-col>
+
       <b-col v-if="actionButtonsVisible" cols="4">
         <b-button
           type="submit"
-          class="QuickFilter-submitBtn"
+          class="m-2"
           variant="primary"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
         </b-button>
-        <b-button
-          class="QuickFilter-resetBtn"
-          variant="outline-primary"
-          @click="resetSearch"
-        >
+        <b-button class="m-2" variant="outline-primary" @click="resetSearch">
           reset
         </b-button>
       </b-col>
@@ -184,6 +189,7 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   text-decoration: underline;
+  color: $primary-color;
 }
 
 .QuickFilter-actions {

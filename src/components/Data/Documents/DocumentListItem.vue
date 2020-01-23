@@ -1,12 +1,11 @@
 <template>
   <b-container fluid>
     <b-row align-h="between" no-gutters>
-      <b-col cols="10" v-b-toggle="`collapse-${document.id}`">
-        <b-row no-gutters>
+      <b-col cols="10">
+        <b-row no-gutters class="pt-1">
           <i
-            :class="
-              `align-middle fa fa-caret-${collapsed ? 'right' : 'down'} mr-2`
-            "
+            @click="toggleCollapse"
+            :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2 mt-1`"
             aria-hidden="true"
           />
           <b-form-checkbox
@@ -59,7 +58,11 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-collapse :id="`collapse-${document.id}`" class="ml-5">
+      <b-collapse
+        :id="`collapse-${document.id}`"
+        v-model="expanded"
+        class="mt-3 ml-3 DocumentListItem-content"
+      >
         <pre v-json-formatter="{ content: document.content, open: true }" />
         <pre v-json-formatter="{ content: document.meta, open: false }" />
         <pre
@@ -93,7 +96,7 @@ export default {
   },
   data() {
     return {
-      collapsed: true,
+      expanded: false,
       checked: false
     }
   },
@@ -128,7 +131,7 @@ export default {
   },
   methods: {
     toggleCollapse() {
-      this.collapsed = !this.collapsed
+      this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
@@ -147,4 +150,8 @@ export default {
 }
 </script>
 
-<style type="scss" rel="stylesheet/scss" scoped></style>
+<style type="scss" rel="stylesheet/scss" scoped>
+pre {
+  font-size: larger;
+}
+</style>

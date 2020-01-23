@@ -1,15 +1,14 @@
 <template>
-  <b-row>
-    <b-col cols="8">
+  <b-row no-gutters>
+    <b-col cols="8" class="mt-2">
       <b-button
         variant="warning"
-        class="m-2"
+        class="ml-0 mr-2"
         :disabled="!displayToggleAll"
         @click="$emit('toggle-all')"
       >
         <i
-          class="fa left"
-          :class="allChecked ? 'fa-check-square-o' : 'fa-square-o'"
+          :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`"
         />
         Toggle all
       </b-button>
