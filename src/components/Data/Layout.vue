@@ -117,6 +117,7 @@ export default {
   height: 100%;
   overflow: auto;
   box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
+  z-index: 1;
 }
 
 .DataLayout-contentWrapper {
@@ -124,5 +125,6 @@ export default {
   height: 100%;
   overflow: auto;
   padding: $content-gutter;
+  background-color: #f5f5f5;
 }
 </style>
