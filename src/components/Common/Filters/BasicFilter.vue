@@ -113,7 +113,7 @@
                             variant="primary"
                             @click="addAndBasicFilter(groupIndex)"
                           >
-                            <i class="fa fa-plus left mr-2" />Add new line
+                            <i class="fa fa-plus left mr-2" />New condition
                           </b-button>
                         </b-row>
                       </b-col>
@@ -133,7 +133,7 @@
 
               <b-row no-gutters class="mt-4 ml-1">
                 <b-button @click="addGroupBasicFilter" variant="primary">
-                  <i class="fa fa-plus left mr-2" />Add new block
+                  <i class="fa fa-plus left mr-2" />New or block
                 </b-button>
               </b-row>
             </b-card-text>

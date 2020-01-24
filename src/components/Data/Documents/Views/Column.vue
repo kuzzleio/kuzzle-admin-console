@@ -1,111 +1,132 @@
 <template>
-  <table class="centered highlight striped">
-    <thead>
-      <tr>
-        <th class="actions" />
-        <th>id</th>
-        <th
-          v-for="(attr, k) in customFields"
-          :key="k"
-          class="Column-view-title"
-        >
-          {{ attr
-          }}<i
-            class="fa fa-times-circle ListViewColumn-remove"
-            @click="removeColumn(k)"
-          />
-        </th>
-        <th v-if="mappingArray.length">
-          <form>
-            <div class="row">
-              <div class="col s12">
-                <autocomplete
-                  class="ListViewColumnInput"
-                  placeholder="Add column"
-                  :items="mappingArray"
-                  :value="newCustomField || ''"
-                  input-class="ListViewColumnInput"
-                  :notify-change="false"
-                  @autocomplete::change="
-                    attribute => {
-                      newCustomField = attribute
-                      addCustomField()
-                    }
-                  "
-                />
-              </div>
-            </div>
-          </form>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(doc, kk) in documents" :key="kk">
-        <td class="actions">
-          <dropdown
-            :id="`document-dropdown-${doc.id}`"
-            class="DocumentBoxItem-actions"
+  <div>
+    <b-table
+      stiped
+      responsive
+      small
+      hover
+      :tbody-transition-props="{ name: 'flip-list' }"
+      :fields="formatedCustomFields"
+      :items="formatedItems"
+    >
+      <template v-slot:head()="data">
+        <span class="text-info">{{ data.label }}</span>
+        <i
+          v-if="data.column !== '_id'"
+          class="fa fa-times-circle ListViewColumn-remove"
+          @click="removeColumn(customFields.findIndex(f => f === data.column))"
+        />
+      </template>
+    </b-table>
+
+    <table class="centered highlight striped">
+      <thead>
+        <tr>
+          <th class="actions" />
+          <th>id</th>
+          <th
+            v-for="(attr, k) in customFields"
+            :key="k"
+            class="Column-view-title"
           >
-            <li>
-              <a
-                v-title="{
-                  active: !canDelete,
-                  title: 'You are not allowed to edit this document'
-                }"
-                :class="{ disabled: !canEdit }"
-                @click="editDocument(doc.id)"
-              >
-                Edit
-              </a>
-            </li>
-            <li class="divider" />
-            <li>
-              <a
-                v-title="{
-                  active: !canDelete,
-                  title: 'You are not allowed to delete this document'
-                }"
-                :class="{ disabled: !canDelete }"
-                @click="deleteDocument(doc.id)"
-              >
-                Delete
-              </a>
-            </li>
-          </dropdown>
-        </td>
-        <td class="DocumentColumnItem">
-          {{ doc.id }}
-        </td>
-        <td
-          v-for="(attr, k) in customFields"
-          :key="k"
-          class="DocumentColumnItem"
-        >
-          <span v-if="parseDocument(attr, doc).isObject" class="relative">
-            <a
-              href="#"
-              @click.prevent="toggleJsonFormatter(attr + doc.id)"
-              @blur="onBlur(attr + doc.id)"
-              >{{ parseDocument(attr, doc).value }} ...</a
-            >
-            <pre
-              tabindex="1"
-              :ref="attr + doc.id"
-              v-json-formatter="{
-                content: parseDocument(attr, doc).realValue,
-                open: true
-              }"
-              class="DocumentListViewColumn-jsonFormatter"
-              style="visibility: hidden;"
+            {{ attr
+            }}<i
+              class="fa fa-times-circle ListViewColumn-remove"
+              @click="removeColumn(k)"
             />
-          </span>
-          <span v-else>
-            {{ parseDocument(attr, doc).value }}
-          </span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          </th>
+          <th v-if="mappingArray.length">
+            <form>
+              <div class="row">
+                <div class="col s12">
+                  <autocomplete
+                    class="ListViewColumnInput"
+                    placeholder="Add column"
+                    :items="mappingArray"
+                    :value="newCustomField || ''"
+                    input-class="ListViewColumnInput"
+                    :notify-change="false"
+                    @autocomplete::change="
+                      attribute => {
+                        newCustomField = attribute
+                        addCustomField()
+                      }
+                    "
+                  />
+                </div>
+              </div>
+            </form>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(doc, kk) in documents" :key="kk">
+          <td class="actions">
+            <dropdown
+              :id="`document-dropdown-${doc.id}`"
+              class="DocumentBoxItem-actions"
+            >
+              <li>
+                <a
+                  v-title="{
+                    active: !canDelete,
+                    title: 'You are not allowed to edit this document'
+                  }"
+                  :class="{ disabled: !canEdit }"
+                  @click="editDocument(doc.id)"
+                >
+                  Edit
+                </a>
+              </li>
+              <li class="divider" />
+              <li>
+                <a
+                  v-title="{
+                    active: !canDelete,
+                    title: 'You are not allowed to delete this document'
+                  }"
+                  :class="{ disabled: !canDelete }"
+                  @click="deleteDocument(doc.id)"
+                >
+                  Delete
+                </a>
+              </li>
+            </dropdown>
+          </td>
+          <td class="DocumentColumnItem">
+            {{ doc.id }}
+          </td>
+          <td
+            v-for="(attr, k) in customFields"
+            :key="k"
+            class="DocumentColumnItem"
+          >
+            <span v-if="parseDocument(attr, doc).isObject" class="relative">
+              <a
+                href="#"
+                @click.prevent="toggleJsonFormatter(attr + doc.id)"
+                @blur="onBlur(attr + doc.id)"
+                >{{ parseDocument(attr, doc).value }} ...</a
+              >
+              <pre
+                tabindex="1"
+                :ref="attr + doc.id"
+                v-json-formatter="{
+                  content: parseDocument(attr, doc).realValue,
+                  open: true
+                }"
+                class="DocumentListViewColumn-jsonFormatter"
+                style="visibility: hidden;"
+              />
+            </span>
+            <span v-else>
+              {{ parseDocument(attr, doc).value }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -144,6 +165,24 @@ export default {
     }
   },
   computed: {
+    formatedCustomFields() {
+      return this.customFields.map(f => ({
+        key: f,
+        sortable: true
+      }))
+    },
+    formatedItems() {
+      return this.documents.map(d => {
+        const doc = {}
+        doc.id = d.id
+        for (const field of this.customFields) {
+          if (field !== 'id') {
+            doc[field] = this.parseDocument(field, d).value
+          }
+        }
+        return doc
+      })
+    },
     canEdit() {
       if (!this.index || !this.collection) {
         return false
@@ -199,6 +238,7 @@ export default {
     for (const attr of this.customFields) {
       this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
     }
+    this.customFields.unshift('id')
   },
   methods: {
     onBlur(id) {
@@ -242,6 +282,8 @@ export default {
       }
     },
     removeColumn(col) {
+      console.log(col)
+
       this.mappingArray.push(this.customFields[col])
       this.mappingArray.sort()
       this.customFields.splice(col, 1)

@@ -109,7 +109,7 @@ export const saveToRouter = (filter, router) => {
   )
   const mergedQuery = _.merge(formattedFilter, otherQueryParams)
 
-  router.push({ query: mergedQuery }).catch(() => {})
+  router.push({ query: mergedQuery }).catch(() => { })
 }
 
 export const saveToLocalStorage = (filter, index, collection) => {
@@ -192,12 +192,12 @@ export const realtimeFilterOperands = {
 export const basicFilterToRealtimeQuery = (groups = [[]]) => {
   let or: any = []
 
-  groups.forEach(function(filters) {
+  groups.forEach(function (filters) {
     let and = filters
       .filter((filter: any) => {
         return filter.attribute !== null
       })
-      .map(function(filter: any) {
+      .map(function (filter: any) {
         switch (filter.operator) {
           case 'match':
             return { equals: { [filter.attribute]: filter.value } }
