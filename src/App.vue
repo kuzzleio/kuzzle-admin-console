@@ -153,6 +153,7 @@ export default {
 .App {
   height: 100vh;
   overflow-x: hidden;
-  background-color: $page-background-color;
+  // background-color: $page-background-color;
+  background-color: white;
 }
 </style>

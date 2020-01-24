@@ -1,6 +1,7 @@
 <template>
   <div class="Filters">
     <quick-filter
+      v-show="!advancedFiltersVisible"
       :advanced-query-label="advancedQueryLabel"
       :submit-button-label="submitButtonLabel"
       :complex-filter-active="complexFilterActive"
@@ -22,7 +23,7 @@
           class="Filters-btnClose fa fa-times close"
           @click="advancedFiltersVisible = false"
         />
-        <b-tabs card v-model="complexFiltersSelectedTab">
+        <b-tabs v-model="complexFiltersSelectedTab">
           <b-tab id="basic" name="basic" tab-select="basic" title="Basic Mode">
             <basic-filter
               :toggle-auto-complete="toggleAutoComplete"
@@ -50,19 +51,15 @@
               @reset="onReset"
             />
           </b-tab>
-
-          <!-- <div slot="contents" class="card"> -->
-          <!-- <div class="col s12"> -->
-          <!-- <div v-show="complexFiltersSelectedTab === 0"> -->
-
-          <!-- </div> -->
-
-          <!-- <div v-show="complexFiltersSelectedTab === 1"> -->
-
-          <!-- </div> -->
-          <!-- </div> -->
-          <!-- </div> -->
         </b-tabs>
+        <!-- <template v-slot:footer v-if="actionButtonsVisible">
+          <b-button variant="primary" class="BasicFilter-submitBtn m-2">
+            search
+          </b-button>
+          <b-button variant="outline-primary" class="BasicFilter-resetBtn m-2">
+            Reset
+          </b-button>
+        </template> -->
       </b-card>
     </div>
 

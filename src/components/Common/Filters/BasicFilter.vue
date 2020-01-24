@@ -1,151 +1,179 @@
 <template>
   <form class="BasicFilter" @submit.prevent="submitSearch">
-    <b-container fluid>
+    <b-container fluid class="mt-2">
       <b-row no-gutters>
         <b-col cols="12">
-          <b-row no-gutters class="BasicFilter-query">
-            <p><i class="fa fa-search" />Query</p>
-          </b-row>
-          <b-row
-            no-gutters
-            v-for="(orBlock, groupIndex) in filters.basic"
-            :key="`orBlock-${groupIndex}`"
-            class="BasicFilter-orBlock"
-          >
+          <b-card>
+            <template v-slot:header>
+              <b-row no-gutters class="BasicFilter-query">
+                <p><i class="fa fa-search" />Query</p>
+              </b-row>
+            </template>
+            <b-card-text>
+              <b-row
+                no-gutters
+                v-for="(orBlock, groupIndex) in filters.basic"
+                :key="`orBlock-${groupIndex}`"
+                class="BasicFilter-orBlock"
+              >
+                <b-col cols="12">
+                  <b-card body-bg-variant="light">
+                    <b-row>
+                      <b-col cols="10">
+                        <b-row
+                          v-for="(andBlock, filterIndex) in orBlock"
+                          :key="`andBlock-${filterIndex}`"
+                          cols="12"
+                        >
+                          <b-col cols="1" align-self="center">
+                            <b-badge
+                              v-show="filterIndex !== 0"
+                              pill
+                              variant="info"
+                            >
+                              And
+                            </b-badge>
+                          </b-col>
+                          <b-col cols="4">
+                            <b-form-select
+                              placeholder="Attribute"
+                              @change="
+                                attribute =>
+                                  selectAttribute(
+                                    attribute,
+                                    groupIndex,
+                                    filterIndex
+                                  )
+                              "
+                              :value="
+                                filters.basic[groupIndex][filterIndex]
+                                  .attribute || ''
+                              "
+                              :options="selectAttributesValues"
+                            >
+                              <template v-slot:first>
+                                <b-form-select-option :value="''" disabled
+                                  >Attribute</b-form-select-option
+                                >
+                              </template>
+                            </b-form-select>
+                          </b-col>
+                          <b-col cols="3">
+                            <b-form-select
+                              v-model="andBlock.operator"
+                              :options="availableOperandsFormatted"
+                            />
+                          </b-col>
+                          <b-col
+                            cols="3"
+                            v-if="andBlock.operator !== 'range'"
+                            v-show="
+                              andBlock.operator !== 'exists' &&
+                                andBlock.operator !== 'not_exists'
+                            "
+                          >
+                            <b-form-input
+                              v-model="andBlock.value"
+                              placeholder="Value"
+                              type="text"
+                              class="BasicFilter--value validate"
+                            />
+                          </b-col>
+                          <div v-else>
+                            <b-col cols="1">
+                              <b-form-input
+                                v-model="andBlock.gt_value"
+                                placeholder="Value 1"
+                                type="text"
+                                class="BasicFilter--gtValue validate"
+                              />
+                            </b-col>
+                            <b-col cols="1">
+                              <b-form-input
+                                v-model="andBlock.lt_value"
+                                placeholder="Value 2"
+                                type="text"
+                                class="BasicFilter--ltValue validate"
+                              />
+                            </b-col>
+                          </div>
+                          <b-col cols="1">
+                            <i
+                              class="fa fa-times mt-2"
+                              @click="
+                                removeAndBasicFilter(groupIndex, filterIndex)
+                              "
+                            />
+                          </b-col>
+                        </b-row>
+                      </b-col>
+                      <b-col cols="2" align-self="center">
+                        <b-row no-gutters class="justify-content-md-center">
+                          <b-button
+                            variant="primary"
+                            @click="addAndBasicFilter(groupIndex)"
+                          >
+                            <i class="fa fa-plus left mr-2" />Add new line
+                          </b-button>
+                        </b-row>
+                      </b-col>
+                    </b-row>
+                  </b-card>
+                </b-col>
+                <b-col cols="12" class="mt-4">
+                  <b-alert
+                    class="text-center"
+                    variant="info"
+                    :show="groupIndex < filters.basic.length - 1"
+                  >
+                    Or
+                  </b-alert>
+                </b-col>
+              </b-row>
+
+              <b-row no-gutters class="mt-4 ml-1">
+                <b-button @click="addGroupBasicFilter" variant="primary">
+                  <i class="fa fa-plus left mr-2" />Add new block
+                </b-button>
+              </b-row>
+            </b-card-text>
+          </b-card>
+          <b-row no-gutters v-if="sortingEnabled">
             <b-col cols="12">
-              <b-card>
-                <b-col
-                  v-for="(andBlock, filterIndex) in orBlock"
-                  :key="`andBlock-${filterIndex}`"
-                  cols="12"
-                >
-                  <b-row>
+              <b-card class="mt-4">
+                <template v-slot:header>
+                  <b-row no-gutters>
+                    <p><i class="fa fa-sort-amount-asc" />Sorting</p>
+                  </b-row>
+                </template>
+                <b-card-text>
+                  <b-row class="block-content">
                     <b-col cols="4">
-                      <b-form-input
-                        v-if="!toggleAutoComplete"
-                        v-model="
-                          filters.basic[groupIndex][filterIndex].attribute
-                        "
-                        placeholder="key"
-                        type="text"
-                        class="BasicFilter--key"
-                      />
-
-                      <autocomplete
-                        v-else
-                        class="BasicFilter--key"
-                        input-class="validate"
-                        placeholder="Attribute"
-                        :items="attributeItems"
-                        :value="
-                          filters.basic[groupIndex][filterIndex].attribute || ''
-                        "
-                        @autocomplete::change="
-                          attribute =>
-                            selectAttribute(attribute, groupIndex, filterIndex)
-                        "
-                      />
-                    </b-col>
-
-                    <b-col cols="3">
                       <b-form-select
-                        v-model="andBlock.operator"
-                        :options="availableOperandsFormatted"
-                      />
+                        placeholder="Attribute"
+                        :value="filters.sorting.attribute || ''"
+                        @change="attribute => setSortAttr(attribute)"
+                        :options="selectAttributesValues"
+                      >
+                        <template v-slot:first>
+                          <b-form-select-option :value="''" disabled
+                            >Attribute</b-form-select-option
+                          >
+                        </template></b-form-select
+                      >
                     </b-col>
-                    <b-col
-                      cols="4"
-                      v-if="andBlock.operator !== 'range'"
-                      v-show="
-                        andBlock.operator !== 'exists' &&
-                          andBlock.operator !== 'not_exists'
-                      "
-                    >
-                      <b-form-input
-                        v-model="andBlock.value"
-                        placeholder="Value"
-                        type="text"
-                        class="BasicFilter--value validate"
-                      />
-                    </b-col>
-                    <div v-else>
-                      <b-col cols="1">
-                        <b-form-input
-                          v-model="andBlock.gt_value"
-                          placeholder="Value 1"
-                          type="text"
-                          class="BasicFilter--gtValue validate"
-                        />
-                      </b-col>
-                      <b-col cols="1">
-                        <b-form-input
-                          v-model="andBlock.lt_value"
-                          placeholder="Value 2"
-                          type="text"
-                          class="BasicFilter--ltValue validate"
-                        />
-                      </b-col>
-                    </div>
-                    <b-col cols="1">
-                      <i
-                        class="fa fa-times"
-                        @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                    <b-col cols="2" class="BasicFilter-sortingValue">
+                      <b-select
+                        v-model="filters.sorting.order"
+                        :options="[
+                          { value: 'asc', text: 'asc' },
+                          { value: 'desc', text: 'desc' }
+                        ]"
                       />
                     </b-col>
                   </b-row>
-                </b-col>
-                <b-col cols="12" class="mt-2">
-                  <b-row no-gutters class="justify-content-md-center">
-                    <b-button
-                      variant="primary"
-                      @click="addAndBasicFilter(groupIndex)"
-                    >
-                      <i class="fa fa-plus left" />And
-                    </b-button>
-                  </b-row>
-                </b-col>
+                </b-card-text>
               </b-card>
-            </b-col>
-            <b-col cols="12">
-              <b-row no-gutters class="justify-content-md-center">
-                <p v-if="groupIndex < filters.basic.length - 1">
-                  Or
-                </p>
-              </b-row>
-            </b-col>
-          </b-row>
-          <b-row no-gutters class="mt-4 ml-1">
-            <b-button @click="addGroupBasicFilter" variant="primary">
-              <i class="fa fa-plus left" />Or
-            </b-button>
-          </b-row>
-
-          <b-row no-gutters v-if="sortingEnabled" class="BasicFilter-sortBlock">
-            <b-col cols="12">
-              <b-row no-gutters>
-                <p><i class="fa fa-sort-amount-asc" />Sorting</p>
-              </b-row>
-              <b-row class="block-content">
-                <b-col cols="4">
-                  <autocomplete
-                    class="BasicFilter-sortingAttr"
-                    input-class="validate"
-                    placeholder="Attribute"
-                    :items="attributeItems"
-                    :value="filters.sorting.attribute || ''"
-                    @autocomplete::change="attribute => setSortAttr(attribute)"
-                  />
-                </b-col>
-                <b-col cols="2" class="BasicFilter-sortingValue">
-                  <b-select
-                    v-model="filters.sorting.order"
-                    :options="[
-                      { value: 'asc', text: 'asc' },
-                      { value: 'desc', text: 'desc' }
-                    ]"
-                  />
-                </b-col>
-              </b-row>
             </b-col>
           </b-row>
         </b-col>
@@ -153,7 +181,7 @@
       <b-row no-gutters v-if="actionButtonsVisible">
         <b-button
           variant="primary"
-          class="BasicFilter-submitBtn m-2"
+          class="BasicFilter-submitBtn mt-2 mb-2 mr-2"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
@@ -171,18 +199,11 @@
 </template>
 
 <script>
-// import MSelect from '../../Common/MSelect'
-import Autocomplete from '../Autocomplete'
-
 const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
 
 export default {
   name: 'BasicFilter',
-  components: {
-    // MSelect,
-    Autocomplete
-  },
   props: {
     basicFilter: Array,
     sorting: Object,
@@ -224,8 +245,10 @@ export default {
       }
     }
   },
-
   computed: {
+    selectAttributesValues() {
+      return this.attributeItems.map(a => ({ text: a, value: a }))
+    },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map(e => ({
         value: e,
@@ -288,6 +311,8 @@ export default {
       this.$set(this.filters.sorting, 'attribute', attribute)
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
+      console.log(attribute, groupIndex, filterIndex)
+
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {
