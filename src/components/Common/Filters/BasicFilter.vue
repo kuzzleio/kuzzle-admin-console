@@ -131,7 +131,7 @@
                 </b-col>
               </b-row>
 
-              <b-row no-gutters class="mt-4 ml-1">
+              <b-row no-gutters class="ml-1">
                 <b-button @click="addGroupBasicFilter" variant="primary">
                   <i class="fa fa-plus left mr-2" />New or block
                 </b-button>
