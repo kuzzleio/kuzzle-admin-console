@@ -16,7 +16,7 @@ describe('Environments', function () {
       force: true
     })
     cy.get('[data-cy="Environment-SubmitButton"]').click()
-    cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`)
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
   it('is able to delete an environment', function () {
@@ -26,7 +26,7 @@ describe('Environments', function () {
       JSON.stringify({
         [envToDeleteName]: {
           name: envToDeleteName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -36,11 +36,13 @@ describe('Environments', function () {
     )
     localStorage.setItem('lastConnectedEnv', envToDeleteName)
     cy.visit('/')
-    cy.get('.row > .col > .EnvironmentsSwitch > .btn-flat > .fa').click()
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
 
-    cy.get('.EnvironmentsSwitch-env:nth-child(1) > .delete').click({
-      force: true
-    })
+    cy.get(`[data-cy="EnvironmentSwitch-env_${envToDeleteName}-delete"]`).click(
+      {
+        force: true
+      }
+    )
 
     cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envToDeleteName)
     cy.get('[data-cy="EnvironmentDeleteModal-submit"]').click({ force: true })
@@ -61,9 +63,9 @@ describe('Environments', function () {
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.wait(1000)
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
-    cy.get('.navbar-fixed > nav').should($nav => {
+    cy.get('nav').should($nav => {
       expect($nav.attr('class')).to.contain('EnvColor--green')
     })
   })
@@ -88,8 +90,8 @@ describe('Environments', function () {
 
     cy.visit('/')
 
-    cy.get('.EnvironmentsSwitch > .btn-flat').click()
-    cy.get('.EnvironmentsSwitch-newConnectionBtn').click()
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').click()
 
     cy.get('[data-cy="CreateEnvironment-name"]').type(invalidEnvName, {
       force: true
@@ -101,8 +103,8 @@ describe('Environments', function () {
 
     cy.contains('Unable to connect to kuzzle server')
 
-    cy.get('.EnvironmentsSwitch > .btn-flat').click()
-    cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(validEnvName)}]`).click()
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(validEnvName)}"]`).click()
 
     cy.get('[data-cy="App-connected"]')
   })

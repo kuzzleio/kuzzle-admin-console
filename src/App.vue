@@ -18,16 +18,16 @@
       <template v-else>
         <div
           v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
-          class="App-disconnected"
+          data-cy="App-disconnected"
         ></div>
-        <div v-else data-cy="App-connected" class="h-100">
+        <template v-else>
           <div
+            data-cy="App-connected"
             v-if="!$store.direct.getters.auth.isAuthenticated"
-            class="App-loggedOut"
           >
             <div
               v-if="!$store.direct.getters.auth.adminAlreadyExists"
-              class="App-noAdmin"
+              data-cy="App-noAdmin"
             >
               <sign-up
                 @environment::create="editEnvironment"
@@ -35,21 +35,23 @@
                 @environment::importEnv="importEnvironment"
               />
             </div>
-            <div v-else class="App-hasAdmin" data-cy="App-hasAdmin">
+            <div v-else>
               <login
+                data-cy="App-hasAdmin"
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
                 @environment::importEnv="importEnvironment"
               />
             </div>
           </div>
-          <div v-else class="App-loggedIn h-100" data-cy="App-loggedIn">
+          <template v-else>
             <router-view
+              data-cy="App-loggedIn"
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
             />
-          </div>
-        </div>
+          </template>
+        </template>
       </template>
     </template>
 
@@ -60,8 +62,6 @@
     />
     <modal-delete id="modal-env-delete" :environment-id="environmentId" />
     <modal-import id="modal-env-import" />
-
-    <toaster />
   </div>
 </template>
 
@@ -78,7 +78,6 @@ import CreateEnvironmentPage from './components/Common/Environments/CreateEnviro
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
-import Toaster from './components/Materialize/Toaster.vue'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -90,7 +89,6 @@ export default {
     ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
-    Toaster,
     KuzzleErrorPage,
     SignUp,
     Login,
@@ -151,8 +149,6 @@ export default {
 
 <style lang="scss" scoped>
 .App {
-  height: 100vh;
-  overflow-x: hidden;
-  background-color: $page-background-color;
+  height: 100%;
 }
 </style>

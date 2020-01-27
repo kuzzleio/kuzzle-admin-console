@@ -105,7 +105,7 @@
             <b-button
               class="mr-3"
               data-cy="LoginAsAnonymous-Btn"
-              variant="outline-secondary"
+              variant="link"
               @click="loginAsGuest"
               >Login as Anonymous</b-button
             >
