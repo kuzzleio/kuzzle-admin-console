@@ -60,7 +60,7 @@ describe('Watch', () => {
   it('Should properly set basic filter', () => {
     const firstName = 'Luca'
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.CollectionTabs--watch').click()
