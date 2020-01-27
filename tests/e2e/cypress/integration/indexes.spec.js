@@ -10,7 +10,7 @@ describe('Indexes', () => {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -24,7 +24,7 @@ describe('Indexes', () => {
     const indexName = 'testindex'
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage-createBtn').click()
     cy.get('.CreateIndexModal-name').type(indexName, {
       force: true
@@ -38,7 +38,7 @@ describe('Indexes', () => {
     cy.request('POST', `http://localhost:7512/${indexName}/_create`)
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage-createBtn')
       .should('be.visible')
       .click()
@@ -54,7 +54,7 @@ describe('Indexes', () => {
     cy.request('POST', `http://localhost:7512/${indexName}/_create`)
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
 
     cy.get(`.IndexBoxed[title=${indexName}] .IndexBoxed-dropdown`).click()
     cy.get(`.IndexBoxed[title=${indexName}] .IndexDropdown-delete`).click()

@@ -1,5 +1,5 @@
 <template>
-  <aside class="h-100">
+  <aside class="Treeview h-100">
     <b-nav vertical>
       <b-nav-item v-if="!canSearchIndex()">
         <i class="fa fa-lock" aria-hidden="true" />

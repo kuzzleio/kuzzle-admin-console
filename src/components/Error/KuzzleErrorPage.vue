@@ -1,38 +1,37 @@
 <template>
-  <div>
-    <div class="row">
-      <div class="col offset-s4 s2">
-        <environment-switch
-          @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment"
-          @environment::importEnv="importEnv"
+  <div class="KuzzleErrorPage">
+    <b-jumbotron>
+      <template v-slot:header>
+        <img
+          alt="Welcome to the Kuzzle Admin Console"
+          class="mb-3"
+          height="60"
+          src="../../assets/logo.svg"
         />
-      </div>
-    </div>
-    <div class="row message-warning">
-      <h5>{{ $store.state.kuzzle.errorFromKuzzle }}</h5>
-    </div>
-    <div class="row kuzzle-disconnected">
-      <div class="col s12">
-        <p>Trying to connect to Kuzzle...</p>
-      </div>
+        <h2>{{ $store.state.kuzzle.errorFromKuzzle }}</h2>
+      </template>
 
-      <div class="col s1 offset-s5">
-        <div class="preloader-wrapper active valign-wrapper">
-          <div class="spinner-layer">
-            <div class="circle-clipper left">
-              <div class="circle" />
-            </div>
-            <div class="gap-patch">
-              <div class="circle" />
-            </div>
-            <div class="circle-clipper right">
-              <div class="circle" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <hr class="my-4" />
+
+      <b-row align-v="center">
+        <b-col sm="1">
+          <b-spinner variant="secondary" label="Spinning"> </b-spinner
+        ></b-col>
+        <b-col sm="7" class="align-middle"
+          >Trying to connect to Kuzzle...</b-col
+        >
+        <b-col sm="2" class="text-right">
+          <span class="text-muted align-middle">Connection:</span>
+        </b-col>
+        <b-col sm="2" class="text-right">
+          <environment-switch
+            @environment::create="editEnvironment"
+            @environment::delete="deleteEnvironment"
+            @environment::importEnv="importEnv"
+          />
+        </b-col>
+      </b-row>
+    </b-jumbotron>
   </div>
 </template>
 
