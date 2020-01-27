@@ -92,6 +92,7 @@ import {
   canCreateIndex,
   canSearchIndex
 } from '../../../services/userAuthorization'
+
 export default {
   name: 'IndexesList',
   components: {
@@ -121,10 +122,10 @@ export default {
           tdClass: 'IndexesPage-name code align-middle'
         },
         {
-          key: 'collectionsNumber',
+          key: 'collectionCount',
           sortable: true,
           label: 'Collections',
-          class: 'IndexesPage-collectionsNumber text-center align-middle'
+          class: 'IndexesPage-collectionCount text-center align-middle'
         },
         {
           key: 'actions',
@@ -135,18 +136,15 @@ export default {
     }
   },
   computed: {
+    indexes() {
+      return this.$store.state.index.indexesAndCollections
+    },
     tableItems() {
-      const tableItems = [],
-        entries = Object.entries(this.$store.state.index.indexesAndCollections)
-
-      for (const [index, collections] of entries) {
-        tableItems.push({
-          indexName: index,
-          collectionsNumber:
-            collections.realtime.length + collections.stored.length
-        })
-      }
-      return tableItems
+      return Object.keys(this.indexes).map(i => ({
+        indexName: i,
+        collectionCount:
+          this.indexes[i].realtime.length + this.indexes[i].stored.length
+      }))
     },
     orderedFilteredIndices() {
       return this.$store.state.index.indexes
@@ -178,7 +176,7 @@ export default {
     font-weight: 500;
   }
 }
-.IndexesPage-collectionsNumber {
+.IndexesPage-collectionCount {
   width: 2em;
 }
 .IndexesPage-actions {
