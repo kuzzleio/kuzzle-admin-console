@@ -125,6 +125,6 @@ export default {
   height: 100%;
   overflow: auto;
   padding: $content-gutter;
-  background-color: #f5f5f5;
+  background-color: $light-grey-color;
 }
 </style>
