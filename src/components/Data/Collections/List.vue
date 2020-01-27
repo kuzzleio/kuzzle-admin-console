@@ -9,6 +9,7 @@
         <b-col class="text-right">
           <b-button
             class="align-middle"
+            data-cy="CollectionList-create"
             variant="primary"
             :disabled="!canCreateCollection(index)"
             :title="
@@ -81,6 +82,7 @@
         <template v-slot:cell(name)="name">
           <b-link
             class="code"
+            :data-cy="`CollectionList-name--${name.value}`"
             :to="
               name.item.type === 'realtime'
                 ? {
@@ -115,6 +117,7 @@
             class="mx-1"
             variant="outline-secondary"
             title="Delete collection"
+            :data-cy="`CollectionList-delete--${row.item.name}`"
             @click="onDeleteCollectionClicked(row.item.name)"
             ><i class="fa fa-trash"></i
           ></b-button>
@@ -141,6 +144,7 @@
         </template>
         <b-form-input
           id="deleteCollectionPromptField"
+          data-cy="DeleteCollectionPrompt-confirm"
           v-model="deleteConfirmation"
           @keypress.enter="onDeleteCollectionConfirmed"
         ></b-form-input>
@@ -150,6 +154,7 @@
           >Cancel</b-button
         >
         <b-button
+          data-cy="DeleteCollectionPrompt-OK"
           variant="primary"
           :disabled="!deleteConfirmation"
           @click="onDeleteCollectionConfirmed"
