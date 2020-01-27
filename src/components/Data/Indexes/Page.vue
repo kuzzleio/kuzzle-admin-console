@@ -1,10 +1,10 @@
 <template>
-  <div class="IndexesPage wrapper w-75">
+  <b-container class="IndexesPage">
     <headline>
-      Indexes - Browse
+      Indexes
       <b-button
         class="float-right mt-3"
-        v-if="canCreateIndex() && $store.state.index.indexes.length"
+        v-if="canCreateIndex()"
         variant="primary"
         :title="
           !canCreateIndex() ? `Your rights disallow you to create indexes` : ''
@@ -16,45 +16,56 @@
       </b-button>
     </headline>
 
-    <template v-if="canSearchIndex() && !$store.state.index.indexes.length">
-      <b-card>
-        <b-card-text>
-          <b-container>
-            <b-row align-v="center">
-              <b-col lg="3" xl="2" class="d-none d-xl-block mr-1">
-                <i
-                  class="fa fa-8x fa-database text-secondary"
-                  aria-hidden="true"
-                />
-              </b-col>
-              <b-col>
-                <h2>Here you'll see the kuzzle's indexes</h2>
-                <p><em>Currently there is no index.</em></p>
-                <b-button
-                  v-if="canCreateIndex()"
-                  variant="primary"
-                  @click.prevent="openCreateModal"
-                >
-                  <i class="fa fa-plus-circle left" />
-                  Create an index
-                </b-button>
-              </b-col>
-            </b-row>
-          </b-container>
-        </b-card-text>
-      </b-card>
-    </template>
-    <template v-if="$store.state.index.indexes.length">
+    <list-not-allowed v-if="!canSearchIndex()" />
+    <template v-else>
+      <b-row class="mb-3">
+        <b-col sm="8" class="text-secondary">
+          {{ tableItems.length }}
+          {{ tableItems.length === 1 ? 'index' : 'indexes' }}
+        </b-col>
+        <b-col sm="4">
+          <b-input-group>
+            <template v-slot:prepend>
+              <b-input-group-text>Filter</b-input-group-text>
+            </template>
+            <b-form-input v-model="filter"></b-form-input>
+          </b-input-group>
+        </b-col>
+      </b-row>
+
       <b-table
         striped
         outlined
+        show-empty
         sticky-header="1000px"
         :items="tableItems"
         :fields="tableFields"
+        :filter="filter"
       >
-        <template v-slot:cell(indexName)="indexName">
+        <template v-slot:empty>
+          <h4 class="text-secondary text-center">There is no index.</h4>
+          <p class="text-secondary text-center" v-if="canCreateIndex()">
+            You can create one by hitting the button above.
+          </p>
+        </template>
+        <template v-slot:emptyfiltered>
+          <h4 class="text-secondary text-center">
+            There is no index matching your filter.
+          </h4>
+        </template>
+        <template v-slot:cell(icon)>
           <i class="fa fa-2x fa-database mr-2"></i>
-          {{ indexName.value }}
+        </template>
+        <template v-slot:cell(indexName)="indexName">
+          <router-link
+            :data-cy="`IndexesPage-name--${indexName.value}`"
+            :to="{
+              name: 'DataIndexSummary',
+              params: { index: indexName.value }
+            }"
+          >
+            {{ indexName.value }}
+          </router-link>
         </template>
         <template v-slot:cell(actions)="row">
           <b-button
@@ -69,7 +80,7 @@
     </template>
     <CreateIndexModal :id="createIndexModalId" />
     <DeleteIndexModal :id="deleteIndexModalId" :index="indexToDelete" />
-  </div>
+  </b-container>
 </template>
 
 <script>
@@ -81,7 +92,6 @@ import {
   canCreateIndex,
   canSearchIndex
 } from '../../../services/userAuthorization'
-
 export default {
   name: 'IndexesList',
   components: {
@@ -99,13 +109,28 @@ export default {
       filter: '',
       indexToDelete: null,
       tableFields: [
-        { key: 'indexName', sortable: true },
+        {
+          key: 'icon',
+          label: '',
+          tdClass: 'IndexesPage-icon text-secondary align-middle'
+        },
+        {
+          key: 'indexName',
+          label: 'Name',
+          sortable: true,
+          tdClass: 'IndexesPage-name code align-middle'
+        },
         {
           key: 'collectionsNumber',
           sortable: true,
-          label: 'Number of collections'
+          label: 'Collections',
+          class: 'IndexesPage-collectionsNumber text-center align-middle'
         },
-        { key: 'actions', label: '' }
+        {
+          key: 'actions',
+          label: '',
+          class: 'IndexesPage-actions text-right align-middle'
+        }
       ]
     }
   },
@@ -143,8 +168,20 @@ export default {
 }
 </script>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.wrapper {
-  margin: 0 auto;
+<style lang="scss" rel="stylesheet/scss">
+.IndexesPage-icon {
+  width: 2em;
+}
+.IndexesPage-name {
+  a {
+    color: #222;
+    font-weight: 500;
+  }
+}
+.IndexesPage-collectionsNumber {
+  width: 2em;
+}
+.IndexesPage-actions {
+  width: 8em;
 }
 </style>
