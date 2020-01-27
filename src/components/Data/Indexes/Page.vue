@@ -6,7 +6,10 @@
         class="float-right mt-3"
         v-if="canCreateIndex() && $store.state.index.indexes.length"
         variant="primary"
-        @click.prevent="openModal"
+        :title="
+          !canCreateIndex() ? `Your rights disallow you to create indexes` : ''
+        "
+        @click.prevent="openCreateModal"
       >
         <i class="fa fa-plus-circle left" />
         Create an index
@@ -30,7 +33,7 @@
                 <b-button
                   v-if="canCreateIndex()"
                   variant="primary"
-                  @click.prevent="openModal"
+                  @click.prevent="openCreateModal"
                 >
                   <i class="fa fa-plus-circle left" />
                   Create an index
@@ -42,25 +45,37 @@
       </b-card>
     </template>
     <template v-if="$store.state.index.indexes.length">
-      <b-card>
-        <b-card-text>
-          <b-table
-            sticky-header
-            :items="tableItems"
-            :fields="tableFields"
-            :bordered="false"
-          ></b-table>
-        </b-card-text>
-      </b-card>
+      <b-table
+        striped
+        outlined
+        sticky-header="1000px"
+        :items="tableItems"
+        :fields="tableFields"
+      >
+        <template v-slot:cell(indexName)="indexName">
+          <i class="fa fa-2x fa-database mr-2"></i>
+          {{ indexName.value }}
+        </template>
+        <template v-slot:cell(actions)="row">
+          <b-button
+            class="mx-1"
+            variant="outline-secondary"
+            title="Delete index"
+            @click="openDeleteModal(row.item.indexName)"
+            ><i class="fa fa-trash"></i
+          ></b-button>
+        </template>
+      </b-table>
     </template>
-    <CreateIndexModal :id="createIndexModalId" @hide="onCreateIndexModalHide" />
+    <CreateIndexModal :id="createIndexModalId" />
+    <DeleteIndexModal :id="deleteIndexModalId" :index="indexToDelete" />
   </div>
 </template>
 
 <script>
 import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
-import IndexBoxed from './Boxed'
+import DeleteIndexModal from './DeleteIndexModal'
 import Title from '../../../directives/title.directive'
 import {
   canCreateIndex,
@@ -72,7 +87,7 @@ export default {
   components: {
     Headline,
     CreateIndexModal,
-    IndexBoxed
+    DeleteIndexModal
   },
   directives: {
     Title
@@ -80,9 +95,18 @@ export default {
   data() {
     return {
       createIndexModalId: 'createIndexModal',
+      deleteIndexModalId: 'deleteIndexModal',
       filter: '',
-      isOpen: false,
-      tableFields: ['name', 'collectionsNumber', 'actions']
+      indexToDelete: null,
+      tableFields: [
+        { key: 'indexName', sortable: true },
+        {
+          key: 'collectionsNumber',
+          sortable: true,
+          label: 'Number of collections'
+        },
+        { key: 'actions', label: '' }
+      ]
     }
   },
   computed: {
@@ -90,10 +114,11 @@ export default {
       const tableItems = [],
         entries = Object.entries(this.$store.state.index.indexesAndCollections)
 
-      for (const [key, el] of entries) {
+      for (const [index, collections] of entries) {
         tableItems.push({
-          name: key,
-          collectionsNumber: el.realtime.length + el.stored.length
+          indexName: index,
+          collectionsNumber:
+            collections.realtime.length + collections.stored.length
         })
       }
       return tableItems
@@ -107,8 +132,12 @@ export default {
   methods: {
     canSearchIndex,
     canCreateIndex,
-    openModal() {
+    openCreateModal() {
       this.$bvModal.show(this.createIndexModalId)
+    },
+    openDeleteModal(index) {
+      this.indexToDelete = index
+      this.$bvModal.show(this.deleteIndexModalId)
     }
   }
 }
