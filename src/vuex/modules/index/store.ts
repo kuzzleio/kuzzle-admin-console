@@ -10,7 +10,6 @@ import Vue from 'vue'
 import { IndexState } from './types'
 import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
-import axios from 'axios'
 
 const state: IndexState = {
   indexes: [],
@@ -173,9 +172,11 @@ const actions = createActions({
   },
   async deleteCollection(context, { index, collection }) {
     const { commit, rootGetters } = indexActionContext(context)
-    await axios.request({
-      url: `${rootGetters.kuzzle.currentHttpUrl}/${index}/${collection}`,
-      method: 'delete'
+    await Vue.prototype.$kuzzle.query({
+      index,
+      collection,
+      controller: 'collection',
+      action: 'delete'
     })
     commit.removeStoredCollection({ index, collection })
   }
