@@ -125,7 +125,7 @@
 
     <b-row align-h="center" align-v="center">
       <b-col sm="6">
-        <!-- <b-input-group v-if="sortingEnabled" prepend="Sorting">
+        <b-input-group v-if="sortingEnabled" prepend="Sorting">
           <template v-slot:append>
             <b-select
               v-model="filters.sorting.order"
@@ -147,7 +147,7 @@
               >
             </template></b-form-select
           >
-        </b-input-group> -->
+        </b-input-group>
       </b-col>
       <b-col v-if="actionButtonsVisible" class="text-right">
         <b-button
