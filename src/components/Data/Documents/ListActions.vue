@@ -2,7 +2,7 @@
   <b-row no-gutters>
     <b-col cols="8" class="mt-2">
       <b-button
-        variant="warning"
+        variant="outline-dark"
         class="ml-0 mr-2"
         :disabled="!displayToggleAll"
         @click="$emit('toggle-all')"
@@ -13,18 +13,18 @@
         Toggle all
       </b-button>
 
-      <b-button
-        variant="dark"
+      <!-- <b-button
+        variant="outline-dark"
         class="m-2"
         :disabled="!displayCreate"
         @click.prevent="$emit('create')"
       >
         <i class="fa fa-plus-circle left" />
         Create
-      </b-button>
+      </b-button> -->
 
       <b-button
-        variant="danger"
+        variant="outline-danger"
         class="m-2"
         :disabled="!displayBulkDelete"
         @click="$emit('bulk-delete')"
@@ -33,7 +33,11 @@
         Delete
       </b-button>
 
-      <b-button variant="primary" class="m-2" @click.prevent="$emit('refresh')">
+      <b-button
+        variant="outline-secondary"
+        class="m-2"
+        @click.prevent="$emit('refresh')"
+      >
         <i class="fas fa-sync-alt left" />
         Refresh
       </b-button>

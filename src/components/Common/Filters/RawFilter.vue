@@ -18,18 +18,26 @@
           />
         </b-col>
       </b-row>
+      <b-alert :show="jsonInvalid" variant="danger" class="mt-2"
+        >Your JSON is not valid</b-alert
+      >
       <b-row no-gutters v-if="actionButtonsVisible">
-        <b-button
-          variant="primary"
-          class="mt-2 mr-2 mb-2"
-          @click.prevent="submitSearch"
-        >
-          {{ submitButtonLabel }}
-        </b-button>
-        <b-button variant="outline-primary" class="m-2" @click="resetSearch">
-          Reset
-        </b-button>
-        <span v-if="jsonInvalid" class="error">Your JSON is not valid</span>
+        <b-col sm="12" class="text-right">
+          <b-button
+            variant="primary"
+            class="mt-2 mr-2 mb-2"
+            @click.prevent="submitSearch"
+          >
+            {{ submitButtonLabel }}
+          </b-button>
+          <b-button
+            variant="outline-secondary"
+            class="m-2"
+            @click="resetSearch"
+          >
+            Reset
+          </b-button>
+        </b-col>
       </b-row>
     </b-container>
   </form>
@@ -55,7 +63,7 @@ export default {
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'Search'
     },
     actionButtonsVisible: {
       type: Boolean,

@@ -1,5 +1,5 @@
 <template>
-  <div class="nav CollectionTabs">
+  <div class="nav CollectionTabs text-right">
     <ul class="pl-0">
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
@@ -52,7 +52,7 @@
         v-if="!$store.state.collection.isRealtimeOnly"
         :class="{ active: isRouteActive('DataCreateDocument') }"
       >
-        <router-link
+        <!-- <router-link
           class="CollectionTabs--createDocument"
           :title="
             canCreateDocument($route.params.index, $route.params.collection)
@@ -78,7 +78,7 @@
           "
         >
           Create a document
-        </router-link>
+        </router-link> -->
       </li>
     </ul>
   </div>
