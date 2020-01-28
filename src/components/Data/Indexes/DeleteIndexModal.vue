@@ -1,35 +1,40 @@
 <template>
-  <div>
-    <b-modal ref="deleteIndexModal" :id="id" @hide="resetForm">
-      <template v-slot:modal-title>
-        Index <strong>{{ index }}</strong> deletion
-      </template>
+  <b-modal
+    class="DeleteIndexModal"
+    ref="deleteIndexModal"
+    :id="id"
+    @hide="resetForm"
+  >
+    <template v-slot:modal-title>
+      Index <strong>{{ index }}</strong> deletion
+    </template>
 
-      <template v-slot:modal-footer>
-        <b-button variant="secondary" @click="hideModal">
-          Cancel
-        </b-button>
-        <b-button
-          variant="primary"
-          :disabled="index !== indexConfirmation"
-          @click="tryDeleteIndex"
-        >
-          OK
-        </b-button>
-      </template>
-      <b-form>
-        <b-form-group label="Index name confirmation" label-for="indexName">
-          <b-form-input
-            id="indexName"
-            v-model="indexConfirmation"
-            type="text"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
-      </b-form>
-    </b-modal>
-  </div>
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="hideModal">
+        Cancel
+      </b-button>
+      <b-button
+        data-cy="DeleteIndexModal-deleteBtn"
+        variant="primary"
+        :disabled="index !== indexConfirmation"
+        @click="tryDeleteIndex"
+      >
+        OK
+      </b-button>
+    </template>
+    <b-form>
+      <b-form-group label="Index name confirmation" label-for="indexName">
+        <b-form-input
+          data-cy="DeleteIndexModal-name"
+          id="indexName"
+          v-model="indexConfirmation"
+          type="text"
+          required
+        ></b-form-input>
+      </b-form-group>
+      <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
+    </b-form>
+  </b-modal>
 </template>
 
 <script>

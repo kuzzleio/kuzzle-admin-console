@@ -1,41 +1,47 @@
 <template>
-  <div>
-    <b-modal
-      ref="createIndexModal"
-      title="Index creation"
-      :id="id"
-      @hide="resetForm"
-    >
-      <template v-slot:modal-footer>
-        <b-button variant="secondary" @click="hideModal">
-          Cancel
-        </b-button>
-        <b-button
-          variant="primary"
-          :disabled="index.length === 0"
-          @click="tryCreateIndex"
-        >
-          OK
-        </b-button>
-      </template>
-      <b-form>
-        <b-form-group
-          label="Index name"
-          label-for="indexName"
-          description="The index name should contain only lowercase characters, no space and cannot
-            begin with an underscore (_)"
-        >
-          <b-form-input
-            id="indexName"
-            v-model="index"
-            type="text"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
-      </b-form>
-    </b-modal>
-  </div>
+  <b-modal
+    class="CreateIndexModal"
+    ref="createIndexModal"
+    title="Index creation"
+    :id="id"
+    @hide="resetForm"
+  >
+    <template v-slot:modal-footer>
+      <b-button variant="secondary" @click="hideModal">
+        Cancel
+      </b-button>
+      <b-button
+        data-cy="CreateIndexModal-createBtn"
+        variant="primary"
+        :disabled="index.length === 0"
+        @click="tryCreateIndex"
+      >
+        OK
+      </b-button>
+    </template>
+    <b-form>
+      <b-form-group
+        label="Index name"
+        label-for="indexName"
+        description="The index name should contain only lowercase characters, no space and cannot
+          begin with an underscore (_)"
+      >
+        <b-form-input
+          data-cy="CreateIndexModal-name"
+          id="indexName"
+          required
+          type="text"
+          v-model="index"
+        ></b-form-input>
+      </b-form-group>
+      <b-alert
+        data-cy="CreateIndexModal-alert"
+        :show="error.length"
+        variant="danger"
+        >{{ error }}</b-alert
+      >
+    </b-form>
+  </b-modal>
 </template>
 
 <script>

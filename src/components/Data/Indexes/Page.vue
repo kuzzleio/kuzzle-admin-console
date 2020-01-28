@@ -4,6 +4,7 @@
       Indexes
       <b-button
         class="float-right mt-3"
+        data-cy="IndexesPage-createBtn"
         v-if="canCreateIndex()"
         variant="primary"
         :title="
@@ -70,8 +71,9 @@
         <template v-slot:cell(actions)="row">
           <b-button
             class="mx-1"
-            variant="outline-secondary"
+            :data-cy="`IndexesPage-delete--${row.item.indexName}`"
             title="Delete index"
+            variant="outline-secondary"
             @click="openDeleteModal(row.item.indexName)"
             ><i class="fa fa-trash"></i
           ></b-button>
