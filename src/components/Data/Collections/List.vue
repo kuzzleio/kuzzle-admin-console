@@ -47,7 +47,6 @@
       <b-table
         striped
         outlined
-        sticky-header
         show-empty
         :items="collections"
         :fields="tableFields"

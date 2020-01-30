@@ -177,6 +177,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+// TODO Clean this up, please
 ul.collections {
   padding-left: 15px;
   overflow-y: hidden;
@@ -224,10 +225,7 @@ i.fa {
 }
 
 i.tree-toggle {
-  position: absolute;
   cursor: pointer;
-  padding: 0 10px 0 10px;
-  margin: 0 0 0 -10px;
   transition-duration: 0.2s;
   transform-origin: 50% 50%;
 }
