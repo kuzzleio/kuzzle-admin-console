@@ -26,7 +26,7 @@ export const waitForConnected = (timeout = 1000) => {
   return Promise.resolve()
 }
 
-export const connectToEnvironment = environment => {
+export const connectToEnvironment = async environment => {
   // fix default port for users that have an old environment settings in their localStorage:
   if (environment.port === undefined) environment.port = 7512
   if (typeof environment.ssl !== 'boolean') environment.ssl = false
@@ -41,7 +41,7 @@ export const connectToEnvironment = environment => {
     sslConnection: environment.ssl
   })
 
-  Vue.prototype.$kuzzle.connect()
+  await Vue.prototype.$kuzzle.connect()
 }
 
 // ### Data
@@ -382,22 +382,22 @@ export const isKuzzleActionAllowed = (
 
   // We filter in all the rights that match the request (including wildcards).
   filteredRights = rights
-    .filter(function(right) {
+    .filter(function (right) {
       return right.controller === controller || right.controller === '*'
     })
-    .filter(function(right) {
+    .filter(function (right) {
       return right.action === action || right.action === '*'
     })
-    .filter(function(right) {
+    .filter(function (right) {
       return right.index === index || right.index === '*'
     })
-    .filter(function(right) {
+    .filter(function (right) {
       return right.collection === collection || right.collection === '*'
     })
 
   // Then, if at least one right allows the action, we return 'allowed'
   if (
-    filteredRights.some(function(item) {
+    filteredRights.some(function (item) {
       return item.value === 'allowed'
     })
   ) {
