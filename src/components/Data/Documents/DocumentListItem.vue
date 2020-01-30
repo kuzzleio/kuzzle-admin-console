@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid>
-    <b-row align-h="between" no-gutters>
+  <b-container fluid data-cy="collection-item">
+    <b-row align-h="between" no-gutters data-cy="DocumentListItem">
       <b-col cols="10">
         <b-row no-gutters class="pt-1">
           <i
@@ -20,10 +20,10 @@
           <a class="align-middle" @click="toggleCollapse">{{ document.id }}</a>
         </b-row>
       </b-col>
-      <b-col cols="2">
+      <b-col cols="2" data-cy="DocumentListItem-actions">
         <div class="float-right">
           <a
-            class="DocumentListItem-update"
+            data-cy="DocumentListItem-update"
             href=""
             :title="
               canEdit
@@ -36,6 +36,7 @@
           </a>
 
           <b-dropdown
+            data-cy="DocumentListItem-dropdown"
             :id="document.id"
             toggle-class="text-decoration-none"
             no-caret

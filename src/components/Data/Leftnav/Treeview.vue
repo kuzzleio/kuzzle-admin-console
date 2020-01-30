@@ -1,6 +1,6 @@
 <template>
   <aside class="h-100">
-    <b-nav vertical>
+    <b-nav verticalc data-cy="Treeview-root">
       <b-nav-item v-if="!canSearchIndex()">
         <i class="fa fa-lock" aria-hidden="true" />
         <em>You are not allowed to list indexes</em>
@@ -14,7 +14,11 @@
           ></b-form-input>
         </div>
       </b-nav-item>
-      <b-nav-item v-for="indexName in orderedFilteredIndices" :key="indexName">
+      <b-nav-item
+        v-for="indexName in orderedFilteredIndices"
+        :key="indexName"
+        data-cy="tree-item"
+      >
         <index-branch
           :index-name="indexName"
           :route-name="routeName"

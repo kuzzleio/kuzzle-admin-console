@@ -103,7 +103,7 @@
               <template v-show="documents.length" class="p-0 mt-2">
                 <b-row
                   v-show="listViewType === 'list'"
-                  class="DocumentList-list"
+                  data-cy="DocumentList-list"
                   no-gutters
                 >
                   <b-list-group class="w-100">

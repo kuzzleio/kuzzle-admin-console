@@ -49,7 +49,7 @@ describe('Document List', function() {
 
   it('sets and persists the listViewType param accessing a collection', function() {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.url().should('contain', 'listViewType=list')
@@ -57,17 +57,18 @@ describe('Document List', function() {
 
   it('shows list items when viewType is set to list', function() {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.DocumentList-list .collection-item')
+    cy.get('[data-cy="DocumentList-list"]')
+      .get('[data-cy="collection-item"]')
       .children()
-      .should('have.class', 'DocumentListItem')
+      .should('have.attr', 'data-cy', 'DocumentListItem')
   })
 
   it('sets and persists the listViewType param when switching the list view', function() {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
@@ -78,7 +79,7 @@ describe('Document List', function() {
 
   it('shows boxed items when viewType is set to boxes', function() {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
@@ -90,7 +91,7 @@ describe('Document List', function() {
   it('remembers the list view settings when navigating from one collection to another', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.request(
@@ -103,25 +104,29 @@ describe('Document List', function() {
       }
     )
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
-    cy.get('.Treeview-root .tree-item')
+    cy.get('[data-cy="Treeview-root"]')
+      .get('[data-cy="tree-item"]')
       .contains('anothercollection')
-      .click()
+      .click({ force: true })
 
-    cy.get('.Treeview-root .tree-item')
+    cy.get('[data-cy="Treeview-root"]')
+      .get('[data-cy="tree-item"]')
       .contains(collectionName)
-      .click()
+      .click({ force: true })
     cy.url().should('contain', 'listViewType=boxes')
     cy.get('.DocumentList-boxes')
       .children()
       .should('have.class', 'DocumentBoxItem')
 
-    cy.get('.Treeview-root .tree-item')
+    cy.get('[data-cy="Treeview-root"]')
+      .get('[data-cy="tree-item"]')
       .contains('anothercollection')
-      .click()
+      .click({ force: true })
     cy.url().should('contain', 'listViewType=list')
-    cy.get('.DocumentList-list .collection-item')
+    cy.get('[data-cy="DocumentList-list"]')
+      .get('[data-cy="collection-item"]')
       .children()
-      .should('have.class', 'DocumentListItem')
+      .should('have.attr', 'data-cy', 'DocumentListItem')
   })
 
   it('has items with working dropdowns (even if the ID contains weird characters)', function() {
@@ -147,27 +152,66 @@ describe('Document List', function() {
     )
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.DocumentListItem')
+    cy.get('[data-cy="DocumentListItem"]')
       .contains(adrienID)
       .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-dropdown')
-      .click()
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-dropdown"]')
+      .children('ul')
+      .should('not.have.class', 'show')
       .contains('Delete')
 
+    cy.get('[data-cy="DocumentListItem"]')
+      .contains(adrienID)
+      .parent()
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-dropdown"]')
+      .find('button')
+      .click()
+
+    cy.get('[data-cy="DocumentListItem"]')
+      .contains(adrienID)
+      .parent()
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-dropdown"]')
+      .children('ul')
+      .should('have.class', 'show')
     cy.get('.Headline').click()
 
-    cy.get('.DocumentListItem')
+    cy.get('[data-cy="DocumentListItem"]')
       .contains(nicoID)
       .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-dropdown')
-      .click()
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-dropdown"]')
+      .children('ul')
+      .should('not.have.class', 'show')
       .contains('Delete')
+
+    cy.get('[data-cy="DocumentListItem"]')
+      .contains(nicoID)
+      .parent()
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-dropdown"]')
+      .find('button')
+      .click()
+
+    cy.get('[data-cy="DocumentListItem"]')
+      .contains(nicoID)
+      .parent()
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-dropdown"]')
+      .children('ul')
+      .should('have.class', 'show')
   })
 
   it('should handle the column view properly', function() {
@@ -182,7 +226,7 @@ describe('Document List', function() {
     )
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('.ListViewButtons-btn[title~="column"]').click()
@@ -240,7 +284,7 @@ describe('Document List', function() {
     )
 
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
@@ -319,16 +363,17 @@ describe('Document update/replace', () => {
 
   it('should update a document', () => {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.DocumentListItem').should('be.visible')
-    cy.get('.DocumentListItem')
+    cy.get('[data-cy="DocumentListItem"]').should('be.visible')
+    cy.get('[data-cy="DocumentListItem"]')
       .contains('myId')
       .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-update')
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-update"]')
       .click()
 
     cy.get(
@@ -352,7 +397,7 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('.DocumentUpdate').click()
+    cy.get('[data-cy="DocumentUpdate"]').click()
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
@@ -364,16 +409,17 @@ describe('Document update/replace', () => {
 
   it('should replace a document', () => {
     cy.visit('/')
-    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.DocumentListItem').should('be.visible')
-    cy.get('.DocumentListItem')
+    cy.get('[data-cy="DocumentListItem"]').should('be.visible')
+    cy.get('[data-cy="DocumentListItem"]')
       .contains('myId')
       .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-update')
+      .parent()
+      .siblings('[data-cy="DocumentListItem-actions"]')
+      .find('[data-cy="DocumentListItem-update"]')
       .click()
 
     cy.get(
@@ -398,9 +444,9 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('.DocumentReplace').click({ force: true })
+    cy.get('[data-cy="DocumentReplace"]').click({ force: true })
 
-    cy.get('.DocumentListItem').should('be.visible')
+    cy.get('[data-cy="DocumentListItem"]').should('be.visible')
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
