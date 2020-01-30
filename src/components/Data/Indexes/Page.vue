@@ -20,7 +20,7 @@
     <list-not-allowed v-if="!canSearchIndex()" />
     <template v-else>
       <b-row class="mb-3">
-        <b-col sm="8" class="text-secondary">
+        <b-col sm="8" class="text-secondary pt-2">
           {{ tableItems.length }}
           {{ tableItems.length === 1 ? 'index' : 'indexes' }}
         </b-col>
