@@ -125,20 +125,15 @@
                   </b-list-group>
                 </b-row>
 
-                <b-row
-                  v-show="listViewType === 'column'"
-                  class="DocumentList-column"
-                >
-                  <div class="DocumentList-materializeCollection h-scroll">
-                    <Column
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :index="index"
-                      :collection="collection"
-                      @edit="onEditDocumentClicked"
-                      @delete="onDeleteClicked"
-                    />
-                  </div>
+                <b-row v-show="listViewType === 'column'">
+                  <Column
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :index="index"
+                    :collection="collection"
+                    @edit="onEditDocumentClicked"
+                    @delete="onDeleteClicked"
+                  />
                 </b-row>
 
                 <b-row v-show="listViewType === 'boxes'">
@@ -171,7 +166,10 @@
                   </div>
                 </b-row>
 
-                <b-row v-if="listViewType === 'map'" class="DocumentList-map">
+                <b-row
+                  v-if="listViewType === 'map'"
+                  class="DocumentList-map"
+                >
                   <view-map
                     :documents="geoDocuments"
                     :get-coordinates="getCoordinates"

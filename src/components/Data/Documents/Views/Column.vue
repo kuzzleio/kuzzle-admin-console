@@ -1,25 +1,48 @@
 <template>
-  <div>
-    <b-table
-      stiped
-      responsive
-      small
-      hover
-      :tbody-transition-props="{ name: 'flip-list' }"
-      :fields="formatedCustomFields"
-      :items="formatedItems"
-    >
-      <template v-slot:head()="data">
-        <span class="text-info">{{ data.label }}</span>
-        <i
-          v-if="data.column !== '_id'"
-          class="fa fa-times-circle ListViewColumn-remove"
-          @click="removeColumn(customFields.findIndex(f => f === data.column))"
-        />
-      </template>
-    </b-table>
-
-    <table class="centered highlight striped">
+  <b-col cols="12">
+    <b-row class="mt-2 ml-0">
+      <b-select
+        v-model="newCustomField"
+        :options="formatedSelectFields"
+        @change="displayColumn"
+      />
+      <!-- <autocomplete
+        class="ListViewColumnInput"
+        placeholder="Add column"
+        :items="mappingArray"
+        :value="newCustomField || ''"
+        input-class="ListViewColumnInput"
+        :notify-change="false"
+        @autocomplete::change="
+          attribute => {
+            newCustomField = attribute
+            addCustomField()
+          }
+        "
+      /> -->
+    </b-row>
+    <b-row class="mt-2 ml-0 mr-2">
+      <b-table
+        striped
+        sticky-header
+        responsive
+        hover
+        :fields="formatedTableFields"
+        :items="formatedItems"
+      >
+        <template v-slot:head()="data">
+          <span class="text-info"
+            >{{ data.label }}
+            <i
+              v-if="data.column !== 'id'"
+              class="fa fa-times-circle ListViewColumn-remove"
+              @click="hideColumn(data.field.index)"
+            />
+          </span>
+        </template>
+      </b-table>
+    </b-row>
+    <!-- <table class="centered highlight striped">
       <thead>
         <tr>
           <th class="actions" />
@@ -125,19 +148,19 @@
           </td>
         </tr>
       </tbody>
-    </table>
-  </div>
+    </table> -->
+  </b-col>
 </template>
 
 <script>
-import Dropdown from '../../../Materialize/Dropdown'
+// import Dropdown from '../../../Materialize/Dropdown'
 import Title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
 import {
   canEditDocument,
   canDeleteDocument
 } from '../../../../services/userAuthorization'
-import Autocomplete from '../../../Common/Autocomplete'
+// import Autocomplete from '../../../Common/Autocomplete'
 import _ from 'lodash'
 
 export default {
@@ -147,8 +170,8 @@ export default {
     JsonFormatter
   },
   components: {
-    Dropdown,
-    Autocomplete
+    // Dropdown,
+    // Autocomplete
   },
   props: {
     documents: Array,
@@ -165,19 +188,33 @@ export default {
     }
   },
   computed: {
-    formatedCustomFields() {
-      return this.customFields.map(f => ({
-        key: f,
-        sortable: true
-      }))
+    formatedSelectFields() {
+      return this.mappingArray
+        .map((attr, index) => ({
+          value: index,
+          text: attr.key,
+          displayed: attr.displayed
+        }))
+        .filter(attr => !attr.displayed)
+    },
+    formatedTableFields() {
+      return this.mappingArray
+        .map((attr, index) => ({
+          key: attr.key,
+          index: index,
+          sortable: true,
+          displayed: attr.displayed,
+          stickyColumn: attr.key === 'id'
+        }))
+        .filter(attr => attr.displayed)
     },
     formatedItems() {
       return this.documents.map(d => {
         const doc = {}
         doc.id = d.id
-        for (const field of this.customFields) {
-          if (field !== 'id') {
-            doc[field] = this.parseDocument(field, d).value
+        for (const { key } of this.formatedTableFields) {
+          if (key !== 'id') {
+            doc[key] = this.parseDocument(key, d).value
           }
         }
         return doc
@@ -201,49 +238,75 @@ export default {
   },
   watch: {
     $route() {
-      const columnsConfig = JSON.parse(
-        localStorage.getItem('columnViewConfig') || '{}'
-      )
+      this.initColumnsFields()
+      // const columnsConfig = JSON.parse(
+      //   localStorage.getItem('columnViewConfig') || '{}'
+      // )
 
-      this.customFields = []
+      // this.customFields = []
+      // if (
+      //   columnsConfig[this.index] &&
+      //   columnsConfig[this.index][this.collection]
+      // ) {
+      //   this.customFields = columnsConfig[this.index][this.collection]
+      // } else {
+      //   this.customFields = []
+      // }
+    },
+    mapping() {
+      this.initColumnsFields()
+      // this.mappingArray = this.buildAttributeList(this.mapping)
+      // for (const attr of this.customFields) {
+      //   this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
+      // }
+    }
+  },
+  mounted() {
+    this.initColumnsFields()
+  },
+  methods: {
+    initColumnsFields() {
+      this.mappingArray = this.buildAttributeList(this.mapping)
+      this.mappingArray.unshift({
+        key: 'id',
+        displayed: true
+      })
+      const columnsConfig = {}
+      // = JSON.parse(
+      // localStorage.getItem('columnViewConfig') || '{}'
+      // )
       if (
         columnsConfig[this.index] &&
         columnsConfig[this.index][this.collection]
       ) {
-        this.customFields = columnsConfig[this.index][this.collection]
-      } else {
-        this.customFields = []
+        // this.customFields = columnsConfig[this.index][this.collection]
+        this.mappingArray.map(attr => {
+          attr.displayed = columnsConfig[this.index][this.collection].includes(
+            attr.key
+          )
+          return attr
+        })
       }
+      console.log(this.mappingArray)
+      // for (const attr of this.customFields) {
+      // this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
+      // }
+      // const found = this.customFields.findIndex(attr => attr === 'id')
+      // if (found === -1) {
+      //   this.customFields.unshift('id')
+      // }
     },
-    mapping() {
-      this.mappingArray = this.buildAttributeList(this.mapping)
-      for (const attr of this.customFields) {
-        this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
-      }
-    }
-  },
-  mounted() {
-    const columnsConfig = JSON.parse(
-      localStorage.getItem('columnViewConfig') || '{}'
-    )
-
-    if (
-      columnsConfig[this.index] &&
-      columnsConfig[this.index][this.collection]
-    ) {
-      this.customFields = columnsConfig[this.index][this.collection]
-    }
-
-    this.mappingArray = this.buildAttributeList(this.mapping)
-    for (const attr of this.customFields) {
-      this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
-    }
-    this.customFields.unshift('id')
-  },
-  methods: {
-    onBlur(id) {
-      this.$refs[id][0].style.visibility = 'hidden'
+    displayColumn(index) {
+      this.mappingArray[index].displayed = true
+      this.newCustomField = null
     },
+    hideColumn(index) {
+      this.mappingArray[index].displayed = false
+      this.newCustomField = null
+    },
+    // onBlur(id) {
+    //   this.$refs[id][0].style.visibility = 'hidden'
+    // },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
         this.$refs[id][0].style.visibility = 'visible'
@@ -281,28 +344,30 @@ export default {
         localStorage.setItem('columnViewConfig', JSON.stringify(config))
       }
     },
-    removeColumn(col) {
-      console.log(col)
+    // removeColumn(col) {
+    //   console.log(this.customFields)
 
-      this.mappingArray.push(this.customFields[col])
-      this.mappingArray.sort()
-      this.customFields.splice(col, 1)
-      this.saveToLocalStorage()
-    },
+    //   this.mappingArray.push(this.customFields[col])
+    //   this.mappingArray.sort()
+    //   this.customFields.splice(col, 1)
+    //   this.saveToLocalStorage()
+    //   console.log(this.customFields)
+    // },
     getNestedField(doc, customField) {
       return _.get(doc, customField, '')
     },
-    addCustomField() {
-      if (this.newCustomField) {
-        this.customFields.push(this.newCustomField)
-        this.mappingArray.splice(
-          this.mappingArray.indexOf(this.newCustomField),
-          1
-        )
-        this.newCustomField = null
-        this.saveToLocalStorage()
-      }
-    },
+    // addCustomField() {
+    //   if (this.newCustomField) {
+    //     this.customFields.push(this.newCustomField)
+    //     this.mappingArray.splice(
+    //       this.mappingArray.indexOf(this.newCustomField),
+    //       1
+    //     )
+    //     this.newCustomField = null
+    //     this.saveToLocalStorage()
+    //   }
+    //   console.log(this.customFields)
+    // },
     deleteDocument(id) {
       if (this.canDelete) {
         this.$emit('delete', id)
@@ -320,7 +385,10 @@ export default {
         if (
           Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
         ) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
+          attributes = attributes.concat({
+            key: path.concat(attributeName).join('.'),
+            displayed: false
+          })
           attributes = attributes.concat(
             this.buildAttributeList(
               attributeValue.properties,
@@ -330,10 +398,12 @@ export default {
         } else if (
           Object.prototype.hasOwnProperty.call(attributeValue, 'type')
         ) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
+          attributes = attributes.concat({
+            key: path.concat(attributeName).join('.'),
+            displayed: false
+          })
         }
       }
-
       return attributes
     }
   }
@@ -341,58 +411,59 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.DocumentColumnItem {
-  padding: 0px 0px;
-  white-space: pre;
-  word-wrap: break-word;
-  font-size: 0.9rem;
-}
+// .DocumentColumnItem {
+//   padding: 0px 0px;
+//   white-space: pre;
+//   word-wrap: break-word;
+//   font-size: 0.9rem;
+// }
 
-td {
-  padding: 0 0 0 0;
-}
+// td {
+//   padding: 0 0 0 0;
+// }
 
-.ListViewColumnInput {
-  width: 300px;
-  float: left;
-}
+// .ListViewColumnInput {
+//   width: 300px;
+//   float: left;
+// }
 
-.ListViewColumn-remove {
-  color: #3498db;
-  cursor: pointer;
-  padding-left: 6px;
-}
+// .ListViewColumn-remove {
+//   color: #3498db;
+//   cursor: pointer;
+//   padding-left: 6px;
+// }
 
-.DocumentListViewColumn-add {
-  float: left;
-  color: #3498db;
-  font-size: 1.4rem;
-  padding-top: 10px;
-  cursor: pointer;
-}
+// .DocumentListViewColumn-add {
+//   float: left;
+//   color: #3498db;
+//   font-size: 1.4rem;
+//   padding-top: 10px;
+//   cursor: pointer;
+// }
 
-.actions {
-  width: 20px;
-}
+// .actions {
+//   width: 20px;
+// }
 
-.relative {
-  position: relative;
-}
+// .relative {
+//   position: relative;
+// }
 
-.DocumentListViewColumn-jsonFormatter {
-  position: absolute;
-  background-color: #fff;
-  border: 0.3px solid grey;
-  z-index: 999;
-  left: 0;
-  bottom: 0;
-  padding: 5px;
-  text-align: left;
-}
+// .DocumentListViewColumn-jsonFormatter {
+//   position: absolute;
+//   background-color: #fff;
+//   border: 0.3px solid grey;
+//   z-index: 999;
+//   left: 0;
+//   bottom: 0;
+//   padding: 5px;
+//   text-align: left;
+// }
 
-.Column-view-title {
-  white-space: nowrap;
-}
+// .Column-view-title {
+//   white-space: nowrap;
+// }
+//
 </style>
 
 <style>
