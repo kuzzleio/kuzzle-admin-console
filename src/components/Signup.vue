@@ -221,6 +221,7 @@ export default {
 
 <style type="text/css" scoped>
 .Signup {
+  overflow-y: auto;
   height: 100vh;
   display: flex;
   justify-content: center;

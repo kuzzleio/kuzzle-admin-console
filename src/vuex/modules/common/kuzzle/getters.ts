@@ -24,6 +24,7 @@ export const getters = createGetters<KuzzleState>()({
     return state.port
   },
   currentHttpUrl(state, getters) {
+    // prettier-ignore
     return `${getters.currentEnvironment.ssl ? 'https' : 'http'}://${
       getters.currentEnvironment.host
       }:${getters.currentEnvironment.port}`

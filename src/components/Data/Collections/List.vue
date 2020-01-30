@@ -174,6 +174,10 @@
   width: 8em;
 }
 .CollectionList-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   a {
     color: #222;
     font-weight: 500;
