@@ -29,7 +29,10 @@
             <template v-slot:prepend>
               <b-input-group-text>Filter</b-input-group-text>
             </template>
-            <b-form-input v-model="filter"></b-form-input>
+            <b-form-input
+              v-model="filter"
+              :disabled="tableItems.length === 0"
+            ></b-form-input>
           </b-input-group>
         </b-col>
       </b-row>
@@ -38,7 +41,6 @@
         striped
         outlined
         show-empty
-        sticky-header="1000px"
         :items="tableItems"
         :fields="tableFields"
         :filter="filter"

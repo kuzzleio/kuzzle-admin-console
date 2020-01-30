@@ -56,8 +56,7 @@ export default {
   data() {
     return {
       error: '',
-      index: '',
-      errorTruncated: true
+      index: ''
     }
   },
   methods: {

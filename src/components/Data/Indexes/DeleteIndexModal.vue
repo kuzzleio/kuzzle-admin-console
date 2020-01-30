@@ -53,8 +53,7 @@ export default {
   data() {
     return {
       error: '',
-      indexConfirmation: '',
-      errorTruncated: true
+      indexConfirmation: ''
     }
   },
   methods: {
