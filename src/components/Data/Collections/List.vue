@@ -10,7 +10,7 @@
           <b-button
             class="align-middle"
             data-cy="CollectionList-create"
-            variant="primary"
+            variant="info"
             :disabled="!canCreateCollection(index)"
             :title="
               !canCreateCollection(index)
@@ -37,7 +37,10 @@
             <template v-slot:prepend>
               <b-input-group-text>Filter</b-input-group-text>
             </template>
-            <b-form-input v-model="filter"></b-form-input>
+            <b-form-input
+              v-model="filter"
+              :disabled="collections.length === 0"
+            ></b-form-input>
           </b-input-group>
         </b-col>
       </b-row>
@@ -73,7 +76,7 @@
             class="fa fa-2x"
             :class="{
               'fa-bolt': type.value === 'realtime',
-              'fa-server': type.value === 'stored'
+              'fa-th-list': type.value === 'stored'
             }"
             :title="type.value === 'realtime' ? 'Realtime' : 'Persisted'"
           ></i>
@@ -98,8 +101,25 @@
         </template>
         <template v-slot:cell(actions)="row">
           <b-button
-            class="mx-1"
-            variant="outline-info"
+            class="mx-1 text-info"
+            variant="link"
+            title="Browse contents"
+            :to="
+              row.item.type === 'realtime'
+                ? {
+                    name: 'DataCollectionWatch',
+                    params: { index, collection: row.item.name }
+                  }
+                : {
+                    name: 'DataDocumentsList',
+                    params: { index, collection: row.item.name }
+                  }
+            "
+            ><i class="fa fa-eye"></i
+          ></b-button>
+          <b-button
+            class="mx-1 text-info"
+            variant="link"
             title="Edit collection"
             :disabled="!canEditCollection(index, row.item.name)"
             :to="
@@ -113,8 +133,8 @@
             ><i class="fa fa-pencil-alt"></i
           ></b-button>
           <b-button
-            class="mx-1"
-            variant="outline-secondary"
+            class="mx-1 text-info"
+            variant="link"
             title="Delete collection"
             :data-cy="`CollectionList-delete--${row.item.name}`"
             @click="onDeleteCollectionClicked(row.item.name)"
@@ -170,7 +190,7 @@
   color: #555;
 }
 .CollectionList-actions {
-  width: 8em;
+  width: 30%;
 }
 .CollectionList-name {
   white-space: nowrap;
