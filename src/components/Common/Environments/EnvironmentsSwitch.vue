@@ -15,8 +15,8 @@
       :key="env.name"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
     >
-      <div @click="clickSwitch(index)">
-        <div class="EnvironmentSwitch-env-name">
+      <div>
+        <div @click="clickSwitch(index)" class="EnvironmentSwitch-env-name">
           {{ env.name }}
           <span class="text-muted ml-2 mr-5">{{ env.host }}</span>
         </div>

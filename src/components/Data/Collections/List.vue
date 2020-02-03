@@ -145,7 +145,7 @@
       </b-table>
     </template>
     <b-modal
-      centered
+      size="lg"
       id="deleteCollectionPrompt"
       title="Are you sure you want to delete this collection?"
       @hidden="resetDeletePrompt"
@@ -175,7 +175,7 @@
         >
         <b-button
           data-cy="DeleteCollectionPrompt-OK"
-          variant="primary"
+          variant="danger"
           :disabled="!deleteConfirmation"
           @click="onDeleteCollectionConfirmed"
           >OK</b-button
