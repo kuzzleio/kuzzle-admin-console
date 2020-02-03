@@ -74,6 +74,18 @@
         <template v-slot:cell(actions)="row">
           <b-button
             class="mx-1"
+            title="Create a collection in this index"
+            variant="outline-secondary"
+            :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
+            :to="{
+              name: 'DataCreateCollection',
+              params: { index: row.item.indexName }
+            }"
+            @click="openDeleteModal(row.item.indexName)"
+            ><i class="fa fa-plus"></i
+          ></b-button>
+          <b-button
+            class="mx-1"
             :data-cy="`IndexesPage-delete--${row.item.indexName}`"
             title="Delete index"
             variant="outline-secondary"
