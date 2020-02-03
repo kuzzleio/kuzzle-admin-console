@@ -1,214 +1,214 @@
 <template>
-  <b-container :fluid="listViewType !== 'list'">
-    <b-row align-v="center">
-      <b-col sm="6">
-        <headline>
-          <span class="code">{{ collection }}</span>
-          <collection-dropdown
-            class="icon-medium icon-black"
-            :index="index"
-            :collection="collection"
-          />
-        </headline>
-      </b-col>
-      <b-col class="text-right">
-        <b-button variant="primary">Create New Document</b-button>
-      </b-col>
-    </b-row>
+  <div>
+    <b-container>
+      <b-row align-v="center">
+        <b-col sm="6">
+          <headline>
+            <span class="code">{{ collection }}</span>
+            <collection-dropdown
+              class="icon-medium icon-black"
+              :index="index"
+              :collection="collection"
+            />
+          </headline>
+        </b-col>
+        <b-col class="text-right">
+          <b-button variant="primary">Create New Document</b-button>
+        </b-col>
+      </b-row>
 
-    <list-not-allowed v-if="!canSearchDocument(index, collection)" />
-    <b-row class="justify-content-md-center" no-gutters>
-      <b-col cols="12">
-        <template v-if="isCollectionEmpty">
-          <realtime-only-empty-state
-            v-if="isRealtimeCollection"
-            :index="index"
-            :collection="collection"
-          />
-          <empty-state v-else :index="index" :collection="collection" />
-        </template>
-        <template v-if="!isCollectionEmpty">
-          <filters
-            :available-operands="searchFilterOperands"
-            :current-filter="currentFilter"
-            :collection-mapping="collectionMapping"
-            @filters-updated="onFiltersUpdated"
-            @reset="onFiltersUpdated"
-          />
-          <div class="text-center mt-3">
-            <b-alert :show="currentFilter.active" variant="warning"
-              >Warning: a filter has been set, some documents might be
-              hidden.</b-alert
-            >
-          </div>
-        </template>
-
-        <template v-if="!isCollectionEmpty">
-          <b-card class="light-shadow">
-            <b-card-text class="p-0">
-              <b-row>
-                <b-col cols="8">
-                  Result per page:
-                  <span v-for="(v, i) in resultPerPage" :key="i"
-                    ><a
-                      href="#"
-                      variant="warning"
-                      :class="
-                        `ResultPerPage--${
-                          v === paginationSize ? 'active' : 'link'
-                        }`
-                      "
-                      @click.prevent="changePaginationSize(v)"
-                      >{{ v }}</a
-                    >{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span
+      <list-not-allowed v-if="!canSearchDocument(index, collection)" />
+      <b-row class="justify-content-md-center" no-gutters>
+        <b-col cols="12">
+          <template v-if="isCollectionEmpty">
+            <realtime-only-empty-state
+              v-if="isRealtimeCollection"
+              :index="index"
+              :collection="collection"
+            />
+            <empty-state v-else :index="index" :collection="collection" />
+          </template>
+          <template v-if="!isCollectionEmpty">
+            <filters
+              :available-operands="searchFilterOperands"
+              :current-filter="currentFilter"
+              :collection-mapping="collectionMapping"
+              @filters-updated="onFiltersUpdated"
+              @reset="onFiltersUpdated"
+            />
+            <div class="text-center mt-3">
+              <b-alert :show="currentFilter.active" variant="warning"
+                >Warning: a filter has been set, some documents might be
+                hidden.</b-alert
+              >
+            </div>
+          </template>
+        </b-col>
+      </b-row>
+    </b-container>
+    <b-container :fluid="listViewType !== 'list'">
+      <template v-if="!isCollectionEmpty">
+        <b-card class="light-shadow">
+          <b-card-text class="p-0">
+            <b-row>
+              <b-col cols="8">
+                Result per page:
+                <span v-for="(v, i) in resultPerPage" :key="i"
+                  ><a
+                    href="#"
+                    variant="warning"
+                    :class="
+                      `ResultPerPage--${
+                        v === paginationSize ? 'active' : 'link'
+                      }`
+                    "
+                    @click.prevent="changePaginationSize(v)"
+                    >{{ v }}</a
+                  >{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span
+                >
+              </b-col>
+              <b-col cols="4">
+                <list-view-buttons
+                  :active-view="listViewType"
+                  :boxes-enabled="true"
+                  :map-enabled="isCollectionGeo"
+                  @list="onListViewClicked"
+                  @boxes="onBoxesViewClicked"
+                  @map="onMapViewClicked"
+                  @column="onColumnViewClicked"
+                  @time-series="onTimeSeriesClicked"
+                />
+              </b-col>
+            </b-row>
+            <no-results-empty-state v-show="!documents.length" />
+            <list-actions
+              v-if="documents.length && listViewType !== 'time-series'"
+              :all-checked="allChecked"
+              :display-bulk-delete="
+                hasSelectedDocuments &&
+                  canDeleteDocument(index, collection) &&
+                  listViewType !== 'map'
+              "
+              :geopoint-list="mappingGeopoints"
+              :view-type="listViewType"
+              :display-create="canCreateDocument(index, collection)"
+              :display-geopoint-select="listViewType === 'map'"
+              :display-toggle-all="
+                (listViewType !== 'map' &&
+                  canCreateDocument(index, collection)) ||
+                  canDeleteDocument(index, collection)
+              "
+              @create="onCreateClicked"
+              @bulk-delete="onBulkDeleteClicked"
+              @toggle-all="onToggleAllClicked"
+              @select-geopoint="onSelectGeopoint"
+              @refresh="onRefreshClicked"
+            />
+            <template v-show="documents.length" class="p-0 mt-2">
+              <b-row
+                v-show="listViewType === 'list'"
+                class="DocumentList-list"
+                no-gutters
+              >
+                <b-list-group class="w-100">
+                  <b-list-group-item
+                    v-for="document in documents"
+                    :key="document.id"
+                    class="p-2"
                   >
-                </b-col>
-                <b-col cols="4">
-                  <list-view-buttons
-                    :active-view="listViewType"
-                    :boxes-enabled="true"
-                    :map-enabled="isCollectionGeo"
-                    @list="onListViewClicked"
-                    @boxes="onBoxesViewClicked"
-                    @map="onMapViewClicked"
-                    @column="onColumnViewClicked"
-                    @time-series="onTimeSeriesClicked"
-                  />
-                </b-col>
-              </b-row>
-              <no-results-empty-state v-show="!documents.length" />
-              <list-actions
-                v-if="documents.length && listViewType !== 'time-series'"
-                :all-checked="allChecked"
-                :display-bulk-delete="
-                  hasSelectedDocuments &&
-                    canDeleteDocument(index, collection) &&
-                    listViewType !== 'map'
-                "
-                :geopoint-list="mappingGeopoints"
-                :view-type="listViewType"
-                :display-create="canCreateDocument(index, collection)"
-                :display-geopoint-select="listViewType === 'map'"
-                :display-toggle-all="
-                  (listViewType !== 'map' &&
-                    canCreateDocument(index, collection)) ||
-                    canDeleteDocument(index, collection)
-                "
-                @create="onCreateClicked"
-                @bulk-delete="onBulkDeleteClicked"
-                @toggle-all="onToggleAllClicked"
-                @select-geopoint="onSelectGeopoint"
-                @refresh="onRefreshClicked"
-              />
-              <template v-show="documents.length" class="p-0 mt-2">
-                <b-row
-                  v-show="listViewType === 'list'"
-                  class="DocumentList-list"
-                  no-gutters
-                >
-                  <b-list-group class="w-100">
-                    <b-list-group-item
-                      v-for="document in documents"
-                      :key="document.id"
-                      class="p-2"
-                    >
-                      <document-list-item
-                        :document="document"
-                        :collection="collection"
-                        :index="index"
-                        :is-checked="isChecked(document.id)"
-                        @checkbox-click="toggleSelectDocuments"
-                        @edit="onEditDocumentClicked"
-                        @delete="onDeleteClicked"
-                      />
-                    </b-list-group-item>
-                  </b-list-group>
-                </b-row>
-
-                <b-row
-                  v-show="listViewType === 'column'"
-                  class="DocumentList-column"
-                >
-                  <div class="DocumentList-materializeCollection h-scroll">
-                    <Column
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :index="index"
-                      :collection="collection"
-                      @edit="onEditDocumentClicked"
-                      @delete="onDeleteClicked"
-                    />
-                  </div>
-                </b-row>
-
-                <b-row v-show="listViewType === 'boxes'">
-                  <div class="DocumentList-boxes">
-                    <document-box-item
-                      v-for="document in documents"
-                      :key="document.id"
-                      :collection="collection"
-                      :index="index"
+                    <document-list-item
                       :document="document"
-                      @edit="onEditDocumentClicked"
-                      @delete="onDeleteClicked"
-                    />
-                  </div>
-                </b-row>
-
-                <b-row
-                  v-show="listViewType === 'time-series'"
-                  class="DocumentList-timeseries"
-                >
-                  <div class="DocumentList-materializeCollection h-scroll">
-                    <TimeSeries
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :index="index"
                       :collection="collection"
+                      :index="index"
+                      :is-checked="isChecked(document.id)"
+                      @checkbox-click="toggleSelectDocuments"
                       @edit="onEditDocumentClicked"
                       @delete="onDeleteClicked"
                     />
-                  </div>
-                </b-row>
+                  </b-list-group-item>
+                </b-list-group>
+              </b-row>
 
-                <b-row v-if="listViewType === 'map'" class="DocumentList-map">
-                  <view-map
-                    :documents="geoDocuments"
-                    :get-coordinates="getCoordinates"
-                    :selected-geopoint="selectedGeopoint"
+              <b-row
+                v-show="listViewType === 'column'"
+                class="DocumentList-column"
+              >
+                <div class="DocumentList-materializeCollection h-scroll">
+                  <Column
+                    :documents="documents"
+                    :mapping="collectionMapping"
                     :index="index"
                     :collection="collection"
                     @edit="onEditDocumentClicked"
                     @delete="onDeleteClicked"
                   />
-                </b-row>
-                <b-row
-                  v-show="totalDocuments > paginationSize"
-                  align-h="center"
-                >
-                  <b-pagination
-                    class="m-2 mt-4"
-                    v-model="currentPage"
-                    :total-rows="totalDocuments"
-                    :per-page="paginationSize"
-                    aria-controls="my-table"
-                  ></b-pagination>
-                </b-row>
-              </template>
-            </b-card-text>
-          </b-card>
-        </template>
-      </b-col>
-    </b-row>
+                </div>
+              </b-row>
 
-    <delete-modal
-      :candidates-for-deletion="candidatesForDeletion"
-      :is-loading="deleteModalIsLoading"
-      :is-open="deleteModalIsOpen"
-      @close="closeDeleteModal"
-      @confirm="onDeleteConfirmed"
-    />
-  </b-container>
+              <b-row v-show="listViewType === 'boxes'">
+                <div class="DocumentList-boxes">
+                  <document-box-item
+                    v-for="document in documents"
+                    :key="document.id"
+                    :collection="collection"
+                    :index="index"
+                    :document="document"
+                    @edit="onEditDocumentClicked"
+                    @delete="onDeleteClicked"
+                  />
+                </div>
+              </b-row>
+
+              <b-row
+                v-show="listViewType === 'time-series'"
+                class="DocumentList-timeseries"
+              >
+                <div class="DocumentList-materializeCollection h-scroll">
+                  <TimeSeries
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :index="index"
+                    :collection="collection"
+                    @edit="onEditDocumentClicked"
+                    @delete="onDeleteClicked"
+                  />
+                </div>
+              </b-row>
+
+              <b-row v-if="listViewType === 'map'" class="DocumentList-map">
+                <view-map
+                  :documents="geoDocuments"
+                  :get-coordinates="getCoordinates"
+                  :selected-geopoint="selectedGeopoint"
+                  :index="index"
+                  :collection="collection"
+                  @edit="onEditDocumentClicked"
+                  @delete="onDeleteClicked"
+                />
+              </b-row>
+              <b-row v-show="totalDocuments > paginationSize" align-h="center">
+                <b-pagination
+                  class="m-2 mt-4"
+                  v-model="currentPage"
+                  :total-rows="totalDocuments"
+                  :per-page="paginationSize"
+                  aria-controls="my-table"
+                ></b-pagination>
+              </b-row>
+            </template>
+          </b-card-text>
+        </b-card>
+      </template>
+
+      <delete-modal
+        :candidates-for-deletion="candidatesForDeletion"
+        :is-loading="deleteModalIsLoading"
+        :is-open="deleteModalIsOpen"
+        @close="closeDeleteModal"
+        @confirm="onDeleteConfirmed"
+      />
+    </b-container>
+  </div>
 </template>
 
 <script>

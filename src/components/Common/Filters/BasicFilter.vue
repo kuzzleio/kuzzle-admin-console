@@ -124,17 +124,8 @@
     </div>
 
     <b-row align-h="center" align-v="center">
-      <b-col sm="6">
+      <b-col sm="5">
         <b-input-group v-if="sortingEnabled" prepend="Sorting">
-          <template v-slot:append>
-            <b-select
-              v-model="filters.sorting.order"
-              :options="[
-                { value: 'asc', text: 'asc' },
-                { value: 'desc', text: 'desc' }
-              ]"
-            />
-          </template>
           <b-form-select
             placeholder="Attribute"
             :value="filters.sorting.attribute || ''"
@@ -149,6 +140,14 @@
           >
         </b-input-group>
       </b-col>
+      <b-col sm="2"
+        ><b-select
+          v-model="filters.sorting.order"
+          :options="[
+            { value: 'asc', text: 'Ascending' },
+            { value: 'desc', text: 'Descending' }
+          ]"
+      /></b-col>
       <b-col v-if="actionButtonsVisible" class="text-right">
         <b-button
           variant="primary"

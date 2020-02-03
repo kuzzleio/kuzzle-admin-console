@@ -126,7 +126,7 @@ export default {
 
 <style lang="scss" scoped>
 ::v-deep .collectionDropdown {
-  background-color: $page-background-color;
+  background-color: $light-grey-color;
   border: none;
 }
 
