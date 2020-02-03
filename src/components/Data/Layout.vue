@@ -113,6 +113,7 @@ export default {
   flex-wrap: nowrap;
 }
 .DataLayout-sidebarWrapper {
+  background-color: $light-grey-color;
   flex-basis: $sidebar-width;
   height: 100%;
   overflow: auto;
@@ -125,6 +126,5 @@ export default {
   height: 100%;
   overflow: auto;
   padding: $content-gutter;
-  background-color: $light-grey-color;
 }
 </style>
