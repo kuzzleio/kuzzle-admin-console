@@ -151,7 +151,7 @@ export default {
           key: 'indexName',
           label: 'Name',
           sortable: true,
-          tdClass: 'IndexesPage-name code align-middle text-truncate'
+          tdClass: 'IndexesPage-name code align-middle'
         },
         {
           key: 'collectionCount',
