@@ -131,6 +131,8 @@
                     :mapping="collectionMapping"
                     :index="index"
                     :collection="collection"
+                    :isChecked="isChecked"
+                    @checkbox-click="toggleSelectDocuments"
                     @edit="onEditDocumentClicked"
                     @delete="onDeleteClicked"
                   />
@@ -586,6 +588,8 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     isChecked(id) {
+      console.log(id, this.selectedDocuments);
+      
       return this.selectedDocuments.indexOf(id) > -1
     },
 

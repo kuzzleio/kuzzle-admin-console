@@ -1,12 +1,19 @@
 <template>
   <b-col cols="12">
-    <b-row class="mt-2 ml-0">
-      <b-select
-        v-model="newCustomField"
-        :options="formatedSelectFields"
-        @change="displayColumn"
-      />
-      <!-- <autocomplete
+    <b-row class="mt-2 ml-0" no-gutters>
+      <b-col cols="4">
+        <b-select
+          class="ml-0"
+          v-model="newCustomField"
+          :options="formatedSelectFields"
+          @change="displayColumn"
+        >
+          <template v-slot:first>
+            <option disabled default :value="null">Add a column</option>
+          </template>
+        </b-select>
+
+        <!-- <autocomplete
         class="ListViewColumnInput"
         placeholder="Add column"
         :items="mappingArray"
@@ -20,25 +27,70 @@
           }
         "
       /> -->
+      </b-col>
     </b-row>
     <b-row class="mt-2 ml-0 mr-2">
       <b-table
+        id="DocumentColumnView-table"
         striped
         sticky-header
-        responsive
         hover
+        responsive
+        sort-icon-left
+        no-border-collapse
+        small
         :fields="formatedTableFields"
         :items="formatedItems"
+        :tbody-transition-props="{ name: 'flip-list' }"
       >
         <template v-slot:head()="data">
-          <span class="text-info"
+          <span class="text-info m-3"
             >{{ data.label }}
             <i
-              v-if="data.column !== 'id'"
+              v-if="data.field.deletable"
               class="fa fa-times-circle ListViewColumn-remove"
               @click="hideColumn(data.field.index)"
             />
           </span>
+        </template>
+        <template v-slot:cell(id)="data">
+          <b-row class="pl-2">
+            <b-dropdown
+              data-cy="DocumentListItem-dropdown"
+              :id="data.item.id"
+              toggle-class="text-decoration-none"
+              no-caret
+              variant="link"
+              size="sm"
+            >
+              <template v-slot:button-content>
+                <i class="fas fa-ellipsis-v" />
+              </template>
+              <b-dropdown-item
+                :disabled="!canEdit"
+                :class="{ disabled: !canEdit }"
+                @click="editDocument(data.item.id)"
+              >
+                Edit
+              </b-dropdown-item>
+              <b-dropdown-item
+                :disabled="!canDelete"
+                :class="{ disabled: !canDelete }"
+                @click="deleteDocument(data.item.id)"
+              >
+                Delete
+              </b-dropdown-item>
+            </b-dropdown>
+            <b-form-checkbox
+              :checked="isChecked(data.item.id)"
+              @change="toggleSelectDocument(data.item.id)"
+            >
+            </b-form-checkbox>
+            {{ data.item.id }}
+          </b-row>
+        </template>
+        <template v-slot:cell()="data">
+          <span class="m-3">{{ data.value }}</span>
         </template>
       </b-table>
     </b-row>
@@ -178,13 +230,22 @@ export default {
     index: String,
     collection: String,
     value: [Object, String, Array],
-    mapping: Object
+    mapping: Object,
+    isChecked: Function
   },
   data() {
     return {
       customFields: [],
       newCustomField: null,
-      mappingArray: []
+      mappingArray: [],
+      defaultFields: [
+        {
+          key: 'id',
+          displayed: true,
+          deletable: false,
+          sortable: true
+        }
+      ]
     }
   },
   computed: {
@@ -198,15 +259,17 @@ export default {
         .filter(attr => !attr.displayed)
     },
     formatedTableFields() {
-      return this.mappingArray
-        .map((attr, index) => ({
-          key: attr.key,
-          index: index,
-          sortable: true,
-          displayed: attr.displayed,
-          stickyColumn: attr.key === 'id'
-        }))
-        .filter(attr => attr.displayed)
+      return this.defaultFields.concat(
+        this.mappingArray
+          .map((attr, index) => ({
+            key: attr.key,
+            index: index,
+            sortable: true,
+            displayed: attr.displayed,
+            deletable: true
+          }))
+          .filter(attr => attr.displayed)
+      )
     },
     formatedItems() {
       return this.documents.map(d => {
@@ -214,7 +277,12 @@ export default {
         doc.id = d.id
         for (const { key } of this.formatedTableFields) {
           if (key !== 'id') {
-            doc[key] = this.parseDocument(key, d).value
+            const parsed = this.parseDocument(key, d)
+            if (parsed.realValue && Array.isArray(parsed.realValue)) {
+              doc[key] = parsed.realValue.toString()
+            } else {
+              doc[key] = parsed.value
+            }
           }
         }
         return doc
@@ -265,12 +333,11 @@ export default {
     this.initColumnsFields()
   },
   methods: {
+    toggleSelectDocument(id) {
+      this.$emit('checkbox-click', id)
+    },
     initColumnsFields() {
       this.mappingArray = this.buildAttributeList(this.mapping)
-      this.mappingArray.unshift({
-        key: 'id',
-        displayed: true
-      })
       const columnsConfig = {}
       // = JSON.parse(
       // localStorage.getItem('columnViewConfig') || '{}'
@@ -280,14 +347,13 @@ export default {
         columnsConfig[this.index][this.collection]
       ) {
         // this.customFields = columnsConfig[this.index][this.collection]
-        this.mappingArray.map(attr => {
+        this.mappingArray = this.mappingArray.map(attr => {
           attr.displayed = columnsConfig[this.index][this.collection].includes(
             attr.key
           )
           return attr
         })
       }
-      console.log(this.mappingArray)
       // for (const attr of this.customFields) {
       // this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
       // }
@@ -385,10 +451,10 @@ export default {
         if (
           Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
         ) {
-          attributes = attributes.concat({
-            key: path.concat(attributeName).join('.'),
-            displayed: false
-          })
+          // attributes = attributes.concat({
+          //   key: path.concat(attributeName).join('.'),
+          //   displayed: false
+          // })
           attributes = attributes.concat(
             this.buildAttributeList(
               attributeValue.properties,
@@ -410,7 +476,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+table#DocumentColumnView-table .flip-list {
+  transition: transform 1s;
+}
 // .DocumentColumnItem {
 //   padding: 0px 0px;
 //   white-space: pre;
