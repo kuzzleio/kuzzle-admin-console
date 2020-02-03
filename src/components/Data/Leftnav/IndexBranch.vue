@@ -6,14 +6,18 @@
       aria-hidden="true"
       @click="toggleBranch"
     />
+    <i v-else class="no-caret"></i>
     <router-link
       data-cy="Treeview-item"
       class="tree-item truncate"
       :class="{ active: isIndexActive(indexName) }"
+      :title="indexName"
       :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
+      <span v-html="highlight(truncateName(indexName, 12), filter)" /> ({{
+        collectionCount
+      }})
     </router-link>
     <b-nav vertical class="collections">
       <b-nav-item
@@ -32,7 +36,7 @@
           aria-hidden="true"
           title="Persisted collection"
         />
-        <span v-html="highlight(collectionName, filter)" />
+        <span v-html="highlight(truncateName(collectionName, 15), filter)" />
       </b-nav-item>
       <b-nav-item
         v-for="collectionName in orderedFilteredRealtimeCollections"
@@ -46,7 +50,7 @@
         }"
       >
         <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection" />
-        <span v-html="highlight(collectionName, filter)" />
+        <span v-html="highlight(truncateName(collectionName, 15), filter)" />
         <i
           class="fa fa-times right remove"
           @click.prevent="removeRealtimeCollection(indexName, collectionName)"
@@ -57,6 +61,8 @@
 </template>
 
 <script>
+import { truncateName } from '../../../utils'
+
 export default {
   props: {
     forceOpen: {
@@ -112,6 +118,7 @@ export default {
     this.testOpen()
   },
   methods: {
+    truncateName,
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
@@ -234,19 +241,7 @@ i.tree-toggle {
   transform: rotate(90deg);
 }
 
-/* webkit adjacent element selector bugfix */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .treeview {
-    -webkit-animation: webkit-adjacent-element-selector-bugfix infinite 1s;
-  }
-
-  @-webkit-keyframes webkit-adjacent-element-selector-bugfix {
-    from {
-      padding: 0;
-    }
-    to {
-      padding: 0;
-    }
-  }
+.no-caret {
+  margin: 0 0.35em;
 }
 </style>

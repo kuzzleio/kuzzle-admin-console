@@ -85,6 +85,7 @@
           <b-link
             class="code"
             :data-cy="`CollectionList-name--${name.value}`"
+            :title="name.value"
             :to="
               name.item.type === 'realtime'
                 ? {
@@ -96,7 +97,7 @@
                     params: { index, collection: name.value }
                   }
             "
-            >{{ name.value }}</b-link
+            >{{ truncateName(name.value) }}</b-link
           >
         </template>
         <template v-slot:cell(actions)="row">
@@ -214,6 +215,7 @@ import {
   canCreateCollection,
   canEditCollection
 } from '../../../services/userAuthorization'
+import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
 
 export default {
@@ -309,6 +311,7 @@ export default {
       this.collectionToDelete = ''
       this.deleteConfirmation = ''
     },
+    truncateName,
     async onDeleteCollectionConfirmed() {
       if (!this.deleteConfirmation) {
         return
