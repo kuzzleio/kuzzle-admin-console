@@ -6,7 +6,7 @@
         class="float-right mt-3"
         data-cy="IndexesPage-createBtn"
         v-if="canCreateIndex()"
-        variant="info"
+        variant="primary"
         :title="
           !canCreateIndex() ? `Your rights disallow you to create indexes` : ''
         "
@@ -76,7 +76,7 @@
         <template v-slot:cell(actions)="row">
           <div class="IndexesPage-actions">
             <b-button
-              class="mx-1 text-info"
+              class="mx-1"
               title="Create a collection in this index"
               variant="link"
               :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
@@ -88,7 +88,7 @@
               ><i class="fa fa-plus"></i
             ></b-button>
             <b-button
-              class="mx-1 text-info"
+              class="mx-1"
               :data-cy="`IndexesPage-delete--${row.item.indexName}`"
               title="Delete index"
               variant="link"
