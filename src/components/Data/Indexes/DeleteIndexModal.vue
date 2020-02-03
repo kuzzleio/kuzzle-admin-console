@@ -7,7 +7,7 @@
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      Index <strong>{{ index }}</strong> deletion
+      Index <strong>{{ truncateName(index) }}</strong> deletion
     </template>
 
     <template v-slot:modal-footer>
@@ -39,6 +39,8 @@
 </template>
 
 <script>
+import { truncateName } from '@/utils'
+
 export default {
   name: 'deleteIndexModal',
   props: {
@@ -58,6 +60,7 @@ export default {
     }
   },
   methods: {
+    truncateName,
     resetForm() {
       this.indexConfirmation = ''
       this.error = ''
