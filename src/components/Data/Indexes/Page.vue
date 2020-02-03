@@ -77,6 +77,17 @@
           <div class="IndexesPage-actions">
             <b-button
               class="mx-1"
+              title="browse this index"
+              variant="link"
+              :data-cy="`IndexesPage-browse--${row.item.indexName}`"
+              :to="{
+                name: 'DataIndexSummary',
+                params: { index: row.item.indexName }
+              }"
+              ><i class="fa fa-eye"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
               title="Create a collection in this index"
               variant="link"
               :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
@@ -113,7 +124,6 @@ import {
   canCreateIndex,
   canSearchIndex
 } from '../../../services/userAuthorization'
-import { truncateName } from '../../../utils'
 
 export default {
   name: 'IndexesList',
@@ -175,7 +185,6 @@ export default {
     }
   },
   methods: {
-    truncateName,
     canSearchIndex,
     canCreateIndex,
     openCreateModal() {
@@ -203,6 +212,6 @@ export default {
   width: 2em;
 }
 .IndexesPage-actions {
-  width: 8em;
+  width: 100%;
 }
 </style>
