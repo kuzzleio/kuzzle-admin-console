@@ -10,7 +10,7 @@
           <b-button
             class="align-middle"
             data-cy="CollectionList-create"
-            variant="info"
+            variant="primary"
             :disabled="!canCreateCollection(index)"
             :title="
               !canCreateCollection(index)
@@ -102,7 +102,7 @@
         </template>
         <template v-slot:cell(actions)="row">
           <b-button
-            class="mx-1 text-info"
+            class="mx-1"
             variant="link"
             title="Browse contents"
             :to="
@@ -119,7 +119,7 @@
             ><i class="fa fa-eye"></i
           ></b-button>
           <b-button
-            class="mx-1 text-info"
+            class="mx-1"
             variant="link"
             title="Edit collection"
             :disabled="!canEditCollection(index, row.item.name)"
@@ -134,7 +134,7 @@
             ><i class="fa fa-pencil-alt"></i
           ></b-button>
           <b-button
-            class="mx-1 text-info"
+            class="mx-1"
             variant="link"
             title="Delete collection"
             :data-cy="`CollectionList-delete--${row.item.name}`"
