@@ -25,11 +25,11 @@ describe('Indexes', () => {
 
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
-    cy.get('.IndexesPage-createBtn').click()
-    cy.get('.CreateIndexModal-name').type(indexName, {
+    cy.get('[data-cy="IndexesPage-createBtn"').click()
+    cy.get('[data-cy="CreateIndexModal-name"]').type(indexName, {
       force: true
     })
-    cy.get('.CreateIndexModal-createBtn').click()
+    cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
     cy.contains(indexName)
   })
 
@@ -39,14 +39,15 @@ describe('Indexes', () => {
 
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
-    cy.get('.IndexesPage-createBtn')
+    cy.get('[data-cy="IndexesPage-createBtn"')
       .should('be.visible')
       .click()
-    cy.get('.CreateIndexModal-name').type(indexName, {
+    cy.get('[data-cy="CreateIndexModal-name"]').type(indexName, {
       force: true
     })
-    cy.get('.CreateIndexModal-createBtn').click()
-    cy.contains('An error has occurred')
+    cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
+    cy.get('[data-cy="CreateIndexModal-alert"]')
+    cy.contains(`A public index named "${indexName}" already exists`)
   })
 
   it('is able to delete an index', () => {
@@ -56,11 +57,10 @@ describe('Indexes', () => {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
 
-    cy.get(`.IndexBoxed[title=${indexName}] .IndexBoxed-dropdown`).click()
-    cy.get(`.IndexBoxed[title=${indexName}] .IndexDropdown-delete`).click()
+    cy.get(`[data-cy=IndexesPage-delete--${indexName}]`).click()
 
-    cy.get('.IndexDeleteModal-name').type(indexName, { force: true })
-    cy.get('.IndexDeleteModal-deleteBtn').click()
+    cy.get('[data-cy="DeleteIndexModal-name"').type(indexName, { force: true })
+    cy.get('[data-cy="DeleteIndexModal-deleteBtn"]').click()
 
     cy.get('.IndexesPage').should('not.contain', indexName)
   })

@@ -51,7 +51,7 @@ const mutations = createMutations<IndexState>()({
   },
   deleteIndex(state, index) {
     state.indexes.splice(state.indexes.indexOf(index), 1)
-    delete state.indexesAndCollections[index]
+    Vue.delete(state.indexesAndCollections, index)
   },
   removeRealtimeCollection(state, { index, collection }) {
     if (

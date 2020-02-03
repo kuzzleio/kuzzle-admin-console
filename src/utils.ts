@@ -8,5 +8,16 @@ module.exports = {
    */
   formatForDom: word => {
     return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
+  },
+  truncateName: (name, maxLength = 50) => {
+    if (!name) {
+      return ''
+    }
+    if (name.length <= maxLength) {
+      return name
+    }
+    if (name.length > maxLength) {
+      return `${name.substring(0, maxLength)}...`
+    }
   }
 }
