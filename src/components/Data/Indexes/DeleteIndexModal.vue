@@ -2,6 +2,7 @@
   <b-modal
     class="DeleteIndexModal"
     ref="deleteIndexModal"
+    size="lg"
     :id="id"
     @hide="resetForm"
   >

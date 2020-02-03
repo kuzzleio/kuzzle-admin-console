@@ -2,6 +2,7 @@
   <b-modal
     class="CreateIndexModal"
     ref="createIndexModal"
+    size="lg"
     title="Index creation"
     :id="id"
     @hide="resetForm"
@@ -36,6 +37,7 @@
       </b-form-group>
       <b-alert
         data-cy="CreateIndexModal-alert"
+        style="overflow: auto"
         :show="error.length"
         variant="danger"
         >{{ error }}</b-alert
@@ -43,6 +45,8 @@
     </b-form>
   </b-modal>
 </template>
+
+<style lang="scss"></style>
 
 <script>
 export default {

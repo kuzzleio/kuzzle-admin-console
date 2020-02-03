@@ -62,12 +62,13 @@
         <template v-slot:cell(indexName)="indexName">
           <router-link
             :data-cy="`IndexesPage-name--${indexName.value}`"
+            :title="indexName.value"
             :to="{
               name: 'DataIndexSummary',
               params: { index: indexName.value }
             }"
           >
-            {{ indexName.value }}
+            {{ truncateName(indexName.value) }}
           </router-link>
         </template>
         <template v-slot:cell(actions)="row">
@@ -165,6 +166,18 @@ export default {
     openDeleteModal(index) {
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
+    },
+    truncateName(name) {
+      const MAX_LENGTH = 50
+      if (!name) {
+        return ''
+      }
+      if (name.length <= MAX_LENGTH) {
+        return name
+      }
+      if (name.length > MAX_LENGTH) {
+        return `${name.substring(0, MAX_LENGTH)}...`
+      }
     }
   }
 }
