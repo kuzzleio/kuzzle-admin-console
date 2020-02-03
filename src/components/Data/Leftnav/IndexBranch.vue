@@ -19,26 +19,30 @@
         collectionCount
       }})
     </router-link>
-    <b-nav vertical class="collections">
-      <b-nav-item
+    <div class="collections mb-2">
+      <div
         v-for="collectionName in orderedFilteredStoredCollections"
         class="tree-item truncate"
         data-cy="Treeview-item"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
-        :to="{
-          name: 'DataDocumentsList',
-          params: { index: indexName, collection: collectionName }
-        }"
       >
-        <i
-          class="fa fa-th-list"
-          aria-hidden="true"
-          title="Persisted collection"
-        />
-        <span v-html="highlight(truncateName(collectionName, 15), filter)" />
-      </b-nav-item>
-      <b-nav-item
+        <router-link
+          :to="{
+            name: 'DataDocumentsList',
+            params: { index: indexName, collection: collectionName }
+          }"
+        >
+          <i
+            class="fa fa-th-list"
+            aria-hidden="true"
+            title="Persisted collection"
+          />
+          <span v-html="highlight(truncateName(collectionName, 15), filter)" />
+        </router-link>
+      </div>
+
+      <div
         v-for="collectionName in orderedFilteredRealtimeCollections"
         class="tree-item"
         data-cy="Treeview-item"
@@ -55,8 +59,8 @@
           class="fa fa-times right remove"
           @click.prevent="removeRealtimeCollection(indexName, collectionName)"
         />
-      </b-nav-item>
-    </b-nav>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -184,45 +188,33 @@ export default {
 </script>
 
 <style scoped lang="scss">
-// TODO Clean this up, please
-ul.collections {
-  padding-left: 15px;
+.collections {
+  padding-left: 25px;
   overflow-y: hidden;
   max-height: 0;
 }
 
-.open ul.collections {
+.open .collections {
   max-height: 2000px;
   transition: max-height 0.5s ease-out;
 }
 
-li {
-  position: relative;
+a {
+  color: #002835;
 }
 
-a,
-i.tree-toggle {
+.tree-item {
+  padding: 0 5px;
+  margin: 0 5px;
+  color: #002835;
   line-height: 32px;
   height: 32px;
-}
-
-.nav-item a {
-  color: #002835;
-  .active {
-    font-weight: bold;
-  }
-}
-
-a.tree-item {
-  padding: 0 5px;
-  margin: 0 15px;
-  color: #002835;
   &.active {
     font-weight: bold;
   }
 }
 
-i.fa {
+.fa {
   margin-right: 5px;
   color: rgb(100, 100, 100);
   &:hover {
@@ -231,13 +223,13 @@ i.fa {
   }
 }
 
-i.tree-toggle {
+.tree-toggle {
   cursor: pointer;
   transition-duration: 0.2s;
   transform-origin: 50% 50%;
 }
 
-.open i.tree-toggle {
+.open .tree-toggle {
   transform: rotate(90deg);
 }
 
