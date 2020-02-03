@@ -16,7 +16,7 @@
       </b-button>
       <b-button
         data-cy="DeleteIndexModal-deleteBtn"
-        variant="primary"
+        variant="danger"
         :disabled="index !== indexConfirmation"
         @click="tryDeleteIndex"
       >

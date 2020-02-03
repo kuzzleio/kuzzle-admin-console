@@ -6,7 +6,7 @@
         class="float-right mt-3"
         data-cy="IndexesPage-createBtn"
         v-if="canCreateIndex()"
-        variant="primary"
+        variant="info"
         :title="
           !canCreateIndex() ? `Your rights disallow you to create indexes` : ''
         "
@@ -38,6 +38,8 @@
       </b-row>
 
       <b-table
+        class="IndexPage-table"
+        responsive
         striped
         outlined
         show-empty
@@ -68,30 +70,32 @@
               params: { index: indexName.value }
             }"
           >
-            {{ truncateName(indexName.value) }}
+            {{ indexName.value }}
           </router-link>
         </template>
         <template v-slot:cell(actions)="row">
-          <b-button
-            class="mx-1"
-            title="Create a collection in this index"
-            variant="outline-secondary"
-            :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
-            :to="{
-              name: 'DataCreateCollection',
-              params: { index: row.item.indexName }
-            }"
-            @click="openDeleteModal(row.item.indexName)"
-            ><i class="fa fa-plus"></i
-          ></b-button>
-          <b-button
-            class="mx-1"
-            :data-cy="`IndexesPage-delete--${row.item.indexName}`"
-            title="Delete index"
-            variant="outline-secondary"
-            @click="openDeleteModal(row.item.indexName)"
-            ><i class="fa fa-trash"></i
-          ></b-button>
+          <div class="IndexesPage-actions">
+            <b-button
+              class="mx-1 text-info"
+              title="Create a collection in this index"
+              variant="link"
+              :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
+              :to="{
+                name: 'DataCreateCollection',
+                params: { index: row.item.indexName }
+              }"
+              @click="openDeleteModal(row.item.indexName)"
+              ><i class="fa fa-plus"></i
+            ></b-button>
+            <b-button
+              class="mx-1 text-info"
+              :data-cy="`IndexesPage-delete--${row.item.indexName}`"
+              title="Delete index"
+              variant="link"
+              @click="openDeleteModal(row.item.indexName)"
+              ><i class="fa fa-trash"></i
+            ></b-button>
+          </div>
         </template>
       </b-table>
     </template>
@@ -109,6 +113,7 @@ import {
   canCreateIndex,
   canSearchIndex
 } from '../../../services/userAuthorization'
+import { truncateName } from '../../../utils'
 
 export default {
   name: 'IndexesList',
@@ -136,7 +141,7 @@ export default {
           key: 'indexName',
           label: 'Name',
           sortable: true,
-          tdClass: 'IndexesPage-name code align-middle'
+          tdClass: 'IndexesPage-name code align-middle text-truncate'
         },
         {
           key: 'collectionCount',
@@ -147,7 +152,7 @@ export default {
         {
           key: 'actions',
           label: '',
-          class: 'IndexesPage-actions text-right align-middle'
+          class: 'text-right align-middle'
         }
       ]
     }
@@ -170,6 +175,7 @@ export default {
     }
   },
   methods: {
+    truncateName,
     canSearchIndex,
     canCreateIndex,
     openCreateModal() {
@@ -178,18 +184,6 @@ export default {
     openDeleteModal(index) {
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
-    },
-    truncateName(name) {
-      const MAX_LENGTH = 50
-      if (!name) {
-        return ''
-      }
-      if (name.length <= MAX_LENGTH) {
-        return name
-      }
-      if (name.length > MAX_LENGTH) {
-        return `${name.substring(0, MAX_LENGTH)}...`
-      }
     }
   }
 }
