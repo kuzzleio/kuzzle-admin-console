@@ -1,23 +1,21 @@
 <template>
-  <b-container fluid class="p-0 h-100">
-    <b-row no-gutters class="h-100">
-      <div class="sidebar">
-        <treeview
-          :route-name="$route.name"
-          :index="$route.params.index"
-          :collection="$route.params.collection"
-        />
-      </div>
-      <div class="content">
-        <router-view
-          v-if="routeExist"
-          :index="$route.params.index"
-          :collection="$route.params.collection"
-        />
-        <notFound v-else />
-      </div>
-    </b-row>
-  </b-container>
+  <div class="DataLayout">
+    <div class="DataLayout-sidebarWrapper">
+      <treeview
+        :route-name="$route.name"
+        :index="$route.params.index"
+        :collection="$route.params.collection"
+      />
+    </div>
+    <div class="DataLayout-contentWrapper">
+      <router-view
+        v-if="routeExist"
+        :index="$route.params.index"
+        :collection="$route.params.collection"
+      />
+      <notFound v-else />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -108,20 +106,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.sidebar {
-  background: $page-background-color;
-  // background: white;
-  width: $sidebar-width;
-  position: fixed;
-  top: 0;
-  padding-top: $navbar-height;
-  overflow-y: auto;
+.DataLayout {
   height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.DataLayout-sidebarWrapper {
+  flex-basis: $sidebar-width;
+  height: 100%;
+  overflow: auto;
+  box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
+  z-index: 1;
 }
 
-.content {
-  width: calc(100% - #{$sidebar-width});
-  margin-left: $sidebar-width;
+.DataLayout-contentWrapper {
+  flex-grow: 1;
+  height: 100%;
+  overflow: auto;
   padding: $content-gutter;
+  background-color: $light-grey-color;
 }
 </style>

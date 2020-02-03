@@ -11,7 +11,7 @@ describe('Login', function () {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
