@@ -369,22 +369,13 @@ export default {
     collection: {
       immediate: true,
       handler() {
-        this.loadMappingInfo()
-        this.loadListView()
-        this.saveListView()
-
-        this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
-          this.$route
-        )
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
-          this.index,
-          this.collection
-        )
-        this.fetchDocuments()
+        this.loadAllTheThings()
+      }
+    },
+    index: {
+      immediate: true,
+      handler() {
+        this.loadAllTheThings()
       }
     },
     documents: {
@@ -493,6 +484,24 @@ export default {
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
+    loadAllTheThings() {
+      this.loadMappingInfo()
+      this.loadListView()
+      this.saveListView()
+
+      this.currentFilter = filterManager.load(
+        this.index,
+        this.collection,
+        this.$route
+      )
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.index,
+        this.collection
+      )
+      this.fetchDocuments()
+    },
     performSearchDocuments,
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters

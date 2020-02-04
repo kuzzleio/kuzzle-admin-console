@@ -8,11 +8,7 @@
       />
     </div>
     <div class="DataLayout-contentWrapper">
-      <router-view
-        v-if="routeExist"
-        :index="$route.params.index"
-        :collection="$route.params.collection"
-      />
+      <router-view v-if="routeExist" />
       <notFound v-else />
     </div>
   </div>
