@@ -114,7 +114,7 @@
                   <b-list-group-item
                     v-for="document in documents"
                     :key="document.id"
-                    class="p-2"
+                    class="p-1"
                   >
                     <document-list-item
                       :document="document"
@@ -193,6 +193,7 @@
                   :total-rows="totalDocuments"
                   :per-page="paginationSize"
                   aria-controls="my-table"
+                  @change="fetchDocuments"
                 ></b-pagination>
               </b-row>
             </template>
@@ -224,12 +225,10 @@ import EmptyState from './EmptyState'
 import ListActions from './ListActions'
 import NoResultsEmptyState from './NoResultsEmptyState'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
-// import CollectionTabs from '../Collections/Tabs'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
-// import Pagination from '../../Materialize/Pagination'
 import ViewMap from './ViewMap'
 import * as filterManager from '../../../services/filterManager'
 import {
@@ -255,7 +254,6 @@ const LIST_VIEW_TIME_SERIES = 'time-series'
 export default {
   name: 'DocumentsPage',
   components: {
-    // CollectionTabs,
     CollectionDropdown,
     DeleteModal,
     DocumentBoxItem,
@@ -269,7 +267,6 @@ export default {
     ListNotAllowed,
     ListViewButtons,
     NoResultsEmptyState,
-    // Pagination,
     RealtimeOnlyEmptyState,
     ViewMap
   },
@@ -293,7 +290,7 @@ export default {
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
-      currentPage: 0
+      currentPage: 1
     }
   },
   computed: {

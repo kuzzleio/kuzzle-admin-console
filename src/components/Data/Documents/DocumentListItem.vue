@@ -20,9 +20,11 @@
           v-model="checked"
           @change="notifyCheckboxClick"
         />
-        <a class="d-inline-block align-middle" @click="toggleCollapse">{{
-          document.id
-        }}</a>
+        <a
+          class="d-inline-block align-middle code pointer"
+          @click="toggleCollapse"
+          >{{ document.id }}</a
+        >
       </b-col>
       <b-col cols="2">
         <div class="float-right">
@@ -104,7 +106,6 @@ export default {
     isChecked: {
       handler(value) {
         this.checked = value
-        console.log('setChecked')
       }
     }
   },

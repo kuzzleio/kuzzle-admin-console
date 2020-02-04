@@ -119,7 +119,7 @@
 
     <b-row align-h="center" align-v="center">
       <b-col sm="5">
-        <b-input-group v-if="sortingEnabled" prepend="Sorting">
+        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
           <b-form-select
             placeholder="Attribute"
             :value="filters.sorting.attribute || ''"
