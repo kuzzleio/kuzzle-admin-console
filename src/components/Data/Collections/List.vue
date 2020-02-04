@@ -256,11 +256,12 @@ export default {
         {
           class: 'CollectionList-type align-middle',
           key: 'type',
-          label: 'Type'
+          label: ''
         },
         {
           key: 'name',
           label: 'Name',
+          sortable: true,
           class: 'CollectionList-name align-middle'
         },
         {
