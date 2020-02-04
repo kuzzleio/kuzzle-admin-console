@@ -15,7 +15,7 @@ describe('Collection management', function () {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -35,15 +35,26 @@ describe('Collection management', function () {
     ).check('on', { force: true })
     cy.get('div > .row > .col > .Mapping-name > label').click({ force: true })
     cy.get('div > .row > .col > .Mapping-name > #collection-name').type(
-      'testcollection'
+      collectionName
     )
     cy.get('.col > .Mapping > .row > .col > .Mapping-submitBtn').click({
       force: true
     })
-    cy.get('.card > .card-title > .col > .fluid-hover > .name').click({
-      force: true
-    })
+    cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click()
     cy.contains(collectionName)
     cy.contains('You did not subscribe yet')
+  })
+
+  it('is able to delete a collection', function () {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+
+    cy.visit('/')
+    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+    cy.visit(`/#/data/${indexName}/`)
+
+    cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
+    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
+    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
+    cy.should('not.contain', collectionName)
   })
 })

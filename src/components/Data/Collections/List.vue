@@ -1,176 +1,228 @@
 <template>
-  <div class="CollectionsList wrapper">
+  <b-container class="CollectionList">
     <headline>
-      {{ index }}
-      <index-dropdown :index="index" class="icon-medium icon-black" />
+      <b-row>
+        <b-col sm="9">
+          <i class="fa fa-database text-secondary"></i> &nbsp;
+          <span class="code">{{ index }}</span>
+        </b-col>
+        <b-col class="text-right">
+          <b-button
+            class="align-middle"
+            data-cy="CollectionList-create"
+            variant="primary"
+            :disabled="!canCreateCollection(index)"
+            :title="
+              !canCreateCollection(index)
+                ? `Your rights disallow you to create collections on index ${index}`
+                : ''
+            "
+            :to="{ name: 'DataCreateCollection', params: { index: index } }"
+          >
+            <i class="fa fa-plus"></i> Create a collection
+          </b-button>
+        </b-col>
+      </b-row>
     </headline>
 
-    <div class="row">
-      <div class="col s12 m10 l8">
-        <div v-if="collectionCount" class="row actions">
-          <div class="col s9">
-            <router-link
-              v-title="{
-                active: !canCreateCollection(index),
-                title:
-                  'Your rights disallow you to create collections on index ' +
-                  index
-              }"
-              class="CollectionsList-createBtn btn waves-effect waves-light primary"
-              :class="{ unauthorized: !canCreateCollection(index) }"
-              :to="
-                canCreateCollection(index)
-                  ? { name: 'DataCreateCollection', params: { index: index } }
-                  : ''
-              "
-            >
-              <i class="fa fa-plus-circle left" />Create a collection
-            </router-link>
-          </div>
+    <list-not-allowed v-if="!canSearchCollection(index)" />
+    <template v-else>
+      <b-row class="mb-3">
+        <b-col sm="8" class="text-secondary">
+          {{ collections.length }}
+          {{ collections.length === 1 ? 'collection' : 'collections' }}
+        </b-col>
+        <b-col sm="4">
+          <b-input-group>
+            <template v-slot:prepend>
+              <b-input-group-text>Filter</b-input-group-text>
+            </template>
+            <b-form-input
+              v-model="filter"
+              :disabled="collections.length === 0"
+            ></b-form-input>
+          </b-input-group>
+        </b-col>
+      </b-row>
+    </template>
 
-          <!-- filter must be hidden when there is no indexes -->
-          <div class="col s3">
-            <div v-if="collectionCount > 1" class="input-field left-align">
-              <label for="filter"><i class="fa fa-search" /> Filter</label>
-              <input id="filter" v-model="filter" type="text" tabindex="1" />
-            </div>
-          </div>
-        </div>
-
-        <div class="row list">
-          <!-- Not allowed -->
-          <list-not-allowed v-if="!canSearchCollection(index)" />
-
-          <!-- No Collection -->
-          <div
-            v-if="canSearchCollection(index) && !collectionCount"
-            class="card-panel"
+    <template v-if="canSearchCollection(index)">
+      <b-table
+        striped
+        outlined
+        show-empty
+        :items="collections"
+        :fields="tableFields"
+        :filter="filter"
+      >
+        <template v-slot:empty>
+          <h4 class="text-secondary text-center">
+            This index has no collections.
+          </h4>
+          <p
+            v-if="canCreateCollection(index)"
+            class="text-secondary text-center"
           >
-            <div class="row valign-bottom empty-set empty-set">
-              <div class="col s1 offset-s1">
-                <i
-                  class="fa fa-6x fa-th-list grey-text text-lighten-1"
-                  aria-hidden="true"
-                />
-              </div>
-              <div class="col s9">
-                <p>
-                  Here you can view collections in <strong>{{ index }}</strong
-                  >. <br />
-                  <em>There are currently no collections in this index.</em>
-                </p>
-                <router-link
-                  v-title="{
-                    active: !canCreateCollection(index),
-                    title:
-                      'Your rights disallow you to create collections on index ' +
-                      index
-                  }"
-                  :to="{
-                    name: 'DataCreateCollection',
-                    params: { index: index }
-                  }"
-                  :class="{ unauthorized: !canCreateCollection(index) }"
-                  class="btn primary waves-effect waves-light"
-                >
-                  <i class="fa fa-plus-circle left" />
-                  Create a collection
-                </router-link>
-              </div>
-            </div>
-          </div>
-
-          <!-- Not Collection for filter -->
-          <div
-            v-if="!isCollectionForFilter && filter"
-            class="card-panel card-body"
+            You can create the collection by hitting the button above.
+          </p>
+        </template>
+        <template v-slot:emptyfiltered>
+          <h4 class="text-secondary text-center">
+            There is no collection matching your filter.
+          </h4>
+        </template>
+        <template v-slot:cell(type)="type">
+          <i
+            class="fa fa-2x"
+            :class="{
+              'fa-bolt': type.value === 'realtime',
+              'fa-th-list': type.value === 'stored'
+            }"
+            :title="type.value === 'realtime' ? 'Realtime' : 'Persisted'"
+          ></i>
+        </template>
+        <template v-slot:cell(name)="name">
+          <b-link
+            class="code"
+            :data-cy="`CollectionList-name--${name.value}`"
+            :title="name.value"
+            :to="
+              name.item.type === 'realtime'
+                ? {
+                    name: 'DataCollectionWatch',
+                    params: { index, collection: name.value }
+                  }
+                : {
+                    name: 'DataDocumentsList',
+                    params: { index, collection: name.value }
+                  }
+            "
+            >{{ truncateName(name.value) }}</b-link
           >
-            <div class="row valign-center empty-set">
-              <div class="col s2 offset-s1">
-                <i
-                  class="fa fa-6x fa-search grey-text text-lighten-1"
-                  aria-hidden="true"
-                />
-              </div>
-              <div class="col s12">
-                <p>
-                  There is no collection matching your filter.<br />
-                  Please try with another one.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="canSearchCollection(index)">
-            <collection-boxed
-              v-for="(collection, i) in orderedFilteredStoredCollections"
-              :key="collection + i"
-              :index="index"
-              :collection="collection"
-              :is-realtime="false"
-            />
-
-            <collection-boxed
-              v-for="(collection, i) in orderedFilteredRealtimeCollections"
-              :key="collection + i"
-              :index="index"
-              :collection="collection"
-              :is-realtime="true"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        </template>
+        <template v-slot:cell(actions)="row">
+          <b-button
+            class="mx-1"
+            variant="link"
+            title="Browse contents"
+            :to="
+              row.item.type === 'realtime'
+                ? {
+                    name: 'DataCollectionWatch',
+                    params: { index, collection: row.item.name }
+                  }
+                : {
+                    name: 'DataDocumentsList',
+                    params: { index, collection: row.item.name }
+                  }
+            "
+            ><i class="fa fa-eye"></i
+          ></b-button>
+          <b-button
+            class="mx-1"
+            variant="link"
+            title="Edit collection"
+            :disabled="!canEditCollection(index, row.item.name)"
+            :to="
+              canEditCollection(index, row.item.name)
+                ? {
+                    name: 'DataCollectionEdit',
+                    params: { collection: row.item.name, index }
+                  }
+                : ''
+            "
+            ><i class="fa fa-pencil-alt"></i
+          ></b-button>
+          <b-button
+            class="mx-1"
+            variant="link"
+            title="Delete collection"
+            :data-cy="`CollectionList-delete--${row.item.name}`"
+            @click="onDeleteCollectionClicked(row.item.name)"
+            ><i class="fa fa-trash"></i
+          ></b-button>
+        </template>
+      </b-table>
+    </template>
+    <b-modal
+      size="lg"
+      id="deleteCollectionPrompt"
+      title="Are you sure you want to delete this collection?"
+      @hidden="resetDeletePrompt"
+    >
+      <b-form-group
+        description="This operation is NOT reversible"
+        label-for="deleteCollectionPromptField"
+        :state="deletionConfirmed"
+        :invalid-feedback="deletionPromptFeedback"
+      >
+        <template v-slot:label>
+          Please type the name of the collection (<span class="code">{{
+            collectionToDelete
+          }}</span
+          >) below to confirm the deletion:
+        </template>
+        <b-form-input
+          id="deleteCollectionPromptField"
+          data-cy="DeleteCollectionPrompt-confirm"
+          v-model="deleteConfirmation"
+          @keypress.enter="onDeleteCollectionConfirmed"
+        ></b-form-input>
+      </b-form-group>
+      <template v-slot:modal-footer>
+        <b-button @click="$bvModal.hide('deleteCollectionPrompt')"
+          >Cancel</b-button
+        >
+        <b-button
+          data-cy="DeleteCollectionPrompt-OK"
+          variant="danger"
+          :disabled="!deleteConfirmation"
+          @click="onDeleteCollectionConfirmed"
+          >OK</b-button
+        >
+      </template>
+    </b-modal>
+  </b-container>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.switch {
-  label {
-    .lever {
-      margin: 0;
-    }
-  }
+<style lang="scss" rel="stylesheet/scss">
+.CollectionList-type {
+  width: 2em;
+  color: #555;
 }
-.actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
+.CollectionList-actions {
+  width: 30%;
 }
-.input-field {
-  margin-top: 0;
-  label {
-    left: 0;
+.CollectionList-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  a {
+    color: #222;
+    font-weight: 500;
   }
-  input {
-    margin-bottom: 0;
-  }
-}
-.list {
-  margin-top: 25px;
 }
 </style>
 
 <script>
 import Headline from '../../Materialize/Headline'
-import IndexDropdown from '../Indexes/Dropdown'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionBoxed from '../Collections/Boxed'
 import {
   canDeleteIndex,
   canSearchIndex,
   canSearchCollection,
-  canCreateCollection
+  canCreateCollection,
+  canEditCollection
 } from '../../../services/userAuthorization'
+import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
 
 export default {
-  name: 'CollectionsList',
+  name: 'CollectionList',
   components: {
     Headline,
-    ListNotAllowed,
-    CollectionBoxed,
-    IndexDropdown
+    ListNotAllowed
   },
   directives: {
     Title
@@ -180,37 +232,44 @@ export default {
   },
   data() {
     return {
-      filter: ''
+      filter: '',
+      collectionToDelete: '',
+      deleteConfirmation: ''
     }
   },
   computed: {
-    collectionCount() {
-      if (!this.$store.state.index.indexesAndCollections[this.index]) {
-        return 0
-      }
+    deletionConfirmed() {
       return (
-        this.$store.state.index.indexesAndCollections[this.index].stored
-          .length +
-        this.$store.state.index.indexesAndCollections[this.index].realtime
-          .length
+        this.deleteConfirmation !== '' &&
+        this.deleteConfirmation !== null &&
+        this.deleteConfirmation === this.collectionToDelete
       )
     },
-    isCollectionForFilter() {
-      if (!this.$store.state.index.indexesAndCollections[this.index]) {
-        return
+    deletionPromptFeedback() {
+      if (this.deleteConfirmation === '' || this.deletionConfirmed) {
+        return ''
       }
-
-      return (
-        this.$store.state.index.indexesAndCollections[
-          this.index
-        ].stored.filter(col => col.indexOf(this.filter !== -1)).length > 0 ||
-        // prettier-ignore
-        this.$store.state.index
-          .indexesAndCollections[this.index]
-          .realtime
-          .filter(col => col.indexOf(this.filter !== -1))
-          .length > 0
-      )
+      return 'Confirmation is not matching collection name'
+    },
+    tableFields() {
+      return [
+        {
+          class: 'CollectionList-type align-middle',
+          key: 'type',
+          label: ''
+        },
+        {
+          key: 'name',
+          label: 'Name',
+          sortable: true,
+          class: 'CollectionList-name align-middle'
+        },
+        {
+          class: 'CollectionList-actions align-middle text-right',
+          key: 'actions',
+          label: ''
+        }
+      ]
     },
     storedCollections() {
       if (!this.$store.state.index.indexesAndCollections[this.index]) {
@@ -226,22 +285,59 @@ export default {
 
       return this.$store.state.index.indexesAndCollections[this.index].realtime
     },
-    orderedFilteredStoredCollections() {
-      return this.storedCollections
-        .filter(col => col.indexOf(this.filter) !== -1)
-        .sort()
-    },
-    orderedFilteredRealtimeCollections() {
-      return this.realtimeCollections
-        .filter(col => col.indexOf(this.filter) !== -1)
-        .sort()
+    collections() {
+      return [
+        ...this.realtimeCollections.map(c => ({
+          name: c,
+          type: 'realtime'
+        })),
+        ...this.storedCollections.map(c => ({
+          name: c,
+          type: 'stored'
+        }))
+      ].sort((a, b) => (a.name < b.name ? -1 : 1))
     }
   },
   methods: {
     canDeleteIndex,
     canSearchIndex,
     canSearchCollection,
-    canCreateCollection
+    canCreateCollection,
+    canEditCollection,
+    onDeleteCollectionClicked(name) {
+      this.collectionToDelete = name
+      this.$bvModal.show('deleteCollectionPrompt')
+    },
+    resetDeletePrompt() {
+      this.collectionToDelete = ''
+      this.deleteConfirmation = ''
+    },
+    truncateName,
+    async onDeleteCollectionConfirmed() {
+      if (!this.deleteConfirmation) {
+        return
+      }
+      try {
+        await this.$store.direct.dispatch.index.deleteCollection({
+          index: this.index,
+          collection: this.collectionToDelete
+        })
+        this.$bvModal.hide('deleteCollectionPrompt')
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: 'Ooops! Something went wrong while deleting the collection.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+    }
   }
 }
 </script>

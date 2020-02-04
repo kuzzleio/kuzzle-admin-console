@@ -20,26 +20,17 @@
         >
       </li>
     </dropdown>
-
-    <modal-delete
-      :id="'index-delete-' + index"
-      :index="index"
-      :is-open="isOpen"
-      :close="close"
-    />
   </span>
 </template>
 
 <script>
 import Dropdown from '../../Materialize/Dropdown'
-import ModalDelete from './ModalDelete'
 import { canDeleteIndex } from '../../../services/userAuthorization'
 
 export default {
   name: 'IndexDropdown',
   components: {
-    Dropdown,
-    ModalDelete
+    Dropdown
   },
   props: {
     index: String,
