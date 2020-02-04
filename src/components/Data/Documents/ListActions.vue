@@ -13,16 +13,6 @@
         Toggle all
       </b-button>
 
-      <!-- <b-button
-        variant="outline-dark"
-        class="m-2"
-        :disabled="!displayCreate"
-        @click.prevent="$emit('create')"
-      >
-        <i class="fa fa-plus-circle left" />
-        Create
-      </b-button> -->
-
       <b-button
         variant="outline-danger"
         class="m-2"

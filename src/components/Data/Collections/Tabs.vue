@@ -51,35 +51,7 @@
       <li
         v-if="!$store.state.collection.isRealtimeOnly"
         :class="{ active: isRouteActive('DataCreateDocument') }"
-      >
-        <!-- <router-link
-          class="CollectionTabs--createDocument"
-          :title="
-            canCreateDocument($route.params.index, $route.params.collection)
-              ? ''
-              : 'You are not allowed to create a document in this collection'
-          "
-          :class="{
-            disabled: !canCreateDocument(
-              $route.params.index,
-              $route.params.collection
-            )
-          }"
-          :to="
-            canCreateDocument($route.params.index, $route.params.collection)
-              ? {
-                  name: 'DataCreateDocument',
-                  params: {
-                    index: $route.params.index,
-                    collection: $route.params.collection
-                  }
-                }
-              : ''
-          "
-        >
-          Create a document
-        </router-link> -->
-      </li>
+      ></li>
     </ul>
   </div>
 </template>

@@ -70,7 +70,6 @@
 </template>
 
 <script>
-// import Dropdown from '../../Materialize/Dropdown'
 import ModalClear from './ModalClear.vue'
 import {
   canEditCollection,
@@ -81,7 +80,6 @@ import {
 export default {
   name: 'CollectionDropdown',
   components: {
-    // Dropdown,
     ModalClear
   },
   props: {

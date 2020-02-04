@@ -115,12 +115,6 @@
           <b-col class="pl-0 ml-0" cols="5"><hr /></b-col>
         </b-row>
       </div>
-
-      <!-- <b-row align-h="center">
-        <b-col cols="2" class="text-center">
-          
-        </b-col>
-      </b-row> -->
     </div>
 
     <b-row align-h="center" align-v="center">
@@ -281,8 +275,6 @@ export default {
       this.$set(this.filters.sorting, 'attribute', attribute)
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
-      console.log(attribute, groupIndex, filterIndex)
-
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {
