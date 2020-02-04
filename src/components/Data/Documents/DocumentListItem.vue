@@ -153,6 +153,6 @@ export default {
 
 <style type="scss" rel="stylesheet/scss" scoped>
 pre {
-  font-size: larger;
+  font-size: 16px;
 }
 </style>
