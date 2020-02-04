@@ -173,12 +173,18 @@ const actions = createActions({
 
     commit.reset()
 
-    connectToEnvironment(environment)
-    dispatch.setConnection(id)
+    try {
+      await connectToEnvironment(environment)
+      dispatch.setConnection(id)
+    } catch (error) {
+      return false
+    }
 
-    await waitForConnected(1000)
-    await rootDispatch.auth.loginByToken({ token: environment.token })
     await rootDispatch.auth.checkFirstAdmin()
+    if (environment.token) {
+      await rootDispatch.auth.loginByToken({ token: environment.token })
+      return true
+    }
     return true
   },
   loadEnvironments(context) {

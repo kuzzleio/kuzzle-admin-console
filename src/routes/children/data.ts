@@ -4,7 +4,7 @@ export default [
     path: '/data',
     name: 'Data',
     component(resolve) {
-      require(['../../components/Data/Indexes/List'], resolve)
+      require(['../../components/Data/Indexes/Page'], resolve)
     }
   },
   {
