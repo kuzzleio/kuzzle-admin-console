@@ -67,6 +67,17 @@ const mutations = createMutations<IndexState>()({
         .indexesAndCollections[index]
         .realtime
         .filter(realtimeCollection => realtimeCollection !== collection)
+  },
+  removeStoredCollection(state, { index, collection }) {
+    if (
+      !state.indexesAndCollections[index] ||
+      !state.indexesAndCollections[index].stored
+    ) {
+      return
+    }
+
+    const idx = state.indexesAndCollections[index].stored.indexOf(collection)
+    Vue.delete(state.indexesAndCollections[index].stored, idx)
   }
 })
 
@@ -158,6 +169,16 @@ const actions = createActions({
     localStorage.setItem('realtimeCollections', JSON.stringify(collections))
 
     commit.removeRealtimeCollection({ index, collection })
+  },
+  async deleteCollection(context, { index, collection }) {
+    const { commit, rootGetters } = indexActionContext(context)
+    await Vue.prototype.$kuzzle.query({
+      index,
+      collection,
+      controller: 'collection',
+      action: 'delete'
+    })
+    commit.removeStoredCollection({ index, collection })
   }
 })
 

@@ -1,35 +1,7 @@
-@font-face {
-  font-family: 'Gobold';
-  src: url($gobold-font-path+'Gobold.ttf.eot'); /* IE9+ Compat Modes */
-  src: url($gobold-font-path+'Gobold.ttf.woff') format('woff'),
-    url($gobold-font-path+'Gobold.ttf.svg#Gobold') format('svg'); /* Legacy iOS */
-}
-@font-face {
-  font-family: 'AnonymousPro';
-  src: url($anonymous-pro-font-path+'AnonymousPro-Regular.ttf')
-    format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'AnonymousPro';
-  src: url($anonymous-pro-font-path+'AnonymousPro-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'AnonymousPro';
-  src: url($anonymous-pro-font-path+'AnonymousPro-Italic.ttf')
-    format('truetype');
-  font-weight: normal;
-  font-style: italic;
-}
-@font-face {
-  font-family: 'AnonymousPro';
-  src: url($anonymous-pro-font-path+'AnonymousPro-BoldItalic.ttf')
-    format('truetype');
-  font-weight: bold;
-  font-style: italic;
+@import url('https://fonts.googleapis.com/css?family=Cousine&display=swap');
+
+.code {
+  font-family: 'Cousine', monospace;
 }
 
 .code {
