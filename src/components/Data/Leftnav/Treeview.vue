@@ -15,7 +15,7 @@
           placeholder="Search index &amp; collection"
         ></b-form-input>
       </div>
-      <div class="Treeview-items px-3">
+      <div class="Treeview-items p-3">
         <index-branch
           v-for="indexName in orderedFilteredIndices"
           :key="indexName"

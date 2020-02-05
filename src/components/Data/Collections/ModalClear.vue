@@ -80,7 +80,15 @@ export default {
         this.$bvModal.hide(this.id)
       } catch (err) {
         this.error = err.message
-        // TODO Toast
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: 'Ooops! Something went wrong while clearing the collection.',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
       }
     }
   }

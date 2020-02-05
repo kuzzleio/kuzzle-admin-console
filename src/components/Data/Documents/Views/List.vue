@@ -59,9 +59,9 @@
           :collection="collection"
           :index="index"
           :is-checked="isChecked(document.id)"
-          @checkbox-click="$emit('checkbox-click')"
-          @edit="$emit('edit')"
-          @delete="$emit('delete')"
+          @checkbox-click="$emit('checkbox-click', $event)"
+          @edit="$emit('edit', $event)"
+          @delete="$emit('delete', $event)"
         />
       </b-list-group-item>
     </b-list-group>

@@ -16,7 +16,11 @@
           </headline>
         </b-col>
         <b-col class="text-right">
-          <b-button variant="primary">Create New Document</b-button>
+          <b-button
+            variant="primary"
+            :to="{ name: 'DataCreateDocument', params: { index, collection } }"
+            >Create New Document</b-button
+          >
         </b-col>
       </b-row>
 
@@ -46,11 +50,13 @@
     </b-container>
     <b-container :fluid="listViewType !== 'list'">
       <template v-if="!isCollectionEmpty">
-        <b-card class="light-shadow">
+        <b-card
+          class="light-shadow"
+          :bg-variant="documents.length === 0 ? 'light' : 'default'"
+        >
           <b-card-text class="p-0">
-            <no-results-empty-state v-if="!documents.length" />
             <List
-              v-if="listViewType === 'list'"
+              v-if="listViewType === 'list' && documents.length"
               :all-checked="allChecked"
               :collection="collection"
               :documents="documents"
@@ -63,9 +69,10 @@
               @checkbox-click="toggleSelectDocuments"
               @delete="onDeleteClicked"
               @edit="onEditDocumentClicked"
-              @refresh="onRefreshClicked"
+              @refresh="onRefresh"
               @toggle-all="onToggleAllClicked"
             ></List>
+            <no-results-empty-state v-if="!documents.length" />
 
             <b-row v-if="listViewType === 'column'" class="DocumentList-column">
               <div class="DocumentList-materializeCollection h-scroll">
@@ -95,11 +102,11 @@
       </template>
 
       <delete-modal
+        id="modal-delete"
         :candidates-for-deletion="candidatesForDeletion"
         :is-loading="deleteModalIsLoading"
-        :is-open="deleteModalIsOpen"
-        @close="closeDeleteModal"
         @confirm="onDeleteConfirmed"
+        @hide="resetCandidatesForDeletion"
       />
     </b-container>
   </div>
@@ -334,29 +341,38 @@ export default {
           this.collection,
           documentsToDelete
         )
-        this.closeDeleteModal()
+        this.$bvModal.hide('modal-delete')
+        this.resetCandidatesForDeletion()
         this.fetchDocuments()
         this.deleteModalIsLoading = false
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({ text: e.message })
         this.$log.error(e)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while deleting the document(s).',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
       }
     },
-    closeDeleteModal() {
-      this.deleteModalIsOpen = false
+    resetCandidatesForDeletion() {
       this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
     },
     onBulkDeleteClicked() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(
         this.selectedDocuments
       )
-      this.deleteModalIsOpen = true
+      this.$bvModal.show('modal-delete')
     },
     onDeleteClicked(id) {
       this.candidatesForDeletion.push(id)
-      this.deleteModalIsOpen = true
+      this.$bvModal.show('modal-delete')
     },
-    onRefreshClicked() {
+    onRefresh() {
       this.fetchDocuments()
     },
     // LIST (FETCH & SEARCH)
