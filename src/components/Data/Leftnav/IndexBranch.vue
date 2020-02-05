@@ -24,6 +24,7 @@
         v-for="collectionName in orderedFilteredStoredCollections"
         class="tree-item truncate"
         data-cy="Treeview-item"
+        :title="collectionName"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
       >

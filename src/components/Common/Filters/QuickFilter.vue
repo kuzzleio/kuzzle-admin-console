@@ -1,65 +1,69 @@
 <template>
-  <b-row no-gutters>
-    <b-col cols="6">
-      <div class="QuickFilter-searchBar">
-        <b-input-group>
-          <b-input-group-prepend is-text>
-            <i class="fa fa-search search" />
-          </b-input-group-prepend>
+  <div class="QuickFilter">
+    <b-row no-gutters v-if="!complexFilterActive">
+      <b-col cols="6">
+        <div class="QuickFilter-searchBar">
+          <b-input-group>
+            <b-input-group-prepend is-text>
+              <i class="fa fa-search search" />
+            </b-input-group-prepend>
 
-          <div
-            v-if="complexFilterActive || !enabled"
-            class="QuickFilter-chip chip"
-          >
-            <span
-              class="QuickFilter-chipLabel"
-              @click.prevent="displayAdvancedFilters"
-              >{{ advancedQueryLabel }}</span
+            <b-form-input
+              v-model="inputSearchTerm"
+              v-focus
+              type="search"
+              placeholder="Search..."
+              @input="submitSearch"
             >
-          </div>
-          <b-form-input
-            v-else
-            v-model="inputSearchTerm"
-            v-focus
-            type="search"
-            placeholder="Search..."
-            @input="submitSearch"
-          >
-          </b-form-input>
-        </b-input-group>
-      </div>
-    </b-col>
-    <b-col cols="2">
-      <a
-        v-if="!advancedFiltersVisible"
-        class="QuickFilter-optionBtn"
-        href="#"
-        @click.prevent="displayAdvancedFilters"
-        >More query options</a
-      >
-      <a
-        v-else
-        class="QuickFilter-optionBtn"
-        href="#"
-        @click.prevent="displayAdvancedFilters"
-        >Less query options</a
-      >
-    </b-col>
+            </b-form-input>
+          </b-input-group>
+        </div>
+      </b-col>
+      <b-col cols="2">
+        <a
+          v-if="!advancedFiltersVisible"
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >More query options</a
+        >
+        <a
+          v-else
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >Less query options</a
+        >
+      </b-col>
 
-    <b-col v-if="actionButtonsVisible" class="text-right" cols="4">
-      <b-button
-        type="submit"
-        class="m-2"
-        variant="primary"
-        @click.prevent="submitSearch"
-      >
-        {{ submitButtonLabel }}
-      </b-button>
-      <b-button class="m-2" variant="outline-secondary" @click="resetSearch">
-        Reset
-      </b-button>
-    </b-col>
-  </b-row>
+      <b-col v-if="actionButtonsVisible" class="text-right" cols="4">
+        <b-button
+          type="submit"
+          class="m-2"
+          variant="primary"
+          @click.prevent="submitSearch"
+        >
+          {{ submitButtonLabel }}
+        </b-button>
+        <b-button class="m-2" variant="outline-secondary" @click="resetSearch">
+          Reset
+        </b-button>
+      </b-col>
+    </b-row>
+    <div v-else class="QuickFilter-warning mx-3 mb-2 font-weight-bold">
+      <div class="align-middle pt-2">
+        Warning: a filter has been set, some documents might be hidden.
+      </div>
+      <div>
+        <b-button
+          class="align-middle d-inline ml-3 font-weight-bold"
+          variant="outline-light"
+          @click.prevent="displayAdvancedFilters"
+          >Display the advanced filters.</b-button
+        >
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -193,5 +197,12 @@ export default {
 .QuickFilter-actions {
   height: 48px;
   line-height: 48px;
+}
+
+.QuickFilter-warning {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: space-between;
 }
 </style>

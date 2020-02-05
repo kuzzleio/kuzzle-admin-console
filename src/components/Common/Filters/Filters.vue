@@ -1,6 +1,12 @@
 <template>
   <b-card
     class="Filters"
+    :bg-variant="
+      complexFilterActive && !advancedFiltersVisible ? 'warning' : ''
+    "
+    :text-variant="
+      complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
+    "
     :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
     :no-body="!advancedFiltersVisible"
   >

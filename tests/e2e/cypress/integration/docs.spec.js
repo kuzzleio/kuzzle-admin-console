@@ -1,4 +1,4 @@
-describe('Document List', function () {
+describe('Document List', function() {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -47,7 +47,7 @@ describe('Document List', function () {
     )
   })
 
-  it('sets and persists the listViewType param accessing a collection', function () {
+  it('sets and persists the listViewType param accessing a collection', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
@@ -55,17 +55,15 @@ describe('Document List', function () {
     cy.url().should('contain', 'listViewType=list')
   })
 
-  it('shows list items when viewType is set to list', function () {
+  it('shows list items when viewType is set to list', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.DocumentList-list .collection-item')
-      .children()
-      .should('have.class', 'DocumentListItem')
+    cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
-  it('sets and persists the listViewType param when switching the list view', function () {
+  it('sets and persists the listViewType param when switching the list view', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
@@ -76,7 +74,7 @@ describe('Document List', function () {
     cy.url().should('contain', 'listViewType=list')
   })
 
-  it('shows boxed items when viewType is set to boxes', function () {
+  it('shows boxed items when viewType is set to boxes', function() {
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
@@ -87,7 +85,7 @@ describe('Document List', function () {
       .should('have.class', 'DocumentBoxItem')
   })
 
-  it('remembers the list view settings when navigating from one collection to another', function () {
+  it('remembers the list view settings when navigating from one collection to another', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
     cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
@@ -103,74 +101,20 @@ describe('Document List', function () {
       }
     )
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
-    cy.get('[data-cy="Treeview-item"]')
-      .contains('anothercollection')
-      .click()
+    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
 
-    cy.get('[data-cy="Treeview-item"]')
-      .contains(collectionName)
-      .click()
+    cy.get(`[data-cy="Treeview-item"][title="${collectionName}"]`).click()
     cy.url().should('contain', 'listViewType=boxes')
     cy.get('.DocumentList-boxes')
       .children()
       .should('have.class', 'DocumentBoxItem')
 
-    cy.get('[data-cy="Treeview-item"]')
-      .contains('anothercollection')
-      .click()
+    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
     cy.url().should('contain', 'listViewType=list')
-    cy.get('.DocumentList-list .collection-item')
-      .children()
-      .should('have.class', 'DocumentListItem')
+    cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
-  it('has items with working dropdowns (even if the ID contains weird characters)', function () {
-    const adrienID = 'adrien maret'
-    const nicoID = 'nico_juelle'
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${adrienID}/_create?refresh=wait_for`,
-      {
-        firstName: 'Adrien',
-        lastName: 'Maret',
-        job: 'Blockchain Keylogger as a Service'
-      }
-    )
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${nicoID}/_create?refresh=wait_for`,
-      {
-        firstName: 'Nico',
-        lastName: 'Juelle',
-        job: 'Standing-desk Advocacy Superstar'
-      }
-    )
-
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-
-    cy.get('.DocumentListItem')
-      .contains(adrienID)
-      .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-dropdown')
-      .click()
-      .contains('Delete')
-
-    cy.get('.Headline').click()
-
-    cy.get('.DocumentListItem')
-      .contains(nicoID)
-      .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-dropdown')
-      .click()
-      .contains('Delete')
-  })
-
-  it('should handle the column view properly', function () {
+  it('should handle the column view properly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -210,7 +154,7 @@ describe('Document List', function () {
     cy.get('.centered > thead > tr > th > .fa').click()
   })
 
-  it('should handle the time series view properly', function () {
+  it('should handle the time series view properly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
@@ -307,7 +251,7 @@ describe('Document update/replace', () => {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -323,8 +267,8 @@ describe('Document update/replace', () => {
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.DocumentListItem').should('be.visible')
-    cy.get('.DocumentListItem')
+    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('[data-cy="DocumentList-item"]')
       .contains('myId')
       .parent()
       .siblings('.DocumentListItem-actions')
@@ -368,8 +312,8 @@ describe('Document update/replace', () => {
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.DocumentListItem').should('be.visible')
-    cy.get('.DocumentListItem')
+    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('[data-cy="DocumentList-item"]')
       .contains('myId')
       .parent()
       .siblings('.DocumentListItem-actions')
@@ -400,7 +344,7 @@ describe('Document update/replace', () => {
       )
     cy.get('.DocumentReplace').click({ force: true })
 
-    cy.get('.DocumentListItem').should('be.visible')
+    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {

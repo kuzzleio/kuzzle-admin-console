@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="DocumentList">
     <b-container>
       <b-row align-v="center">
         <b-col sm="6">
           <headline>
-            <span class="code">{{ collection }}</span>
+            <span class="code mr-2">{{ collection }}</span>
             <collection-dropdown
               class="icon-medium icon-black"
               :index="index"
@@ -30,18 +30,13 @@
           </template>
           <template v-if="!isCollectionEmpty">
             <filters
+              class="mb-3"
               :available-operands="searchFilterOperands"
               :current-filter="currentFilter"
               :collection-mapping="collectionMapping"
               @filters-updated="onFiltersUpdated"
               @reset="onFiltersUpdated"
             />
-            <div class="text-center mt-3">
-              <b-alert :show="currentFilter.active" variant="warning"
-                >Warning: a filter has been set, some documents might be
-                hidden.</b-alert
-              >
-            </div>
           </template>
         </b-col>
       </b-row>
@@ -105,16 +100,13 @@
               @refresh="onRefreshClicked"
             />
             <template v-show="documents.length" class="p-0 mt-2">
-              <b-row
-                v-show="listViewType === 'list'"
-                class="DocumentList-list"
-                no-gutters
-              >
+              <b-row v-show="listViewType === 'list'" no-gutters>
                 <b-list-group class="w-100">
                   <b-list-group-item
                     v-for="document in documents"
-                    :key="document.id"
                     class="p-2"
+                    data-cy="DocumentList-item"
+                    :key="document.id"
                   >
                     <document-list-item
                       :document="document"
@@ -224,12 +216,10 @@ import EmptyState from './EmptyState'
 import ListActions from './ListActions'
 import NoResultsEmptyState from './NoResultsEmptyState'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
-// import CollectionTabs from '../Collections/Tabs'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
-// import Pagination from '../../Materialize/Pagination'
 import ViewMap from './ViewMap'
 import * as filterManager from '../../../services/filterManager'
 import {
@@ -255,7 +245,6 @@ const LIST_VIEW_TIME_SERIES = 'time-series'
 export default {
   name: 'DocumentsPage',
   components: {
-    // CollectionTabs,
     CollectionDropdown,
     DeleteModal,
     DocumentBoxItem,
@@ -700,6 +689,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.DocumentList {
+  margin-bottom: 5em;
+}
 .ResultPerPage {
   &--active {
     color: 'primary';

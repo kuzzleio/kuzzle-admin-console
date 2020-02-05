@@ -44,6 +44,7 @@
             class="DocumentListItem-delete"
             href=""
             variant="link"
+            :data-cy="`DocumentListItem-delete--${document.id}`"
             :disabled="!canDelete"
             :title="
               canDelete
