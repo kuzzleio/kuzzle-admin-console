@@ -1,47 +1,37 @@
 <template>
-  <modal
+  <b-modal
+    id="documentsDeleteModal"
+    title="Document deletion"
     class="BulkDeleteModal"
-    :is-open="isOpen"
-    :close="onClose"
-    :loading="isLoading"
+    ok-title="I'm sure!"
+    cancel-title="Cancel"
+    :busy="isLoading"
+    @close="onClose"
+    @ok="onOk"
+    @cancel="onClose"
   >
-    <h4>Document deletion</h4>
-
     <p v-if="candidatesForDeletion.length > 1">
       Do you really want to delete {{ candidatesForDeletion.length }} documents?
     </p>
     <p v-if="candidatesForDeletion.length === 1">
       Do you really want to delete {{ candidatesForDeletion[0] }}?
     </p>
-
-    <span slot="footer">
-      <button
-        href="#"
-        class="waves-effect waves-green btn red-color"
-        @click="$emit('confirm', candidatesForDeletion)"
-      >
-        I'm sure!
-      </button>
-      <button href="#" class="btn-flat" @click.prevent="onClose">
-        Cancel
-      </button>
-    </span>
-  </modal>
+  </b-modal>
 </template>
 
 <script>
-import Modal from '../../Materialize/Modal'
 export default {
   name: 'DeleteModal',
-  components: {
-    Modal
-  },
   props: {
     candidatesForDeletion: Array,
     isOpen: Boolean,
     isLoading: Boolean
   },
   methods: {
+    onOk(e) {
+      e.preventDefault()
+      this.$emit('confirm', this.candidatesForDeletion)
+    },
     onClose() {
       this.$emit('close')
     }

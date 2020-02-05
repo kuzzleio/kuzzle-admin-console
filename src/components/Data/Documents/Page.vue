@@ -1,6 +1,6 @@
 <template>
   <div class="DocumentList">
-    <b-container>
+    <b-container :fluid="listViewType !== 'list'">
       <b-row align-v="center">
         <b-col sm="6">
           <headline>
@@ -124,6 +124,7 @@
               <b-row
                 v-show="listViewType === 'column'"
                 class="DocumentList-column"
+                no-gutters
               >
                 <Column
                   :documents="documents"
@@ -131,6 +132,7 @@
                   :index="index"
                   :collection="collection"
                   :isChecked="isChecked"
+                  @edit="onEditDocumentClicked"
                   @delete="onDeleteClicked"
                 />
               </b-row>
@@ -447,12 +449,15 @@ export default {
         this.closeDeleteModal()
         this.fetchDocuments()
         this.deleteModalIsLoading = false
+        this.$bvModal.hide('documentsDeleteModal')
       } catch (e) {
+        this.deleteModalIsLoading = false
         this.$store.direct.commit.toaster.setToast({ text: e.message })
         this.$log.error(e)
       }
     },
     closeDeleteModal() {
+      this.$bvModal.hide('documentsDeleteModal')
       this.deleteModalIsOpen = false
       this.candidatesForDeletion.splice(0, this.candidatesForDeletion.length)
     },
@@ -461,10 +466,12 @@ export default {
         this.selectedDocuments
       )
       this.deleteModalIsOpen = true
+      this.$bvModal.show('documentsDeleteModal')
     },
     onDeleteClicked(id) {
       this.candidatesForDeletion.push(id)
       this.deleteModalIsOpen = true
+      this.$bvModal.show('documentsDeleteModal')
     },
     onRefreshClicked() {
       this.fetchDocuments()
