@@ -65,130 +65,50 @@
               <b-col cols="4">
                 <list-view-buttons
                   :active-view="listViewType"
-                  :boxes-enabled="true"
-                  :map-enabled="isCollectionGeo"
                   @list="onListViewClicked"
-                  @boxes="onBoxesViewClicked"
-                  @map="onMapViewClicked"
                   @column="onColumnViewClicked"
-                  @time-series="onTimeSeriesClicked"
                 />
               </b-col>
             </b-row>
             <no-results-empty-state v-show="!documents.length" />
-            <list-actions
-              v-if="documents.length && listViewType !== 'time-series'"
+            <List
+              v-if="listViewType === 'list'"
               :all-checked="allChecked"
-              :display-bulk-delete="
-                hasSelectedDocuments &&
-                  canDeleteDocument(index, collection) &&
-                  listViewType !== 'map'
-              "
-              :geopoint-list="mappingGeopoints"
-              :view-type="listViewType"
-              :display-create="canCreateDocument(index, collection)"
-              :display-geopoint-select="listViewType === 'map'"
-              :display-toggle-all="
-                (listViewType !== 'map' &&
-                  canCreateDocument(index, collection)) ||
-                  canDeleteDocument(index, collection)
-              "
-              @create="onCreateClicked"
-              @bulk-delete="onBulkDeleteClicked"
+              :collection="collection"
+              :documents="documents"
+              :index="index"
+              :selected-documents="selectedDocuments"
+              @checkbox-click="toggleSelectDocuments"
+              @edit="onEditDocumentClicked"
+              @delete="onDeleteClicked"
               @toggle-all="onToggleAllClicked"
-              @select-geopoint="onSelectGeopoint"
+              @bulk-delete="onBulkDeleteClicked"
               @refresh="onRefreshClicked"
-            />
-            <template v-show="documents.length" class="p-0 mt-2">
-              <b-row v-show="listViewType === 'list'" no-gutters>
-                <b-list-group class="w-100">
-                  <b-list-group-item
-                    v-for="document in documents"
-                    class="p-2"
-                    data-cy="DocumentList-item"
-                    :key="document.id"
-                  >
-                    <document-list-item
-                      :document="document"
-                      :collection="collection"
-                      :index="index"
-                      :is-checked="isChecked(document.id)"
-                      @checkbox-click="toggleSelectDocuments"
-                      @edit="onEditDocumentClicked"
-                      @delete="onDeleteClicked"
-                    />
-                  </b-list-group-item>
-                </b-list-group>
-              </b-row>
+            ></List>
 
-              <b-row
-                v-show="listViewType === 'column'"
-                class="DocumentList-column"
-              >
-                <div class="DocumentList-materializeCollection h-scroll">
-                  <Column
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :index="index"
-                    :collection="collection"
-                    @edit="onEditDocumentClicked"
-                    @delete="onDeleteClicked"
-                  />
-                </div>
-              </b-row>
-
-              <b-row v-show="listViewType === 'boxes'">
-                <div class="DocumentList-boxes">
-                  <document-box-item
-                    v-for="document in documents"
-                    :key="document.id"
-                    :collection="collection"
-                    :index="index"
-                    :document="document"
-                    @edit="onEditDocumentClicked"
-                    @delete="onDeleteClicked"
-                  />
-                </div>
-              </b-row>
-
-              <b-row
-                v-show="listViewType === 'time-series'"
-                class="DocumentList-timeseries"
-              >
-                <div class="DocumentList-materializeCollection h-scroll">
-                  <TimeSeries
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :index="index"
-                    :collection="collection"
-                    @edit="onEditDocumentClicked"
-                    @delete="onDeleteClicked"
-                  />
-                </div>
-              </b-row>
-
-              <b-row v-if="listViewType === 'map'" class="DocumentList-map">
-                <view-map
-                  :documents="geoDocuments"
-                  :get-coordinates="getCoordinates"
-                  :selected-geopoint="selectedGeopoint"
+            <b-row v-if="listViewType === 'column'" class="DocumentList-column">
+              <div class="DocumentList-materializeCollection h-scroll">
+                <Column
+                  :documents="documents"
+                  :mapping="collectionMapping"
                   :index="index"
                   :collection="collection"
                   @edit="onEditDocumentClicked"
                   @delete="onDeleteClicked"
                 />
-              </b-row>
-              <b-row v-show="totalDocuments > paginationSize" align-h="center">
-                <b-pagination
-                  class="m-2 mt-4"
-                  v-model="currentPage"
-                  :total-rows="totalDocuments"
-                  :per-page="paginationSize"
-                  aria-controls="my-table"
-                  @change="fetchDocuments"
-                ></b-pagination>
-              </b-row>
-            </template>
+              </div>
+            </b-row>
+
+            <b-row v-show="totalDocuments > paginationSize" align-h="center">
+              <b-pagination
+                class="m-2 mt-4"
+                v-model="currentPage"
+                aria-controls="my-table"
+                :total-rows="totalDocuments"
+                :per-page="paginationSize"
+                @change="fetchDocuments"
+              ></b-pagination>
+            </b-row>
           </b-card-text>
         </b-card>
       </template>
@@ -207,21 +127,17 @@
 <script>
 import _ from 'lodash'
 
-import DocumentListItem from './DocumentListItem'
-import DocumentBoxItem from './DocumentBoxItem'
 import Column from './Views/Column'
-import TimeSeries from './Views/TimeSeries'
+import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
-import ListActions from './ListActions'
 import NoResultsEmptyState from './NoResultsEmptyState'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
-import ViewMap from './ViewMap'
 import * as filterManager from '../../../services/filterManager'
 import {
   canSearchIndex,
@@ -248,19 +164,15 @@ export default {
   components: {
     CollectionDropdown,
     DeleteModal,
-    DocumentBoxItem,
-    DocumentListItem,
     Column,
-    TimeSeries,
+    List,
     EmptyState,
     Headline,
     Filters,
-    ListActions,
     ListNotAllowed,
     ListViewButtons,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState,
-    ViewMap
+    RealtimeOnlyEmptyState
   },
   props: {
     index: String,
@@ -309,9 +221,6 @@ export default {
     },
     isCollectionEmpty() {
       return !this.isDocumentListFiltered && this.totalDocuments === 0
-    },
-    hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0
     },
     allChecked() {
       if (!this.selectedDocuments || !this.documents) {
@@ -584,9 +493,6 @@ export default {
       }
 
       this.selectedDocuments.splice(index, 1)
-    },
-    isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1
     },
 
     // LIST VIEW TYPES

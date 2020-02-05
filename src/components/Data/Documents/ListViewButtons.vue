@@ -12,7 +12,7 @@
       :class="{ active: activeView === 'column' }"
       @click="$emit('column')"
     />
-    <a
+    <!-- <a
       class="ListViewButtons-btn fa fa-th"
       :class="{ disabled: !boxesEnabled, active: activeView === 'boxes' }"
       :title="boxesEnabled ? 'Display these items as boxes' : ''"
@@ -29,7 +29,7 @@
       :class="{ disabled: !mapEnabled, active: activeView === 'map' }"
       :title="mapEnabled ? 'Display these items on a map' : ''"
       @click="onMapClicked"
-    />
+    /> -->
   </div>
 </template>
 

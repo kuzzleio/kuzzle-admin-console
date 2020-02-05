@@ -27,34 +27,34 @@
       </b-dropdown-item>
       <b-dropdown-divider />
       <b-dropdown-item v-if="!isRealtime && !isList">
-        <router-link
+        <b-link
           :to="{
             name: 'DataDocumentsList',
             params: { collection: collection, index: index }
           }"
-          >Browse documents</router-link
+          >Browse documents</b-link
         >
       </b-dropdown-item>
       <b-dropdown-item>
-        <router-link
+        <b-link
           :class="{ disabled: !canSubscribe(index, collection) }"
           :to="
             canSubscribe(index, collection)
               ? { name: 'DataCollectionWatch', params: { collection, index } }
               : ''
           "
-          >Watch messages</router-link
+          >Watch messages</b-link
         >
       </b-dropdown-item>
       <b-dropdown-divider />
       <b-dropdown-item v-if="!isRealtime && isList">
-        <a
+        <b-link
           :class="{
-            'red-text': canTruncateCollection(index, collection),
-            disabled: !canTruncateCollection(index, collection)
+            'text-danger': canTruncateCollection(index, collection),
+            'text-secondary': !canTruncateCollection(index, collection)
           }"
           @click.prevent="openModal"
-          >Clear documents</a
+          >Clear documents</b-link
         >
       </b-dropdown-item>
     </b-dropdown>
