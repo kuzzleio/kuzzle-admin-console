@@ -14,12 +14,12 @@
             <div class="inlineDisplay">
               <span class="inlineDisplay-item">
                 <b-form-checkbox
-                  :checked="field.displayed"
                   class="mx-2"
+                  :checked="field.displayed"
                   @change="toggleColumn(field.value)"
                 />
               </span>
-              <span class="inlineDisplay-item">{{ field.text }}</span>
+              <span class="inlineDisplay-item code">{{ field.text }}</span>
             </div>
           </b-dropdown-text>
         </b-dropdown>
@@ -27,7 +27,6 @@
     </b-row>
     <b-row class="mt-2 ml-0 mr-2">
       <b-table
-        id="DocumentColumnView-table"
         striped
         sticky-header
         hover
@@ -40,16 +39,18 @@
       >
         <template v-slot:head()="data">
           <div class="inlineDisplay mx-1">
-            <span :id="data.label" class="inlineDisplay-item text-info m-3">{{
-              getLastKeyPath(data.label)
-            }}</span>
-            <b-tooltip placement="top" :target="data.label">{{
-              data.label
-            }}</b-tooltip>
+            <span
+              class="inlineDisplay-item text-info m-3 code"
+              :id="data.label"
+              >{{ getLastKeyPath(data.label) }}</span
+            >
+            <b-tooltip class="code" placement="top" :target="data.label">
+              {{ data.label }}
+            </b-tooltip>
             <span class="inlineDisplay-item">
               <i
                 v-if="data.field.deletable"
-                class="fa fa-times-circle text-info ListViewColumn-remove m-2"
+                class="fa fa-times-circle text-info m-2"
                 @click="hideColumn(data.field.index)"
               />
             </span>
@@ -62,8 +63,8 @@
                 title="Edit document"
                 variant="link"
                 class="px-0 mx-1"
-                @click="editDocument(data.item.id)"
                 :disabled="!canEdit"
+                @click="editDocument(data.item.id)"
               >
                 <i class="fa fa-pen" />
               </b-button>
@@ -89,10 +90,10 @@
           </div>
         </template>
         <template v-slot:cell(id)="data">
-          <span>{{ data.item.id }}</span>
+          <span class="code">{{ data.item.id }}</span>
         </template>
         <template v-slot:cell()="data">
-          <span>{{ data.value }}</span>
+          <span class="code">{{ data.value }}</span>
         </template>
       </b-table>
     </b-row>
