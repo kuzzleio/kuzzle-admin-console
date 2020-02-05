@@ -38,7 +38,7 @@
   justify-content: center;
 }
 .Treeview-search {
-  border-bottom: 1px solid $disabled-color;
+  border-bottom: 1px solid #dbdbdb;
 }
 .Treeview-items {
   flex: 1;

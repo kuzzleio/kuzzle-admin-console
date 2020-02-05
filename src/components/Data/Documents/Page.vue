@@ -407,8 +407,13 @@ export default {
         )
         await this.fetchDocuments()
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({
-          text: 'An error occurred while updating filters: <br />' + e.message
+        this.$bvToast.toast(e.message, {
+          title: 'Ooops! Something went wrong while performing the search.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
         this.$log.error(e)
       }
@@ -444,8 +449,13 @@ export default {
         this.documents = res.documents
         this.totalDocuments = res.total
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({
-          text: 'An error occurred while performing search: <br />' + e.message
+        this.$bvToast.toast(e.message, {
+          title: 'Ooops! Something went wrong while fetching the documents.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
         this.$log.error(e)
       }
