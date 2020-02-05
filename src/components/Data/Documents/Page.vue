@@ -112,7 +112,7 @@
                       :document="document"
                       :collection="collection"
                       :index="index"
-                      :is-checked="isChecked(document.id)"
+                      :isChecked="isChecked(document.id)"
                       @checkbox-click="toggleSelectDocuments"
                       @edit="onEditDocumentClicked"
                       @delete="onDeleteClicked"
@@ -125,16 +125,14 @@
                 v-show="listViewType === 'column'"
                 class="DocumentList-column"
               >
-                <div class="DocumentList-materializeCollection h-scroll">
-                  <Column
-                    :documents="documents"
-                    :mapping="collectionMapping"
-                    :index="index"
-                    :collection="collection"
-                    @edit="onEditDocumentClicked"
-                    @delete="onDeleteClicked"
-                  />
-                </div>
+                <Column
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :index="index"
+                  :collection="collection"
+                  :isChecked="isChecked"
+                  @delete="onDeleteClicked"
+                />
               </b-row>
 
               <b-row v-show="listViewType === 'boxes'">
@@ -586,8 +584,6 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     isChecked(id) {
-      console.log(id, this.selectedDocuments)
-
       return this.selectedDocuments.indexOf(id) > -1
     },
 
