@@ -7,8 +7,11 @@
             <span class="code mr-2">{{ collection }}</span>
             <collection-dropdown
               class="icon-medium icon-black"
+              :active-view="listViewType"
               :index="index"
               :collection="collection"
+              @list="onListViewClicked"
+              @column="onColumnViewClicked"
             />
           </headline>
         </b-col>
@@ -45,45 +48,23 @@
       <template v-if="!isCollectionEmpty">
         <b-card class="light-shadow">
           <b-card-text class="p-0">
-            <b-row>
-              <b-col cols="8">
-                Result per page:
-                <span v-for="(v, i) in resultPerPage" :key="i"
-                  ><a
-                    href="#"
-                    variant="warning"
-                    :class="
-                      `ResultPerPage--${
-                        v === paginationSize ? 'active' : 'link'
-                      }`
-                    "
-                    @click.prevent="changePaginationSize(v)"
-                    >{{ v }}</a
-                  >{{ i === resultPerPage.length - 1 ? '' : ' / ' }}</span
-                >
-              </b-col>
-              <b-col cols="4">
-                <list-view-buttons
-                  :active-view="listViewType"
-                  @list="onListViewClicked"
-                  @column="onColumnViewClicked"
-                />
-              </b-col>
-            </b-row>
-            <no-results-empty-state v-show="!documents.length" />
+            <no-results-empty-state v-if="!documents.length" />
             <List
               v-if="listViewType === 'list'"
               :all-checked="allChecked"
               :collection="collection"
               :documents="documents"
               :index="index"
+              :current-page-size="paginationSize"
               :selected-documents="selectedDocuments"
-              @checkbox-click="toggleSelectDocuments"
-              @edit="onEditDocumentClicked"
-              @delete="onDeleteClicked"
-              @toggle-all="onToggleAllClicked"
+              :total-documents="totalDocuments"
               @bulk-delete="onBulkDeleteClicked"
+              @change-page-size="changePaginationSize"
+              @checkbox-click="toggleSelectDocuments"
+              @delete="onDeleteClicked"
+              @edit="onEditDocumentClicked"
               @refresh="onRefreshClicked"
+              @toggle-all="onToggleAllClicked"
             ></List>
 
             <b-row v-if="listViewType === 'column'" class="DocumentList-column">
@@ -130,7 +111,6 @@ import _ from 'lodash'
 import Column from './Views/Column'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
-import ListViewButtons from './ListViewButtons'
 import EmptyState from './EmptyState'
 import NoResultsEmptyState from './NoResultsEmptyState'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
@@ -170,7 +150,6 @@ export default {
     Headline,
     Filters,
     ListNotAllowed,
-    ListViewButtons,
     NoResultsEmptyState,
     RealtimeOnlyEmptyState
   },
@@ -459,6 +438,7 @@ export default {
     // PAGINATION
     // =========================================================================
     changePaginationSize(size) {
+      this.$log.debug(`changing pagination to ${size}`)
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           size

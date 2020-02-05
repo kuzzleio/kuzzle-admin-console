@@ -1,10 +1,10 @@
 <template>
   <div>
-    <b-row no-gutters>
-      <b-col cols="8" class="mt-2">
+    <b-row no-gutters class="mb-2">
+      <b-col cols="8">
         <b-button
           variant="outline-dark"
-          class="ml-0 mr-2"
+          class="mr-2"
           @click="$emit('toggle-all')"
         >
           <i
@@ -15,7 +15,7 @@
 
         <b-button
           variant="outline-danger"
-          class="m-2"
+          class="mr-2"
           :disabled="!bulkDeleteEnabled"
           @click="$emit('bulk-delete')"
         >
@@ -25,13 +25,27 @@
 
         <b-button
           variant="outline-secondary"
-          class="m-2"
+          class="mr-2"
           @click.prevent="$emit('refresh')"
         >
           <i class="fas fa-sync-alt left" />
           Refresh
         </b-button>
       </b-col>
+      <b-col cols="4" class="text-right"
+        >Show
+        <b-form-select
+          class="mx-2"
+          style="width: unset"
+          :options="itemsPerPage"
+          :value="currentPageSize"
+          @change="$emit('change-page-size', $event)"
+        >
+        </b-form-select>
+        <span v-if="totalDocuments"
+          >of {{ totalDocuments }} total items.</span
+        ></b-col
+      >
     </b-row>
     <b-list-group class="w-100">
       <b-list-group-item
@@ -70,6 +84,10 @@ export default {
       type: String,
       required: true
     },
+    currentPageSize: {
+      type: Number,
+      default: 10
+    },
     documents: {
       type: Array,
       required: true
@@ -81,6 +99,14 @@ export default {
     selectedDocuments: {
       type: Array,
       required: true
+    },
+    totalDocuments: {
+      type: Number
+    }
+  },
+  data() {
+    return {
+      itemsPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {

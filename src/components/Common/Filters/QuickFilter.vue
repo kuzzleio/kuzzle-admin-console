@@ -1,5 +1,5 @@
 <template>
-  <div class="QuickFilter">
+  <div class="QuickFilter mb-1">
     <b-row no-gutters v-if="!complexFilterActive">
       <b-col cols="6">
         <div class="QuickFilter-searchBar">

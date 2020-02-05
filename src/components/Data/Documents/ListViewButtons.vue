@@ -2,12 +2,14 @@
   <div class="ListViewButtons">
     <a
       class="ListViewButtons-btn fa fa-list"
+      data-cy="ViewBtn--list"
       title="Display these items as a list"
       :class="{ active: activeView === 'list' }"
       @click="$emit('list')"
     />
     <a
       class="ListViewButtons-btn fa fa-list rotate"
+      data-cy="ViewBtn--column"
       title="Display these items as column"
       :class="{ active: activeView === 'column' }"
       @click="$emit('column')"
