@@ -1,6 +1,12 @@
 <template>
   <b-card
     class="Filters"
+    :bg-variant="
+      complexFilterActive && !advancedFiltersVisible ? 'warning' : ''
+    "
+    :text-variant="
+      complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
+    "
     :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
     :no-body="!advancedFiltersVisible"
   >
@@ -25,15 +31,16 @@
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
-            :active="complexFiltersSelectedTab === 'basic'"
-            @click="complexFiltersSelectedTab = 'basic'"
-            >Advanced Filter</b-nav-item
-          >
-          <b-nav-item
             :active="complexFiltersSelectedTab === 'raw'"
             @click="complexFiltersSelectedTab = 'raw'"
             >Raw JSON Filter</b-nav-item
           >
+          <b-nav-item
+            :active="complexFiltersSelectedTab === 'basic'"
+            @click="complexFiltersSelectedTab = 'basic'"
+            >Advanced Filter</b-nav-item
+          >
+
           <i
             class="Filters-btnClose fa fa-times close"
             @click="advancedFiltersVisible = false"
@@ -42,6 +49,18 @@
       </b-nav>
     </template>
     <template v-if="advancedFiltersVisible">
+      <raw-filter
+        v-if="complexFiltersSelectedTab === 'raw'"
+        :raw-filter="rawFilter"
+        :format-from-basic-search="formatFromBasicSearch"
+        :sorting-enabled="sortingEnabled"
+        :action-buttons-visible="actionButtonsVisible"
+        :submit-button-label="submitButtonLabel"
+        :current-filter="currentFilter"
+        :refresh-ace="refreshace"
+        @update-filter="onRawFilterUpdated"
+        @reset="onReset"
+      />
       <basic-filter
         v-if="complexFiltersSelectedTab === 'basic'"
         :toggle-auto-complete="toggleAutoComplete"
@@ -53,18 +72,6 @@
         :sorting="sorting"
         :collection-mapping="collectionMapping"
         @update-filter="onBasicFilterUpdated"
-        @reset="onReset"
-      />
-      <raw-filter
-        v-if="complexFiltersSelectedTab === 'raw'"
-        :raw-filter="rawFilter"
-        :format-from-basic-search="formatFromBasicSearch"
-        :sorting-enabled="sortingEnabled"
-        :action-buttons-visible="actionButtonsVisible"
-        :submit-button-label="submitButtonLabel"
-        :current-filter="currentFilter"
-        :refresh-ace="refreshace"
-        @update-filter="onRawFilterUpdated"
         @reset="onReset"
       />
     </template>
@@ -164,7 +171,7 @@ export default {
   data() {
     return {
       advancedFiltersVisible: false,
-      complexFiltersSelectedTab: ACTIVE_BASIC,
+      complexFiltersSelectedTab: ACTIVE_RAW,
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
@@ -205,13 +212,6 @@ export default {
     Vue.nextTick(() => {
       window.document.addEventListener('keydown', this.handleEsc)
     })
-  },
-  watch: {
-    complexFiltersSelectedTab: {
-      handler(value) {
-        console.log(value)
-      }
-    }
   },
   destroyed() {
     window.document.removeEventListener('keydown', this.handleEsc)
@@ -254,9 +254,6 @@ export default {
     onReset() {
       this.$emit('reset', new Filter())
     },
-    // switchComplexFilterTab(name) {
-    //   this.complexFiltersSelectedTab = name
-    // },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace

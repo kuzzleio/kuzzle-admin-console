@@ -1,31 +1,34 @@
 <template>
   <b-dropdown
     ref="dropdown"
-    class="EnvironmentsSwitch"
+    class="EnvironmentSwitch"
+    data-cy="EnvironmentSwitch"
     variant="outline-secondary"
     :text="currentEnvironmentName"
     :block="block"
     :right="right"
-    :class="blendColor ? 'EnvironmentsSwitch--blendColor' : ''"
+    :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
   >
     <b-dropdown-item
       v-for="(env, index) in $store.direct.getters.kuzzle.environments"
-      class="EnvironmentsSwitch-env environment"
+      class="EnvironmentSwitch-env environment"
       :key="env.name"
-      :data-env="`env_${formatForDom(env.name)}`"
+      :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
     >
-      <div @click="clickSwitch(index)">
-        <div class="EnvironmentsSwitch-env-name">
+      <div>
+        <div @click="clickSwitch(index)" class="EnvironmentSwitch-env-name">
           {{ env.name }}
           <span class="text-muted ml-2 mr-5">{{ env.host }}</span>
         </div>
-        <div class="EnvironmentsSwitch-env-inputs">
+        <div class="EnvironmentSwitch-env-inputs">
           <i
             class="edit primary fa fa-pencil-alt mr-3"
+            :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-edit`"
             @click.prevent="$emit('environment::create', index)"
           />
           <i
             class="delete error fa fa-trash"
+            :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
             @click.prevent="$emit('environment::delete', index)"
           />
         </div>
@@ -33,7 +36,11 @@
     </b-dropdown-item>
     <b-dropdown-divider></b-dropdown-divider>
     <b-dropdown-item>
-      <a href="" @click.prevent="$emit('environment::create')">
+      <a
+        data-cy="EnvironmentSwitch-newConnectionBtn"
+        href=""
+        @click.prevent="$emit('environment::create')"
+      >
         Create new connection
       </a>
     </b-dropdown-item>
@@ -56,7 +63,7 @@ import Promise from 'bluebird'
 import { formatForDom } from '../../../utils'
 
 export default {
-  name: 'EnvironmentsSwitch',
+  name: 'EnvironmentSwitch',
   props: {
     blendColor: {
       type: Boolean,
@@ -115,7 +122,7 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.EnvironmentsSwitch--blendColor {
+.EnvironmentSwitch--blendColor {
   .dropdown-toggle {
     background-color: rgba(255, 255, 255, 0.4);
     border: none;
@@ -129,7 +136,7 @@ export default {
   }
 }
 
-.EnvironmentsSwitch-env {
+.EnvironmentSwitch-env {
   display: table;
 
   &-name {

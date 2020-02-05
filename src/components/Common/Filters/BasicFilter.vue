@@ -115,26 +115,11 @@
           <b-col class="pl-0 ml-0" cols="5"><hr /></b-col>
         </b-row>
       </div>
-
-      <!-- <b-row align-h="center">
-        <b-col cols="2" class="text-center">
-          
-        </b-col>
-      </b-row> -->
     </div>
 
     <b-row align-h="center" align-v="center">
-      <b-col sm="6">
-        <b-input-group v-if="sortingEnabled" prepend="Sorting">
-          <template v-slot:append>
-            <b-select
-              v-model="filters.sorting.order"
-              :options="[
-                { value: 'asc', text: 'asc' },
-                { value: 'desc', text: 'desc' }
-              ]"
-            />
-          </template>
+      <b-col sm="5">
+        <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
           <b-form-select
             placeholder="Attribute"
             :value="filters.sorting.attribute || ''"
@@ -149,6 +134,14 @@
           >
         </b-input-group>
       </b-col>
+      <b-col sm="2"
+        ><b-select
+          v-model="filters.sorting.order"
+          :options="[
+            { value: 'asc', text: 'Ascending' },
+            { value: 'desc', text: 'Descending' }
+          ]"
+      /></b-col>
       <b-col v-if="actionButtonsVisible" class="text-right">
         <b-button
           variant="primary"
@@ -282,8 +275,6 @@ export default {
       this.$set(this.filters.sorting, 'attribute', attribute)
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
-      console.log(attribute, groupIndex, filterIndex)
-
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
     },
     submitSearch() {

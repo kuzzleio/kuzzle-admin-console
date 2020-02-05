@@ -3,12 +3,7 @@ import { mergeMetaAttributes } from '../../../services/collectionHelper'
 import Vue from 'vue'
 import { formatSchema } from '../../../services/collectionHelper'
 import { CollectionState, CollectionActions } from './types'
-import {
-  createModule,
-  createMutations,
-  createActions,
-  ActionImpl
-} from 'direct-vuex'
+import { createModule, createMutations, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
 

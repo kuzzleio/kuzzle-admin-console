@@ -6,54 +6,68 @@
       aria-hidden="true"
       @click="toggleBranch"
     />
+    <i v-else class="no-caret"></i>
     <router-link
-      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
+      data-cy="Treeview-item"
       class="tree-item truncate"
       :class="{ active: isIndexActive(indexName) }"
+      :title="indexName"
+      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
+      <span v-html="highlight(truncateName(indexName, 12), filter)" /> ({{
+        collectionCount
+      }})
     </router-link>
-    <b-nav vertical class="collections">
-      <b-nav-item
+    <div class="collections mb-2">
+      <div
         v-for="collectionName in orderedFilteredStoredCollections"
-        :key="collectionName"
-        :to="{
-          name: 'DataDocumentsList',
-          params: { index: indexName, collection: collectionName }
-        }"
         class="tree-item truncate"
+        data-cy="Treeview-item"
+        :title="collectionName"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
-      >
-        <i
-          class="fa fa-th-list"
-          aria-hidden="true"
-          title="Persisted collection"
-        />
-        <span v-html="highlight(collectionName, filter)" />
-      </b-nav-item>
-      <b-nav-item
-        v-for="collectionName in orderedFilteredRealtimeCollections"
         :key="collectionName"
+      >
+        <router-link
+          :to="{
+            name: 'DataDocumentsList',
+            params: { index: indexName, collection: collectionName }
+          }"
+        >
+          <i
+            class="fa fa-th-list"
+            aria-hidden="true"
+            title="Persisted collection"
+          />
+          <span v-html="highlight(truncateName(collectionName, 15), filter)" />
+        </router-link>
+      </div>
+
+      <div
+        v-for="collectionName in orderedFilteredRealtimeCollections"
         class="tree-item"
+        data-cy="Treeview-item"
+        :class="{ active: isCollectionActive(indexName, collectionName) }"
+        :key="collectionName"
         :to="{
           name: 'DataCollectionWatch',
           params: { index: indexName, collection: collectionName }
         }"
-        :class="{ active: isCollectionActive(indexName, collectionName) }"
       >
         <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection" />
-        <span v-html="highlight(collectionName, filter)" />
+        <span v-html="highlight(truncateName(collectionName, 15), filter)" />
         <i
           class="fa fa-times right remove"
           @click.prevent="removeRealtimeCollection(indexName, collectionName)"
         />
-      </b-nav-item>
-    </b-nav>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { truncateName } from '../../../utils'
+
 export default {
   props: {
     forceOpen: {
@@ -109,6 +123,7 @@ export default {
     this.testOpen()
   },
   methods: {
+    truncateName,
     toggleBranch() {
       // TODO This state should be one day persistent across page refreshes
       this.open = !this.open
@@ -174,44 +189,33 @@ export default {
 </script>
 
 <style scoped lang="scss">
-ul.collections {
-  padding-left: 15px;
+.collections {
+  padding-left: 25px;
   overflow-y: hidden;
   max-height: 0;
 }
 
-.open ul.collections {
+.open .collections {
   max-height: 2000px;
   transition: max-height 0.5s ease-out;
 }
 
-li {
-  position: relative;
+a {
+  color: #002835;
 }
 
-a,
-i.tree-toggle {
+.tree-item {
+  padding: 0 5px;
+  margin: 0 5px;
+  color: #002835;
   line-height: 32px;
   height: 32px;
-}
-
-.nav-item a {
-  color: #002835;
-  .active {
-    font-weight: bold;
-  }
-}
-
-a.tree-item {
-  padding: 0 5px;
-  margin: 0 15px;
-  color: #002835;
   &.active {
     font-weight: bold;
   }
 }
 
-i.fa {
+.fa {
   margin-right: 5px;
   color: rgb(100, 100, 100);
   &:hover {
@@ -220,32 +224,17 @@ i.fa {
   }
 }
 
-i.tree-toggle {
-  position: absolute;
+.tree-toggle {
   cursor: pointer;
-  padding: 0 10px 0 10px;
-  margin: 0 0 0 -10px;
   transition-duration: 0.2s;
   transform-origin: 50% 50%;
 }
 
-.open i.tree-toggle {
+.open .tree-toggle {
   transform: rotate(90deg);
 }
 
-/* webkit adjacent element selector bugfix */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .treeview {
-    -webkit-animation: webkit-adjacent-element-selector-bugfix infinite 1s;
-  }
-
-  @-webkit-keyframes webkit-adjacent-element-selector-bugfix {
-    from {
-      padding: 0;
-    }
-    to {
-      padding: 0;
-    }
-  }
+.no-caret {
+  margin: 0 0.35em;
 }
 </style>

@@ -1,30 +1,38 @@
 <template>
-  <b-container fluid data-cy="collection-item">
-    <b-row align-h="between" no-gutters data-cy="DocumentListItem">
-      <b-col cols="10">
-        <b-row no-gutters class="pt-1">
-          <i
-            @click="toggleCollapse"
-            :class="`fa fa-caret-${expanded ? 'down' : 'right'} mr-2 mt-1`"
-            aria-hidden="true"
-          />
-          <b-form-checkbox
-            class="align-middle"
-            :id="checkboxId"
-            type="checkbox"
-            value="true"
-            unchecked-value="false"
-            v-model="checked"
-            @change="notifyCheckboxClick"
-          />
-          <a class="align-middle" @click="toggleCollapse">{{ document.id }}</a>
-        </b-row>
+  <b-container fluid>
+    <b-row align-h="between" no-gutters>
+      <b-col cols="10" class="py-1">
+        <i
+          @click="toggleCollapse"
+          :class="
+            `fa fa-caret-${
+              expanded ? 'down' : 'right'
+            } mr-2  d-inline-block align-middle`
+          "
+          aria-hidden="true"
+        />
+        <b-form-checkbox
+          class="d-inline-block align-middle"
+          :id="checkboxId"
+          type="checkbox"
+          value="true"
+          unchecked-value="false"
+          v-model="checked"
+          @change="notifyCheckboxClick"
+        />
+        <a
+          class="d-inline-block align-middle code pointer"
+          @click="toggleCollapse"
+          >{{ document.id }}</a
+        >
       </b-col>
       <b-col cols="2" data-cy="DocumentListItem-actions">
         <div class="float-right">
-          <a
-            data-cy="DocumentListItem-update"
+          <b-button
+            class="DocumentListItem-update"
             href=""
+            variant="link"
+            :disabled="!canEdit"
             :title="
               canEdit
                 ? 'Edit Document'
@@ -33,28 +41,22 @@
             @click.prevent="editDocument"
           >
             <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-          </a>
-
-          <b-dropdown
-            data-cy="DocumentListItem-dropdown"
-            :id="document.id"
-            toggle-class="text-decoration-none"
-            no-caret
+          </b-button>
+          <b-button
+            class="DocumentListItem-delete"
+            href=""
             variant="link"
-            size="sm"
+            :data-cy="`DocumentListItem-delete--${document.id}`"
+            :disabled="!canDelete"
+            :title="
+              canDelete
+                ? 'Delete Document'
+                : 'You are not allowed to delete this Document'
+            "
+            @click.prevent="deleteDocument"
           >
-            <template v-slot:button-content>
-              <i class="fas fa-ellipsis-v" />
-            </template>
-            <!-- myclass="DocumentListItem-dropdown icon-black" -->
-            <b-dropdown-item
-              :disabled="!canDelete"
-              :class="{ disabled: !canDelete }"
-              @click="deleteDocument"
-            >
-              Delete
-            </b-dropdown-item>
-          </b-dropdown>
+            <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+          </b-button>
         </div>
       </b-col>
     </b-row>
@@ -105,7 +107,6 @@ export default {
     isChecked: {
       handler(value) {
         this.checked = value
-        console.log('setChecked')
       }
     }
   },
@@ -153,6 +154,6 @@ export default {
 
 <style type="scss" rel="stylesheet/scss" scoped>
 pre {
-  font-size: larger;
+  font-size: 16px;
 }
 </style>

@@ -3,7 +3,6 @@
     <h1>
       <slot>{{ title }}</slot>
     </h1>
-
     <breadcrumb />
   </div>
 </template>
@@ -25,6 +24,7 @@ export default {
 <style lang="scss" rel="stylesheet/scss" scoped>
 .Headline {
   margin-bottom: 30px;
+  color: $primary-color;
 
   h1 {
     margin-top: 0;

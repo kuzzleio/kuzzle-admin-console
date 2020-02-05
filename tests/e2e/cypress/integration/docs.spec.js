@@ -37,7 +37,7 @@ describe('Document List', function() {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -60,10 +60,7 @@ describe('Document List', function() {
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="DocumentList-list"]')
-      .get('[data-cy="collection-item"]')
-      .children()
-      .should('have.attr', 'data-cy', 'DocumentListItem')
+    cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
   it('sets and persists the listViewType param when switching the list view', function() {
@@ -104,114 +101,17 @@ describe('Document List', function() {
       }
     )
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
-    cy.get('[data-cy="Treeview-root"]')
-      .get('[data-cy="tree-item"]')
-      .contains('anothercollection')
-      .click({ force: true })
+    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
 
-    cy.get('[data-cy="Treeview-root"]')
-      .get('[data-cy="tree-item"]')
-      .contains(collectionName)
-      .click({ force: true })
+    cy.get(`[data-cy="Treeview-item"][title="${collectionName}"]`).click()
     cy.url().should('contain', 'listViewType=boxes')
     cy.get('.DocumentList-boxes')
       .children()
       .should('have.class', 'DocumentBoxItem')
 
-    cy.get('[data-cy="Treeview-root"]')
-      .get('[data-cy="tree-item"]')
-      .contains('anothercollection')
-      .click({ force: true })
+    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
     cy.url().should('contain', 'listViewType=list')
-    cy.get('[data-cy="DocumentList-list"]')
-      .get('[data-cy="collection-item"]')
-      .children()
-      .should('have.attr', 'data-cy', 'DocumentListItem')
-  })
-
-  it('has items with working dropdowns (even if the ID contains weird characters)', function() {
-    const adrienID = 'adrien maret'
-    const nicoID = 'nico_juelle'
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${adrienID}/_create?refresh=wait_for`,
-      {
-        firstName: 'Adrien',
-        lastName: 'Maret',
-        job: 'Blockchain Keylogger as a Service'
-      }
-    )
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/${nicoID}/_create?refresh=wait_for`,
-      {
-        firstName: 'Nico',
-        lastName: 'Juelle',
-        job: 'Standing-desk Advocacy Superstar'
-      }
-    )
-
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-
-    cy.get('[data-cy="DocumentListItem"]')
-      .contains(adrienID)
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-dropdown"]')
-      .children('ul')
-      .should('not.have.class', 'show')
-      .contains('Delete')
-
-    cy.get('[data-cy="DocumentListItem"]')
-      .contains(adrienID)
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-dropdown"]')
-      .find('button')
-      .click()
-
-    cy.get('[data-cy="DocumentListItem"]')
-      .contains(adrienID)
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-dropdown"]')
-      .children('ul')
-      .should('have.class', 'show')
-    cy.get('.Headline').click()
-
-    cy.get('[data-cy="DocumentListItem"]')
-      .contains(nicoID)
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-dropdown"]')
-      .children('ul')
-      .should('not.have.class', 'show')
-      .contains('Delete')
-
-    cy.get('[data-cy="DocumentListItem"]')
-      .contains(nicoID)
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-dropdown"]')
-      .find('button')
-      .click()
-
-    cy.get('[data-cy="DocumentListItem"]')
-      .contains(nicoID)
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-dropdown"]')
-      .children('ul')
-      .should('have.class', 'show')
+    cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
   it('should handle the column view properly', function() {
@@ -351,7 +251,7 @@ describe('Document update/replace', () => {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -367,8 +267,8 @@ describe('Document update/replace', () => {
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="DocumentListItem"]').should('be.visible')
-    cy.get('[data-cy="DocumentListItem"]')
+    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('[data-cy="DocumentList-item"]')
       .contains('myId')
       .parent()
       .parent()
@@ -413,8 +313,8 @@ describe('Document update/replace', () => {
     cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="DocumentListItem"]').should('be.visible')
-    cy.get('[data-cy="DocumentListItem"]')
+    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
+    cy.get('[data-cy="DocumentList-item"]')
       .contains('myId')
       .parent()
       .parent()
@@ -446,7 +346,7 @@ describe('Document update/replace', () => {
       )
     cy.get('[data-cy="DocumentReplace"]').click({ force: true })
 
-    cy.get('[data-cy="DocumentListItem"]').should('be.visible')
+    cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {

@@ -40,7 +40,7 @@
           label-cols-lg="3"
           label-for="username"
         >
-          <input
+          <b-input
             data-cy="Signup-username"
             id="username"
             v-model="username"
@@ -56,7 +56,7 @@
           label-cols-lg="3"
           label-for="pass1"
         >
-          <input
+          <b-input
             data-cy="Signup-password1"
             id="pass1"
             v-model="password1"
@@ -72,7 +72,7 @@
           label-cols-lg="3"
           label-for="pass2"
         >
-          <input
+          <b-input
             data-cy="Signup-password2"
             id="pass2"
             v-model="password2"
@@ -105,7 +105,7 @@
             <b-button
               class="mr-3"
               data-cy="LoginAsAnonymous-Btn"
-              variant="outline-secondary"
+              variant="link"
               @click="loginAsGuest"
               >Login as Anonymous</b-button
             >
@@ -196,7 +196,7 @@ export default {
       }
     },
     loginAsGuest() {
-      this.error = ''
+      this.error = null
       this.$store.direct.dispatch.auth
         .prepareSession('anonymous')
         .then(() => {
@@ -221,6 +221,7 @@ export default {
 
 <style type="text/css" scoped>
 .Signup {
+  overflow-y: auto;
   height: 100vh;
   display: flex;
   justify-content: center;
