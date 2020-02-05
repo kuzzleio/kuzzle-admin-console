@@ -185,6 +185,7 @@
                   :total-rows="totalDocuments"
                   :per-page="paginationSize"
                   aria-controls="my-table"
+                  @change="fetchDocuments"
                 ></b-pagination>
               </b-row>
             </template>
@@ -258,7 +259,6 @@ export default {
     ListNotAllowed,
     ListViewButtons,
     NoResultsEmptyState,
-    // Pagination,
     RealtimeOnlyEmptyState,
     ViewMap
   },
@@ -282,7 +282,7 @@ export default {
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
-      currentPage: 0
+      currentPage: 1
     }
   },
   computed: {

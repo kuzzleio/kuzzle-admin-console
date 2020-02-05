@@ -156,7 +156,6 @@ export default {
 
   input {
     height: 48px;
-    padding-left: 34px;
     margin-bottom: 0;
     width: 100%;
     padding-right: 215px;
