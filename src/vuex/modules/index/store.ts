@@ -174,14 +174,22 @@ const actions = createActions({
     commit.removeRealtimeCollection({ index, collection })
   },
   async deleteCollection(context, { index, collection }) {
-    const { commit, rootGetters } = indexActionContext(context)
-    await Vue.prototype.$kuzzle.query({
-      index,
-      collection,
-      controller: 'collection',
-      action: 'delete'
-    })
-    commit.removeStoredCollection({ index, collection })
+    const { commit, dispatch } = indexActionContext(context)
+
+    if (state.indexesAndCollections[index].stored.indexOf(collection) !== -1) {
+      await Vue.prototype.$kuzzle.query({
+        index,
+        collection,
+        controller: 'collection',
+        action: 'delete'
+      })
+      commit.removeStoredCollection({ index, collection })
+    }
+    if (
+      state.indexesAndCollections[index].realtime.indexOf(collection) !== -1
+    ) {
+      dispatch.removeRealtimeCollection({ index, collection })
+    }
   }
 })
 
