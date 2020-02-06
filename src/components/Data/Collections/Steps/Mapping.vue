@@ -1,109 +1,110 @@
 <template>
-  <form class="Mapping wrapper" @submit.prevent="next">
-    <!-- Required fields -->
-    <div v-if="!$route.params.collection">
-      <div class="row">
-        <!-- Collection name -->
-        <div class="col s6">
-          <div class="Mapping-name input-field">
-            <input
-              id="collection-name"
-              v-focus
-              type="text"
-              name="collection"
-              required
-              class="validate"
-              tabindex="1"
-              :value="$store.state.collection.name"
-              @input="setName"
-            />
-            <label for="collection-name">Collection name</label>
-          </div>
-        </div>
+  <b-card class="Mapping">
+    <template v-slot:footer>
+      <div class="text-right">
+        <b-button
+          class="mr-2"
+          :to="{ name: 'DataIndexSummary', params: { index } }"
+          >Cancel</b-button
+        >
+        <b-button variant="primary" @click="onCreateClicked">Create</b-button>
       </div>
+    </template>
+    <b-form-group
+      v-if="!$route.params.collection"
+      id="collection-name"
+      description="This field is mandatory"
+      label="Collection name"
+      label-for="collection-name-input"
+      label-cols-sm="3"
+      :state="nameInputState"
+    >
+      <template v-slot:invalid-feedback
+        >The name you entered is invalid.
+        <a
+          target="_blank"
+          href="https://docs.kuzzle.io/core/2/api/controllers/collection/create/"
+          >Read more about how to choose a valid name</a
+        >
+      </template>
+      <b-input
+        id="collection-name-input"
+        type="text"
+        name="collection"
+        required
+        tabindex="1"
+        v-model="name"
+        :state="nameInputState"
+      />
+    </b-form-group>
 
-      <div class="row">
-        <div class="divider" />
-      </div>
-    </div>
+    <b-form-group
+      id="collection-is-realtime"
+      description="Check this if you want this collection to be realtime only. Realtime collections are useful to subscribe to realtime messages and not physically stored into Kuzzle, only the Admin Console keeps track of them."
+      label="Collection is realtime only"
+      label-cols-sm="3"
+    >
+      <b-form-checkbox
+        id="collection-is-realtime-checkbox"
+        tabindex="1"
+        v-model="realtimeOnly"
+      />
+    </b-form-group>
 
-    <!-- Settings (mappings, realtime only ...) -->
-    <div class="row">
-      <div class="col s12">
-        <div class="row">
-          <p class="Mapping-realtimeOnly">
-            <label>
-              <input
-                id="realtime-collection"
-                type="checkbox"
-                class="filled-in"
-                tabindex="3"
-                :checked="collectionIsRealtimeOnly"
-                @change="setRealtimeOnly"
-              />
-              <span>
-                Real-time only
-              </span>
-            </label>
-          </p>
-        </div>
-      </div>
-
-      <div v-show="!collectionIsRealtimeOnly" class="col s8">
-        <div class="row">
-          <p>Mapping:</p>
+    <div v-show="!realtimeOnly">
+      <b-form-group label="Dynamic mapping" label-cols-sm="3">
+        <template v-slot:description
+          >Set the type of dynamic policy for this collection.
+          <a
+            target="_blank"
+            href="https://docs.kuzzle.io/core/2/guides/essentials/database-mappings/#dynamic-mapping-policy"
+            >Read more about Dynamic Mappings</a
+          >.
+        </template>
+        <b-form-radio-group
+          class="pt-2"
+          v-model="dynamic"
+          :options="['true', 'false', 'strict']"
+        ></b-form-radio-group>
+      </b-form-group>
+      <hr />
+      <b-row>
+        <b-col cols="8">
           <json-editor
             id="collection"
             ref="jsoneditor"
             tabindex="4"
             myclass="pre_ace"
-            :content="$store.state.collection.mapping"
+            :content="mapping"
           />
-        </div>
-      </div>
+        </b-col>
 
-      <div v-show="!collectionIsRealtimeOnly" class="col s4">
-        <div class="row">
-          <div class="help">
-            Mapping is the process of defining how a document, and the fields it
-            contains, are stored and indexed.
+        <b-col cols="4">
+          <div class="text-secondary">
+            You can (optionally) use this editor to define the mapping for this
+            collection.
+            <br />
+            The mapping of a collection is the definition of how each document
+            in the collection (and its fields) are stored and indexed.
             <a
               href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
               target="_blank"
               >Read more about mapping</a
             >
-            <br />
-            You should omit the root "properties" field in this form.
+            <br /><br />
+            For example:
             <pre>
 {
-  "age": { "type": "integer" },
-  "name": { "type": "text" }
+"age": { "type": "integer" },
+"name": { "type": "text" }
 }
-            </pre>
+        </pre
+            >
           </div>
-        </div>
-      </div>
+        </b-col>
+      </b-row>
     </div>
-
-    <div class="row">
-      <div class="divider" />
-    </div>
-
-    <!-- Actions -->
-    <div class="row">
-      <div class="col s12">
-        <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel"
-          >Cancel</a
-        >
-        <button
-          type="submit"
-          class="Mapping-submitBtn btn primary waves-effect waves-light"
-        >
-          {{ collectionIsRealtimeOnly ? 'Save' : 'Next' }}
-        </button>
-      </div>
-    </div>
-  </form>
+  </b-card>
 </template>
 
 <script>
@@ -119,61 +120,47 @@ export default {
     focus
   },
   props: {
-    step: Number
+    index: { type: String, required: true }
   },
   data() {
     return {
-      isRealtimeOnly: false,
-      settingsOpen: false
+      dynamic: 'false',
+      name: '',
+      mapping: {},
+      realtimeOnly: false
     }
   },
   computed: {
-    collectionIsRealtimeOnly() {
-      return this.$store.direct.getters.collection.isRealtimeOnly
-    }
-  },
-  watch: {
-    step() {
-      let mapping = this.$refs.jsoneditor.getJson()
-      if (mapping) {
-        this.$store.direct.commit.collection.setMapping(mapping)
+    nameInputState() {
+      if (this.name === '') {
+        return null
       }
-    }
-  },
-  methods: {
-    setName(e) {
-      this.$store.direct.commit.collection.setCollectionName(
-        e.target.value.trim()
+      const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
+        this.name
       )
-    },
-    next() {
-      if (!this.$store.direct.state.collection.name) {
-        return this.$emit('collection-create::error', 'Invalid collection name')
+      const containsUpperCase = /[A-Z]/.test(this.name)
+      const isTooLong = new TextEncoder().encode(this.name).length > 128
+      return !containsDisallowed && !containsUpperCase && !isTooLong
+    }
+  },
+  watch: {},
+  methods: {
+    onCreateClicked() {
+      let json = this.$refs.jsoneditor.getJson()
+
+      if (json === null) {
+        return
       }
-      if (this.collectionIsRealtimeOnly) {
-        this.$emit('collection-create::create')
-      } else {
-        this.$emit('collection-create::next-step')
-      }
-    },
-    cancel() {
-      this.$emit('cancel')
-    },
-    setRealtimeOnly(event) {
-      this.$store.direct.commit.collection.setRealtimeOnly(event.target.checked)
+
+      this.mapping = json
+
+      this.$emit('create', {
+        dynamic: this.dynamic,
+        name: this.name,
+        mapping: this.mapping,
+        realtimeOnly: this.realtimeOnly
+      })
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.Mapping {
-  .help {
-    color: #777;
-    font-size: 0.9rem;
-  }
-  .pre_ace {
-    min-height: 500px;
-  }
-}
-</style>

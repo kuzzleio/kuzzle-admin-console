@@ -36,7 +36,11 @@ export default [
     name: 'DataCollectionEdit',
     component(resolve) {
       require(['../../components/Data/Collections/Update'], resolve)
-    }
+    },
+    props: route => ({
+      index: route.params.index,
+      collection: route.params.collection
+    })
   },
   {
     path: '/data/:index/:collection',

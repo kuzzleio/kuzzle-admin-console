@@ -7,12 +7,13 @@ import { createModule, createMutations, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
 
+// TODO Eradicate this evil
 const state: CollectionState = {
   name: undefined,
   mapping: {},
   isRealtimeOnly: false,
   schema: {},
-  allowForm: true,
+  allowForm: false,
   defaultViewJson: false
 }
 
@@ -55,35 +56,35 @@ export const mutations = createMutations<CollectionState>()({
 })
 
 const actions = createActions({
-  createCollection(context, { index }) {
+  createCollection(context, { index, collection, mapping, dynamic }) {
     const { state } = collectionActionContext(context)
 
     return Vue.prototype.$kuzzle.collection.create(
       index,
-      state.name,
+      collection,
       mergeMetaAttributes({
-        mapping: state.mapping,
-        schema: state.schema,
-        allowForm: state.allowForm
+        mapping,
+        dynamic,
+        schema: state.schema
       })
     )
   },
-  updateCollection(context, { index }) {
+  updateCollection(context, { name, index, mapping, dynamic, realtimeOnly }) {
     const { state } = collectionActionContext(context)
 
-    if (state.isRealtimeOnly) {
+    if (realtimeOnly) {
       return Promise.resolve()
     }
 
     return Vue.prototype.$kuzzle.query({
       controller: 'collection',
       action: 'updateMapping',
-      collection: state.name,
+      collection: name,
       index,
       body: mergeMetaAttributes({
-        mapping: state.mapping,
-        schema: state.schema,
-        allowForm: state.allowForm
+        mapping,
+        dynamic,
+        schema: state.schema
       })
     })
   },
@@ -108,7 +109,6 @@ const actions = createActions({
 
       if (mappings._meta) {
         schema = mappings._meta.schema || {}
-        allowForm = mappings._meta.allowForm || false
       }
 
       dispatch.getCollectionDefaultViewJson({
@@ -116,6 +116,7 @@ const actions = createActions({
         collection
       })
 
+      // TODO return
       commit.receiveCollectionDetail({
         name: collection,
         mapping: mappings.properties || {},
@@ -123,6 +124,13 @@ const actions = createActions({
         allowForm,
         isRealtimeOnly: false
       })
+
+      return {
+        name: collection,
+        mapping: mappings.properties || {},
+        isRealtimeOnly: false,
+        dynamic: mappings.dynamic
+      }
     }
 
     if (
@@ -136,6 +144,11 @@ const actions = createActions({
         schema: {},
         allowForm: false
       })
+      return {
+        name: collection,
+        mapping: {},
+        isRealtimeOnly: true
+      }
     }
   },
   getCollectionDefaultViewJson(context, { index, collection }) {

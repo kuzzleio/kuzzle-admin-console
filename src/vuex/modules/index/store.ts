@@ -124,20 +124,22 @@ const actions = createActions({
       }
     }
   },
-  createCollectionInIndex(context, { index, collection, isRealtimeOnly }) {
+  async createCollectionInIndex(
+    context,
+    { index, collection, isRealtimeOnly, mapping, dynamic }
+  ) {
     const { rootDispatch, commit, getters } = indexActionContext(context)
 
     if (!collection) {
-      return Promise.reject(new Error('Invalid collection name'))
+      return new Error('Invalid collection name')
     }
 
     if (
       getters.indexCollections(index).stored.indexOf(collection) !== -1 ||
       getters.indexCollections(index).realtime.indexOf(collection) !== -1
     ) {
-      return Promise.reject(
-        new Error(`Collection "${collection}" already exist`)
-      )
+      return
+      new Error(`Collection "${collection}" already exist`)
     }
 
     if (isRealtimeOnly) {
@@ -150,12 +152,13 @@ const actions = createActions({
       return Promise.resolve()
     }
 
-    return rootDispatch.collection
-      .createCollection(index)
-      .then(() => {
-        commit.addStoredCollection({ index: index, name: collection })
-      })
-      .catch(error => Promise.reject(new Error(error.message)))
+    await rootDispatch.collection.createCollection({
+      collection,
+      index,
+      mapping,
+      dynamic
+    })
+    commit.addStoredCollection({ index: index, name: collection })
   },
   removeRealtimeCollection(context, { index, collection }) {
     const { commit } = indexActionContext(context)
