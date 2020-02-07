@@ -1,6 +1,20 @@
 <template>
   <b-col cols="12">
-    <b-row class="mt-2 ml-0" no-gutters>
+    <b-row no-gutters class="mt-2 mb-2">
+      <b-col cols="12">
+        <b-alert
+          :show="true"
+          dismissible
+          fade
+          style="z-index: 2000;"
+          variant="info"
+          class="m-0"
+        >
+          Warning, this view does not allow you to see arrays values.
+        </b-alert>
+      </b-col>
+    </b-row>
+    <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="4">
         <b-dropdown
           variant="outline-secondary"
@@ -25,77 +39,119 @@
         </b-dropdown>
       </b-col>
     </b-row>
-    <b-row class="mt-2 ml-0 mr-2">
-      <b-table
-        striped
-        sticky-header
-        hover
-        sort-icon-left
-        no-border-collapse
-        small
-        responsive
-        :fields="formatedTableFields"
-        :items="formatedItems"
-      >
-        <template v-slot:head()="data">
-          <div class="inlineDisplay mx-1">
-            <span
-              class="inlineDisplay-item text-info m-3 code"
-              :id="data.label"
-              >{{ getLastKeyPath(data.label) }}</span
-            >
-            <b-tooltip class="code" placement="top" :target="data.label">
-              {{ data.label }}
-            </b-tooltip>
-            <span class="inlineDisplay-item">
-              <i
-                v-if="data.field.deletable"
-                class="fa fa-times-circle text-info m-2"
-                @click="hideColumn(data.field.index)"
-              />
-            </span>
-          </div>
-        </template>
-        <template v-slot:cell(actions)="data">
-          <div class="inlineDisplay">
-            <span class="inlineDisplay-item">
-              <b-button
-                title="Edit document"
-                variant="link"
-                class="px-0 mx-1"
-                :disabled="!canEdit"
-                @click="editDocument(data.item.id)"
+    <b-row class="mt-2 mb-2" no-gutters>
+      <b-col cols="12">
+        <b-table
+          striped
+          bordered
+          sticky-header="600px"
+          hover
+          sort-icon-left
+          no-border-collapse
+          small
+          :fields="formatedTableFields"
+          :items="formatedItems"
+        >
+          <template v-slot:head()="data">
+            <div class="inlineDisplay mx-1">
+              <span
+                class="inlineDisplay-item text-primary m-3 code"
+                :id="data.label"
+                >{{ getLastKeyPath(data.label) }}</span
               >
-                <i class="fa fa-pen" />
-              </b-button>
-            </span>
-            <span class="inlineDisplay-item">
-              <b-button
-                class="px-0 mx-1 text-danger"
-                title="Delete document"
-                variant="link"
-                :disabled="!canDelete"
-                @click="deleteDocument(data.item.id)"
+              <b-tooltip class="code" placement="top" :target="data.label">
+                {{ data.label }}
+              </b-tooltip>
+              <span class="inlineDisplay-item">
+                <i
+                  v-if="data.field.deletable"
+                  class="fa fa-times-circle text-info m-2"
+                  @click="hideColumn(data.field.index)"
+                />
+              </span>
+            </div>
+          </template>
+          <template v-slot:cell(actions)="data">
+            <div class="inlineDisplay">
+              <span class="inlineDisplay-item">
+                <b-button
+                  title="Edit document"
+                  variant="link"
+                  class="px-0 mx-1"
+                  :disabled="!canEdit"
+                  @click="editDocument(data.item.id)"
+                >
+                  <i class="fa fa-pen" />
+                </b-button>
+              </span>
+              <span class="inlineDisplay-item">
+                <b-button
+                  class="px-0 mx-1 text-danger"
+                  title="Delete document"
+                  variant="link"
+                  :disabled="!canDelete"
+                  @click="deleteDocument(data.item.id)"
+                >
+                  <i class="fa fa-trash" />
+                </b-button>
+              </span>
+              <span class="inlineDisplay-item">
+                <b-form-checkbox
+                  class="mx-2"
+                  :checked="isChecked(data.item.id)"
+                  @change="toggleSelectDocument(data.item.id)"
+                />
+              </span>
+            </div>
+          </template>
+          <template v-slot:cell(id)="data">
+            <span class="code">{{ data.item.id }}</span>
+          </template>
+          <template v-slot:cell()="data">
+            <div class="inlineDisplay mx-1">
+              <span
+                v-if="data.value.null === true"
+                class="inlineDisplay-item px-3 code"
               >
-                <i class="fa fa-trash" />
-              </b-button>
-            </span>
-            <span class="inlineDisplay-item">
-              <b-form-checkbox
-                class="mx-2"
-                :checked="isChecked(data.item.id)"
-                @change="toggleSelectDocument(data.item.id)"
-              />
-            </span>
-          </div>
-        </template>
-        <template v-slot:cell(id)="data">
-          <span class="code">{{ data.item.id }}</span>
-        </template>
-        <template v-slot:cell()="data">
-          <span class="code">{{ data.value }}</span>
-        </template>
-      </b-table>
+                null
+              </span>
+              <span
+                v-if="data.value.undefined === true"
+                class="inlineDisplay-item px-3 code"
+              >
+                undefined
+              </span>
+              <span
+                v-if="data.value.array === true"
+                class="inlineDisplay-item px-3 code"
+              >
+                [...]
+              </span>
+              <span
+                v-if="typeof data.value !== 'object'"
+                class="inlineDisplay-item px-3 code valueDisplayer"
+                >{{ data.value }}</span
+              >
+              <b-badge
+                pill
+                class="mx-1"
+                variant="info"
+                :id="`tooltip-target-${data.item.id}-${data.field.key}`"
+                v-if="data.value.array === true"
+              >
+                <i class="fa fa-info" />
+              </b-badge>
+              <b-tooltip
+                :target="`tooltip-target-${data.item.id}-${data.field.key}`"
+                triggers="hover"
+              >
+                This value cannot be displayed because it contains or is
+                contained in an array.
+              </b-tooltip>
+            </div>
+          </template>
+        </b-table>
+      </b-col>
     </b-row>
   </b-col>
 </template>
@@ -150,6 +206,8 @@ export default {
   },
   computed: {
     formatedSelectFields() {
+      console.log(this.mappingArray)
+
       return this.mappingArray.map((attr, index) => ({
         value: index,
         text: attr.key,
@@ -165,7 +223,7 @@ export default {
             sortable: true,
             displayed: attr.displayed,
             deletable: true,
-            tdClass: 'align-middle',
+            tdClass: 'align-middle columnClass',
             thClass: 'align-middle'
           }))
           .filter(attr => attr.displayed)
@@ -176,10 +234,17 @@ export default {
         const doc = {}
         doc.id = d.id
         for (const { key } of this.formatedTableFields) {
-          if (key !== 'id') {
+          // each columns path
+          if (key === 'id') continue // column id is always ok
+          // if there is an array in the current document within the 'path'
+          if (this.documentPathContainsArray(key, d)) {
+            doc[key] = { array: true }
+          } else {
             const parsed = this.parseDocument(key, d)
-            if (parsed.realValue && Array.isArray(parsed.realValue)) {
-              doc[key] = parsed.realValue.toString()
+            if (parsed.value === undefined) {
+              doc[key] = { undefined: true }
+            } else if (parsed.value === null) {
+              doc[key] = { null: true }
             } else {
               doc[key] = parsed.value
             }
@@ -216,6 +281,18 @@ export default {
     this.initColumnsFields()
   },
   methods: {
+    documentPathContainsArray(path, document) {
+      let containsArray = false,
+        str = ''
+      for (const key of path.split('.')) {
+        str += key
+        if (Array.isArray(this.parseDocument(str, document).realValue)) {
+          containsArray = true
+        }
+        str += '.'
+      }
+      return containsArray
+    },
     getLastKeyPath(label) {
       const splittedLabel = label.split('.')
       return `${splittedLabel.length > 1 ? '...' : ''}${
@@ -293,7 +370,7 @@ export default {
       }
     },
     getNestedField(doc, customField) {
-      return _.get(doc, customField, '')
+      return _.get(doc, customField, null)
     },
     deleteDocument(id) {
       if (this.canDelete) {
@@ -345,5 +422,16 @@ export default {
 .dropdownScroll {
   max-height: 150px;
   overflow-y: scroll;
+}
+
+.columnClass {
+  max-width: 300px;
+  min-width: 100px;
+  overflow: hidden;
+}
+
+.valueDisplayer {
+  white-space: nowrap;
+  display: inline-block;
 }
 </style>
