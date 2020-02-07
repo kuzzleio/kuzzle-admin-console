@@ -1,7 +1,29 @@
 <template>
   <b-col cols="12">
-    <b-row no-gutters class="mb-2">
+    <b-row no-gutters>
       <b-col cols="8">
+        <b-dropdown
+          class="mr-2"
+          variant="outline-secondary"
+          menu-class="dropdownScroll"
+          text="Select columns to display"
+        >
+          <b-dropdown-text
+            v-for="field of formatedSelectFields"
+            :key="`dropdown-${field.text}`"
+          >
+            <div class="inlineDisplay">
+              <span class="inlineDisplay-item">
+                <b-form-checkbox
+                  class="mx-2"
+                  :checked="field.displayed"
+                  @change="toggleColumn(field.value)"
+                />
+              </span>
+              <span class="inlineDisplay-item code">{{ field.text }}</span>
+            </div>
+          </b-dropdown-text>
+        </b-dropdown>
         <b-button
           variant="outline-dark"
           class="mr-2"
@@ -32,6 +54,7 @@
           Refresh
         </b-button>
       </b-col>
+
       <b-col cols="4" class="text-right"
         >Show
         <b-form-select
@@ -47,45 +70,14 @@
         ></b-col
       >
     </b-row>
-    <b-row no-gutters class="mt-2 mb-2">
+    <b-row no-gutters class="mt-3 mb-2">
       <b-col cols="12">
-        <b-alert
-          :show="true"
-          dismissible
-          fade
-          style="z-index: 2000;"
-          variant="info"
-          class="m-0"
-        >
+        <b-alert :show="true" dismissible fade variant="info" class="m-0">
           Warning, this view does not allow you to see arrays values.
         </b-alert>
       </b-col>
     </b-row>
-    <b-row class="mt-2 mb-2" no-gutters>
-      <b-col cols="4">
-        <b-dropdown
-          variant="outline-secondary"
-          menu-class="dropdownScroll"
-          text="Select columns to display"
-        >
-          <b-dropdown-text
-            v-for="field of formatedSelectFields"
-            :key="`dropdown-${field.text}`"
-          >
-            <div class="inlineDisplay">
-              <span class="inlineDisplay-item">
-                <b-form-checkbox
-                  class="mx-2"
-                  :checked="field.displayed"
-                  @change="toggleColumn(field.value)"
-                />
-              </span>
-              <span class="inlineDisplay-item code">{{ field.text }}</span>
-            </div>
-          </b-dropdown-text>
-        </b-dropdown>
-      </b-col>
-    </b-row>
+    <b-row class="mt-2 mb-2" no-gutters> </b-row>
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="12">
         <b-table
@@ -102,7 +94,7 @@
           <template v-slot:head()="data">
             <div class="inlineDisplay mx-1">
               <span
-                class="inlineDisplay-item text-primary m-3 code"
+                class="inlineDisplay-item text-secondary m-3"
                 :id="data.label"
                 >{{ getLastKeyPath(data.label) }}</span
               >
@@ -121,6 +113,12 @@
           <template v-slot:cell(actions)="data">
             <div class="inlineDisplay">
               <span class="inlineDisplay-item">
+                <b-form-checkbox
+                  :checked="isChecked(data.item.id)"
+                  @change="toggleSelectDocument(data.item.id)"
+                />
+              </span>
+              <span class="inlineDisplay-item">
                 <b-button
                   title="Edit document"
                   variant="link"
@@ -133,7 +131,7 @@
               </span>
               <span class="inlineDisplay-item">
                 <b-button
-                  class="px-0 mx-1 text-danger"
+                  class="px-0 mx-1"
                   title="Delete document"
                   variant="link"
                   :disabled="!canDelete"
@@ -141,13 +139,6 @@
                 >
                   <i class="fa fa-trash" />
                 </b-button>
-              </span>
-              <span class="inlineDisplay-item">
-                <b-form-checkbox
-                  class="mx-2"
-                  :checked="isChecked(data.item.id)"
-                  @change="toggleSelectDocument(data.item.id)"
-                />
               </span>
             </div>
           </template>
