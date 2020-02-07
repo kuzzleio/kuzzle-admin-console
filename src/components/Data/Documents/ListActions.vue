@@ -67,7 +67,6 @@ export default {
   props: {
     allChecked: Boolean,
     displayBulkDelete: Boolean,
-    displayCreate: Boolean,
     displayGeopointSelect: Boolean,
     displayToggleAll: Boolean,
     geopointList: Array

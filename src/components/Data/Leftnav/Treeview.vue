@@ -15,7 +15,7 @@
           placeholder="Search index &amp; collection"
         ></b-form-input>
       </div>
-      <div class="Treeview-items px-3">
+      <div class="Treeview-items p-3">
         <index-branch
           v-for="indexName in orderedFilteredIndices"
           :key="indexName"
@@ -38,7 +38,7 @@
   justify-content: center;
 }
 .Treeview-search {
-  border-bottom: 1px solid $disabled-color;
+  border-bottom: 1px solid #dbdbdb;
 }
 .Treeview-items {
   flex: 1;

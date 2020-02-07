@@ -1,5 +1,5 @@
 <template>
-  <div class="QuickFilter">
+  <div class="QuickFilter mb-1">
     <b-row no-gutters v-if="!complexFilterActive">
       <b-col cols="6">
         <div class="QuickFilter-searchBar">
@@ -9,11 +9,11 @@
             </b-input-group-prepend>
 
             <b-form-input
+              debounce="300"
+              placeholder="Search..."
+              type="search"
               v-model="inputSearchTerm"
               v-focus
-              type="search"
-              placeholder="Search..."
-              @input="submitSearch"
             >
             </b-form-input>
           </b-input-group>
@@ -97,49 +97,26 @@ export default {
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm,
-      throttleSearch: false,
-      lastThrottledSearch: null
-    }
-  },
-  watch: {
-    searchTerm: {
-      immediate: true,
-      handler(value) {
-        this.inputSearchTerm = value
-      }
+      inputSearchTerm: this.searchTerm
     }
   },
   methods: {
     submitSearch() {
-      if (this.throttleSearch) {
-        // Keep the last throttled search to replay it when user stop typing
-        this.lastThrottledSearch = this.inputSearchTerm
-        return
-      }
-
-      this.throttleSearch = true
-      setTimeout(() => {
-        this.throttleSearch = false
-
-        if (this.lastThrottledSearch) {
-          this.submitSearch()
-        }
-      }, 300)
-
-      if (this.complexFilterActive) {
-        this.$emit('refresh')
-      } else {
-        this.$emit('update-filter', this.inputSearchTerm)
-      }
-
-      this.lastThrottledSearch = null
+      this.$emit('update-filter', this.inputSearchTerm)
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
+    }
+  },
+  mounted() {
+    this.inputSearchTerm = this.searchTerm
+  },
+  watch: {
+    inputSearchTerm() {
+      this.submitSearch()
     }
   }
 }

@@ -2,7 +2,7 @@
   <b-modal :id="id" @cancel="reset" @close="reset" @hide="reset">
     <template v-slot:modal-header>
       <h4>
-        Environment <strong>{{ environmentName }}</strong> deletion
+        Environment <span class="code">{{ environmentName }}</span> deletion
       </h4>
     </template>
 
