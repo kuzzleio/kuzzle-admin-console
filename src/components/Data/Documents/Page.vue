@@ -75,17 +75,23 @@
             <no-results-empty-state v-if="!documents.length" />
 
             <b-row v-if="listViewType === 'column'" class="DocumentList-column">
-              <div class="DocumentList-materializeCollection h-scroll">
-                <Column
-                  :documents="documents"
-                  :mapping="collectionMapping"
-                  :index="index"
-                  :collection="collection"
-                  :isChecked="isChecked"
-                  @edit="onEditDocumentClicked"
-                  @delete="onDeleteClicked"
-                />
-              </div>
+              <Column
+                :index="index"
+                :collection="collection"
+                :documents="documents"
+                :mapping="collectionMapping"
+                :selected-documents="selectedDocuments"
+                :all-checked="allChecked"
+                :current-page-size="paginationSize"
+                :total-documents="totalDocuments"
+                @edit="onEditDocumentClicked"
+                @delete="onDeleteClicked"
+                @bulk-delete="onBulkDeleteClicked"
+                @change-page-size="changePaginationSize"
+                @checkbox-click="toggleSelectDocuments"
+                @refresh="onRefresh"
+                @toggle-all="onToggleAllClicked"
+              />
             </b-row>
 
             <b-row v-show="totalDocuments > paginationSize" align-h="center">

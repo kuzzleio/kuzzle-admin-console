@@ -1,5 +1,52 @@
 <template>
   <b-col cols="12">
+    <b-row no-gutters class="mb-2">
+      <b-col cols="8">
+        <b-button
+          variant="outline-dark"
+          class="mr-2"
+          @click="$emit('toggle-all')"
+        >
+          <i
+            :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`"
+          />
+          Toggle all
+        </b-button>
+
+        <b-button
+          variant="outline-danger"
+          class="mr-2"
+          :disabled="!bulkDeleteEnabled"
+          @click="$emit('bulk-delete')"
+        >
+          <i class="fa fa-minus-circle left" />
+          Delete
+        </b-button>
+
+        <b-button
+          variant="outline-secondary"
+          class="mr-2"
+          @click.prevent="$emit('refresh')"
+        >
+          <i class="fas fa-sync-alt left" />
+          Refresh
+        </b-button>
+      </b-col>
+      <b-col cols="4" class="text-right"
+        >Show
+        <b-form-select
+          class="mx-2"
+          style="width: unset"
+          :options="itemsPerPage"
+          :value="currentPageSize"
+          @change="$emit('change-page-size', $event)"
+        >
+        </b-form-select>
+        <span v-if="totalDocuments"
+          >of {{ totalDocuments }} total items.</span
+        ></b-col
+      >
+    </b-row>
     <b-row no-gutters class="mt-2 mb-2">
       <b-col cols="12">
         <b-alert
@@ -172,15 +219,18 @@ export default {
     JsonFormatter
   },
   props: {
+    allChecked: Boolean,
+    currentPageSize: Number,
+    totalDocuments: Number,
     documents: Array,
     index: String,
     collection: String,
-    value: [Object, String, Array],
     mapping: Object,
-    isChecked: Function
+    selectedDocuments: Array
   },
   data() {
     return {
+      itemsPerPage: [10, 25, 50, 100, 500],
       mappingArray: [],
       defaultFields: [
         {
@@ -205,9 +255,16 @@ export default {
     }
   },
   computed: {
+    hasSelectedDocuments() {
+      return this.selectedDocuments.length > 0
+    },
+    bulkDeleteEnabled() {
+      return (
+        this.canDeleteDocument(this.index, this.collection) &&
+        this.hasSelectedDocuments
+      )
+    },
     formatedSelectFields() {
-      console.log(this.mappingArray)
-
       return this.mappingArray.map((attr, index) => ({
         value: index,
         text: attr.key,
@@ -281,6 +338,10 @@ export default {
     this.initColumnsFields()
   },
   methods: {
+    canDeleteDocument,
+    isChecked(id) {
+      return this.selectedDocuments.indexOf(id) > -1
+    },
     documentPathContainsArray(path, document) {
       let containsArray = false,
         str = ''
