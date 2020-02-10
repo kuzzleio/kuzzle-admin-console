@@ -16,7 +16,7 @@
         ></b-form-input>
       </div>
       <div class="Treeview-items p-3">
-        <div class="mb-2">
+        <div class="">
           <router-link
             data-cy="Treeview-item"
             class="text-secondary"
