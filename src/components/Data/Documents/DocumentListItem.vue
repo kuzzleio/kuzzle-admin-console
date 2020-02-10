@@ -1,13 +1,13 @@
 <template>
-  <b-container fluid>
+  <b-container fluid class="DocumentListItem">
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
         <i
           @click="toggleCollapse"
           :class="
             `fa fa-caret-${
-              expanded ? 'down' : 'right'
-            } mr-2  d-inline-block align-middle`
+              expanded ? 'down mr-1' : 'right mr-2 '
+            } d-inline-block align-middle DocumentListItem-caret`
           "
           aria-hidden="true"
         />
@@ -153,6 +153,9 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
+.DocumentListItem-caret {
+  cursor: pointer;
+}
 pre {
   font-size: 16px;
 }
