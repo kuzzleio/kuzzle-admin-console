@@ -4,7 +4,7 @@
       <h4>Document deletion</h4>
     </template>
 
-    <template v-if="!isLoading">
+    <div class="text-truncate" v-if="!isLoading">
       <p v-if="candidatesForDeletion.length > 1">
         Do you really want to delete
         {{ candidatesForDeletion.length }} documents?
@@ -12,7 +12,7 @@
       <p v-if="candidatesForDeletion.length === 1">
         Do you really want to delete {{ candidatesForDeletion[0] }}?
       </p>
-    </template>
+    </div>
     <template v-else>
       <b-spinner label="Spinning"></b-spinner>
     </template>

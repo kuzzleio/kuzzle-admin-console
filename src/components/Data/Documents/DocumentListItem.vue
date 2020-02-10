@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="DocumentListItem">
     <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1">
+      <b-col cols="10" class="py-1 DocumentListItem-nameActions">
         <i
           @click="toggleCollapse"
           :class="
@@ -153,6 +153,10 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
+.DocumentListItem-nameActions {
+  overflow: hidden;
+  white-space: nowrap;
+}
 .DocumentListItem-caret {
   cursor: pointer;
 }
