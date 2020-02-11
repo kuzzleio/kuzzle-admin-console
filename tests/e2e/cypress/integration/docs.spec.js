@@ -259,16 +259,9 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get('[data-cy="DocumentList-item"]')
-      .contains('myId')
-      .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-update')
-      .click()
+    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
 
-    cy.get(
-      '.col > .card-content > #document > .ace_scroller > .ace_content'
-    ).should('be.visible')
+    cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
 
     cy.get('.ace_line')
@@ -287,7 +280,8 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('.DocumentUpdate').click()
+    cy.get('[data-cy="noAdminAlert"] .close').click()
+    cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
@@ -304,18 +298,9 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get('[data-cy="DocumentList-item"]')
-      .contains('myId')
-      .parent()
-      .siblings('.DocumentListItem-actions')
-      .children('.DocumentListItem-update')
-      .click()
+    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
 
-    cy.get(
-      '.col > .card-content > #document > .ace_scroller > .ace_content'
-    ).should('be.visible')
-
-    cy.get('textarea.ace_text-input').should('be.visible')
+    cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
 
     cy.get('.ace_line')
@@ -333,7 +318,8 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('.DocumentReplace').click({ force: true })
+    cy.get('[data-cy="noAdminAlert"] .close').click()
+    cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 

@@ -47,6 +47,7 @@
             v-if="!!id"
             variant="primary"
             class="ml-2"
+            data-cy="DocumentUpdate-btn"
             :disabled="submitting"
             @click="submit"
           >
@@ -57,6 +58,7 @@
             v-if="!!id"
             variant="warning"
             class="ml-2"
+            data-cy="DocumentReplace-btn"
             :disabled="submitting"
             @click="submit(true)"
           >
