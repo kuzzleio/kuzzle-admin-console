@@ -74,25 +74,24 @@
             ></List>
             <no-results-empty-state v-if="!documents.length" />
 
-            <b-row v-if="listViewType === 'column'" class="DocumentList-column">
-              <Column
-                :index="index"
-                :collection="collection"
-                :documents="documents"
-                :mapping="collectionMapping"
-                :selected-documents="selectedDocuments"
-                :all-checked="allChecked"
-                :current-page-size="paginationSize"
-                :total-documents="totalDocuments"
-                @edit="onEditDocumentClicked"
-                @delete="onDeleteClicked"
-                @bulk-delete="onBulkDeleteClicked"
-                @change-page-size="changePaginationSize"
-                @checkbox-click="toggleSelectDocuments"
-                @refresh="onRefresh"
-                @toggle-all="onToggleAllClicked"
-              />
-            </b-row>
+            <Column
+              v-if="listViewType === 'column'"
+              :index="index"
+              :collection="collection"
+              :documents="documents"
+              :mapping="collectionMapping"
+              :selected-documents="selectedDocuments"
+              :all-checked="allChecked"
+              :current-page-size="paginationSize"
+              :total-documents="totalDocuments"
+              @edit="onEditDocumentClicked"
+              @delete="onDeleteClicked"
+              @bulk-delete="onBulkDeleteClicked"
+              @change-page-size="changePaginationSize"
+              @checkbox-click="toggleSelectDocuments"
+              @refresh="onRefresh"
+              @toggle-all="onToggleAllClicked"
+            />
 
             <b-row v-show="totalDocuments > paginationSize" align-h="center">
               <b-pagination

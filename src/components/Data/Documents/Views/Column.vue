@@ -1,5 +1,5 @@
 <template>
-  <b-col cols="12">
+  <div class="Column">
     <b-row no-gutters>
       <b-col cols="8">
         <b-dropdown
@@ -197,7 +197,7 @@
         </b-table>
       </b-col>
     </b-row>
-  </b-col>
+  </div>
 </template>
 
 <script>
