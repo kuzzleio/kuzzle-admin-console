@@ -75,7 +75,8 @@
     <b-row no-gutters class="mt-3 mb-2">
       <b-col cols="12">
         <b-alert :show="true" dismissible fade variant="info" class="m-0">
-          Warning, this view does not allow you to see arrays values.
+          <i class="fas fa-info-circle mr-2"></i> This view does not allow you
+          to see array values.
         </b-alert>
       </b-col>
     </b-row>
