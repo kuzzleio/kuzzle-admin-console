@@ -81,6 +81,7 @@ export default [
       require(['../../components/Data/Documents/Update'], resolve)
     },
     props: route => ({
+      id: route.params.id,
       index: route.params.index,
       collection: route.params.collection
     })

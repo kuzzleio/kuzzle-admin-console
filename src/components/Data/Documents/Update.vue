@@ -1,60 +1,50 @@
 <template>
-  <div v-if="hasRights" class="wrapper">
-    <headline>
-      Edit document - <span class="bold">{{ $route.params.id }}</span>
-      <collection-dropdown
-        class="icon-medium icon-black"
+  <b-container class="DocumentUpdate">
+    <template v-if="hasRights">
+      <headline>
+        Edit document
+      </headline>
+
+      <b-alert variant="danger" :show="showAlert">
+        <b>Warning!</b> This document has been edited while you were editing it.
+        If you save now, you will overwrite someone else's modifications.
+      </b-alert>
+      <div v-if="loading" class="text-center">
+        <b-spinner
+          style="width: 3rem; height: 3rem; margin-top: 3em"
+          label="Large Spinner"
+          variant="primary"
+        ></b-spinner>
+      </div>
+      <create-or-update
+        v-else
+        :id="id"
         :index="index"
         :collection="collection"
+        :document="document"
+        :mapping="mapping"
+        @cancel="onCancel"
+        @submit="onSubmit"
       />
-    </headline>
-
-    <collection-tabs />
-    <div v-if="show" class="row">
-      <div class="card horizontal tertiary col m5">
-        <div class="card-content">
-          <span class="card-title">Warning</span>
-          <p>
-            This document has been edited while you were editing it.
-            <a href="#" @click.prevent="refresh">Click here to refresh it</a>
-          </p>
-        </div>
-      </div>
-    </div>
-    <create-or-update
-      v-model="document"
-      :error="error"
-      :index="index"
-      :collection="collection"
-      :hide-id="true"
-      :get-mapping="getMappingDocument"
-      :submitted="submitted"
-      @document-create::create="update"
-      @document-create::cancel="cancel"
-      @document-create::reset-error="error = null"
-      @document-create::error="setError"
-    />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+    </template>
+    <template v-else>
+      <page-not-allowed />
+    </template>
+  </b-container>
 </template>
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.bold {
-  font-weight: normal;
+<style lang="scss" scoped>
+.DocumentUpdate {
+  height: 100%;
 }
 </style>
 
 <script>
 import { canEditDocument } from '../../../services/userAuthorization'
-import PageNotAllowed from '../../Common/PageNotAllowed'
-
-import CollectionDropdown from '../Collections/Dropdown'
-import Headline from '../../Materialize/Headline'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
+import PageNotAllowed from '../../Common/PageNotAllowed'
+import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
-import CollectionTabs from '../Collections/Tabs'
 
 let room
 
@@ -62,21 +52,20 @@ export default {
   name: 'DocumentUpdate',
   components: {
     Headline,
-    CollectionDropdown,
     CreateOrUpdate,
-    CollectionTabs,
     PageNotAllowed
   },
   props: {
-    index: String,
-    collection: String
+    id: { type: String, required: true },
+    index: { type: String, required: true },
+    collection: { type: String, required: true }
   },
   data() {
     return {
-      error: '',
-      show: false,
       document: {},
-      submitted: false
+      loading: false,
+      mapping: {},
+      showAlert: false
     }
   },
   computed: {
@@ -91,7 +80,7 @@ export default {
       this.collection,
       { ids: { values: [this.$route.params.id] } },
       () => {
-        this.show = true
+        this.showAlert = true
       }
     )
   },
@@ -102,7 +91,7 @@ export default {
   },
   methods: {
     getMappingDocument,
-    async update(document, replace = false) {
+    async onSubmit(document, id, replace = false) {
       this.submitted = true
       this.error = ''
 
@@ -112,6 +101,7 @@ export default {
       }
 
       try {
+        delete document._id
         let action = 'update'
         if (replace === true) {
           action = 'replace'
@@ -119,7 +109,7 @@ export default {
         await this.$kuzzle.document[action](
           this.index,
           this.collection,
-          this.$route.params.id,
+          this.id,
           document,
           { refresh: 'wait_for' }
         )
@@ -128,41 +118,49 @@ export default {
           params: { index: this.index, collection: this.collection }
         })
       } catch (err) {
-        this.error =
-          'An error occurred while trying to update the document: <br/> ' +
-          err.message
-        this.submitted = false
-      }
-    },
-    cancel() {
-      if (this.$router._prevTransition && this.$router._prevTransition.to) {
-        this.$router.push(this.$router._prevTransition.to)
-      } else {
-        this.$router.push({
-          name: 'DataDocumentsList',
-          params: { index: this.index, collection: this.collection }
+        this.$log.error(err)
+        this.$bvToast.toast(err.message, {
+          title: 'Ooops! Something went wrong while persisting the document.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
       }
     },
+    onCancel() {
+      this.$router.push({
+        name: 'DataDocumentsList',
+        params: { index: this.index, collection: this.collection }
+      })
+    },
     async fetch() {
-      this.show = false
+      this.showAlert = false
+      this.loading = true
       try {
         const res = await this.$kuzzle.document.get(
           this.index,
           this.collection,
-          this.$route.params.id
+          this.id
         )
         this.document = res._source
-        this.$emit('document-create::fill', res._source)
+        this.mapping = await this.getMappingDocument(
+          this.collection,
+          this.index
+        )
+        this.loading = false
       } catch (err) {
-        this.$store.direct.commit.toaster.setToast({ text: err.message })
+        this.$log.error(err)
+        this.$bvToast.toast(err.message, {
+          title: 'Ooops! Something went wrong while loading the document.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
-    },
-    setError(payload) {
-      this.error = payload
-    },
-    refresh() {
-      this.$router.go()
     }
   }
 }
