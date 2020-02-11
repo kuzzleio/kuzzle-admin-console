@@ -1,6 +1,9 @@
 <template>
   <div class="DocumentList">
-    <b-container :fluid="listViewType !== 'list'">
+    <b-container
+      class="DocumentList--container"
+      :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+    >
       <b-row align-v="center">
         <b-col sm="6">
           <headline>
@@ -47,8 +50,7 @@
           </template>
         </b-col>
       </b-row>
-    </b-container>
-    <b-container :fluid="listViewType !== 'list'">
+
       <template v-if="!isCollectionEmpty">
         <b-card
           class="light-shadow"
@@ -610,6 +612,12 @@ export default {
 <style lang="scss" scoped>
 .DocumentList {
   margin-bottom: 5em;
+}
+.DocumentList--container {
+  transition: max-width 0.6s;
+}
+.DocumentList--containerFluid {
+  max-width: 100%;
 }
 .ResultPerPage {
   &--active {
