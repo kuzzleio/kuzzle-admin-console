@@ -4,6 +4,7 @@
       <b-col cols="8">
         <b-dropdown
           class="mr-2"
+          data-cy="SelectField"
           variant="outline-secondary"
           menu-class="dropdownScroll"
           text="Select columns to display"
@@ -17,6 +18,7 @@
                 <b-form-checkbox
                   class="mx-2"
                   :checked="field.displayed"
+                  :data-cy="`SelectField--${field.text}`"
                   @change="toggleColumn(field.value)"
                 />
               </span>
@@ -95,6 +97,7 @@
             <div class="inlineDisplay mx-1">
               <span
                 class="inlineDisplay-item text-secondary m-3"
+                :data-cy="`ColumnViewHead--${data.label}`"
                 :id="data.label"
                 >{{ getLastKeyPath(data.label) }}</span
               >
@@ -143,7 +146,9 @@
             </div>
           </template>
           <template v-slot:cell(id)="data">
-            <span class="code">{{ data.item.id }}</span>
+            <span data-cy="ColumnViewCell--id" class="code">{{
+              data.item.id
+            }}</span>
           </template>
           <template v-slot:cell()="data">
             <div class="inlineDisplay mx-1">

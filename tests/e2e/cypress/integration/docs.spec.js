@@ -104,7 +104,7 @@ describe('Document List', function() {
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
-  it('should handle the column view properly', function() {
+  it.only('should handle the column view properly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -123,26 +123,18 @@ describe('Document List', function() {
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
 
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(4)'
-    ).click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)'
-    ).click()
-    cy.get('.centered > thead > tr > th:nth-child(6) > .fa').click()
-    cy.get('.centered > thead > tr > th:nth-child(5) > .fa').click()
-    cy.get('.centered > thead > tr > th:nth-child(4) > .fa').click()
-    cy.get('.centered > thead > tr > th > .fa').click()
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--date"]').click({ force: true })
+    cy.get('[data-cy="ColumnViewHead--Date"]').should('exist')
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--date"]').click({ force: true })
+    cy.get('[data-cy="ColumnViewHead--Date"]').should('not.exist')
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--value"]').click({ force: true })
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--value2"]').click({ force: true })
+    cy.get('[data-cy="ColumnViewHead--Value"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
   })
 
   // it('should handle the time series view properly', function() {
