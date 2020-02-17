@@ -10,7 +10,11 @@
         {{ candidatesForDeletion.length }} documents?
       </p>
       <p v-if="candidatesForDeletion.length === 1">
-        Do you really want to delete {{ candidatesForDeletion[0] }}?
+        Do you really want to delete
+        <span :title="candidatesForDeletion[0]">{{
+          truncateName(candidatesForDeletion[0])
+        }}</span
+        >?
       </p>
     </div>
     <template v-else>
@@ -32,6 +36,8 @@
 </template>
 
 <script>
+import { truncateName } from '../../../utils'
+
 export default {
   name: 'DeleteModal',
   components: {},
@@ -43,6 +49,8 @@ export default {
     candidatesForDeletion: Array,
     isLoading: Boolean
   },
-  methods: {}
+  methods: {
+    truncateName
+  }
 }
 </script>
