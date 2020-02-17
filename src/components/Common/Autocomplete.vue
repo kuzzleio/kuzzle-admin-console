@@ -1,6 +1,6 @@
 <template>
   <div class="Autocomplete">
-    <input
+    <b-form-input
       v-model="inputValue"
       type="text"
       :class="inputClass"

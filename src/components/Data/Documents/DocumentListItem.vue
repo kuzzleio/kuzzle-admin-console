@@ -1,71 +1,84 @@
 <template>
-  <div class="DocumentListItem" :class="{ collapsed: collapsed }">
-    <i
-      class="DocumentListItem-toggle fa fa-caret-down item-toggle"
-      aria-hidden="true"
-      @click="toggleCollapse()"
-    />
-
-    <label>
-      <input
-        :id="checkboxId"
-        type="checkbox"
-        class="filled-in"
-        :value="document.id"
-        :checked="isChecked"
-        @click="notifyCheckboxClick"
-      />
-      <span />
-    </label>
-
-    <label class="DocumentListItem-title item-title "
-      ><a @click="toggleCollapse">{{ document.id }}</a></label
-    >
-
-    <div class="DocumentListItem-actions right">
-      <a
-        class="DocumentListItem-update"
-        href=""
-        :title="
-          canEdit
-            ? 'Edit Document'
-            : 'You are not allowed to edit this Document'
-        "
-        @click.prevent="editDocument"
-      >
-        <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
-      </a>
-
-      <dropdown
-        :id="document.id"
-        myclass="DocumentListItem-dropdown icon-black"
-      >
-        <li>
-          <a
-            :disabled="!canDelete"
-            :class="{ disabled: !canDelete }"
-            @click="deleteDocument"
+  <b-container fluid class="DocumentListItem">
+    <b-row align-h="between" no-gutters>
+      <b-col cols="10" class="py-1 DocumentListItem-nameActions">
+        <i
+          @click="toggleCollapse"
+          :class="
+            `fa fa-caret-${
+              expanded ? 'down mr-1' : 'right mr-2 '
+            } d-inline-block align-middle DocumentListItem-caret`
+          "
+          aria-hidden="true"
+        />
+        <b-form-checkbox
+          class="d-inline-block align-middle"
+          :id="checkboxId"
+          type="checkbox"
+          value="true"
+          unchecked-value="false"
+          v-model="checked"
+          @change="notifyCheckboxClick"
+        />
+        <a
+          class="d-inline-block align-middle code pointer"
+          @click="toggleCollapse"
+          >{{ document.id }}</a
+        >
+      </b-col>
+      <b-col cols="2">
+        <div class="float-right">
+          <b-button
+            class="DocumentListItem-update"
+            href=""
+            variant="link"
+            :disabled="!canEdit"
+            :title="
+              canEdit
+                ? 'Edit Document'
+                : 'You are not allowed to edit this Document'
+            "
+            @click.prevent="editDocument"
           >
-            Delete
-          </a>
-        </li>
-      </dropdown>
-    </div>
-
-    <div class="DocumentListItem-content item-content">
-      <pre v-json-formatter="{ content: document.content, open: true }" />
-      <pre v-json-formatter="{ content: document.meta, open: false }" />
-      <pre
-        v-if="document.aggregations"
-        v-json-formatter="{ content: document.aggregations, open: true }"
-      />
-    </div>
-  </div>
+            <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
+          </b-button>
+          <b-button
+            class="DocumentListItem-delete"
+            href=""
+            variant="link"
+            :data-cy="`DocumentListItem-delete--${document.id}`"
+            :disabled="!canDelete"
+            :title="
+              canDelete
+                ? 'Delete Document'
+                : 'You are not allowed to delete this Document'
+            "
+            @click.prevent="deleteDocument"
+          >
+            <i class="fa fa-trash" :class="{ disabled: !canEdit }" />
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-collapse
+        :id="`collapse-${document.id}`"
+        v-model="expanded"
+        class="mt-3 ml-3 DocumentListItem-content"
+      >
+        <pre v-json-formatter="{ content: document.content, open: true }" />
+        <pre v-json-formatter="{ content: document.meta, open: false }" />
+        <pre
+          v-if="document.aggregations"
+          v-json-formatter="{ content: document.aggregations, open: true }"
+        />
+      </b-collapse>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import Dropdown from '../../Materialize/Dropdown'
 import {
   canEditDocument,
   canDeleteDocument
@@ -78,9 +91,6 @@ export default {
     JsonFormatter,
     title
   },
-  components: {
-    Dropdown
-  },
   props: {
     index: String,
     collection: String,
@@ -89,7 +99,15 @@ export default {
   },
   data() {
     return {
-      collapsed: true
+      expanded: false,
+      checked: false
+    }
+  },
+  watch: {
+    isChecked: {
+      handler(value) {
+        this.checked = value
+      }
     }
   },
   computed: {
@@ -115,7 +133,7 @@ export default {
   },
   methods: {
     toggleCollapse() {
-      this.collapsed = !this.collapsed
+      this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
@@ -135,53 +153,14 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
-.DocumentListItem-toggle {
-  padding: 0 10px;
-  margin-left: -10px;
+.DocumentListItem-nameActions {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.DocumentListItem-caret {
   cursor: pointer;
-  transition-duration: 0.2s;
 }
-
-.collapsed .DocumentListItem-toggle {
-  transform: rotate(-90deg);
-}
-
-.DocumentListItem-title {
-  color: black;
-  line-height: 21px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-family: 'AnonymousPro';
-}
-
-.DocumentListItem-content {
-  transition-duration: 0.2s;
-  max-height: 300px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 10px 10px 0 0;
-
-  pre {
-    margin: 0;
-    width: 70%;
-    display: inline-block;
-  }
-}
-
-.collapsed .DocumentListItem-content {
-  max-height: 0;
-  transition-duration: 0;
-  padding: 0 10px 0 0;
-}
-
-.DocumentListItem-actions {
-  margin-top: 1px;
-  font-size: 1em;
-}
-
-/* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + span:not(.lever) {
-  height: 15px;
-  padding-left: 30px;
+pre {
+  font-size: 16px;
 }
 </style>

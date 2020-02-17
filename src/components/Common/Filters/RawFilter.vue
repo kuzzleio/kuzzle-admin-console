@@ -1,36 +1,45 @@
 <template>
   <form class="RawFilter">
-    <div v-if="currentFilter.basic" class="card-panel blue lighten-3">
-      A Basic filter is currently active. This shows your basic filter as raw
-      filter. If you modify this raw filter it will not change the basic filter
-      view and will reset this raw filter to the original content of the basic
-      filter.
-    </div>
-    <json-editor
-      id="rawsearch"
-      ref="jsoneditor"
-      myclass="pre_ace"
-      :content="filters.raw"
-      :refresh-ace="refreshAce"
-    />
-    <div class="row card-action">
-      <button
-        v-if="actionButtonsVisible"
-        type="submit"
-        class="RawFilter-submitBtn btn primary waves-effect waves-light"
-        @click.prevent="submitSearch"
+    <b-container fluid class="mt-2">
+      <b-row no-gutters v-if="currentFilter.basic" class="blue lighten-3">
+        A Basic filter is currently active. This shows your basic filter as raw
+        filter. If you modify this raw filter it will not change the basic
+        filter view and will reset this raw filter to the original content of
+        the basic filter.
+      </b-row>
+      <b-row no-gutters>
+        <b-col cols="12">
+          <json-editor
+            id="rawsearch"
+            ref="jsoneditor"
+            myclass="pre_ace"
+            :content="filters.raw"
+            :refresh-ace="refreshAce"
+          />
+        </b-col>
+      </b-row>
+      <b-alert :show="jsonInvalid" variant="danger" class="mt-2"
+        >Your JSON is not valid</b-alert
       >
-        {{ submitButtonLabel }}
-      </button>
-      <button
-        v-if="actionButtonsVisible"
-        class="btn-flat waves-effect waves-light"
-        @click="resetSearch"
-      >
-        Reset
-      </button>
-      <span v-if="jsonInvalid" class="error">Your JSON is not valid</span>
-    </div>
+      <b-row no-gutters v-if="actionButtonsVisible">
+        <b-col sm="12" class="text-right">
+          <b-button
+            variant="primary"
+            class="mt-2 mr-2 mb-2"
+            @click.prevent="submitSearch"
+          >
+            {{ submitButtonLabel }}
+          </b-button>
+          <b-button
+            variant="outline-secondary"
+            class="m-2"
+            @click="resetSearch"
+          >
+            Reset
+          </b-button>
+        </b-col>
+      </b-row>
+    </b-container>
   </form>
 </template>
 
@@ -54,7 +63,7 @@ export default {
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'Search'
     },
     actionButtonsVisible: {
       type: Boolean,

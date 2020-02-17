@@ -2,7 +2,7 @@
   <b-container class="CollectionList">
     <headline>
       <b-row>
-        <b-col sm="9">
+        <b-col sm="9" class="text-truncate">
           <i class="fa fa-database text-secondary"></i> &nbsp;
           <span class="code">{{ index }}</span>
         </b-col>

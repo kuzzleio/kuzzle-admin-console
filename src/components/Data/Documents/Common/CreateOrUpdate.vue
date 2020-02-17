@@ -1,24 +1,23 @@
 <template>
   <div class="DocumentCreateOrUpdate">
-    <div class="card-panel">
+    <b-card>
       <form class="wrapper" @submit.prevent="create">
         <div v-if="$store.direct.state.collection.allowForm" class="row" />
 
         <div class="row input-id">
           <div class="col s6">
             <div v-if="!hideId" class="input-field">
-              <input
+              <b-form-input
                 id="id"
                 v-focus
                 type="text"
                 name="collection"
                 :required="mandatoryId"
                 @input="updateId"
+                :placeholder="
+                  `Document identifier ${!mandatoryId ? '(optional)' : ''}`
+                "
               />
-              <label for="id"
-                >Document identifier
-                {{ !mandatoryId ? '(optional)' : '' }}</label
-              >
             </div>
           </div>
           <div class="col s6">
@@ -124,7 +123,7 @@
               Cancel
             </a>
 
-            <button
+            <b-button
               v-if="!hideId"
               type="submit"
               class="btn primary waves-effect waves-light"
@@ -132,9 +131,9 @@
             >
               <i class="fa fa-plus-circle left" />
               Create
-            </button>
+            </b-button>
 
-            <button
+            <b-button
               v-if="hideId"
               ref="update"
               type="submit"
@@ -145,9 +144,9 @@
             >
               <i class="fa fa-pencil-alt left" />
               Update
-            </button>
+            </b-button>
 
-            <button
+            <b-button
               v-if="hideId"
               ref="replace"
               class="btn primary waves-effect waves-light DocumentReplace"
@@ -158,7 +157,7 @@
             >
               <i class="fa fa-fire-alt left" />
               Replace
-            </button>
+            </b-button>
           </div>
           <div v-if="error" class="col s7 m8 l9">
             <div class="card error red-color">
@@ -168,7 +167,7 @@
           </div>
         </div>
       </form>
-    </div>
+    </b-card>
   </div>
 </template>
 

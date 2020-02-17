@@ -15,23 +15,21 @@
       :key="env.name"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
     >
-      <div>
-        <div @click="clickSwitch(index)" class="EnvironmentSwitch-env-name">
-          {{ env.name }}
-          <span class="text-muted ml-2 mr-5">{{ env.host }}</span>
-        </div>
-        <div class="EnvironmentSwitch-env-inputs">
-          <i
-            class="edit primary fa fa-pencil-alt mr-3"
-            :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-edit`"
-            @click.prevent="$emit('environment::create', index)"
-          />
-          <i
-            class="delete error fa fa-trash"
-            :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
-            @click.prevent="$emit('environment::delete', index)"
-          />
-        </div>
+      <div @click="clickSwitch(index)" class="EnvironmentSwitch-env-name mr-3">
+        {{ env.name }}
+        <div class="text-muted">{{ env.host }}</div>
+      </div>
+      <div class="EnvironmentSwitch-env-inputs">
+        <i
+          class="edit primary fa fa-pencil-alt mr-3"
+          :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-edit`"
+          @click.prevent="$emit('environment::create', index)"
+        />
+        <i
+          class="delete error fa fa-trash"
+          :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}-delete`"
+          @click.prevent="$emit('environment::delete', index)"
+        />
       </div>
     </b-dropdown-item>
     <b-dropdown-divider></b-dropdown-divider>
@@ -137,14 +135,13 @@ export default {
 }
 
 .EnvironmentSwitch-env {
-  display: table;
-
-  &-name {
-    display: table-cell;
+  a {
+    display: flex;
+    align-items: center;
   }
 
-  &-inputs {
-    display: table-cell;
+  .EnvironmentSwitch-env-name {
+    flex: 1;
   }
 }
 </style>

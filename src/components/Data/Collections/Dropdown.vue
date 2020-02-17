@@ -1,68 +1,101 @@
 <template>
   <span>
-    <dropdown :id="'collection-' + collection" :myclass="myclass">
-      <li>
-        <router-link
-          :class="{ disabled: !canEditCollection(index, collection) }"
-          :to="
-            canEditCollection(index, collection)
-              ? { name: 'DataCollectionEdit', params: { collection, index } }
-              : ''
-          "
-          >Edit collection</router-link
-        >
-      </li>
-      <li v-if="isRealtime">
-        <a class="remove" @click="removeRealtimeCollection"
-          >Remove collection</a
-        >
-      </li>
-      <li class="divider" />
-      <li v-if="!isRealtime && !isList">
-        <router-link
+    <b-dropdown
+      data-cy="CollectionDropdown"
+      no-caret
+      toggle-class="collectionDropdown"
+      variant="light"
+      :id="`collection-${collection}`"
+    >
+      <template v-slot:button-content>
+        <i class="fas fa-ellipsis-v" />
+      </template>
+      <b-dropdown-item
+        data-cy="CollectionDropdown-list"
+        :active="activeView === 'list'"
+        @click="$emit('list')"
+      >
+        List view
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <b-dropdown-item
+        data-cy="CollectionDropdown-column"
+        :active="activeView === 'column'"
+        @click="$emit('column')"
+      >
+        Column view
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <b-dropdown-item
+        :disabled="!canEditCollection(index, collection)"
+        :title="
+          !canEditCollection(index, collection)
+            ? 'Your rights do not allow you to edit this collection'
+            : ''
+        "
+        :to="
+          canEditCollection(index, collection)
+            ? { name: 'DataCollectionEdit', params: { collection, index } }
+            : ''
+        "
+      >
+        Edit collection
+      </b-dropdown-item>
+      <b-dropdown-item v-if="isRealtime" @click="removeRealtimeCollection">
+        Remove collection
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <template v-if="!isRealtime && !isList">
+        <b-dropdown-item
           :to="{
             name: 'DataDocumentsList',
             params: { collection: collection, index: index }
           }"
-          >Browse documents</router-link
         >
-      </li>
-      <li>
-        <router-link
-          :class="{ disabled: !canSubscribe(index, collection) }"
-          :to="
-            canSubscribe(index, collection)
-              ? { name: 'DataCollectionWatch', params: { collection, index } }
-              : ''
-          "
-          >Watch messages</router-link
-        >
-      </li>
-      <li class="divider" />
-      <li v-if="!isRealtime && isList">
-        <a
-          :class="{
-            'red-text': canTruncateCollection(index, collection),
-            disabled: !canTruncateCollection(index, collection)
-          }"
-          @click.prevent="openModal"
-          >Clear documents</a
-        >
-      </li>
-    </dropdown>
+          Browse documents
+        </b-dropdown-item>
+        <b-dropdown-divider />
+      </template>
+      <b-dropdown-item
+        :disabled="!canSubscribe(index, collection)"
+        :title="
+          !canSubscribe(index, collection)
+            ? 'Your rights do not allow you to subscribe to this collection'
+            : ''
+        "
+        :to="
+          canSubscribe(index, collection)
+            ? { name: 'DataCollectionWatch', params: { collection, index } }
+            : ''
+        "
+      >
+        Watch messages
+      </b-dropdown-item>
+      <b-dropdown-divider />
+      <b-dropdown-item
+        v-if="!isRealtime && isList"
+        class="text-secondary"
+        :disabled="!canTruncateCollection(index, collection)"
+        :title="
+          !canSubscribe(index, collection)
+            ? 'Your rights do not allow you to truncate this collection'
+            : ''
+        "
+        @click.prevent="openModal"
+      >
+        Clear documents
+      </b-dropdown-item>
+    </b-dropdown>
 
     <modal-clear
       :id="'collection-clear-' + collection"
       :index="index"
       :collection="collection"
-      :is-open="isOpen"
-      :close="close"
     />
   </span>
 </template>
 
 <script>
-import Dropdown from '../../Materialize/Dropdown'
 import ModalClear from './ModalClear.vue'
 import {
   canEditCollection,
@@ -73,21 +106,17 @@ import {
 export default {
   name: 'CollectionDropdown',
   components: {
-    Dropdown,
     ModalClear
   },
   props: {
-    index: String,
+    activeView: String,
     collection: String,
+    index: String,
     isRealtime: Boolean,
     myclass: String
   },
-  data() {
-    return {
-      isOpen: false
-    }
-  },
   computed: {
+    // WARNING THIS IS EVIL
     isList() {
       return this.$route.name === 'DataDocumentsList'
     }
@@ -106,12 +135,20 @@ export default {
       if (
         this.canTruncateCollection(this.$props.index, this.$props.collection)
       ) {
-        this.isOpen = true
+        this.$bvModal.show(`collection-clear-${this.collection}`)
       }
-    },
-    close() {
-      this.isOpen = false
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+::v-deep .collectionDropdown {
+  background-color: $light-grey-color;
+  border: none;
+}
+
+::v-deep .show .collectionDropdown i {
+  transform: rotate(90deg);
+}
+</style>
