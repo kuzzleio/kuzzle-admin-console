@@ -92,7 +92,10 @@ const actions = createActions({
     result = result.filter(index => index !== '%kuzzle')
     for (const index of result) {
       try {
-        const res = await Vue.prototype.$kuzzle.collection.list(index)
+        const res = await Vue.prototype.$kuzzle.collection.list(index, {
+          // disable size options to fetch all collections
+          size: 0
+        })
 
         let collections = splitRealtimeStoredCollections(res.collections)
 
