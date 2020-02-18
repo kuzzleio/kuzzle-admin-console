@@ -16,16 +16,14 @@
         ></b-form-input>
       </div>
       <div class="Treeview-items p-3">
-        <div class="">
-          <router-link
-            data-cy="Treeview-item"
-            class="text-secondary"
-            :to="{ name: 'Data' }"
-          >
-            <i class="fas fa-list mr-1"></i>
-            All indexes
-          </router-link>
-        </div>
+        <router-link
+          data-cy="Treeview-item"
+          class="text-secondary"
+          :to="{ name: 'Data' }"
+        >
+          <i class="fas fa-list mr-1"></i>
+          All indexes
+        </router-link>
         <index-branch
           v-for="indexName in orderedFilteredIndices"
           :key="indexName"

@@ -11,7 +11,7 @@
 import Breadcrumb from '../Common/Breadcrumb'
 
 export default {
-  name: 'Eadline',
+  name: 'Headline',
   components: {
     Breadcrumb
   },

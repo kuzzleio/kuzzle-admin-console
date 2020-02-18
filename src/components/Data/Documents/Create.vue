@@ -1,52 +1,43 @@
 <template>
-  <div v-if="hasRights" class="wrapper">
-    <headline>
-      {{ collection }}
-      <collection-dropdown
-        class="icon-medium icon-black"
+  <b-container class="DocumentCreate">
+    <template v-if="hasRights" class="wrapper">
+      <headline>
+        Create Document
+      </headline>
+
+      <create-or-update
         :index="index"
         :collection="collection"
+        :mapping="mapping"
+        @cancel="onCancel"
+        @submit="onSubmit"
       />
-    </headline>
-
-    <collection-tabs />
-
-    <create-or-update
-      v-model="document"
-      :error="error"
-      :index="index"
-      :collection="collection"
-      :get-mapping="getMappingDocument"
-      :submitted="submitted"
-      @document-create::create="create"
-      @document-create::cancel="cancel"
-      @document-create::reset-error="error = null"
-      @document-create::error="setError"
-      @change-id="updateId"
-    />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+    </template>
+    <template v-else>
+      <page-not-allowed />
+    </template>
+  </b-container>
 </template>
+
+<style lang="scss" scoped>
+.DocumentCreate {
+  height: 100%;
+}
+</style>
 
 <script>
 import { canCreateDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 
-import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
-import CollectionTabs from '../Collections/Tabs'
 
 export default {
   name: 'DocumentCreateOrUpdate',
   components: {
     Headline,
-    CollectionDropdown,
     CreateOrUpdate,
-    CollectionTabs,
     PageNotAllowed
   },
   props: {
@@ -55,10 +46,8 @@ export default {
   },
   data() {
     return {
-      error: '',
-      document: {},
-      id: null,
-      submitted: false
+      mapping: {},
+      submitting: false
     }
   },
   computed: {
@@ -68,25 +57,13 @@ export default {
   },
   methods: {
     getMappingDocument,
-    updateId(id) {
-      this.id = id
-    },
-    async create(document) {
-      this.error = ''
-
+    async onSubmit(document, id) {
       if (!document) {
         this.error = 'The document is invalid, please review it'
         return
       }
 
-      this.submitted = true
-
-      let id = this.id
-
-      if (document._id) {
-        id = document._id
-        delete document._id
-      }
+      this.submitting = true
 
       try {
         await this.$kuzzle.document.create(
@@ -105,24 +82,43 @@ export default {
           params: { index: this.index, collection: this.collection }
         })
       } catch (err) {
-        this.error =
-          'An error occurred while trying to create the document: <br/> ' +
-          err.message
-        this.submitted = false
-      }
-    },
-    cancel() {
-      if (this.$router._prevTransition && this.$router._prevTransition.to) {
-        this.$router.go(this.$router._prevTransition.to)
-      } else {
-        this.$router.push({
-          name: 'DataDocumentsList',
-          params: { index: this.index, collection: this.collection }
+        this.$log.error(err)
+        this.$bvToast.toast(err.message, {
+          title: 'Ooops! Something went wrong while persisting the document.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
       }
     },
-    setError(payload) {
-      this.error = payload
+    cancel() {
+      this.$router.push({
+        name: 'DataDocumentsList',
+        params: { index: this.index, collection: this.collection }
+      })
+    },
+    async fetch() {
+      this.loading = true
+      try {
+        this.mapping = await this.getMappingDocument(
+          this.collection,
+          this.index
+        )
+        this.loading = false
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast(err.message, {
+          title:
+            'Ooops! Something went wrong while loading the collection mapping.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
+      }
     }
   }
 }

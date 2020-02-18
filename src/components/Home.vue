@@ -13,6 +13,7 @@
       fade
       style="z-index: 2000;"
       variant="info"
+      data-cy="noAdminAlert"
       :show="!$store.direct.getters.auth.adminAlreadyExists"
     >
       <i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>

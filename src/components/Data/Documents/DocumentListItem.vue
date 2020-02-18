@@ -1,23 +1,23 @@
 <template>
-  <b-container fluid class="DocumentListItem">
+  <b-container fluid>
     <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1 DocumentListItem-nameActions">
+      <b-col cols="10" class="py-1">
         <i
           @click="toggleCollapse"
           :class="
             `fa fa-caret-${
-              expanded ? 'down mr-1' : 'right mr-2 '
-            } d-inline-block align-middle DocumentListItem-caret`
+              expanded ? 'down' : 'right'
+            } mr-2  d-inline-block align-middle`
           "
           aria-hidden="true"
         />
         <b-form-checkbox
           class="d-inline-block align-middle"
-          :id="checkboxId"
           type="checkbox"
           value="true"
           unchecked-value="false"
           v-model="checked"
+          :id="checkboxId"
           @change="notifyCheckboxClick"
         />
         <a
@@ -32,6 +32,7 @@
             class="DocumentListItem-update"
             href=""
             variant="link"
+            :data-cy="`DocumentListItem-update--${document.id}`"
             :disabled="!canEdit"
             :title="
               canEdit
@@ -153,13 +154,6 @@ export default {
 </script>
 
 <style type="scss" rel="stylesheet/scss" scoped>
-.DocumentListItem-nameActions {
-  overflow: hidden;
-  white-space: nowrap;
-}
-.DocumentListItem-caret {
-  cursor: pointer;
-}
 pre {
   font-size: 16px;
 }
