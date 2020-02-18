@@ -3,7 +3,7 @@
     <b-card>
       <!-- Json view -->
       <b-row>
-        <b-col cols="8">
+        <b-col lg="7" md="12">
           <b-form-group
             label="Document ID"
             label-cols="3"
@@ -23,7 +23,7 @@
         </b-col>
 
         <!-- Mapping -->
-        <b-col>
+        <b-col lg="5" md="12">
           <h3>Mapping</h3>
 
           <pre

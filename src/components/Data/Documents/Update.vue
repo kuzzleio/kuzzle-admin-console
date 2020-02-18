@@ -36,6 +36,7 @@
 <style lang="scss" scoped>
 .DocumentUpdate {
   height: 100%;
+  max-width: 95%;
 }
 </style>
 
