@@ -5,7 +5,7 @@
       no-caret
       toggle-class="collectionDropdown"
       variant="light"
-      :id="'collection-' + collection"
+      :id="`collection-${collection}`"
     >
       <template v-slot:button-content>
         <i class="fas fa-ellipsis-v" />
@@ -27,7 +27,12 @@
       </b-dropdown-item>
       <b-dropdown-divider />
       <b-dropdown-item
-        :class="{ disabled: !canEditCollection(index, collection) }"
+        :disabled="!canEditCollection(index, collection)"
+        :title="
+          !canEditCollection(index, collection)
+            ? 'Your rights do not allow you to edit this collection'
+            : ''
+        "
         :to="
           canEditCollection(index, collection)
             ? { name: 'DataCollectionEdit', params: { collection, index } }
@@ -53,6 +58,11 @@
       </template>
       <b-dropdown-item
         :disabled="!canSubscribe(index, collection)"
+        :title="
+          !canSubscribe(index, collection)
+            ? 'Your rights do not allow you to subscribe to this collection'
+            : ''
+        "
         :to="
           canSubscribe(index, collection)
             ? { name: 'DataCollectionWatch', params: { collection, index } }
@@ -64,10 +74,13 @@
       <b-dropdown-divider />
       <b-dropdown-item
         v-if="!isRealtime && isList"
-        :class="{
-          'text-danger': canTruncateCollection(index, collection),
-          'text-secondary': !canTruncateCollection(index, collection)
-        }"
+        class="text-secondary"
+        :disabled="!canTruncateCollection(index, collection)"
+        :title="
+          !canSubscribe(index, collection)
+            ? 'Your rights do not allow you to truncate this collection'
+            : ''
+        "
         @click.prevent="openModal"
       >
         Clear documents

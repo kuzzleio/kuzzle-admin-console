@@ -2,7 +2,7 @@
   <div class="DocumentList">
     <b-container>
       <b-row align-v="center">
-        <b-col sm="6">
+        <b-col sm="9">
           <headline>
             <span class="code mr-2">{{ collection }}</span>
             <collection-dropdown

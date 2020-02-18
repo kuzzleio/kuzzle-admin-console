@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="DocumentsListView">
     <b-row no-gutters class="mb-2">
       <b-col cols="8">
         <b-button
@@ -72,6 +72,7 @@
 import DocumentListItem from '../DocumentListItem'
 import { canDeleteDocument } from '../../../../services/userAuthorization'
 export default {
+  name: 'DocumentsListView',
   components: {
     DocumentListItem
   },

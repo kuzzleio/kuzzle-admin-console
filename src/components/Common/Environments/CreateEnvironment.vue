@@ -256,7 +256,7 @@ export default {
           })
         }
       } catch (error) {
-        console.error(error)
+        this.$log.error(error)
       }
     },
     selectColor(index) {
