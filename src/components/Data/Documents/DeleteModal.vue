@@ -16,6 +16,7 @@
         }}</span
         >?
       </p>
+    </template>
     <template v-else>
       <b-spinner label="Spinning"></b-spinner>
     </template>
