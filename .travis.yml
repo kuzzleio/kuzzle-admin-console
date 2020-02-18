@@ -73,7 +73,7 @@ jobs:
     - stage: build & deploy
       name: "Build & Deploy to console.kuzzle.io"
 
-      if: type != pull_request && branch = master
+      if: type != pull_request && branch = 2-stable
 
       addons:
         apt:
@@ -102,7 +102,7 @@ jobs:
     - stage: build & deploy
       name: "Build & Deploy to next.console.kuzzle.io"
 
-      if: type != pull_request && branch = 3-dev
+      if: type != pull_request && branch = 2-dev
 
       addons:
         apt:
