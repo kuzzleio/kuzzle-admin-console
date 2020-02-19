@@ -1,5 +1,5 @@
 <template>
-  <div class="QuickFilter">
+  <div class="QuickFilter mb-1">
     <b-row no-gutters v-if="!complexFilterActive">
       <b-col cols="6">
         <div class="QuickFilter-searchBar">
@@ -135,7 +135,6 @@ export default {
     height: 48px;
     margin-bottom: 0;
     width: 100%;
-    padding-right: 215px;
     box-sizing: border-box;
     border-bottom: solid 1px #e4e1e1;
   }

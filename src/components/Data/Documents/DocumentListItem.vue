@@ -13,11 +13,11 @@
         />
         <b-form-checkbox
           class="d-inline-block align-middle"
-          :id="checkboxId"
           type="checkbox"
           value="true"
           unchecked-value="false"
           v-model="checked"
+          :id="checkboxId"
           @change="notifyCheckboxClick"
         />
         <a
@@ -26,12 +26,13 @@
           >{{ document.id }}</a
         >
       </b-col>
-      <b-col cols="2" data-cy="DocumentListItem-actions">
+      <b-col cols="2">
         <div class="float-right">
           <b-button
             class="DocumentListItem-update"
             href=""
             variant="link"
+            :data-cy="`DocumentListItem-update--${document.id}`"
             :disabled="!canEdit"
             :title="
               canEdit

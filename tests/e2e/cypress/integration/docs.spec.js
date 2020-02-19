@@ -104,7 +104,7 @@ describe('Document List', function() {
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
-  it.only('should handle the column view properly', function() {
+  it('should handle the column view properly', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -251,17 +251,9 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get('[data-cy="DocumentList-item"]')
-      .contains('myId')
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-update"]')
-      .click()
+    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
 
-    cy.get(
-      '.col > .card-content > #document > .ace_scroller > .ace_content'
-    ).should('be.visible')
+    cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
 
     cy.get('.ace_line')
@@ -280,7 +272,8 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('[data-cy="DocumentUpdate"]').click()
+    cy.get('[data-cy="noAdminAlert"] .close').click()
+    cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
@@ -297,19 +290,9 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get('[data-cy="DocumentList-item"]')
-      .contains('myId')
-      .parent()
-      .parent()
-      .siblings('[data-cy="DocumentListItem-actions"]')
-      .find('[data-cy="DocumentListItem-update"]')
-      .click()
+    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
 
-    cy.get(
-      '.col > .card-content > #document > .ace_scroller > .ace_content'
-    ).should('be.visible')
-
-    cy.get('textarea.ace_text-input').should('be.visible')
+    cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
 
     cy.get('.ace_line')
@@ -327,7 +310,8 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('[data-cy="DocumentReplace"]').click({ force: true })
+    cy.get('[data-cy="noAdminAlert"] .close').click()
+    cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 

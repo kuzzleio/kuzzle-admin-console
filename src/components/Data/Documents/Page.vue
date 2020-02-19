@@ -50,7 +50,6 @@
           </template>
         </b-col>
       </b-row>
-
       <template v-if="!isCollectionEmpty">
         <b-card
           class="light-shadow"

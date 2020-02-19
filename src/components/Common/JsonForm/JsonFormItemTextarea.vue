@@ -48,3 +48,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.materialize-textarea {
+  resize: both;
+}
+</style>

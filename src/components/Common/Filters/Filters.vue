@@ -11,7 +11,7 @@
     :no-body="!advancedFiltersVisible"
   >
     <template v-slot:header>
-      <b-nav card-header :tabs="advancedFiltersVisible">
+      <b-nav card-header tabs>
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"

@@ -1,5 +1,5 @@
 <template>
-  <div class="Headline">
+  <div class="Headline text-truncate">
     <h1>
       <slot>{{ title }}</slot>
     </h1>
@@ -11,7 +11,7 @@
 import Breadcrumb from '../Common/Breadcrumb'
 
 export default {
-  name: 'Eadline',
+  name: 'Headline',
   components: {
     Breadcrumb
   },

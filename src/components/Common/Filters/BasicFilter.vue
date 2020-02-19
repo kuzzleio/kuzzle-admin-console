@@ -88,7 +88,7 @@
             </div>
             <b-col cols="1">
               <i
-                class="fa fa-times mt-2"
+                class="fa fa-times mt-2 pointer"
                 @click="removeAndBasicFilter(groupIndex, filterIndex)"
               />
             </b-col>
