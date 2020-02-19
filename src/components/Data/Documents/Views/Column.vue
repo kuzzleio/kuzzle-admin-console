@@ -13,17 +13,26 @@
             v-for="field of formatedSelectFields"
             :key="`dropdown-${field.text}`"
           >
-            <div class="inlineDisplay">
+            <div
+              class="inlineDisplay pointer"
+              @click="toggleColumn(field.value)"
+            >
               <span class="inlineDisplay-item">
                 <b-form-checkbox
                   class="mx-2"
                   :checked="field.displayed"
                   :data-cy="`SelectField--${field.text}`"
-                  @change="toggleColumn(field.value)"
                 />
               </span>
-              <span class="inlineDisplay-item code">{{ field.text }}</span>
+              <span class="inlineDisplay-item code" :title="field.text">{{
+                truncateName(field.text, 20)
+              }}</span>
             </div>
+          </b-dropdown-text>
+          <b-dropdown-text v-if="formatedSelectFields.length === 0">
+            <span class="inlineDisplay-item">
+              No searchable field
+            </span>
           </b-dropdown-text>
         </b-dropdown>
         <b-button
@@ -100,9 +109,9 @@
                 class="inlineDisplay-item text-secondary m-3"
                 :data-cy="`ColumnViewHead--${data.label}`"
                 :id="data.label"
-                >{{ getLastKeyPath(data.label) }}</span
+                >{{ truncateName(getLastKeyPath(data.label), 20) }}</span
               >
-              <b-tooltip class="code" placement="top" :target="data.label">
+              <b-tooltip class="code" placement="left" :target="data.label">
                 {{ data.label }}
               </b-tooltip>
               <span class="inlineDisplay-item">
@@ -208,6 +217,7 @@ import {
   canDeleteDocument
 } from '../../../../services/userAuthorization'
 import _ from 'lodash'
+import { truncateName } from '@/utils'
 
 export default {
   name: 'Column',
@@ -335,6 +345,7 @@ export default {
     this.initColumnsFields()
   },
   methods: {
+    truncateName,
     canDeleteDocument,
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
