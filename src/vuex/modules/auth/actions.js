@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 import SessionUser from '../../../models/SessionUser'
 import * as types from './mutation-types'
 import * as kuzzleTypes from '../common/kuzzle/mutation-types'
