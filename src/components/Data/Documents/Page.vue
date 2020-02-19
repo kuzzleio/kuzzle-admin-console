@@ -5,17 +5,19 @@
       :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
     >
       <b-row align-v="center">
-        <b-col sm="6">
+        <b-col sm="9">
           <headline>
-            <span class="code mr-2">{{ collection }}</span>
             <collection-dropdown
-              class="icon-medium icon-black"
+              class="icon-medium icon-black mr-2"
               :active-view="listViewType"
               :index="index"
               :collection="collection"
               @list="onListViewClicked"
               @column="onColumnViewClicked"
             />
+            <span class="code" :title="collection">{{
+              truncateName(collection, 20)
+            }}</span>
           </headline>
         </b-col>
         <b-col class="text-right">
@@ -145,6 +147,7 @@ import {
   performDeleteDocuments,
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
+import { truncateName } from '@/utils'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -277,6 +280,7 @@ export default {
     }
   },
   methods: {
+    truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
