@@ -1,62 +1,68 @@
 <template>
-  <div class="QuickFilter row">
-    <form>
-      <div class="col s8 l8 xl8">
+  <div class="QuickFilter mb-1">
+    <b-row no-gutters v-if="!complexFilterActive">
+      <b-col cols="6">
         <div class="QuickFilter-searchBar">
-          <i class="QuickFilter-searchIcon fa fa-search search" />
-          <div
-            v-if="complexFilterActive || !enabled"
-            class="QuickFilter-chip chip"
-          >
-            <span
-              class="QuickFilter-chipLabel"
-              @click.prevent="displayAdvancedFilters"
-              >{{ advancedQueryLabel }}</span
+          <b-input-group>
+            <b-input-group-prepend is-text>
+              <i class="fa fa-search search" />
+            </b-input-group-prepend>
+
+            <b-form-input
+              debounce="300"
+              placeholder="Search..."
+              type="search"
+              v-model="inputSearchTerm"
+              v-focus
             >
-          </div>
-          <input
-            v-else
-            v-model="inputSearchTerm"
-            v-focus
-            type="text"
-            placeholder="Search..."
-            @input="submitSearch"
-          />
-          <a
-            v-if="!advancedFiltersVisible"
-            class="QuickFilter-optionBtn fluid-hover"
-            href="#"
-            @click.prevent="displayAdvancedFilters"
-            >More query options</a
-          >
-          <a
-            v-else
-            class="QuickFilter-optionBtn fluid-hover"
-            href="#"
-            @click.prevent="displayAdvancedFilters"
-            >Less query options</a
-          >
+            </b-form-input>
+          </b-input-group>
         </div>
-      </div>
-      <div
-        v-if="actionButtonsVisible"
-        class="QuickFilter-actions col s4 l4 xl4"
-      >
-        <button
+      </b-col>
+      <b-col cols="2">
+        <a
+          v-if="!advancedFiltersVisible"
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >More query options</a
+        >
+        <a
+          v-else
+          class="QuickFilter-optionBtn"
+          href="#"
+          @click.prevent="displayAdvancedFilters"
+          >Less query options</a
+        >
+      </b-col>
+
+      <b-col v-if="actionButtonsVisible" class="text-right" cols="4">
+        <b-button
           type="submit"
-          class="QuickFilter-submitBtn btn btn-small waves-effect waves-light"
+          class="m-2"
+          variant="primary"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
-        </button>
-        <button
-          class="QuickFilter-resetBtn btn-flat btn-small waves-effect waves-light"
-          @click="resetSearch"
-        >
-          reset
-        </button>
+        </b-button>
+        <b-button class="m-2" variant="outline-secondary" @click="resetSearch">
+          Reset
+        </b-button>
+      </b-col>
+    </b-row>
+    <div v-else class="QuickFilter-warning mx-3 mb-2 font-weight-bold">
+      <div class="align-middle pt-2">
+        Warning: a filter has been set, some documents might be hidden.
       </div>
-    </form>
+      <div>
+        <b-button
+          class="align-middle d-inline ml-3 font-weight-bold"
+          variant="outline-light"
+          @click.prevent="displayAdvancedFilters"
+          >Display the advanced filters.</b-button
+        >
+      </div>
+    </div>
   </div>
 </template>
 
@@ -91,49 +97,26 @@ export default {
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm,
-      throttleSearch: false,
-      lastThrottledSearch: null
-    }
-  },
-  watch: {
-    searchTerm: {
-      immediate: true,
-      handler(value) {
-        this.inputSearchTerm = value
-      }
+      inputSearchTerm: this.searchTerm
     }
   },
   methods: {
     submitSearch() {
-      if (this.throttleSearch) {
-        // Keep the last throttled search to replay it when user stop typing
-        this.lastThrottledSearch = this.inputSearchTerm
-        return
-      }
-
-      this.throttleSearch = true
-      setTimeout(() => {
-        this.throttleSearch = false
-
-        if (this.lastThrottledSearch) {
-          this.submitSearch()
-        }
-      }, 300)
-
-      if (this.complexFilterActive) {
-        this.$emit('refresh')
-      } else {
-        this.$emit('update-filter', this.inputSearchTerm)
-      }
-
-      this.lastThrottledSearch = null
+      this.$emit('update-filter', this.inputSearchTerm)
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
+    }
+  },
+  mounted() {
+    this.inputSearchTerm = this.searchTerm
+  },
+  watch: {
+    inputSearchTerm() {
+      this.submitSearch()
     }
   }
 }
@@ -150,10 +133,8 @@ export default {
 
   input {
     height: 48px;
-    padding-left: 34px;
     margin-bottom: 0;
     width: 100%;
-    padding-right: 215px;
     box-sizing: border-box;
     border-bottom: solid 1px #e4e1e1;
   }
@@ -185,10 +166,18 @@ export default {
   top: 50%;
   transform: translateY(-50%);
   text-decoration: underline;
+  color: $primary-color;
 }
 
 .QuickFilter-actions {
   height: 48px;
   line-height: 48px;
+}
+
+.QuickFilter-warning {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: space-between;
 }
 </style>

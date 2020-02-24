@@ -1,7 +1,19 @@
+$theme-colors: (
+  "primary": #002835,
+);
+
 .navbar .navbar-nav .nav-link {
   color: white;
 
   &.active {
     font-weight: 600;
   }
+}
+
+.light-shadow {
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.125);
+}
+
+.json-formatter-row .json-formatter-toggler:after {
+  font-size: 14px;
 }

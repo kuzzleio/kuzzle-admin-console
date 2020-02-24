@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ open: open || filter }" class="index-branch">
+  <div :class="{ open: open || filter }" class="index-branch mt-2">
     <i
       v-if="collectionCount"
       class="fa fa-caret-right tree-toggle"
@@ -9,7 +9,7 @@
     <i v-else class="no-caret"></i>
     <router-link
       data-cy="Treeview-item"
-      class="tree-item truncate"
+      class="tree-item truncate mt-2"
       :class="{ active: isIndexActive(indexName) }"
       :title="indexName"
       :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
@@ -19,11 +19,12 @@
         collectionCount
       }})
     </router-link>
-    <div class="collections mb-2">
+    <div class="collections">
       <div
         v-for="collectionName in orderedFilteredStoredCollections"
-        class="tree-item truncate"
+        class="tree-item truncate mt-2"
         data-cy="Treeview-item"
+        :title="collectionName"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
       >
@@ -210,8 +211,6 @@ a {
   padding: 0 5px;
   margin: 0 5px;
   color: #002835;
-  line-height: 32px;
-  height: 32px;
   &.active {
     font-weight: bold;
   }
