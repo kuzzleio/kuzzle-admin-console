@@ -1,55 +1,65 @@
 <template>
   <div class="App">
-    <div v-if="$store.direct.state.kuzzle.errorFromKuzzle" class="App-errored">
-      <error-layout>
-        <kuzzle-error-page
-          @environment::create="editEnvironment"
-          @environment::delete="deleteEnvironment"
-        />
-      </error-layout>
-    </div>
+    <main-spinner v-if="initializing"></main-spinner>
     <template v-else>
       <div
-        v-if="!$store.direct.getters.kuzzle.hasEnvironment"
-        class="App-noEnvironments"
+        v-if="$store.direct.state.kuzzle.errorFromKuzzle"
+        class="App-errored"
       >
-        <create-environment-page @environment::importEnv="importEnvironment" />
+        <error-layout>
+          <kuzzle-error-page
+            @environment::create="editEnvironment"
+            @environment::delete="deleteEnvironment"
+          />
+        </error-layout>
       </div>
       <template v-else>
         <div
-          v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
-          data-cy="App-disconnected"
-        ></div>
+          v-if="!$store.direct.getters.kuzzle.hasEnvironment"
+          class="App-noEnvironments"
+        >
+          <create-environment-page
+            @environment::importEnv="importEnvironment"
+          />
+        </div>
         <template v-else>
-          <div
-            data-cy="App-connected"
-            v-if="!$store.direct.getters.auth.isAuthenticated"
+          <main-spinner
+            v-if="!$store.direct.state.kuzzle.isConnected"
+            data-cy="App-disconnected"
           >
-            <div
-              v-if="!$store.direct.getters.auth.adminAlreadyExists"
-              data-cy="App-noAdmin"
-            >
-              <sign-up
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnvironment"
-              />
-            </div>
-            <div v-else>
-              <login
-                data-cy="App-hasAdmin"
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnvironment"
-              />
-            </div>
-          </div>
+            <b-spinner variant="primary"></b-spinner>
+          </main-spinner>
           <template v-else>
-            <router-view
-              data-cy="App-loggedIn"
-              @environment::create="editEnvironment"
-              @environment::delete="deleteEnvironment"
-            />
+            <div
+              data-cy="App-connected"
+              v-if="!$store.direct.getters.auth.isAuthenticated"
+            >
+              <div
+                v-if="!$store.direct.getters.auth.adminAlreadyExists"
+                data-cy="App-noAdmin"
+              >
+                <sign-up
+                  @environment::create="editEnvironment"
+                  @environment::delete="deleteEnvironment"
+                  @environment::importEnv="importEnvironment"
+                />
+              </div>
+              <div v-else>
+                <login
+                  data-cy="App-hasAdmin"
+                  @environment::create="editEnvironment"
+                  @environment::delete="deleteEnvironment"
+                  @environment::importEnv="importEnvironment"
+                />
+              </div>
+            </div>
+            <template v-else>
+              <router-view
+                data-cy="App-loggedIn"
+                @environment::create="editEnvironment"
+                @environment::delete="deleteEnvironment"
+              />
+            </template>
           </template>
         </template>
       </template>
@@ -78,6 +88,7 @@ import CreateEnvironmentPage from './components/Common/Environments/CreateEnviro
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
+import MainSpinner from './components/Common/MainSpinner'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -92,15 +103,21 @@ export default {
     KuzzleErrorPage,
     SignUp,
     Login,
-    CreateEnvironmentPage
+    CreateEnvironmentPage,
+    MainSpinner
   },
   data() {
     return {
+      initializing: true,
       environmentId: null
     }
   },
-  mounted() {
+  async mounted() {
+    this.initializing = true
     this.$store.direct.commit.auth.setTokenValid(false)
+    this.$store.direct.dispatch.kuzzle.loadEnvironments()
+    await this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
+
     this.$kuzzle.removeAllListeners()
     this.$kuzzle.on('queryError', error => {
       if (error && error.message) {
@@ -130,6 +147,7 @@ export default {
         this.$store.direct.commit.toaster.setToast({ text: data.message })
       }
     })
+    this.initializing = false
   },
   methods: {
     editEnvironment(id) {

@@ -4,16 +4,16 @@ import { KuzzleState } from './types'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
 import {
-  waitForConnected,
-  connectToEnvironment
+  connectToEnvironment,
+  disconnect
 } from '../../../../services/kuzzleWrapper'
 
-const ENVIRONMENT_ITEM_NAME = 'environments'
-const LAST_CONNECTED_NAME = 'lastConnectedEnv'
+const LS_ENVIRONMENTS = 'environments'
+const LS_CURRENT_ENV = 'currentId'
 export const state: KuzzleState = {
   environments: {},
-  lastConnectedEnv: undefined,
-  connectedTo: undefined,
+  currentId: undefined,
+  isConnected: false,
   errorFromKuzzle: undefined,
   host: '',
   port: 0
@@ -51,47 +51,45 @@ const mutations = createMutations<KuzzleState>()({
     }
     Vue.delete(state.environments, id)
   },
-  connectToEnvironment(state, id) {
-    if (id === null) {
-      throw new Error(
-        'Cannot connect to a null environment. To reset connection, use the RESET mutation.'
-      )
-    }
-    if (Object.keys(state.environments).indexOf(id) === -1) {
-      throw new Error(
-        `The given id ${id} does not correspond to any existing environment.`
-      )
-    }
-    state.connectedTo = id
-  },
   setErrorFromKuzzle(state, error) {
     state.errorFromKuzzle = error
   },
   setEnvironments(state, payload) {
     state.environments = { ...payload }
   },
-  setLastConnectedEnvironment(state, payload) {
-    state.lastConnectedEnv = payload
+  setCurrentEnvironment(state, payload) {
+    if (payload === null) {
+      throw new Error(
+        'Cannot connect to a null environment. To reset connection, use the RESET mutation.'
+      )
+    }
+    if (Object.keys(state.environments).indexOf(payload) === -1) {
+      throw new Error(
+        `The given id ${payload} does not correspond to any existing environment.`
+      )
+    }
+    state.currentId = payload
   },
   reset(state) {
-    state.connectedTo = undefined
+    state.isConnected = false
+  },
+  setConnected(state, value: boolean) {
+    state.isConnected = value
   }
 })
 
 const actions = createActions({
-  setConnection(context, id) {
-    const { dispatch, commit } = kuzzleActionContext(context)
-    commit.connectToEnvironment(id)
-    dispatch.setLastConnectedEnvironment(id)
+  setCurrentEnvironment(context, payload) {
+    const { commit } = kuzzleActionContext(context)
+
+    localStorage.setItem(LS_CURRENT_ENV, payload)
+    commit.setCurrentEnvironment(payload)
   },
   createEnvironment(context, payload) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
 
     commit.createEnvironment(payload)
-    localStorage.setItem(
-      ENVIRONMENT_ITEM_NAME,
-      JSON.stringify(state.environments)
-    )
+    localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
     dispatch.switchEnvironment(payload.id)
   },
@@ -99,30 +97,24 @@ const actions = createActions({
     const { dispatch, commit, state } = kuzzleActionContext(context)
     commit.deleteEnvironment(id)
 
-    if (state.lastConnectedEnv === id) {
-      dispatch.setLastConnectedEnvironment(null)
-      localStorage.removeItem(LAST_CONNECTED_NAME)
+    if (state.currentId === id) {
+      dispatch.setCurrentEnvironment(null)
+      localStorage.removeItem(LS_CURRENT_ENV)
     }
 
-    localStorage.setItem(
-      ENVIRONMENT_ITEM_NAME,
-      JSON.stringify(state.environments)
-    )
+    localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
   },
   updateTokenCurrentEnvironment(context, payload) {
     const { commit, state, getters } = kuzzleActionContext(context)
     commit.updateEnvironment({
-      id: getters.currentEnvironmentId,
+      id: state.currentId,
       environment: {
         ...getters.currentEnvironment,
         token: payload
       }
     })
 
-    localStorage.setItem(
-      ENVIRONMENT_ITEM_NAME,
-      JSON.stringify(state.environments)
-    )
+    localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
   },
   updateEnvironment(context, payload) {
     const { dispatch, commit, state, getters } = kuzzleActionContext(context)
@@ -130,10 +122,7 @@ const actions = createActions({
       id: payload.id,
       environment: payload.environment
     })
-    localStorage.setItem(
-      ENVIRONMENT_ITEM_NAME,
-      JSON.stringify(state.environments)
-    )
+    localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
     if (
       getters.currentEnvironment &&
@@ -143,20 +132,20 @@ const actions = createActions({
       dispatch.switchEnvironment(payload.id)
     }
   },
-  switchLastEnvironment(context) {
+  async switchLastEnvironment(context) {
     const { dispatch, state } = kuzzleActionContext(context)
     if (Object.keys(state.environments).length === 0) {
       return Promise.resolve()
     }
 
-    let lastConnectedEnv = state.lastConnectedEnv
+    let currentId = state.currentId
 
-    if (!lastConnectedEnv) {
-      lastConnectedEnv = Object.keys(state.environments)[0]
-      dispatch.setLastConnectedEnvironment(lastConnectedEnv)
+    if (!currentId) {
+      currentId = Object.keys(state.environments)[0]
+      dispatch.setCurrentEnvironment(currentId)
     }
 
-    return dispatch.switchEnvironment(lastConnectedEnv)
+    return dispatch.switchEnvironment(currentId)
   },
   async switchEnvironment(context, id) {
     const { rootDispatch, commit, dispatch, state } = kuzzleActionContext(
@@ -171,16 +160,19 @@ const actions = createActions({
       throw new Error(`Id ${id} does not match any environment`)
     }
 
-    commit.reset()
+    disconnect()
+    commit.setConnected(false)
+    dispatch.setCurrentEnvironment(id)
 
     try {
       await connectToEnvironment(environment)
-      dispatch.setConnection(id)
+      commit.setConnected(true)
     } catch (error) {
+      commit.setErrorFromKuzzle(error.message)
       return false
     }
 
-    await rootDispatch.auth.checkFirstAdmin()
+    rootDispatch.auth.checkFirstAdmin()
     if (environment.token) {
       await rootDispatch.auth.loginByToken({ token: environment.token })
       return true
@@ -189,25 +181,17 @@ const actions = createActions({
   },
   loadEnvironments(context) {
     let loadedEnv
-    let lastConnectedEnv
+    let currentId
     const { commit } = kuzzleActionContext(context)
 
     try {
-      loadedEnv = JSON.parse(
-        localStorage.getItem(ENVIRONMENT_ITEM_NAME) || '{}'
-      )
+      loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
       commit.setEnvironments(loadedEnv)
-      lastConnectedEnv = localStorage.getItem(LAST_CONNECTED_NAME)
-      commit.setLastConnectedEnvironment(lastConnectedEnv)
+      currentId = localStorage.getItem(LS_CURRENT_ENV)
+      commit.setCurrentEnvironment(currentId)
     } catch (e) {
       commit.setEnvironments({})
     }
-  },
-  setLastConnectedEnvironment(context, payload) {
-    const { commit } = kuzzleActionContext(context)
-
-    localStorage.setItem(LAST_CONNECTED_NAME, payload)
-    commit.setLastConnectedEnvironment(payload)
   }
 })
 
