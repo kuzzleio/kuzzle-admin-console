@@ -7,17 +7,17 @@
       <b-row align-v="center">
         <b-col sm="9">
           <headline>
+            <span class="code" :title="collection">{{
+              truncateName(collection, 20)
+            }}</span>
             <collection-dropdown
-              class="icon-medium icon-black mr-2"
+              class="icon-medium icon-black ml-2"
               :active-view="listViewType"
               :index="index"
               :collection="collection"
               @list="onListViewClicked"
               @column="onColumnViewClicked"
             />
-            <span class="code" :title="collection">{{
-              truncateName(collection, 20)
-            }}</span>
           </headline>
         </b-col>
         <b-col class="text-right">
