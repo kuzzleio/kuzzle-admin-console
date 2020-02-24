@@ -151,8 +151,11 @@ export default {
     headline: String,
     submitLabel: { type: String, default: 'OK' },
     realtimeOnly: Boolean,
-    mapping: Object,
-    dynamic: String
+    mapping: {
+      type: Object,
+      default: () => ({})
+    },
+    dynamic: { type: String, default: 'false' }
   },
   data() {
     return {
@@ -177,20 +180,26 @@ export default {
   },
   methods: {
     onSubmit() {
-      let json = this.$refs.jsoneditor.getJson()
+      if (this.$refs.jsoneditor.isValid()) {
+        this.mappingState = this.$refs.jsoneditor.getJson()
 
-      if (json === null) {
-        return
+        this.$emit('submit', {
+          dynamic: this.dynamicState,
+          name: this.name,
+          mapping: this.mappingState,
+          realtimeOnly: this.realtimeOnlyState
+        })
+      } else {
+        this.$bvToast.toast(
+          'The JSON specification of the mapping is not valid',
+          {
+            title: 'You cannot proceed',
+            variant: 'info',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
       }
-
-      this.mappingState = json
-
-      this.$emit('submit', {
-        dynamic: this.dynamicState,
-        name: this.name,
-        mapping: this.mappingState,
-        realtimeOnly: this.realtimeOnlyState
-      })
     }
   },
   watch: {
