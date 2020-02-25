@@ -95,7 +95,7 @@ export default {
         this.$router.push(this.$router._prevTransition.to)
       } else {
         this.$router.push({
-          name: 'DataIndexSummary',
+          name: 'Indexes',
           params: { index: this.index }
         })
       }

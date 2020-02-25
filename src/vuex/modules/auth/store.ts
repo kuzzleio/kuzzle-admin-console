@@ -100,8 +100,6 @@ const actions = createActions({
     const kuzzle = Vue.prototype.$kuzzle
     const jwt = rootGetters.kuzzle.currentEnvironment.token
 
-    console.log(`token ${jwt}`)
-
     if (!jwt) {
       return false
     }

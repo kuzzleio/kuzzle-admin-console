@@ -52,7 +52,7 @@ export default {
     } catch (e) {
       this.$store.direct.commit.toaster.setToast({ text: e.message })
       this.$router.push({
-        name: 'DataIndexSummary',
+        name: 'Indexes',
         params: { index: this.index }
       })
     }
@@ -66,7 +66,7 @@ export default {
           index: this.index
         })
         this.$router.push({
-          name: 'DataIndexSummary',
+          name: 'Indexes',
           params: { index: this.index }
         })
       } catch (e) {

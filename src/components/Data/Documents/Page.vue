@@ -18,7 +18,7 @@
         <b-col class="text-right">
           <b-button
             variant="primary"
-            :to="{ name: 'DataCreateDocument', params: { index, collection } }"
+            :to="{ name: 'CreateDocument', params: { index, collection } }"
             >Create New Document</b-button
           >
         </b-col>
@@ -318,14 +318,14 @@ export default {
     // CREATE
     // =========================================================================
     onCreateClicked() {
-      this.$router.push({ name: 'DataCreateDocument' })
+      this.$router.push({ name: 'CreateDocument' })
     },
 
     // UPDATE
     // =========================================================================
     onEditDocumentClicked(id) {
       this.$router.push({
-        name: 'DataUpdateDocument',
+        name: 'UpdateDocument',
         params: { id }
       })
     },

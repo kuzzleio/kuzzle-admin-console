@@ -12,7 +12,7 @@
       class="tree-item truncate mt-2"
       :class="{ active: isIndexActive(indexName) }"
       :title="indexName"
-      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
+      :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(truncateName(indexName, 12), filter)" /> ({{
@@ -30,7 +30,7 @@
       >
         <router-link
           :to="{
-            name: 'DataDocumentsList',
+            name: 'DocumentList',
             params: { index: indexName, collection: collectionName }
           }"
         >
@@ -50,7 +50,7 @@
         :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
         :to="{
-          name: 'DataCollectionWatch',
+          name: 'WatchCollection',
           params: { index: indexName, collection: collectionName }
         }"
       >
@@ -131,12 +131,12 @@ export default {
     // TODO get rid of this ESTEBAAAAAAAAN
     getRelativeLink(isRealtime) {
       switch (this.routeName) {
-        case 'DataCollectionWatch':
+        case 'WatchCollection':
           return this.routeName
-        case 'DataDocumentsList':
-          return isRealtime ? 'DataCollectionWatch' : this.routeName
+        case 'DocumentList':
+          return isRealtime ? 'WatchCollection' : this.routeName
         default:
-          return 'DataDocumentsList'
+          return 'DocumentList'
       }
     },
     testOpen() {
@@ -179,7 +179,7 @@ export default {
         this.$route.params.collection === collectionName
       ) {
         this.$router.push({
-          name: 'DataIndexSummary',
+          name: 'Indexes',
           params: { index: indexName }
         })
       }

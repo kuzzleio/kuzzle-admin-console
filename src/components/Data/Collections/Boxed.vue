@@ -41,7 +41,7 @@
           :to="
             canManageRealtime(index, collection)
               ? {
-                  name: 'DataCollectionWatch',
+                  name: 'WatchCollection',
                   params: { index: index, collection: collection }
                 }
               : ''
@@ -64,7 +64,7 @@
           :to="
             canCreateDocument(index, collection)
               ? {
-                  name: 'DataCreateDocument',
+                  name: 'CreateDocument',
                   params: { index: index, collection: collection }
                 }
               : ''
@@ -98,12 +98,12 @@ export default {
     collectionLink() {
       if (this.isRealtime) {
         return {
-          name: 'DataCollectionWatch',
+          name: 'WatchCollection',
           params: { index: this.index, collection: this.collection }
         }
       } else {
         return {
-          name: 'DataDocumentsList',
+          name: 'DocumentList',
           params: { index: this.index, collection: this.collection }
         }
       }

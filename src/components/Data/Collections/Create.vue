@@ -53,7 +53,7 @@ export default {
         })
         .then(() => {
           this.$router.push({
-            name: 'DataIndexSummary',
+            name: 'Indexes',
             params: { index: this.index }
           })
         })

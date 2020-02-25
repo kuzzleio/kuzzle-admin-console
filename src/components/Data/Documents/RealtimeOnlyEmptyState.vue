@@ -21,7 +21,7 @@
         "
         :class="!canEditCollection(index, collection) ? 'disabled' : ''"
         :to="{
-          name: 'DataCollectionEdit',
+          name: 'EditCollection',
           params: { index: index, collection: collection }
         }"
         class="btn primary waves-effect waves-light"

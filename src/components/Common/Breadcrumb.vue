@@ -43,7 +43,7 @@
 
         <router-link
           :to="{
-            name: 'DataIndexSummary',
+            name: 'Indexes',
             params: { index: $route.params.index }
           }"
         >
@@ -57,7 +57,7 @@
         <router-link
           v-if="isCollectionRealtime()"
           :to="{
-            name: 'DataCollectionWatch',
+            name: 'WatchCollection',
             params: {
               index: $route.params.index,
               collection: $route.params.collection
@@ -70,7 +70,7 @@
         <router-link
           v-else
           :to="{
-            name: 'DataDocumentsList',
+            name: 'DocumentList',
             params: {
               index: $route.params.index,
               collection: $route.params.collection

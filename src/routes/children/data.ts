@@ -1,7 +1,7 @@
 export default [
   // Indexes routes
   {
-    path: '/',
+    path: '/data',
     name: 'Indexes',
     component(resolve) {
       require(['../../components/Data/Indexes/Page'], resolve)

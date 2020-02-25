@@ -17,7 +17,7 @@
                 ? `Your rights disallow you to create collections on index ${index}`
                 : ''
             "
-            :to="{ name: 'DataCreateCollection', params: { index: index } }"
+            :to="{ name: 'CreateCollection', params: { index: index } }"
           >
             <i class="fa fa-plus"></i> Create a collection
           </b-button>
@@ -89,11 +89,11 @@
             :to="
               name.item.type === 'realtime'
                 ? {
-                    name: 'DataCollectionWatch',
+                    name: 'WatchCollection',
                     params: { index, collection: name.value }
                   }
                 : {
-                    name: 'DataDocumentsList',
+                    name: 'DocumentList',
                     params: { index, collection: name.value }
                   }
             "
@@ -108,11 +108,11 @@
             :to="
               row.item.type === 'realtime'
                 ? {
-                    name: 'DataCollectionWatch',
+                    name: 'WatchCollection',
                     params: { index, collection: row.item.name }
                   }
                 : {
-                    name: 'DataDocumentsList',
+                    name: 'DocumentList',
                     params: { index, collection: row.item.name }
                   }
             "
@@ -126,7 +126,7 @@
             :to="
               canEditCollection(index, row.item.name)
                 ? {
-                    name: 'DataCollectionEdit',
+                    name: 'EditCollection',
                     params: { collection: row.item.name, index }
                   }
                 : ''

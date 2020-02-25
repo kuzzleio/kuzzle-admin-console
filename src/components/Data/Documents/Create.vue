@@ -78,7 +78,7 @@ export default {
           collection: this.collection
         })
         this.$router.push({
-          name: 'DataDocumentsList',
+          name: 'DocumentList',
           params: { index: this.index, collection: this.collection }
         })
       } catch (err) {
@@ -95,7 +95,7 @@ export default {
     },
     cancel() {
       this.$router.push({
-        name: 'DataDocumentsList',
+        name: 'DocumentList',
         params: { index: this.index, collection: this.collection }
       })
     },

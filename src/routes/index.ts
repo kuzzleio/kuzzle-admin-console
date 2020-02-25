@@ -62,7 +62,6 @@ export default function createRoutes(log, kuzzle) {
       }
     } catch (error) {
       log.debug('Token no bueno (error)')
-
       console.error(error.message)
       next({ name: 'Login', query: { to: to.name } })
     }
@@ -100,6 +99,7 @@ export default function createRoutes(log, kuzzle) {
               {
                 path: '/',
                 name: 'Data',
+                redirect: '/data',
                 component: DataLayout,
                 children: DataSubRoutes
               },

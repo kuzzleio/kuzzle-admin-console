@@ -66,7 +66,7 @@
             :data-cy="`IndexesPage-name--${indexName.value}`"
             :title="indexName.value"
             :to="{
-              name: 'DataIndexSummary',
+              name: 'Collections',
               params: { index: indexName.value }
             }"
           >
@@ -81,7 +81,7 @@
               variant="link"
               :data-cy="`IndexesPage-browse--${row.item.indexName}`"
               :to="{
-                name: 'DataIndexSummary',
+                name: 'Collections',
                 params: { index: row.item.indexName }
               }"
               ><i class="fa fa-eye"></i
@@ -92,7 +92,7 @@
               variant="link"
               :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
               :to="{
-                name: 'DataCreateCollection',
+                name: 'CreateCollection',
                 params: { index: row.item.indexName }
               }"
               @click="openDeleteModal(row.item.indexName)"
