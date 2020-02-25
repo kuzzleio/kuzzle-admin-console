@@ -32,7 +32,6 @@ const actions = createActions({
 
     const sessionUser = new SessionUser()
     rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
-    rootDispatch.index.listIndexesAndCollections()
     const user = await Vue.prototype.$kuzzle.auth.getCurrentUser()
 
     sessionUser.id = user._id
@@ -95,6 +94,36 @@ const actions = createActions({
         throw error
       }
     }
+  },
+  async checkToken(context) {
+    const { dispatch, getters, rootGetters } = authActionContext(context)
+    const kuzzle = Vue.prototype.$kuzzle
+    const jwt = rootGetters.kuzzle.currentEnvironment.token
+
+    console.log(`token ${jwt}`)
+
+    if (!jwt) {
+      return false
+    }
+
+    if (jwt === 'anonymous') {
+      return true
+    }
+
+    const { valid } = await kuzzle.auth.checkToken(jwt)
+
+    if (!valid) {
+      await dispatch.doLogout()
+      return false
+    }
+
+    kuzzle.jwt = jwt
+
+    if (!getters.user) {
+      await dispatch.prepareSession()
+    }
+
+    return true
   },
   async doLogout(context) {
     const { commit, dispatch, rootDispatch } = authActionContext(context)

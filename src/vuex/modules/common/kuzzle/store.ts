@@ -13,10 +13,9 @@ const LS_CURRENT_ENV = 'currentId'
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,
-  isConnected: false,
-  errorFromKuzzle: undefined,
-  host: '',
-  port: 0
+  connecting: false,
+  online: false,
+  errorFromKuzzle: undefined
 }
 
 const mutations = createMutations<KuzzleState>()({
@@ -70,11 +69,11 @@ const mutations = createMutations<KuzzleState>()({
     }
     state.currentId = payload
   },
-  reset(state) {
-    state.isConnected = false
+  setConnecting(state, value: boolean) {
+    state.connecting = value
   },
-  setConnected(state, value: boolean) {
-    state.isConnected = value
+  setOnline(state, value: boolean) {
+    state.online = value
   }
 })
 
@@ -132,17 +131,16 @@ const actions = createActions({
       dispatch.switchEnvironment(payload.id)
     }
   },
-  async switchLastEnvironment(context) {
-    const { dispatch, state } = kuzzleActionContext(context)
-    if (Object.keys(state.environments).length === 0) {
-      return Promise.resolve()
+  async connectToCurrentEnvironment(context) {
+    const { dispatch, state, getters } = kuzzleActionContext(context)
+    if (!getters.hasEnvironment) {
+      return
     }
 
     let currentId = state.currentId
 
     if (!currentId) {
       currentId = Object.keys(state.environments)[0]
-      dispatch.setCurrentEnvironment(currentId)
     }
 
     return dispatch.switchEnvironment(currentId)
@@ -159,14 +157,16 @@ const actions = createActions({
     if (!environment) {
       throw new Error(`Id ${id} does not match any environment`)
     }
+    commit.setErrorFromKuzzle(null)
 
     disconnect()
-    commit.setConnected(false)
+    commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
     try {
       await connectToEnvironment(environment)
-      commit.setConnected(true)
+      commit.setConnecting(false)
+      commit.setOnline(true)
     } catch (error) {
       commit.setErrorFromKuzzle(error.message)
       return false

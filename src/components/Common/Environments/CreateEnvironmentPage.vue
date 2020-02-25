@@ -49,7 +49,7 @@ export default {
     createEnvironment() {
       const submitted = this.$refs.createEnvironmentComponent.createEnvironment()
       if (submitted) {
-        this.$router.push({ name: 'Home' })
+        this.$router.push('/')
       }
     },
     importEnv() {

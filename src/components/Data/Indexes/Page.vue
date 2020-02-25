@@ -119,6 +119,8 @@
 import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
+import ListNotAllowed from '../../Common/ListNotAllowed'
+
 import Title from '../../../directives/title.directive'
 import {
   canCreateIndex,
@@ -130,7 +132,8 @@ export default {
   components: {
     Headline,
     CreateIndexModal,
-    DeleteIndexModal
+    DeleteIndexModal,
+    ListNotAllowed
   },
   directives: {
     Title

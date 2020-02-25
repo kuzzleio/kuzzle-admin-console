@@ -1,8 +1,7 @@
 export interface KuzzleState {
   environments: Object
   currentId?: string
-  isConnected: boolean
+  connecting: boolean
+  online: boolean
   errorFromKuzzle?: string
-  host: string
-  port: number
 }

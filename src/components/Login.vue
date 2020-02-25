@@ -56,7 +56,7 @@ export default {
       if (this.$store.getters.routeBeforeRedirect) {
         this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
       } else {
-        this.$router.push({ name: 'Home' }).catch(() => {})
+        this.$router.push('/').catch(() => {})
       }
 
       this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
