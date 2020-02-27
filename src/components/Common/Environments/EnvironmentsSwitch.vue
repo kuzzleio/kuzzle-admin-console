@@ -42,23 +42,19 @@
         Create new connection
       </a>
     </b-dropdown-item>
-    <b-dropdown-item>
-      <a ref="export">
-        Export all
-      </a>
+    <b-dropdown-item download="connections.json" :href="exportUrl">
+      Export all
     </b-dropdown-item>
     <b-dropdown-item @click.prevent="$emit('environment::importEnv')">
-      <a href="">
-        Import
-      </a>
+      Import
     </b-dropdown-item>
   </b-dropdown>
 </template>
 
 <script>
 import Promise from 'bluebird'
-
 import { formatForDom } from '../../../utils'
+import { mapValues, omit } from 'lodash'
 
 export default {
   name: 'EnvironmentSwitch',
@@ -83,23 +79,21 @@ export default {
       }
 
       return this.$store.direct.getters.kuzzle.currentEnvironment.name
-    }
-  },
-  mounted() {
-    const env = {}
-    for (const name in this.$store.state.kuzzle.environments) {
-      env[name] = Object.assign(
-        {},
-        this.$store.direct.getters.kuzzle.environments[name]
+    },
+    exportUrl() {
+      const envWitoutToken = mapValues(
+        this.$store.state.kuzzle.environments,
+        e => omit(e, 'token')
       )
-      delete env[name].token
+
+      const blob = new Blob([JSON.stringify(envWitoutToken)], {
+        type: 'application/json'
+      })
+
+      return URL.createObjectURL(blob)
     }
-
-    const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
-
-    this.$refs.export.href = URL.createObjectURL(blob)
-    this.$refs.export.download = 'connections.json'
   },
+  mounted() {},
   methods: {
     clickSwitch(id) {
       return this.$store.direct.dispatch.kuzzle
