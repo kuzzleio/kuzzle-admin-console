@@ -1,7 +1,7 @@
 <template>
   <div class="Signup">
-    <b-container>
-      <b-card>
+    <b-container class="Signup-flexContainer">
+      <b-card class="my-3">
         <b-jumbotron>
           <template v-slot:header>
             <img
@@ -223,6 +223,8 @@ export default {
 .Signup {
   overflow-y: auto;
   height: 100vh;
+}
+.Signup-flexContainer {
   display: flex;
   justify-content: center;
   align-items: center;
