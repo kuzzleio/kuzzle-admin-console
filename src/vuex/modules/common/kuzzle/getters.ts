@@ -2,12 +2,6 @@ import { KuzzleState } from './types'
 import { createGetters } from 'direct-vuex'
 
 export const getters = createGetters<KuzzleState>()({
-  // kuzzleIsConnected(state) {
-  //   return state.connectedTo !== null
-  // },
-  // currentEnvironmentId(state) {
-  //   return state.connectedTo
-  // },
   currentEnvironment(state, getters) {
     if (!getters.hasEnvironment) {
       return null
