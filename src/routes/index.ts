@@ -16,25 +16,6 @@ import DataSubRoutes from './children/data'
 
 Vue.use(VueRouter)
 
-const combineGuards = guards => {
-  return async (from, to, next) => {
-    let failed = false
-    for (const g of guards) {
-      const r = await g()
-
-      if (r !== true) {
-        failed = true
-        next(r)
-        break
-      }
-    }
-
-    if (!failed) {
-      next()
-    }
-  }
-}
-
 export default function createRoutes(log, kuzzle) {
   const environmentsGuard = async (from, to, next) => {
     store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
