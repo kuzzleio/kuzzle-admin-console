@@ -28,6 +28,14 @@
           <template v-slot:footer>
             <div class="text-right">
               <b-button
+                class="CreateEnvironment-import mr-3"
+                data-cy="CreateEnvironment-import"
+                variant="outline-primary"
+                @click="importEnv"
+              >
+                Import a connection
+              </b-button>
+              <b-button
                 data-cy="Environment-SubmitButton"
                 variant="primary"
                 type="submit"

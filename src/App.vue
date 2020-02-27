@@ -58,6 +58,7 @@
                 data-cy="App-loggedIn"
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
+                @environment::importEnv="importEnvironment"
               />
             </template>
           </template>

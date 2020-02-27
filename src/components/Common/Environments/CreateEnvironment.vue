@@ -6,17 +6,6 @@
       Kuzzle supports HTTPS/SSL connections.
     </b-alert>
 
-    <div v-if="!environmentId" class="mb-3 text-right">
-      <b-button
-        class="CreateEnvironment-import btn"
-        data-cy="CreateEnvironment-import"
-        variant="outline-info"
-        @click="$emit('environment::importEnv')"
-      >
-        Import a connection
-      </b-button>
-    </div>
-
     <b-form>
       <b-form-group
         description="A friendly name for the connection"

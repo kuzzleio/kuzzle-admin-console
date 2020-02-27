@@ -33,12 +33,8 @@
       </div>
     </b-dropdown-item>
     <b-dropdown-divider></b-dropdown-divider>
-    <b-dropdown-item>
-      <a
-        data-cy="EnvironmentSwitch-newConnectionBtn"
-        href=""
-        @click.prevent="$emit('environment::create')"
-      >
+    <b-dropdown-item @click.prevent="$emit('environment::create')">
+      <a data-cy="EnvironmentSwitch-newConnectionBtn" href="">
         Create new connection
       </a>
     </b-dropdown-item>
@@ -47,8 +43,8 @@
         Export all
       </a>
     </b-dropdown-item>
-    <b-dropdown-item>
-      <a href="" @click.prevent="$emit('environment::importEnv')">
+    <b-dropdown-item @click.prevent="$emit('environment::importEnv')">
+      <a href="">
         Import
       </a>
     </b-dropdown-item>
