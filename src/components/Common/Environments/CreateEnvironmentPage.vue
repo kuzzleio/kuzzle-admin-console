@@ -1,40 +1,45 @@
 <template>
-  <form class="CreateEnvironmentPage" @submit.prevent="createEnvironment">
-    <b-container>
-      <b-card>
-        <b-jumbotron
-          lead="Please provide the details below to connect to your Kuzzle instance."
-        >
-          <template v-slot:header
-            ><img
-              src="../../../assets/logo.svg"
-              alt="Welcome to the Kuzzle Admin Console"
-              height="60"
-            />
-            <h1>Create a Connection</h1>
+  <div class="CreateEnvironmentPage">
+    <form
+      class="CreateEnvironmentPage-form"
+      @submit.prevent="createEnvironment"
+    >
+      <b-container>
+        <b-card class="my-3">
+          <b-jumbotron
+            lead="Please provide the details below to connect to your Kuzzle instance."
+          >
+            <template v-slot:header
+              ><img
+                src="../../../assets/logo.svg"
+                alt="Welcome to the Kuzzle Admin Console"
+                height="60"
+              />
+              <h1>Create a Connection</h1>
+            </template>
+          </b-jumbotron>
+
+          <create-environment
+            ref="createEnvironmentComponent"
+            :environment-id="null"
+            @environment::importEnv="importEnv"
+          />
+
+          <template v-slot:footer>
+            <div class="text-right">
+              <b-button
+                data-cy="Environment-SubmitButton"
+                variant="primary"
+                type="submit"
+              >
+                Create connection
+              </b-button>
+            </div>
           </template>
-        </b-jumbotron>
-
-        <create-environment
-          ref="createEnvironmentComponent"
-          :environment-id="null"
-          @environment::importEnv="importEnv"
-        />
-
-        <template v-slot:footer>
-          <div class="text-right">
-            <b-button
-              data-cy="Environment-SubmitButton"
-              variant="primary"
-              type="submit"
-            >
-              Create connection
-            </b-button>
-          </div>
-        </template>
-      </b-card>
-    </b-container>
-  </form>
+        </b-card>
+      </b-container>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -62,6 +67,9 @@ export default {
 <style lang="scss">
 .CreateEnvironmentPage {
   height: 100vh;
+  overflow: auto;
+}
+.CreateEnvironmentPage-form {
   display: flex;
   flex-direction: column;
   justify-content: center;
