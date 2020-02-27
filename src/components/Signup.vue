@@ -194,6 +194,7 @@ export default {
           }
         )
       }
+      this.waiting = false
     },
     loginAsGuest() {
       this.error = null
