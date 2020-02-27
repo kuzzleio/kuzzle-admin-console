@@ -37,12 +37,16 @@
         </b-nav-item>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
-        <b-nav-text class="mr-2 text-white">
-          <b>{{ currentUserName }}</b> on
+        <b-nav-text
+          class="MainMenu-username mr-2 text-white text-truncate"
+          :title="currentUserName"
+        >
+          <b>{{ currentUserName }}</b>
         </b-nav-text>
+        <b-nav-text class="mr-2">on</b-nav-text>
         <environment-switch
+          class="MainMenu-envSwitch"
           :blend-color="true"
-          style="display: inline-flex"
           @environment::importEnv="importEnv"
           @environment::create="editEnvironment"
           @environment::delete="deleteEnvironment"
@@ -121,5 +125,12 @@ export default {
     height: 50px;
     padding: 5px 50px;
   }
+}
+.MainMenu-envSwitch {
+  display: inline-flex;
+  max-width: 250px;
+}
+.MainMenu-username {
+  max-width: 250px;
 }
 </style>

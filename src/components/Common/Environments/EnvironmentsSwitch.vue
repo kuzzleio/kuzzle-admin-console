@@ -3,6 +3,7 @@
     ref="dropdown"
     class="EnvironmentSwitch"
     data-cy="EnvironmentSwitch"
+    toggle-class="text-truncate"
     variant="outline-secondary"
     :text="currentEnvironmentName"
     :block="block"
@@ -15,7 +16,10 @@
       :key="env.name"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
     >
-      <div @click="clickSwitch(index)" class="EnvironmentSwitch-env-name mr-3">
+      <div
+        @click="clickSwitch(index)"
+        class="EnvironmentSwitch-env-name text-truncate mr-3"
+      >
         {{ env.name }}
         <div class="text-muted">{{ env.host }}</div>
       </div>
@@ -138,6 +142,7 @@ export default {
 
   .EnvironmentSwitch-env-name {
     flex: 1;
+    max-width: 250px;
   }
 }
 </style>
