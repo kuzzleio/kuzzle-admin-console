@@ -118,11 +118,10 @@
               For example:
               <pre>
 {
-"age": { "type": "integer" },
-"name": { "type": "text" }
+  "age": { "type": "integer" },
+  "name": { "type": "text" }
 }
-        </pre
-              >
+              </pre>
             </div>
           </b-col>
         </b-row>
