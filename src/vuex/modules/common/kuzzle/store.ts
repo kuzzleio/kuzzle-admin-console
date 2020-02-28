@@ -188,6 +188,7 @@ const actions = createActions({
       loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
       commit.setEnvironments(loadedEnv)
     } catch (e) {
+      // eslint-disable-next-line
       console.error(e)
       commit.setEnvironments({})
     }
@@ -196,6 +197,7 @@ const actions = createActions({
       currentId = localStorage.getItem(LS_CURRENT_ENV)
       commit.setCurrentEnvironment(currentId)
     } catch (error) {
+      // eslint-disable-next-line
       console.warn(
         `Something went wrong while setting the current environment, ${error.message}`
       )
