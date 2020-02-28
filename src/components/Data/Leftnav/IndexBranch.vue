@@ -49,17 +49,20 @@
         data-cy="Treeview-item"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
-        :to="{
-          name: 'DataCollectionWatch',
-          params: { index: indexName, collection: collectionName }
-        }"
       >
-        <i class="fa fa-bolt" aria-hidden="true" title="Volatile collection" />
-        <span v-html="highlight(truncateName(collectionName, 15), filter)" />
         <i
-          class="fa fa-times right remove"
-          @click.prevent="removeRealtimeCollection(indexName, collectionName)"
+          class="fa fa-bolt ml-1 mr-2"
+          aria-hidden="true"
+          title="Volatile collection"
         />
+        <router-link
+          :to="{
+            name: 'DataCollectionWatch',
+            params: { index: indexName, collection: collectionName }
+          }"
+        >
+          <span v-html="highlight(truncateName(collectionName, 15), filter)" />
+        </router-link>
       </div>
     </div>
   </div>

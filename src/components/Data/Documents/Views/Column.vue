@@ -282,8 +282,6 @@ export default {
       }
     },
     removeColumn(col) {
-      console.log(col)
-
       this.mappingArray.push(this.customFields[col])
       this.mappingArray.sort()
       this.customFields.splice(col, 1)

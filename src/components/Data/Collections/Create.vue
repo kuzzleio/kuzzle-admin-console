@@ -1,17 +1,17 @@
 <template>
-  <div v-if="hasRights">
-    <create-or-update
-      headline="Create a new collection"
-      :error="error"
-      :index="index"
-      @collection-create::create="create"
-      @collection-create::reset-error="error = ''"
-      @document-create::error="setError"
-    />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+  <b-container class="CollectionCreate">
+    <div v-if="hasRights">
+      <create-or-update
+        headline="Create a new collection"
+        submit-label="Create"
+        :index="index"
+        @submit="create"
+      />
+    </div>
+    <div v-else>
+      <page-not-allowed />
+    </div>
+  </b-container>
 </template>
 
 <script>
@@ -28,42 +28,43 @@ export default {
   props: {
     index: String
   },
-  data() {
-    return {
-      error: ''
-    }
-  },
   computed: {
     hasRights() {
       return canCreateCollection(this.index, this.collection)
     }
   },
-  mounted() {
-    this.$store.direct.commit.collection.resetCollectionDetail()
-  },
   methods: {
-    create() {
-      this.error = ''
-
-      this.$store.direct.dispatch.index
-        .createCollectionInIndex({
+    async create(payload) {
+      try {
+        await this.$store.direct.dispatch.index.createCollectionInIndex({
           index: this.index,
-          collection: this.$store.state.collection.name,
-          isRealtimeOnly: this.$store.state.collection.isRealtimeOnly
+          collection: payload.name,
+          isRealtimeOnly: payload.realtimeOnly,
+          mapping: payload.mapping,
+          dynamic: payload.dynamic
         })
-        .then(() => {
-          this.$router.push({
-            name: 'DataIndexSummary',
-            params: { index: this.index }
-          })
+        this.$router.push({
+          name: 'DataIndexSummary',
+          params: { index: this.index }
         })
-        .catch(e => {
-          this.error = e.message
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(error.message, {
+          title: 'Ooops! Something went wrong while creating the collection.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
-    },
-    setError(payload) {
-      this.error = payload
+      }
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.CollectionCreate {
+  margin-bottom: 4em;
+}
+</style>

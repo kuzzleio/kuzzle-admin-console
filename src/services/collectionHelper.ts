@@ -176,8 +176,8 @@ export const formatSchema = schema => {
  * @param allowForm {Boolean}
  * @returns {{properties: {}, _meta: {schema: *, allowForm: *}}}
  */
-export const mergeMetaAttributes = ({ mapping, schema, allowForm }) => {
-  return { properties: { ...mapping }, _meta: { schema, allowForm } }
+export const mergeMetaAttributes = ({ mapping, schema, dynamic }) => {
+  return { properties: { ...mapping }, _meta: { schema }, dynamic }
 }
 
 /**
