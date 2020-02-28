@@ -1,12 +1,14 @@
 <template>
   <div v-if="hasRights">
     <create-or-update
-      :headline="headline"
-      :error="error"
+      headline="Update collection"
+      submit-label="Update"
+      :collection="collection"
       :index="index"
-      @collection-create::create="update"
-      @collection-create::reset-error="error = ''"
-      @document-create::error="setError"
+      :dynamic="dynamic"
+      :mapping="mapping"
+      :realtime-only="realtimeOnly"
+      @submit="update"
     />
   </div>
   <div v-else>
@@ -27,17 +29,17 @@ export default {
     PageNotAllowed
   },
   props: {
-    index: String
+    index: { type: String, required: true },
+    collection: { type: String, required: true }
   },
   data() {
     return {
-      error: ''
+      dynamic: 'false',
+      mapping: {},
+      realtimeOnly: false
     }
   },
   computed: {
-    headline() {
-      return 'Update ' + this.$route.params.collection
-    },
     hasRights() {
       return canEditCollection(this.index, this.collection)
     }
@@ -45,32 +47,55 @@ export default {
   async mounted() {
     try {
       await this.$store.direct.dispatch.index.listIndexesAndCollections()
-      await this.$store.direct.dispatch.collection.fetchCollectionDetail({
-        index: this.index,
-        collection: this.$route.params.collection
-      })
+      const details = await this.$store.direct.dispatch.collection.fetchCollectionDetail(
+        {
+          index: this.index,
+          collection: this.collection
+        }
+      )
+
+      this.dynamic = details.dynamic
+      this.mapping = details.mapping
+      this.realtimeOnly = details.realtimeOnly
     } catch (e) {
-      this.$store.direct.commit.toaster.setToast({ text: e.message })
-      this.$router.push({
-        name: 'Indexes',
-        params: { index: this.index }
+      this.$log.error(e)
+      this.$bvToast.toast(e.message, {
+        title:
+          'Ooops! Something went wrong while fetching the details of the collection.',
+        variant: 'warning',
+        toaster: 'b-toaster-bottom-right',
+        appendToast: true,
+        dismissible: true,
+        noAutoHide: true
       })
     }
   },
   methods: {
-    async update() {
+    async update(payload) {
       this.error = ''
 
       try {
         await this.$store.direct.dispatch.collection.updateCollection({
-          index: this.index
+          index: this.index,
+          name: payload.name,
+          mapping: payload.mapping,
+          realtimeOnly: payload.realtimeOnly,
+          dynamic: payload.dynamic
         })
         this.$router.push({
           name: 'Indexes',
           params: { index: this.index }
         })
       } catch (e) {
-        this.error = e.message
+        this.$log.error(e)
+        this.$bvToast.toast(e.message, {
+          title: 'Ooops! Something went wrong while updating the collection.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
     },
     setError(payload) {

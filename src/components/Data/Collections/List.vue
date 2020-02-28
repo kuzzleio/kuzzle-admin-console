@@ -75,7 +75,7 @@
           <i
             class="fa fa-2x"
             :class="{
-              'fa-bolt': type.value === 'realtime',
+              'fa-bolt ml-2': type.value === 'realtime',
               'fa-th-list': type.value === 'stored'
             }"
             :title="type.value === 'realtime' ? 'Realtime' : 'Persisted'"
@@ -122,7 +122,10 @@
             class="mx-1"
             variant="link"
             title="Edit collection"
-            :disabled="!canEditCollection(index, row.item.name)"
+            :disabled="
+              row.item.type !== 'stored' ||
+                !canEditCollection(index, row.item.name)
+            "
             :to="
               canEditCollection(index, row.item.name)
                 ? {

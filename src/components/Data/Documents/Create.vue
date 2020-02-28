@@ -34,7 +34,7 @@ import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 
 export default {
-  name: 'DocumentCreateOrUpdate',
+  name: 'DocumentCreate',
   components: {
     Headline,
     CreateOrUpdate,
@@ -93,7 +93,7 @@ export default {
         })
       }
     },
-    cancel() {
+    onCancel() {
       this.$router.push({
         name: 'DocumentList',
         params: { index: this.index, collection: this.collection }
