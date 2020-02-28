@@ -187,10 +187,18 @@ const actions = createActions({
     try {
       loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
       commit.setEnvironments(loadedEnv)
+    } catch (e) {
+      console.error(e)
+      commit.setEnvironments({})
+    }
+
+    try {
       currentId = localStorage.getItem(LS_CURRENT_ENV)
       commit.setCurrentEnvironment(currentId)
-    } catch (e) {
-      commit.setEnvironments({})
+    } catch (error) {
+      console.warn(
+        `Something went wrong while setting the current environment, ${error.message}`
+      )
     }
   }
 })
