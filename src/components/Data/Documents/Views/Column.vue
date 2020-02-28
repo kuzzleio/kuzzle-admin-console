@@ -10,18 +10,16 @@
           text="Select columns to display"
         >
           <b-dropdown-text
-            v-for="field of formatedSelectFields"
+            v-for="field of formattedSelectFields"
             :key="`dropdown-${field.text}`"
           >
-            <div
-              class="inlineDisplay pointer"
-              @click="toggleColumn(field.value)"
-            >
+            <div class="inlineDisplay pointer">
               <span class="inlineDisplay-item">
                 <b-form-checkbox
                   class="mx-2"
                   :checked="field.displayed"
                   :data-cy="`SelectField--${field.text}`"
+                  @change="toggleColumn(field.text, $event)"
                 />
               </span>
               <span class="inlineDisplay-item code" :title="field.text">{{
@@ -29,7 +27,7 @@
               }}</span>
             </div>
           </b-dropdown-text>
-          <b-dropdown-text v-if="formatedSelectFields.length === 0">
+          <b-dropdown-text v-if="formattedSelectFields.length === 0">
             <span class="inlineDisplay-item">
               No searchable field
             </span>
@@ -100,20 +98,17 @@
           sort-icon-left
           no-border-collapse
           small
-          :fields="formatedTableFields"
-          :items="formatedItems"
+          :fields="formattedTableFields"
+          :items="formattedItems"
         >
           <template v-slot:head()="data">
             <div class="inlineDisplay mx-1">
               <span
                 class="inlineDisplay-item text-secondary m-3"
                 :data-cy="`ColumnViewHead--${data.label}`"
-                :id="data.label"
+                :title="data.label"
                 >{{ truncateName(getLastKeyPath(data.label), 20) }}</span
               >
-              <b-tooltip class="code" placement="left" :target="data.label">
-                {{ data.label }}
-              </b-tooltip>
               <span class="inlineDisplay-item">
                 <i
                   v-if="data.field.deletable"
@@ -192,15 +187,12 @@
                 :id="`tooltip-target-${data.item.id}-${data.field.key}`"
                 v-if="data.value.array === true"
               >
-                <i class="fa fa-info" />
+                <i
+                  class="fa fa-info"
+                  title="This value cannot be displayed because it contains or is
+                contained in an array."
+                />
               </b-badge>
-              <b-tooltip
-                :target="`tooltip-target-${data.item.id}-${data.field.key}`"
-                triggers="hover"
-              >
-                This value cannot be displayed because it contains or is
-                contained in an array.
-              </b-tooltip>
             </div>
           </template>
         </b-table>
@@ -238,8 +230,28 @@ export default {
   data() {
     return {
       itemsPerPage: [10, 25, 50, 100, 500],
-      mappingArray: [],
-      defaultFields: [
+      selectedFields: [],
+      fieldList: []
+    }
+  },
+  computed: {
+    hasSelectedDocuments() {
+      return this.selectedDocuments.length > 0
+    },
+    bulkDeleteEnabled() {
+      return (
+        this.canDeleteDocument(this.index, this.collection) &&
+        this.hasSelectedDocuments
+      )
+    },
+    formattedSelectFields() {
+      return this.fieldList.map(field => ({
+        text: field,
+        displayed: this.selectedFields.includes(field)
+      }))
+    },
+    formattedTableFields() {
+      return [
         {
           key: 'actions',
           label: '',
@@ -259,45 +271,29 @@ export default {
           thClass: 'align-middle'
         }
       ]
-    }
-  },
-  computed: {
-    hasSelectedDocuments() {
-      return this.selectedDocuments.length > 0
-    },
-    bulkDeleteEnabled() {
-      return (
-        this.canDeleteDocument(this.index, this.collection) &&
-        this.hasSelectedDocuments
-      )
-    },
-    formatedSelectFields() {
-      return this.mappingArray.map((attr, index) => ({
-        value: index,
-        text: attr.key,
-        displayed: attr.displayed
-      }))
-    },
-    formatedTableFields() {
-      return this.defaultFields.concat(
-        this.mappingArray
-          .map((attr, index) => ({
-            key: attr.key,
+        .concat(
+          this.fieldList.map((field, index) => ({
+            key: field,
             index: index,
             sortable: true,
-            displayed: attr.displayed,
             deletable: true,
             tdClass: 'align-middle columnClass',
             thClass: 'align-middle'
           }))
-          .filter(attr => attr.displayed)
-      )
+        )
+        .filter(field => {
+          return (
+            field.key === 'id' ||
+            field.key === 'actions' ||
+            this.selectedFields.includes(field.key)
+          )
+        })
     },
-    formatedItems() {
+    formattedItems() {
       return this.documents.map(d => {
         const doc = {}
         doc.id = d.id
-        for (const { key } of this.formatedTableFields) {
+        for (const { key } of this.formattedTableFields) {
           // each columns path
           if (key === 'id') continue // column id is always ok
           // if there is an array in the current document within the 'path'
@@ -333,17 +329,6 @@ export default {
       return `checkbox-${this.document.id}`
     }
   },
-  watch: {
-    $route() {
-      this.initColumnsFields()
-    },
-    mapping() {
-      this.initColumnsFields()
-    }
-  },
-  mounted() {
-    this.initColumnsFields()
-  },
   methods: {
     truncateName,
     canDeleteDocument,
@@ -371,35 +356,26 @@ export default {
     toggleSelectDocument(id) {
       this.$emit('checkbox-click', id)
     },
-    initColumnsFields() {
-      this.mappingArray = this.buildAttributeList(this.mapping)
-      const columnsConfig = JSON.parse(
-        localStorage.getItem('columnViewConfig') || {}
+    initSelectedFields() {
+      const columnViewConfig = JSON.parse(
+        localStorage.getItem('columnViewConfig') || '{}'
       )
       if (
-        columnsConfig[this.index] &&
-        columnsConfig[this.index][this.collection]
+        columnViewConfig[this.index] &&
+        columnViewConfig[this.index][this.collection]
       ) {
-        this.mappingArray = this.mappingArray.map((attr, index) => {
-          const displayed = _.get(
-            columnsConfig,
-            `${this.index}.${this.collection}[${index}].displayed`
-          )
-          if (displayed !== null) {
-            attr.displayed = displayed
-          }
-          return attr
-        })
+        this.selectedFields = columnViewConfig[this.index][this.collection]
       }
     },
-    toggleColumn(index) {
-      this.mappingArray[index].displayed = !this.mappingArray[index].displayed
-      this.saveToLocalStorage()
-    },
-    hideColumn(index) {
-      this.mappingArray[index].displayed = false
-      this.newCustomField = null
-      this.saveToLocalStorage()
+    toggleColumn(field, value) {
+      this.$log.debug(`Toggling field ${field}`)
+      if (value === true && !this.selectedFields.includes(field)) {
+        this.selectedFields.push(field)
+      }
+      if (value === false) {
+        this.$delete(this.selectedFields, this.selectedFields.indexOf(field))
+      }
+      this.saveSelectedFieldsToLocalStorage()
     },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
@@ -426,7 +402,7 @@ export default {
         value: ret
       }
     },
-    saveToLocalStorage() {
+    saveSelectedFieldsToLocalStorage() {
       if (this.index && this.collection) {
         const config = JSON.parse(
           localStorage.getItem('columnViewConfig') || '{}'
@@ -434,7 +410,7 @@ export default {
         if (!config[this.index]) {
           config[this.index] = {}
         }
-        config[this.index][this.collection] = this.mappingArray
+        config[this.index][this.collection] = this.selectedFields
         localStorage.setItem('columnViewConfig', JSON.stringify(config))
       }
     },
@@ -451,7 +427,7 @@ export default {
         this.$emit('edit', id)
       }
     },
-    buildAttributeList(mapping, path = []) {
+    buildFieldList(mapping, path = []) {
       let attributes = []
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
@@ -459,7 +435,7 @@ export default {
           Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
         ) {
           attributes = attributes.concat(
-            this.buildAttributeList(
+            this.buildFieldList(
               attributeValue.properties,
               path.concat(attributeName)
             )
@@ -467,13 +443,31 @@ export default {
         } else if (
           Object.prototype.hasOwnProperty.call(attributeValue, 'type')
         ) {
-          attributes = attributes.concat({
-            key: path.concat(attributeName).join('.'),
-            displayed: false
-          })
+          attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
       return attributes
+    },
+    initFields() {
+      this.initSelectedFields()
+      this.fieldList = this.buildFieldList(this.mapping)
+    }
+  },
+  mounted() {
+    this.initFields()
+  },
+  watch: {
+    $route: {
+      immediate: false,
+      handler() {
+        this.initFields()
+      }
+    },
+    mapping: {
+      immediate: false,
+      handler() {
+        this.initFields()
+      }
     }
   }
 }
