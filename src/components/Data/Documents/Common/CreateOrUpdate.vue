@@ -127,11 +127,19 @@ export default {
 
       if (this.$refs.jsoneditor.isValid()) {
         this.submitting = true
-        let json = this.$refs.jsoneditor.getJson()
+        const json = this.$refs.jsoneditor.getJson()
         this.$emit('submit', { ...json }, this.idValue, replace)
         this.submitting = false
       } else {
-        // TODO show JSON error
+        this.$bvToast.toast(
+          'The JSON specification of the document contains errors',
+          {
+            title: 'You cannot proceed',
+            variant: 'info',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
       }
     }
   }
