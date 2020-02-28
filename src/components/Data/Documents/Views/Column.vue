@@ -1,5 +1,5 @@
 <template>
-  <div class="Column">
+  <div class="Column" data-cy="DocumentList-Column">
     <b-row no-gutters>
       <b-col cols="8">
         <b-dropdown

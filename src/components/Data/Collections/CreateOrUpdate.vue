@@ -16,9 +16,12 @@
             :to="{ name: 'DataIndexSummary', params: { index } }"
             >Cancel</b-button
           >
-          <b-button variant="primary" @click="onSubmit">{{
-            submitLabel
-          }}</b-button>
+          <b-button
+            data-cy="CollectionCreateOrUpdate-submit"
+            variant="primary"
+            @click="onSubmit"
+            >{{ submitLabel }}</b-button
+          >
         </div>
       </template>
       <b-form-group
@@ -41,6 +44,7 @@
           >
         </template>
         <b-input
+          data-cy="CollectionCreateOrUpdate-name"
           id="collection-name-input"
           type="text"
           name="collection"
@@ -67,6 +71,7 @@
           >
         </template>
         <b-form-checkbox
+          data-cy="CollectionCreateOrUpdate-realtimeOnly"
           id="collection-is-realtime-checkbox"
           tabindex="1"
           v-model="realtimeOnlyState"

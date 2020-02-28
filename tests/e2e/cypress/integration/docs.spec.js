@@ -97,7 +97,7 @@ describe('Document List', function() {
 
     cy.get(`[data-cy="Treeview-item"][title="${collectionName}"]`).click()
     cy.url().should('contain', 'listViewType=column')
-    cy.get('.DocumentList-column')
+    cy.get('[data-cy="DocumentList-Column"]')
 
     cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
     cy.url().should('contain', 'listViewType=list')
@@ -272,7 +272,6 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('[data-cy="noAdminAlert"] .close').click()
     cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
@@ -310,7 +309,6 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('[data-cy="noAdminAlert"] .close').click()
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
