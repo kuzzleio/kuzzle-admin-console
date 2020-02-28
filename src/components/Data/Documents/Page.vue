@@ -4,28 +4,27 @@
       class="DocumentList--container"
       :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
     >
-      <b-row align-v="center">
-        <b-col sm="9">
+      <b-row>
+        <b-col sm="8">
           <headline>
             <span class="code" :title="collection">{{
               truncateName(collection, 20)
             }}</span>
-            <collection-dropdown
-              class="icon-medium icon-black ml-2"
-              :active-view="listViewType"
-              :index="index"
-              :collection="collection"
-              @list="onListViewClicked"
-              @column="onColumnViewClicked"
-            />
           </headline>
         </b-col>
-        <b-col class="text-right">
+        <b-col class="text-right mt-3">
           <b-button
             variant="primary"
             :to="{ name: 'DataCreateDocument', params: { index, collection } }"
             >Create New Document</b-button
-          >
+          ><collection-dropdown
+            class="icon-medium icon-black ml-2"
+            :active-view="listViewType"
+            :index="index"
+            :collection="collection"
+            @list="onListViewClicked"
+            @column="onColumnViewClicked"
+          />
         </b-col>
       </b-row>
 
