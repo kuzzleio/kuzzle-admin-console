@@ -28,6 +28,7 @@ const mutations = createMutations<KuzzleState>()({
         `Unable to add new environment to already existing id "${payload.id}"`
       )
     }
+    // TODO Check environment integrity
 
     state.environments = {
       ...state.environments,
@@ -54,18 +55,12 @@ const mutations = createMutations<KuzzleState>()({
     state.errorFromKuzzle = error
   },
   setEnvironments(state, payload) {
+    // TODO Split in multiple setEnvironment
     state.environments = { ...payload }
   },
   setCurrentEnvironment(state, payload) {
-    if (payload === null) {
-      throw new Error(
-        'Cannot connect to a null environment. To reset connection, use the RESET mutation.'
-      )
-    }
     if (Object.keys(state.environments).indexOf(payload) === -1) {
-      throw new Error(
-        `The given id ${payload} does not correspond to any existing environment.`
-      )
+      return
     }
     state.currentId = payload
   },
@@ -184,24 +179,11 @@ const actions = createActions({
     let currentId
     const { commit } = kuzzleActionContext(context)
 
-    try {
-      loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
-      commit.setEnvironments(loadedEnv)
-    } catch (e) {
-      // eslint-disable-next-line
-      console.error(e)
-      commit.setEnvironments({})
-    }
+    loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
+    commit.setEnvironments(loadedEnv)
 
-    try {
-      currentId = localStorage.getItem(LS_CURRENT_ENV)
-      commit.setCurrentEnvironment(currentId)
-    } catch (error) {
-      // eslint-disable-next-line
-      console.warn(
-        `Something went wrong while setting the current environment, ${error.message}`
-      )
-    }
+    currentId = localStorage.getItem(LS_CURRENT_ENV)
+    commit.setCurrentEnvironment(currentId)
   }
 })
 

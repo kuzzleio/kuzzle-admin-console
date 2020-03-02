@@ -18,7 +18,15 @@ Vue.use(VueRouter)
 
 export default function createRoutes(log, kuzzle) {
   const environmentsGuard = async (from, to, next) => {
-    store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+    log.debug('Router:EnvironmentsGuard')
+    try {
+      store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+    } catch (error) {
+      log.error(
+        'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.'
+      )
+      log.error(error.message)
+    }
     if (store.getters.kuzzle.hasEnvironment) {
       log.debug('Has environments')
       // TODO check whether current environment is set
@@ -59,7 +67,6 @@ export default function createRoutes(log, kuzzle) {
       },
       {
         path: '/',
-        name: 'ConnectionAwareContainer',
         beforeEnter: environmentsGuard,
         component: ConnectionAwareContainer,
         children: [
@@ -75,7 +82,6 @@ export default function createRoutes(log, kuzzle) {
           },
           {
             path: '/',
-            name: 'Authentified',
             component: Home,
             beforeEnter: authenticationGuard,
             children: [

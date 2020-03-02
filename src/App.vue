@@ -87,9 +87,6 @@ import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
 import MainSpinner from './components/Common/MainSpinner'
 
-// @TODO we'll have to import FA from global.scss one day...
-import '@fortawesome/fontawesome-free/css/all.css'
-
 export default {
   name: 'KuzzleAdminConsole',
   components: {
@@ -110,11 +107,30 @@ export default {
   },
 
   async mounted() {
+    this.$log.debug('App:Mounted')
     this.initializing = true
     try {
-      this.$store.direct.commit.auth.setTokenValid(false)
+      // NOTE This operation is pretty useless here, as the environments must be
+      // loaded in the router guard. We double check here in order to display a
+      // warning if necessary, since we cannot show a toast from the router guard.
       this.$store.direct.dispatch.kuzzle.loadEnvironments()
-      await this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
+    } catch (error) {
+      this.$log.error(localStorage.getItem('environments'))
+      this.$bvToast.toast(
+        'The list of saved collections seems to be malformed. If you know how to fix it, take a look at the console.',
+        {
+          title: 'Ooops! Something went wrong while loading the collections.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        }
+      )
+    }
+
+    try {
+      this.$store.direct.commit.auth.setTokenValid(false)
 
       this.$kuzzle.removeAllListeners()
       this.$kuzzle.on('queryError', error => {
@@ -146,7 +162,8 @@ export default {
         }
       })
     } catch (error) {
-      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
+      // TODO show error page or Toast
+      // this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
     }
     this.initializing = false
   },

@@ -2,7 +2,7 @@
   <div class="Signup">
     <b-container class="Signup-flexContainer">
       <b-card class="my-3">
-        <b-jumbotron>
+        <b-jumbotron class="p-5">
           <template v-slot:header>
             <img
               src="../assets/logo.svg"
@@ -102,6 +102,13 @@
 
         <template v-slot:footer>
           <div class="text-right">
+            <b-button
+              class="mr-3"
+              data-cy="LoginAsAnonymous-Btn"
+              variant="link"
+              @click="$router.push({ name: 'Login' })"
+              >Go to Login Page</b-button
+            >
             <b-button
               class="mr-3"
               data-cy="LoginAsAnonymous-Btn"
