@@ -89,7 +89,7 @@ describe('Environments', function() {
     })
   })
 
-  it('is able to create an unreachable environment and switch back to the reachable one', function() {
+  it.only('is able to create an unreachable environment and switch back to the reachable one', function() {
     const reachableEnvName = 'reachable'
     const unreachableEnvName = 'unreachable'
     localStorage.setItem(
@@ -97,7 +97,7 @@ describe('Environments', function() {
       JSON.stringify({
         [reachableEnvName]: {
           name: reachableEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
