@@ -106,17 +106,15 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
-
+import {
+  DEFAULT_COLOR,
+  envColors
+} from '../../../vuex/modules/common/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
-const DEFAULT_COLOR = 'darkblue'
 
 export default {
   name: 'CreateEnvironment',
   components: {},
-  directives: {
-    Focus
-  },
   props: ['environmentId'],
   data() {
     return {
@@ -132,20 +130,14 @@ export default {
         color: DEFAULT_COLOR,
         ssl: useHttps
       },
-      colors: [
-        DEFAULT_COLOR,
-        'lightblue',
-        'purple',
-        'green',
-        'orange',
-        'red',
-        'grey',
-        'magenta'
-      ],
+
       submitting: false
     }
   },
   computed: {
+    colors() {
+      return envColors
+    },
     environments() {
       return this.$store.direct.state.kuzzle.environments
     },

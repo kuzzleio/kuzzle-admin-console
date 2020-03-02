@@ -18,21 +18,59 @@ export const state: KuzzleState = {
   errorFromKuzzle: undefined
 }
 
+export const DEFAULT_COLOR = 'darkblue'
+
+export const envColors = [
+  DEFAULT_COLOR,
+  'lightblue',
+  'purple',
+  'green',
+  'orange',
+  'red',
+  'grey',
+  'magenta'
+]
+
+const checkEnvironment = e => {
+  if (!e.name) {
+    throw new Error(`Invalid environment name: ${e.name}`)
+  }
+  if (!e.host) {
+    throw new Error(`Invalid environment host: ${e.host}`)
+  }
+  if (!e.port) {
+    throw new Error(`Invalid environment port: ${e.port}`)
+  }
+  if (typeof e.port !== 'number') {
+    throw new Error(
+      `Type of environment port is invalid: ${e.port} (must be a number)`
+    )
+  }
+  if (e.ssl === undefined || e.ssl === null) {
+    throw new Error('SSL parameter not found (must be a boolean)')
+  }
+  if (!e.color) {
+    throw new Error(`Invalid environment color: ${e.color}`)
+  }
+  if (!envColors.includes(e.color)) {
+    throw new Error(`Invalid environment color: ${e.color}`)
+  }
+  return true
+}
+
 const mutations = createMutations<KuzzleState>()({
   createEnvironment(state, payload) {
     if (!payload) {
-      throw new Error(`The environment can't be falsy`)
+      return
     }
     if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
-      throw new Error(
-        `Unable to add new environment to already existing id "${payload.id}"`
-      )
+      return
     }
-    // TODO Check environment integrity
-
-    state.environments = {
-      ...state.environments,
-      [payload.id]: payload.environment
+    if (checkEnvironment(payload.environment)) {
+      state.environments = {
+        ...state.environments,
+        [payload.id]: payload.environment
+      }
     }
   },
   updateEnvironment(state, payload) {
@@ -53,10 +91,6 @@ const mutations = createMutations<KuzzleState>()({
   },
   setErrorFromKuzzle(state, error) {
     state.errorFromKuzzle = error
-  },
-  setEnvironments(state, payload) {
-    // TODO Split in multiple setEnvironment
-    state.environments = { ...payload }
   },
   setCurrentEnvironment(state, payload) {
     state.currentId = payload
@@ -82,7 +116,6 @@ const actions = createActions({
     commit.createEnvironment(payload)
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
-    // dispatch.switchEnvironment(payload.id)
     return payload.id
   },
   deleteEnvironment(context, id) {
@@ -115,14 +148,6 @@ const actions = createActions({
       environment: payload.environment
     })
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
-
-    // if (
-    //   getters.currentEnvironment &&
-    //   getters.currentEnvironment.name &&
-    //   getters.currentEnvironment.name !== payload.id
-    // ) {
-    //   dispatch.switchEnvironment(payload.id)
-    // }
   },
   async connectToCurrentEnvironment(context) {
     const { dispatch, state, getters } = kuzzleActionContext(context)
@@ -178,7 +203,12 @@ const actions = createActions({
     const { commit } = kuzzleActionContext(context)
 
     loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
-    commit.setEnvironments(loadedEnv)
+    Object.keys(loadedEnv).forEach(envName => {
+      commit.createEnvironment({
+        environment: loadedEnv[envName],
+        id: envName
+      })
+    })
 
     currentId = localStorage.getItem(LS_CURRENT_ENV)
     commit.setCurrentEnvironment(currentId)

@@ -31,7 +31,7 @@
       show
       variant="danger"
       :key="k"
-      >Error: {{ err }}</b-alert
+      >{{ err }}</b-alert
     >
   </b-modal>
 </template>

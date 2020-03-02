@@ -1,44 +1,6 @@
 <template>
   <div class="App">
     <main-spinner v-if="initializing"></main-spinner>
-
-    <!-- <template v-else>
-      <div
-        v-if="!$store.direct.getters.kuzzle.hasEnvironment"
-        class="App-noEnvironments"
-      >
-        <create-environment-page @environment::importEnv="importEnvironment" />
-      </div>
-      <template v-else>
-        <offline
-          v-if="$store.direct.state.kuzzle.connecting"
-          data-cy="App-disconnected"
-        >
-        </offline>
-        <template v-else>
-          <div
-            data-cy="App-connected"
-            v-if="!$store.direct.getters.auth.isAuthenticated"
-          >
-            <div
-              v-if="!$store.direct.getters.auth.adminAlreadyExists"
-              data-cy="App-noAdmin"
-            >
-              <sign-up
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnvironment"
-              />
-            </div>
-            <div v-else>
-              <login
-                data-cy="App-hasAdmin"
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnvironment"
-              />
-            </div>
-          </div>-->
     <template v-else>
       <router-view
         data-cy="App-loggedIn"
@@ -47,9 +9,6 @@
         @environment::importEnv="importEnvironment"
       />
     </template>
-    <!-- </template>
-      </template>
-    </template> -->
 
     <modal-create-or-update
       id="modal-env-create-or-update"
@@ -79,10 +38,6 @@ require('ace-builds')
 require('ace-builds/webpack-resolver')
 
 import {} from './assets/global.scss'
-// import SignUp from './components/Signup'
-// import Offline from './components/Common/Offline'
-// import Login from './components/Login'
-// import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
@@ -94,10 +49,6 @@ export default {
     ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
-    // SignUp,
-    // Login,
-    // Offline,
-    // CreateEnvironmentPage,
     MainSpinner
   },
   data() {
@@ -116,6 +67,7 @@ export default {
       // warning if necessary, since we cannot show a toast from the router guard.
       this.$store.direct.dispatch.kuzzle.loadEnvironments()
     } catch (error) {
+      this.$log.error(error.message)
       this.$log.error(localStorage.getItem('environments'))
       this.$bvToast.toast(
         'The list of saved connections seems to be malformed. If you know how to fix it, take a look at the console.',
