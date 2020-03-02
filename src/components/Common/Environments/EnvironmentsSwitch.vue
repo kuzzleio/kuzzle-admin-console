@@ -5,7 +5,7 @@
     data-cy="EnvironmentSwitch"
     toggle-class="text-truncate"
     variant="outline-secondary"
-    :text="currentEnvironmentName"
+    :text="dropdownText"
     :block="block"
     :right="right"
     :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
@@ -73,9 +73,9 @@ export default {
     }
   },
   computed: {
-    currentEnvironmentName() {
+    dropdownText() {
       if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        return null
+        return 'Select a connection'
       }
 
       return this.$store.direct.getters.kuzzle.currentEnvironment.name

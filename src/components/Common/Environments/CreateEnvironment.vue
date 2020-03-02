@@ -18,6 +18,7 @@
         :state="nameState"
       >
         <b-form-input
+          autofocus
           id="input-env-name"
           v-model="environment.name"
           trim
@@ -141,7 +142,7 @@ export default {
         'grey',
         'magenta'
       ],
-      warningHeaderText: ``
+      submitting: false
     }
   },
   computed: {
@@ -152,6 +153,9 @@ export default {
       return useHttps
     },
     nameState() {
+      if (this.submitting) {
+        return true
+      }
       return (
         this.environment.name != null &&
         this.environment.name != '' &&
@@ -160,6 +164,9 @@ export default {
       )
     },
     nameFeedback() {
+      if (this.submitting) {
+        return ''
+      }
       if (this.environment.name == '') {
         return 'You must enter a non-empty name'
       }
@@ -172,6 +179,9 @@ export default {
       return ''
     },
     hostState() {
+      if (this.submitting) {
+        return true
+      }
       return (
         this.environment.host != null &&
         this.environment.host != '' &&
@@ -179,6 +189,9 @@ export default {
       )
     },
     hostFeedback() {
+      if (this.submitting) {
+        return ''
+      }
       if (this.environment.host == '') {
         return 'You must enter a non-empty host name'
       }
@@ -188,9 +201,15 @@ export default {
       return ''
     },
     portState() {
+      if (this.submitting) {
+        return true
+      }
       return this.environment.port !== null && this.environment.port !== ''
     },
     portFeedback() {
+      if (this.submitting) {
+        return ''
+      }
       if (this.environment.port !== '') {
         return 'You must enter a non-empty port'
       }
@@ -220,6 +239,7 @@ export default {
       if (!this.canSubmit) {
         return false
       }
+      this.submitting = true
       try {
         if (this.environmentId) {
           return this.$store.direct.dispatch.kuzzle.updateEnvironment({
@@ -245,8 +265,21 @@ export default {
           })
         }
       } catch (error) {
-        this.$log.error(error)
+        this.$log.error(error.message)
+        this.$bvToast.toast(
+          'The complete error has been dumped to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while creating the new environment.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
       }
+      this.submitting = false
     },
     selectColor(index) {
       this.environment.color = this.colors[index]

@@ -21,13 +21,21 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it('is able to delete an environment', function() {
-    const envToDeleteName = 'local'
+  it('is able to delete environments', function() {
+    const envNames = ['local', 'another']
     localStorage.setItem(
       'environments',
       JSON.stringify({
-        [envToDeleteName]: {
-          name: envToDeleteName,
+        [envNames[0]]: {
+          name: envNames[0],
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          token: null
+        },
+        [envNames[1]]: {
+          name: envNames[1],
           color: 'darkblue',
           host: 'localhost',
           ssl: false,
@@ -36,19 +44,27 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', envToDeleteName)
+    localStorage.setItem('lastConnectedEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
 
-    cy.get(`[data-cy="EnvironmentSwitch-env_${envToDeleteName}-delete"]`).click(
-      {
-        force: true
-      }
-    )
+    cy.get(`[data-cy="EnvironmentSwitch-env_${envNames[0]}-delete"]`).click({
+      force: true
+    })
 
-    cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envToDeleteName)
+    cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envNames[0])
     cy.get('[data-cy="EnvironmentDeleteModal-submit"]').click({ force: true })
+    cy.contains('Please select a Kuzzle instance to connect to')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(`[data-cy="EnvironmentSwitch-env_${envNames[1]}-delete"]`).click({
+      force: true
+    })
+    cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envNames[1])
+    cy.get('[data-cy="EnvironmentDeleteModal-submit"]').click({ force: true })
+
     cy.contains('Create a Connection')
   })
 
@@ -104,11 +120,25 @@ describe('Environments', function() {
     })
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
 
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(
+      `[data-cy=EnvironmentSwitch-env_${fmt(
+        unreachableEnvName
+      )}] > .EnvironmentSwitch-env-name`
+    ).click({
+      force: true
+    })
+
     cy.contains('Connecting to Kuzzle')
     cy.get('[data-cy="App-offline"]')
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(reachableEnvName)}"]`).click()
+    cy.get(
+      `[data-cy="EnvironmentSwitch-env_${fmt(
+        reachableEnvName
+      )}"]  > .EnvironmentSwitch-env-name`
+    ).click()
 
     cy.get('[data-cy="App-online"]')
   })

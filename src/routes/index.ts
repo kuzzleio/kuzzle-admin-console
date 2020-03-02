@@ -4,6 +4,7 @@ import store from '../vuex/store'
 import { moduleActionContext } from '../vuex/store'
 
 import CreateEnvironmentPage from '../components/Common/Environments/CreateEnvironmentPage.vue'
+import SelectEnvironmentPage from '../components/Common/Environments/SelectEnvironmentPage.vue'
 import ConnectionAwareContainer from '../components/ConnectionAwareContainer.vue'
 import Home from '../components/Home.vue'
 import Login from '../components/Login.vue'
@@ -64,6 +65,11 @@ export default function createRoutes(log, kuzzle) {
         path: '/create-connection',
         name: 'CreateEnvironment',
         component: CreateEnvironmentPage
+      },
+      {
+        path: '/select-connection',
+        name: 'SelectEnvironment',
+        component: SelectEnvironmentPage
       },
       {
         path: '/',

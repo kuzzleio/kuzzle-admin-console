@@ -63,7 +63,6 @@
 
 <script>
 import { hasSecurityRights } from '../../services/userAuthorization'
-import { DEFAULT_COLOR } from '../../services/environment'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
 export default {
@@ -73,10 +72,6 @@ export default {
   },
   computed: {
     currentEnvironmentColor() {
-      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        return DEFAULT_COLOR
-      }
-
       return this.$store.direct.getters.kuzzle.currentEnvironment.color
     },
     currentUserName() {

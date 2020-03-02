@@ -59,9 +59,6 @@ const mutations = createMutations<KuzzleState>()({
     state.environments = { ...payload }
   },
   setCurrentEnvironment(state, payload) {
-    if (Object.keys(state.environments).indexOf(payload) === -1) {
-      return
-    }
     state.currentId = payload
   },
   setConnecting(state, value: boolean) {
@@ -85,7 +82,8 @@ const actions = createActions({
     commit.createEnvironment(payload)
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
-    dispatch.switchEnvironment(payload.id)
+    // dispatch.switchEnvironment(payload.id)
+    return payload.id
   },
   deleteEnvironment(context, id) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -118,13 +116,13 @@ const actions = createActions({
     })
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
-    if (
-      getters.currentEnvironment &&
-      getters.currentEnvironment.name &&
-      getters.currentEnvironment.name !== payload.id
-    ) {
-      dispatch.switchEnvironment(payload.id)
-    }
+    // if (
+    //   getters.currentEnvironment &&
+    //   getters.currentEnvironment.name &&
+    //   getters.currentEnvironment.name !== payload.id
+    // ) {
+    //   dispatch.switchEnvironment(payload.id)
+    // }
   },
   async connectToCurrentEnvironment(context) {
     const { dispatch, state, getters } = kuzzleActionContext(context)

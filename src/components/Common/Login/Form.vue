@@ -8,15 +8,15 @@
         label-cols-lg="3"
       >
         <b-form-input
-          id="username"
+          autofocus
+          class="validate"
           data-cy="Login-username"
-          v-model="username"
-          v-focus
-          type="text"
+          id="username"
           name="username"
           required
+          v-model="username"
           tabindex="1"
-          class="validate"
+          type="text"
         />
       </b-form-group>
       <b-form-group

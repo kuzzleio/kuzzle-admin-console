@@ -8,8 +8,9 @@ export const getters = createGetters<KuzzleState>()({
     }
 
     if (!state.currentId) {
-      const firstKey = Object.keys(state.environments)[0]
-      return state.environments[firstKey]
+      return null
+      // const firstKey = Object.keys(state.environments)[0]
+      // return state.environments[firstKey]
     }
 
     return state.environments[state.currentId]
