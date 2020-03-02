@@ -26,14 +26,18 @@ export const waitForConnected = (timeout = 1000) => {
   return Promise.resolve()
 }
 
+export const disconnect = () => {
+  Vue.prototype.$kuzzle.disconnect()
+  Vue.prototype.$kuzzle.jwt = null
+}
+
 export const connectToEnvironment = async environment => {
   // fix default port for users that have an old environment settings in their localStorage:
   if (environment.port === undefined) environment.port = 7512
   if (typeof environment.ssl !== 'boolean') environment.ssl = false
 
   if (Vue.prototype.$kuzzle.protocol.state === 'connected') {
-    Vue.prototype.$kuzzle.disconnect()
-    Vue.prototype.$kuzzle.jwt = null
+    disconnect()
   }
 
   Vue.prototype.$kuzzle.protocol = new WebSocket(environment.host, {

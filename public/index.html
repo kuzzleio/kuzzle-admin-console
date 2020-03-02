@@ -4,92 +4,33 @@
     <meta charset="utf-8" />
     <title>Kuzzle Admin Console</title>
     <style>
-      .app-loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        padding-top: 50px;
-        height: 100%;
-        overflow: auto;
-      }
       html {
-        background-color: #f5f5f5;
+        /* We can avoid setting height:100vh on the grid container if we use height:100% 
+          on the root element and then all descendants up until the grid container. 
+          Using 100vh can be a simpler option, but the vh unit can be problematic on 
+          iOS and Android: https://nicolas-hoizey.com/articles/2015/02/18/viewport-height-is-taller-than-the-visible-part-of-the-document-in-some-mobile-browsers/ 
+        */
+        height: 100%;
+        /* With our styles we should not have any cause for a scrollbar on the page itself,
+          so this is not strictly necessary, but to be safe we can prevent scrollbars on
+          the full page. 
+        */
+        overflow: hidden;
       }
-      .app-loading > div {
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-        padding: 30px 40px;
-        width: 400px;
+
+      body {
+        height: 100%;
+      }
+
+      .center-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         text-align: center;
-        margin: 0 auto;
-        font-weight: 400;
-        left: 50%;
-        right: 50%;
-        display: block;
-        background-color: #fff;
-        transition: box-shadow 0.25s;
-        border-radius: 2px;
-        box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
-          0 2px 10px 0 rgba(0, 0, 0, 0.12);
-        font-size: 20px;
+        min-height: 100vh;
       }
-      .app-loading .loader,
-      .app-loading .loader:after,
-      .app-loading .loader:before {
-        border-radius: 50%;
-        width: 2.5em;
-        height: 2.5em;
-        -webkit-animation: load7 1.8s infinite ease-in-out;
-        animation: load7 1.8s infinite ease-in-out;
-      }
-      .app-loading .loader {
-        color: #002835;
-        font-size: 6px;
-        margin: 30px auto;
-        position: relative;
-        text-indent: -9999em;
-        -webkit-transform: translateZ(0);
-        -ms-transform: translateZ(0);
-        transform: translateZ(0);
-        -webkit-animation-delay: -0.16s;
-        animation-delay: -0.16s;
-      }
-      .app-loading .loader:before {
-        left: -3.5em;
-        -webkit-animation-delay: -0.32s;
-        animation-delay: -0.32s;
-      }
-      .app-loading .loader:after {
-        left: 3.5em;
-      }
-      .app-loading .loader:after,
-      .app-loading .loader:before {
-        content: '';
-        position: absolute;
-        top: 0;
-      }
-      @-webkit-keyframes load7 {
-        0%,
-        100%,
-        80% {
-          box-shadow: 0 2.5em 0 -1.3em;
-        }
-        40% {
-          box-shadow: 0 2.5em 0 0;
-        }
-      }
-      @keyframes load7 {
-        0%,
-        100%,
-        80% {
-          box-shadow: 0 2.5em 0 -1.3em;
-        }
-        40% {
-          box-shadow: 0 2.5em 0 0;
-        }
-      }
+
     </style>
     <link
       rel="apple-touch-icon-precomposed"
@@ -192,9 +133,8 @@
   </head>
   <body>
     <div class="app-loading" id="app">
-      <div>
-        <span>Loading Kuzzle Admin Console</span>
-        <div class="loader"></div>
+      <div class="center-screen">
+        <img src=" data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA5CAMAAAC7xnO3AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAz1BMVEUAKDUAJzUAKDQAJzQ7WWN6j5YjRVD+/v7////b4OIILztZc3zN1dcCKjdGY226xcgBKTb7/Pw1VV+otbr4+fklSFOUparx8/QZPUmAlJro6+0ONEBsg4va4OJZc3vM1NcCKTa5xMf8/P00VF6mtLn3+PklR1KTpKnw8vMYPEiAk5rn6uzZ3+EHLjtYcnvL09b9/v5GY2wBKTX8/PwzU132+PgkR1IXO0d/k5nm6usOM0BrgopXcXrL09X9/f1EYmu4w8cBKDX8/f0yUlxheoKBHv/HAAAAAWJLR0QIht6VegAAAAd0SU1FB+IIBwsjEnu6ipkAAANMSURBVEjHnVdntxw1DL2FwSKQ8OglgZACCb33Xv7/b+KDZI+9u7Ocg897tqdorHJ1pQUAgPgfQ5JknQ2crGePABCiCJAgCRAgmUv+p1qsSwIEAZAUBRokSZow+3bMY1tvkYAg8UwpQAAEoRaNK+Q+dXhm+8/x7HQcCRKypK21iBYRLVrso65aRDx3SxJ3Z1ogSWxxebQu2Z6fjys7KWg7Eux6vHAboiAaJAzCGdCt63oqWHfanfPYQrYPzmzD2BdvLBmeBwjS2xVlo8VLL5M0TaedJl0A2dZjTscrB8DFobYVq1dfIygZhAl2H9G0j3yby+twV9aGTdJ2Zth2JZrxxpuFcJxlpHRFssVbHa6rjYW+KxB6+24iXnBBHSCUWcajeLaIuJfpN8G9J7IO7YxoEe/cWqzsie/aH9rZ2rsAXTxQfFAfIg8xFC3i/ns0Lw4AvOLbdiepILkDHkExAB1KRsSDG2QWQ06ihMXcgDz20MNHS+S5/l2JZzxG5qRrsgw5MQD5WNv3P/ABXUOJqyPJJ0jSKPUMDeUJADS2dj6iPf2wWFdcoT6Zvl0SbB+NOjCdVPfYMXThzPbxXQ7sZB05E7UuSt6zRAFOL5Z70d11qG375NNhjCfbsoj1BVuLUyPbZ/09DZAnr8P1GQuXtP38RrJY8ReM2nRkQL5o5xdfyrIsOQGU+wKCLQOwhmS01qJFi/bgKxmgRQqWIaV6VU2z2rNL7sZ+/Q0NUTBgKJkW7hgSnHykLRa51h5foHSu+ZLOPfXtt9/tj/s7M5ew+pIz38YTnHU3e/PjqZNIyf3Yp98rrQQFS2LnlGw7Mn/glJzV/QHujKekkWJo16QBq/XMH3/qCO/zbHS/29E3R/Nnju6L8zeWz7D3CVkJCupKlNmSAFtC8Z9lG7JsQGC3M1n9lwx0b3vmJrGSa/h2xe2vt51Yz5ErKjP3RYAzy3p9/+330WNWZad2Rw1q6be2VvUn2h9/jsZ0gVz1q+zt6spg0dpff/MEeDN3AZx4iODUa/4DnFCkNfNIlk87j82OGosWe+xOugSulEvQuw2LKy78OmDH4UDS3qITC8Vi2Q0YV7MB0ftF5l9OhsxhUuZC97kymVgC+TzTYW7f137oX9nPMBHUYxjrAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE4LTA4LTA3VDExOjM1OjE3KzAwOjAwAT03mQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxOC0wOC0wN1QxMTozNToxOCswMDowMIYo/8wAAAAASUVORK5CYII=" alt="Loading...">
       </div>
     </div>
     <!-- built files will be auto injected -->

@@ -2,17 +2,17 @@ import { KuzzleState } from './types'
 import { createGetters } from 'direct-vuex'
 
 export const getters = createGetters<KuzzleState>()({
-  kuzzleIsConnected(state) {
-    return state.connectedTo !== null
-  },
-  currentEnvironmentId(state) {
-    return state.connectedTo
-  },
   currentEnvironment(state, getters) {
-    if (!state.environments[getters.currentEnvironmentId]) {
+    if (!getters.hasEnvironment) {
       return null
     }
-    return state.environments[getters.currentEnvironmentId]
+
+    if (!state.currentId) {
+      const firstKey = Object.keys(state.environments)[0]
+      return state.environments[firstKey]
+    }
+
+    return state.environments[state.currentId]
   },
   hasEnvironment(state) {
     return Object.keys(state.environments).length !== 0
@@ -23,22 +23,8 @@ export const getters = createGetters<KuzzleState>()({
   kuzzlePort(state) {
     return state.port
   },
-  currentHttpUrl(state, getters) {
-    // prettier-ignore
-    return `${getters.currentEnvironment.ssl ? 'https' : 'http'}://${
-      getters.currentEnvironment.host
-      }:${getters.currentEnvironment.port}`
-  },
-  oldMappingSupport(state, getters) {
-    if (!state.environments[getters.currentEnvironmentId]) {
-      return null
-    }
-
-    return /^2/.test(
-      state.environments[getters.currentEnvironmentId].storageEngineVersion
-    )
-  },
   environments(state) {
+    // DAFUQ IZ DIS 4?
     return state.environments
   }
 })

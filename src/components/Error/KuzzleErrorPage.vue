@@ -21,7 +21,7 @@
           >Trying to connect to Kuzzle...</b-col
         >
         <b-col sm="2" class="text-right">
-          <span class="text-muted align-middle">Connection:</span>
+          <span class="text-muted align-middle">Connecting to</span>
         </b-col>
         <b-col sm="2" class="text-right">
           <environment-switch
