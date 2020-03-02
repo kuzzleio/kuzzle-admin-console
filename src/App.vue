@@ -44,6 +44,7 @@
         data-cy="App-loggedIn"
         @environment::create="editEnvironment"
         @environment::delete="deleteEnvironment"
+        @environment::importEnv="importEnvironment"
       />
     </template>
     <!-- </template>
@@ -117,9 +118,9 @@ export default {
     } catch (error) {
       this.$log.error(localStorage.getItem('environments'))
       this.$bvToast.toast(
-        'The list of saved collections seems to be malformed. If you know how to fix it, take a look at the console.',
+        'The list of saved connections seems to be malformed. If you know how to fix it, take a look at the console.',
         {
-          title: 'Ooops! Something went wrong while loading the collections.',
+          title: 'Ooops! Something went wrong while loading the connections.',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
           appendToast: true,

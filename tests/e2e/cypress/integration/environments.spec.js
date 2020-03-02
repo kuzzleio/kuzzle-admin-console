@@ -2,10 +2,12 @@ const fmt = word => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
-describe('Environments', function () {
-  this.beforeEach(() => { })
+describe('Environments', function() {
+  this.beforeEach(() => {
+    localStorage.removeItem('environments')
+  })
 
-  it('is able to create a new environment', function () {
+  it('is able to create a new environment', function() {
     const newEnvName = 'local'
     cy.visit('/')
     cy.contains('Create a Connection')
@@ -19,7 +21,7 @@ describe('Environments', function () {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it('is able to delete an environment', function () {
+  it('is able to delete an environment', function() {
     const envToDeleteName = 'local'
     localStorage.setItem(
       'environments',
@@ -36,6 +38,7 @@ describe('Environments', function () {
     )
     localStorage.setItem('lastConnectedEnv', envToDeleteName)
     cy.visit('/')
+    cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
 
     cy.get(`[data-cy="EnvironmentSwitch-env_${envToDeleteName}-delete"]`).click(
@@ -49,7 +52,7 @@ describe('Environments', function () {
     cy.contains('Create a Connection')
   })
 
-  it('is able to set the color of an environment', function () {
+  it('is able to set the color of an environment', function() {
     cy.visit('/')
     cy.get('[data-cy="CreateEnvironment-name"]').type('local', {
       force: true
@@ -70,14 +73,14 @@ describe('Environments', function () {
     })
   })
 
-  it('is able to create an invalid environment and switch back to the valid one', function () {
-    const validEnvName = 'valid'
-    const invalidEnvName = 'invalid'
+  it('is able to create an unreachable environment and switch back to the reachable one', function() {
+    const reachableEnvName = 'reachable'
+    const unreachableEnvName = 'unreachable'
     localStorage.setItem(
       'environments',
       JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
+        [reachableEnvName]: {
+          name: reachableEnvName,
           color: '#002835',
           host: 'localhost',
           ssl: false,
@@ -86,27 +89,28 @@ describe('Environments', function () {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', validEnvName)
+    localStorage.setItem('lastConnectedEnv', reachableEnvName)
 
     cy.visit('/')
-
+    cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').click()
 
-    cy.get('[data-cy="CreateEnvironment-name"]').type(invalidEnvName, {
+    cy.get('[data-cy="CreateEnvironment-name"]').type(unreachableEnvName, {
       force: true
     })
-    cy.get('[data-cy="CreateEnvironment-host"]').type('invalid-host', {
+    cy.get('[data-cy="CreateEnvironment-host"]').type('unreachable-host', {
       force: true
     })
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
 
-    cy.contains('Unable to connect to kuzzle server')
+    cy.contains('Connecting to Kuzzle')
+    cy.get('[data-cy="App-offline"]')
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(validEnvName)}"]`).click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(reachableEnvName)}"]`).click()
 
-    cy.get('[data-cy="App-connected"]')
+    cy.get('[data-cy="App-online"]')
   })
 
   it('should import environment', () => {
@@ -126,5 +130,12 @@ describe('Environments', function () {
         { subjectType: 'input' }
       )
     })
+  })
+
+  it('should display toast when environment list is malformed', () => {
+    localStorage.setItem('environments', `{   Som3 m@l4rm3D CODEZ jayzon}}]}`)
+    cy.visit('/')
+    cy.contains('Ooops! Something went wrong while loading the connections.')
+    cy.url().should('contain', 'create-connection')
   })
 })

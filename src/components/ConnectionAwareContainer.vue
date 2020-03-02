@@ -1,8 +1,9 @@
 <template>
   <div class="ConnectionAwareContainer h-100">
-    <offline-spinner v-if="connecting"></offline-spinner>
+    <offline-spinner v-if="connecting" data-cy="App-offline"></offline-spinner>
     <router-view
       v-else
+      data-cy="App-online"
       @environment::create="$emit('environment::create')"
       @environment::delete="$emit('environment::delete', $event)"
     ></router-view>
