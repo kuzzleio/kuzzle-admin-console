@@ -1,7 +1,7 @@
 <template>
   <div class="LoginPage">
     <b-row align-h="center" class="w-100">
-      <b-col xl="5" lg="7" md="8" sm="10">
+      <b-col xl="6" lg="7" md="8" sm="10">
         <b-card>
           <b-card-body>
             <div class="text-center">
@@ -11,6 +11,21 @@
                 class="mb-5 img-fluid"
               />
             </div>
+            <b-alert
+              class="text-center"
+              variant="info"
+              data-cy="noAdminAlert"
+              :show="!$store.direct.getters.auth.adminAlreadyExists"
+            >
+              <i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>
+              <b>Warning!</b> Your Kuzzle has no administrator user. It is
+              strongly recommended
+              <a href="#/signup" class="alert-link"> that you create one.</a
+              ><i
+                class="fa fa-exclamation-triangle ml-2"
+                aria-hidden="true"
+              ></i>
+            </b-alert>
             <b-form-group
               label="Connected to"
               label-cols-sm="4"

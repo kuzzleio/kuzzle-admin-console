@@ -21,9 +21,11 @@ export default function createRoutes(log, kuzzle) {
     store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
     if (store.getters.kuzzle.hasEnvironment) {
       log.debug('Has environments')
+      // TODO check whether current environment is set
       await store.dispatch.kuzzle.connectToCurrentEnvironment(
         moduleActionContext
       )
+      // TODO check first admin
       next()
     } else {
       log.debug('No environments')
