@@ -143,11 +143,24 @@ const actions = createActions({
   },
   updateEnvironment(context, payload) {
     const { dispatch, commit, state, getters } = kuzzleActionContext(context)
+    let mustReconnect = false
+
+    if (
+      payload.id === state.currentId &&
+      (payload.environment.host !== getters.currentEnvironment.host ||
+        payload.environment.port !== getters.currentEnvironment.port ||
+        payload.environment.ssl !== getters.currentEnvironment.ssl)
+    ) {
+      mustReconnect = true
+    }
     commit.updateEnvironment({
       id: payload.id,
       environment: payload.environment
     })
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
+    if (mustReconnect) {
+      dispatch.switchEnvironment(payload.id)
+    }
   },
   async connectToCurrentEnvironment(context) {
     const { dispatch, state, getters } = kuzzleActionContext(context)

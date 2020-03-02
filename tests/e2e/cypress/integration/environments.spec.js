@@ -89,7 +89,7 @@ describe('Environments', function() {
     })
   })
 
-  it.only('is able to create an unreachable environment and switch back to the reachable one', function() {
+  it('is able to create an unreachable environment and switch back to the reachable one', function() {
     const reachableEnvName = 'reachable'
     const unreachableEnvName = 'unreachable'
     localStorage.setItem(
@@ -141,6 +141,58 @@ describe('Environments', function() {
     ).click()
 
     cy.get('[data-cy="App-online"]')
+  })
+
+  it('should be able to update an environment', () => {
+    const envNames = ['local', 'another']
+    const hosts = ['localhost', '123.123.123.123']
+    const ports = [7512, 7514]
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [envNames[0]]: {
+          name: envNames[0],
+          color: 'darkblue',
+          host: hosts[0],
+          ssl: false,
+          port: ports[0],
+          token: null
+        }
+      })
+    )
+    cy.visit('/')
+    cy.contains('Connected to')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[0])}-edit"]`).click()
+
+    cy.get('[data-cy=CreateEnvironment-name]').type(`{selectall}${envNames[1]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}`)
+
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-host]').type(`{selectall}${hosts[1]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connecting to Kuzzle at')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-host]').type(`{selectall}${hosts[0]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connected to')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-port]').type(`{selectall}${ports[1]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connecting to Kuzzle at')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-port]').type(`{selectall}${ports[0]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connected to')
   })
 
   it('should import environment', () => {

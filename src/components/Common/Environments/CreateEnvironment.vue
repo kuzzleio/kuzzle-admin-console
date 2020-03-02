@@ -38,11 +38,11 @@
         :state="hostState"
       >
         <b-form-input
+          data-cy="CreateEnvironment-host"
           id="input-env-host"
           v-model="environment.host"
           trim
           required
-          data-cy="CreateEnvironment-host"
         ></b-form-input>
       </b-form-group>
 
@@ -57,6 +57,7 @@
         :state="portState"
       >
         <b-form-input
+          data-cy="CreateEnvironment-port"
           id="input-env-port"
           v-model="environment.port"
           type="number"
