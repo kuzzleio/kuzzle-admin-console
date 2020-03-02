@@ -111,23 +111,43 @@ export default {
 
   async mounted() {
     this.initializing = true
+    try {
+      this.$store.direct.commit.auth.setTokenValid(false)
+      this.$store.direct.dispatch.kuzzle.loadEnvironments()
+      await this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
 
-    this.$kuzzle.removeAllListeners()
-    this.$kuzzle.on('queryError', error => {
-      if (error && error.message) {
-        switch (error.message) {
-          case 'Token expired':
-          case 'Invalid token':
-          case 'Json Web Token Error':
-            this.$store.direct.dispatch.auth.doLogout()
-            break
+      this.$kuzzle.removeAllListeners()
+      this.$kuzzle.on('queryError', error => {
+        if (error && error.message) {
+          switch (error.message) {
+            case 'Token expired':
+            case 'Invalid token':
+            case 'Json Web Token Error':
+              this.$store.direct.commit.auth.setTokenValid(false)
+              this.$kuzzle.connect()
+              break
+          }
         }
-      }
-    })
-
-    this.$kuzzle.on('discarded', function() {
-      this.$bvToast.show('discarded-toast')
-    })
+      })
+      this.$kuzzle.on('networkError', error => {
+        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
+      })
+      this.$kuzzle.on('connected', () => {
+        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
+        this.$store.direct.dispatch.auth.checkFirstAdmin()
+      })
+      this.$kuzzle.on('reconnected', () => {
+        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
+        this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
+      })
+      this.$kuzzle.on('discarded', function(data) {
+        if (this.$store) {
+          this.$store.direct.commit.toaster.setToast({ text: data.message })
+        }
+      })
+    } catch (error) {
+      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
+    }
     this.initializing = false
   },
   methods: {

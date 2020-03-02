@@ -3,6 +3,7 @@
     ref="dropdown"
     class="EnvironmentSwitch"
     data-cy="EnvironmentSwitch"
+    toggle-class="text-truncate"
     variant="outline-secondary"
     :text="currentEnvironmentName"
     :block="block"
@@ -15,7 +16,10 @@
       :key="env.name"
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
     >
-      <div @click="clickSwitch(index)" class="EnvironmentSwitch-env-name mr-3">
+      <div
+        @click="clickSwitch(index)"
+        class="EnvironmentSwitch-env-name text-truncate mr-3"
+      >
         {{ env.name }}
         <div class="text-muted">{{ env.host }}</div>
       </div>
@@ -33,32 +37,24 @@
       </div>
     </b-dropdown-item>
     <b-dropdown-divider></b-dropdown-divider>
-    <b-dropdown-item>
-      <a
-        data-cy="EnvironmentSwitch-newConnectionBtn"
-        href=""
-        @click.prevent="$emit('environment::create')"
-      >
+    <b-dropdown-item @click.prevent="$emit('environment::create')">
+      <a data-cy="EnvironmentSwitch-newConnectionBtn" href="">
         Create new connection
       </a>
     </b-dropdown-item>
-    <b-dropdown-item>
-      <a ref="export">
-        Export all
-      </a>
+    <b-dropdown-item download="connections.json" :href="exportUrl">
+      Export all
     </b-dropdown-item>
-    <b-dropdown-item>
-      <a href="" @click.prevent="$emit('environment::importEnv')">
-        Import
-      </a>
+    <b-dropdown-item @click.prevent="$emit('environment::importEnv')">
+      Import
     </b-dropdown-item>
   </b-dropdown>
 </template>
 
 <script>
 import Promise from 'bluebird'
-
 import { formatForDom } from '../../../utils'
+import { mapValues, omit } from 'lodash'
 
 export default {
   name: 'EnvironmentSwitch',
@@ -83,23 +79,21 @@ export default {
       }
 
       return this.$store.direct.getters.kuzzle.currentEnvironment.name
-    }
-  },
-  mounted() {
-    const env = {}
-    for (const name in this.$store.state.kuzzle.environments) {
-      env[name] = Object.assign(
-        {},
-        this.$store.direct.getters.kuzzle.environments[name]
+    },
+    exportUrl() {
+      const envWitoutToken = mapValues(
+        this.$store.state.kuzzle.environments,
+        e => omit(e, 'token')
       )
-      delete env[name].token
+
+      const blob = new Blob([JSON.stringify(envWitoutToken)], {
+        type: 'application/json'
+      })
+
+      return URL.createObjectURL(blob)
     }
-
-    const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
-
-    this.$refs.export.href = URL.createObjectURL(blob)
-    this.$refs.export.download = 'connections.json'
   },
+  mounted() {},
   methods: {
     clickSwitch(id) {
       return this.$store.direct.dispatch.kuzzle
@@ -142,6 +136,7 @@ export default {
 
   .EnvironmentSwitch-env-name {
     flex: 1;
+    max-width: 250px;
   }
 }
 </style>

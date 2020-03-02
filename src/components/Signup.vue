@@ -1,7 +1,7 @@
 <template>
   <div class="Signup">
-    <b-container>
-      <b-card>
+    <b-container class="Signup-flexContainer">
+      <b-card class="my-3">
         <b-jumbotron>
           <template v-slot:header>
             <img
@@ -19,7 +19,7 @@
 
           <b-row align-v="center">
             <b-col sm="10" class="text-right">
-              <span class="text-muted align-middle">Connection:</span>
+              <span class="text-muted align-middle">Connected to</span>
             </b-col>
             <b-col sm="2" class="text-right">
               <environment-switch
@@ -194,6 +194,7 @@ export default {
           }
         )
       }
+      this.waiting = false
     },
     loginAsGuest() {
       this.error = null
@@ -223,6 +224,8 @@ export default {
 .Signup {
   overflow-y: auto;
   height: 100vh;
+}
+.Signup-flexContainer {
   display: flex;
   justify-content: center;
   align-items: center;
