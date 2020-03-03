@@ -25,3 +25,8 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import 'cypress-file-upload'
+
+Cypress.Commands.add('waitOverlay', () => {
+  cy.visit('/')
+  cy.wait(600)
+})

@@ -19,7 +19,9 @@
             >
               <b>Warning!</b> Your Kuzzle has no administrator user. It is
               strongly recommended
-              <a href="#/signup" class="alert-link"> that you create one.</a>
+              <a class="alert-link" data-cy="NoAdminAlert-link" href="#/signup">
+                that you create one.</a
+              >
             </b-alert>
             <b-form-group
               label="Connected to"

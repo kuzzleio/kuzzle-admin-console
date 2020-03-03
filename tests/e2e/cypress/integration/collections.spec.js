@@ -1,4 +1,4 @@
-describe('Collection management', function () {
+describe('Collection management', function() {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -19,16 +19,15 @@ describe('Collection management', function () {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
   })
 
-  it('is able to create a realtime collection and access it', function () {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+  it('is able to create a realtime collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
+    cy.get('.CollectionCreate').should('be.visible')
 
     cy.get(
       '.col > .row > .Mapping-realtimeOnly > label > #realtime-collection'
@@ -45,11 +44,9 @@ describe('Collection management', function () {
     cy.contains('You did not subscribe yet')
   })
 
-  it('is able to delete a collection', function () {
+  it('is able to delete a collection', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.visit(`/#/data/${indexName}/`)
 
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()

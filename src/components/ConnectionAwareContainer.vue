@@ -1,6 +1,7 @@
 <template>
   <div class="ConnectionAwareContainer h-100">
     <div
+      data-cy="AntiGlitchOverlay"
       class="AntiGlitchOverlay"
       v-if="connecting && !showOfflineSpinner"
     ></div>
@@ -96,7 +97,7 @@ export default {
         this.showOfflineSpinner = false
         setTimeout(() => {
           this.showOfflineSpinner = true
-        }, 900)
+        }, 600)
       }
     }
   }

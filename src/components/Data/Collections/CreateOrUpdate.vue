@@ -67,6 +67,7 @@
           >
         </template>
         <b-form-checkbox
+          data-cy="Collection-realtime"
           id="collection-is-realtime-checkbox"
           tabindex="1"
           v-model="realtimeOnlyState"

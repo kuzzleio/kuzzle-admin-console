@@ -11,7 +11,7 @@
             class="align-middle"
             data-cy="CollectionList-create"
             variant="primary"
-            :disabled="!canCreateCollection(index)"
+            :disabled="!canCreateCollection(index) || !indexExists"
             :title="
               !canCreateCollection(index)
                 ? `Your rights disallow you to create collections on index ${index}`
@@ -47,7 +47,10 @@
     </template>
 
     <template v-if="canSearchCollection(index)">
+      <data-not-found v-if="!indexExists" class="mt-3"></data-not-found>
+
       <b-table
+        v-else
         striped
         outlined
         show-empty
@@ -220,12 +223,14 @@ import {
 } from '../../../services/userAuthorization'
 import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
+import DataNotFound from '../Data404'
 
 export default {
   name: 'CollectionList',
   components: {
     Headline,
-    ListNotAllowed
+    ListNotAllowed,
+    DataNotFound
   },
   directives: {
     Title
@@ -241,6 +246,9 @@ export default {
     }
   },
   computed: {
+    indexExists() {
+      return !!this.$store.state.index.indexesAndCollections[this.index]
+    },
     deletionConfirmed() {
       return (
         this.deleteConfirmation !== '' &&

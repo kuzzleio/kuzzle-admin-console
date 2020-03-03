@@ -18,6 +18,9 @@
         <b-col class="text-right">
           <b-button
             variant="primary"
+            :disabled="
+              indexOrCollectionNotFound || !canCreateDocument(index, collection)
+            "
             :to="{ name: 'CreateDocument', params: { index, collection } }"
             >Create New Document</b-button
           >
@@ -25,80 +28,93 @@
       </b-row>
 
       <list-not-allowed v-if="!canSearchDocument(index, collection)" />
-      <b-row class="justify-content-md-center" no-gutters>
-        <b-col cols="12">
-          <template v-if="isCollectionEmpty">
-            <realtime-only-empty-state
-              v-if="isRealtimeCollection"
-              :index="index"
-              :collection="collection"
-            />
-            <empty-state v-else :index="index" :collection="collection" />
-          </template>
-          <template v-if="!isCollectionEmpty">
-            <filters
-              class="mb-3"
-              :available-operands="searchFilterOperands"
-              :current-filter="currentFilter"
-              :collection-mapping="collectionMapping"
-              @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
-            />
-          </template>
-        </b-col>
-      </b-row>
-    </b-container>
-    <b-container :fluid="listViewType !== 'list'">
-      <template v-if="!isCollectionEmpty">
-        <b-card
-          class="light-shadow"
-          :bg-variant="documents.length === 0 ? 'light' : 'default'"
-        >
-          <b-card-text class="p-0">
-            <List
-              v-if="listViewType === 'list' && documents.length"
-              :all-checked="allChecked"
-              :collection="collection"
-              :documents="documents"
-              :index="index"
-              :current-page-size="paginationSize"
-              :selected-documents="selectedDocuments"
-              :total-documents="totalDocuments"
-              @bulk-delete="onBulkDeleteClicked"
-              @change-page-size="changePaginationSize"
-              @checkbox-click="toggleSelectDocuments"
-              @delete="onDeleteClicked"
-              @edit="onEditDocumentClicked"
-              @refresh="onRefresh"
-              @toggle-all="onToggleAllClicked"
-            ></List>
-            <no-results-empty-state v-if="!documents.length" />
-
-            <b-row v-if="listViewType === 'column'" class="DocumentList-column">
-              <div class="DocumentList-materializeCollection h-scroll">
-                <Column
-                  :documents="documents"
-                  :mapping="collectionMapping"
+      <template v-else>
+        <data-not-found
+          v-if="indexOrCollectionNotFound"
+          class="mt-3"
+        ></data-not-found>
+        <template v-else>
+          <b-row class="justify-content-md-center" no-gutters>
+            <b-col cols="12">
+              <template v-if="isCollectionEmpty">
+                <realtime-only-empty-state
+                  v-if="isRealtimeCollection"
                   :index="index"
                   :collection="collection"
-                  @edit="onEditDocumentClicked"
-                  @delete="onDeleteClicked"
                 />
-              </div>
-            </b-row>
+                <empty-state v-else :index="index" :collection="collection" />
+              </template>
+              <template v-if="!isCollectionEmpty">
+                <filters
+                  class="mb-3"
+                  :available-operands="searchFilterOperands"
+                  :current-filter="currentFilter"
+                  :collection-mapping="collectionMapping"
+                  @filters-updated="onFiltersUpdated"
+                  @reset="onFiltersUpdated"
+                />
+              </template>
+            </b-col>
+          </b-row>
 
-            <b-row v-show="totalDocuments > paginationSize" align-h="center">
-              <b-pagination
-                class="m-2 mt-4"
-                v-model="currentPage"
-                aria-controls="my-table"
-                :total-rows="totalDocuments"
-                :per-page="paginationSize"
-                @change="fetchDocuments"
-              ></b-pagination>
-            </b-row>
-          </b-card-text>
-        </b-card>
+          <template v-if="!isCollectionEmpty">
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <List
+                  v-if="listViewType === 'list' && documents.length"
+                  :all-checked="allChecked"
+                  :collection="collection"
+                  :documents="documents"
+                  :index="index"
+                  :current-page-size="paginationSize"
+                  :selected-documents="selectedDocuments"
+                  :total-documents="totalDocuments"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @delete="onDeleteClicked"
+                  @edit="onEditDocumentClicked"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                ></List>
+                <no-results-empty-state v-if="!documents.length" />
+
+                <b-row
+                  v-if="listViewType === 'column'"
+                  class="DocumentList-column"
+                >
+                  <div class="DocumentList-materializeCollection h-scroll">
+                    <Column
+                      :documents="documents"
+                      :mapping="collectionMapping"
+                      :index="index"
+                      :collection="collection"
+                      @edit="onEditDocumentClicked"
+                      @delete="onDeleteClicked"
+                    />
+                  </div>
+                </b-row>
+
+                <b-row
+                  v-show="totalDocuments > paginationSize"
+                  align-h="center"
+                >
+                  <b-pagination
+                    class="m-2 mt-4"
+                    v-model="currentPage"
+                    aria-controls="my-table"
+                    :total-rows="totalDocuments"
+                    :per-page="paginationSize"
+                    @change="fetchDocuments"
+                  ></b-pagination>
+                </b-row>
+              </b-card-text>
+            </b-card>
+          </template>
+        </template>
       </template>
 
       <delete-modal
@@ -138,6 +154,7 @@ import {
   performDeleteDocuments,
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
+import DataNotFound from '../Data404'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -158,7 +175,8 @@ export default {
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState
+    RealtimeOnlyEmptyState,
+    DataNotFound
   },
   props: {
     index: String,
@@ -180,7 +198,8 @@ export default {
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
-      currentPage: 1
+      currentPage: 1,
+      indexOrCollectionNotFound: false
     }
   },
   computed: {
@@ -420,6 +439,7 @@ export default {
     },
     async fetchDocuments() {
       this.$forceUpdate()
+      this.indexOrCollectionNotFound = false
 
       this.selectedDocuments = []
 
@@ -449,15 +469,19 @@ export default {
         this.documents = res.documents
         this.totalDocuments = res.total
       } catch (e) {
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while fetching the documents.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
         this.$log.error(e)
+        if (e.status === 412) {
+          this.indexOrCollectionNotFound = true
+        } else {
+          this.$bvToast.toast(e.message, {
+            title: 'Ooops! Something went wrong while fetching the documents.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          })
+        }
       }
     },
 
