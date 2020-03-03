@@ -28,5 +28,5 @@ import 'cypress-file-upload'
 
 Cypress.Commands.add('waitOverlay', () => {
   cy.visit('/')
-  cy.wait(600)
+  cy.wait(700)
 })

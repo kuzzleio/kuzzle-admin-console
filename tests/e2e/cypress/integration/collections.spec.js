@@ -25,7 +25,7 @@ describe('Collection management', function() {
     )
   })
 
-  it('is able to create a realtime collection and access it', function() {
+  it('is able to create a collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.get('.CollectionCreate').should('be.visible')
 
@@ -39,7 +39,6 @@ describe('Collection management', function() {
     })
     cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click()
     cy.contains(collectionName)
-    cy.contains('You did not subscribe yet')
   })
 
   it('is able to delete a collection', function() {

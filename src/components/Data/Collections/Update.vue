@@ -83,7 +83,7 @@ export default {
           dynamic: payload.dynamic
         })
         this.$router.push({
-          name: 'Indexes',
+          name: 'Collections',
           params: { index: this.index }
         })
       } catch (e) {

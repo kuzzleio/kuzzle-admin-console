@@ -46,7 +46,7 @@ export default {
           })
           .then(() => {
             this.$router.push({
-              name: 'Indexes',
+              name: 'Collections',
               params: { index: this.index }
             })
           })
