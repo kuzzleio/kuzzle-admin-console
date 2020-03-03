@@ -96,7 +96,7 @@ export default {
         this.showOfflineSpinner = false
         setTimeout(() => {
           this.showOfflineSpinner = true
-        }, 1500)
+        }, 900)
       }
     }
   }
