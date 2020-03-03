@@ -53,7 +53,7 @@ export default function createRoutes(log, kuzzle) {
       }
     } catch (error) {
       log.debug('Token no bueno (error)')
-      console.error(error.message)
+      log.error(error.message)
       next({ name: 'Login', query: { to: to.name } })
     }
   }
