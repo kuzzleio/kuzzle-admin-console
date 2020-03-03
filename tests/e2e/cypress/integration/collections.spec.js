@@ -29,14 +29,12 @@ describe('Collection management', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.get('.CollectionCreate').should('be.visible')
 
-    cy.get(
-      '.col > .row > .Mapping-realtimeOnly > label > #realtime-collection'
-    ).check('on', { force: true })
-    cy.get('div > .row > .col > .Mapping-name > label').click({ force: true })
-    cy.get('div > .row > .col > .Mapping-name > #collection-name').type(
-      collectionName
-    )
-    cy.get('.col > .Mapping > .row > .col > .Mapping-submitBtn').click({
+    cy.get('[data-cy="CollectionCreateOrUpdate-realtimeOnly"]').click({
+      force: true
+    })
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"]').click({ force: true })
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"]').type(collectionName)
+    cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click({
       force: true
     })
     cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click()

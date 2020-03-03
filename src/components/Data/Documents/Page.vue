@@ -1,21 +1,18 @@
 <template>
   <div class="DocumentList">
-    <b-container>
-      <b-row align-v="center">
-        <b-col sm="9">
+    <b-container
+      class="DocumentList--container"
+      :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+    >
+      <b-row>
+        <b-col sm="8">
           <headline>
-            <span class="code mr-2">{{ collection }}</span>
-            <collection-dropdown
-              class="icon-medium icon-black"
-              :active-view="listViewType"
-              :index="index"
-              :collection="collection"
-              @list="onListViewClicked"
-              @column="onColumnViewClicked"
-            />
+            <span class="code" :title="collection">{{
+              truncateName(collection, 20)
+            }}</span>
           </headline>
         </b-col>
-        <b-col class="text-right">
+        <b-col class="text-right mt-3">
           <b-button
             variant="primary"
             :disabled="
@@ -23,7 +20,14 @@
             "
             :to="{ name: 'CreateDocument', params: { index, collection } }"
             >Create New Document</b-button
-          >
+          ><collection-dropdown
+            class="icon-medium icon-black ml-2"
+            :active-view="listViewType"
+            :index="index"
+            :collection="collection"
+            @list="onListViewClicked"
+            @column="onColumnViewClicked"
+          />
         </b-col>
       </b-row>
 
@@ -82,21 +86,24 @@
                 ></List>
                 <no-results-empty-state v-if="!documents.length" />
 
-                <b-row
+                <Column
                   v-if="listViewType === 'column'"
-                  class="DocumentList-column"
-                >
-                  <div class="DocumentList-materializeCollection h-scroll">
-                    <Column
-                      :documents="documents"
-                      :mapping="collectionMapping"
-                      :index="index"
-                      :collection="collection"
-                      @edit="onEditDocumentClicked"
-                      @delete="onDeleteClicked"
-                    />
-                  </div>
-                </b-row>
+                  :index="index"
+                  :collection="collection"
+                  :documents="documents"
+                  :mapping="collectionMapping"
+                  :selected-documents="selectedDocuments"
+                  :all-checked="allChecked"
+                  :current-page-size="paginationSize"
+                  :total-documents="totalDocuments"
+                  @edit="onEditDocumentClicked"
+                  @delete="onDeleteClicked"
+                  @bulk-delete="onBulkDeleteClicked"
+                  @change-page-size="changePaginationSize"
+                  @checkbox-click="toggleSelectDocuments"
+                  @refresh="onRefresh"
+                  @toggle-all="onToggleAllClicked"
+                />
 
                 <b-row
                   v-show="totalDocuments > paginationSize"
@@ -155,6 +162,7 @@ import {
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
 import DataNotFound from '../Data404'
+import { truncateName } from '@/utils'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -289,6 +297,7 @@ export default {
     }
   },
   methods: {
+    truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
     getCoordinates(document) {
@@ -364,6 +373,7 @@ export default {
         this.resetCandidatesForDeletion()
         this.fetchDocuments()
         this.deleteModalIsLoading = false
+        this.$bvModal.hide('documentsDeleteModal')
       } catch (e) {
         this.$log.error(e)
         this.$bvToast.toast(
@@ -627,6 +637,12 @@ export default {
 <style lang="scss" scoped>
 .DocumentList {
   margin-bottom: 5em;
+}
+.DocumentList--container {
+  transition: max-width 0.6s;
+}
+.DocumentList--containerFluid {
+  max-width: 100%;
 }
 .ResultPerPage {
   &--active {

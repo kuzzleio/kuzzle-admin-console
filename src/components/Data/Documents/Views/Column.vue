@@ -1,144 +1,213 @@
 <template>
-  <div>
-    <b-table
-      stiped
-      responsive
-      small
-      hover
-      :tbody-transition-props="{ name: 'flip-list' }"
-      :fields="formatedCustomFields"
-      :items="formatedItems"
-    >
-      <template v-slot:head()="data">
-        <span class="text-info">{{ data.label }}</span>
-        <i
-          v-if="data.column !== '_id'"
-          class="fa fa-times-circle ListViewColumn-remove"
-          @click="removeColumn(customFields.findIndex(f => f === data.column))"
-        />
-      </template>
-    </b-table>
-
-    <table class="centered highlight striped">
-      <thead>
-        <tr>
-          <th class="actions" />
-          <th>id</th>
-          <th
-            v-for="(attr, k) in customFields"
-            :key="k"
-            class="Column-view-title"
+  <div class="Column" data-cy="DocumentList-Column">
+    <b-row no-gutters>
+      <b-col cols="8">
+        <b-dropdown
+          class="mr-2"
+          data-cy="SelectField"
+          variant="outline-secondary"
+          menu-class="dropdownScroll"
+          text="Select columns to display"
+          no-flip
+        >
+          <b-dropdown-text
+            v-for="field of formattedSelectFields"
+            :key="`dropdown-${field.text}`"
           >
-            {{ attr
-            }}<i
-              class="fa fa-times-circle ListViewColumn-remove"
-              @click="removeColumn(k)"
-            />
-          </th>
-          <th v-if="mappingArray.length">
-            <form>
-              <div class="row">
-                <div class="col s12">
-                  <autocomplete
-                    class="ListViewColumnInput"
-                    placeholder="Add column"
-                    :items="mappingArray"
-                    :value="newCustomField || ''"
-                    input-class="ListViewColumnInput"
-                    :notify-change="false"
-                    @autocomplete::change="
-                      attribute => {
-                        newCustomField = attribute
-                        addCustomField()
-                      }
-                    "
-                  />
-                </div>
-              </div>
-            </form>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(doc, kk) in documents" :key="kk">
-          <td class="actions">
-            <dropdown
-              :id="`document-dropdown-${doc.id}`"
-              class="DocumentBoxItem-actions"
-            >
-              <li>
-                <a
-                  v-title="{
-                    active: !canDelete,
-                    title: 'You are not allowed to edit this document'
-                  }"
-                  :class="{ disabled: !canEdit }"
-                  @click="editDocument(doc.id)"
-                >
-                  Edit
-                </a>
-              </li>
-              <li class="divider" />
-              <li>
-                <a
-                  v-title="{
-                    active: !canDelete,
-                    title: 'You are not allowed to delete this document'
-                  }"
-                  :class="{ disabled: !canDelete }"
-                  @click="deleteDocument(doc.id)"
-                >
-                  Delete
-                </a>
-              </li>
-            </dropdown>
-          </td>
-          <td class="DocumentColumnItem">
-            {{ doc.id }}
-          </td>
-          <td
-            v-for="(attr, k) in customFields"
-            :key="k"
-            class="DocumentColumnItem"
-          >
-            <span v-if="parseDocument(attr, doc).isObject" class="relative">
-              <a
-                href="#"
-                @click.prevent="toggleJsonFormatter(attr + doc.id)"
-                @blur="onBlur(attr + doc.id)"
-                >{{ parseDocument(attr, doc).value }} ...</a
+            <div class="inlineDisplay pointer">
+              <span class="inlineDisplay-item">
+                <b-form-checkbox
+                  class="mx-2"
+                  :checked="field.displayed"
+                  :data-cy="`SelectField--${field.text}`"
+                  :id="field.text"
+                  @change="toggleColumn(field.text, $event)"
+                />
+              </span>
+              <label
+                class="inlineDisplay-item code pointer"
+                :for="field.text"
+                :title="field.text"
+                >{{ truncateName(field.text, 20) }}</label
               >
-              <pre
-                tabindex="1"
-                :ref="attr + doc.id"
-                v-json-formatter="{
-                  content: parseDocument(attr, doc).realValue,
-                  open: true
-                }"
-                class="DocumentListViewColumn-jsonFormatter"
-                style="visibility: hidden;"
-              />
+            </div>
+          </b-dropdown-text>
+          <b-dropdown-text v-if="formattedSelectFields.length === 0">
+            <span class="inlineDisplay-item">
+              No searchable field
             </span>
-            <span v-else>
-              {{ parseDocument(attr, doc).value }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </b-dropdown-text>
+        </b-dropdown>
+        <b-button
+          variant="outline-dark"
+          class="mr-2"
+          @click="$emit('toggle-all')"
+        >
+          <i
+            :class="`far ${allChecked ? 'fa-check-square' : 'fa-square'} left`"
+          />
+          Toggle all
+        </b-button>
+
+        <b-button
+          variant="outline-danger"
+          class="mr-2"
+          :disabled="!bulkDeleteEnabled"
+          @click="$emit('bulk-delete')"
+        >
+          <i class="fa fa-minus-circle left" />
+          Delete
+        </b-button>
+
+        <b-button
+          variant="outline-secondary"
+          class="mr-2"
+          @click.prevent="$emit('refresh')"
+        >
+          <i class="fas fa-sync-alt left" />
+          Refresh
+        </b-button>
+      </b-col>
+
+      <b-col cols="4" class="text-right"
+        >Show
+        <b-form-select
+          class="mx-2"
+          style="width: unset"
+          :options="itemsPerPage"
+          :value="currentPageSize"
+          @change="$emit('change-page-size', $event)"
+        >
+        </b-form-select>
+        <span v-if="totalDocuments"
+          >of {{ totalDocuments }} total items.</span
+        ></b-col
+      >
+    </b-row>
+    <b-row no-gutters class="mt-3 mb-2">
+      <b-col cols="12">
+        <b-alert :show="true" dismissible fade variant="info" class="m-0">
+          <i class="fas fa-info-circle mr-2"></i> This view does not allow you
+          to see array values.
+        </b-alert>
+      </b-col>
+    </b-row>
+    <b-row class="mt-2 mb-2" no-gutters> </b-row>
+    <b-row class="mt-2 mb-2" no-gutters>
+      <b-col cols="12">
+        <b-table
+          striped
+          bordered
+          sticky-header="600px"
+          hover
+          sort-icon-left
+          no-border-collapse
+          small
+          :fields="formattedTableFields"
+          :items="formattedItems"
+        >
+          <template v-slot:head()="data">
+            <div class="inlineDisplay mx-1">
+              <span
+                class="inlineDisplay-item text-secondary m-3"
+                :data-cy="`ColumnViewHead--${data.label}`"
+                :title="data.label"
+                >{{ truncateName(getLastKeyPath(data.label), 20) }}</span
+              >
+            </div>
+          </template>
+          <template v-slot:cell(actions)="data">
+            <div class="inlineDisplay">
+              <span class="inlineDisplay-item">
+                <b-form-checkbox
+                  :checked="isChecked(data.item.id)"
+                  @change="toggleSelectDocument(data.item.id)"
+                />
+              </span>
+              <span class="inlineDisplay-item">
+                <b-button
+                  title="Edit document"
+                  variant="link"
+                  class="px-0 mx-1"
+                  :disabled="!canEdit"
+                  @click="editDocument(data.item.id)"
+                >
+                  <i class="fa fa-pen" />
+                </b-button>
+              </span>
+              <span class="inlineDisplay-item">
+                <b-button
+                  class="px-0 mx-1"
+                  title="Delete document"
+                  variant="link"
+                  :disabled="!canDelete"
+                  @click="deleteDocument(data.item.id)"
+                >
+                  <i class="fa fa-trash" />
+                </b-button>
+              </span>
+            </div>
+          </template>
+          <template v-slot:cell(id)="data">
+            <span data-cy="ColumnViewCell--id" class="code">{{
+              data.item.id
+            }}</span>
+          </template>
+          <template v-slot:cell()="data">
+            <div class="inlineDisplay mx-1">
+              <span
+                v-if="data.value.null === true"
+                class="inlineDisplay-item px-3 code"
+              >
+                null
+              </span>
+              <span
+                v-if="data.value.undefined === true"
+                class="inlineDisplay-item px-3 code"
+              >
+                undefined
+              </span>
+              <span
+                v-if="data.value.array === true"
+                class="inlineDisplay-item px-3 code"
+              >
+                [...]
+              </span>
+              <span
+                v-if="typeof data.value !== 'object'"
+                class="inlineDisplay-item px-3 code valueDisplayer"
+                >{{ data.value }}</span
+              >
+              <b-badge
+                pill
+                class="mx-1"
+                variant="info"
+                :id="`tooltip-target-${data.item.id}-${data.field.key}`"
+                v-if="data.value.array === true"
+              >
+                <i
+                  class="fa fa-info"
+                  title="This value cannot be displayed because it contains or is
+                contained in an array."
+                />
+              </b-badge>
+            </div>
+          </template>
+        </b-table>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
-import Dropdown from '../../../Materialize/Dropdown'
 import Title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
 import {
   canEditDocument,
   canDeleteDocument
 } from '../../../../services/userAuthorization'
-import Autocomplete from '../../../Common/Autocomplete'
 import _ from 'lodash'
+import { truncateName } from '@/utils'
 
 export default {
   name: 'Column',
@@ -146,38 +215,95 @@ export default {
     Title,
     JsonFormatter
   },
-  components: {
-    Dropdown,
-    Autocomplete
-  },
   props: {
+    allChecked: Boolean,
+    currentPageSize: Number,
+    totalDocuments: Number,
     documents: Array,
     index: String,
     collection: String,
-    value: [Object, String, Array],
-    mapping: Object
+    mapping: Object,
+    selectedDocuments: Array
   },
   data() {
     return {
-      customFields: [],
-      newCustomField: null,
-      mappingArray: []
+      itemsPerPage: [10, 25, 50, 100, 500],
+      selectedFields: [],
+      fieldList: []
     }
   },
   computed: {
-    formatedCustomFields() {
-      return this.customFields.map(f => ({
-        key: f,
-        sortable: true
+    hasSelectedDocuments() {
+      return this.selectedDocuments.length > 0
+    },
+    bulkDeleteEnabled() {
+      return (
+        this.canDeleteDocument(this.index, this.collection) &&
+        this.hasSelectedDocuments
+      )
+    },
+    formattedSelectFields() {
+      return this.fieldList.map(field => ({
+        text: field,
+        displayed: this.selectedFields.includes(field)
       }))
     },
-    formatedItems() {
+    formattedTableFields() {
+      return [
+        {
+          key: 'actions',
+          label: '',
+          deletable: false,
+          stickyColumn: true,
+          sortable: false,
+          thStyle: { width: '20px' },
+          thClass: 'align-middle'
+        },
+        {
+          key: 'id',
+          deletable: false,
+          sortable: true,
+          tdClass: 'align-middle',
+          thClass: 'align-middle'
+        }
+      ]
+        .concat(
+          this.fieldList.map((field, index) => ({
+            key: field,
+            index: index,
+            sortable: true,
+            deletable: true,
+            tdClass: 'align-middle columnClass',
+            thClass: 'align-middle'
+          }))
+        )
+        .filter(field => {
+          return (
+            field.key === 'id' ||
+            field.key === 'actions' ||
+            this.selectedFields.includes(field.key)
+          )
+        })
+    },
+    formattedItems() {
       return this.documents.map(d => {
         const doc = {}
         doc.id = d.id
-        for (const field of this.customFields) {
-          if (field !== 'id') {
-            doc[field] = this.parseDocument(field, d).value
+        for (const { key } of this.formattedTableFields) {
+          // each columns path
+          if (key === 'id') continue // column id is always ok
+          // if there is an array in the current document within the 'path'
+          if (this.documentPathContainsArray(key, d)) {
+            doc[key] = { array: true }
+          } else {
+            const parsed = this.parseDocument(key, d)
+            if (parsed.value === undefined) {
+              doc[key] = { undefined: true }
+            } else if (parsed.value === null) {
+              doc[key] = { null: true }
+            } else {
+              doc[key] = parsed.value
+            }
           }
         }
         return doc
@@ -199,50 +325,53 @@ export default {
       return `checkbox-${this.document.id}`
     }
   },
-  watch: {
-    $route() {
-      const columnsConfig = JSON.parse(
+  methods: {
+    truncateName,
+    canDeleteDocument,
+    isChecked(id) {
+      return this.selectedDocuments.indexOf(id) > -1
+    },
+    documentPathContainsArray(path, document) {
+      let containsArray = false,
+        str = ''
+      for (const key of path.split('.')) {
+        str += key
+        if (Array.isArray(this.parseDocument(str, document).realValue)) {
+          containsArray = true
+        }
+        str += '.'
+      }
+      return containsArray
+    },
+    getLastKeyPath(label) {
+      const splittedLabel = label.split('.')
+      return `${splittedLabel.length > 1 ? '...' : ''}${
+        splittedLabel[splittedLabel.length - 1]
+      }`
+    },
+    toggleSelectDocument(id) {
+      this.$emit('checkbox-click', id)
+    },
+    initSelectedFields() {
+      const columnViewConfig = JSON.parse(
         localStorage.getItem('columnViewConfig') || '{}'
       )
-
-      this.customFields = []
       if (
-        columnsConfig[this.index] &&
-        columnsConfig[this.index][this.collection]
+        columnViewConfig[this.index] &&
+        columnViewConfig[this.index][this.collection]
       ) {
-        this.customFields = columnsConfig[this.index][this.collection]
-      } else {
-        this.customFields = []
+        this.selectedFields = columnViewConfig[this.index][this.collection]
       }
     },
-    mapping() {
-      this.mappingArray = this.buildAttributeList(this.mapping)
-      for (const attr of this.customFields) {
-        this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
+    toggleColumn(field, value) {
+      this.$log.debug(`Toggling field ${field}`)
+      if (value === true && !this.selectedFields.includes(field)) {
+        this.selectedFields.push(field)
       }
-    }
-  },
-  mounted() {
-    const columnsConfig = JSON.parse(
-      localStorage.getItem('columnViewConfig') || '{}'
-    )
-
-    if (
-      columnsConfig[this.index] &&
-      columnsConfig[this.index][this.collection]
-    ) {
-      this.customFields = columnsConfig[this.index][this.collection]
-    }
-
-    this.mappingArray = this.buildAttributeList(this.mapping)
-    for (const attr of this.customFields) {
-      this.mappingArray.splice(this.mappingArray.indexOf(attr), 1)
-    }
-    this.customFields.unshift('id')
-  },
-  methods: {
-    onBlur(id) {
-      this.$refs[id][0].style.visibility = 'hidden'
+      if (value === false) {
+        this.$delete(this.selectedFields, this.selectedFields.indexOf(field))
+      }
+      this.saveSelectedFieldsToLocalStorage()
     },
     toggleJsonFormatter(id) {
       if (this.$refs[id][0].style.visibility === 'hidden') {
@@ -269,7 +398,7 @@ export default {
         value: ret
       }
     },
-    saveToLocalStorage() {
+    saveSelectedFieldsToLocalStorage() {
       if (this.index && this.collection) {
         const config = JSON.parse(
           localStorage.getItem('columnViewConfig') || '{}'
@@ -277,29 +406,12 @@ export default {
         if (!config[this.index]) {
           config[this.index] = {}
         }
-        config[this.index][this.collection] = this.customFields
+        config[this.index][this.collection] = this.selectedFields
         localStorage.setItem('columnViewConfig', JSON.stringify(config))
       }
     },
-    removeColumn(col) {
-      this.mappingArray.push(this.customFields[col])
-      this.mappingArray.sort()
-      this.customFields.splice(col, 1)
-      this.saveToLocalStorage()
-    },
     getNestedField(doc, customField) {
-      return _.get(doc, customField, '')
-    },
-    addCustomField() {
-      if (this.newCustomField) {
-        this.customFields.push(this.newCustomField)
-        this.mappingArray.splice(
-          this.mappingArray.indexOf(this.newCustomField),
-          1
-        )
-        this.newCustomField = null
-        this.saveToLocalStorage()
-      }
+      return _.get(doc, customField, null)
     },
     deleteDocument(id) {
       if (this.canDelete) {
@@ -311,16 +423,15 @@ export default {
         this.$emit('edit', id)
       }
     },
-    buildAttributeList(mapping, path = []) {
+    buildFieldList(mapping, path = []) {
       let attributes = []
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
         if (
           Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
         ) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
           attributes = attributes.concat(
-            this.buildAttributeList(
+            this.buildFieldList(
               attributeValue.properties,
               path.concat(attributeName)
             )
@@ -331,70 +442,55 @@ export default {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }
-
       return attributes
+    },
+    initFields() {
+      this.initSelectedFields()
+      this.fieldList = this.buildFieldList(this.mapping)
+    }
+  },
+  mounted() {
+    this.initFields()
+  },
+  watch: {
+    $route: {
+      immediate: false,
+      handler() {
+        this.initFields()
+      }
+    },
+    mapping: {
+      immediate: false,
+      handler() {
+        this.initFields()
+      }
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.DocumentColumnItem {
-  padding: 0px 0px;
-  white-space: pre;
-  word-wrap: break-word;
-  font-size: 0.9rem;
+<style lang="scss">
+.inlineDisplay {
+  display: table;
+
+  &-item {
+    display: table-cell;
+  }
 }
 
-td {
-  padding: 0 0 0 0;
+.dropdownScroll {
+  max-height: 250px;
+  overflow-y: scroll;
 }
 
-.ListViewColumnInput {
-  width: 300px;
-  float: left;
+.columnClass {
+  max-width: 300px;
+  min-width: 100px;
+  overflow: hidden;
 }
 
-.ListViewColumn-remove {
-  color: #3498db;
-  cursor: pointer;
-  padding-left: 6px;
-}
-
-.DocumentListViewColumn-add {
-  float: left;
-  color: #3498db;
-  font-size: 1.4rem;
-  padding-top: 10px;
-  cursor: pointer;
-}
-
-.actions {
-  width: 20px;
-}
-
-.relative {
-  position: relative;
-}
-
-.DocumentListViewColumn-jsonFormatter {
-  position: absolute;
-  background-color: #fff;
-  border: 0.3px solid grey;
-  z-index: 999;
-  left: 0;
-  bottom: 0;
-  padding: 5px;
-  text-align: left;
-}
-
-.Column-view-title {
+.valueDisplayer {
   white-space: nowrap;
-}
-</style>
-
-<style>
-.Autocomplete-results {
-  height: 200px !important;
+  display: inline-block;
 }
 </style>

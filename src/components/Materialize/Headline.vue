@@ -1,5 +1,5 @@
 <template>
-  <div class="Headline text-truncate">
+  <div class="Headline">
     <h1>
       <slot>{{ title }}</slot>
     </h1>

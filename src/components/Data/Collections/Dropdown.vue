@@ -10,81 +10,84 @@
       <template v-slot:button-content>
         <i class="fas fa-ellipsis-v" />
       </template>
-      <b-dropdown-item
-        data-cy="CollectionDropdown-list"
-        :active="activeView === 'list'"
-        @click="$emit('list')"
-      >
-        List view
-      </b-dropdown-item>
-      <b-dropdown-divider />
-      <b-dropdown-item
-        data-cy="CollectionDropdown-column"
-        :active="activeView === 'column'"
-        @click="$emit('column')"
-      >
-        Column view
-      </b-dropdown-item>
-      <b-dropdown-divider />
-      <b-dropdown-item
-        :disabled="!canEditCollection(index, collection)"
-        :title="
-          !canEditCollection(index, collection)
-            ? 'Your rights do not allow you to edit this collection'
-            : ''
-        "
-        :to="
-          canEditCollection(index, collection)
-            ? { name: 'EditCollection', params: { collection, index } }
-            : ''
-        "
-      >
-        Edit collection
-      </b-dropdown-item>
-      <b-dropdown-item v-if="isRealtime" @click="removeRealtimeCollection">
-        Remove collection
-      </b-dropdown-item>
-      <b-dropdown-divider />
-      <template v-if="!isRealtime && !isList">
+
+      <b-dropdown-group id="collection-dd-group-views" header="View type">
         <b-dropdown-item
-          :to="{
-            name: 'DocumentList',
-            params: { collection: collection, index: index }
-          }"
+          data-cy="CollectionDropdown-list"
+          :active="activeView === 'list'"
+          @click="$emit('list')"
         >
-          Browse documents
+          List view
         </b-dropdown-item>
-        <b-dropdown-divider />
-      </template>
-      <b-dropdown-item
-        :disabled="!canSubscribe(index, collection)"
-        :title="
-          !canSubscribe(index, collection)
-            ? 'Your rights do not allow you to subscribe to this collection'
-            : ''
-        "
-        :to="
-          canSubscribe(index, collection)
-            ? { name: 'WatchCollection', params: { collection, index } }
-            : ''
-        "
-      >
-        Watch messages
-      </b-dropdown-item>
+        <b-dropdown-item
+          data-cy="CollectionDropdown-column"
+          :active="activeView === 'column'"
+          @click="$emit('column')"
+        >
+          Column view
+        </b-dropdown-item>
+        <b-dropdown-item
+          :disabled="!canSubscribe(index, collection)"
+          :title="
+            !canSubscribe(index, collection)
+              ? 'Your rights do not allow you to subscribe to this collection'
+              : ''
+          "
+          :to="
+            canSubscribe(index, collection)
+              ? { name: 'DataCollectionWatch', params: { collection, index } }
+              : ''
+          "
+        >
+          Realtime view
+        </b-dropdown-item>
+      </b-dropdown-group>
       <b-dropdown-divider />
-      <b-dropdown-item
-        v-if="!isRealtime && isList"
-        class="text-secondary"
-        :disabled="!canTruncateCollection(index, collection)"
-        :title="
-          !canSubscribe(index, collection)
-            ? 'Your rights do not allow you to truncate this collection'
-            : ''
-        "
-        @click.prevent="openModal"
-      >
-        Clear documents
-      </b-dropdown-item>
+
+      <b-dropdown-group id="collection-dd-group-actions" header="Actions">
+        <b-dropdown-item
+          :disabled="!canEditCollection(index, collection)"
+          :title="
+            !canEditCollection(index, collection)
+              ? 'Your rights do not allow you to edit this collection'
+              : ''
+          "
+          :to="
+            canEditCollection(index, collection)
+              ? { name: 'DataCollectionEdit', params: { collection, index } }
+              : ''
+          "
+        >
+          Edit collection
+        </b-dropdown-item>
+        <b-dropdown-item v-if="isRealtime" @click="removeRealtimeCollection">
+          Remove collection
+        </b-dropdown-item>
+        <template v-if="!isRealtime && !isList">
+          <b-dropdown-item
+            :to="{
+              name: 'DataDocumentsList',
+              params: { collection: collection, index: index }
+            }"
+          >
+            Browse documents
+          </b-dropdown-item>
+        </template>
+
+        <b-dropdown-item
+          v-if="!isRealtime && isList"
+          class="text-secondary"
+          :disabled="!canTruncateCollection(index, collection)"
+          :title="
+            !canSubscribe(index, collection)
+              ? 'Your rights do not allow you to truncate this collection'
+              : ''
+          "
+          @click.prevent="openModal"
+        >
+          Clear documents
+        </b-dropdown-item>
+      </b-dropdown-group>
     </b-dropdown>
 
     <modal-clear
