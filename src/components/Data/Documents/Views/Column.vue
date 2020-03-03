@@ -8,6 +8,7 @@
           variant="outline-secondary"
           menu-class="dropdownScroll"
           text="Select columns to display"
+          no-flip
         >
           <b-dropdown-text
             v-for="field of formattedSelectFields"
@@ -19,12 +20,16 @@
                   class="mx-2"
                   :checked="field.displayed"
                   :data-cy="`SelectField--${field.text}`"
+                  :id="field.text"
                   @change="toggleColumn(field.text, $event)"
                 />
               </span>
-              <span class="inlineDisplay-item code" :title="field.text">{{
-                truncateName(field.text, 20)
-              }}</span>
+              <label
+                class="inlineDisplay-item code pointer"
+                :for="field.text"
+                :title="field.text"
+                >{{ truncateName(field.text, 20) }}</label
+              >
             </div>
           </b-dropdown-text>
           <b-dropdown-text v-if="formattedSelectFields.length === 0">
@@ -109,13 +114,6 @@
                 :title="data.label"
                 >{{ truncateName(getLastKeyPath(data.label), 20) }}</span
               >
-              <span class="inlineDisplay-item">
-                <i
-                  v-if="data.field.deletable"
-                  class="fa fa-times-circle text-info m-2"
-                  @click="hideColumn(data.field.index)"
-                />
-              </span>
             </div>
           </template>
           <template v-slot:cell(actions)="data">
@@ -255,7 +253,6 @@ export default {
         {
           key: 'actions',
           label: '',
-          displayed: true,
           deletable: false,
           stickyColumn: true,
           sortable: false,
@@ -264,7 +261,6 @@ export default {
         },
         {
           key: 'id',
-          displayed: true,
           deletable: false,
           sortable: true,
           tdClass: 'align-middle',
@@ -483,7 +479,7 @@ export default {
 }
 
 .dropdownScroll {
-  max-height: 150px;
+  max-height: 250px;
   overflow-y: scroll;
 }
 
