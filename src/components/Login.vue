@@ -17,14 +17,9 @@
               data-cy="noAdminAlert"
               :show="!$store.direct.getters.auth.adminAlreadyExists"
             >
-              <i class="fa fa-exclamation-triangle mr-2" aria-hidden="true"></i>
               <b>Warning!</b> Your Kuzzle has no administrator user. It is
               strongly recommended
-              <a href="#/signup" class="alert-link"> that you create one.</a
-              ><i
-                class="fa fa-exclamation-triangle ml-2"
-                aria-hidden="true"
-              ></i>
+              <a href="#/signup" class="alert-link"> that you create one.</a>
             </b-alert>
             <b-form-group
               label="Connected to"

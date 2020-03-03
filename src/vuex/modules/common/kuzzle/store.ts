@@ -66,11 +66,15 @@ const mutations = createMutations<KuzzleState>()({
     if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
       return
     }
-    if (checkEnvironment(payload.environment)) {
-      state.environments = {
-        ...state.environments,
-        [payload.id]: payload.environment
+    try {
+      if (checkEnvironment(payload.environment)) {
+        state.environments = {
+          ...state.environments,
+          [payload.id]: payload.environment
+        }
       }
+    } catch (error) {
+      throw new Error(`[${payload.id}] - ${error.message}`)
     }
   },
   updateEnvironment(state, payload) {
