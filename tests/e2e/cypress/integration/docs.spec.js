@@ -97,7 +97,7 @@ describe('Document List', function() {
 
     cy.get(`[data-cy="Treeview-item"][title="${collectionName}"]`).click()
     cy.url().should('contain', 'listViewType=column')
-    cy.get('.DocumentList-column')
+    cy.get('[data-cy="DocumentList-Column"]')
 
     cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
     cy.url().should('contain', 'listViewType=list')
@@ -123,26 +123,18 @@ describe('Document List', function() {
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
 
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(4)'
-    ).click()
-    cy.get('form > .row > .col > .Autocomplete > .ListViewColumnInput').click()
-    cy.get(
-      '.row > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)'
-    ).click()
-    cy.get('.centered > thead > tr > th:nth-child(6) > .fa').click()
-    cy.get('.centered > thead > tr > th:nth-child(5) > .fa').click()
-    cy.get('.centered > thead > tr > th:nth-child(4) > .fa').click()
-    cy.get('.centered > thead > tr > th > .fa').click()
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--date"]').click({ force: true })
+    cy.get('[data-cy="ColumnViewHead--Date"]').should('exist')
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--date"]').click({ force: true })
+    cy.get('[data-cy="ColumnViewHead--Date"]').should('not.exist')
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--value"]').click({ force: true })
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--value2"]').click({ force: true })
+    cy.get('[data-cy="ColumnViewHead--Value"]').should('exist')
+    cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
   })
 
   // it('should handle the time series view properly', function() {
@@ -280,7 +272,6 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('[data-cy="noAdminAlert"] .close').click()
     cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
@@ -318,7 +309,6 @@ describe('Document update/replace', () => {
           force: true
         }
       )
-    cy.get('[data-cy="noAdminAlert"] .close').click()
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')

@@ -111,6 +111,7 @@ export default {
 .DataLayout-sidebarWrapper {
   background-color: $light-grey-color;
   flex-basis: $sidebar-width;
+  min-width: $sidebar-width;
   height: 100%;
   overflow: auto;
   box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
