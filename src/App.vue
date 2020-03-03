@@ -86,18 +86,6 @@ export default {
       this.$store.direct.commit.auth.setTokenValid(false)
 
       this.$kuzzle.removeAllListeners()
-      this.$kuzzle.on('queryError', error => {
-        if (error && error.message) {
-          switch (error.message) {
-            case 'Token expired':
-            case 'Invalid token':
-            case 'Json Web Token Error':
-              this.$store.direct.commit.auth.setTokenValid(false)
-              this.$kuzzle.connect()
-              break
-          }
-        }
-      })
       this.$kuzzle.on('networkError', error => {
         this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
       })

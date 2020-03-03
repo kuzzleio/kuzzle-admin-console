@@ -1,7 +1,11 @@
 <template>
   <div class="ConnectionAwareContainer h-100">
+    <div
+      class="AntiGlitchOverlay"
+      v-if="connecting && !showOfflineSpinner"
+    ></div>
     <offline-spinner
-      v-if="connecting"
+      v-if="connecting && showOfflineSpinner"
       data-cy="App-offline"
       @environment::create="$emit('environment::create', $event)"
       @environment::delete="$emit('environment::delete', $event)"
@@ -38,7 +42,7 @@ export default {
   },
   data() {
     return {
-      showOfflineSpinner: true
+      showOfflineSpinner: false
     }
   },
   computed: {
@@ -81,9 +85,30 @@ export default {
       handler() {
         this.checkConnection()
       }
+    },
+    connecting: {
+      immediate: true,
+      handler(val) {
+        if (val === false) {
+          this.showOfflineSpinner = false
+          return
+        }
+        this.showOfflineSpinner = false
+        setTimeout(() => {
+          this.showOfflineSpinner = true
+        }, 1500)
+      }
     }
   }
 }
 </script>
 
-<style></style>
+<style>
+.AntiGlitchOverlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+</style>

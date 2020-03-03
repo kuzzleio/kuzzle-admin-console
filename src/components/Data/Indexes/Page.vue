@@ -128,7 +128,7 @@ import {
 } from '../../../services/userAuthorization'
 
 export default {
-  name: 'IndexesList',
+  name: 'IndexesPage',
   components: {
     Headline,
     CreateIndexModal,

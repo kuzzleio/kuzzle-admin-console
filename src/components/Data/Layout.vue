@@ -1,8 +1,8 @@
 <template>
   <div class="DataLayout">
     <div class="DataLayout-sidebarWrapper">
+      <!-- TODO loader here -->
       <treeview
-        :route-name="$route.name"
         :index="$route.params.index"
         :collection="$route.params.collection"
       />
@@ -21,8 +21,21 @@ export default {
   components: {
     Treeview
   },
+  computed: {
+    loading() {
+      return this.$store.direct.state.index.loading
+    }
+  },
+  methods: {
+    async loadStuff() {
+      if (this.loading) {
+        return
+      }
+      await this.$store.direct.dispatch.index.listIndexesAndCollections()
+    }
+  },
   mounted() {
-    this.$store.direct.dispatch.index.listIndexesAndCollections()
+    this.loadStuff()
   }
 }
 </script>

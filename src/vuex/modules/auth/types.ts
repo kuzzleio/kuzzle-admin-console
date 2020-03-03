@@ -4,4 +4,5 @@ export interface AuthState {
   user: SessionUser
   tokenValid: boolean
   adminAlreadyExists: boolean
+  initializing: boolean
 }

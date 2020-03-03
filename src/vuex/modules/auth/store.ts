@@ -11,7 +11,8 @@ import { moduleActionContext } from '@/vuex/store'
 export const state: AuthState = {
   user: new SessionUser(),
   tokenValid: false,
-  adminAlreadyExists: false
+  adminAlreadyExists: false,
+  initializing: true
 }
 
 const mutations = createMutations<AuthState>()({
@@ -23,13 +24,29 @@ const mutations = createMutations<AuthState>()({
   },
   setAdminExists(state, exists: boolean) {
     state.adminAlreadyExists = exists
+  },
+  reset(state) {
+    state.user = new SessionUser()
+    state.tokenValid = false
+    state.adminAlreadyExists = false
+    state.initializing = true
+  },
+  setInitializing(state, value: boolean) {
+    state.initializing = value
   }
 })
 
 const actions = createActions({
+  async init(context, environment) {
+    const { commit, dispatch } = authActionContext(context)
+
+    commit.reset()
+    await dispatch.checkFirstAdmin()
+    await dispatch.loginByToken(environment)
+  },
   async prepareSession(context, token) {
     const { rootDispatch, commit } = authActionContext(context)
-
+    commit.setInitializing(true)
     const sessionUser = new SessionUser()
     rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
     const user = await Vue.prototype.$kuzzle.auth.getCurrentUser()
@@ -41,6 +58,8 @@ const actions = createActions({
     sessionUser.rights = rights
     commit.setCurrentUser(sessionUser)
     commit.setTokenValid(true)
+    commit.setInitializing(false)
+
     return sessionUser
   },
   async doLogin(context, data) {

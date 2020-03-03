@@ -13,10 +13,19 @@ import { moduleActionContext } from '@/vuex/store'
 
 const state: IndexState = {
   indexes: [],
-  indexesAndCollections: {}
+  indexesAndCollections: {},
+  loading: false
 }
 
 const mutations = createMutations<IndexState>()({
+  reset(state) {
+    state.indexes = []
+    state.indexesAndCollections = {}
+    state.loading = false
+  },
+  setLoading(state, value) {
+    state.loading = value
+  },
   receiveIndexesCollections(state, indexesAndCollections) {
     state.indexes = Object.keys(indexesAndCollections)
     for (const index of state.indexes) {
@@ -97,34 +106,31 @@ const actions = createActions({
   },
   async listIndexesAndCollections(context) {
     const { commit } = indexActionContext(context)
+    commit.setLoading(true)
+    commit.reset()
     let result = await Vue.prototype.$kuzzle.index.list()
 
     let indexesAndCollections = {}
     result = result.filter(index => index !== '%kuzzle')
     for (const index of result) {
-      try {
-        const res = await Vue.prototype.$kuzzle.collection.list(index, {
-          size: 0
-        })
+      const res = await Vue.prototype.$kuzzle.collection.list(index, {
+        size: 0
+      })
 
-        let collections = splitRealtimeStoredCollections(res.collections)
+      let collections = splitRealtimeStoredCollections(res.collections)
 
-        if (!collections.realtime) {
-          collections.realtime = []
-        }
-
-        collections.realtime = collections.realtime.concat(
-          getRealtimeCollectionFromStorage(index)
-        )
-        collections = dedupeRealtimeCollections(collections)
-        indexesAndCollections[index] = collections
-        commit.receiveIndexesCollections(indexesAndCollections || {})
-      } catch (error) {
-        if (error.message.indexOf('Forbidden') === -1) {
-          throw error
-        }
+      if (!collections.realtime) {
+        collections.realtime = []
       }
+
+      collections.realtime = collections.realtime.concat(
+        getRealtimeCollectionFromStorage(index)
+      )
+      collections = dedupeRealtimeCollections(collections)
+      indexesAndCollections[index] = collections
+      commit.receiveIndexesCollections(indexesAndCollections || {})
     }
+    commit.setLoading(false)
   },
   async createCollectionInIndex(
     context,

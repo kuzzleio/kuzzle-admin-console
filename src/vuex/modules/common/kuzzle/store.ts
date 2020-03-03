@@ -203,11 +203,8 @@ const actions = createActions({
       return false
     }
 
-    rootDispatch.auth.checkFirstAdmin()
-    if (environment.token) {
-      await rootDispatch.auth.loginByToken({ token: environment.token })
-      return true
-    }
+    await rootDispatch.auth.init(environment)
+
     return true
   },
   loadEnvironments(context) {
