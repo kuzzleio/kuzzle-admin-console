@@ -12,7 +12,7 @@
     />
 
     <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="$bvModal.hide(id)">
+      <b-button variant="outline-secondary" @click="$bvModal.hide(id)">
         Cancel
       </b-button>
       <b-button

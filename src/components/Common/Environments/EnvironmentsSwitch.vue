@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import Promise from 'bluebird'
 import { formatForDom } from '../../../utils'
 import { mapValues, omit } from 'lodash'
 
@@ -95,18 +94,24 @@ export default {
   },
   mounted() {},
   methods: {
-    clickSwitch(id) {
-      return this.$store.direct.dispatch.kuzzle
-        .switchEnvironment(id)
-        .then(() => {
-          this.$router.push({ path: '/' }).catch(() => {})
-        })
-        .catch(e => {
-          this.$store.direct.commit.toaster(
-            'An error occurred while switching environment'
-          )
-          return Promise.reject(e)
-        })
+    async clickSwitch(id) {
+      try {
+        await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
+        this.$router.push({ path: '/' })
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: 'Ooops! Something went wrong while switching connections.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
     },
     formatForDom
   }
@@ -114,16 +119,23 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.EnvironmentSwitch--blendColor {
+.EnvironmentSwitch--blendColor,
+.EnvironmentSwitch--blendColor.show {
   .dropdown-toggle {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.4) !important;
     border: none;
     color: white;
-  }
 
-  &.show {
-    .dropdown-toggle {
-      background-color: rgba(255, 255, 255, 0.4);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5) !important;
     }
   }
 }

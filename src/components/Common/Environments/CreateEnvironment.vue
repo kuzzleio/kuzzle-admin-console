@@ -241,7 +241,7 @@ export default {
               name: this.environment.name,
               color: this.environment.color,
               host: this.environment.host,
-              port: this.environment.port,
+              port: parseInt(this.environment.port),
               ssl: this.environment.ssl
             }
           })
@@ -252,7 +252,7 @@ export default {
               name: this.environment.name,
               color: this.environment.color,
               host: this.environment.host,
-              port: this.environment.port,
+              port: parseInt(this.environment.port),
               ssl: this.environment.ssl
             }
           })

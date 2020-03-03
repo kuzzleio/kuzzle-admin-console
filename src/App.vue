@@ -109,9 +109,10 @@ export default {
         this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
         this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
       })
-      this.$kuzzle.on('discarded', function(data) {
+      this.$kuzzle.on('discarded', function() {
         if (this.$store) {
-          this.$store.direct.commit.toaster.setToast({ text: data.message })
+          // TODO show BV Toast
+          // this.$store.direct.commit.toaster.setToast({ text: data.message })
         }
       })
     } catch (error) {
