@@ -175,7 +175,7 @@ const actions = createActions({
     let currentId = state.currentId
 
     if (!currentId) {
-      currentId = Object.keys(state.environments)[0]
+      throw new Error('No current environment selected')
     }
 
     return dispatch.switchEnvironment(currentId)

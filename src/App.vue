@@ -81,32 +81,6 @@ export default {
         }
       )
     }
-
-    try {
-      this.$store.direct.commit.auth.setTokenValid(false)
-
-      this.$kuzzle.removeAllListeners()
-      this.$kuzzle.on('networkError', error => {
-        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
-      })
-      this.$kuzzle.on('connected', () => {
-        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
-        this.$store.direct.dispatch.auth.checkFirstAdmin()
-      })
-      this.$kuzzle.on('reconnected', () => {
-        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
-        this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
-      })
-      this.$kuzzle.on('discarded', function() {
-        if (this.$store) {
-          // TODO show BV Toast
-          // this.$store.direct.commit.toaster.setToast({ text: data.message })
-        }
-      })
-    } catch (error) {
-      // TODO show error page or Toast
-      // this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
-    }
     this.initializing = false
   },
   methods: {

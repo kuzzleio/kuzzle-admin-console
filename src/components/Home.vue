@@ -30,7 +30,7 @@
     <b-modal
       id="tokenExpired"
       hide-footer
-      title="Your session has expired"
+      title="You must login in order to continue"
       v-model="tokenExpiredIsOpen"
     >
       <login-form :on-login="onLogin" />
@@ -76,8 +76,19 @@ export default {
     noop() {}
   },
   mounted() {
-    // TODO do this in a robust, clean and tested way
+    const invalidTokenRegex = /Invalid token/
     this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
+    this.$kuzzle.on('queryError', e => {
+      // TODO use the error codes when available
+      if (invalidTokenRegex.test(e.message)) {
+        this.onTokenExpired()
+        this.tokenExpiredIsOpen = true
+      }
+    })
+  },
+  beforeDestroy() {
+    this.$kuzzle.removeListener('tokenExpired')
+    this.$kuzzle.removeListener('queryError')
   }
 }
 </script>

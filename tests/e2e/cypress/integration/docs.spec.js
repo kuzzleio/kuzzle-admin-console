@@ -45,6 +45,7 @@ describe('Document List', function() {
         }
       })
     )
+    localStorage.setItem('currentId', validEnvName)
   })
 
   it('sets and persists the listViewType param accessing a collection', function() {
@@ -232,6 +233,7 @@ describe('Document update/replace', () => {
         }
       })
     )
+    localStorage.setItem('currentId', validEnvName)
   })
 
   it('should update a document', () => {
