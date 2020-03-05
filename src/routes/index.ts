@@ -14,6 +14,7 @@ import SecurityLayout from '../components/Security/Layout.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
+import { splitRealtimeStoredCollections } from '@/services/data'
 
 Vue.use(VueRouter)
 
@@ -30,10 +31,10 @@ export default function createRoutes(log, kuzzle) {
     }
     if (store.getters.kuzzle.hasEnvironment) {
       log.debug('Has environments')
-      await store.dispatch.kuzzle.connectToCurrentEnvironment(
-        moduleActionContext
-      )
 
+      if (!store.getters.kuzzle.currentEnvironment) {
+        next({ name: 'SelectEnvironment' })
+      }
       next()
     } else {
       log.debug('No environments')
@@ -53,7 +54,7 @@ export default function createRoutes(log, kuzzle) {
       }
     } catch (error) {
       log.debug('Token no bueno (error)')
-      log.error(error.message)
+      log.error(error)
       next({ name: 'Login', query: { to: to.name } })
     }
   }

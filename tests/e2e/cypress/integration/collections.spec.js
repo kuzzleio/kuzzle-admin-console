@@ -23,6 +23,7 @@ describe('Collection management', function() {
         }
       })
     )
+    localStorage.setItem('currentId', validEnvName)
   })
 
   it('is able to create a collection and access it', function() {

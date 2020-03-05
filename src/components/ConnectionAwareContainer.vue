@@ -36,6 +36,8 @@
 
 <script>
 import OfflineSpinner from './Common/Offline'
+import { antiGlitchOverlayTimeout } from '../utils'
+
 export default {
   name: 'ConnectionAwareContainer',
   components: {
@@ -97,7 +99,7 @@ export default {
         this.showOfflineSpinner = false
         setTimeout(() => {
           this.showOfflineSpinner = true
-        }, 600)
+        }, antiGlitchOverlayTimeout)
       }
     }
   }

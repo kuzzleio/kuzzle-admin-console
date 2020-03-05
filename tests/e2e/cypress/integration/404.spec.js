@@ -15,6 +15,7 @@ describe('404 page', function() {
         }
       })
     )
+    localStorage.setItem('currentId', validEnvName)
   })
 
   it('shows when browsing to an unexisting index and has a valid link to the home page', function() {

@@ -93,7 +93,7 @@ export default {
           username: this.username,
           password: this.password
         })
-        this.onLogin()
+        this.onLogin() // TODO change this to $emit
       } catch (err) {
         this.error = err.message
       }

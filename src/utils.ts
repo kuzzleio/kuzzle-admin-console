@@ -19,5 +19,6 @@ module.exports = {
     if (name.length > maxLength) {
       return `${name.substring(0, maxLength)}...`
     }
-  }
+  },
+  antiGlitchOverlayTimeout: 900
 }
