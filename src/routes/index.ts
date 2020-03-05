@@ -30,9 +30,6 @@ export default function createRoutes(log, kuzzle) {
     }
     if (store.getters.kuzzle.hasEnvironment) {
       log.debug('Has environments')
-      await store.dispatch.kuzzle.connectToCurrentEnvironment(
-        moduleActionContext
-      )
 
       next()
     } else {

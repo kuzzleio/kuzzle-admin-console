@@ -1,5 +1,5 @@
 describe('404 page', function() {
-  beforeEach(() => {
+  before(() => {
     // create environment
     const validEnvName = 'valid'
     localStorage.setItem(
