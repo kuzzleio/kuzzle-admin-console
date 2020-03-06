@@ -63,9 +63,28 @@ export default {
       } else {
         this.$bvToast.hide('offline-toast')
       }
+    },
+    async authenticationGuard() {
+      // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
+      // the code from router.authenticationGuard by refactoring it into a separate
+      // function, but I can't pass `this.$router.push` as the `next` parameter:
+      // I get a `this$1` doesn't exist error.
+      try {
+        if (await this.$store.direct.dispatch.auth.checkToken()) {
+          this.$log.debug('ConnectionAwareContainer::Token bueno')
+        } else {
+          this.$log.debug('ConnectionAwareContainer::Token no bueno')
+          this.$router.push({ name: 'Login', query: { to: this.$route.name } })
+        }
+      } catch (error) {
+        this.$log.debug('ConnectionAwareContainer::Token no bueno (error)')
+        this.$log.error(error)
+        this.$router.push({ name: 'Login', query: { to: this.$route.name } })
+      }
     }
   },
   async mounted() {
+    this.$log.debug('ConnectionAwareContainer::mounted')
     this.$kuzzle.on('networkError', error => {
       this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
     })
@@ -94,7 +113,10 @@ export default {
       handler(val) {
         if (val === false) {
           this.showOfflineSpinner = false
-          return
+          this.$log.debug(
+            'ConnectionAwareContainer::checking authentication after (re)connection...'
+          )
+          this.authenticationGuard()
         }
         this.showOfflineSpinner = false
         setTimeout(() => {
