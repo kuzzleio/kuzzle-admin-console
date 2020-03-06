@@ -13,7 +13,7 @@ const LS_CURRENT_ENV = 'currentId'
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,
-  connecting: false,
+  connecting: true,
   online: false,
   errorFromKuzzle: undefined
 }

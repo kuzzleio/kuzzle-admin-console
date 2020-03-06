@@ -100,13 +100,16 @@ export default {
       })
     },
     async fetch() {
-      this.loading = true
       try {
-        this.mapping = await this.getMappingDocument(
-          this.collection,
-          this.index
+        const details = await this.$store.direct.dispatch.collection.fetchCollectionDetail(
+          {
+            index: this.index,
+            collection: this.collection
+          }
         )
-        this.loading = false
+        this.$log.debug(`fetched mapping`)
+        this.$log.info(details)
+        this.mapping = details.mapping
       } catch (err) {
         this.$log.error(err)
         this.$bvToast.toast(err.message, {
@@ -120,6 +123,9 @@ export default {
         })
       }
     }
+  },
+  mounted() {
+    this.fetch()
   }
 }
 </script>
