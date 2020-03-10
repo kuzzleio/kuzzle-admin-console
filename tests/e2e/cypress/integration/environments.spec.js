@@ -44,7 +44,7 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', envNames[0])
+    localStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -105,7 +105,7 @@ describe('Environments', function() {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', reachableEnvName)
+    localStorage.setItem('currentEnv', reachableEnvName)
 
     cy.visit('/')
     cy.contains('Connected to')
@@ -160,6 +160,7 @@ describe('Environments', function() {
         }
       })
     )
+    localStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
     cy.contains('Connected to')
 

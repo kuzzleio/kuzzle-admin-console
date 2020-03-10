@@ -8,8 +8,8 @@ import {
   disconnect
 } from '../../../../services/kuzzleWrapper'
 
-const LS_ENVIRONMENTS = 'environments'
-const LS_CURRENT_ENV = 'currentId'
+export const LS_ENVIRONMENTS = 'environments'
+export const LS_CURRENT_ENV = 'currentEnv'
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,

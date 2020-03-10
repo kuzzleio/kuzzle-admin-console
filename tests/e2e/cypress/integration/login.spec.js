@@ -19,7 +19,7 @@ describe('Login', function() {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', validEnvName)
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('is able to login as anonymous', () => {

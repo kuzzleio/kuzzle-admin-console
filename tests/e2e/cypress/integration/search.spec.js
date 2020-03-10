@@ -64,7 +64,7 @@ describe('Search', function() {
         }
       })
     )
-    localStorage.setItem('currentId', validEnvName)
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('perists the Quick Search query in the URL', function() {

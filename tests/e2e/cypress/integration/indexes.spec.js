@@ -18,7 +18,7 @@ describe('Indexes', () => {
         }
       })
     )
-    localStorage.setItem('currentId', validEnvName)
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('is able to create a new index', () => {

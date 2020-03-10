@@ -45,7 +45,7 @@ describe('Document List', function() {
         }
       })
     )
-    localStorage.setItem('currentId', validEnvName)
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('sets and persists the listViewType param accessing a collection', function() {
@@ -84,13 +84,13 @@ describe('Document List', function() {
     )
     cy.get('[data-cy="CollectionDropdown"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
-    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
+    cy.get('[data-cy=Treeview-item--anothercollection]').click()
 
-    cy.get(`[data-cy="Treeview-item"][title="${collectionName}"]`).click()
+    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'listViewType=column')
     cy.get('[data-cy="DocumentList-Column"]')
 
-    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
+    cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('contain', 'listViewType=list')
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
@@ -233,7 +233,7 @@ describe('Document update/replace', () => {
         }
       })
     )
-    localStorage.setItem('currentId', validEnvName)
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('should update a document', () => {
