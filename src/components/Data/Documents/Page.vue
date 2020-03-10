@@ -67,57 +67,59 @@
               :bg-variant="documents.length === 0 ? 'light' : 'default'"
             >
               <b-card-text class="p-0">
-                <List
-                  v-if="listViewType === 'list' && documents.length"
-                  :all-checked="allChecked"
-                  :collection="collection"
-                  :documents="documents"
-                  :index="index"
-                  :current-page-size="paginationSize"
-                  :selected-documents="selectedDocuments"
-                  :total-documents="totalDocuments"
-                  @bulk-delete="onBulkDeleteClicked"
-                  @change-page-size="changePaginationSize"
-                  @checkbox-click="toggleSelectDocuments"
-                  @delete="onDeleteClicked"
-                  @edit="onEditDocumentClicked"
-                  @refresh="onRefresh"
-                  @toggle-all="onToggleAllClicked"
-                ></List>
                 <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collection"
+                    :documents="documents"
+                    :index="index"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @edit="onEditDocumentClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  ></List>
 
-                <Column
-                  v-if="listViewType === 'column'"
-                  :index="index"
-                  :collection="collection"
-                  :documents="documents"
-                  :mapping="collectionMapping"
-                  :selected-documents="selectedDocuments"
-                  :all-checked="allChecked"
-                  :current-page-size="paginationSize"
-                  :total-documents="totalDocuments"
-                  @edit="onEditDocumentClicked"
-                  @delete="onDeleteClicked"
-                  @bulk-delete="onBulkDeleteClicked"
-                  @change-page-size="changePaginationSize"
-                  @checkbox-click="toggleSelectDocuments"
-                  @refresh="onRefresh"
-                  @toggle-all="onToggleAllClicked"
-                />
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="index"
+                    :collection="collection"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditDocumentClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
 
-                <b-row
-                  v-show="totalDocuments > paginationSize"
-                  align-h="center"
-                >
-                  <b-pagination
-                    class="m-2 mt-4"
-                    v-model="currentPage"
-                    aria-controls="my-table"
-                    :total-rows="totalDocuments"
-                    :per-page="paginationSize"
-                    @change="fetchDocuments"
-                  ></b-pagination>
-                </b-row>
+                  <b-row
+                    v-show="totalDocuments > paginationSize"
+                    align-h="center"
+                  >
+                    <b-pagination
+                      class="m-2 mt-4"
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                      @change="fetchDocuments"
+                    ></b-pagination>
+                  </b-row>
+                </template>
               </b-card-text>
             </b-card>
           </template>
