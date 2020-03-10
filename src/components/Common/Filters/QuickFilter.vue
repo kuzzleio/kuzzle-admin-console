@@ -9,6 +9,7 @@
             </b-input-group-prepend>
 
             <b-form-input
+              data-cy="QuickFilter-input"
               debounce="300"
               placeholder="Search..."
               type="search"
@@ -22,6 +23,7 @@
       <b-col cols="2">
         <a
           v-if="!advancedFiltersVisible"
+          data-cy="QuickFilter-optionBtn"
           class="QuickFilter-optionBtn"
           href="#"
           @click.prevent="displayAdvancedFilters"
@@ -45,7 +47,12 @@
         >
           {{ submitButtonLabel }}
         </b-button>
-        <b-button class="m-2" variant="outline-secondary" @click="resetSearch">
+        <b-button
+          class="m-2"
+          data-cy="QuickFilter-resetBtn"
+          variant="outline-secondary"
+          @click="resetSearch"
+        >
           Reset
         </b-button>
       </b-col>
@@ -111,12 +118,15 @@ export default {
       this.$emit('display-advanced-filters')
     }
   },
-  mounted() {
-    this.inputSearchTerm = this.searchTerm
-  },
   watch: {
     inputSearchTerm() {
       this.submitSearch()
+    },
+    searchTerm: {
+      immediate: true,
+      handler(val) {
+        this.inputSearchTerm = val
+      }
     }
   }
 }

@@ -23,10 +23,10 @@
       <div
         v-for="collectionName in orderedFilteredStoredCollections"
         class="tree-item truncate mt-2"
-        data-cy="Treeview-item"
-        :title="collectionName"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
+        :data-cy="`Treeview-item--${collectionName}`"
         :key="collectionName"
+        :title="collectionName"
       >
         <router-link
           :to="{

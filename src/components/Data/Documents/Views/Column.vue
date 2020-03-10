@@ -96,13 +96,14 @@
     <b-row class="mt-2 mb-2" no-gutters>
       <b-col cols="12">
         <b-table
-          striped
+          data-cy="ColumnView-table"
           bordered
-          sticky-header="600px"
           hover
-          sort-icon-left
           no-border-collapse
           small
+          sort-icon-left
+          sticky-header="600px"
+          striped
           :fields="formattedTableFields"
           :items="formattedItems"
         >
