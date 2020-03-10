@@ -27,6 +27,7 @@
           Column view
         </b-dropdown-item>
         <b-dropdown-item
+          :active="activeView === 'realtime'"
           :disabled="!canSubscribe(index, collection)"
           :title="
             !canSubscribe(index, collection)

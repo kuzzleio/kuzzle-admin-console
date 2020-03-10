@@ -1,7 +1,7 @@
 <template>
   <div class="valign-center">
     <div class="col s5 m5 l4">
-      <button
+      <!-- <button
         v-title="{
           active: !canSubscribe(index, collection),
           title:
@@ -23,14 +23,14 @@
           class="fa left"
         />
         {{ subscribed ? 'Unsubscribe' : 'Subscribe' }}
-      </button>
-      <button
+      </button> -->
+      <!-- <button
         class="btn-flat btn-small  waves-effect waves-grey "
         @click.prevent="clear()"
       >
         <i class="fa fa-trash-o left" />
         Clear messages
-      </button>
+      </button> -->
     </div>
 
     <div class="col s4 m4 l6 right-align truncate">

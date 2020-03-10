@@ -1,21 +1,17 @@
 <template>
-  <li class="Notification">
-    <div
-      class="Notification--header collapsible-header unselectable"
-      :class="notification.class"
-      @click="toggleCollapse"
-    >
+  <b-card no-body class="Notification">
+    <b-card-header @click="collapsed = !collapsed">
       <i
-        :class="{ 'fa-caret-right': collapsed, 'fa-caret-down': !collapsed }"
+        :class="{ 'fa-caret-right': !collapsed, 'fa-caret-down': collapsed }"
         class="fa"
       />
-      <i class="fa" :class="notificationIcon" /> {{ notification.text }} -
-      {{ ago }}
-    </div>
-    <div v-if="!notification.empty" class="Notification--body collapsible-body">
+      <i class="fa" :class="notificationIcon" /> {{ notification.text }}
+      <span class="text-secondary"> - {{ time }}</span>
+    </b-card-header>
+    <b-collapse v-model="collapsed" class="p-3">
       <p v-json-formatter="{ content: notification.source, open: true }" />
-    </div>
-  </li>
+    </b-collapse>
+  </b-card>
 </template>
 
 <style type="text/css" media="screen" scoped>
@@ -55,30 +51,22 @@ import JsonFormatter from '../../../directives/json-formatter.directive'
 var moment = require('moment')
 
 export default {
-  name: 'RealtimeNotification',
+  name: 'Notification',
   directives: {
     JsonFormatter
   },
   props: ['notification'],
   data() {
     return {
-      ago: moment(this.notification.timestamp).fromNow(),
-      collapsed: true
+      collapsed: false
     }
   },
   computed: {
     notificationIcon() {
       return `fa-${this.notification.icon}`
-    }
-  },
-  mounted() {
-    setInterval(() => {
-      this.ago = moment(this.notification.timestamp).fromNow()
-    }, 60000)
-  },
-  methods: {
-    toggleCollapse: function() {
-      this.collapsed = !this.collapsed
+    },
+    time() {
+      return moment(this.notification.source.meta.createdAt).format('H:mm:ss')
     }
   }
 }
