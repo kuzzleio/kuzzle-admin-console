@@ -1,4 +1,4 @@
-describe('Search', function () {
+describe('Search', function() {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -60,13 +60,14 @@ describe('Search', function () {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('perists the Quick Search query in the URL', function () {
+  it('perists the Quick Search query in the URL', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -77,15 +78,14 @@ describe('Search', function () {
       }
     )
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
+    cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
     cy.url().should('contain', 'quick=Keylogger')
     cy.url().should('contain', 'active=quick')
   })
 
-  it('persists the Basic Search query in the URL', function () {
+  it('persists the Basic Search query in the URL', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -96,17 +96,13 @@ describe('Search', function () {
       }
     )
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
+    // cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', {
       delay: 60
     })
     cy.get('.BasicFilter-submitBtn').click()
@@ -117,7 +113,7 @@ describe('Search', function () {
     cy.url().should('contain', 'Blockchain')
   })
 
-  it('remembers the Quick Search query across collections', function () {
+  it('remembers the Quick Search query across collections', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -149,25 +145,20 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 250 })
+    cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 250 })
     cy.wait(250)
-    cy.get('[data-cy="Treeview-item"]')
-      .contains('anothercollection')
-      .click()
+    cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('not.contain', 'Keylogger')
-    cy.get('.DocumentListItem').should('have.length', 2)
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
-    cy.get('[data-cy="Treeview-item"]')
-      .contains(collectionName)
-      .click()
+    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'Keylogger')
-    cy.get('.DocumentListItem').should('have.length', 1)
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
   })
 
-  it('remembers the Basic Search query across collections', function () {
+  it('remembers the Basic Search query across collections', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -199,62 +190,49 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', {
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger', {
       delay: 60
     })
-    cy.get('.BasicFilter-submitBtn').click()
-    cy.get('.DocumentListItem').should('have.length', 1)
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get('[data-cy="Treeview-item"]')
-      .contains('anothercollection')
-      .click()
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+
+    cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('not.contain', 'Keylogger')
-    cy.get('.DocumentListItem').should('have.length', 2)
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
 
-    cy.get('[data-cy="Treeview-item"]')
-      .contains(collectionName)
-      .click()
+    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'Keylogger')
-    cy.get('.DocumentListItem').should('have.length', 1)
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').should(
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').should(
       'have.value',
       'job'
     )
-    cy.get('.BasicFilter-query input[placeholder=Value]').should(
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').should(
       'have.value',
       'Keylogger'
     )
   })
 
-  it('refreshes search when the Search button is hit twice', function () {
+  it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(`${collectionName}`)
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', {
       delay: 60
     })
-    cy.get('.BasicFilter-submitBtn').click()
-    cy.get('.DocumentListItem').should('have.length', 1)
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
     cy.request(
       'POST',
@@ -267,11 +245,11 @@ describe('Search', function () {
     )
     cy.wait(1500)
 
-    cy.get('.BasicFilter-submitBtn').click()
-    cy.get('.DocumentListItem').should('have.length', 2)
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
   })
 
-  it('resets the search query but not the list view type, when the RESET button is hit', function () {
+  it('resets the search query but not the list view type, when the RESET button is hit', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -283,50 +261,37 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
+    cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
 
     cy.url().should('contain', 'Keylogger')
-    cy.get('.DocumentListItem').should('have.length', 1)
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
-    cy.get('.ListViewButtons-btn[title~="boxes"]').click()
-    cy.get('.DocumentList-boxes')
-      .children()
-      .should('have.class', 'DocumentBoxItem')
-    cy.get('.DocumentBoxItem').should('have.length', 1)
+    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy=CollectionDropdown-column]').click()
+    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
 
-    cy.get('.QuickFilter-resetBtn').click()
+    cy.get('[data-cy="QuickFilter-resetBtn"]').click()
 
     cy.url().should('not.contain', 'Keylogger')
-    cy.url().should('contain', 'listViewType=boxes')
-    cy.get('.DocumentList-boxes')
-      .children()
-      .should('have.class', 'DocumentBoxItem')
-    cy.get('.DocumentBoxItem').should('have.length', 2)
+    cy.url().should('contain', 'listViewType=column')
+    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
-    cy.get('.BasicFilter-submitBtn').click()
-    cy.get('.DocumentBoxItem').should('have.length', 1)
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Keylogger')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
 
-    cy.get('.BasicFilter-resetBtn').click()
+    cy.get('[data-cy="BasicFilter-resetBtn"]').click()
     cy.url().should('not.contain', 'Keylogger')
-    cy.url().should('contain', 'listViewType=boxes')
-    cy.get('.DocumentList-boxes')
-      .children()
-      .should('have.class', 'DocumentBoxItem')
-    cy.get('.DocumentBoxItem').should('have.length', 2)
+    cy.url().should('contain', 'listViewType=column')
+    cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
   })
 
-  it('sorts the results when sorting is selected in the basic filter', function () {
+  it('sorts the results when sorting is selected in the basic filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/maret/_create?refresh=wait_for`,
@@ -356,38 +321,28 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get(
-      '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
-    ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('job')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Blockchain', {
       delay: 60
     })
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get(
-      '.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate'
-    ).click()
-    cy.get(
-      '.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)'
-    ).click()
-    cy.get('.BasicFilter-sortingValue select').select('desc')
-
+    cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-sortOrderSelect"]').select('desc')
     cy.get('.BasicFilter-submitBtn').click()
 
-    cy.get('.DocumentListItem').should(function ($el) {
+    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
       expect($el.first()).to.contain('maret')
       expect($el.last()).to.contain('marchesini')
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function () {
+  it('sorts the results when sorting is specfied in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -417,14 +372,10 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.tab.col')
-      .contains('JSON')
-      .click()
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
 
     cy.get('#rawsearch .ace_line').should('be.visible')
     cy.wait(1000)
@@ -448,30 +399,29 @@ describe('Search', function () {
         }
       )
 
-    cy.get('.RawFilter-submitBtn').click()
+    cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('.DocumentListItem').should(function ($el) {
+    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
   })
 
-  it('transforms a search query from basic filter to raw filter', function () {
+  it('transforms a search query from basic filter to raw filter', function() {
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.BasicFilter-query input[placeholder=Attribute]').type('foo', {
-      delay: 60
-    })
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('bar', {
-      delay: 60
-    })
-    cy.get('.BasicFilter-submitBtn').click()
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
 
-    cy.get('#raw').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('firstName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('bar', {
+      delay: 60
+    })
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+
+    cy.get('[data-cy="Filters-rawTab"]').click()
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
@@ -479,7 +429,7 @@ describe('Search', function () {
       .and('contain', 'bar')
   })
 
-  it('should show aggregations in search result when aggregations are specified in the raw filter', function () {
+  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -489,14 +439,11 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.tab.col')
-      .contains('JSON')
-      .click()
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-rawTab"]').click()
 
     cy.get('#rawsearch .ace_line').should('be.visible')
 
@@ -518,14 +465,14 @@ describe('Search', function () {
         }
       )
 
-    cy.get('.RawFilter-submitBtn').click()
+    cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('.DocumentListItem').should(function ($el) {
+    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
       expect($el.first()).to.contain('Aggregations')
     })
   })
 
-  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function () {
+  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -535,14 +482,11 @@ describe('Search', function () {
     )
 
     cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('.QuickFilter-optionBtn').click()
-    cy.get('.tab.col')
-      .contains('JSON')
-      .click()
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-rawTab"]').click()
 
     cy.get('#rawsearch .ace_line').should('be.visible')
 
@@ -559,6 +503,6 @@ describe('Search', function () {
         }
       )
 
-    cy.get('.RawFilter-submitBtn').click()
+    cy.get('[data-cy="RawFilter-submitBtn"]').click()
   })
 })

@@ -6,7 +6,7 @@
           <!-- index browse link -->
           <router-link
             class="fluid-hover"
-            :to="{ name: 'DataIndexSummary', params: { index: index } }"
+            :to="{ name: 'Indexes', params: { index: index } }"
           >
             <i
               class="fa fa-database grey-text text-darken-1"
@@ -34,7 +34,7 @@
           }"
           class="btn btn-small"
           :class="{ unauthorized: !canCreateCollection(index) }"
-          :to="{ name: 'DataCreateCollection', params: { index: index } }"
+          :to="{ name: 'CreateCollection', params: { index: index } }"
         >
           Create a collection
         </router-link>

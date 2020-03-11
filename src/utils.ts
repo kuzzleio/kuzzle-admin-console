@@ -19,5 +19,8 @@ module.exports = {
     if (name.length > maxLength) {
       return `${name.substring(0, maxLength)}...`
     }
-  }
+  },
+  antiGlitchOverlayTimeout: 900,
+  LS_ENVIRONMENTS: 'environments',
+  LS_CURRENT_ENV: 'currentEnvironment'
 }

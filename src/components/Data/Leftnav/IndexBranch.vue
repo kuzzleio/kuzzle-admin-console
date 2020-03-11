@@ -12,7 +12,7 @@
       class="tree-item truncate mt-2"
       :class="{ active: isIndexActive(indexName) }"
       :title="indexName"
-      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
+      :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(truncateName(indexName, 12), filter)" /> ({{
@@ -23,14 +23,14 @@
       <div
         v-for="collectionName in orderedFilteredStoredCollections"
         class="tree-item truncate mt-2"
-        data-cy="Treeview-item"
-        :title="collectionName"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
+        :data-cy="`Treeview-item--${collectionName}`"
         :key="collectionName"
+        :title="collectionName"
       >
         <router-link
           :to="{
-            name: 'DataDocumentsList',
+            name: 'DocumentList',
             params: { index: indexName, collection: collectionName }
           }"
         >
@@ -49,6 +49,10 @@
         data-cy="Treeview-item"
         :class="{ active: isCollectionActive(indexName, collectionName) }"
         :key="collectionName"
+        :to="{
+          name: 'WatchCollection',
+          params: { index: indexName, collection: collectionName }
+        }"
       >
         <i
           class="fa fa-bolt ml-1 mr-2"
@@ -134,12 +138,12 @@ export default {
     // TODO get rid of this ESTEBAAAAAAAAN
     getRelativeLink(isRealtime) {
       switch (this.routeName) {
-        case 'DataCollectionWatch':
+        case 'WatchCollection':
           return this.routeName
-        case 'DataDocumentsList':
-          return isRealtime ? 'DataCollectionWatch' : this.routeName
+        case 'DocumentList':
+          return isRealtime ? 'WatchCollection' : this.routeName
         default:
-          return 'DataDocumentsList'
+          return 'DocumentList'
       }
     },
     testOpen() {
@@ -182,7 +186,7 @@ export default {
         this.$route.params.collection === collectionName
       ) {
         this.$router.push({
-          name: 'DataIndexSummary',
+          name: 'Indexes',
           params: { index: indexName }
         })
       }

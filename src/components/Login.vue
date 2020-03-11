@@ -1,7 +1,7 @@
 <template>
   <div class="LoginPage">
     <b-row align-h="center" class="w-100">
-      <b-col xl="5" lg="7" md="8" sm="10">
+      <b-col xl="6" lg="7" md="8" sm="10">
         <b-card>
           <b-card-body>
             <div class="text-center">
@@ -11,6 +11,18 @@
                 class="mb-5 img-fluid"
               />
             </div>
+            <b-alert
+              class="text-center"
+              variant="info"
+              data-cy="noAdminAlert"
+              :show="!$store.direct.getters.auth.adminAlreadyExists"
+            >
+              <b>Warning!</b> Your Kuzzle has no administrator user. It is
+              strongly recommended
+              <a class="alert-link" data-cy="NoAdminAlert-link" href="#/signup">
+                that you create one.</a
+              >
+            </b-alert>
             <b-form-group
               label="Connected to"
               label-cols-sm="4"
@@ -56,7 +68,7 @@ export default {
       if (this.$store.getters.routeBeforeRedirect) {
         this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
       } else {
-        this.$router.push({ name: 'Home' }).catch(() => {})
+        this.$router.push('/').catch(() => {})
       }
 
       this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)

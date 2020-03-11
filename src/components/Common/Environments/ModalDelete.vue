@@ -16,6 +16,7 @@
         id="env-to-delete-name"
         data-cy="EnvironmentDeleteModal-envName"
         trim
+        autofocus
         v-model="envConfirmation"
         @keydown.enter="confirmDeleteEnvironment"
       ></b-form-input>
@@ -59,7 +60,6 @@ button {
 
 <script>
 import Focus from '../../../directives/focus.directive'
-import { deleteEnvironment } from '../../../services/environment'
 
 export default {
   name: 'EnvironmentDeleteModal',
@@ -96,7 +96,17 @@ export default {
     },
     confirmDeleteEnvironment() {
       if (this.confirmationOk) {
-        deleteEnvironment(this.environmentId)
+        if (this.$store.direct.state.kuzzle.currentId === this.environmentId) {
+          this.$store.direct.dispatch.auth.doLogout()
+        }
+
+        this.$store.direct.dispatch.kuzzle.deleteEnvironment(this.environmentId)
+
+        if (this.$store.direct.getters.kuzzle.hasEnvironment) {
+          this.$router.push({ name: 'SelectEnvironment' })
+        } else {
+          this.$router.push({ name: 'CreateEnvironment' })
+        }
 
         this.$bvModal.hide(this.id)
       }

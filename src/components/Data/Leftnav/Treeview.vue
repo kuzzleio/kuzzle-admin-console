@@ -28,7 +28,6 @@
           v-for="indexName in orderedFilteredIndices"
           :key="indexName"
           :index-name="indexName"
-          :route-name="routeName"
           :collections="indexesAndCollections[indexName]"
           :current-index="index"
           :filter="filter"
@@ -66,8 +65,7 @@ export default {
   },
   props: {
     index: String,
-    collection: String,
-    routeName: String
+    collection: String
   },
   data() {
     return {

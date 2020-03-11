@@ -63,7 +63,6 @@
 
 <script>
 import { hasSecurityRights } from '../../services/userAuthorization'
-import { DEFAULT_COLOR } from '../../services/environment'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
 export default {
@@ -73,10 +72,6 @@ export default {
   },
   computed: {
     currentEnvironmentColor() {
-      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        return DEFAULT_COLOR
-      }
-
       return this.$store.direct.getters.kuzzle.currentEnvironment.color
     },
     currentUserName() {
@@ -98,10 +93,24 @@ export default {
   },
 
   methods: {
-    doLogout() {
-      return this.$store.direct.dispatch.auth.doLogout().then(() => {
+    async doLogout() {
+      try {
+        await this.$store.direct.dispatch.auth.doLogout()
         this.$router.push({ name: 'Login' })
-      })
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: 'Ooops! Something went wrong while logging out.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
     },
     hasSecurityRights,
     editEnvironment(id) {

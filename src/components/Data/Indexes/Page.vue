@@ -66,7 +66,7 @@
             :data-cy="`IndexesPage-name--${indexName.value}`"
             :title="indexName.value"
             :to="{
-              name: 'DataIndexSummary',
+              name: 'Collections',
               params: { index: indexName.value }
             }"
           >
@@ -81,7 +81,7 @@
               variant="link"
               :data-cy="`IndexesPage-browse--${row.item.indexName}`"
               :to="{
-                name: 'DataIndexSummary',
+                name: 'Collections',
                 params: { index: row.item.indexName }
               }"
               ><i class="fa fa-eye"></i
@@ -92,7 +92,7 @@
               variant="link"
               :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
               :to="{
-                name: 'DataCreateCollection',
+                name: 'CreateCollection',
                 params: { index: row.item.indexName }
               }"
               @click="openDeleteModal(row.item.indexName)"
@@ -119,6 +119,8 @@
 import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
+import ListNotAllowed from '../../Common/ListNotAllowed'
+
 import Title from '../../../directives/title.directive'
 import {
   canCreateIndex,
@@ -126,11 +128,12 @@ import {
 } from '../../../services/userAuthorization'
 
 export default {
-  name: 'IndexesList',
+  name: 'IndexesPage',
   components: {
     Headline,
     CreateIndexModal,
-    DeleteIndexModal
+    DeleteIndexModal,
+    ListNotAllowed
   },
   directives: {
     Title

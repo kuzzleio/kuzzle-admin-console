@@ -33,6 +33,9 @@
             <b-col cols="2">
               <b-form-select
                 placeholder="Attribute"
+                :data-cy="
+                  `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
+                "
                 @change="
                   attribute =>
                     selectAttribute(attribute, groupIndex, filterIndex)
@@ -62,10 +65,13 @@
               "
             >
               <b-form-input
-                v-model="andBlock.value"
+                class="BasicFilter--value validate"
                 placeholder="Value"
                 type="text"
-                class="BasicFilter--value validate"
+                :data-cy="
+                  `BasicFilter-valueInput--${groupIndex}.${filterIndex}`
+                "
+                v-model="andBlock.value"
               />
             </b-col>
             <div v-else>
@@ -121,6 +127,7 @@
       <b-col sm="5">
         <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
           <b-form-select
+            data-cy="BasicFilter-sortAttributeSelect"
             placeholder="Attribute"
             :value="filters.sorting.attribute || ''"
             @change="attribute => setSortAttr(attribute)"
@@ -137,6 +144,7 @@
       <b-col sm="2"
         ><b-select
           v-model="filters.sorting.order"
+          data-cy="BasicFilter-sortOrderSelect"
           :options="[
             { value: 'asc', text: 'Ascending' },
             { value: 'desc', text: 'Descending' }
@@ -144,15 +152,17 @@
       /></b-col>
       <b-col v-if="actionButtonsVisible" class="text-right">
         <b-button
-          variant="primary"
+          data-cy="BasicFilter-submitBtn"
           class="BasicFilter-submitBtn mt-2 mb-2 mr-2"
+          variant="primary"
           @click.prevent="submitSearch"
         >
           {{ submitButtonLabel }}
         </b-button>
         <b-button
+          class="BasicFilter-resetBtn"
+          data-cy="BasicFilter-resetBtn"
           variant="outline-secondary"
-          class="BasicFilter-resetBtn m-2"
           @click="resetSearch"
         >
           Reset

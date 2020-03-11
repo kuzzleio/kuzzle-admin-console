@@ -11,13 +11,13 @@
             class="align-middle"
             data-cy="CollectionList-create"
             variant="primary"
-            :disabled="!canCreateCollection(index)"
+            :disabled="!canCreateCollection(index) || !indexExists"
             :title="
               !canCreateCollection(index)
                 ? `Your rights disallow you to create collections on index ${index}`
                 : ''
             "
-            :to="{ name: 'DataCreateCollection', params: { index: index } }"
+            :to="{ name: 'CreateCollection', params: { index: index } }"
           >
             <i class="fa fa-plus"></i> Create a collection
           </b-button>
@@ -47,7 +47,10 @@
     </template>
 
     <template v-if="canSearchCollection(index)">
+      <data-not-found v-if="!indexExists" class="mt-3"></data-not-found>
+
       <b-table
+        v-else
         striped
         outlined
         show-empty
@@ -89,11 +92,11 @@
             :to="
               name.item.type === 'realtime'
                 ? {
-                    name: 'DataCollectionWatch',
+                    name: 'WatchCollection',
                     params: { index, collection: name.value }
                   }
                 : {
-                    name: 'DataDocumentsList',
+                    name: 'DocumentList',
                     params: { index, collection: name.value }
                   }
             "
@@ -108,11 +111,11 @@
             :to="
               row.item.type === 'realtime'
                 ? {
-                    name: 'DataCollectionWatch',
+                    name: 'WatchCollection',
                     params: { index, collection: row.item.name }
                   }
                 : {
-                    name: 'DataDocumentsList',
+                    name: 'DocumentList',
                     params: { index, collection: row.item.name }
                   }
             "
@@ -129,7 +132,7 @@
             :to="
               canEditCollection(index, row.item.name)
                 ? {
-                    name: 'DataCollectionEdit',
+                    name: 'EditCollection',
                     params: { collection: row.item.name, index }
                   }
                 : ''
@@ -220,12 +223,14 @@ import {
 } from '../../../services/userAuthorization'
 import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
+import DataNotFound from '../Data404'
 
 export default {
   name: 'CollectionList',
   components: {
     Headline,
-    ListNotAllowed
+    ListNotAllowed,
+    DataNotFound
   },
   directives: {
     Title
@@ -241,6 +246,9 @@ export default {
     }
   },
   computed: {
+    indexExists() {
+      return !!this.$store.state.index.indexesAndCollections[this.index]
+    },
     deletionConfirmed() {
       return (
         this.deleteConfirmation !== '' &&

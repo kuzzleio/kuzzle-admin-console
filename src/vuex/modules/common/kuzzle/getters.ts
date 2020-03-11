@@ -8,20 +8,15 @@ export const getters = createGetters<KuzzleState>()({
     }
 
     if (!state.currentId) {
-      const firstKey = Object.keys(state.environments)[0]
-      return state.environments[firstKey]
+      return null
+      // const firstKey = Object.keys(state.environments)[0]
+      // return state.environments[firstKey]
     }
 
     return state.environments[state.currentId]
   },
   hasEnvironment(state) {
     return Object.keys(state.environments).length !== 0
-  },
-  kuzzleHost(state) {
-    return state.host
-  },
-  kuzzlePort(state) {
-    return state.port
   },
   environments(state) {
     // DAFUQ IZ DIS 4?

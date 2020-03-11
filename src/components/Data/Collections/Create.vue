@@ -36,17 +36,20 @@ export default {
   methods: {
     async create(payload) {
       try {
-        await this.$store.direct.dispatch.index.createCollectionInIndex({
-          index: this.index,
-          collection: payload.name,
-          isRealtimeOnly: payload.realtimeOnly,
-          mapping: payload.mapping,
-          dynamic: payload.dynamic
-        })
-        this.$router.push({
-          name: 'DataIndexSummary',
-          params: { index: this.index }
-        })
+        await this.$store.direct.dispatch.index
+          .createCollectionInIndex({
+            index: this.index,
+            collection: payload.name,
+            isRealtimeOnly: payload.realtimeOnly,
+            mapping: payload.mapping,
+            dynamic: payload.dynamic
+          })
+          .then(() => {
+            this.$router.push({
+              name: 'Collections',
+              params: { index: this.index }
+            })
+          })
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(error.message, {

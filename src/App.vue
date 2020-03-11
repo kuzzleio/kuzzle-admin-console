@@ -2,68 +2,12 @@
   <div class="App">
     <main-spinner v-if="initializing"></main-spinner>
     <template v-else>
-      <div
-        v-if="$store.direct.state.kuzzle.errorFromKuzzle"
-        class="App-errored"
-      >
-        <error-layout>
-          <kuzzle-error-page
-            @environment::create="editEnvironment"
-            @environment::delete="deleteEnvironment"
-          />
-        </error-layout>
-      </div>
-      <template v-else>
-        <div
-          v-if="!$store.direct.getters.kuzzle.hasEnvironment"
-          class="App-noEnvironments"
-        >
-          <create-environment-page
-            @environment::importEnv="importEnvironment"
-          />
-        </div>
-        <template v-else>
-          <main-spinner
-            v-if="!$store.direct.state.kuzzle.isConnected"
-            data-cy="App-disconnected"
-          >
-            <b-spinner variant="primary"></b-spinner>
-          </main-spinner>
-          <template v-else>
-            <div
-              data-cy="App-connected"
-              v-if="!$store.direct.getters.auth.isAuthenticated"
-            >
-              <div
-                v-if="!$store.direct.getters.auth.adminAlreadyExists"
-                data-cy="App-noAdmin"
-              >
-                <sign-up
-                  @environment::create="editEnvironment"
-                  @environment::delete="deleteEnvironment"
-                  @environment::importEnv="importEnvironment"
-                />
-              </div>
-              <div v-else>
-                <login
-                  data-cy="App-hasAdmin"
-                  @environment::create="editEnvironment"
-                  @environment::delete="deleteEnvironment"
-                  @environment::importEnv="importEnvironment"
-                />
-              </div>
-            </div>
-            <template v-else>
-              <router-view
-                data-cy="App-loggedIn"
-                @environment::create="editEnvironment"
-                @environment::delete="deleteEnvironment"
-                @environment::importEnv="importEnvironment"
-              />
-            </template>
-          </template>
-        </template>
-      </template>
+      <router-view
+        data-cy="App-loggedIn"
+        @environment::create="editEnvironment"
+        @environment::delete="deleteEnvironment"
+        @environment::importEnv="importEnvironment"
+      />
     </template>
 
     <modal-create-or-update
@@ -73,6 +17,19 @@
     />
     <modal-delete id="modal-env-delete" :environment-id="environmentId" />
     <modal-import id="modal-env-import" />
+
+    <b-toast
+      id="discarded-toast"
+      title="Request Discarded"
+      no-auto-hide
+      no-close-button
+      variant="danger"
+      toaster="b-toaster-bottom-right"
+      append="true"
+    >
+      Your request could not be sent to Kuzzle. Check the browser console for
+      more details.
+    </b-toast>
   </div>
 </template>
 
@@ -81,30 +38,17 @@ require('ace-builds')
 require('ace-builds/webpack-resolver')
 
 import {} from './assets/global.scss'
-import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
-import ErrorLayout from './components/Error/Layout'
-import SignUp from './components/Signup'
-import Login from './components/Login'
-import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
 import MainSpinner from './components/Common/MainSpinner'
 
-// @TODO we'll have to import FA from global.scss one day...
-import '@fortawesome/fontawesome-free/css/all.css'
-
 export default {
   name: 'KuzzleAdminConsole',
   components: {
-    ErrorLayout,
     ModalCreateOrUpdate,
     ModalDelete,
     ModalImport,
-    KuzzleErrorPage,
-    SignUp,
-    Login,
-    CreateEnvironmentPage,
     MainSpinner
   },
   data() {
@@ -113,44 +57,29 @@ export default {
       environmentId: null
     }
   },
+
   async mounted() {
+    this.$log.debug('App:Mounted')
     this.initializing = true
     try {
-      this.$store.direct.commit.auth.setTokenValid(false)
+      // NOTE This operation is pretty useless here, as the environments must be
+      // loaded in the router guard. We double check here in order to display a
+      // warning if necessary, since we cannot show a toast from the router guard.
       this.$store.direct.dispatch.kuzzle.loadEnvironments()
-      await this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
-
-      this.$kuzzle.removeAllListeners()
-      this.$kuzzle.on('queryError', error => {
-        if (error && error.message) {
-          switch (error.message) {
-            case 'Token expired':
-            case 'Invalid token':
-            case 'Json Web Token Error':
-              this.$store.direct.commit.auth.setTokenValid(false)
-              this.$kuzzle.connect()
-              break
-          }
-        }
-      })
-      this.$kuzzle.on('networkError', error => {
-        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
-      })
-      this.$kuzzle.on('connected', () => {
-        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
-        this.$store.direct.dispatch.auth.checkFirstAdmin()
-      })
-      this.$kuzzle.on('reconnected', () => {
-        this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
-        this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
-      })
-      this.$kuzzle.on('discarded', function(data) {
-        if (this.$store) {
-          this.$store.direct.commit.toaster.setToast({ text: data.message })
-        }
-      })
     } catch (error) {
-      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
+      this.$log.error(error.message)
+      this.$log.error(localStorage.getItem('environments'))
+      this.$bvToast.toast(
+        'The list of saved connections seems to be malformed. If you know how to fix it, take a look at the console.',
+        {
+          title: 'Ooops! Something went wrong while loading the connections.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        }
+      )
     }
     this.initializing = false
   },

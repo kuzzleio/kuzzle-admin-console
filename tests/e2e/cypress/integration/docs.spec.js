@@ -41,33 +41,27 @@ describe('Document List', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('sets and persists the listViewType param accessing a collection', function() {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.url().should('contain', 'listViewType=list')
   })
 
   it('shows list items when viewType is set to list', function() {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
 
   it('sets and persists the listViewType param when switching the list view', function() {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
+    cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
+
     cy.get('[data-cy="CollectionDropdown"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
@@ -78,9 +72,6 @@ describe('Document List', function() {
 
   it('remembers the list view settings when navigating from one collection to another', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/anothercollection`)
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.request(
       'POST',
@@ -93,13 +84,13 @@ describe('Document List', function() {
     )
     cy.get('[data-cy="CollectionDropdown"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
-    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
+    cy.get('[data-cy=Treeview-item--anothercollection]').click()
 
-    cy.get(`[data-cy="Treeview-item"][title="${collectionName}"]`).click()
+    cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'listViewType=column')
     cy.get('[data-cy="DocumentList-Column"]')
 
-    cy.get('[data-cy="Treeview-item"][title="anothercollection"]').click()
+    cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('contain', 'listViewType=list')
     cy.get('[data-cy="DocumentList-item"]').should('exist')
   })
@@ -114,10 +105,8 @@ describe('Document List', function() {
         }
       }
     )
+    cy.waitOverlay()
 
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="CollectionDropdown"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
@@ -167,6 +156,8 @@ describe('Document List', function() {
   //   )
 
   //   cy.visit('/')
+  // cy.get('[data-cy="AntiGlitchOverlay"]').should('not.be.visible')
+
   //   cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
   //   cy.contains('Indexes')
   //   cy.visit(`/#/data/${indexName}/${collectionName}`)
@@ -238,16 +229,16 @@ describe('Document update/replace', () => {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('should update a document', () => {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
+    cy.waitOverlay()
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
@@ -283,9 +274,8 @@ describe('Document update/replace', () => {
   })
 
   it('should replace a document', () => {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
-    cy.contains('Indexes')
+    cy.waitOverlay()
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')

@@ -2,14 +2,14 @@ export default [
   // Indexes routes
   {
     path: '/data',
-    name: 'Data',
+    name: 'Indexes',
     component(resolve) {
       require(['../../components/Data/Indexes/Page'], resolve)
     }
   },
   {
     path: '/data/:index',
-    name: 'DataIndexSummary',
+    name: 'Collections',
     meta: {
       auth: true
     },
@@ -22,7 +22,7 @@ export default [
   },
   {
     path: '/data/:index/create',
-    name: 'DataCreateCollection',
+    name: 'CreateCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Create'], resolve)
     },
@@ -32,7 +32,7 @@ export default [
   },
   {
     path: '/data/:index/:collection/watch',
-    name: 'DataCollectionWatch',
+    name: 'WatchCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Watch'], resolve)
     },
@@ -43,7 +43,7 @@ export default [
   },
   {
     path: '/data/:index/:collection/edit',
-    name: 'DataCollectionEdit',
+    name: 'EditCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Update'], resolve)
     },
@@ -54,7 +54,7 @@ export default [
   },
   {
     path: '/data/:index/:collection',
-    name: 'DataDocumentsList',
+    name: 'DocumentList',
     component(resolve) {
       require(['../../components/Data/Documents/Page'], resolve)
     },
@@ -65,7 +65,7 @@ export default [
   },
   {
     path: '/data/:index/:collection/create',
-    name: 'DataCreateDocument',
+    name: 'CreateDocument',
     component(resolve) {
       require(['../../components/Data/Documents/Create'], resolve)
     },
@@ -76,7 +76,7 @@ export default [
   },
   {
     path: '/data/:index/:collection/update/:id',
-    name: 'DataUpdateDocument',
+    name: 'UpdateDocument',
     component(resolve) {
       require(['../../components/Data/Documents/Update'], resolve)
     },

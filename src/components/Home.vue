@@ -2,9 +2,9 @@
   <div class="Home">
     <div class="Home-menuWrapper">
       <main-menu
-        @environment::create="editEnvironment"
-        @environment::delete="deleteEnvironment"
-        @environment::importEnv="importEnv"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
       />
     </div>
     <b-alert
@@ -23,13 +23,14 @@
     </b-alert>
 
     <div class="Home-routeWrapper">
-      <router-view />
+      <main-spinner v-if="authInitializing"></main-spinner>
+      <router-view v-else />
     </div>
 
     <b-modal
       id="tokenExpired"
       hide-footer
-      title="Your session has expired"
+      title="You must login in order to continue"
       v-model="tokenExpiredIsOpen"
     >
       <login-form :on-login="onLogin" />
@@ -39,13 +40,15 @@
 
 <script>
 import MainMenu from './Common/MainMenu'
+import MainSpinner from './Common/MainSpinner'
 import LoginForm from './Common/Login/Form'
 
 export default {
   name: 'Home',
   components: {
     LoginForm,
-    MainMenu
+    MainMenu,
+    MainSpinner
   },
   data() {
     return {
@@ -54,34 +57,38 @@ export default {
       tokenExpiredIsOpen: false
     }
   },
-  watch: {
-    '$store.direct.state.auth.tokenValid'(valid) {
-      if (!valid) {
-        this.tokenExpiredIsOpen = true
-      }
+  computed: {
+    tokenValid() {
+      return this.$store.direct.state.auth.tokenValid
+    },
+    authInitializing() {
+      return this.$store.direct.state.auth.initializing
     }
-  },
-  mounted() {
-    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
   },
   methods: {
     onLogin() {
       this.tokenExpiredIsOpen = false
       this.$emit('modal-close', 'tokenExpired')
     },
-    editEnvironment(id) {
-      this.$emit('environment::create', id)
-    },
-    deleteEnvironment(id) {
-      this.$emit('environment::delete', id)
-    },
-    importEnv() {
-      this.$emit('environment::importEnv')
-    },
     onTokenExpired() {
       this.$store.direct.commit.auth.setTokenValid(false)
     },
     noop() {}
+  },
+  mounted() {
+    const invalidTokenRegex = /Invalid token/
+    this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
+    this.$kuzzle.on('queryError', e => {
+      // TODO use the error codes when available
+      if (invalidTokenRegex.test(e.message)) {
+        this.onTokenExpired()
+        this.tokenExpiredIsOpen = true
+      }
+    })
+  },
+  beforeDestroy() {
+    this.$kuzzle.removeListener('tokenExpired')
+    this.$kuzzle.removeListener('queryError')
   }
 }
 </script>

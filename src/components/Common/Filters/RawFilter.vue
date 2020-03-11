@@ -24,15 +24,17 @@
       <b-row no-gutters v-if="actionButtonsVisible">
         <b-col sm="12" class="text-right">
           <b-button
-            variant="primary"
             class="mt-2 mr-2 mb-2"
+            data-cy="RawFilter-submitBtn"
+            variant="primary"
             @click.prevent="submitSearch"
           >
             {{ submitButtonLabel }}
           </b-button>
           <b-button
+            class="ml-2"
+            data-cy="RawFilter-resetBtn"
             variant="outline-secondary"
-            class="m-2"
             @click="resetSearch"
           >
             Reset

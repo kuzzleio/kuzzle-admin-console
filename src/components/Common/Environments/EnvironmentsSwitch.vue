@@ -5,7 +5,7 @@
     data-cy="EnvironmentSwitch"
     toggle-class="text-truncate"
     variant="outline-secondary"
-    :text="currentEnvironmentName"
+    :text="dropdownText"
     :block="block"
     :right="right"
     :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import Promise from 'bluebird'
 import { formatForDom } from '../../../utils'
 import { mapValues, omit } from 'lodash'
 
@@ -73,12 +72,15 @@ export default {
     }
   },
   computed: {
-    currentEnvironmentName() {
-      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
-        return null
+    currentEnvironment() {
+      return this.$store.direct.getters.kuzzle.currentEnvironment
+    },
+    dropdownText() {
+      if (!this.currentEnvironment) {
+        return 'Select a connection'
       }
 
-      return this.$store.direct.getters.kuzzle.currentEnvironment.name
+      return this.currentEnvironment.name
     },
     exportUrl() {
       const envWitoutToken = mapValues(
@@ -95,18 +97,48 @@ export default {
   },
   mounted() {},
   methods: {
-    clickSwitch(id) {
-      return this.$store.direct.dispatch.kuzzle
-        .switchEnvironment(id)
-        .then(() => {
-          this.$router.push({ path: '/' }).catch(() => {})
-        })
-        .catch(e => {
-          this.$store.direct.commit.toaster(
-            'An error occurred while switching environment'
-          )
-          return Promise.reject(e)
-        })
+    async clickSwitch(id) {
+      try {
+        this.$log.debug(`Switching to environment ${id}...`)
+        await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: 'Ooops! Something went wrong while switching connections.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+      try {
+        this.$log.debug(`Switched.`)
+        if (this.$store.direct.state.auth.tokenValid) {
+          this.$log.debug(`Token is valid, going to /...`)
+          this.$router.push({ path: '/' })
+        } else {
+          this.$log.debug(`Token is invalid, going to Login...`)
+          this.$router.push({ name: 'Login' })
+        }
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while authenticating to the new environment.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
     },
     formatForDom
   }
@@ -114,16 +146,23 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss">
-.EnvironmentSwitch--blendColor {
+.EnvironmentSwitch--blendColor,
+.EnvironmentSwitch--blendColor.show {
   .dropdown-toggle {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.4) !important;
     border: none;
     color: white;
-  }
 
-  &.show {
-    .dropdown-toggle {
-      background-color: rgba(255, 255, 255, 0.4);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    &:active {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.5) !important;
     }
   }
 }

@@ -8,31 +8,73 @@ import {
   disconnect
 } from '../../../../services/kuzzleWrapper'
 
-const LS_ENVIRONMENTS = 'environments'
-const LS_CURRENT_ENV = 'currentId'
+export const LS_ENVIRONMENTS = 'environments'
+export const LS_CURRENT_ENV = 'currentEnv'
 export const state: KuzzleState = {
   environments: {},
   currentId: undefined,
-  isConnected: false,
-  errorFromKuzzle: undefined,
-  host: '',
-  port: 0
+  connecting: true,
+  online: false,
+  errorFromKuzzle: undefined
+}
+
+export const DEFAULT_COLOR = 'darkblue'
+
+export const envColors = [
+  DEFAULT_COLOR,
+  'lightblue',
+  'purple',
+  'green',
+  'orange',
+  'red',
+  'grey',
+  'magenta'
+]
+
+const checkEnvironment = e => {
+  if (!e.name) {
+    throw new Error(`Invalid environment name: ${e.name}`)
+  }
+  if (!e.host) {
+    throw new Error(`Invalid environment host: ${e.host}`)
+  }
+  if (!e.port) {
+    throw new Error(`Invalid environment port: ${e.port}`)
+  }
+  if (typeof e.port !== 'number') {
+    throw new Error(
+      `Type of environment port is invalid: ${e.port} (must be a number)`
+    )
+  }
+  if (e.ssl === undefined || e.ssl === null) {
+    throw new Error('SSL parameter not found (must be a boolean)')
+  }
+  if (!e.color) {
+    throw new Error(`Invalid environment color: ${e.color}`)
+  }
+  if (!envColors.includes(e.color)) {
+    throw new Error(`Invalid environment color: ${e.color}`)
+  }
+  return true
 }
 
 const mutations = createMutations<KuzzleState>()({
   createEnvironment(state, payload) {
     if (!payload) {
-      throw new Error(`The environment can't be falsy`)
+      return
     }
     if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
-      throw new Error(
-        `Unable to add new environment to already existing id "${payload.id}"`
-      )
+      return
     }
-
-    state.environments = {
-      ...state.environments,
-      [payload.id]: payload.environment
+    try {
+      if (checkEnvironment(payload.environment)) {
+        state.environments = {
+          ...state.environments,
+          [payload.id]: payload.environment
+        }
+      }
+    } catch (error) {
+      throw new Error(`[${payload.id}] - ${error.message}`)
     }
   },
   updateEnvironment(state, payload) {
@@ -54,27 +96,14 @@ const mutations = createMutations<KuzzleState>()({
   setErrorFromKuzzle(state, error) {
     state.errorFromKuzzle = error
   },
-  setEnvironments(state, payload) {
-    state.environments = { ...payload }
-  },
   setCurrentEnvironment(state, payload) {
-    if (payload === null) {
-      throw new Error(
-        'Cannot connect to a null environment. To reset connection, use the RESET mutation.'
-      )
-    }
-    if (Object.keys(state.environments).indexOf(payload) === -1) {
-      throw new Error(
-        `The given id ${payload} does not correspond to any existing environment.`
-      )
-    }
     state.currentId = payload
   },
-  reset(state) {
-    state.isConnected = false
+  setConnecting(state, value: boolean) {
+    state.connecting = value
   },
-  setConnected(state, value: boolean) {
-    state.isConnected = value
+  setOnline(state, value: boolean) {
+    state.online = value
   }
 })
 
@@ -91,7 +120,7 @@ const actions = createActions({
     commit.createEnvironment(payload)
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
-    dispatch.switchEnvironment(payload.id)
+    return payload.id
   },
   deleteEnvironment(context, id) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
@@ -118,31 +147,35 @@ const actions = createActions({
   },
   updateEnvironment(context, payload) {
     const { dispatch, commit, state, getters } = kuzzleActionContext(context)
+    let mustReconnect = false
+
+    if (
+      payload.id === state.currentId &&
+      (payload.environment.host !== getters.currentEnvironment.host ||
+        payload.environment.port !== getters.currentEnvironment.port ||
+        payload.environment.ssl !== getters.currentEnvironment.ssl)
+    ) {
+      mustReconnect = true
+    }
     commit.updateEnvironment({
       id: payload.id,
       environment: payload.environment
     })
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
-
-    if (
-      getters.currentEnvironment &&
-      getters.currentEnvironment.name &&
-      getters.currentEnvironment.name !== payload.id
-    ) {
+    if (mustReconnect) {
       dispatch.switchEnvironment(payload.id)
     }
   },
-  async switchLastEnvironment(context) {
-    const { dispatch, state } = kuzzleActionContext(context)
-    if (Object.keys(state.environments).length === 0) {
-      return Promise.resolve()
+  async connectToCurrentEnvironment(context) {
+    const { dispatch, state, getters } = kuzzleActionContext(context)
+    if (!getters.hasEnvironment) {
+      return
     }
 
     let currentId = state.currentId
 
     if (!currentId) {
-      currentId = Object.keys(state.environments)[0]
-      dispatch.setCurrentEnvironment(currentId)
+      throw new Error('No current environment selected')
     }
 
     return dispatch.switchEnvironment(currentId)
@@ -159,24 +192,23 @@ const actions = createActions({
     if (!environment) {
       throw new Error(`Id ${id} does not match any environment`)
     }
+    commit.setErrorFromKuzzle(null)
 
     disconnect()
-    commit.setConnected(false)
+    commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
     try {
       await connectToEnvironment(environment)
-      commit.setConnected(true)
+      commit.setConnecting(false)
+      commit.setOnline(true)
     } catch (error) {
       commit.setErrorFromKuzzle(error.message)
       return false
     }
 
-    rootDispatch.auth.checkFirstAdmin()
-    if (environment.token) {
-      await rootDispatch.auth.loginByToken({ token: environment.token })
-      return true
-    }
+    await rootDispatch.auth.init(environment)
+
     return true
   },
   loadEnvironments(context) {
@@ -184,24 +216,16 @@ const actions = createActions({
     let currentId
     const { commit } = kuzzleActionContext(context)
 
-    try {
-      loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
-      commit.setEnvironments(loadedEnv)
-    } catch (e) {
-      // eslint-disable-next-line
-      console.error(e)
-      commit.setEnvironments({})
-    }
+    loadedEnv = JSON.parse(localStorage.getItem(LS_ENVIRONMENTS) || '{}')
+    Object.keys(loadedEnv).forEach(envName => {
+      commit.createEnvironment({
+        environment: loadedEnv[envName],
+        id: envName
+      })
+    })
 
-    try {
-      currentId = localStorage.getItem(LS_CURRENT_ENV)
-      commit.setCurrentEnvironment(currentId)
-    } catch (error) {
-      // eslint-disable-next-line
-      console.warn(
-        `Something went wrong while setting the current environment, ${error.message}`
-      )
-    }
+    currentId = localStorage.getItem(LS_CURRENT_ENV)
+    commit.setCurrentEnvironment(currentId)
   }
 })
 

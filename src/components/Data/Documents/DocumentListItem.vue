@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+  <b-container fluid data-cy="DocumentListItem">
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
         <i

@@ -2,7 +2,7 @@
   <span>
     <dropdown :id="'index-' + index" class="IndexDropdown" :myclass="myclass">
       <li v-if="!isList">
-        <router-link :to="{ name: 'DataIndexSummary', params: { index } }"
+        <router-link :to="{ name: 'Indexes', params: { index } }"
           >Browse collections</router-link
         >
       </li>
@@ -43,7 +43,7 @@ export default {
   },
   computed: {
     isList() {
-      return this.$route.name === 'DataIndexSummary'
+      return this.$route.name === 'Indexes'
     }
   },
   methods: {

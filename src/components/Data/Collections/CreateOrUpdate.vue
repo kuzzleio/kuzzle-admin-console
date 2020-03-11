@@ -13,7 +13,7 @@
         <div class="text-right">
           <b-button
             class="mr-2"
-            :to="{ name: 'DataIndexSummary', params: { index } }"
+            :to="{ name: 'Collections', params: { index } }"
             >Cancel</b-button
           >
           <b-button
@@ -183,6 +183,16 @@ export default {
     }
   },
   methods: {
+    cancel() {
+      if (this.$router._prevTransition && this.$router._prevTransition.to) {
+        this.$router.push(this.$router._prevTransition.to)
+      } else {
+        this.$router.push({
+          name: 'Indexes',
+          params: { index: this.index }
+        })
+      }
+    },
     onSubmit() {
       if (this.$refs.jsoneditor.isValid()) {
         this.mappingState = this.$refs.jsoneditor.getJson()

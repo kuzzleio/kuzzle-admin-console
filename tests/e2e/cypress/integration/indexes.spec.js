@@ -14,17 +14,18 @@ describe('Indexes', () => {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('is able to create a new index', () => {
     const indexName = 'testindex'
 
-    cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
+    cy.waitOverlay()
+
     cy.get('[data-cy="IndexesPage-createBtn"').click()
     cy.get('[data-cy="CreateIndexModal-name"]').type(indexName, {
       force: true
@@ -37,8 +38,8 @@ describe('Indexes', () => {
     const indexName = 'testindex'
     cy.request('POST', `http://localhost:7512/${indexName}/_create`)
 
-    cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
+    cy.waitOverlay()
+
     cy.get('[data-cy="IndexesPage-createBtn"')
       .should('be.visible')
       .click()
@@ -54,8 +55,7 @@ describe('Indexes', () => {
     const indexName = 'testindex'
     cy.request('POST', `http://localhost:7512/${indexName}/_create`)
 
-    cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
+    cy.waitOverlay()
 
     cy.get(`[data-cy=IndexesPage-delete--${indexName}]`).click()
 

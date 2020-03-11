@@ -31,11 +31,13 @@
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
+            data-cy="Filters-rawTab"
             :active="complexFiltersSelectedTab === 'raw'"
             @click="complexFiltersSelectedTab = 'raw'"
             >Raw JSON Filter</b-nav-item
           >
           <b-nav-item
+            data-cy="Filters-basicTab"
             :active="complexFiltersSelectedTab === 'basic'"
             @click="complexFiltersSelectedTab = 'basic'"
             >Advanced Filter</b-nav-item

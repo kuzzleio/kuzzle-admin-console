@@ -1,4 +1,5 @@
 export interface IndexState {
-  indexes: Array<string>,
+  indexes: Array<string>
   indexesAndCollections: object
+  loading: boolean
 }

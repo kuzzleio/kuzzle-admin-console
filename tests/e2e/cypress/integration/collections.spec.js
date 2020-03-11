@@ -19,17 +19,16 @@ describe('Collection management', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('is able to create a realtime collection and access it', function() {
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
+  it('is able to create a collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
-    cy.contains('Create a new collection')
+    cy.get('.CollectionCreate').should('be.visible')
 
     cy.get('[data-cy="CollectionCreateOrUpdate-realtimeOnly"]').click({
       force: true
@@ -41,14 +40,11 @@ describe('Collection management', function() {
     })
     cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click()
     cy.contains(collectionName)
-    cy.contains('You did not subscribe yet')
   })
 
   it('is able to delete a collection', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
-    cy.visit('/')
-    cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
     cy.visit(`/#/data/${indexName}/`)
 
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()

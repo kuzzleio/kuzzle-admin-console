@@ -15,7 +15,10 @@
         <b-col class="text-right mt-3">
           <b-button
             variant="primary"
-            :to="{ name: 'DataCreateDocument', params: { index, collection } }"
+            :disabled="
+              indexOrCollectionNotFound || !canCreateDocument(index, collection)
+            "
+            :to="{ name: 'CreateDocument', params: { index, collection } }"
             >Create New Document</b-button
           ><collection-dropdown
             class="icon-medium icon-black ml-2"
@@ -29,84 +32,98 @@
       </b-row>
 
       <list-not-allowed v-if="!canSearchDocument(index, collection)" />
-      <b-row class="justify-content-md-center" no-gutters>
-        <b-col cols="12">
-          <template v-if="isCollectionEmpty">
-            <realtime-only-empty-state
-              v-if="isRealtimeCollection"
-              :index="index"
-              :collection="collection"
-            />
-            <empty-state v-else :index="index" :collection="collection" />
-          </template>
+      <template v-else>
+        <data-not-found
+          v-if="indexOrCollectionNotFound"
+          class="mt-3"
+        ></data-not-found>
+        <template v-else>
+          <b-row class="justify-content-md-center" no-gutters>
+            <b-col cols="12">
+              <template v-if="isCollectionEmpty">
+                <realtime-only-empty-state
+                  v-if="isRealtimeCollection"
+                  :index="index"
+                  :collection="collection"
+                />
+                <empty-state v-else :index="index" :collection="collection" />
+              </template>
+              <template v-if="!isCollectionEmpty">
+                <filters
+                  class="mb-3"
+                  :available-operands="searchFilterOperands"
+                  :current-filter="currentFilter"
+                  :collection-mapping="collectionMapping"
+                  @filters-updated="onFiltersUpdated"
+                  @reset="onFiltersUpdated"
+                />
+              </template>
+            </b-col>
+          </b-row>
+
           <template v-if="!isCollectionEmpty">
-            <filters
-              class="mb-3"
-              :available-operands="searchFilterOperands"
-              :current-filter="currentFilter"
-              :collection-mapping="collectionMapping"
-              @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
-            />
+            <b-card
+              class="light-shadow"
+              :bg-variant="documents.length === 0 ? 'light' : 'default'"
+            >
+              <b-card-text class="p-0">
+                <no-results-empty-state v-if="!documents.length" />
+                <template v-else>
+                  <List
+                    v-if="listViewType === 'list'"
+                    :all-checked="allChecked"
+                    :collection="collection"
+                    :documents="documents"
+                    :index="index"
+                    :current-page-size="paginationSize"
+                    :selected-documents="selectedDocuments"
+                    :total-documents="totalDocuments"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @delete="onDeleteClicked"
+                    @edit="onEditDocumentClicked"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  ></List>
+
+                  <Column
+                    v-if="listViewType === 'column'"
+                    :index="index"
+                    :collection="collection"
+                    :documents="documents"
+                    :mapping="collectionMapping"
+                    :selected-documents="selectedDocuments"
+                    :all-checked="allChecked"
+                    :current-page-size="paginationSize"
+                    :total-documents="totalDocuments"
+                    @edit="onEditDocumentClicked"
+                    @delete="onDeleteClicked"
+                    @bulk-delete="onBulkDeleteClicked"
+                    @change-page-size="changePaginationSize"
+                    @checkbox-click="toggleSelectDocuments"
+                    @refresh="onRefresh"
+                    @toggle-all="onToggleAllClicked"
+                  />
+
+                  <b-row
+                    v-show="totalDocuments > paginationSize"
+                    align-h="center"
+                  >
+                    <b-pagination
+                      class="m-2 mt-4"
+                      v-model="currentPage"
+                      aria-controls="my-table"
+                      :total-rows="totalDocuments"
+                      :per-page="paginationSize"
+                      @change="fetchDocuments"
+                    ></b-pagination>
+                  </b-row>
+                </template>
+              </b-card-text>
+            </b-card>
           </template>
-        </b-col>
-      </b-row>
-      <template v-if="!isCollectionEmpty">
-        <b-card
-          class="light-shadow"
-          :bg-variant="documents.length === 0 ? 'light' : 'default'"
-        >
-          <b-card-text class="p-0">
-            <List
-              v-if="listViewType === 'list' && documents.length"
-              :all-checked="allChecked"
-              :collection="collection"
-              :documents="documents"
-              :index="index"
-              :current-page-size="paginationSize"
-              :selected-documents="selectedDocuments"
-              :total-documents="totalDocuments"
-              @bulk-delete="onBulkDeleteClicked"
-              @change-page-size="changePaginationSize"
-              @checkbox-click="toggleSelectDocuments"
-              @delete="onDeleteClicked"
-              @edit="onEditDocumentClicked"
-              @refresh="onRefresh"
-              @toggle-all="onToggleAllClicked"
-            ></List>
-            <no-results-empty-state v-if="!documents.length" />
-
-            <Column
-              v-if="listViewType === 'column'"
-              :index="index"
-              :collection="collection"
-              :documents="documents"
-              :mapping="collectionMapping"
-              :selected-documents="selectedDocuments"
-              :all-checked="allChecked"
-              :current-page-size="paginationSize"
-              :total-documents="totalDocuments"
-              @edit="onEditDocumentClicked"
-              @delete="onDeleteClicked"
-              @bulk-delete="onBulkDeleteClicked"
-              @change-page-size="changePaginationSize"
-              @checkbox-click="toggleSelectDocuments"
-              @refresh="onRefresh"
-              @toggle-all="onToggleAllClicked"
-            />
-
-            <b-row v-show="totalDocuments > paginationSize" align-h="center">
-              <b-pagination
-                class="m-2 mt-4"
-                v-model="currentPage"
-                aria-controls="my-table"
-                :total-rows="totalDocuments"
-                :per-page="paginationSize"
-                @change="fetchDocuments"
-              ></b-pagination>
-            </b-row>
-          </b-card-text>
-        </b-card>
+        </template>
       </template>
 
       <delete-modal
@@ -146,6 +163,7 @@ import {
   performDeleteDocuments,
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
+import DataNotFound from '../Data404'
 import { truncateName } from '@/utils'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
@@ -167,7 +185,8 @@ export default {
     Filters,
     ListNotAllowed,
     NoResultsEmptyState,
-    RealtimeOnlyEmptyState
+    RealtimeOnlyEmptyState,
+    DataNotFound
   },
   props: {
     index: String,
@@ -189,7 +208,8 @@ export default {
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
-      currentPage: 1
+      currentPage: 1,
+      indexOrCollectionNotFound: false
     }
   },
   computed: {
@@ -328,14 +348,14 @@ export default {
     // CREATE
     // =========================================================================
     onCreateClicked() {
-      this.$router.push({ name: 'DataCreateDocument' })
+      this.$router.push({ name: 'CreateDocument' })
     },
 
     // UPDATE
     // =========================================================================
     onEditDocumentClicked(id) {
       this.$router.push({
-        name: 'DataUpdateDocument',
+        name: 'UpdateDocument',
         params: { id }
       })
     },
@@ -431,6 +451,7 @@ export default {
     },
     async fetchDocuments() {
       this.$forceUpdate()
+      this.indexOrCollectionNotFound = false
 
       this.selectedDocuments = []
 
@@ -460,15 +481,19 @@ export default {
         this.documents = res.documents
         this.totalDocuments = res.total
       } catch (e) {
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while fetching the documents.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
         this.$log.error(e)
+        if (e.status === 412) {
+          this.indexOrCollectionNotFound = true
+        } else {
+          this.$bvToast.toast(e.message, {
+            title: 'Ooops! Something went wrong while fetching the documents.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          })
+        }
       }
     },
 

@@ -2,10 +2,12 @@ const fmt = word => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
-describe('Environments', function () {
-  this.beforeEach(() => { })
+describe('Environments', function() {
+  this.beforeEach(() => {
+    localStorage.removeItem('environments')
+  })
 
-  it('is able to create a new environment', function () {
+  it('is able to create a new environment', function() {
     const newEnvName = 'local'
     cy.visit('/')
     cy.contains('Create a Connection')
@@ -19,13 +21,21 @@ describe('Environments', function () {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it('is able to delete an environment', function () {
-    const envToDeleteName = 'local'
+  it('is able to delete environments', function() {
+    const envNames = ['local', 'another']
     localStorage.setItem(
       'environments',
       JSON.stringify({
-        [envToDeleteName]: {
-          name: envToDeleteName,
+        [envNames[0]]: {
+          name: envNames[0],
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          token: null
+        },
+        [envNames[1]]: {
+          name: envNames[1],
           color: 'darkblue',
           host: 'localhost',
           ssl: false,
@@ -34,22 +44,31 @@ describe('Environments', function () {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', envToDeleteName)
+    localStorage.setItem('currentEnv', envNames[0])
     cy.visit('/')
+    cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
 
-    cy.get(`[data-cy="EnvironmentSwitch-env_${envToDeleteName}-delete"]`).click(
-      {
-        force: true
-      }
-    )
+    cy.get(`[data-cy="EnvironmentSwitch-env_${envNames[0]}-delete"]`).click({
+      force: true
+    })
 
-    cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envToDeleteName)
+    cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envNames[0])
     cy.get('[data-cy="EnvironmentDeleteModal-submit"]').click({ force: true })
+    cy.contains('Please select a Kuzzle instance to connect to')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(`[data-cy="EnvironmentSwitch-env_${envNames[1]}-delete"]`).click({
+      force: true
+    })
+    cy.get('[data-cy="EnvironmentDeleteModal-envName"]').type(envNames[1])
+    cy.get('[data-cy="EnvironmentDeleteModal-submit"]').click({ force: true })
+
     cy.contains('Create a Connection')
   })
 
-  it('is able to set the color of an environment', function () {
+  it('is able to set the color of an environment', function() {
     cy.visit('/')
     cy.get('[data-cy="CreateEnvironment-name"]').type('local', {
       force: true
@@ -70,15 +89,15 @@ describe('Environments', function () {
     })
   })
 
-  it('is able to create an invalid environment and switch back to the valid one', function () {
-    const validEnvName = 'valid'
-    const invalidEnvName = 'invalid'
+  it('is able to create an unreachable environment and switch back to the reachable one', function() {
+    const reachableEnvName = 'reachable'
+    const unreachableEnvName = 'unreachable'
     localStorage.setItem(
       'environments',
       JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: '#002835',
+        [reachableEnvName]: {
+          name: reachableEnvName,
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
@@ -86,27 +105,95 @@ describe('Environments', function () {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', validEnvName)
+    localStorage.setItem('currentEnv', reachableEnvName)
 
     cy.visit('/')
-
+    cy.contains('Connected to')
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get('[data-cy="EnvironmentSwitch-newConnectionBtn"]').click()
 
-    cy.get('[data-cy="CreateEnvironment-name"]').type(invalidEnvName, {
+    cy.get('[data-cy="CreateEnvironment-name"]').type(unreachableEnvName, {
       force: true
     })
-    cy.get('[data-cy="CreateEnvironment-host"]').type('invalid-host', {
+    cy.get('[data-cy="CreateEnvironment-host"]').type('unreachable-host', {
       force: true
     })
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
 
-    cy.contains('Unable to connect to kuzzle server')
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(
+      `[data-cy=EnvironmentSwitch-env_${fmt(
+        unreachableEnvName
+      )}] > .EnvironmentSwitch-env-name`
+    ).click({
+      force: true
+    })
+
+    cy.contains('Connecting to Kuzzle')
+    cy.get('[data-cy="App-offline"]')
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
-    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(validEnvName)}"]`).click()
+    cy.get(
+      `[data-cy="EnvironmentSwitch-env_${fmt(
+        reachableEnvName
+      )}"]  > .EnvironmentSwitch-env-name`
+    ).click()
 
-    cy.get('[data-cy="App-connected"]')
+    cy.get('[data-cy="App-online"]')
+  })
+
+  it('should be able to update an environment', () => {
+    const envNames = ['local', 'another']
+    const hosts = ['localhost', '123.123.123.123']
+    const ports = [7512, 7514]
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [envNames[0]]: {
+          name: envNames[0],
+          color: 'darkblue',
+          host: hosts[0],
+          ssl: false,
+          port: ports[0],
+          token: null
+        }
+      })
+    )
+    localStorage.setItem('currentEnv', envNames[0])
+    cy.visit('/')
+    cy.contains('Connected to')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[0])}-edit"]`).click()
+
+    cy.get('[data-cy=CreateEnvironment-name]').type(`{selectall}${envNames[1]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}`)
+
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-host]').type(`{selectall}${hosts[1]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connecting to Kuzzle at')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-host]').type(`{selectall}${hosts[0]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connected to')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-port]').type(`{selectall}${ports[1]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connecting to Kuzzle at')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
+    cy.get('[data-cy=CreateEnvironment-port]').type(`{selectall}${ports[0]}`)
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.contains('Connected to')
   })
 
   it('should import environment', () => {
@@ -126,5 +213,12 @@ describe('Environments', function () {
         { subjectType: 'input' }
       )
     })
+  })
+
+  it('should display toast when environment list is malformed', () => {
+    localStorage.setItem('environments', `{   Som3 m@l4rm3D CODEZ jayzon}}]}`)
+    cy.visit('/')
+    cy.contains('Ooops! Something went wrong while loading the connections.')
+    cy.url().should('contain', 'create-connection')
   })
 })

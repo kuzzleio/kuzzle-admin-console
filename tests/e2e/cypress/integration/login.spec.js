@@ -2,7 +2,7 @@ const admin = {
   username: 'admin',
   password: 'pass'
 }
-describe('Login', function () {
+describe('Login', function() {
   beforeEach(() => {
     const validEnvName = 'valid'
 
@@ -19,7 +19,7 @@ describe('Login', function () {
         }
       })
     )
-    localStorage.setItem('lastConnectedEnv', validEnvName)
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
   it('is able to login as anonymous', () => {
@@ -53,11 +53,16 @@ describe('Login', function () {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
 
     cy.visit('/')
+    cy.get('[data-cy="NoAdminAlert-link"]').click()
     cy.contains('Create an Admin Account')
     cy.get('[data-cy="Signup-username"]').type(admin.username)
     cy.get('[data-cy="Signup-password1"]').type(admin.password)
     cy.get('[data-cy="Signup-password2"]').type(admin.password)
     cy.get('[data-cy="Signup-submitBtn"]').click()
-    cy.get('[data-cy="App-hasAdmin"]')
+    cy.contains('Connected to')
+    cy.get('[data-cy="Login-username"]').type(admin.username)
+    cy.get('[data-cy="Login-password"]').type(admin.password)
+    cy.get('[data-cy="Login-submitBtn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
   })
 })

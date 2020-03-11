@@ -35,7 +35,7 @@
           "
           :to="
             canSubscribe(index, collection)
-              ? { name: 'DataCollectionWatch', params: { collection, index } }
+              ? { name: 'WatchCollection', params: { collection, index } }
               : ''
           "
         >
@@ -54,7 +54,7 @@
           "
           :to="
             canEditCollection(index, collection)
-              ? { name: 'DataCollectionEdit', params: { collection, index } }
+              ? { name: 'EditCollection', params: { collection, index } }
               : ''
           "
         >
@@ -66,7 +66,7 @@
         <template v-if="!isRealtime && !isList">
           <b-dropdown-item
             :to="{
-              name: 'DataDocumentsList',
+              name: 'DocumentList',
               params: { collection: collection, index: index }
             }"
           >
@@ -121,7 +121,7 @@ export default {
   computed: {
     // WARNING THIS IS EVIL
     isList() {
-      return this.$route.name === 'DataDocumentsList'
+      return this.$route.name === 'DocumentList'
     }
   },
   methods: {

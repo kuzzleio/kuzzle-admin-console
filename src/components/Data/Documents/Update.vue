@@ -115,7 +115,7 @@ export default {
           { refresh: 'wait_for' }
         )
         this.$router.push({
-          name: 'DataDocumentsList',
+          name: 'DocumentList',
           params: { index: this.index, collection: this.collection }
         })
       } catch (err) {
@@ -132,7 +132,7 @@ export default {
     },
     onCancel() {
       this.$router.push({
-        name: 'DataDocumentsList',
+        name: 'DocumentList',
         params: { index: this.index, collection: this.collection }
       })
     },
