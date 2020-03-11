@@ -48,7 +48,7 @@
                 />
                 <empty-state v-else :index="index" :collection="collection" />
               </template>
-              <template v-else>
+              <template v-if="fetchingDocuments">
                 <b-row class="text-center">
                   <b-col>
                     <b-spinner
