@@ -11,7 +11,7 @@
             <b-form-input
               data-cy="QuickFilter-input"
               debounce="300"
-              placeholder="Search..."
+              :placeholder="placeholder"
               type="search"
               v-model="inputSearchTerm"
               v-focus
@@ -27,7 +27,7 @@
           class="QuickFilter-optionBtn"
           href="#"
           @click.prevent="displayAdvancedFilters"
-          >More query options</a
+          >{{ advancedQueryLabel }}</a
         >
         <a
           v-else
@@ -83,24 +83,32 @@ export default {
   },
   props: {
     searchTerm: String,
+    advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
       type: String,
       required: false,
       default: 'Advanced query...'
     },
+    complexFilterActive: Boolean,
+    enabled: Boolean,
     submitButtonLabel: {
       type: String,
       required: false,
-      default: 'search'
+      default: 'Search'
     },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
       default: true
     },
-    complexFilterActive: Boolean,
-    advancedFiltersVisible: Boolean,
-    enabled: Boolean
+    placeholder: {
+      type: String,
+      default: 'Search everywhere...'
+    },
+    submitOnType: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -120,6 +128,9 @@ export default {
   },
   watch: {
     inputSearchTerm() {
+      if (!this.submitOnType) {
+        return
+      }
       this.submitSearch()
     },
     searchTerm: {

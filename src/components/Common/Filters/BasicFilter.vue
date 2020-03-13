@@ -143,6 +143,7 @@
       </b-col>
       <b-col sm="2"
         ><b-select
+          v-if="sortingEnabled"
           v-model="filters.sorting.order"
           data-cy="BasicFilter-sortOrderSelect"
           :options="[

@@ -50,14 +50,16 @@
 
         <div v-else class="Watch-container">
           <filters
-            :submit-button-label="subscribed ? 'Unsubscribe' : 'Subscribe'"
-            advanced-query-label="Click to open the filter builder"
-            :current-filter="currentFilter"
+            advanced-query-label="Advanced filters..."
+            quick-filter-placeholder="Filter notifications..."
             :available-operands="realtimeFilterOperands"
-            :quick-filter-enabled="false"
-            :sorting-enabled="false"
-            :toggle-auto-complete="false"
+            :current-filter="currentFilter"
             :collection-mapping="collectionMapping"
+            :quick-filter-enabled="false"
+            :quick-filter-submit-on-type="false"
+            :sorting-enabled="false"
+            :submit-button-label="subscribed ? 'Unsubscribe' : 'Subscribe'"
+            :toggle-auto-complete="false"
             @filters-updated="onFiltersUpdated"
             @reset="onReset"
           />
@@ -117,22 +119,21 @@
               warning.message
             }}</b-alert>
             <template v-if="notifications.length">
-              <b-row>
-                <b-col cols="8" class="text-secondary"
-                  >Received {{ notifications.length }} notifications - last
-                  notification received at {{ lastNotificationTime }}</b-col
-                >
+              <b-row class="mb-3">
+                <b-col cols="8" class="text-secondary vertical-align">
+                  Received {{ notifications.length }} notifications
+                </b-col>
                 <b-col class="text-right"
                   ><b-button
-                    class="mb-2"
                     title="Clear messages"
                     variant="outline-secondary"
                     @click="clear"
                     ><i class="fas fa-trash-alt mr-2"></i>Clear all
                     notifications</b-button
                   ></b-col
-                >
-              </b-row>
+                ></b-row
+              >
+
               <b-row>
                 <b-col
                   cols="8"
@@ -150,7 +151,7 @@
                 <b-col cols="4">
                   <b-card no-body>
                     <b-card-header>
-                      Latest notification
+                      Latest notification ({{ lastNotificationTime }})
                     </b-card-header>
                     <b-card-body>
                       <b-badge
@@ -299,7 +300,7 @@ export default {
         if (this.warning.message === '') {
           this.warning.info = true
           this.warning.message =
-            'Older notifications are discarded due to huge amount of items displayed'
+            'Older notifications are discarded due to the amount of items displayed'
         }
 
         if (Date.now() - this.warning.lastTime < 50) {
@@ -438,9 +439,12 @@ export default {
     border-width: 1px 1px 0 1px;
   }
   &:last-child {
-    border-top: none;
     border-radius: 0 0 0.25rem 0.25rem;
     border-width: 0 1px 1px 1px;
+  }
+  &:only-child {
+    border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
+    border-width: 1px 1px 1px 1px;
   }
 }
 </style>
