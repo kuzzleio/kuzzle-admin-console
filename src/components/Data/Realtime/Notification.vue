@@ -1,5 +1,5 @@
 <template>
-  <b-card no-body class="Notification">
+  <b-card no-body class="Notification" :class="headerClass">
     <b-card-header @click="collapsed = !collapsed">
       <i
         :class="{ 'fa-caret-right': !collapsed, 'fa-caret-down': collapsed }"
@@ -32,6 +32,22 @@ export default {
     }
   },
   computed: {
+    headerClass() {
+      switch (this.notification.action) {
+        case 'publish':
+          return 'Notification--publish'
+        case 'create':
+        case 'createOrReplace':
+        case 'replace':
+          return 'Notification--document'
+        case 'subscribe':
+        case 'unsubscribe':
+          return 'Notification--subscribe'
+        case 'delete':
+          return 'Notification--delete'
+      }
+      return ''
+    },
     notificationId() {
       return this.notification.type === 'document' &&
         this.notification.result._id
@@ -83,3 +99,22 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+$types: (
+  'publish': #e3eff4,
+  'document': #809199,
+  'subscribe': #8e24aa,
+  'delete': #e06660
+);
+
+@each $name, $value in $types {
+  .Notification--#{$name} {
+    border-color: desaturate(darken($value, 15%), 20%);
+    .card-header {
+      border-color: desaturate(darken($value, 15%), 20%);
+      background-color: $value;
+    }
+  }
+}
+</style>
