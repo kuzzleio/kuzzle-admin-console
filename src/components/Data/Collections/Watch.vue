@@ -50,7 +50,7 @@
 
         <div v-else class="Watch-container">
           <filters
-            submit-button-label="Subscribe"
+            :submit-button-label="subscribed ? 'Unsubscribe' : 'Subscribe'"
             advanced-query-label="Click to open the filter builder"
             :current-filter="currentFilter"
             :available-operands="realtimeFilterOperands"
@@ -62,23 +62,6 @@
             @reset="onReset"
           />
           <b-card class="mt-3">
-            <template v-slot:header>
-              <b-button
-                class="mr-2"
-                :variant="subscribed ? 'outline-primary' : 'primary'"
-                @click="toggleSubscription"
-              >
-                <i
-                  :class="{ 'fa-play': !subscribed, 'fa-pause': subscribed }"
-                  class="fa mr-2"
-                />
-                {{ subscribed ? 'Unsubscribe' : 'Subscribe' }}
-              </b-button>
-              <b-button class="mr-2" variant="outline-secondary" @click="clear"
-                ><i class="far fa-trash-alt mr-2" />Clear messages</b-button
-              >
-            </template>
-
             <b-row v-if="!subscribed && !notifications.length">
               <b-col cols="4" class="text-center">
                 <i
@@ -133,40 +116,95 @@
             <b-alert variant="warning" :show="!!warning.message">{{
               warning.message
             }}</b-alert>
-
-            <b-row v-if="notifications.length">
-              <b-col
-                cols="8"
-                id="notification-container"
-                ref="notificationContainer"
-                :style="notifStyle"
-                class="Watch--notifications col s8"
-              >
-                <div v-if="notifications.length">
-                  <notification
-                    v-for="(notification, i) in notifications"
-                    :key="i"
-                    :notification="notification"
-                  />
-                </div>
-              </b-col>
-              <b-col>
-                <h5>Latest notification :</h5>
-                <div class="lastNotification-body">
-                  <p
-                    v-json-formatter="{
-                      content: {
-                        id: lastNotification.source.id,
-                        body: lastNotification.source.body,
-                        meta: lastNotification.source.meta,
-                        volatile: lastNotification.source.volatile
-                      },
-                      open: true
-                    }"
-                  />
-                </div>
-              </b-col>
-            </b-row>
+            <template v-if="notifications.length">
+              <b-row>
+                <b-col cols="8" class="text-secondary"
+                  >Received {{ notifications.length }} notifications - last
+                  notification received at {{ lastNotificationTime }}</b-col
+                >
+                <b-col class="text-right"
+                  ><b-button
+                    class="mb-2"
+                    title="Clear messages"
+                    variant="outline-secondary"
+                    @click="clear"
+                    ><i class="fas fa-trash-alt mr-2"></i>Clear all
+                    notifications</b-button
+                  ></b-col
+                >
+              </b-row>
+              <b-row>
+                <b-col
+                  cols="8"
+                  id="notification-container"
+                  ref="notificationContainer"
+                  :style="notifStyle"
+                  class="Watch--notifications col s8"
+                >
+                  <div v-if="notifications.length">
+                    <notification
+                      v-for="(notification, i) in notifications"
+                      :key="i"
+                      :notification="notification"
+                    />
+                  </div>
+                </b-col>
+                <b-col cols="4" class="p-0">
+                  <b-card no-body>
+                    <b-card-header>
+                      Latest notification
+                    </b-card-header>
+                    <b-card-body>
+                      <b-badge
+                        pill
+                        variant="success"
+                        class="mr-2"
+                        title="controller : action"
+                        >{{ lastNotification.controller }} :
+                        {{ lastNotification.action }}</b-badge
+                      >
+                      <b-badge pill variant="info" title="index / collection"
+                        >{{ lastNotification.index }} /
+                        {{ lastNotification.collection }}</b-badge
+                      >
+                      <!-- <ul>
+                        <li>
+                          Controller:
+                          <span class="code">
+                            {{ lastNotification.controller }}</span
+                          >
+                        </li>
+                        <li>
+                          Action:
+                          <span class="code">
+                            {{ lastNotification.action }}</span
+                          >
+                        </li>
+                        <li>
+                          Index:
+                          <span class="code">
+                            {{ lastNotification.index }}</span
+                          >
+                        </li>
+                        <li>
+                          Collection:
+                          <span class="code">
+                            {{ lastNotification.collection }}</span
+                          >
+                        </li>
+                      </ul> -->
+                      <p
+                        class="mt-3"
+                        v-json-formatter="{
+                          content: lastNotification.result,
+                          open: true
+                        }"
+                      />
+                    </b-card-body>
+                  </b-card>
+                </b-col>
+              </b-row>
+            </template>
           </b-card>
         </div>
       </div>
@@ -184,8 +222,7 @@ import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { truncateName } from '@/utils'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-
-import Vue from 'vue'
+import moment from 'moment'
 
 export default {
   name: 'CollectionWatch',
@@ -210,23 +247,7 @@ export default {
       currentFilter: new filterManager.Filter(),
       realtimeFilterOperands: filterManager.realtimeFilterOperands,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
-      notifications: [
-        {
-          text: 'Received volatile message',
-          icon: 'send',
-          class: 'message-volatile',
-          source: {
-            meta: { author: '-1', createdAt: 1583854413073 },
-            body: {
-              lol: 'this is a message',
-              _kuzzle_info: { author: '-1', createdAt: 1583854413073 }
-            }
-          },
-          expanded: false,
-          empty: false,
-          timestamp: 1583854413071
-        }
-      ],
+      notifications: [],
       notificationsLengthLimit: 50,
       warning: { message: '', count: 0, lastTime: null, info: false },
       notifStyle: {},
@@ -239,14 +260,13 @@ export default {
       if (this.notifications.length) {
         return this.notifications[this.notifications.length - 1]
       }
-      return {
-        source: {
-          id: null,
-          body: null,
-          meta: null,
-          volatile: null
-        }
+      return {}
+    },
+    lastNotificationTime() {
+      if (!this.notifications.length) {
+        return null
       }
+      return moment(this.lastNotification.timestamp).format('H:mm:ss')
     }
   },
   methods: {
@@ -266,104 +286,6 @@ export default {
       } else {
         await this.unsubscribe(this.room)
       }
-    },
-    notificationToMessage(notification) {
-      const idText =
-        notification.type === 'document' && notification.result._id
-          ? `(${notification.result._id})`
-          : ''
-      const messageItem = {
-        text: '',
-        icon: 'file',
-        class: '',
-        source: {},
-        expanded: false
-      }
-
-      if (
-        notification.volatile &&
-        Object.keys(notification.volatile).length > 0
-      ) {
-        messageItem.source.volatile = notification.volatile
-      }
-
-      if (notification.type === 'document') {
-        if (notification.result._id) {
-          messageItem.source.id = notification.result._id
-        }
-
-        if (
-          notification.result._source &&
-          notification.result._source._kuzzle_info &&
-          Object.keys(notification.result._source._kuzzle_info).length > 0
-        ) {
-          messageItem.source.meta = notification.result._source._kuzzle_info
-        }
-
-        if (
-          notification.result._source &&
-          Object.keys(notification.result._source).length > 0
-        ) {
-          messageItem.source.body = notification.result._source
-        }
-      } else {
-        messageItem.source.users = notification.user.count
-      }
-
-      messageItem.empty = Object.keys(messageItem.source).length === 0
-
-      switch (notification.action) {
-        case 'publish':
-          messageItem.text = 'Received volatile message'
-          messageItem.icon = 'send'
-          messageItem.class = 'message-volatile'
-          break
-        case 'create':
-        case 'createOrReplace':
-        case 'replace':
-          messageItem.icon = 'file'
-
-          if (notification.state === 'done') {
-            messageItem.text = `New document created ${idText}`
-            messageItem.class = 'message-created-updated-doc'
-          } else if (notification.state === 'pending') {
-            messageItem.text = `Pending document creation ${idText}`
-            messageItem.class = 'message-pending'
-          }
-          break
-
-        case 'update':
-          messageItem.text = `Document updated ${idText}`
-          messageItem.icon = 'file'
-          messageItem.class = 'message-created-updated-doc'
-          break
-
-        case 'delete':
-          messageItem.icon = 'remove'
-          if (notification.state === 'done') {
-            messageItem.text = `Document deleted ${idText}`
-            messageItem.class = 'message-deleted-doc'
-          } else if (notification.state === 'pending') {
-            messageItem.text = `Pending document deletion ${idText}`
-            messageItem.class = 'message-pending'
-          }
-          break
-
-        case 'subscribe':
-          messageItem.text = 'A new user is listening to this room'
-          messageItem.icon = 'user'
-          messageItem.class = 'message-user'
-          break
-
-        case 'unsubscribe':
-          messageItem.text = 'A user exited this room'
-          messageItem.icon = 'user'
-          messageItem.class = 'message-user'
-          break
-      }
-
-      messageItem.timestamp = notification.timestamp
-      return messageItem
     },
     makeAutoScroll() {
       // Auto scroll
@@ -399,7 +321,7 @@ export default {
         this.notifications.shift()
       }
 
-      this.notifications.unshift(this.notificationToMessage(result))
+      this.notifications.unshift(result) //this.notificationToMessage(result)
       // this.handleWebNotification(
       //   this.notifications[this.notifications.length - 1].text
       // )
@@ -456,16 +378,15 @@ export default {
       this.notifications = []
     },
     computeNotifHeight() {
-      Vue.nextTick(() => {
-        const mainNavHeight = document.getElementById('mainnav').offsetHeight
-        const searchFilter = document.getElementsByClassName('Filters')[0]
-          .offsetHeight
-        const subCtrl = this.$refs.subscribeControl.offsetHeight
-        const notifHeight =
-          document.body.offsetHeight - (mainNavHeight + searchFilter + subCtrl)
-
-        this.notifStyle = { maxHeight: notifHeight + 'px', overflowY: 'auto' }
-      })
+      // Vue.nextTick(() => {
+      //   const mainNavHeight = document.getElementById('mainnav').offsetHeight
+      //   const searchFilter = document.getElementsByClassName('Filters')[0]
+      //     .offsetHeight
+      //   const subCtrl = this.$refs.subscribeControl.offsetHeight
+      //   const notifHeight =
+      //     document.body.offsetHeight - (mainNavHeight + searchFilter + subCtrl)
+      //   this.notifStyle = { maxHeight: notifHeight + 'px', overflowY: 'auto' }
+      // })
     },
     setScrollDown(v) {
       this.scrollDown = v
@@ -488,10 +409,10 @@ export default {
     $route() {
       this.reset()
       this.currentFilter = filterManager.loadFromRoute(this.$route)
-    },
-    subscribed() {
-      this.computeNotifHeight()
     }
+    // subscribed() {
+    //   this.computeNotifHeight()
+    // }
   },
   created() {
     window.addEventListener('scroll', this.handleScroll)

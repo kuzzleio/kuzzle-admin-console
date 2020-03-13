@@ -1,6 +1,6 @@
 <template>
-  <div id="lastNotification-container" class="card-panel col s4">
-    <h5>Latest notification :</h5>
+  <b-card id="lastNotification-container" class="card-panel col s4">
+    <template v-slot:header>Latest notification</template>
     <div class="lastNotification-body">
       <p
         v-json-formatter="{
@@ -14,7 +14,7 @@
         }"
       />
     </div>
-  </div>
+  </b-card>
 </template>
 
 <script>
