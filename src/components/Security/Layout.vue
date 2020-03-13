@@ -1,85 +1,68 @@
 <template>
-  <div>
-    <aside>
-      <ul
-        class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
-      >
-        <router-link
+  <div class="SecurityLayout">
+    <div class="SecurityLayout-sidebarWrapper">
+      <b-nav vertical>
+        <b-nav-item
           v-if="canManageUsers()"
-          class="bold"
-          tag="li"
           :to="{ name: 'SecurityUsersList' }"
-          active-class="active"
+          active
         >
-          <a class="waves-effect">
+          <span>
             <i class="fa fa-user" aria-hidden="true" />
-            <span>Users</span>
-          </a>
-        </router-link>
-        <router-link
+            Users
+          </span>
+        </b-nav-item>
+        <b-nav-item
           v-if="canManageProfiles()"
-          class="bold"
-          tag="li"
           :to="{ name: 'SecurityProfilesList' }"
-          active-class="active"
         >
-          <a class="waves-effect">
+          <span>
             <i class="fa fa-users" aria-hidden="true" />
-            <span>Profiles</span>
-          </a>
-        </router-link>
-        <router-link
-          v-if="canManageRoles()"
-          class="bold"
-          tag="li"
-          :to="{ name: 'SecurityRolesList' }"
-          active-class="active"
-        >
-          <a class="waves-effect">
+            Profiles
+          </span>
+        </b-nav-item>
+        <b-nav-item v-if="canManageRoles()" :to="{ name: 'SecurityRolesList' }">
+          <span>
             <i class="fa fa-unlock-alt" aria-hidden="true" />
-            <span>Roles</span>
-          </a>
-        </router-link>
-      </ul>
-    </aside>
-
-    <section class="view">
-      <div class="wrapper">
-        <router-view />
-      </div>
-    </section>
+            Roles</span
+          >
+        </b-nav-item>
+      </b-nav>
+    </div>
+    <div class="SecurityLayout-contentWrapper">
+      <router-view />
+    </div>
   </div>
 </template>
+<style lang="scss" scoped>
+.sideEntry {
+  display: table;
+}
+.sideEntry-content {
+  display: table-cell;
+}
 
-<style lang="scss" rel="stylesheet/scss" scoped>
-.Treeview-container {
-  @media (max-width: $medium-screen) {
-    // @HACK this is nasty, but we need it to override the default
-    // MaterializeCSS behavior, hiding the side menu whenever the
-    // screen is less than medium-width.
-    transform: translateX(0);
-  }
+.SecurityLayout {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
-.sidenav {
-  top: 50px;
-  width: $sidebar-width;
-  a {
-    i.fa {
-      color: #646464;
-    }
-    height: 54px;
-    line-height: 54px;
-  }
-  transform: translateX(0%) !important;
+.SecurityLayout-sidebarWrapper {
+  background-color: $light-grey-color;
+  flex-basis: $sidebar-width;
+  min-width: $sidebar-width;
+  height: 100%;
+  overflow: auto;
+  box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
+  z-index: 1;
 }
-aside {
-  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-  a {
-    padding: 0 20px;
-  }
-  .fa {
-    width: 18px;
-  }
+
+.SecurityLayout-contentWrapper {
+  flex-grow: 1;
+  height: 100%;
+  overflow: auto;
+  padding: $content-gutter;
 }
 </style>
 
