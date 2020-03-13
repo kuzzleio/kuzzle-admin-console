@@ -7,25 +7,40 @@
           :to="{ name: 'SecurityUsersList' }"
           active
         >
-          <span>
-            <i class="fa fa-user" aria-hidden="true" />
-            Users
-          </span>
+          <b-row no-gutters>
+            <b-col cols="2">
+              <i class="fa fa-user fa-lg align-bottom" aria-hidden="true" />
+            </b-col>
+            <b-col cols="10" class="sideEntry">
+              Users
+            </b-col>
+          </b-row>
         </b-nav-item>
         <b-nav-item
           v-if="canManageProfiles()"
           :to="{ name: 'SecurityProfilesList' }"
         >
-          <span>
-            <i class="fa fa-users" aria-hidden="true" />
-            Profiles
-          </span>
+          <b-row no-gutters>
+            <b-col cols="2">
+              <i class="fa fa-users fa-lg align-bottom" aria-hidden="true" />
+            </b-col>
+            <b-col cols="10" class="sideEntry">
+              Profiles
+            </b-col>
+          </b-row>
         </b-nav-item>
         <b-nav-item v-if="canManageRoles()" :to="{ name: 'SecurityRolesList' }">
-          <span>
-            <i class="fa fa-unlock-alt" aria-hidden="true" />
-            Roles</span
-          >
+          <b-row no-gutters>
+            <b-col cols="2">
+              <i
+                class="fa fa-unlock-alt fa-lg align-bottom"
+                aria-hidden="true"
+              />
+            </b-col>
+            <b-col cols="10" class="sideEntry">
+              Roles
+            </b-col>
+          </b-row>
         </b-nav-item>
       </b-nav>
     </div>
@@ -36,10 +51,7 @@
 </template>
 <style lang="scss" scoped>
 .sideEntry {
-  display: table;
-}
-.sideEntry-content {
-  display: table-cell;
+  font-size: 22px;
 }
 
 .SecurityLayout {
