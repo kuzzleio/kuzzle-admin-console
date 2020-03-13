@@ -141,15 +141,13 @@
                   :style="notifStyle"
                   class="Watch--notifications col s8"
                 >
-                  <div v-if="notifications.length">
-                    <notification
-                      v-for="(notification, i) in notifications"
-                      :key="i"
-                      :notification="notification"
-                    />
-                  </div>
+                  <notification
+                    v-for="(notification, i) in notifications"
+                    :key="i"
+                    :notification="notification"
+                  />
                 </b-col>
-                <b-col cols="4" class="p-0">
+                <b-col cols="4">
                   <b-card no-body>
                     <b-card-header>
                       Latest notification
@@ -258,7 +256,7 @@ export default {
   computed: {
     lastNotification() {
       if (this.notifications.length) {
-        return this.notifications[this.notifications.length - 1]
+        return this.notifications[0]
       }
       return {}
     },
@@ -431,62 +429,18 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-.Watch {
-  // @TODO temoirarily reverted
-  // max-width: 1080px;
-  // margin: auto;
+.Notification {
+  border-radius: 0;
+  border-width: 0 1px 0 1px;
 
-  .head {
-    float: left;
-    font-size: 2rem;
-    margin-top: 0;
+  &:first-child {
+    border-radius: 0.25rem 0.25rem 0 0;
+    border-width: 1px 1px 0 1px;
   }
-
-  .fixed {
-    position: fixed;
-  }
-
-  .Watch-container {
-    max-width: $container-width;
-  }
-
-  .wrapper {
-    position: relative;
-  }
-
-  .sticky {
-    position: fixed;
-    top: 50px;
-    left: 260px;
-    line-height: 20px;
-    padding: 10px 5px;
-    right: 20px;
-    z-index: 200;
-    background-color: #fff;
-    transition: all 0.3s;
-    box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
-  }
-
-  #notification-container {
-    margin-left: -10px;
-    ul {
-      margin: 0;
-      li {
-        font-family: monospace;
-        font-size: 0.8rem;
-      }
-      li:nth-child(odd) {
-        background-color: #f5f5f5;
-
-        .collapsible-header {
-          background-color: #f5f5f5;
-        }
-      }
-    }
-  }
-
-  .collapsible {
-    border-width: 0;
+  &:last-child {
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    border-width: 0 1px 1px 1px;
   }
 }
 </style>
