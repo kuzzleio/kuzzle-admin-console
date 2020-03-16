@@ -54,6 +54,7 @@
               <b-row>
                 <b-col cols="8">
                   <b-button
+                    data-cy="Watch-toggleFiltersBtn"
                     variant="outline-info"
                     @click="advancedFiltersVisible = !advancedFiltersVisible"
                   >
@@ -62,7 +63,8 @@
                     }}</b-button
                   >
                   <b-badge
-                    v-if="complexFilterActive"
+                    v-if="complexFilterActive && !advancedFiltersVisible"
+                    data-cy="Watch-filtersPill"
                     pill
                     variant="warning"
                     class="ml-2 p-2"
@@ -71,8 +73,9 @@
                 </b-col>
                 <b-col class="text-right">
                   <b-button
-                    type="submit"
                     class="ml-2 d-inline-block"
+                    data-cy="Watch-subscribeBtn"
+                    type="submit"
                     :variant="subscribed ? 'danger' : 'primary'"
                     @click.prevent="toggleSubscription"
                   >
@@ -191,7 +194,7 @@
                   />
                 </b-col>
                 <b-col cols="4">
-                  <b-card no-body>
+                  <b-card data-cy="Watch-latestNotification" no-body>
                     <b-card-header>
                       Latest notification ({{ lastNotificationTime }})
                     </b-card-header>

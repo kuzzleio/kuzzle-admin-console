@@ -1,5 +1,11 @@
 <template>
-  <div :id="id" ref="jsoneditor" :class="classes" :style="style" />
+  <div
+    data-cy="JSONEditor"
+    ref="jsoneditor"
+    :class="classes"
+    :id="id"
+    :style="style"
+  />
 </template>
 
 <style lang="scss" rel="stylesheet/scss">

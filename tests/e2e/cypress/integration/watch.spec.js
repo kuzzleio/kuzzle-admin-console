@@ -2,6 +2,11 @@ describe('Watch', () => {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
+  const filter = {
+    equals: {
+      firstName: 'Luca'
+    }
+  }
 
   beforeEach(() => {
     // reset database and setup
@@ -47,54 +52,123 @@ describe('Watch', () => {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('Should properly set basic filter', () => {
-    const firstName = 'Luca'
-    cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
-    cy.get('.IndexesPage').should('be.visible')
-    cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.CollectionTabs--watch').click()
-    cy.get('.QuickFilter-chipLabel').click()
-    cy.get('.BasicFilter-andBlock .BasicFilter--key')
+  it('Should subscribe without filters and receive all notifications', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-subscribeBtn"]')
+      .should('contain', 'Subscribe')
       .click()
-      .type('firstName{downarrow}{enter}')
-    cy.get('.BasicFilter-andBlock .BasicFilter--value')
-      .click()
-      .type(firstName)
-    cy.get('.BasicFilter-submitBtn').click()
+      .should('contain', 'Unsubscribe')
 
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
-      {
-        firstName: 'Adrien',
-        lastName: 'Maret',
-        job: 'Keylogger as a Service'
-      }
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      message: 'This is a notification'
+    })
+
+    cy.get('[data-cy="Notification"]').should(
+      'contain',
+      'Volatile notification'
     )
 
-    cy.get('.Notification').should('not.exist')
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      message: 'This is another notification'
+    })
 
-    cy.request(
-      'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
-      {
-        firstName: 'Luca',
-        lastName: 'Marchesini',
-        job: 'Blockchain as a Service'
-      }
-    )
-
-    cy.get('.Notification').should('exist')
+    cy.get('[data-cy="Notification"]').should('have.length', 2)
   })
+
+  it('Should display last notification', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      message: 'This is a notification'
+    })
+
+    cy.get('[data-cy="Watch-latestNotification"]').should(
+      'contain',
+      'This is a notification'
+    )
+
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      message: 'This is another notification'
+    })
+
+    cy.get('[data-cy="Watch-latestNotification"]').should(
+      'contain',
+      'This is another notification'
+    )
+  })
+
+  it('Should subscribe with filters and receive only matching notifications', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="JSONEditor"]').should('be.visible')
+    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"equals": {
+"firstName": "Luca"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'Luca'
+    })
+
+    cy.get('[data-cy="Notification"]').should('have.length', 1)
+
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'Corona'
+    })
+
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'virus'
+    })
+
+    cy.get('[data-cy="Notification"]').should('have.length', 1)
+  })
+
+  it.only('Should show the pill when filters are active but not visible', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="JSONEditor"]').should('be.visible')
+    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"equals": {
+"firstName": "Luca"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="Watch-filtersPill"]').should('be.visible')
+  })
+
+  it('Should properly clear notifications without unsubscribing', () => {})
+
+  it('Should properly reset filters and unsubscribe without clearing the notifications', () => {})
+
+  it('Should limit the number of displayed notifications', () => {})
+
+  it('Should show a warning message when notifications are too frequent', () => {})
 })

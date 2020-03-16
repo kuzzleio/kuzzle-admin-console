@@ -1,6 +1,14 @@
 <template>
-  <b-card no-body class="Notification" :class="headerClass">
-    <b-card-header @click="collapsed = !collapsed">
+  <b-card
+    class="Notification"
+    data-cy="Notification"
+    no-body
+    :class="headerClass"
+  >
+    <b-card-header
+      data-cy="Notification-header"
+      @click="collapsed = !collapsed"
+    >
       <i
         :class="{ 'fa-caret-right': !collapsed, 'fa-caret-down': collapsed }"
         class="fa"
