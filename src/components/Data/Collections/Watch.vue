@@ -426,10 +426,6 @@ export default {
       this.resetFilters()
       this.resetNotifications()
     },
-    clear() {
-      this.warning.message = ''
-      this.notifications = []
-    },
     computeNotifHeight() {
       // Vue.nextTick(() => {
       //   const mainNavHeight = document.getElementById('mainnav').offsetHeight

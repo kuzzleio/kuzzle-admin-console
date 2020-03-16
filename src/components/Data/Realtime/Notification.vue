@@ -18,7 +18,8 @@
 
 <script>
 import JsonFormatter from '../../../directives/json-formatter.directive'
-var moment = require('moment')
+import { truncateName } from '../../../utils'
+import moment from 'moment'
 
 export default {
   name: 'Notification',
@@ -51,7 +52,7 @@ export default {
     notificationId() {
       return this.notification.type === 'document' &&
         this.notification.result._id
-        ? `(${this.notification.result._id})`
+        ? truncateName(this.notification.result._id)
         : ''
     },
     icon() {
@@ -75,13 +76,13 @@ export default {
           return 'Volatile notification'
         case 'create':
         case 'createOrReplace':
-          return `New document created ${this.notificationId}`
+          return `New document created (${this.notificationId})`
         case 'replace':
-          return `Document replaced ${this.notificationId}`
+          return `Document replaced (${this.notificationId})`
         case 'update':
-          return `Document updated ${this.notificationId}`
+          return `Document updated (${this.notificationId})`
         case 'delete':
-          return `Document deleted ${this.notificationId}`
+          return `Document deleted (${this.notificationId})`
         case 'subscribe':
           return 'A new user is listening to this room'
 
