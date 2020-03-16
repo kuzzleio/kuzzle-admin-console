@@ -161,7 +161,8 @@ export default {
       type: String
     },
     quickFilterSubmitOnType: {
-      type: Boolean
+      type: Boolean,
+      default: true
     },
     sortingEnabled: {
       type: Boolean,
