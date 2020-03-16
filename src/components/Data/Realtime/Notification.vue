@@ -113,9 +113,7 @@ $types: (
 
 @each $name, $value in $types {
   .Notification--#{$name} {
-    // border-color: desaturate(darken($value, 15%), 20%);
     .card-header {
-      // border-color: desaturate(darken($value, 15%), 20%);
       background-color: $value;
     }
   }

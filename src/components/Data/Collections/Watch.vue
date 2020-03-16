@@ -210,33 +210,6 @@
                         >{{ lastNotification.controller }} :
                         {{ lastNotification.action }}</b-badge
                       >
-
-                      <!-- <ul>
-                        <li>
-                          Controller:
-                          <span class="code">
-                            {{ lastNotification.controller }}</span
-                          >
-                        </li>
-                        <li>
-                          Action:
-                          <span class="code">
-                            {{ lastNotification.action }}</span
-                          >
-                        </li>
-                        <li>
-                          Index:
-                          <span class="code">
-                            {{ lastNotification.index }}</span
-                          >
-                        </li>
-                        <li>
-                          Collection:
-                          <span class="code">
-                            {{ lastNotification.collection }}</span
-                          >
-                        </li>
-                      </ul> -->
                       <p
                         class="mt-3"
                         v-json-formatter="{
@@ -291,14 +264,11 @@ export default {
       subscribed: false,
       room: null,
       currentFilter: new filterManager.Filter(),
-      // realtimeFilterOperands: filterManager.realtimeFilterOperands,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       notifications: [],
       notificationsLengthLimit: 50,
       warning: { message: '', count: 0, lastTime: null, info: false },
       notifStyle: {}
-      // scrollDown: true,
-      // collectionMapping: {}
     }
   },
   computed: {
@@ -331,14 +301,6 @@ export default {
         this.currentFilter.raw = content
       }
     },
-    // onFiltersUpdated(newFilters) {
-    //   this.currentFilter = newFilters
-    //   filterManager.saveToRouter(
-    //     filterManager.stripDefaultValuesFromFilter(newFilters),
-    //     this.$router
-    //   )
-    //   this.toggleSubscription()
-    // },
     async toggleSubscription() {
       if (!this.subscribed) {
         await this.subscribe()
@@ -346,15 +308,6 @@ export default {
         await this.unsubscribe(this.room)
       }
     },
-    // makeAutoScroll() {
-    //   // Auto scroll
-    //   if (this.scrollDown) {
-    //     const div = this.$refs.notificationContainer
-    //     setTimeout(() => {
-    //       div.scrollTop = div.scrollHeight
-    //     }, 0)
-    //   }
-    // },
     handleNotification(result) {
       if (this.notifications.length > this.notificationsLengthLimit) {
         if (this.warning.message === '') {
@@ -380,13 +333,7 @@ export default {
         this.notifications.shift()
       }
 
-      this.notifications.unshift(result) //this.notificationToMessage(result)
-      // this.handleWebNotification(
-      //   this.notifications[this.notifications.length - 1].text
-      // )
-      // this.lastNotification = this.notifications[this.notifications.length - 1]
-
-      // this.makeAutoScroll()
+      this.notifications.unshift(result)
     },
     async subscribe() {
       try {
@@ -430,28 +377,7 @@ export default {
       // trigged when user changed the collection of watch data page
       this.resetFilters()
       this.resetNotifications()
-    },
-    computeNotifHeight() {
-      // Vue.nextTick(() => {
-      //   const mainNavHeight = document.getElementById('mainnav').offsetHeight
-      //   const searchFilter = document.getElementsByClassName('Filters')[0]
-      //     .offsetHeight
-      //   const subCtrl = this.$refs.subscribeControl.offsetHeight
-      //   const notifHeight =
-      //     document.body.offsetHeight - (mainNavHeight + searchFilter + subCtrl)
-      //   this.notifStyle = { maxHeight: notifHeight + 'px', overflowY: 'auto' }
-      // })
     }
-    // setScrollDown(v) {
-    //   this.scrollDown = v
-    // }
-    // handleWebNotification(text) {
-    //   const notif = new window.Notification('Kuzzle Admin Console', {
-    //     body: text + ' in ' + this.index + ' ' + this.collection,
-    //     icon: '/static/favicon/favicon-32x32.png'
-    //   })
-    //   setTimeout(notif.close.bind(notif), 5000)
-    // }
   },
   watch: {
     index() {
@@ -464,22 +390,12 @@ export default {
       this.reset()
       this.currentFilter = filterManager.loadFromRoute(this.$route)
     }
-    // subscribed() {
-    //   this.computeNotifHeight()
-    // }
-  },
-  // created() {
-  //   window.addEventListener('scroll', this.handleScroll)
-  // },
-  async mounted() {
-    // this.notifications = []
   },
   async destroyed() {
     this.reset()
     if (this.room) {
       await this.$kuzzle.realtime.unsubscribe(this.room)
     }
-    // window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
