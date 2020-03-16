@@ -21,7 +21,6 @@
             />
           </b-col>
         </b-row>
-        <!--  -->
         <b-card v-if="!canSubscribe(index, collection)">
           <b-row>
             <b-col cols="2">
@@ -88,7 +87,7 @@
                   </b-button>
                   <b-button
                     class="ml-2 d-inline-block"
-                    data-cy="QuickFilter-resetBtn"
+                    data-cy="Watch-resetBtn"
                     title="Reset filters and unsubscribe"
                     variant="outline-primary"
                     @click="resetFilters"
@@ -160,9 +159,12 @@
               >
             </b-row>
 
-            <b-alert variant="warning" :show="!!warning.message">{{
-              warning.message
-            }}</b-alert>
+            <b-alert
+              data-cy="Watch-alert"
+              variant="warning"
+              :show="!!warning.message"
+              >{{ warning.message }}</b-alert
+            >
             <template v-if="notifications.length">
               <b-row class="mb-3">
                 <b-col cols="8" class="text-secondary vertical-align">
@@ -170,6 +172,7 @@
                 </b-col>
                 <b-col class="text-right"
                   ><b-button
+                    data-cy="Watch-clearNotifications"
                     title="Clear messages"
                     variant="outline-secondary"
                     @click="resetNotifications"
@@ -415,9 +418,8 @@ export default {
         this.subscribed = false
         this.unsubscribe(this.room)
       }
-      if (this.$refs.rawFilter) {
-        this.$refs.rawFilter.resetSearch()
-      }
+      this.currentFilter.raw = {}
+      this.$refs.rawFilter.resetSearch()
     },
     resetNotifications() {
       this.notifications = []

@@ -142,9 +142,10 @@ describe('Watch', () => {
     })
 
     cy.get('[data-cy="Notification"]').should('have.length', 1)
+    cy.get('[data-cy="Watch-subscribeBtn"]').should('contain', 'Unsubscribe')
   })
 
-  it.only('Should show the pill when filters are active but not visible', () => {
+  it('Should show the pill when filters are active but not visible', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
@@ -164,11 +165,69 @@ describe('Watch', () => {
     cy.get('[data-cy="Watch-filtersPill"]').should('be.visible')
   })
 
-  it('Should properly clear notifications without unsubscribing', () => {})
+  it('Should properly clear notifications without unsubscribing', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-subscribeBtn"]').click()
 
-  it('Should properly reset filters and unsubscribe without clearing the notifications', () => {})
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'Luca'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'Corona'
+    })
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'virus'
+    })
+    cy.get('[data-cy="Notification"]').should('have.length', 3)
+    cy.get('[data-cy="Watch-clearNotifications"]').click()
+    cy.get('[data-cy="Notification"]').should('have.length', 0)
+  })
 
-  it('Should limit the number of displayed notifications', () => {})
+  it('Should properly reset filters and unsubscribe without clearing the notifications', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="JSONEditor"]').should('be.visible')
+    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"equals": {
+"firstName": "Luca"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="Watch-filtersPill"]').should('be.visible')
+    cy.get('[data-cy="Watch-subscribeBtn"]').click()
 
-  it('Should show a warning message when notifications are too frequent', () => {})
+    cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
+      firstName: 'Luca'
+    })
+    cy.get('[data-cy="Notification"]').should('have.length', 1)
+    cy.get('[data-cy="Watch-resetBtn"]').click()
+    cy.get('[data-cy="Notification"]').should('have.length', 1)
+    cy.get('[data-cy=Watch-filtersPill]').should('not.be.visible')
+  })
+
+  it('Should limit the number of displayed notifications', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-subscribeBtn"]').click()
+
+    for (let i = 0; i < 60; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/${indexName}/${collectionName}/_publish`,
+        {
+          firstName: 'Luca'
+        }
+      )
+    }
+    cy.get('[data-cy="Notification"]').should('have.length', 50)
+    cy.get('[data-cy="Watch-alert"]')
+      .should('be.visible')
+      .should('contain', 'Older notifications are discarded')
+  })
 })
