@@ -49,20 +49,62 @@
         </b-card>
 
         <div v-else class="Watch-container">
-          <filters
-            advanced-query-label="Advanced filters..."
-            quick-filter-placeholder="Filter notifications..."
-            :available-operands="realtimeFilterOperands"
-            :current-filter="currentFilter"
-            :collection-mapping="collectionMapping"
-            :quick-filter-enabled="false"
-            :quick-filter-submit-on-type="false"
-            :sorting-enabled="false"
-            :submit-button-label="subscribed ? 'Unsubscribe' : 'Subscribe'"
-            :toggle-auto-complete="false"
-            @filters-updated="onFiltersUpdated"
-            @reset="onReset"
-          />
+          <b-card class="Filters" :no-body="!advancedFiltersVisible">
+            <template v-slot:header>
+              <b-row>
+                <b-col cols="8">
+                  <b-button
+                    variant="outline-info"
+                    @click="advancedFiltersVisible = !advancedFiltersVisible"
+                  >
+                    <i class="fa left fa-filter mr-2" />{{
+                      advancedFiltersVisible ? 'Hide filters' : 'Show filters'
+                    }}</b-button
+                  >
+                  <b-badge
+                    v-if="complexFilterActive"
+                    pill
+                    variant="warning"
+                    class="ml-2 p-2"
+                    >Filters are being applied</b-badge
+                  >
+                </b-col>
+                <b-col class="text-right">
+                  <b-button
+                    type="submit"
+                    class="ml-2 d-inline-block"
+                    :variant="subscribed ? 'danger' : 'primary'"
+                    @click.prevent="toggleSubscription"
+                  >
+                    <template v-if="!subscribed">
+                      <i class="fa left fa-play mr-2" />Subscribe
+                    </template>
+                    <template v-else
+                      ><i class="fa left fa-pause mr-2" />Unsubscribe</template
+                    >
+                  </b-button>
+                  <b-button
+                    class="ml-2 d-inline-block"
+                    data-cy="QuickFilter-resetBtn"
+                    title="Reset filters and unsubscribe"
+                    variant="outline-primary"
+                    @click="resetFilters"
+                  >
+                    Reset filters
+                  </b-button>
+                </b-col>
+              </b-row>
+            </template>
+            <template v-if="advancedFiltersVisible">
+              <raw-filter
+                ref="rawFilter"
+                submit-button-label="Subscribe"
+                :sorting-enabled="false"
+                :action-buttons-visible="false"
+                :refresh-ace="advancedFiltersVisible"
+                @change="onRawFilterChange"
+            /></template>
+          </b-card>
           <b-card class="mt-3">
             <b-row v-if="!subscribed && !notifications.length">
               <b-col cols="4" class="text-center">
@@ -127,7 +169,7 @@
                   ><b-button
                     title="Clear messages"
                     variant="outline-secondary"
-                    @click="clear"
+                    @click="resetNotifications"
                     ><i class="fas fa-trash-alt mr-2"></i>Clear all
                     notifications</b-button
                   ></b-col
@@ -140,7 +182,7 @@
                   id="notification-container"
                   ref="notificationContainer"
                   :style="notifStyle"
-                  class="Watch--notifications col s8"
+                  class="Watch--notifications pr-1"
                 >
                   <notification
                     v-for="(notification, i) in notifications"
@@ -156,16 +198,13 @@
                     <b-card-body>
                       <b-badge
                         pill
-                        variant="success"
+                        variant="info"
                         class="mr-2"
                         title="controller : action"
                         >{{ lastNotification.controller }} :
                         {{ lastNotification.action }}</b-badge
                       >
-                      <b-badge pill variant="info" title="index / collection"
-                        >{{ lastNotification.index }} /
-                        {{ lastNotification.collection }}</b-badge
-                      >
+
                       <!-- <ul>
                         <li>
                           Controller:
@@ -216,12 +255,13 @@ import Headline from '../../Materialize/Headline'
 import collapsible from '../../../directives/Materialize/collapsible.directive'
 import Notification from '../Realtime/Notification'
 import CollectionDropdown from '../Collections/Dropdown'
-import Filters from '../../Common/Filters/Filters'
+import RawFilter from '../../Common/Filters/RawFilter'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { truncateName } from '@/utils'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
+import { isEqual } from 'lodash'
 
 export default {
   name: 'CollectionWatch',
@@ -232,7 +272,7 @@ export default {
   components: {
     Notification,
     CollectionDropdown,
-    Filters,
+    RawFilter,
     Headline
   },
   props: {
@@ -241,20 +281,24 @@ export default {
   },
   data() {
     return {
+      advancedFiltersVisible: false,
       subscribed: false,
       room: null,
       currentFilter: new filterManager.Filter(),
-      realtimeFilterOperands: filterManager.realtimeFilterOperands,
+      // realtimeFilterOperands: filterManager.realtimeFilterOperands,
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       notifications: [],
       notificationsLengthLimit: 50,
       warning: { message: '', count: 0, lastTime: null, info: false },
-      notifStyle: {},
-      scrollDown: true,
-      collectionMapping: {}
+      notifStyle: {}
+      // scrollDown: true,
+      // collectionMapping: {}
     }
   },
   computed: {
+    complexFilterActive() {
+      return this.currentFilter.raw && !isEqual(this.currentFilter.raw, {})
+    },
     lastNotification() {
       if (this.notifications.length) {
         return this.notifications[0]
@@ -266,19 +310,29 @@ export default {
         return null
       }
       return moment(this.lastNotification.timestamp).format('H:mm:ss')
+    },
+    realtimeQuery() {
+      return filterManager.toRealtimeQuery(this.currentFilter)
     }
   },
   methods: {
     canSubscribe,
     truncateName,
-    onFiltersUpdated(newFilters) {
-      this.currentFilter = newFilters
-      filterManager.saveToRouter(
-        filterManager.stripDefaultValuesFromFilter(newFilters),
-        this.$router
-      )
-      this.toggleSubscription()
+    onRawFilterChange(content) {
+      this.$log.debug('Raw filter changed', content)
+      if (content) {
+        this.currentFilter.active = filterManager.ACTIVE_RAW
+        this.currentFilter.raw = content
+      }
     },
+    // onFiltersUpdated(newFilters) {
+    //   this.currentFilter = newFilters
+    //   filterManager.saveToRouter(
+    //     filterManager.stripDefaultValuesFromFilter(newFilters),
+    //     this.$router
+    //   )
+    //   this.toggleSubscription()
+    // },
     async toggleSubscription() {
       if (!this.subscribed) {
         await this.subscribe()
@@ -286,15 +340,15 @@ export default {
         await this.unsubscribe(this.room)
       }
     },
-    makeAutoScroll() {
-      // Auto scroll
-      if (this.scrollDown) {
-        const div = this.$refs.notificationContainer
-        setTimeout(() => {
-          div.scrollTop = div.scrollHeight
-        }, 0)
-      }
-    },
+    // makeAutoScroll() {
+    //   // Auto scroll
+    //   if (this.scrollDown) {
+    //     const div = this.$refs.notificationContainer
+    //     setTimeout(() => {
+    //       div.scrollTop = div.scrollHeight
+    //     }, 0)
+    //   }
+    // },
     handleNotification(result) {
       if (this.notifications.length > this.notificationsLengthLimit) {
         if (this.warning.message === '') {
@@ -330,11 +384,10 @@ export default {
     },
     async subscribe() {
       try {
-        const realtimeQuery = filterManager.toRealtimeQuery(this.currentFilter)
         const room = await this.$kuzzle.realtime.subscribe(
           this.index,
           this.collection,
-          realtimeQuery,
+          this.realtimeQuery,
           this.handleNotification,
           this.subscribeOptions
         )
@@ -354,23 +407,24 @@ export default {
       this.subscribed = false
       this.room = null
     },
-    onReset(newFilters) {
-      filterManager.saveToRouter(
-        filterManager.stripDefaultValuesFromFilter(newFilters),
-        this.$router
-      )
-      this.reset()
-    },
-    reset() {
-      // trigged when user changed the collection of watch data page
-      this.notifications = []
-      this.warning.message = ''
-      this.warning.count = 0
-
+    resetFilters() {
       if (this.subscribed) {
         this.subscribed = false
         this.unsubscribe(this.room)
       }
+      if (this.$refs.rawFilter) {
+        this.$refs.rawFilter.resetSearch()
+      }
+    },
+    resetNotifications() {
+      this.notifications = []
+      this.warning.message = ''
+      this.warning.count = 0
+    },
+    reset() {
+      // trigged when user changed the collection of watch data page
+      this.resetFilters()
+      this.resetNotifications()
     },
     clear() {
       this.warning.message = ''
@@ -386,10 +440,10 @@ export default {
       //     document.body.offsetHeight - (mainNavHeight + searchFilter + subCtrl)
       //   this.notifStyle = { maxHeight: notifHeight + 'px', overflowY: 'auto' }
       // })
-    },
-    setScrollDown(v) {
-      this.scrollDown = v
     }
+    // setScrollDown(v) {
+    //   this.scrollDown = v
+    // }
     // handleWebNotification(text) {
     //   const notif = new window.Notification('Kuzzle Admin Console', {
     //     body: text + ' in ' + this.index + ' ' + this.collection,
@@ -413,9 +467,9 @@ export default {
     //   this.computeNotifHeight()
     // }
   },
-  created() {
-    window.addEventListener('scroll', this.handleScroll)
-  },
+  // created() {
+  //   window.addEventListener('scroll', this.handleScroll)
+  // },
   async mounted() {
     // this.notifications = []
   },
@@ -424,15 +478,22 @@ export default {
     if (this.room) {
       await this.$kuzzle.realtime.unsubscribe(this.room)
     }
-    window.removeEventListener('scroll', this.handleScroll)
+    // window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
+.Watch {
+  margin-bottom: 3em;
+}
+
 .Notification {
   border-radius: 0;
   border-width: 0 1px 0 1px;
+  & .card-header {
+    border-radius: 0;
+  }
 
   &:first-child {
     border-radius: 0.25rem 0.25rem 0 0;

@@ -86,13 +86,14 @@ export default {
       if (this.content !== null) {
         this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
       }
+      // WARNING - Beware of update loops!
+      // This event is triggered both when the content changes after
+      // user interaction and when it is set programmatically.
       this.editor.on('change', () => {
         let value = this.getJson()
         this.editor.resize()
 
-        if (value) {
-          this.$emit('changed', value)
-        }
+        this.$emit('change', value)
       })
     })
   },

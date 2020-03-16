@@ -5,7 +5,7 @@
         :class="{ 'fa-caret-right': !collapsed, 'fa-caret-down': collapsed }"
         class="fa"
       />
-      <i class="ml-2 fa" :class="`fa-${icon}`" /><span class="code">
+      <i class="ml-3 fa" :class="`fa-${icon}`" /><span class="code">
         {{ text }}</span
       >
       <span class="text-secondary"> - {{ time }}</span>
@@ -75,19 +75,13 @@ export default {
           return 'Volatile notification'
         case 'create':
         case 'createOrReplace':
+          return `New document created ${this.notificationId}`
         case 'replace':
-          if (this.notification.state === 'done') {
-            return `New document created ${this.notificationId}`
-          }
-          return `Pending document creation ${this.notificationId}`
-
+          return `Document replaced ${this.notificationId}`
         case 'update':
           return `Document updated ${this.notificationId}`
         case 'delete':
-          if (this.notification.state === 'done') {
-            return `Document deleted ${this.notificationId}`
-          }
-          return `Pending document deletion ${this.notificationId}`
+          return `Document deleted ${this.notificationId}`
         case 'subscribe':
           return 'A new user is listening to this room'
 
@@ -103,16 +97,16 @@ export default {
 <style lang="scss" scoped>
 $types: (
   'publish': #e3eff4,
-  'document': #809199,
-  'subscribe': #8e24aa,
-  'delete': #e06660
+  'document': #cae6d3,
+  'subscribe': #e1c8e8,
+  'delete': #e6c6c4
 );
 
 @each $name, $value in $types {
   .Notification--#{$name} {
-    border-color: desaturate(darken($value, 15%), 20%);
+    // border-color: desaturate(darken($value, 15%), 20%);
     .card-header {
-      border-color: desaturate(darken($value, 15%), 20%);
+      // border-color: desaturate(darken($value, 15%), 20%);
       background-color: $value;
     }
   }

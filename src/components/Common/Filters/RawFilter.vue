@@ -15,6 +15,7 @@
             myclass="pre_ace"
             :content="filters.raw"
             :refresh-ace="refreshAce"
+            @change="$emit('change', $event)"
           />
         </b-col>
       </b-row>
@@ -129,8 +130,11 @@ export default {
     }
   },
   methods: {
+    getContent() {
+      return this.$refs.jsoneditor.getJson()
+    },
     submitSearch() {
-      let json = this.$refs.jsoneditor.getJson()
+      let json = this.getContent()
 
       if (json === null) {
         this.jsonInvalid = true
@@ -143,7 +147,7 @@ export default {
       this.$emit('update-filter', this.filters.raw)
     },
     resetSearch() {
-      this.filters.raw = null
+      this.filters.raw = {}
       this.$emit('update-filter', this.filters.raw)
     }
   }
