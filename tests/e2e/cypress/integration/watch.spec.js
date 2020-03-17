@@ -107,7 +107,7 @@ describe('Watch', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
-    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
       .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
@@ -143,7 +143,7 @@ describe('Watch', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
-    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
       .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
@@ -156,7 +156,7 @@ describe('Watch', () => {
         }
       )
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
-    cy.get('[data-cy="Watch-filtersPill"]').should('be.visible')
+    cy.get('[data-cy="Watch-filterAppliedPill"]').should('be.visible')
   })
 
   it('Should properly clear notifications without unsubscribing', () => {
@@ -181,7 +181,7 @@ describe('Watch', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
-    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
       .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
@@ -194,7 +194,7 @@ describe('Watch', () => {
         }
       )
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
-    cy.get('[data-cy="Watch-filtersPill"]').should('be.visible')
+    cy.get('[data-cy="Watch-filterAppliedPill"]').should('be.visible')
     cy.get('[data-cy="Watch-subscribeBtn"]').click()
 
     cy.request('POST', `${kuzzleUrl}/${indexName}/${collectionName}/_publish`, {
@@ -225,13 +225,32 @@ describe('Watch', () => {
       .should('contain', 'Older notifications are discarded')
   })
 
-  it('Cannot subscribe when JSON filter contains errors', () => {})
-
-  it.only('Remember JSON filter when it is toggled', () => {
+  it('Should not be able to subscribe when JSON filter contains errors', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.get('[data-cy="JSONEditor"]').should('be.visible')
-    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('.ace_content .ace_line').click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"equals": {
+"firstName": Luca`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="Watch-subscribeBtn"]').should('be.disabled')
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="Watch-filterErrorPill"]').should('be.visible')
+  })
+
+  it('Shoud remember JSON filter when it is toggled', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="JSONEditor"]').should('be.visible')
+    cy.get('.ace_content .ace_line').click({ force: true })
     cy.get('textarea.ace_text-input')
       .should('be.visible')
       .type('{selectall}{backspace}', { delay: 200, force: true })
@@ -246,6 +265,6 @@ describe('Watch', () => {
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
     cy.wait(500)
     cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
-    cy.get('textarea.ace_text-input').should('contain', '"firstName": "Luca"')
+    cy.get('.ace_content').should('contain', '"firstName": "Luca"')
   })
 })
