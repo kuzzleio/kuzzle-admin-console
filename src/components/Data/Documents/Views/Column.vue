@@ -189,6 +189,7 @@
                 <i class="fa fa-info" />
               </b-badge>
               <b-tooltip
+                placement="left"
                 :target="`tooltip-target-${data.item.id}-${data.field.key}`"
               >
                 This value cannot be displayed because it contains or is
