@@ -62,12 +62,20 @@
                     }}</b-button
                   >
                   <b-badge
-                    v-if="complexFilterActive && !advancedFiltersVisible"
-                    data-cy="Watch-filtersPill"
+                    v-if="hasFilter && !advancedFiltersVisible"
+                    data-cy="Watch-filterAppliedPill"
+                    pill
+                    variant="info"
+                    class="ml-2 py-2 px-3"
+                    >Filters are being applied</b-badge
+                  >
+                  <b-badge
+                    v-if="!isFilterValid && !advancedFiltersVisible"
+                    data-cy="Watch-filterErrorPill"
                     pill
                     variant="warning"
-                    class="ml-2 p-2"
-                    >Filters are being applied</b-badge
+                    class="ml-2 py-2 px-3"
+                    >Filter contains errors</b-badge
                   >
                 </b-col>
                 <b-col class="text-right">
@@ -75,6 +83,7 @@
                     class="ml-2 d-inline-block"
                     data-cy="Watch-subscribeBtn"
                     type="submit"
+                    :disabled="!isFilterValid"
                     :variant="subscribed ? 'danger' : 'primary'"
                     @click.prevent="toggleSubscription"
                   >
@@ -98,13 +107,10 @@
               </b-row>
             </template>
             <template v-if="advancedFiltersVisible">
-              <raw-filter
-                ref="rawFilter"
-                submit-button-label="Subscribe"
-                :sorting-enabled="false"
-                :action-buttons-visible="false"
-                :refresh-ace="advancedFiltersVisible"
-                @change="onRawFilterChange"
+              <json-editor
+                ref="filter"
+                :content="rawFilter"
+                @change="onFilterChanged"
             /></template>
           </b-card>
           <b-card class="mt-3">
@@ -187,7 +193,6 @@
                   cols="8"
                   id="notification-container"
                   ref="notificationContainer"
-                  :style="notifStyle"
                   class="Watch--notifications pr-1"
                 >
                   <notification
@@ -234,7 +239,7 @@ import Headline from '../../Materialize/Headline'
 import collapsible from '../../../directives/Materialize/collapsible.directive'
 import Notification from '../Realtime/Notification'
 import CollectionDropdown from '../Collections/Dropdown'
-import RawFilter from '../../Common/Filters/RawFilter'
+import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { canSubscribe } from '../../../services/userAuthorization'
 import { truncateName } from '@/utils'
@@ -251,7 +256,7 @@ export default {
   components: {
     Notification,
     CollectionDropdown,
-    RawFilter,
+    JsonEditor,
     Headline
   },
   props: {
@@ -263,17 +268,20 @@ export default {
       advancedFiltersVisible: false,
       subscribed: false,
       room: null,
-      currentFilter: new filterManager.Filter(),
+      rawFilter: '{}',
       subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       notifications: [],
       notificationsLengthLimit: 50,
-      warning: { message: '', count: 0, lastTime: null, info: false },
-      notifStyle: {}
+      warning: { message: '', count: 0, lastTime: null, info: false }
     }
   },
   computed: {
-    complexFilterActive() {
-      return this.currentFilter.raw && !isEqual(this.currentFilter.raw, {})
+    hasFilter() {
+      return (
+        !!this.realtimeQuery &&
+        !isEqual(this.realtimeQuery, {}) &&
+        this.isFilterValid
+      )
     },
     lastNotification() {
       if (this.notifications.length) {
@@ -288,18 +296,29 @@ export default {
       return moment(this.lastNotification.timestamp).format('H:mm:ss')
     },
     realtimeQuery() {
-      return filterManager.toRealtimeQuery(this.currentFilter)
+      try {
+        return JSON.parse(this.rawFilter)
+      } catch (error) {
+        return {}
+      }
+    },
+    isFilterValid() {
+      if (!this.rawFilter) {
+        return true
+      }
+      try {
+        JSON.parse(this.rawFilter)
+        return true
+      } catch (error) {
+        return false
+      }
     }
   },
   methods: {
     canSubscribe,
     truncateName,
-    onRawFilterChange(content) {
-      this.$log.debug('Raw filter changed', content)
-      if (content) {
-        this.currentFilter.active = filterManager.ACTIVE_RAW
-        this.currentFilter.raw = content
-      }
+    onFilterChanged(value) {
+      this.rawFilter = value
     },
     async toggleSubscription() {
       if (!this.subscribed) {
@@ -337,6 +356,9 @@ export default {
     },
     async subscribe() {
       try {
+        if (!this.isFilterValid) {
+          throw new Error('Realtime filter seems to be invalid')
+        }
         const room = await this.$kuzzle.realtime.subscribe(
           this.index,
           this.collection,
@@ -349,7 +371,8 @@ export default {
       } catch (err) {
         this.room = null
         this.subscribed = false
-        this.$store.direct.commit.toaster.setToast({ text: err.message })
+        this.$log.error(err)
+        // TODO toast
       }
     },
     async unsubscribe(room) {
@@ -365,8 +388,9 @@ export default {
         this.subscribed = false
         this.unsubscribe(this.room)
       }
-      this.currentFilter.raw = {}
-      this.$refs.rawFilter.resetSearch()
+      if (this.$refs.filter) {
+        this.$refs.filter.setContent('{}')
+      }
     },
     resetNotifications() {
       this.notifications = []
@@ -400,29 +424,8 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .Watch {
   margin-bottom: 3em;
-}
-
-.Notification {
-  border-radius: 0;
-  border-width: 0 1px 0 1px;
-  & .card-header {
-    border-radius: 0;
-  }
-
-  &:first-child {
-    border-radius: 0.25rem 0.25rem 0 0;
-    border-width: 1px 1px 0 1px;
-  }
-  &:last-child {
-    border-radius: 0 0 0.25rem 0.25rem;
-    border-width: 0 1px 1px 1px;
-  }
-  &:only-child {
-    border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
-    border-width: 1px 1px 1px 1px;
-  }
 }
 </style>

@@ -112,6 +112,27 @@ $types: (
 );
 
 @each $name, $value in $types {
+  .Notification {
+    border-radius: 0;
+    border-width: 0 1px 0 1px;
+    & .card-header {
+      border-radius: 0;
+    }
+
+    &:first-child {
+      border-radius: 0.25rem 0.25rem 0 0;
+      border-width: 1px 1px 0 1px;
+    }
+    &:last-child {
+      border-radius: 0 0 0.25rem 0.25rem;
+      border-width: 0 1px 1px 1px;
+    }
+    &:only-child {
+      border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
+      border-width: 1px 1px 1px 1px;
+    }
+  }
+
   .Notification--#{$name} {
     .card-header {
       background-color: $value;

@@ -224,4 +224,28 @@ describe('Watch', () => {
       .should('be.visible')
       .should('contain', 'Older notifications are discarded')
   })
+
+  it('Cannot subscribe when JSON filter contains errors', () => {})
+
+  it.only('Remember JSON filter when it is toggled', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('[data-cy="JSONEditor"]').should('be.visible')
+    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"equals": {
+"firstName": "Luca"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.wait(500)
+    cy.get('[data-cy="Watch-toggleFiltersBtn"]').click()
+    cy.get('textarea.ace_text-input').should('contain', '"firstName": "Luca"')
+  })
 })
