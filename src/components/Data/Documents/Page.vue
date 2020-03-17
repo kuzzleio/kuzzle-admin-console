@@ -40,13 +40,24 @@
         <template v-else>
           <b-row class="justify-content-md-center" no-gutters>
             <b-col cols="12">
-              <template v-if="isCollectionEmpty">
+              <template v-if="isCollectionEmpty && !fetchingDocuments">
                 <realtime-only-empty-state
                   v-if="isRealtimeCollection"
                   :index="index"
                   :collection="collection"
                 />
                 <empty-state v-else :index="index" :collection="collection" />
+              </template>
+              <template v-if="fetchingDocuments">
+                <b-row class="text-center">
+                  <b-col>
+                    <b-spinner
+                      v-if="fetchingDocuments"
+                      variant="primary"
+                      class="mt-5"
+                    ></b-spinner>
+                  </b-col>
+                </b-row>
               </template>
               <template v-if="!isCollectionEmpty">
                 <filters
@@ -194,6 +205,7 @@ export default {
   },
   data() {
     return {
+      fetchingDocuments: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -450,6 +462,7 @@ export default {
       }
     },
     async fetchDocuments() {
+      this.fetchingDocuments = true
       this.$forceUpdate()
       this.indexOrCollectionNotFound = false
 
@@ -495,6 +508,7 @@ export default {
           })
         }
       }
+      this.fetchingDocuments = false
     },
 
     // PAGINATION
