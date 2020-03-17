@@ -79,7 +79,7 @@
         />
       </b-form-group>
 
-      <div v-show="!realtimeOnlyState">
+      <div v-if="!realtimeOnlyState">
         <b-form-group label="Dynamic mapping" label-cols-sm="3">
           <template v-slot:description
             >Set the type of dynamic policy for this collection.
@@ -103,7 +103,8 @@
               ref="jsoneditor"
               tabindex="4"
               myclass="pre_ace"
-              :content="mappingState"
+              :content="rawMapping"
+              @change="onMappingChanged"
             />
           </b-col>
 
@@ -165,7 +166,7 @@ export default {
     return {
       dynamicState: this.dynamic || 'false',
       name: this.collection || '',
-      mappingState: this.mapping || {},
+      rawMapping: '{}',
       realtimeOnlyState: this.realtimeOnly || false
     }
   },
@@ -180,9 +181,27 @@ export default {
       const containsUpperCase = /[A-Z]/.test(this.name)
       const isTooLong = new TextEncoder().encode(this.name).length > 128
       return !containsDisallowed && !containsUpperCase && !isTooLong
+    },
+    mappingState() {
+      try {
+        return JSON.parse(this.rawMapping)
+      } catch (error) {
+        return {}
+      }
+    },
+    isMappingValid() {
+      try {
+        JSON.parse(this.rawMapping)
+        return true
+      } catch (error) {
+        return false
+      }
     }
   },
   methods: {
+    onMappingChanged(value) {
+      this.rawMapping = value
+    },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
         this.$router.push(this.$router._prevTransition.to)
@@ -194,9 +213,7 @@ export default {
       }
     },
     onSubmit() {
-      if (this.$refs.jsoneditor.isValid()) {
-        this.mappingState = this.$refs.jsoneditor.getJson()
-
+      if (this.isMappingValid) {
         this.$emit('submit', {
           dynamic: this.dynamicState,
           name: this.name,
@@ -205,7 +222,7 @@ export default {
         })
       } else {
         this.$bvToast.toast(
-          'The JSON specification of the mapping is not valid',
+          'The JSON specification of the mapping contains syntax errors',
           {
             title: 'You cannot proceed',
             variant: 'info',
@@ -225,8 +242,12 @@ export default {
     },
     mapping: {
       immediate: true,
-      handler(v) {
-        this.mappingState = v
+      handler(val) {
+        try {
+          this.rawMapping = JSON.stringify(val, null, 2)
+        } catch (error) {
+          this.$log.error(error)
+        }
       }
     },
     realtimeOnly: {

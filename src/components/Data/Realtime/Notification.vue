@@ -1,85 +1,142 @@
 <template>
-  <li class="Notification">
-    <div
-      class="Notification--header collapsible-header unselectable"
-      :class="notification.class"
-      @click="toggleCollapse"
+  <b-card
+    class="Notification"
+    data-cy="Notification"
+    no-body
+    :class="headerClass"
+  >
+    <b-card-header
+      data-cy="Notification-header"
+      @click="collapsed = !collapsed"
     >
       <i
-        :class="{ 'fa-caret-right': collapsed, 'fa-caret-down': !collapsed }"
+        :class="{ 'fa-caret-right': !collapsed, 'fa-caret-down': collapsed }"
         class="fa"
       />
-      <i class="fa" :class="notificationIcon" /> {{ notification.text }} -
-      {{ ago }}
-    </div>
-    <div v-if="!notification.empty" class="Notification--body collapsible-body">
-      <p v-json-formatter="{ content: notification.source, open: true }" />
-    </div>
-  </li>
+      <i class="ml-3 fa" :class="`fa-${icon}`" /><span class="code">
+        {{ text }}</span
+      >
+      <span class="text-secondary"> - {{ time }}</span>
+    </b-card-header>
+    <b-collapse v-model="collapsed" class="p-3 overflow-auto">
+      <p v-json-formatter="{ content: notification, open: true }" />
+    </b-collapse>
+  </b-card>
 </template>
-
-<style type="text/css" media="screen" scoped>
-.collapsible-header {
-  border-width: 0;
-}
-
-.collapsible-header i {
-  font-size: 1rem;
-  width: 1rem;
-}
-
-.collapsible-body {
-  color: #2a2a2a;
-  border-width: 0;
-}
-
-.collapsible-body p {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  border-top: solid 1px rgba(0, 0, 0, 0.1);
-  border-bottom: solid 1px rgba(0, 0, 0, 0.1);
-}
-
-.unselectable {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-</style>
 
 <script>
 import JsonFormatter from '../../../directives/json-formatter.directive'
-var moment = require('moment')
+import { truncateName } from '../../../utils'
+import moment from 'moment'
 
 export default {
-  name: 'RealtimeNotification',
+  name: 'Notification',
   directives: {
     JsonFormatter
   },
   props: ['notification'],
   data() {
     return {
-      ago: moment(this.notification.timestamp).fromNow(),
-      collapsed: true
+      collapsed: false
     }
   },
   computed: {
-    notificationIcon() {
-      return `fa-${this.notification.icon}`
-    }
-  },
-  mounted() {
-    setInterval(() => {
-      this.ago = moment(this.notification.timestamp).fromNow()
-    }, 60000)
-  },
-  methods: {
-    toggleCollapse: function() {
-      this.collapsed = !this.collapsed
+    headerClass() {
+      switch (this.notification.action) {
+        case 'publish':
+          return 'Notification--publish'
+        case 'create':
+        case 'createOrReplace':
+        case 'replace':
+          return 'Notification--document'
+        case 'subscribe':
+        case 'unsubscribe':
+          return 'Notification--subscribe'
+        case 'delete':
+          return 'Notification--delete'
+      }
+      return ''
+    },
+    notificationId() {
+      return this.notification.type === 'document' &&
+        this.notification.result._id
+        ? truncateName(this.notification.result._id)
+        : ''
+    },
+    icon() {
+      switch (this.notification.action) {
+        case 'publish':
+          return 'paper-plane'
+        case 'subscribe':
+        case 'unsubscribe':
+          return 'user'
+        case 'delete':
+          return 'remove'
+      }
+      return 'file'
+    },
+    time() {
+      return moment(this.notification.timestamp).format('H:mm:ss')
+    },
+    text() {
+      switch (this.notification.action) {
+        case 'publish':
+          return 'Volatile notification'
+        case 'create':
+        case 'createOrReplace':
+          return `New document created (${this.notificationId})`
+        case 'replace':
+          return `Document replaced (${this.notificationId})`
+        case 'update':
+          return `Document updated (${this.notificationId})`
+        case 'delete':
+          return `Document deleted (${this.notificationId})`
+        case 'subscribe':
+          return 'A new user is listening to this room'
+
+        case 'unsubscribe':
+          return 'A user exited this room'
+      }
+      return 'New notification'
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+$types: (
+  'publish': #e3eff4,
+  'document': #cae6d3,
+  'subscribe': #e1c8e8,
+  'delete': #e6c6c4
+);
+
+@each $name, $value in $types {
+  .Notification {
+    border-radius: 0;
+    border-width: 0 1px 0 1px;
+    & .card-header {
+      border-radius: 0;
+    }
+
+    &:first-child {
+      border-radius: 0.25rem 0.25rem 0 0;
+      border-width: 1px 1px 0 1px;
+    }
+    &:last-child {
+      border-radius: 0 0 0.25rem 0.25rem;
+      border-width: 0 1px 1px 1px;
+    }
+    &:only-child {
+      border-radius: 0.25rem 0.25rem 0.25rem 0.25rem;
+      border-width: 1px 1px 1px 1px;
+    }
+  }
+
+  .Notification--#{$name} {
+    .card-header {
+      background-color: $value;
+    }
+  }
+}
+</style>

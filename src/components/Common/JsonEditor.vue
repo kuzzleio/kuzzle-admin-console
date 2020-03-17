@@ -1,5 +1,11 @@
 <template>
-  <div :id="id" ref="jsoneditor" :class="classes" :style="style" />
+  <div
+    data-cy="JSONEditor"
+    ref="jsoneditor"
+    :class="classes"
+    :id="id"
+    :style="style"
+  />
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
@@ -21,11 +27,12 @@
 
 <script>
 import Vue from 'vue'
+let editor
 
 export default {
   name: 'JsonEditor',
   props: {
-    content: [Object, String, Number, Array],
+    content: String,
     myclass: {
       type: String,
       default: ''
@@ -36,12 +43,6 @@ export default {
     refreshAce: {
       type: Boolean,
       default: false
-    }
-  },
-  data() {
-    return {
-      editor: {},
-      refresh: false
     }
   },
   computed: {
@@ -56,61 +57,48 @@ export default {
       }
     }
   },
-  watch: {
-    content() {
-      if (this.content && this.editor.getSession) {
-        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
-      }
+  methods: {
+    getRawValue() {
+      return editor.getValue()
     },
+    getEditor() {
+      return editor
+    },
+    setContent(value) {
+      this.$log.debug('Setting content', value)
+      editor.getSession().setValue(value)
+    }
+  },
+  watch: {
     refreshAce() {
       setTimeout(() => {
-        this.editor.focus()
+        editor.focus()
       }, 500)
     }
   },
   mounted() {
     Vue.nextTick(() => {
       /* eslint no-undef: 0 */
-      if (!this.id || this.id === '') {
-        return
-      }
+      editor = ace.edit(this.$refs.jsoneditor)
+      editor.setTheme('ace/theme/tomorrow')
+      editor.getSession().setMode('ace/mode/json')
+      editor.setFontSize(15)
+      editor.getSession().setTabSize(2)
+      editor.setReadOnly(this.readonly)
+      editor.$blockScrolling = Infinity
+      this.setContent(this.content)
 
-      this.editor = ace.edit(this.$refs.jsoneditor)
-      this.editor.setTheme('ace/theme/tomorrow')
-      this.editor.getSession().setMode('ace/mode/json')
-      this.editor.setFontSize(13)
-      this.editor.getSession().setTabSize(2)
-      this.editor.setReadOnly(this.readonly)
-      this.editor.$blockScrolling = Infinity
-
-      if (this.content !== null) {
-        this.editor.getSession().setValue(JSON.stringify(this.content, null, 2))
-      }
-      this.editor.on('change', () => {
-        let value = this.getJson()
-        this.editor.resize()
-
-        if (value) {
-          this.$emit('changed', value)
-        }
+      // WARNING - Beware of update loops!
+      // This event is triggered both when the content changes after
+      // user interaction and when it is set programmatically.
+      editor.on('change', () => {
+        this.$emit('change', this.getRawValue())
       })
     })
   },
-  methods: {
-    getJson() {
-      try {
-        return Object.freeze(JSON.parse(this.editor.getValue()))
-      } catch (e) {
-        return null
-      }
-    },
-    isValid() {
-      try {
-        JSON.parse(this.editor.getValue())
-        return true
-      } catch (e) {
-        return false
-      }
+  beforeDestroy() {
+    if (editor) {
+      editor.removeAllListeners('change')
     }
   }
 }

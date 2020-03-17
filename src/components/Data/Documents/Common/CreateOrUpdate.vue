@@ -17,8 +17,9 @@
             id="document"
             ref="jsoneditor"
             class="document-json"
-            :content="document"
+            :content="rawDocument"
             :height="500"
+            @change="onDocumentChange"
           />
         </b-col>
 
@@ -48,7 +49,7 @@
             variant="primary"
             class="ml-2"
             data-cy="DocumentUpdate-btn"
-            :disabled="submitting"
+            :disabled="submitting || !isDocumentValid"
             @click="submit"
           >
             <i class="fa fa-pencil-alt left" />
@@ -59,7 +60,7 @@
             variant="warning"
             class="ml-2"
             data-cy="DocumentReplace-btn"
-            :disabled="submitting"
+            :disabled="submitting || !isDocumentValid"
             @click="submit(true)"
           >
             <i class="fa fa-fire-alt left" />
@@ -107,28 +108,39 @@ export default {
   data() {
     return {
       idValue: null,
-      submitting: false
+      submitting: false,
+      rawDocument: '{}'
     }
   },
-  computed: {},
-  watch: {
-    id: {
-      immediate: true,
-      handler(val) {
-        this.idValue = val
+  computed: {
+    documentState() {
+      try {
+        return JSON.parse(this.rawDocument)
+      } catch (error) {
+        return {}
+      }
+    },
+    isDocumentValid() {
+      try {
+        JSON.parse(this.rawDocument)
+        return true
+      } catch (error) {
+        return false
       }
     }
   },
   methods: {
+    onDocumentChange(val) {
+      this.rawDocument = val
+    },
     submit(replace = false) {
       if (this.submitting) {
         return
       }
 
-      if (this.$refs.jsoneditor.isValid()) {
+      if (this.isDocumentValid) {
         this.submitting = true
-        const json = this.$refs.jsoneditor.getJson()
-        this.$emit('submit', { ...json }, this.idValue, replace)
+        this.$emit('submit', { ...this.documentState }, this.idValue, replace)
         this.submitting = false
       } else {
         this.$bvToast.toast(
@@ -140,6 +152,20 @@ export default {
             appendToast: true
           }
         )
+      }
+    }
+  },
+  watch: {
+    id: {
+      immediate: true,
+      handler(val) {
+        this.idValue = val
+      }
+    },
+    document: {
+      immediate: true,
+      handler(val) {
+        this.rawDocument = JSON.stringify(val, null, 2)
       }
     }
   }
