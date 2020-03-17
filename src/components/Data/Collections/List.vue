@@ -125,6 +125,7 @@
             class="mx-1"
             variant="link"
             title="Edit collection"
+            :data-cy="`CollectionList-edit--${row.item.name}`"
             :disabled="
               row.item.type !== 'stored' ||
                 !canEditCollection(index, row.item.name)

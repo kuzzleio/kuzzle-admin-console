@@ -26,7 +26,7 @@ describe('Collection management', function() {
     localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('is able to create a collection and access it', function() {
+  it('Should be able to create a collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.get('.CollectionCreate').should('be.visible')
 
@@ -40,6 +40,29 @@ describe('Collection management', function() {
     })
     cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click()
     cy.contains(collectionName)
+  })
+
+  it('Should be able to update a collection', function() {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
+      dynamic: 'true'
+    })
+    cy.visit(`/#/data/${indexName}/${collectionName}/edit`)
+    cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"firstName": {
+"type": "keyword"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy=CollectionCreateOrUpdate-submit]').click()
+    cy.get(`[data-cy="CollectionList-edit--${collectionName}"]`).click()
+    cy.get('[data-cy="JSONEditor"]')
+      .should('contain', '"firstName": {')
+      .should('contain', '"type": "keyword"')
   })
 
   it('is able to delete a collection', function() {

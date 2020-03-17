@@ -97,7 +97,9 @@ export default {
     })
   },
   beforeDestroy() {
-    editor.removeAllListeners('change')
+    if (editor) {
+      editor.removeAllListeners('change')
+    }
   }
 }
 </script>
