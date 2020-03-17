@@ -497,6 +497,19 @@ export default {
         this.$log.error(e)
         if (e.status === 412) {
           this.indexOrCollectionNotFound = true
+        } else if (e.message.includes('failed to create query')) {
+          this.$bvToast.toast(
+            'Your query is ill-formed. The complete error has been dumped to the console.',
+            {
+              title:
+                'Ooops! Something went wrong while fetching the documents.',
+              variant: 'warning',
+              toaster: 'b-toaster-bottom-right',
+              appendTouast: true,
+              dismissible: true,
+              noAutoHide: true
+            }
+          )
         } else {
           this.$bvToast.toast(e.message, {
             title: 'Ooops! Something went wrong while fetching the documents.',
