@@ -1,73 +1,74 @@
 <template>
-  <div class="wrapper">
-    <headline>
-      Edit user - <span class="bold">{{ $route.params.id }}</span>
-    </headline>
+  <div class="UserUpdate">
+    <b-container class="UserUpdate--container">
+      <headline>
+        Edit user - <span class="bold">{{ $route.params.id }}</span>
+      </headline>
 
-    <Notice />
+      <Notice />
 
-    <div class="card-panel card-body">
-      <div class="col s12">
-        <tabs
-          v-if="!loading"
-          :active="activeTab"
-          :object-tab-active="activeTabObject"
-          @tab-changed="switchTab"
-        >
-          <tab
-            name="basic"
-            tab-select="basic"
-            @tabs-on-select="setActiveTabObject"
+      <div>
+        <b-card no-body>
+          <b-tabs
+            card
+            v-if="!loading"
+            :active="activeTab"
+            :object-tab-active="activeTabObject"
+            @tab-changed="switchTab"
           >
-            <a href="">Basic</a>
-          </tab>
-          <tab
-            name="credentials"
-            tab-select="basic"
-            @tabs-on-select="setActiveTabObject"
-          >
-            <a href="">Credentials</a>
-          </tab>
-          <tab
-            name="custom"
-            tab-select="basic"
-            @tabs-on-select="setActiveTabObject"
-          >
-            <a href="">Custom</a>
-          </tab>
-          <div slot="contents">
-            <steps-content
-              ref="stepsContent"
-              v-model="user"
-              :step="stepNumber"
-              :is-update="true"
-            />
-          </div>
-        </tabs>
+            <b-tab title="Basic">
+              <steps-content
+                ref="stepsContent"
+                v-model="user"
+                :step="0"
+                :is-update="true"
+              />
+            </b-tab>
+            <b-tab title="Credentials">
+              <steps-content
+                ref="stepsContent"
+                v-model="user"
+                :step="1"
+                :is-update="true"
+              />
+            </b-tab>
+            <b-tab title="Custom">
+              <steps-content
+                ref="stepsContent"
+                v-model="user"
+                :step="2"
+                :is-update="true"
+              />
+            </b-tab>
+          </b-tabs>
+        </b-card>
+
+        <!-- Actions -->
+        <b-row align-h="end" class="mt-2">
+          <b-col cols="2" class="text-right">
+            <b-button class="m-1" tabindex="6" @click.prevent="cancel"
+              >Cancel</b-button
+            >
+            <b-button
+              class="m-1"
+              type="submit"
+              variant="primary"
+              @click.prevent="save"
+            >
+              Save
+            </b-button>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col v-if="error" align-self="start">
+            <b-alert :show="error" variant="danger">
+              <i class="fa fa-times dismiss-error" @click="dismissError()" />
+              {{ error }}
+            </b-alert>
+          </b-col>
+        </b-row>
       </div>
-
-      <!-- Actions -->
-      <div class="row">
-        <div class="col s3">
-          <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel"
-            >Cancel</a
-          >
-          <button
-            type="submit"
-            class="btn primary waves-effect waves-light"
-            @click.prevent="save"
-          >
-            Save
-          </button>
-        </div>
-        <div class="col s9">
-          <div v-if="error" class="card error red-color white-text">
-            <i class="fa fa-times dismiss-error" @click="dismissError()" />
-            {{ error }}
-          </div>
-        </div>
-      </div>
-    </div>
+    </b-container>
   </div>
 </template>
 
@@ -75,12 +76,13 @@
 .bold {
   font-weight: normal;
 }
+.UserUpdate--container {
+  transition: max-width 0.6s;
+}
 </style>
 
 <script>
 import Headline from '../../Materialize/Headline'
-import Tabs from '../../Materialize/Tabs'
-import Tab from '../../Materialize/Tab'
 import Notice from '../Common/Notice'
 import Promise from 'bluebird'
 import StepsContent from './Steps/StepsContent'
@@ -89,8 +91,6 @@ export default {
   name: 'UpdateUser',
   components: {
     Headline,
-    Tabs,
-    Tab,
     StepsContent,
     Notice
   },

@@ -1,11 +1,11 @@
 <template>
   <form class="wrapper">
-    <div class="row">
-      <div class="col s3">
+    <b-row>
+      <b-col cols="2">
         <strong>KUID</strong>
-      </div>
+      </b-col>
 
-      <div class="col s6">
+      <b-col cols="6">
         <input
           v-if="editKuid"
           id="custom-kuid"
@@ -17,8 +17,8 @@
           @change="setCustomKuid"
         />
         <span v-if="!editKuid">{{ kuid }}</span>
-      </div>
-      <div v-if="editKuid" class="col s3">
+      </b-col>
+      <b-col cols="3" v-if="editKuid">
         <label>
           <input
             id="user-auto-generate-kuid"
@@ -31,20 +31,20 @@
             Auto-generate
           </span>
         </label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s3">
+      </b-col>
+    </b-row>
+    <b-row class="mt-2">
+      <b-col cols="2">
         <strong>Profiles</strong>
-      </div>
-      <div class="col s9">
+      </b-col>
+      <b-col cols="10">
         <user-profile-list
           :added-profiles="addedProfiles"
           @selected-profile="onProfileSelected"
           @remove-profile="removeProfile"
         />
-      </div>
-    </div>
+      </b-col>
+    </b-row>
   </form>
 </template>
 

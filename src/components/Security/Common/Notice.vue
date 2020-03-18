@@ -1,5 +1,5 @@
 <template functional>
-  <div class="SecurityNotice card-panel blue lighten-4">
+  <b-alert show>
     For more information about securities policies please visit
     <a
       class="blue-text lighten-2"
@@ -8,7 +8,7 @@
       >https://docs.kuzzle.io/guide/1/essentials/security
       <i class="fa fa-external-link-alt"
     /></a>
-  </div>
+  </b-alert>
 </template>
 
 <style lang="scss" rel="stylesheet/scss" scoped>

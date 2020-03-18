@@ -1,48 +1,45 @@
 <template>
-  <div>
-    <h5>Available strategies</h5>
-    <hr />
-    <m-select v-model="currentStrategy">
-      <option v-for="(strategy, index) in strategies" :key="index">
-        {{ strategy }}
-      </option>
-    </m-select>
-
-    <div class="row">
-      <div class="col s8">
-        <div
-          v-for="(fieldName, index) in fieldsForStrategy"
+  <b-row>
+    <b-col cols="6">
+      <b-row
+        v-for="fieldName in fieldsForStrategy"
+        :key="`update-user-credential-${fieldName}`"
+      >
+        <b-col cols="12">
+          <b-form-text>
+            {{ getFieldHelp(fieldName) }}
+          </b-form-text>
+          <b-form-input
+            :value="credentialsForStrategy[fieldName]"
+            :type="fieldType(fieldName)"
+            :name="fieldName"
+            @input="onFieldChange"
+          >
+          </b-form-input>
+        </b-col>
+      </b-row>
+    </b-col>
+    <b-col cols="6">
+      <b-form-text>
+        Available strategies
+      </b-form-text>
+      <b-form-select v-model="currentStrategy">
+        <b-select-option
+          v-for="(strategy, index) in strategies"
           :key="index"
-          class="row"
+          :value="strategy"
         >
-          <div class="input-field col s12">
-            <input
-              :id="fieldName"
-              :value="credentialsForStrategy[fieldName]"
-              :type="fieldType(fieldName)"
-              :name="fieldName"
-              @input="onFieldChange"
-            />
-            <label
-              :for="fieldName"
-              :class="{ active: credentialsForStrategy[fieldName] }"
-              >{{ fieldName }}</label
-            >
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+          {{ strategy }}
+        </b-select-option>
+      </b-form-select>
+    </b-col>
+  </b-row>
 </template>
 
 <script>
-import MSelect from '../../../Common/MSelect'
-
 export default {
   name: 'CredentialsSelector',
-  components: {
-    MSelect
-  },
+  components: {},
   props: ['fields', 'strategies', 'credentials', 'credentialsMapping'],
   data() {
     return {
@@ -80,6 +77,9 @@ export default {
     }
   },
   methods: {
+    getFieldHelp(fieldName) {
+      return fieldName.replace(/^\w/, c => c.toUpperCase())
+    },
     fieldType(fieldName) {
       if (fieldName === 'password') {
         return 'password'
@@ -92,7 +92,7 @@ export default {
         strategy: this.currentStrategy,
         credentials: {
           ...this.credentials[this.currentStrategy],
-          [input.target.name]: input.target.value
+          input
         }
       })
     }

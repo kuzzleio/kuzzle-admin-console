@@ -1,57 +1,66 @@
 <template>
   <div class="UserList">
-    <slot v-if="isCollectionEmpty" name="emptySet" />
-    <crudl-document
-      v-else
-      :search-filter-operands="searchFilterOperands"
-      :pagination-from="paginationFrom"
-      :pagination-size="paginationSize"
-      :current-filter="currentFilter"
-      :index="index"
-      :collection="collection"
-      :documents="documents"
-      :total-documents="totalDocuments"
-      :display-bulk-delete="displayBulkDelete"
-      :display-create="displayCreate"
-      :all-checked="allChecked"
-      :selected-documents="selectedDocuments"
-      :length-document="selectedDocuments.length"
-      :document-to-delete="documentToDelete"
-      :perform-delete="performDelete"
-      :collection-mapping="collectionMapping"
-      @filters-updated="onFiltersUpdated"
-      @create-clicked="create"
-      @toggle-all="toggleAll"
-      @crudl-refresh-search="fetchDocuments"
-    >
-      <!-- <div class="CommonList-list collection"> -->
-      <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
-      <!-- <div
+    <template v-if="fetchingUsers">
+      <b-row class="text-center">
+        <b-col>
+          <b-spinner variant="primary" class="mt-5"></b-spinner>
+        </b-col>
+      </b-row>
+    </template>
+    <template v-else>
+      <slot v-if="isCollectionEmpty" name="emptySet" />
+      <crudl-document
+        v-else
+        :search-filter-operands="searchFilterOperands"
+        :pagination-from="paginationFrom"
+        :pagination-size="paginationSize"
+        :current-filter="currentFilter"
+        :index="index"
+        :collection="collection"
+        :documents="documents"
+        :total-documents="totalDocuments"
+        :display-bulk-delete="displayBulkDelete"
+        :display-create="displayCreate"
+        :all-checked="allChecked"
+        :selected-documents="selectedDocuments"
+        :length-document="selectedDocuments.length"
+        :document-to-delete="documentToDelete"
+        :perform-delete="performDelete"
+        :collection-mapping="collectionMapping"
+        @filters-updated="onFiltersUpdated"
+        @create-clicked="create"
+        @toggle-all="toggleAll"
+        @crudl-refresh-search="fetchDocuments"
+      >
+        <!-- <div class="CommonList-list collection"> -->
+        <!-- .collection and .collection-* classes are MaterializeCSS helpers -->
+        <!-- <div
           v-for="document in documents"
           :key="document.id"
           class="collection-item collection-transition"
         > -->
-      <b-list-group class="w-100">
-        <b-list-group-item
-          v-for="document in documents"
-          class="p-2"
-          data-cy="UserList-item"
-          :key="document.id"
-        >
-          <UserItem
-            :document="document"
-            :is-checked="isChecked(document.id)"
-            :index="index"
-            :collection="collection"
-            @checkbox-click="toggleSelectDocuments"
-            @common-list::edit-document="editDocument"
-            @delete-document="deleteDocument"
-          />
-        </b-list-group-item>
-      </b-list-group>
-      <!-- </div> -->
-      <!-- </div> -->
-    </crudl-document>
+        <b-list-group class="w-100">
+          <b-list-group-item
+            v-for="document in documents"
+            class="p-2"
+            data-cy="UserList-item"
+            :key="document.id"
+          >
+            <UserItem
+              :document="document"
+              :is-checked="isChecked(document.id)"
+              :index="index"
+              :collection="collection"
+              @checkbox-click="toggleSelectDocuments"
+              @common-list::edit-document="editDocument"
+              @delete-document="deleteDocument"
+            />
+          </b-list-group-item>
+        </b-list-group>
+        <!-- </div> -->
+        <!-- </div> -->
+      </crudl-document>
+    </template>
   </div>
 </template>
 
@@ -91,7 +100,8 @@ export default {
       documents: [],
       totalDocuments: 0,
       documentToDelete: null,
-      currentFilter: new filterManager.Filter()
+      currentFilter: new filterManager.Filter(),
+      fetchingUsers: false
     }
   },
   computed: {
@@ -190,6 +200,8 @@ export default {
       }
     },
     fetchDocuments() {
+      this.fetchingUsers = true
+
       this.$forceUpdate()
 
       this.selectedDocuments = []
@@ -222,12 +234,14 @@ export default {
         .then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total
+          this.fetchingUsers = false
         })
         .catch(e => {
           this.$store.direct.commit.toaster.setToast({
             text:
               'An error occurred while performing search: <br />' + e.message
           })
+          this.fetchingUsers = false
         })
     },
     editDocument(route, id) {

@@ -1,38 +1,37 @@
 <template>
   <div>
-    <div>
-      <div
-        v-for="(profile, index) in addedProfiles"
-        :key="index"
-        class="chip"
-        title="Click to remove"
-        @click="removeProfile(profile)"
-      >
-        {{ profile }}&nbsp;
-        <i class="fa fa-trash" />
-      </div>
-    </div>
-    <div v-if="profileList.length">
-      <m-select :options="availableProfiles" @input="onProfileSelected">
-        <option v-if="availableProfiles.length" value="" disabled selected>
-          Select a Profile to add
-        </option>
-        <option
-          v-if="profileList.length && availableProfiles.length === 0"
-          value=""
+    <b-badge
+      v-for="(profile, index) in addedProfiles"
+      :key="index"
+      class="chip"
+      title="Click to remove"
+    >
+      {{ profile }}&nbsp;
+      <i class="fa fa-trash" @click="removeProfile(profile)" />
+    </b-badge>
+    <div v-if="profileList.length" class="mt-2">
+      <b-form-select v-model="selectedProfiled" @change="onProfileSelected">
+        <b-select-option
+          v-if="availableProfiles.length"
           disabled
           selected
+          :value="0"
         >
-          The user has all the profiles (are you sure?)
-        </option>
-        <option
-          v-for="(profile, index) in availableProfiles"
-          :key="index"
-          :value="profile.id"
+          Select a Profile to add
+        </b-select-option>
+        <b-select-option
+          v-if="profileList.length && availableProfiles.length === 0"
+          value="The user has all the profiles (are you sure?)"
+          disabled
+        />
+        <b-select-option
+          v-for="profile of availableProfiles"
+          :key="profile.id"
+          :value="profile"
         >
-          {{ profile.id }}
-        </option>
-      </m-select>
+          {{ profile }}
+        </b-select-option>
+      </b-form-select>
     </div>
     <div v-else>
       No profiles found (you should
@@ -48,14 +47,11 @@
 </template>
 
 <script type="text/javascript">
-import MSelect from '../../../Common/MSelect'
 import { performSearchProfiles } from '../../../../services/kuzzleWrapper'
 
 export default {
   name: 'UserProfileList',
-  components: {
-    MSelect
-  },
+  components: {},
   props: {
     addedProfiles: {
       type: Array
@@ -63,14 +59,17 @@ export default {
   },
   data() {
     return {
-      profileList: []
+      profileList: [],
+      selectedProfiled: 0
     }
   },
   computed: {
     availableProfiles() {
-      return this.profileList.filter(profile => {
-        return this.addedProfiles.indexOf(profile.id) === -1
-      })
+      return this.profileList
+        .filter(profile => {
+          return this.addedProfiles.indexOf(profile.id) === -1
+        })
+        .map(profile => profile.id)
     }
   },
   mounted() {
@@ -86,6 +85,7 @@ export default {
     },
     onProfileSelected(profile) {
       this.$emit('selected-profile', profile)
+      this.selectedProfiled = 0
     },
     removeProfile(profile) {
       this.$emit('remove-profile', profile)

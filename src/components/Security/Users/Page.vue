@@ -35,15 +35,15 @@
         :collection-mapping="userMapping"
         @create-clicked="createUser"
       >
-        <div slot="emptySet" class="card-panel">
-          <div class="row valign-bottom empty-set">
-            <div class="col s1 offset-s1">
+        <b-card slot="emptySet">
+          <b-row class="empty-set">
+            <b-col cols="4">
               <i
-                class="fa fa-6x fa-user grey-text text-lighten-1"
+                class="fa fa-6x fa-user grey-text text-lighten-1 ml-5"
                 aria-hidden="true"
               />
-            </div>
-            <div class="col s10">
+            </b-col>
+            <b-col>
               <p>
                 In this page, you'll be able to manage the
                 <a
@@ -70,9 +70,9 @@
                 <i class="fa fa-plus-circle left" />
                 Create a user
               </router-link>
-            </div>
-          </div>
-        </div>
+            </b-col>
+          </b-row>
+        </b-card>
       </common-list>
     </b-container>
   </div>

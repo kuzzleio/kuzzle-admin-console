@@ -5,13 +5,17 @@
         <b-nav-item
           v-if="canManageUsers()"
           :to="{ name: 'SecurityUsersList' }"
-          active
+          :class="
+            $route.path.includes('users')
+              ? 'activeItemClass'
+              : 'inactiveItemClass'
+          "
         >
           <b-row no-gutters>
-            <b-col cols="2">
+            <b-col cols="2" class="text-center">
               <i class="fa fa-user fa-lg align-bottom" aria-hidden="true" />
             </b-col>
-            <b-col cols="10" class="sideEntry">
+            <b-col cols="10" class="sideEntry pl-2 pt-1">
               Users
             </b-col>
           </b-row>
@@ -19,25 +23,38 @@
         <b-nav-item
           v-if="canManageProfiles()"
           :to="{ name: 'SecurityProfilesList' }"
+          :class="
+            $route.path.includes('profiles')
+              ? 'activeItemClass'
+              : 'inactiveItemClass'
+          "
         >
           <b-row no-gutters>
-            <b-col cols="2">
+            <b-col cols="2" class="text-center">
               <i class="fa fa-users fa-lg align-bottom" aria-hidden="true" />
             </b-col>
-            <b-col cols="10" class="sideEntry">
+            <b-col cols="10" class="sideEntry pl-2 pt-1">
               Profiles
             </b-col>
           </b-row>
         </b-nav-item>
-        <b-nav-item v-if="canManageRoles()" :to="{ name: 'SecurityRolesList' }">
+        <b-nav-item
+          v-if="canManageRoles()"
+          :to="{ name: 'SecurityRolesList' }"
+          :class="
+            $route.path.includes('roles')
+              ? 'activeItemClass'
+              : 'inactiveItemClass'
+          "
+        >
           <b-row no-gutters>
-            <b-col cols="2">
+            <b-col cols="2" class="text-center">
               <i
                 class="fa fa-unlock-alt fa-lg align-bottom"
                 aria-hidden="true"
               />
             </b-col>
-            <b-col cols="10" class="sideEntry">
+            <b-col cols="10" class="sideEntry pl-2 pt-1">
               Roles
             </b-col>
           </b-row>
@@ -50,8 +67,18 @@
   </div>
 </template>
 <style lang="scss" scoped>
+.activeItemClass {
+  font-weight: 600;
+  opacity: 1;
+}
+
+.inactiveItemClass {
+  font-weight: 100;
+  opacity: 0.6;
+}
+
 .sideEntry {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .SecurityLayout {

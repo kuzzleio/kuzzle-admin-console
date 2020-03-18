@@ -1,66 +1,55 @@
 <template>
   <div class="document-create-update">
     <form class="wrapper" @submit.prevent="submit">
-      <div class="row">
-        <div class="switch right">
-          <label>
-            Form
-            <input
-              type="checkbox"
-              :checked="!isFormView"
-              @change="switchView"
-            />
-            <span class="lever" />
-            JSON
-          </label>
-        </div>
-      </div>
+      <b-row no-gutters class="mb-2">
+        <span class="mr-2">Form</span>
+        <b-form-checkbox switch :checked="!isFormView" @change="switchView">
+          JSON
+        </b-form-checkbox>
+      </b-row>
 
-      <div v-if="isFormView" class="row">
-        <div class="col s12 card">
-          <div class="card-content">
+      <b-row v-if="isFormView">
+        <b-col cols="12">
+          <b-card>
             <json-form
               :schema="schema"
               :document="value"
               @update-value="updateValue"
             />
-          </div>
-        </div>
-      </div>
+          </b-card>
+        </b-col>
+      </b-row>
 
       <!-- Json view -->
-      <div v-if="!isFormView" class="row json-view">
-        <div
-          class="col s6 card"
-          :class="{ s12: $store.state.collection.isRealtimeOnly }"
-        >
-          <div class="card-content">
-            <span class="card-title">Custom content</span>
+      <b-row v-else class="json-view">
+        <b-col :cols="$store.state.collection.isRealtimeOnly ? '12' : '6'">
+          <b-card>
+            <b-card-title>Custom content</b-card-title>
             <json-editor
               id="document"
               ref="jsoneditor"
               class="document-json"
-              :content="newContent"
+              :content="JSON.stringify(newContent)"
               :height="300"
               @changed="jsonChanged"
             />
-          </div>
-        </div>
+          </b-card>
+        </b-col>
 
         <!-- Mapping -->
-        <div v-if="!$store.state.collection.isRealtimeOnly" class="col s6 card">
-          <div class="card-content">
-            <span class="card-title">Mapping</span>
+        <b-col cols="6" v-if="!$store.state.collection.isRealtimeOnly">
+          <b-card>
+            <b-card-title>Mapping</b-card-title>
             <json-editor
               id="mapping"
               class="document-json"
-              :content="mapping"
+              :content="JSON.stringify(mapping)"
               :readonly="true"
               :height="300"
             />
-          </div>
-        </div>
-      </div>
+          </b-card>
+        </b-col>
+      </b-row>
     </form>
   </div>
 </template>
@@ -106,6 +95,8 @@ export default {
   },
   watch: {
     value: function(val) {
+      console.log(val)
+
       if (this.viewType === 'form') {
         this.newContent = { ...val }
       }
