@@ -247,7 +247,7 @@ describe('Document update/replace', () => {
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
 
-    cy.get('.ace_line')
+    cy.get('[data-cy="JSONEditor"] .ace_line')
       .contains('{')
       .click({ force: true })
 

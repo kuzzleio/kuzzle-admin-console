@@ -65,7 +65,7 @@
       <b-collapse
         :id="`collapse-${document.id}`"
         v-model="expanded"
-        class="mt-3 ml-3 DocumentListItem-content"
+        class="mt-3 ml-3 DocumentListItem-content w-100"
       >
         <pre v-json-formatter="{ content: document.content, open: true }" />
         <pre v-json-formatter="{ content: document.meta, open: false }" />

@@ -61,7 +61,7 @@
         />
         <router-link
           :to="{
-            name: 'DataCollectionWatch',
+            name: 'WatchCollection',
             params: { index: indexName, collection: collectionName }
           }"
         >

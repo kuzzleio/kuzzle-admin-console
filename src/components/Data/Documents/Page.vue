@@ -40,13 +40,24 @@
         <template v-else>
           <b-row class="justify-content-md-center" no-gutters>
             <b-col cols="12">
-              <template v-if="isCollectionEmpty">
+              <template v-if="isCollectionEmpty && !fetchingDocuments">
                 <realtime-only-empty-state
                   v-if="isRealtimeCollection"
                   :index="index"
                   :collection="collection"
                 />
                 <empty-state v-else :index="index" :collection="collection" />
+              </template>
+              <template v-if="fetchingDocuments">
+                <b-row class="text-center">
+                  <b-col>
+                    <b-spinner
+                      v-if="fetchingDocuments"
+                      variant="primary"
+                      class="mt-5"
+                    ></b-spinner>
+                  </b-col>
+                </b-row>
               </template>
               <template v-if="!isCollectionEmpty">
                 <filters
@@ -194,6 +205,7 @@ export default {
   },
   data() {
     return {
+      fetchingDocuments: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -450,6 +462,7 @@ export default {
       }
     },
     async fetchDocuments() {
+      this.fetchingDocuments = true
       this.$forceUpdate()
       this.indexOrCollectionNotFound = false
 
@@ -484,6 +497,19 @@ export default {
         this.$log.error(e)
         if (e.status === 412) {
           this.indexOrCollectionNotFound = true
+        } else if (e.message.includes('failed to create query')) {
+          this.$bvToast.toast(
+            'Your query is ill-formed. The complete error has been dumped to the console.',
+            {
+              title:
+                'Ooops! Something went wrong while fetching the documents.',
+              variant: 'warning',
+              toaster: 'b-toaster-bottom-right',
+              appendTouast: true,
+              dismissible: true,
+              noAutoHide: true
+            }
+          )
         } else {
           this.$bvToast.toast(e.message, {
             title: 'Ooops! Something went wrong while fetching the documents.',
@@ -495,6 +521,7 @@ export default {
           })
         }
       }
+      this.fetchingDocuments = false
     },
 
     // PAGINATION

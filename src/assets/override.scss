@@ -17,3 +17,8 @@ $theme-colors: (
 .json-formatter-row .json-formatter-toggler:after {
   font-size: 14px;
 }
+
+.vertical-align {
+  display: flex;
+  align-items: center;
+}

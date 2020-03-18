@@ -1,6 +1,7 @@
 <template>
   <div v-if="hasRights">
     <create-or-update
+      v-if="!loading"
       headline="Update collection"
       submit-label="Update"
       :collection="collection"
@@ -36,7 +37,8 @@ export default {
     return {
       dynamic: 'false',
       mapping: {},
-      realtimeOnly: false
+      realtimeOnly: false,
+      loading: true
     }
   },
   computed: {
@@ -45,6 +47,7 @@ export default {
     }
   },
   async mounted() {
+    this.loading = true
     try {
       await this.$store.direct.dispatch.index.listIndexesAndCollections()
       const details = await this.$store.direct.dispatch.collection.fetchCollectionDetail(
@@ -57,6 +60,7 @@ export default {
       this.dynamic = details.dynamic
       this.mapping = details.mapping
       this.realtimeOnly = details.realtimeOnly
+      this.loading = false
     } catch (e) {
       this.$log.error(e)
       this.$bvToast.toast(e.message, {

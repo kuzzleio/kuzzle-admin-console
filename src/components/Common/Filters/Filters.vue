@@ -15,13 +15,15 @@
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
-          :advanced-query-label="advancedQueryLabel"
-          :submit-button-label="submitButtonLabel"
-          :complex-filter-active="complexFilterActive"
-          :search-term="quickFilter"
-          :advanced-filters-visible="advancedFiltersVisible"
-          :enabled="quickFilterEnabled"
           :action-buttons-visible="actionButtonsVisible"
+          :advanced-filters-visible="advancedFiltersVisible"
+          :advanced-query-label="advancedQueryLabel"
+          :complex-filter-active="complexFilterActive"
+          :enabled="quickFilterEnabled"
+          :placeholder="quickFilterPlaceholder"
+          :search-term="quickFilter"
+          :submit-button-label="submitButtonLabel"
+          :submit-on-type="quickFilterSubmitOnType"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
@@ -130,28 +132,36 @@ export default {
     RawFilter
   },
   props: {
-    advancedQueryLabel: {
-      type: String,
-      required: false,
-      default: 'Advanced query...'
-    },
-    submitButtonLabel: {
-      type: String,
-      required: false,
-      default: 'Search'
-    },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
       default: true
     },
+    advancedQueryLabel: {
+      type: String,
+      required: false,
+      default: 'Advanced query...'
+    },
     availableOperands: {
       type: Object,
       required: true
     },
+    collectionMapping: {
+      type: Object,
+      required: true
+    },
+    currentFilter: Object,
+    formatFromBasicSearch: Function,
     quickFilterEnabled: {
       type: Boolean,
       required: false,
+      default: true
+    },
+    quickFilterPlaceholder: {
+      type: String
+    },
+    quickFilterSubmitOnType: {
+      type: Boolean,
       default: true
     },
     sortingEnabled: {
@@ -159,11 +169,10 @@ export default {
       required: false,
       default: true
     },
-    currentFilter: Object,
-    formatFromBasicSearch: Function,
-    collectionMapping: {
-      type: Object,
-      required: true
+    submitButtonLabel: {
+      type: String,
+      required: false,
+      default: 'Search'
     },
     toggleAutoComplete: {
       type: Boolean,
