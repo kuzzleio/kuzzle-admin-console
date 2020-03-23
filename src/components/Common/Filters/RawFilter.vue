@@ -115,8 +115,7 @@ export default {
       }
     },
     reset() {
-      this.rawFilter = '{}'
-      this.submit()
+      this.$emit('reset')
     }
   },
   watch: {
