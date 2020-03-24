@@ -1,39 +1,49 @@
 <template>
   <div class="UsersManagement">
     <b-container class="UserList--container">
-      <headline>
-        User Management
-        <b-dropdown
-          data-cy="UsersDropdown"
-          no-caret
-          toggle-class="usersDropdown"
-          variant="light"
-          id="users-dropdown"
-        >
-          <template v-slot:button-content>
-            <i class="fas fa-ellipsis-v" />
-          </template>
-          <b-dropdown-item :to="{ name: 'SecurityUsersEditCustomMapping' }">
-            Edit data mapping
-          </b-dropdown-item>
-        </b-dropdown>
-      </headline>
+      <b-row>
+        <b-col cols="8">
+          <headline>Users</headline>
+        </b-col>
+        <b-col class="text-right mt-3">
+          <b-button
+            class="mr-2"
+            variant="primary"
+            :disabled="!canCreateUser()"
+            :to="{ name: 'SecurityUsersCreate' }"
+            >Create User</b-button
+          >
+          <b-dropdown
+            data-cy="UsersDropdown"
+            no-caret
+            toggle-class="usersDropdown"
+            variant="light"
+            id="users-dropdown"
+          >
+            <template v-slot:button-content>
+              <i class="fas fa-ellipsis-v" />
+            </template>
+            <b-dropdown-item :to="{ name: 'SecurityUsersEditCustomMapping' }">
+              Edit user content mapping
+            </b-dropdown-item>
+          </b-dropdown>
+        </b-col>
+      </b-row>
 
       <!-- Not allowed -->
       <list-not-allowed v-if="!canSearchUser()" />
 
-      <common-list
+      <list
         v-if="canSearchUser()"
         item-name="UserItem"
         collection="users"
         index="%kuzzle"
         route-create="SecurityUsersCreate"
         route-update="SecurityUsersUpdate"
-        :display-create="canCreateUser()"
+        :display-create="false"
         :perform-search="performSearchUsers"
         :perform-delete="performDeleteUsers"
         :collection-mapping="userMapping"
-        @create-clicked="createUser"
       >
         <b-card slot="emptySet">
           <b-row class="empty-set">
@@ -73,13 +83,13 @@
             </b-col>
           </b-row>
         </b-card>
-      </common-list>
+      </list>
     </b-container>
   </div>
 </template>
 
 <script>
-import CommonList from './CommonList'
+import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
 import {
@@ -96,7 +106,7 @@ export default {
   name: 'UsersManagement',
   components: {
     ListNotAllowed,
-    CommonList,
+    List,
     Headline
   },
   data() {
