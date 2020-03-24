@@ -27,6 +27,7 @@
             :collection="collection"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
+            @clear="onCollectionClear"
           />
         </b-col>
       </b-row>
@@ -460,6 +461,11 @@ export default {
         })
         this.$log.error(e)
       }
+    },
+    onCollectionClear() {
+      this.documents = []
+      this.totalDocuments = 0
+      this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
       this.fetchingDocuments = true

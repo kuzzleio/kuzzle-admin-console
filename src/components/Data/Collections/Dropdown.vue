@@ -95,6 +95,7 @@
       :id="'collection-clear-' + collection"
       :index="index"
       :collection="collection"
+      @clear="$emit('clear')"
     />
   </span>
 </template>

@@ -61,10 +61,6 @@ export default {
     reset() {
       this.confirmation = ''
     },
-    refreshSearch() {
-      // WARNING THIS IS EVIL
-      this.$router.go()
-    },
     async clearCollection() {
       if (!this.index.trim() || !this.collection.trim()) {
         return
@@ -75,11 +71,11 @@ export default {
           index: this.index,
           collection: this.collection
         })
-        this.refreshSearch()
+        this.$emit('clear')
         this.reset()
         this.$bvModal.hide(this.id)
       } catch (err) {
-        this.error = err.message
+        this.$log.error(err)
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
