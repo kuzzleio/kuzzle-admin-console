@@ -12,29 +12,31 @@ import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 
 const state: IndexState = {
-  indexes: [],
   indexesAndCollections: {},
-  loading: false
+  loadingIndexes: false
 }
 
 const mutations = createMutations<IndexState>()({
   reset(state) {
-    state.indexes = []
     state.indexesAndCollections = {}
-    state.loading = false
+    state.loadingIndexes = false
   },
-  setLoading(state, value) {
-    state.loading = value
+  setLoadingIndexes(state, value) {
+    state.loadingIndexes = value
   },
   receiveIndexesCollections(state, indexesAndCollections) {
-    state.indexes = Object.keys(indexesAndCollections)
-    for (const index of state.indexes) {
+    const indexes = Object.keys(indexesAndCollections)
+    for (const index of indexes) {
       Vue.set(state.indexesAndCollections, index, indexesAndCollections[index])
+    }
+  },
+  setCollectionsForIndex(state, { index, collections, type }) {
+    if (type !== 'stored' || type !== 'realtime') {
+      Vue.set(state.indexesAndCollections, `${index}.${type}`, collections)
     }
   },
   addStoredCollection(state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
-      state.indexes.push(payload.index)
       Vue.set(state.indexesAndCollections, payload.index, {
         realtime: [],
         stored: []
@@ -45,7 +47,6 @@ const mutations = createMutations<IndexState>()({
   },
   addRealtimeCollection(state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
-      state.indexes.push(payload.index)
       Vue.set(state.indexesAndCollections, payload.index, {
         realtime: [],
         stored: []
@@ -55,11 +56,9 @@ const mutations = createMutations<IndexState>()({
     state.indexesAndCollections[payload.index].realtime.push(payload.name)
   },
   addIndex(state, index) {
-    state.indexes.push(index)
     Vue.set(state.indexesAndCollections, index, { realtime: [], stored: [] })
   },
   deleteIndex(state, index) {
-    state.indexes.splice(state.indexes.indexOf(index), 1)
     Vue.delete(state.indexesAndCollections, index)
   },
   removeRealtimeCollection(state, { index, collection }) {
@@ -104,33 +103,53 @@ const actions = createActions({
     removeIndex(index)
     commit.deleteIndex(index)
   },
-  async listIndexesAndCollections(context) {
+  async listIndexes(context) {
     const { commit } = indexActionContext(context)
-    commit.setLoading(true)
-    commit.reset()
+    commit.setLoadingIndexes(true)
     let result = await Vue.prototype.$kuzzle.index.list()
-
-    let indexesAndCollections = {}
     result = result.filter(index => index !== '%kuzzle')
+
     for (const index of result) {
-      const res = await Vue.prototype.$kuzzle.collection.list(index, {
-        size: 0
-      })
-
-      let collections = splitRealtimeStoredCollections(res.collections)
-
-      if (!collections.realtime) {
-        collections.realtime = []
-      }
-
-      collections.realtime = collections.realtime.concat(
-        getRealtimeCollectionFromStorage(index)
-      )
-      collections = dedupeRealtimeCollections(collections)
-      indexesAndCollections[index] = collections
-      commit.receiveIndexesCollections(indexesAndCollections || {})
+      commit.addIndex(index)
     }
-    commit.setLoading(false)
+    commit.setLoadingIndexes(false)
+  },
+  async listCollectionsForIndex(context, index) {
+    const { commit } = indexActionContext(context)
+    const res = await Vue.prototype.$kuzzle.collection.list(index, {
+      size: 0
+    })
+
+    let collections = splitRealtimeStoredCollections(res.collections)
+
+    if (!collections.realtime) {
+      collections.realtime = []
+    }
+
+    collections.realtime = collections.realtime.concat(
+      getRealtimeCollectionFromStorage(index)
+    )
+    collections = dedupeRealtimeCollections(collections)
+    commit.setCollectionsForIndex({
+      index,
+      collections: collections.stored,
+      type: 'stored'
+    })
+    commit.setCollectionsForIndex({
+      index,
+      collections: collections.realtime,
+      type: 'realtime'
+    })
+  },
+
+  async listIndexesAndCollections(context) {
+    const { commit, dispatch, state } = indexActionContext(context)
+    commit.reset()
+
+    dispatch.listIndexes()
+    Object.keys(state.indexesAndCollections).forEach(async index => {
+      await dispatch.listCollectionsForIndex(index)
+    })
   },
   async createCollectionInIndex(
     context,

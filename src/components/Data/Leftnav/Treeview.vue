@@ -76,8 +76,8 @@ export default {
     orderedFilteredIndices() {
       return [
         ...filterIndexesByKeyword(
-          this.$store.state.index.indexes,
-          this.$store.state.index.indexesAndCollections,
+          this.$store.direct.getters.index.indexes,
+          this.$store.direct.state.index.indexesAndCollections,
           this.filter
         )
       ].sort()
