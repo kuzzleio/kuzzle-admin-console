@@ -31,9 +31,13 @@ const mutations = createMutations<IndexState>()({
     }
   },
   setCollectionsForIndex(state, { index, collections, type }) {
+    // debugger
     if (type !== 'stored' || type !== 'realtime') {
-      Vue.set(state.indexesAndCollections, `${index}.${type}`, collections)
+      Vue.set(state.indexesAndCollections[index], type, collections)
     }
+  },
+  setLoadingCollectionsForIndex(state, { index, loading }) {
+    Vue.set(state.indexesAndCollections[index], 'loading', loading)
   },
   addStoredCollection(state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
@@ -56,7 +60,11 @@ const mutations = createMutations<IndexState>()({
     state.indexesAndCollections[payload.index].realtime.push(payload.name)
   },
   addIndex(state, index) {
-    Vue.set(state.indexesAndCollections, index, { realtime: [], stored: [] })
+    Vue.set(state.indexesAndCollections, index, {
+      loading: false,
+      realtime: [],
+      stored: []
+    })
   },
   deleteIndex(state, index) {
     Vue.delete(state.indexesAndCollections, index)
@@ -116,10 +124,11 @@ const actions = createActions({
   },
   async listCollectionsForIndex(context, index) {
     const { commit } = indexActionContext(context)
+    commit.setLoadingCollectionsForIndex({ index, loading: true })
     const res = await Vue.prototype.$kuzzle.collection.list(index, {
       size: 0
     })
-
+    // debugger
     let collections = splitRealtimeStoredCollections(res.collections)
 
     if (!collections.realtime) {
@@ -140,13 +149,14 @@ const actions = createActions({
       collections: collections.realtime,
       type: 'realtime'
     })
+    commit.setLoadingCollectionsForIndex({ index, loading: false })
   },
 
   async listIndexesAndCollections(context) {
-    const { commit, dispatch, state } = indexActionContext(context)
+    const { commit, dispatch } = indexActionContext(context)
     commit.reset()
 
-    dispatch.listIndexes()
+    await dispatch.listIndexes()
     Object.keys(state.indexesAndCollections).forEach(async index => {
       await dispatch.listCollectionsForIndex(index)
     })
