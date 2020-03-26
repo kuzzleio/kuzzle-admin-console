@@ -251,7 +251,7 @@ export const formatFromQuickSearch = searchTerm => {
 
 export const rawFilterToSearchQuery = rawFilter => {
   if (!rawFilter.query) {
-    throw new Error('The filter is malformed: "query" attribute not found')
+    return null
   }
 
   if (rawFilter._source && rawFilter._source.indexOf('_kuzzle_info') === -1) {
