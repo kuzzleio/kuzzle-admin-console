@@ -196,22 +196,48 @@ describe('Environments', function() {
     cy.contains('Connected to')
   })
 
-  it('should import environment', () => {
+  it.only('should import environment', () => {
     cy.visit('/')
     cy.contains('Create a Connection')
     cy.get('[data-cy="CreateEnvironment-import"]').click({
       force: true
     })
 
-    cy.fixture('environment.json').then(fileContent => {
-      cy.get('input[type=file').upload(
-        {
-          fileContent,
-          fileName: 'environment.json',
-          mimeType: 'application/json'
-        },
-        { subjectType: 'input' }
+    cy.fixture('environment.json').then(fileJson => {
+      const blob = JSON.stringify(fileJson)
+
+      // WTF insane logic to upload a JSON file LOL
+      cy.get('input[type=file]').then(subject => {
+        const el = subject[0]
+        const testFile = new File([blob], 'environment.json', {
+          type: 'application/json'
+        })
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(testFile)
+        el.files = dataTransfer.files
+
+        const events = ['change']
+        const eventPayload = {
+          bubbles: true,
+          cancelable: true,
+          detail: dataTransfer
+        }
+
+        events.forEach(e => {
+          const event = new CustomEvent(e, eventPayload)
+          Object.assign(event, { dataTransfer })
+
+          subject[0].dispatchEvent(event)
+        })
+      })
+
+      cy.get('[data-cy="Environment-found"]').should(
+        'contain',
+        'Found 2 connections'
       )
+      cy.wait(200)
+      cy.get('[data-cy="EnvironmentImport-submitBtn"]').click()
+      cy.contains('Select Kuzzle')
     })
   })
 
