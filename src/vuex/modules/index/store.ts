@@ -7,7 +7,7 @@ import {
 import { removeIndex } from '../../../services/localStore'
 import Promise from 'bluebird'
 import Vue from 'vue'
-import { IndexState } from './types'
+import { IndexState, Index } from './types'
 import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 
@@ -41,30 +41,20 @@ const mutations = createMutations<IndexState>()({
   },
   addStoredCollection(state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
-      Vue.set(state.indexesAndCollections, payload.index, {
-        realtime: [],
-        stored: []
-      })
+      Vue.set(state.indexesAndCollections, payload.index, new Index())
     }
 
     state.indexesAndCollections[payload.index].stored.push(payload.name)
   },
   addRealtimeCollection(state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
-      Vue.set(state.indexesAndCollections, payload.index, {
-        realtime: [],
-        stored: []
-      })
+      Vue.set(state.indexesAndCollections, payload.index, new Index())
     }
 
     state.indexesAndCollections[payload.index].realtime.push(payload.name)
   },
   addIndex(state, index) {
-    Vue.set(state.indexesAndCollections, index, {
-      loading: false,
-      realtime: [],
-      stored: []
-    })
+    Vue.set(state.indexesAndCollections, index, new Index())
   },
   deleteIndex(state, index) {
     Vue.delete(state.indexesAndCollections, index)

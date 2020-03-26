@@ -1,29 +1,33 @@
 <template>
   <div class="DataLayout">
     <div class="DataLayout-sidebarWrapper">
-      <!-- TODO loader here -->
       <treeview
         :index="$route.params.index"
         :collection="$route.params.collection"
       />
     </div>
     <div class="DataLayout-contentWrapper">
-      <router-view />
+      <template v-if="loading">
+        <main-spinner></main-spinner>
+      </template>
+      <router-view v-else />
     </div>
   </div>
 </template>
 
 <script>
 import Treeview from './Leftnav/Treeview'
+import MainSpinner from '../Common/MainSpinner'
 
 export default {
   name: 'DataLayout',
   components: {
+    MainSpinner,
     Treeview
   },
   computed: {
     loading() {
-      return this.$store.direct.state.index.loading
+      return this.$store.direct.state.index.loadingIndexes
     }
   },
   methods: {
