@@ -142,7 +142,7 @@ export const performSearchDocuments = async (
     index,
     collection,
     { ...filters, sort },
-    { ...pagination }
+    { ...pagination, scroll: '1ms' }
   )
 
   let additionalAttributeName: any = null
