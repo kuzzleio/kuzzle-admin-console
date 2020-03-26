@@ -681,7 +681,7 @@ function dateFromTimestamp(value) {
   } else if (length === 13) {
     date = new Date(timestamp)
   } else {
-    date = null
+    return `Invalid Date value (${value})`
   }
 
   return date
