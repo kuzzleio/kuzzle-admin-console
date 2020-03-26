@@ -1,7 +1,7 @@
-describe('Users', function () {
+describe.skip('Users', function() {
   const kuzzleUrl = 'http://localhost:7512'
 
-  before(function () {
+  before(function() {
     cy.request('PUT', `${kuzzleUrl}/users/_mapping`, {
       properties: {
         name: { type: 'keyword' }
@@ -9,7 +9,7 @@ describe('Users', function () {
     })
   })
 
-  beforeEach(function () {
+  beforeEach(function() {
     // create environment
     const validEnvName = 'valid'
     localStorage.setItem(
@@ -27,7 +27,7 @@ describe('Users', function () {
     )
   })
 
-  it('deletes a user successfully via the dropdown menu', function () {
+  it('deletes a user successfully via the dropdown menu', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
@@ -63,7 +63,7 @@ describe('Users', function () {
     cy.get('.CommonList').should('not.contain', kuid)
   })
 
-  it('deletes a user successfully via the checkbox and bulk delete button', function () {
+  it('deletes a user successfully via the checkbox and bulk delete button', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
@@ -95,7 +95,7 @@ describe('Users', function () {
     cy.get('.CommonList').should('not.contain', kuid)
   })
 
-  it('updates the user mapping successfully', function () {
+  it('updates the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.contains('Indexes')
