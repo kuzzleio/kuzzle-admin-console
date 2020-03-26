@@ -2,8 +2,8 @@ import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
 import sortJson from 'sort-json'
-
-// ### Environment
+import { get } from 'lodash'
+import moment from 'moment'
 
 export const waitForConnected = (timeout = 1000) => {
   if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
@@ -82,13 +82,26 @@ class Content {
  * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
  */
 class Meta {
-  constructor(meta) {
-    if (!meta) {
+  constructor(_kuzzle_info) {
+    if (!_kuzzle_info) {
       return
     }
-    Object.keys(meta).forEach(key => {
-      this[key] = meta[key]
-    })
+    this['author'] =
+      _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author
+
+    this['updater'] =
+      _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater
+
+    if (_kuzzle_info.createdAt) {
+      this['createdAt'] = `${moment(_kuzzle_info.createdAt).format(
+        'YYYY-MM-DD HH:mm:ss'
+      )} (${_kuzzle_info.createdAt})`
+    }
+    if (_kuzzle_info.updatedAt) {
+      this['updatedAt'] = `${moment(_kuzzle_info.updatedAt).format(
+        'YYYY-MM-DD HH:mm:ss'
+      )} (${_kuzzle_info.updatedAt})`
+    }
   }
 }
 
@@ -160,7 +173,7 @@ export const performSearchDocuments = async (
     const object: IKuzzleDocument = {
       content: new Content(sorted._source),
       id: document._id,
-      meta: new Meta(sorted._kuzzle_info),
+      meta: new Meta(get(sorted, '_source._kuzzle_info', {})),
       credentials: new Credentials({}),
       aggregations: new Aggregations({}),
       additionalAttribute: null
