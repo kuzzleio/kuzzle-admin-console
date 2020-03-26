@@ -64,9 +64,10 @@
       <div>
         <b-button
           class="align-middle d-inline ml-3 font-weight-bold"
+          data-cy="QuickFilter-displayActiveFilters"
           variant="outline-light"
           @click.prevent="displayAdvancedFilters"
-          >Display the advanced filters.</b-button
+          >Display the advanced filters</b-button
         >
       </div>
     </div>
