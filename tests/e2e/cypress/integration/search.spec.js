@@ -210,6 +210,8 @@ describe('Search', function() {
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').should(
       'have.value',
       'job'
@@ -244,7 +246,8 @@ describe('Search', function() {
       }
     )
     cy.wait(1500)
-
+    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
   })
@@ -285,6 +288,8 @@ describe('Search', function() {
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
     cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
 
+    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-resetBtn"]').click()
     cy.url().should('not.contain', 'Keylogger')
     cy.url().should('contain', 'listViewType=column')
@@ -332,6 +337,8 @@ describe('Search', function() {
     })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
+    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-sortAttributeSelect"]').select('lastName')
     cy.get('[data-cy="BasicFilter-sortOrderSelect"]').select('desc')
     cy.get('.BasicFilter-submitBtn').click()
@@ -420,7 +427,7 @@ describe('Search', function() {
       delay: 60
     })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-
+    cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy="Filters-rawTab"]').click()
     cy.get('.ace_content')
       .should('contain', 'query')
