@@ -665,7 +665,7 @@ function dateFromTimestamp(value) {
     timestamp = parseInt(value, 10)
 
     if (isNaN(timestamp)) {
-      return null
+      return `Invalid Date value (${value})`
     }
   } else if (Number.isInteger(value)) {
     timestamp = value
