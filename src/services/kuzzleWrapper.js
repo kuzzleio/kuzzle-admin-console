@@ -123,9 +123,11 @@ export const performSearchDocuments = async (
     throw new Error('Missing collection or index')
   }
 
+  // Use a scroll in order for ES to return the total number of document that match the search
+  // without being limited by its own limitation (10k documents)
   const result = await Vue.prototype.$kuzzle
     .document
-    .search(index, collection, { ...filters, sort }, { ...pagination })
+    .search(index, collection, { ...filters, sort }, { ...pagination, scroll: '1ms' })
 
   let additionalAttributeName = null
 
