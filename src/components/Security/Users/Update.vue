@@ -2,7 +2,7 @@
   <div class="UserUpdate">
     <b-container class="UserUpdate--container">
       <headline>
-        Edit user - <span class="bold">{{ $route.params.id }}</span>
+        Edit user - <span class="code">{{ $route.params.id }}</span>
       </headline>
 
       <Notice />
