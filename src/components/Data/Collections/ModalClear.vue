@@ -1,5 +1,10 @@
 <template>
-  <b-modal additional-class="left-align" :id="id" @hide="reset">
+  <b-modal
+    data-cy="CollectionClearModal"
+    additional-class="left-align"
+    :id="id"
+    @hide="reset"
+  >
     <template v-slot:modal-header
       ><h5>
         Clear <span class="code">{{ collection }}</span>
@@ -8,6 +13,7 @@
     <template v-slot:modal-footer="{ cancel }">
       <b-button @click="cancel()">Cancel</b-button>
       <b-button
+        data-cy="CollectionClearModal-submit"
         variant="danger"
         :disabled="!confirmationOk"
         @click="clearCollection(index, collection)"
@@ -61,10 +67,6 @@ export default {
     reset() {
       this.confirmation = ''
     },
-    refreshSearch() {
-      // WARNING THIS IS EVIL
-      this.$router.go()
-    },
     async clearCollection() {
       if (!this.index.trim() || !this.collection.trim()) {
         return
@@ -75,11 +77,11 @@ export default {
           index: this.index,
           collection: this.collection
         })
-        this.refreshSearch()
+        this.$emit('clear')
         this.reset()
         this.$bvModal.hide(this.id)
       } catch (err) {
-        this.error = err.message
+        this.$log.error(err)
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
