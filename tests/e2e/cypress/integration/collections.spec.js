@@ -65,7 +65,7 @@ describe('Collection management', function() {
       .should('contain', '"type": "keyword"')
   })
 
-  it('is able to delete a collection', function() {
+  it('Should be able to delete a collection', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/${indexName}/`)

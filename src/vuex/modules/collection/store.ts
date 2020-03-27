@@ -96,59 +96,35 @@ const actions = createActions({
       return
     }
 
-    if (
-      rootGetters.index.indexCollections(index).stored.indexOf(collection) !==
-      -1
-    ) {
-      let mappings = await Vue.prototype.$kuzzle.collection.getMapping(
-        index,
-        collection
-      )
-      let schema = {}
-      let allowForm = false
+    let mappings = await Vue.prototype.$kuzzle.collection.getMapping(
+      index,
+      collection
+    )
+    let schema = {}
+    let allowForm = false
 
-      if (mappings._meta) {
-        schema = mappings._meta.schema || {}
-      }
-
-      dispatch.getCollectionDefaultViewJson({
-        index,
-        collection
-      })
-
-      // TODO return
-      commit.receiveCollectionDetail({
-        name: collection,
-        mapping: mappings.properties || {},
-        schema,
-        allowForm,
-        isRealtimeOnly: false
-      })
-
-      return {
-        name: collection,
-        mapping: mappings.properties || {},
-        isRealtimeOnly: false,
-        dynamic: mappings.dynamic
-      }
+    if (mappings._meta) {
+      schema = mappings._meta.schema || {}
     }
 
-    if (
-      rootGetters.index.indexCollections(index).realtime.indexOf(collection) !==
-      -1
-    ) {
-      commit.receiveCollectionDetail({
-        name: collection,
-        mapping: {},
-        isRealtimeOnly: true,
-        schema: {},
-        allowForm: false
-      })
-      return {
-        name: collection,
-        mapping: {},
-        isRealtimeOnly: true
-      }
+    dispatch.getCollectionDefaultViewJson({
+      index,
+      collection
+    })
+
+    commit.receiveCollectionDetail({
+      name: collection,
+      mapping: mappings.properties || {},
+      schema,
+      allowForm,
+      isRealtimeOnly: false
+    })
+
+    return {
+      name: collection,
+      mapping: mappings.properties || {},
+      isRealtimeOnly: false,
+      dynamic: mappings.dynamic
     }
   },
   getCollectionDefaultViewJson(context, { index, collection }) {
