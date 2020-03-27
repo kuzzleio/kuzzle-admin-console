@@ -3,6 +3,7 @@
     <ul v-if="$route.path.indexOf('/security') === 0">
       <li>
         <router-link :to="{ name: 'Security' }">
+          <i class="fa fa-home"></i>
           security
         </router-link>
       </li>
@@ -34,6 +35,7 @@
     <ul v-if="$route.path.indexOf('/data') === 0">
       <li>
         <router-link :to="{ name: 'Data' }">
+          <i class="fa fa-home"></i>
           data
         </router-link>
       </li>

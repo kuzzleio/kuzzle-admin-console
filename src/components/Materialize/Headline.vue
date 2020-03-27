@@ -1,8 +1,8 @@
 <template>
   <div class="Headline">
-    <h1>
+    <h2>
       <slot>{{ title }}</slot>
-    </h1>
+    </h2>
     <breadcrumb />
   </div>
 </template>
