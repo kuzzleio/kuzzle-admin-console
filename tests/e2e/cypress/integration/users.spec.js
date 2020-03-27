@@ -1,4 +1,4 @@
-describe.skip('Users', function() {
+describe('Users', function() {
   const kuzzleUrl = 'http://localhost:7512'
 
   before(function() {
@@ -10,6 +10,7 @@ describe.skip('Users', function() {
   })
 
   beforeEach(function() {
+    cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
     // create environment
     const validEnvName = 'valid'
     localStorage.setItem(
@@ -17,17 +18,129 @@ describe.skip('Users', function() {
       JSON.stringify({
         [validEnvName]: {
           name: validEnvName,
-          color: '#002835',
+          color: 'darkblue',
           host: 'localhost',
           ssl: false,
           port: 7512,
-          token: null
+          token: 'anonymous'
         }
       })
     )
+    localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('deletes a user successfully via the dropdown menu', function() {
+  it('Should be able to search users via the quick search', () => {
+    const kuids = ['dummy', 'goofy']
+    kuids.forEach(kuid => {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (${kuid})`
+          },
+          credentials: {
+            local: {
+              username: kuid,
+              password: 'test'
+            }
+          }
+        }
+      )
+    })
+    cy.visit('/#/security/users')
+    cy.contains(kuids[0])
+    cy.contains(kuids[1])
+    cy.get('[data-cy=QuickFilter-input]').type(kuids[0])
+    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[1])
+  })
+
+  it('Should be able to search users via the advanced search', () => {
+    const kuids = ['dummy', 'goofy']
+    kuids.forEach(kuid => {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (${kuid})`
+          },
+          credentials: {
+            local: {
+              username: kuid,
+              password: 'test'
+            }
+          }
+        }
+      )
+    })
+    cy.visit('/#/security/users')
+    cy.contains(kuids[0])
+    cy.contains(kuids[1])
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('name')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(kuids[1])
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.contains(kuids[1])
+    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
+  })
+
+  it('Should be able to search users via the raw JSON search', () => {
+    const kuids = ['dummy', 'goofy']
+    kuids.forEach(kuid => {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (${kuid})`
+          },
+          credentials: {
+            local: {
+              username: kuid,
+              password: 'test'
+            }
+          }
+        }
+      )
+    })
+    cy.visit('/#/security/users')
+    cy.contains(kuids[0])
+    cy.contains(kuids[1])
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-rawTab]').click()
+
+    cy.get('#rawsearch .ace_line').should('be.visible')
+    cy.wait(1000)
+
+    cy.get('#rawsearch .ace_line').click({ force: true })
+    cy.get('textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"query": { 
+"bool": {
+"must": {
+"match": {
+"name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
+}`,
+        {
+          force: true
+        }
+      )
+
+    cy.get('[data-cy="RawFilter-submitBtn"]').click()
+
+    cy.contains(kuids[1])
+    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
+  })
+
+  it.skip('deletes a user successfully via the dropdown menu', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
@@ -63,7 +176,7 @@ describe.skip('Users', function() {
     cy.get('.CommonList').should('not.contain', kuid)
   })
 
-  it('deletes a user successfully via the checkbox and bulk delete button', function() {
+  it.skip('deletes a user successfully via the checkbox and bulk delete button', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
@@ -95,7 +208,7 @@ describe.skip('Users', function() {
     cy.get('.CommonList').should('not.contain', kuid)
   })
 
-  it('updates the user mapping successfully', function() {
+  it.skip('updates the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.contains('Indexes')

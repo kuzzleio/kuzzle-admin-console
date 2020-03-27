@@ -83,7 +83,11 @@
           </b-row>
         </div>
 
-        <div v-show="documents.length" class="row CrudlDocument-collection">
+        <div
+          v-show="documents.length"
+          class="row CrudlDocument-collection"
+          data-cy="UserList-items"
+        >
           <div class="col s12">
             <slot v-if="documents.length" @delete-document="deleteDocument" />
           </div>

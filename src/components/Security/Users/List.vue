@@ -199,7 +199,7 @@ export default {
         })
       }
     },
-    fetchDocuments() {
+    async fetchDocuments() {
       this.fetchingUsers = true
 
       this.$forceUpdate()
@@ -224,25 +224,29 @@ export default {
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
-      this.performSearch(
-        this.collection,
-        this.index,
-        searchQuery,
-        pagination,
-        sorting
-      )
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
-          this.fetchingUsers = false
+      try {
+        const res = await this.performSearch(
+          this.collection,
+          this.index,
+          searchQuery,
+          pagination,
+          sorting
+        )
+        this.documents = res.documents
+        this.totalDocuments = res.total
+      } catch (error) {
+        this.$log.error(error)
+        this.$log.debug(error.stack)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title: 'Ooops! Something went wrong while fetching users.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
-        .catch(e => {
-          this.$store.direct.commit.toaster.setToast({
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-          this.fetchingUsers = false
-        })
+      }
+      this.fetchingUsers = false
     },
     editDocument(route, id) {
       this.$router.push({
