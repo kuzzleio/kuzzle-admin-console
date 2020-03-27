@@ -46,6 +46,7 @@ import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
+import { omit } from 'lodash'
 
 let room
 
@@ -145,7 +146,7 @@ export default {
           this.collection,
           this.id
         )
-        this.document = res._source
+        this.document = omit(res._source, '_kuzzle_info')
         this.mapping = await this.getMappingDocument(
           this.collection,
           this.index
