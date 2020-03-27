@@ -1,5 +1,10 @@
 <template>
-  <b-modal additional-class="left-align" :id="id" @hide="reset">
+  <b-modal
+    data-cy="CollectionClearModal"
+    additional-class="left-align"
+    :id="id"
+    @hide="reset"
+  >
     <template v-slot:modal-header
       ><h5>
         Clear <span class="code">{{ collection }}</span>
@@ -8,6 +13,7 @@
     <template v-slot:modal-footer="{ cancel }">
       <b-button @click="cancel()">Cancel</b-button>
       <b-button
+        data-cy="CollectionClearModal-submit"
         variant="danger"
         :disabled="!confirmationOk"
         @click="clearCollection(index, collection)"
