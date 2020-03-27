@@ -61,6 +61,7 @@
           id="input-env-port"
           v-model="environment.port"
           type="number"
+          @change="checkSSL"
           trim
           required
         ></b-form-input>
@@ -228,6 +229,11 @@ export default {
     }
   },
   methods: {
+    checkSSL () {
+      if (this.environment.port === "443") {
+        this.environment.ssl = true
+      }
+    },
     createEnvironment() {
       if (!this.canSubmit) {
         return false

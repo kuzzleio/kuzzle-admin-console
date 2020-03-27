@@ -27,6 +27,7 @@
             :collection="collection"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
+            @clear="onCollectionClear"
           />
         </b-col>
       </b-row>
@@ -464,6 +465,11 @@ export default {
         this.$log.error(e)
       }
     },
+    onCollectionClear() {
+      this.documents = []
+      this.totalDocuments = 0
+      this.currentFilter = new filterManager.Filter()
+    },
     async fetchDocuments() {
       this.fetchingDocuments = true
       this.$forceUpdate()
@@ -644,12 +650,8 @@ export default {
 
       const changeField = document => {
         for (const [field, value] of Object.entries(document)) {
-          if (dateFields.includes(field) && Number.isInteger(value)) {
-            const date =
-              `${value}`.length === 13
-                ? new Date(value)
-                : new Date(value * 1000)
-
+          if (dateFields.includes(field)) {
+            const date = dateFromTimestamp(value)
             document[field] += ` (${date.toUTCString()})`
           } else if (value && typeof value === 'object') {
             changeField(value)
@@ -662,6 +664,35 @@ export default {
       this.documents.forEach(changeField)
     }
   }
+}
+
+function dateFromTimestamp(value) {
+  let timestamp
+
+  if (typeof value === 'string') {
+    timestamp = parseInt(value, 10)
+
+    if (isNaN(timestamp)) {
+      return `Invalid Date value (${value})`
+    }
+  } else if (Number.isInteger(value)) {
+    timestamp = value
+  } else {
+    return null
+  }
+
+  const length = `${timestamp}`.length
+
+  let date
+  if (length === 10) {
+    date = new Date(timestamp * 1000)
+  } else if (length === 13) {
+    date = new Date(timestamp)
+  } else {
+    return `Invalid Date value (${value})`
+  }
+
+  return date
 }
 </script>
 
