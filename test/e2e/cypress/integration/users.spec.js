@@ -4,7 +4,7 @@ describe('Users', function() {
   before(function() {
     cy.request('PUT', `${kuzzleUrl}/users/_mapping`, {
       properties: {
-        name: { type: 'keyword' }
+        name: { type: 'text' }
       }
     })
   })
@@ -126,7 +126,7 @@ describe('Users', function() {
 "query": { 
 "bool": {
 "must": {
-"match": {
+"match_phrase_prefix": {
 "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
 }`,
         {
@@ -140,7 +140,7 @@ describe('Users', function() {
     cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
   })
 
-  it.skip('deletes a user successfully via the dropdown menu', function() {
+  it('Should be able to delete a user', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
@@ -160,14 +160,8 @@ describe('Users', function() {
     cy.contains('Indexes')
     cy.visit('/#/security/users')
 
-    cy.get('.UserItem')
-      .contains(kuid)
-      .parent()
-      .siblings('.UserItem-actions')
-      .children('.UserItem-dropdown')
-      .click()
-      .contains('Delete')
-      .click()
+    cy.get('.UserItem').contains(kuid)
+    cy.get('[data-cy=UserListItem-delete--goofy]').click()
 
     cy.contains(`Do you really want to delete ${kuid}`)
     cy.contains('sure!').click()
@@ -176,7 +170,7 @@ describe('Users', function() {
     cy.get('.CommonList').should('not.contain', kuid)
   })
 
-  it.skip('deletes a user successfully via the checkbox and bulk delete button', function() {
+  it.skip('Should be able to bulk delete users via the checkbox and bulk button', function() {
     const kuid = 'dummy'
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
