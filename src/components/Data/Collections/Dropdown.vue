@@ -78,6 +78,7 @@
         <b-dropdown-item
           v-if="!isRealtime && isList"
           class="text-secondary"
+          data-cy="CollectionDropdown-clear"
           :disabled="!canTruncateCollection(index, collection)"
           :title="
             !canSubscribe(index, collection)
@@ -95,6 +96,7 @@
       :id="'collection-clear-' + collection"
       :index="index"
       :collection="collection"
+      @clear="$emit('clear')"
     />
   </span>
 </template>
