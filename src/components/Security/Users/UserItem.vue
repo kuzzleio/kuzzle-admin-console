@@ -19,6 +19,7 @@
           value="true"
           unchecked-value="false"
           v-model="checked"
+          :data-cy="`UserListItem-checkbox--${document.id}`"
           :id="checkboxId"
           @change="notifyCheckboxClick"
         />
@@ -29,8 +30,6 @@
           @click="toggleCollapse"
           >{{ document.id }}</a
         >
-        <!-- <a @click="toggleCollapse">{{ document.id }}</a> -->
-        <!-- <div class="UserItem-profileList"> -->
         <b-badge
           v-for="profile in profileList"
           :key="profile"
@@ -55,8 +54,6 @@
             >Show all...</router-link
           >
         </b-badge>
-        <!-- </div> -->
-        <!-- </label> -->
 
         <label
           @click="toggleCollapse"
@@ -103,40 +100,6 @@
         </div>
       </b-col>
     </b-row>
-    <!-- <div class="UserItem-actions right">
-      <a
-        href="#"
-        :title="
-          canEditUser ? 'Edit User' : 'You are not allowed to edit this user'
-        "
-        @click.prevent="update"
-      >
-        <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser() }" />
-      </a>
-      <dropdown :id="document.id" myclass="UserItem-dropdown icon-black">
-        <li>
-          <a
-            v-title="{
-              active: !canDeleteUser(),
-              title: 'You are not allowed to delete this user'
-            }"
-            :class="{ disabled: !canDeleteUser() }"
-            @click="deleteDocument(document.id)"
-            >Delete</a
-          >
-        </li>
-      </dropdown>
-    </div> -->
-
-    <!-- <div class="UserItem-content item-content">
-      <pre v-json-formatter="{ content: document.content, open: true }" />
-      <pre v-json-formatter="{ content: document.meta, open: true }" />
-      <pre v-json-formatter="{ content: document.credentials, open: true }" />
-      <pre
-        v-if="document.aggregations"
-        v-json-formatter="{ content: document.aggregations, open: true }"
-      />
-    </div> -->
     <b-row>
       <b-collapse
         :id="`collapse-${document.id}`"
@@ -152,11 +115,9 @@
       </b-collapse>
     </b-row>
   </b-container>
-  <!-- </div> -->
 </template>
 
 <script>
-// import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
 import { canEditUser, canDeleteUser } from '../../../services/userAuthorization'
 import title from '../../../directives/title.directive'
@@ -165,9 +126,7 @@ const MAX_PROFILES = 5
 
 export default {
   name: 'UserItem',
-  components: {
-    // Dropdown
-  },
+  components: {},
   directives: {
     jsonFormatter,
     title
@@ -215,16 +174,12 @@ export default {
     },
     deleteDocument() {
       if (this.canDeleteUser()) {
-        this.$emit('delete-document', this.document.id)
+        this.$emit('delete', this.document.id)
       }
     },
     update() {
       if (this.canEditUser()) {
-        this.$emit(
-          'common-list::edit-document',
-          'SecurityUsersUpdate',
-          this.document.id
-        )
+        this.$emit('edit', this.document.id)
       }
     },
     canEditUser,

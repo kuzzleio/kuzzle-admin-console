@@ -8,6 +8,7 @@
         <b-col class="text-right mt-3">
           <b-button
             class="mr-2"
+            data-cy="UsersManagement-createBtn"
             variant="primary"
             :disabled="!canCreateUser()"
             :to="{ name: 'SecurityUsersCreate' }"
@@ -23,7 +24,10 @@
             <template v-slot:button-content>
               <i class="fas fa-ellipsis-v" />
             </template>
-            <b-dropdown-item :to="{ name: 'SecurityUsersEditCustomMapping' }">
+            <b-dropdown-item
+              data-cy="UsersDropdown-editMapping"
+              :to="{ name: 'SecurityUsersEditCustomMapping' }"
+            >
               Edit user content mapping
             </b-dropdown-item>
           </b-dropdown>
@@ -45,43 +49,14 @@
         :perform-delete="performDeleteUsers"
         :collection-mapping="userMapping"
       >
-        <b-card slot="emptySet">
-          <b-row class="empty-set">
-            <b-col cols="4">
-              <i
-                class="fa fa-6x fa-user grey-text text-lighten-1 ml-5"
-                aria-hidden="true"
-              />
-            </b-col>
-            <b-col>
-              <p>
-                In this page, you'll be able to manage the
-                <a
-                  href="https://docs.kuzzle.io/guide/1/essentials/user-authentication/"
-                  >users</a
-                >
-                defined in your Kuzzle server.<br />
-                <em
-                  >Currently, no user is defined. You can create one by pushing
-                  the "Create" button above.</em
-                >
-              </p>
-              <router-link
-                :disabled="!canCreateUser()"
-                :class="!canCreateUser() ? 'disabled' : ''"
-                :title="
-                  !canCreateUser()
-                    ? 'You are not allowed to create new users'
-                    : ''
-                "
-                :to="{ name: 'SecurityUsersCreate' }"
-                class="btn primary waves-effect waves-light"
-              >
-                <i class="fa fa-plus-circle left" />
-                Create a user
-              </router-link>
-            </b-col>
-          </b-row>
+        <b-card class="EmptyState text-center" slot="emptySet">
+          <i class="text-secondary fas fa-user fa-6x mb-3"></i>
+          <h2 class="text-secondary font-weight-bold">
+            No user is defined
+          </h2>
+          <p class="text-secondary" v-if="canCreateUser()">
+            You can create a new user by hitting the button above
+          </p>
         </b-card>
       </list>
     </b-container>
