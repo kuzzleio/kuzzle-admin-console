@@ -156,7 +156,7 @@ export default {
       this.credentials[payload.strategy] = { ...payload.credentials }
     },
     onCustomContentChanged(value) {
-      this.customContent = value
+      this.customContentValue = value
     },
     switchTab(name) {
       this.activeTab = name
@@ -182,7 +182,7 @@ export default {
 
       let userObject = {
         profileIds: this.addedProfiles,
-        ...this.customContent
+        ...JSON.parse(this.customContentValue)
       }
 
       try {
@@ -288,7 +288,9 @@ export default {
       this.id = _id
       this.addedProfiles = content.profileIds
       delete content.profileIds
-      this.customContent = { ...content }
+      delete content._kuzzle_info
+      this.customContent = JSON.stringify(content, null, 2)
+      this.customContentValue = this.customContentValue
 
       this.loading = false
     } catch (e) {

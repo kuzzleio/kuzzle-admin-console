@@ -326,7 +326,9 @@ describe('Users', function() {
     cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').should(
       'be.visible'
     )
-    cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').click({
+    cy.get(
+      '[data-cy="UserCustomContent-jsonEditor"] .ace_line:first-child'
+    ).click({
       force: true
     })
     cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
@@ -343,7 +345,7 @@ describe('Users', function() {
     cy.get('[data-cy="UserUpdate-submit"]').click()
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
-    cy.get('[data-cy=UserItem]').should('contain', '"super_important_field"')
+    cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
     cy.get('[data-cy=UserItem]').should('contain', '"LOL"')
   })
 
