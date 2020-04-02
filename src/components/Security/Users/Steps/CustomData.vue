@@ -95,8 +95,6 @@ export default {
   },
   watch: {
     value: function(val) {
-      console.log(val)
-
       if (this.viewType === 'form') {
         this.newContent = { ...val }
       }
