@@ -7,8 +7,11 @@
 
       <Notice />
 
-      <div>
-        <b-card no-body>
+      <b-card no-body>
+        <template v-if="loading">
+          <MainSpinner class="my-5" />
+        </template>
+        <template v-else>
           <b-tabs
             card
             v-if="!loading"
@@ -16,58 +19,62 @@
             :object-tab-active="activeTabObject"
             @tab-changed="switchTab"
           >
-            <b-tab title="Basic">
-              <steps-content
-                ref="stepsContent"
-                v-model="user"
-                :step="0"
-                :is-update="true"
+            <b-tab id="UserUpdate-basicTab" title="Basic">
+              <basic
+                :edit-kuid="false"
+                :added-profiles="addedProfiles"
+                :auto-generate-kuid="autoGenerateKuid"
+                :kuid="kuid"
+                @set-auto-generate-kuid="setAutoGenerateKuid"
+                @set-custom-kuid="setCustomKuid"
+                @profile-add="onProfileAdded"
+                @profile-remove="onProfileRemoved"
+              />
+              <credentials-selector
+                class="mt-3"
+                :credentials="credentials"
+                :strategies="strategies"
+                :credentials-mapping="credentialsMapping"
+                @input="onCredentialsChanged"
               />
             </b-tab>
-            <b-tab title="Credentials">
-              <steps-content
-                ref="stepsContent"
-                v-model="user"
-                :step="1"
-                :is-update="true"
-              />
-            </b-tab>
-            <b-tab title="Custom">
-              <steps-content
-                ref="stepsContent"
-                v-model="user"
-                :step="2"
-                :is-update="true"
+            <b-tab id="UserUpdate-customTab" title="Custom">
+              <custom-data
+                :mapping="customContentMapping"
+                :value="customContent"
+                @input="onCustomContentChanged"
               />
             </b-tab>
           </b-tabs>
-        </b-card>
+        </template>
 
-        <!-- Actions -->
-        <b-row align-h="end" class="mt-2">
-          <b-col cols="2" class="text-right">
-            <b-button class="m-1" tabindex="6" @click.prevent="cancel"
-              >Cancel</b-button
+        <template v-slot:footer>
+          <b-row class="mt-2">
+            <b-col cols="9"
+              ><b-alert :show="error" variant="danger">
+                <i class="fa fa-times dismiss-error" @click="dismissError()" />
+                {{ error }}
+              </b-alert></b-col
             >
-            <b-button
-              class="m-1"
-              type="submit"
-              variant="primary"
-              @click.prevent="save"
-            >
-              Save
-            </b-button>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col v-if="error" align-self="start">
-            <b-alert :show="error" variant="danger">
-              <i class="fa fa-times dismiss-error" @click="dismissError()" />
-              {{ error }}
-            </b-alert>
-          </b-col>
-        </b-row>
-      </div>
+            <b-col class="text-right">
+              <b-button class="m-1" tabindex="6" @click.prevent="cancel"
+                >Cancel</b-button
+              >
+              <b-button
+                class="m-1"
+                data-cy="UserUpdate-submit"
+                type="submit"
+                variant="primary"
+                @click.prevent="save"
+              >
+                Save
+              </b-button>
+            </b-col>
+          </b-row>
+        </template>
+      </b-card>
+
+      <!-- Actions -->
     </b-container>
   </div>
 </template>
@@ -82,32 +89,42 @@
 </style>
 
 <script>
+import { getMappingUsers } from '../../../services/kuzzleWrapper'
+import Basic from './Steps/Basic'
+import CredentialsSelector from './Steps/CredentialsSelector'
+import CustomData from './Steps/CustomData'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
+import MainSpinner from '../../Common/MainSpinner'
 import Promise from 'bluebird'
-import StepsContent from './Steps/StepsContent'
 
 export default {
   name: 'UpdateUser',
   components: {
+    Basic,
+    CredentialsSelector,
+    CustomData,
     Headline,
-    StepsContent,
+    MainSpinner,
     Notice
   },
   data() {
     return {
-      error: '',
+      error: null,
       loading: false,
       refresh: false,
       activeTab: 'basic',
       activeTabObject: null,
-      submitted: false,
-      user: {
-        kuid: null,
-        addedProfiles: [],
-        credentials: {},
-        customContent: {}
-      }
+      submitting: false,
+      kuid: null,
+      addedProfiles: [],
+      autoGenerateKuid: false,
+      credentials: {},
+      strategies: [],
+      credentialsMapping: {},
+      customContent: '{}',
+      customContentValue: '{}',
+      customContentMapping: {}
     }
   },
   computed: {
@@ -123,6 +140,24 @@ export default {
     }
   },
   methods: {
+    onProfileAdded(profile) {
+      this.addedProfiles.push(profile)
+    },
+    onProfileRemoved(profile) {
+      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+    },
+    setAutoGenerateKuid(value) {
+      this.autoGenerateKuid = value
+    },
+    setCustomKuid(value) {
+      this.kuid = value
+    },
+    onCredentialsChanged(payload) {
+      this.credentials[payload.strategy] = { ...payload.credentials }
+    },
+    onCustomContentChanged(value) {
+      this.customContent = value
+    },
     switchTab(name) {
       this.activeTab = name
     },
@@ -130,7 +165,7 @@ export default {
       this.activeTabObject = tab
     },
     validate() {
-      if (!this.user.addedProfiles.length) {
+      if (!this.addedProfiles.length) {
         throw new Error('Please add at least one profile to the user')
       }
 
@@ -143,35 +178,35 @@ export default {
         this.setError(e.message)
         return
       }
-      this.submitted = true
+      this.submitting = true
 
       let userObject = {
-        profileIds: this.user.addedProfiles,
-        ...this.user.customContent
+        profileIds: this.addedProfiles,
+        ...this.customContent
       }
 
       try {
-        await this.$kuzzle.security.replaceUser(this.user.kuid, userObject, {
+        await this.$kuzzle.security.replaceUser(this.kuid, userObject, {
           refresh: 'wait_for'
         })
         await Promise.all(
-          Object.keys(this.user.credentials).map(async strategy => {
+          Object.keys(this.credentials).map(async strategy => {
             const credentialsExists = await this.$kuzzle.security.hasCredentials(
               strategy,
-              this.user.kuid
+              this.kuid
             )
 
             if (credentialsExists) {
               await this.$kuzzle.security.updateCredentials(
                 strategy,
-                this.user.kuid,
-                this.user.credentials[strategy]
+                this.kuid,
+                this.credentials[strategy]
               )
             } else {
               await this.$kuzzle.security.createCredentials(
                 strategy,
-                this.user.kuid,
-                this.user.credentials[strategy]
+                this.kuid,
+                this.credentials[strategy]
               )
             }
           })
@@ -179,8 +214,9 @@ export default {
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (err) {
         if (err) {
+          this.$log.error(err)
           this.setError(err.message)
-          this.submitted = false
+          this.submitting = false
         }
       }
     },
@@ -191,7 +227,7 @@ export default {
       }, 5000)
     },
     dismissError() {
-      this.error = ''
+      this.error = null
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
@@ -199,6 +235,72 @@ export default {
       } else {
         this.$router.push({ name: 'SecurityUsersList' })
       }
+    }
+  },
+  async mounted() {
+    this.loading = true
+
+    try {
+      let credentialsMapping = await this.$kuzzle.security.getAllCredentialFields()
+      this.strategies = Object.keys(credentialsMapping)
+
+      // Clean "kuid" from credentialsMapping
+      this.strategies.forEach(strategy => {
+        if (credentialsMapping[strategy].kuid) {
+          delete credentialsMapping[strategy].kuid
+        }
+      })
+      this.credentialsMapping = credentialsMapping
+
+      const { mapping } = await getMappingUsers()
+      if (mapping) {
+        this.customContentMapping = mapping
+        delete this.customContentMapping.profileIds
+      }
+
+      this.kuid = this.$route.params.id
+
+      await Promise.all(
+        this.strategies.map(async strategy => {
+          const credentialsExists = await this.$kuzzle.security.hasCredentials(
+            strategy,
+            this.kuid
+          )
+
+          if (!credentialsExists) {
+            return
+          }
+
+          let strategyCredentials = await this.$kuzzle.security.getCredentials(
+            strategy,
+            this.kuid
+          )
+
+          if (strategyCredentials.kuid) {
+            delete strategyCredentials.kuid
+          }
+
+          this.$set(this.credentials, strategy, strategyCredentials)
+        })
+      )
+
+      let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
+      this.id = _id
+      this.addedProfiles = content.profileIds
+      delete content.profileIds
+      this.customContent = { ...content }
+
+      this.loading = false
+    } catch (e) {
+      this.$log.error(e)
+      this.$bvToast.toast('The complete error has been printed to console', {
+        title: 'Ooops! Something went wrong while loading the user',
+        variant: 'warning',
+        toaster: 'b-toaster-bottom-right',
+        appendToast: true,
+        dismissible: true,
+        noAutoHide: true
+      })
     }
   }
 }

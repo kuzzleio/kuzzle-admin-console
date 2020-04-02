@@ -16,7 +16,7 @@
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
         />
-        <span v-if="!editKuid">{{ kuid }}</span>
+        <span class="code" v-if="!editKuid">{{ kuid }}</span>
       </b-col>
       <b-col cols="3" v-if="editKuid">
         <label>

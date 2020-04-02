@@ -1,37 +1,51 @@
 <template>
-  <b-row>
-    <b-col cols="6">
-      <b-row
-        v-for="fieldName in fieldsForStrategy"
-        :key="`update-user-credential-${fieldName}`"
-      >
-        <b-col cols="12">
-          <b-form-text>
-            {{ getFieldHelp(fieldName) }}
-          </b-form-text>
-          <b-form-input
-            :value="credentialsForStrategy[fieldName]"
-            :type="fieldType(fieldName)"
-            :name="fieldName"
-            @input="onFieldChange"
-          >
-          </b-form-input>
-        </b-col>
-      </b-row>
+  <b-row class="Credentials">
+    <b-col cols="2">
+      <strong>Credentials</strong>
     </b-col>
-    <b-col cols="6">
-      <b-form-text>
-        Available strategies
-      </b-form-text>
-      <b-form-select v-model="currentStrategy">
-        <b-select-option
-          v-for="(strategy, index) in strategies"
-          :key="index"
-          :value="strategy"
-        >
-          {{ strategy }}
-        </b-select-option>
-      </b-form-select>
+    <b-col>
+      <b-card no-body class="Credentials-selector">
+        <b-tabs card vertical>
+          <template v-slot:tabs-start>
+            <span class="text-secondary text-small mb-2 px-3"
+              >Auth strategies</span
+            >
+          </template>
+
+          <!-- Render this if no tabs -->
+          <template v-slot:empty>
+            <div class="text-center text-muted">
+              No strategies found<br />
+              It looks like no authentication strategies are installed on your
+              Kuzzle instance.
+            </div>
+          </template>
+          <b-tab
+            v-for="(strategy, index) in strategies"
+            :key="index"
+            :title="strategy"
+          >
+            <div
+              v-for="fieldName in credentialsMapping[strategy]"
+              :key="`update-user-credential-${fieldName}`"
+            >
+              <b-form-group
+                label-cols="2"
+                :label="getFieldHelp(fieldName)"
+                :label-for="fieldName"
+              >
+                <b-form-input
+                  :id="fieldName"
+                  :value="credentials[strategy][fieldName]"
+                  :type="fieldType(fieldName)"
+                  :name="fieldName"
+                  @input="onFieldChange"
+                />
+              </b-form-group>
+            </div>
+          </b-tab>
+        </b-tabs>
+      </b-card>
     </b-col>
   </b-row>
 </template>
@@ -99,3 +113,18 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.Credentials-selector {
+  .card-header {
+    border-right: 1px solid #dee2e6;
+  }
+  .nav-tabs .nav-link.active {
+    border-color: #dee2e6 #fff #dee2e6 #dee2e6;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 0.25rem 0 0 0.25rem;
+    margin-right: -1.33rem;
+  }
+}
+</style>

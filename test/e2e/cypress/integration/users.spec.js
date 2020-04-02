@@ -302,6 +302,51 @@ describe('Users', function() {
     cy.url().should('contain', 'from=10')
   })
 
+  it.only('Should be able to update a user', () => {
+    const kuid = 'dummy'
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
+      content: {
+        profileIds: ['default'],
+        name: 'Dummy User'
+      },
+      credentials: {
+        local: {
+          username: 'dummy',
+          password: 'test'
+        }
+      }
+    })
+    cy.visit(`/#/security/users/${kuid}`)
+    cy.contains(`Edit user - ${kuid}`)
+
+    cy.get('[data-cy=UserProfileList-default--delete]').click()
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+
+    cy.get('#UserUpdate-customTab___BV_tab_button__').click()
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').should(
+      'be.visible'
+    )
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').click({
+      force: true
+    })
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"super_important_field": "LOL"`,
+        {
+          force: true
+        }
+      )
+
+    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
+    cy.get('[data-cy=UserItem]').should('contain', '"admin"')
+    cy.get('[data-cy=UserItem]').should('contain', '"super_important_field"')
+    cy.get('[data-cy=UserItem]').should('contain', '"LOL"')
+  })
+
   it.skip('updates the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()

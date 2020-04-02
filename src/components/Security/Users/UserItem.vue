@@ -5,12 +5,13 @@
         <!-- <div class="UserItem" :class="{ collapsed: collapsed }"> -->
         <!-- class="UserItem-toggle fa fa-caret-down item-toggle" -->
         <i
+          aria-hidden="true"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          aria-hidden="true"
+          :data-cy="`UserItem-${document.id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox

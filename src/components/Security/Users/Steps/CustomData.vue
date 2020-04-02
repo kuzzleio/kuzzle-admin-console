@@ -1,53 +1,30 @@
 <template>
   <div class="document-create-update">
     <form class="wrapper" @submit.prevent="submit">
-      <b-row no-gutters class="mb-2">
-        <span class="mr-2">Form</span>
-        <b-form-checkbox switch :checked="!isFormView" @change="switchView">
-          JSON
-        </b-form-checkbox>
-      </b-row>
-
-      <b-row v-if="isFormView">
-        <b-col cols="12">
-          <b-card>
-            <json-form
-              :schema="schema"
-              :document="value"
-              @update-value="updateValue"
-            />
-          </b-card>
-        </b-col>
-      </b-row>
-
       <!-- Json view -->
-      <b-row v-else class="json-view">
+      <b-row class="json-view">
         <b-col :cols="$store.state.collection.isRealtimeOnly ? '12' : '6'">
-          <b-card>
-            <b-card-title>Custom content</b-card-title>
-            <json-editor
-              id="document"
-              ref="jsoneditor"
-              class="document-json"
-              :content="JSON.stringify(newContent)"
-              :height="300"
-              @changed="jsonChanged"
-            />
-          </b-card>
+          <h3>Custom content</h3>
+          <json-editor
+            data-cy="UserCustomContent-jsonEditor"
+            ref="jsoneditor"
+            class="document-json"
+            :content="newContent"
+            :height="300"
+            @change="jsonChanged"
+          />
         </b-col>
 
         <!-- Mapping -->
         <b-col cols="6" v-if="!$store.state.collection.isRealtimeOnly">
-          <b-card>
-            <b-card-title>Mapping</b-card-title>
-            <json-editor
-              id="mapping"
-              class="document-json"
-              :content="JSON.stringify(mapping)"
-              :readonly="true"
-              :height="300"
-            />
-          </b-card>
+          <h3>Mapping</h3>
+          <json-editor
+            id="mapping"
+            class="document-json"
+            :content="mapping"
+            :readonly="true"
+            :height="300"
+          />
         </b-col>
       </b-row>
     </form>
@@ -55,14 +32,12 @@
 </template>
 
 <script>
-import JsonForm from '../../../Common/JsonForm/JsonForm'
 import JsonEditor from '../../../Common/JsonEditor'
 import { mergeSchemaMapping } from '../../../../services/collectionHelper'
 
 export default {
   name: 'CustomData',
   components: {
-    JsonForm,
     JsonEditor
   },
   props: {
@@ -112,8 +87,8 @@ export default {
       this.newContent[payload.name] = payload.value
       this.$emit('input', this.newContent)
     },
-    jsonChanged() {
-      this.$emit('input', this.$refs.jsoneditor.getJson())
+    jsonChanged(value) {
+      this.$emit('input', value)
     }
   }
 }
