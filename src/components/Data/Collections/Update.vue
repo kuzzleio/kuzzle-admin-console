@@ -1,20 +1,22 @@
 <template>
-  <div v-if="hasRights">
-    <create-or-update
-      v-if="!loading"
-      headline="Update collection"
-      submit-label="Update"
-      :collection="collection"
-      :index="index"
-      :dynamic="dynamic"
-      :mapping="mapping"
-      :realtime-only="realtimeOnly"
-      @submit="update"
-    />
-  </div>
-  <div v-else>
-    <page-not-allowed />
-  </div>
+  <b-container class="CollectionUpdate">
+    <div v-if="hasRights">
+      <create-or-update
+        v-if="!loading"
+        headline="Update collection"
+        submit-label="Update"
+        :collection="collection"
+        :index="index"
+        :dynamic="dynamic"
+        :mapping="mapping"
+        :realtime-only="realtimeOnly"
+        @submit="update"
+      />
+    </div>
+    <div v-else>
+      <page-not-allowed />
+    </div>
+  </b-container>
 </template>
 
 <script>
