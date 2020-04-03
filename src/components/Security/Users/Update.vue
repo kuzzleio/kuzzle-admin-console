@@ -21,7 +21,7 @@
           >
             <b-tab id="UserUpdate-basicTab" title="Basic">
               <basic
-                :edit-kuid="false"
+                :edit-kuid="!id"
                 :added-profiles="addedProfiles"
                 :auto-generate-kuid="autoGenerateKuid"
                 :kuid="kuid"
@@ -125,6 +125,11 @@ export default {
       customContent: '{}',
       customContentValue: '{}',
       customContentMapping: {}
+    }
+  },
+  props: {
+    id: {
+      type: String
     }
   },
   computed: {
@@ -258,39 +263,41 @@ export default {
         delete this.customContentMapping.profileIds
       }
 
-      this.kuid = this.$route.params.id
+      if (this.id) {
+        this.kuid = this.id
 
-      await Promise.all(
-        this.strategies.map(async strategy => {
-          const credentialsExists = await this.$kuzzle.security.hasCredentials(
-            strategy,
-            this.kuid
-          )
+        await Promise.all(
+          this.strategies.map(async strategy => {
+            const credentialsExists = await this.$kuzzle.security.hasCredentials(
+              strategy,
+              this.kuid
+            )
 
-          if (!credentialsExists) {
-            return
-          }
+            if (!credentialsExists) {
+              return
+            }
 
-          let strategyCredentials = await this.$kuzzle.security.getCredentials(
-            strategy,
-            this.kuid
-          )
+            let strategyCredentials = await this.$kuzzle.security.getCredentials(
+              strategy,
+              this.kuid
+            )
 
-          if (strategyCredentials.kuid) {
-            delete strategyCredentials.kuid
-          }
+            if (strategyCredentials.kuid) {
+              delete strategyCredentials.kuid
+            }
 
-          this.$set(this.credentials, strategy, strategyCredentials)
-        })
-      )
+            this.$set(this.credentials, strategy, strategyCredentials)
+          })
+        )
 
-      let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
-      this.id = _id
-      this.addedProfiles = content.profileIds
-      delete content.profileIds
-      delete content._kuzzle_info
-      this.customContent = JSON.stringify(content, null, 2)
-      this.customContentValue = this.customContentValue
+        let { _id, content } = await this.$kuzzle.security.getUser(this.kuid)
+        this.id = _id
+        this.addedProfiles = content.profileIds
+        delete content.profileIds
+        delete content._kuzzle_info
+        this.customContent = JSON.stringify(content, null, 2)
+        this.customContentValue = this.customContentValue
+      }
 
       this.loading = false
     } catch (e) {

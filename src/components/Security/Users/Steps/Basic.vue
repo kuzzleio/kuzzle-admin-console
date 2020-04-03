@@ -5,32 +5,35 @@
         <strong>KUID</strong>
       </b-col>
 
-      <b-col cols="6">
-        <input
+      <b-col cols="5">
+        <b-input
           v-if="editKuid"
           id="custom-kuid"
           type="text"
           class="validate"
-          placeholder="Custom KUID"
+          :placeholder="
+            autoGenerateKuidValue
+              ? 'Will be auto-generated'
+              : 'Please fill-in the KUID'
+          "
           :value="kuid"
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
         />
         <span class="code" v-if="!editKuid">{{ kuid }}</span>
       </b-col>
-      <b-col cols="3" v-if="editKuid">
-        <label>
-          <input
-            id="user-auto-generate-kuid"
-            type="checkbox"
-            class="filled-in"
-            :checked="autoGenerateKuid"
-            @change="setAutoGenerateKuid"
-          />
+      <b-col cols="3" v-if="editKuid" class="vertical-align">
+        <b-form-checkbox
+          v-model="autoGenerateKuidValue"
+          class="filled-in"
+          id="user-auto-generate-kuid"
+          type="checkbox"
+          @input="$emit('set-auto-generate-kuid', $event)"
+        >
           <span>
             Auto-generate
           </span>
-        </label>
+        </b-form-checkbox>
       </b-col>
     </b-row>
     <b-row class="mt-2">
@@ -55,6 +58,11 @@ export default {
   name: 'UserBasicData',
   components: {
     UserProfileList
+  },
+  data() {
+    return {
+      autoGenerateKuidValue: false
+    }
   },
   props: {
     addedProfiles: {
@@ -88,6 +96,14 @@ export default {
     },
     removeProfile(profile) {
       this.$emit('profile-remove', profile)
+    }
+  },
+  watch: {
+    autoGenerateKuid: {
+      immediate: true,
+      handler(v) {
+        this.autoGenerateKuidValue = v
+      }
     }
   }
 }

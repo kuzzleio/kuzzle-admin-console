@@ -36,11 +36,7 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      // if (!canCreateUser()) {
-      //   require(['../../components/Common/PageNotAllowed'], resolve)
-      // } else {
-      require(['../../components/Security/Users/Create'], resolve)
-      // }
+      require(['../../components/Security/Users/Update'], resolve)
     }
   },
   {
@@ -50,12 +46,9 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      // if (!canEditUser()) {
-      //   require(['../../components/Common/PageNotAllowed'], resolve)
-      // } else {
       require(['../../components/Security/Users/Update'], resolve)
-      // }
-    }
+    },
+    props: route => ({ id: route.params.id })
   },
   {
     path: '/security/profiles',
@@ -74,11 +67,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      // if (!canCreateProfile()) {
-      //   require(['../../components/Common/PageNotAllowed'], resolve)
-      // } else {
       require(['../../components/Security/Profiles/Create'], resolve)
-      // }
     }
   },
   {
@@ -88,11 +77,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      // if (!canEditProfile()) {
-      //   require(['../../components/Common/PageNotAllowed'], resolve)
-      // } else {
       require(['../../components/Security/Profiles/Update'], resolve)
-      // }
     }
   },
   {
@@ -112,12 +97,8 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      // if (!canCreateRole()) {
-      //   require(['../../components/Common/PageNotAllowed'], resolve)
-      // } else {
       require(['../../components/Security/Roles/Create'], resolve)
     }
-    // }
   },
   {
     path: '/security/roles/:id',
@@ -126,11 +107,7 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      // if (!canEditRole()) {
-      //   require(['../../components/Common/PageNotAllowed'], resolve)
-      // } else {
       require(['../../components/Security/Roles/Update'], resolve)
-      // }
     }
   }
 ]
