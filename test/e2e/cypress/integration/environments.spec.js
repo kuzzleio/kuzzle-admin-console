@@ -7,7 +7,7 @@ describe('Environments', function() {
     localStorage.removeItem('environments')
   })
 
-  it('is able to create a new environment', function() {
+  it('Should be able to create a new environment', function() {
     const newEnvName = 'local'
     cy.visit('/')
     cy.contains('Create a Connection')
@@ -21,7 +21,7 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it('is able to delete environments', function() {
+  it('Should be able to delete environments', function() {
     const envNames = ['local', 'another']
     localStorage.setItem(
       'environments',
@@ -68,7 +68,7 @@ describe('Environments', function() {
     cy.contains('Create a Connection')
   })
 
-  it('is able to set the color of an environment', function() {
+  it('Should be able to set the color of an environment', function() {
     cy.visit('/')
     cy.get('[data-cy="CreateEnvironment-name"]').type('local', {
       force: true
@@ -89,7 +89,7 @@ describe('Environments', function() {
     })
   })
 
-  it('is able to create an unreachable environment and switch back to the reachable one', function() {
+  it('Should be able to create an unreachable environment and switch back to the reachable one', function() {
     const reachableEnvName = 'reachable'
     const unreachableEnvName = 'unreachable'
     localStorage.setItem(
@@ -143,7 +143,7 @@ describe('Environments', function() {
     cy.get('[data-cy="App-online"]')
   })
 
-  it('should be able to update an environment', () => {
+  it('Should be able to update an environment', () => {
     const envNames = ['local', 'another']
     const hosts = ['localhost', '123.123.123.123']
     const ports = [7512, 7514]
@@ -196,7 +196,7 @@ describe('Environments', function() {
     cy.contains('Connected to')
   })
 
-  it.only('should import environment', () => {
+  it('Should be able to import environments', () => {
     cy.visit('/')
     cy.contains('Create a Connection')
     cy.get('[data-cy="CreateEnvironment-import"]').click({
@@ -241,7 +241,7 @@ describe('Environments', function() {
     })
   })
 
-  it('should display toast when environment list is malformed', () => {
+  it('Should display a toast when environment list is malformed', () => {
     localStorage.setItem('environments', `{   Som3 m@l4rm3D CODEZ jayzon}}]}`)
     cy.visit('/')
     cy.contains('Ooops! Something went wrong while loading the connections.')

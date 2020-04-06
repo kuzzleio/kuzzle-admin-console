@@ -158,12 +158,12 @@ const actions = createActions({
     localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
     return commit.setCollectionDefaultViewJson({ jsonView })
   },
-  async clearCollection({ state }, { index }) {
+  async clearCollection({ state }, { index, collection }) {
     await Vue.prototype.$kuzzle.query({
       controller: 'collection',
       action: 'truncate',
       index,
-      collection: state.name,
+      collection,
       refresh: 'wait_for'
     })
   }
