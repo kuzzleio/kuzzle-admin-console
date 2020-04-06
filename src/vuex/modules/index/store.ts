@@ -148,7 +148,7 @@ const actions = createActions({
 
     await dispatch.listIndexes()
     Object.keys(state.indexesAndCollections).forEach(async index => {
-      await dispatch.listCollectionsForIndex(index)
+      dispatch.listCollectionsForIndex(index)
     })
   },
   async createCollectionInIndex(

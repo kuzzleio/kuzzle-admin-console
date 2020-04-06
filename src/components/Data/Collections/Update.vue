@@ -49,14 +49,12 @@ export default {
   async mounted() {
     this.loading = true
     try {
-      // await this.$store.direct.dispatch.index.listIndexesAndCollections()
       const details = await this.$store.direct.dispatch.collection.fetchCollectionDetail(
         {
           index: this.index,
           collection: this.collection
         }
       )
-      // this.$log.debug(details)
 
       this.dynamic = details.dynamic
       this.mapping = details.mapping
