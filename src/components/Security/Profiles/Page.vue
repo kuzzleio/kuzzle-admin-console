@@ -5,7 +5,7 @@
     <!-- Not allowed -->
     <list-not-allowed v-if="!canSearchProfile()" />
 
-    <common-list
+    <list
       v-if="canSearchProfile()"
       item-name="ProfileItem"
       :display-create="canCreateProfile()"
@@ -53,12 +53,12 @@
           </div>
         </div>
       </div>
-    </common-list>
+    </list>
   </div>
 </template>
 
 <script>
-import CommonList from './CommonList'
+import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
 import {
@@ -73,7 +73,7 @@ import {
 export default {
   name: 'ProfileManagement',
   components: {
-    CommonList,
+    List,
     ListNotAllowed,
     Headline
   },

@@ -1,7 +1,10 @@
 <template>
   <div class="ProfileList">
     <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
-    <crudl-document
+    <template v-else>
+      <filters />
+    </template>
+    <!-- <crudl-document
       v-else
       :current-filter="currentFilter"
       :pagination-from="paginationFrom"
@@ -40,26 +43,28 @@
           />
         </div>
       </div>
-    </crudl-document>
+    </crudl-document> -->
   </div>
 </template>
 
 <script>
-import CrudlDocument from './CrudlDocument'
-import UserItem from '../Users/UserItem'
-import RoleItem from '../Roles/RoleItem'
-import ProfileItem from '../Profiles/ProfileItem'
-import DocumentItem from '../../Data/Documents/DocumentListItem'
+// import CrudlDocument from './CrudlDocument'
+// import UserItem from '../Users/UserItem'
+// import RoleItem from '../Roles/RoleItem'
+// import ProfileItem from '../Profiles/ProfileItem'
+// import DocumentItem from '../../Data/Documents/DocumentListItem'
+import Filters from './Filters'
 import * as filterManager from '../../../services/filterManager'
 
 export default {
   name: 'ProfileList',
   components: {
-    CrudlDocument,
-    UserItem,
-    RoleItem,
-    ProfileItem,
-    DocumentItem
+    Filters
+    // CrudlDocument,
+    // UserItem,
+    // RoleItem,
+    // ProfileItem,
+    // DocumentItem
   },
   props: {
     index: String,
