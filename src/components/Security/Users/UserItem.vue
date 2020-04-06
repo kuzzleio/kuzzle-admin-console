@@ -110,8 +110,8 @@
         <pre v-json-formatter="{ content: document.content, open: true }" />
         <pre v-json-formatter="{ content: document.meta, open: false }" />
         <pre
-          v-if="document.aggregations"
-          v-json-formatter="{ content: document.aggregations, open: true }"
+          v-if="document.credentials"
+          v-json-formatter="{ content: document.credentials, open: true }"
         />
       </b-collapse>
     </b-row>

@@ -85,11 +85,8 @@ export default {
     }
   },
   methods: {
-    setAutoGenerateKuid(event) {
-      this.$emit('set-auto-generate-kuid', event.target.checked)
-    },
-    setCustomKuid(event) {
-      this.$emit('set-custom-kuid', event.target.value)
+    setCustomKuid(value) {
+      this.$emit('set-custom-kuid', value)
     },
     onProfileSelected(profile) {
       this.$emit('profile-add', profile)

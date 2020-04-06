@@ -1,8 +1,11 @@
 <template>
   <div class="UserUpdate">
     <b-container class="UserUpdate--container">
-      <headline>
+      <headline v-if="!!id">
         Edit user - <span class="code">{{ $route.params.id }}</span>
+      </headline>
+      <headline v-else>
+        Create a new user
       </headline>
 
       <Notice />
@@ -65,9 +68,10 @@
                 data-cy="UserUpdate-submit"
                 type="submit"
                 variant="primary"
-                @click.prevent="save"
+                @click.prevent="submit"
               >
-                Save
+                <span v-if="!!id">Save</span>
+                <span v-else>Create</span>
               </b-button>
             </b-col>
           </b-row>
@@ -176,7 +180,7 @@ export default {
 
       return true
     },
-    async save() {
+    async submit() {
       try {
         this.validate()
       } catch (e) {
@@ -185,37 +189,56 @@ export default {
       }
       this.submitting = true
 
-      let userObject = {
-        profileIds: this.addedProfiles,
-        ...JSON.parse(this.customContentValue)
-      }
-
       try {
-        await this.$kuzzle.security.replaceUser(this.kuid, userObject, {
-          refresh: 'wait_for'
-        })
-        await Promise.all(
-          Object.keys(this.credentials).map(async strategy => {
-            const credentialsExists = await this.$kuzzle.security.hasCredentials(
-              strategy,
-              this.kuid
-            )
-
-            if (credentialsExists) {
-              await this.$kuzzle.security.updateCredentials(
-                strategy,
-                this.kuid,
-                this.credentials[strategy]
-              )
-            } else {
-              await this.$kuzzle.security.createCredentials(
-                strategy,
-                this.kuid,
-                this.credentials[strategy]
-              )
+        if (this.id) {
+          await this.$kuzzle.security.replaceUser(
+            this.kuid,
+            {
+              profileIds: this.addedProfiles,
+              ...JSON.parse(this.customContentValue)
+            },
+            {
+              refresh: 'wait_for'
             }
-          })
-        )
+          )
+          await Promise.all(
+            Object.keys(this.credentials).map(async strategy => {
+              const credentialsExists = await this.$kuzzle.security.hasCredentials(
+                strategy,
+                this.kuid
+              )
+
+              if (credentialsExists) {
+                await this.$kuzzle.security.updateCredentials(
+                  strategy,
+                  this.kuid,
+                  this.credentials[strategy]
+                )
+              } else {
+                await this.$kuzzle.security.createCredentials(
+                  strategy,
+                  this.kuid,
+                  this.credentials[strategy]
+                )
+              }
+            })
+          )
+        } else {
+          await this.$kuzzle.security.createUser(
+            this.kuid,
+            {
+              content: {
+                profileIds: this.addedProfiles,
+                ...JSON.parse(this.customContentValue)
+              },
+              credentials: this.credentials
+            },
+            {
+              refresh: 'wait_for'
+            }
+          )
+        }
+
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (err) {
         if (err) {
@@ -229,7 +252,7 @@ export default {
       this.error = msg
       setTimeout(() => {
         this.dismissError()
-      }, 5000)
+      }, 15000)
     },
     dismissError() {
       this.error = null

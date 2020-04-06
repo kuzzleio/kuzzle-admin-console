@@ -36,10 +36,10 @@
               >
                 <b-form-input
                   :id="fieldName"
-                  :value="credentials[strategy][fieldName]"
+                  :value="getValue(strategy, fieldName)"
                   :type="fieldType(fieldName)"
                   :name="fieldName"
-                  @input="onFieldChange"
+                  @input="onFieldChange(strategy, fieldName, $event)"
                 />
               </b-form-group>
             </div>
@@ -54,43 +54,35 @@
 export default {
   name: 'CredentialsSelector',
   components: {},
-  props: ['fields', 'strategies', 'credentials', 'credentialsMapping'],
+  props: {
+    strategies: {
+      type: Array,
+      default: () => []
+    },
+    credentials: {
+      type: Object,
+      default: () => ({})
+    },
+    credentialsMapping: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   data() {
     return {
       error: '',
       document: null,
-      id: null,
-      currentStrategy: null
+      id: null
     }
   },
-  computed: {
-    fieldsForStrategy() {
-      if (
-        !this.credentialsMapping ||
-        !this.credentialsMapping[this.currentStrategy]
-      ) {
-        return []
-      }
-
-      return this.credentialsMapping[this.currentStrategy]
-    },
-    credentialsForStrategy() {
-      if (!this.credentials || !this.credentials[this.currentStrategy]) {
-        return []
-      }
-
-      return this.credentials[this.currentStrategy]
-    }
-  },
-  watch: {
-    strategies() {
-      if (!this.strategies.length) {
-        return
-      }
-      this.currentStrategy = this.strategies[0]
-    }
-  },
+  computed: {},
   methods: {
+    getValue(strategy, fieldName) {
+      if (!this.credentials[strategy]) {
+        return null
+      }
+      return this.credentials[strategy][fieldName]
+    },
     getFieldHelp(fieldName) {
       return fieldName.replace(/^\w/, c => c.toUpperCase())
     },
@@ -101,12 +93,12 @@ export default {
 
       return 'text'
     },
-    onFieldChange(input) {
+    onFieldChange(strategy, fieldName, value) {
       this.$emit('input', {
-        strategy: this.currentStrategy,
+        strategy: strategy,
         credentials: {
-          ...this.credentials[this.currentStrategy],
-          input
+          ...this.credentials[strategy],
+          [fieldName]: value
         }
       })
     }
