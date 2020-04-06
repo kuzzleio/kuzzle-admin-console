@@ -32,7 +32,7 @@ export default {
       try {
         const res = await Vue.prototype.$kuzzle.collection.list(
           index,
-          { size: 42000 }
+          { size: 0 }
         )
 
         let collections = splitRealtimeStoredCollections(res.collections)
