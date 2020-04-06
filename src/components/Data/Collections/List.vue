@@ -82,7 +82,7 @@
                 'fa-bolt ml-2': type.value === 'realtime',
                 'fa-th-list': type.value === 'stored'
               }"
-              :title="type.value === 'realtime' ? 'Realtime' : 'Persisted'"
+              :title="type.value === 'realtime' ? 'Realtime' : 'Stored'"
             ></i>
           </template>
           <template v-slot:cell(name)="name">
