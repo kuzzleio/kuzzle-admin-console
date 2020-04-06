@@ -103,7 +103,7 @@ import MainSpinner from '../../Common/MainSpinner'
 import Promise from 'bluebird'
 
 export default {
-  name: 'UpdateUser',
+  name: 'CreateOrUpdateUser',
   components: {
     Basic,
     CredentialsSelector,

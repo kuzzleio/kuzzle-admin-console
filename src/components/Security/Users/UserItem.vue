@@ -108,7 +108,6 @@
         class="mt-3 ml-3 DocumentListItem-content"
       >
         <pre v-json-formatter="{ content: document.content, open: true }" />
-        <pre v-json-formatter="{ content: document.meta, open: false }" />
         <pre
           v-if="document.credentials"
           v-json-formatter="{ content: document.credentials, open: true }"

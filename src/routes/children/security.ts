@@ -36,7 +36,7 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      require(['../../components/Security/Users/Update'], resolve)
+      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
     }
   },
   {
@@ -46,7 +46,7 @@ export default [
       section: 'users'
     },
     component(resolve) {
-      require(['../../components/Security/Users/Update'], resolve)
+      require(['../../components/Security/Users/CreateOrUpdate'], resolve)
     },
     props: route => ({ id: route.params.id })
   },

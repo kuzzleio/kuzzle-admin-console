@@ -44,7 +44,7 @@
       >
         {{ profile }}&nbsp;
         <i
-          class="ml-1 fa fa-trash"
+          class="UserProfileList-delete ml-1 fa fa-trash"
           :data-cy="`UserProfileList-${profile}--delete`"
           @click="removeProfile(profile)"
         /> </b-badge
@@ -101,8 +101,7 @@ export default {
 </script>
 
 <style type="text/css" scoped>
-.chip {
-  margin-right: 5px;
+.UserProfileList-delete {
   cursor: pointer;
 }
 </style>

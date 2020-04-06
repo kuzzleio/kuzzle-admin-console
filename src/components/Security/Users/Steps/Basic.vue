@@ -8,9 +8,10 @@
       <b-col cols="5">
         <b-input
           v-if="editKuid"
+          class="validate"
+          data-cy="UserBasic-kuid"
           id="custom-kuid"
           type="text"
-          class="validate"
           :placeholder="
             autoGenerateKuidValue
               ? 'Will be auto-generated'
@@ -26,6 +27,7 @@
         <b-form-checkbox
           v-model="autoGenerateKuidValue"
           class="filled-in"
+          data-cy="UserBasic-autoKuidBtn"
           id="user-auto-generate-kuid"
           type="checkbox"
           @input="$emit('set-auto-generate-kuid', $event)"

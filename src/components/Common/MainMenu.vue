@@ -52,7 +52,7 @@
           @environment::delete="deleteEnvironment"
         />
         <b-nav-item class="ml-1">
-          <a title="Logout" @click="doLogout"
+          <a data-cy="MainMenu-logoutBtn" title="Logout" @click="doLogout"
             ><i class="logout fas fa-power-off"
           /></a>
         </b-nav-item>

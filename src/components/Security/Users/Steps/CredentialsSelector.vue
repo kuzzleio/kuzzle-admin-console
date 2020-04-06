@@ -36,9 +36,10 @@
               >
                 <b-form-input
                   :id="fieldName"
+                  :data-cy="`CredentialsSelector-${strategy}-${fieldName}`"
+                  :name="fieldName"
                   :value="getValue(strategy, fieldName)"
                   :type="fieldType(fieldName)"
-                  :name="fieldName"
                   @input="onFieldChange(strategy, fieldName, $event)"
                 />
               </b-form-group>
