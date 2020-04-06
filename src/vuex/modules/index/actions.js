@@ -30,10 +30,11 @@ export default {
     result = result.filter(index => index !== '%kuzzle')
     for (const index of result) {
       try {
-        const res = await Vue.prototype.$kuzzle
-          .collection
-          .list(index)
-      
+        const res = await Vue.prototype.$kuzzle.collection.list(
+          index,
+          { size: 42000 }
+        )
+
         let collections = splitRealtimeStoredCollections(res.collections)
 
         if (!collections.realtime) {
