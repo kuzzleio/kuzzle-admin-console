@@ -354,7 +354,7 @@ describe('Users', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it.only('Should be able to create a new user with auto-generated KUID', () => {
+  it('Should be able to create a new user with auto-generated KUID', () => {
     const credentials = {
       username: 'trippy',
       password: 'martinez'
