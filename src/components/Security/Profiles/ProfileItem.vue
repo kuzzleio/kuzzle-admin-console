@@ -1,37 +1,83 @@
 <template>
-  <div class="ProfileItem" :class="{ collapsed: collapsed }">
-    <i
-      class="ProfileItem-toggle fa fa-caret-down item-toggle"
-      aria-hidden="true"
-      @click="toggleCollapse()"
-    />
-
-    <label>
-      <input
-        :id="checkboxId"
-        type="checkbox"
-        class="filled-in"
-        :value="document.id"
-        :checked="isChecked"
-        @click="notifyCheckboxClick"
-      />
-
-      <span />
-    </label>
+  <b-container fluid data-cy="ProfileItem">
+    <b-row align-h="between" no-gutters>
+      <b-col cols="10" class="py-1">
+        <i
+          aria-hidden="true"
+          :class="
+            `fa fa-caret-${
+              expanded ? 'down' : 'right'
+            } mr-2  d-inline-block align-middle`
+          "
+          :data-cy="`ProfileItem-${document.id}--toggle`"
+          @click="toggleCollapse"
+        />
+        <b-form-checkbox
+          class="d-inline-block align-middle"
+          type="checkbox"
+          value="true"
+          unchecked-value="false"
+          v-model="checked"
+          :data-cy="`ProfileListItem-checkbox--${document.id}`"
+          :id="checkboxId"
+          @change="notifyCheckboxClick"
+        />
+        <a
+          class="d-inline-block align-middle code pointer"
+          @click="toggleCollapse"
+          >{{ document.id }}</a
+        >
+        <label
+          v-if="
+            document.additionalAttribute && document.additionalAttribute.value
+          "
+          class="ProfileItem-additionalAttribute"
+        >
+          ({{ document.additionalAttribute.name }}:
+          {{ document.additionalAttribute.value }})
+        </label>
+      </b-col>
+      <b-col cols="2">
+        <div class="float-right">
+          <b-button
+            class="ProfileListItem-update"
+            href=""
+            variant="link"
+            :data-cy="`ProfileListItem-update--${document.id}`"
+            :disabled="!canEditProfile()"
+            :title="
+              canEditProfile()
+                ? 'Edit Profile'
+                : 'You are not allowed to edit this profile'
+            "
+            @click.prevent="update"
+          >
+            <i
+              class="fa fa-pencil-alt"
+              :class="{ disabled: !canEditProfile() }"
+            />
+          </b-button>
+          <b-button
+            class="ProfileListItem-delete"
+            href=""
+            variant="link"
+            :data-cy="`ProfileListItem-delete--${document.id}`"
+            :disabled="!canDeleteProfile()"
+            :title="
+              canDeleteProfile()
+                ? 'Delete profile'
+                : 'You are not allowed to delete this profile'
+            "
+            @click.prevent="deleteDocument(document.id)"
+          >
+            <i class="fa fa-trash" :class="{ disabled: !canDeleteProfile() }" />
+          </b-button>
+        </div>
+      </b-col>
+    </b-row>
     <!-- The following anchor will go to the profile details page -->
-    <label class="ProfileItem-title item-title"
-      ><a @click="toggleCollapse">{{ document.id }}</a></label
-    >
 
-    <label
-      v-if="document.additionalAttribute && document.additionalAttribute.value"
-      class="ProfileItem-additionalAttribute"
-    >
-      ({{ document.additionalAttribute.name }}:
-      {{ document.additionalAttribute.value }})
-    </label>
-
-    <div class="ProfileItem-actions right">
+    <!-- <div class="ProfileItem-actions right">
       <a
         v-title="{
           active: !canEditProfile(),
@@ -54,18 +100,23 @@
             >Delete</a
           >
         </li>
-      </dropdown>
-    </div>
+      </dropdown> 
+    </div>-->
 
-    <div class="ProfileItem-content item-content">
-      <pre v-json-formatter="{ content: document.content, open: true }" />
-      <pre v-json-formatter="{ content: document.meta, open: true }" />
-    </div>
-  </div>
+    <b-row>
+      <b-collapse
+        :id="`collapse-${document.id}`"
+        v-model="expanded"
+        class="mt-3 ml-3 DocumentListItem-content"
+      >
+        <pre v-json-formatter="{ content: document.content, open: true }" />
+      </b-collapse>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-import Dropdown from '../../Materialize/Dropdown'
+// import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
 import {
   canEditProfile,
@@ -76,7 +127,7 @@ import title from '../../../directives/title.directive'
 export default {
   name: 'ProfileItem',
   components: {
-    Dropdown
+    // Dropdown
   },
   directives: {
     jsonFormatter,
@@ -88,7 +139,8 @@ export default {
   },
   data() {
     return {
-      collapsed: true
+      expanded: false,
+      checked: false
     }
   },
   computed: {
@@ -98,7 +150,7 @@ export default {
   },
   methods: {
     toggleCollapse() {
-      this.collapsed = !this.collapsed
+      this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
       this.$emit('checkbox-click', this.document.id)
