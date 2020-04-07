@@ -7,7 +7,7 @@
           <b-dropdown
             class="ml-2"
             data-cy="ProfileFilters-roleSelect"
-            variant="outline-secondary"
+            variant="outline-primary"
             menu-class="dropdownScroll"
             text="Select roles to be contained in the profiles"
             no-flip
@@ -93,7 +93,7 @@ export default {
       }
     },
     submitSearch() {
-      this.$emit('filters-updated', { roles: this.selectedRoles })
+      this.$emit('filters-updated', this.selectedRoles)
     },
     reset() {
       this.selectedRoles = []
@@ -102,6 +102,7 @@ export default {
   },
   mounted() {
     this.fetchRoleList()
+    this.selectedRoles = this.currentFilter.map(role => role)
   },
   watch: {
     selectedRoles() {

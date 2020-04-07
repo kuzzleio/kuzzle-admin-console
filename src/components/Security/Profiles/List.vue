@@ -2,7 +2,10 @@
   <div class="ProfileList">
     <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
-      <filters />
+      <filters
+        :current-filter="currentFilter"
+        @filters-updated="onFiltersUpdated"
+      />
     </template>
     <!-- <crudl-document
       v-else
@@ -54,7 +57,6 @@
 // import ProfileItem from '../Profiles/ProfileItem'
 // import DocumentItem from '../../Data/Documents/DocumentListItem'
 import Filters from './Filters'
-import * as filterManager from '../../../services/filterManager'
 
 export default {
   name: 'ProfileList',
@@ -85,7 +87,7 @@ export default {
       documents: [],
       totalDocuments: 0,
       documentToDelete: null,
-      currentFilter: new filterManager.Filter()
+      currentFilter: []
     }
   },
   computed: {
@@ -105,26 +107,6 @@ export default {
     paginationSize() {
       return parseInt(this.currentFilter.size) || 10
     }
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler() {
-        this.currentFilter = Object.assign(
-          new filterManager.Filter(),
-          filterManager.loadFromRoute(this.$route)
-        )
-      }
-    },
-    currentFilter() {
-      this.fetchProfiles()
-    }
-  },
-  mounted() {
-    this.currentFilter = Object.assign(
-      new filterManager.Filter(),
-      filterManager.loadFromRoute(this.$route)
-    )
   },
   methods: {
     async deleteProfiles(index, collection, ids) {
@@ -157,15 +139,23 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(newFilters) {
+      // newFilters
       try {
-        filterManager.saveToRouter(
-          filterManager.stripDefaultValuesFromFilter(newFilters),
-          this.$router
-        )
+        this.$log.debug(newFilters)
+        this.saveFilterToRoute(newFilters)
+        // filterManager.saveToRouter(
+        //   filterManager.stripDefaultValuesFromFilter(newFilters),
+        //   this.$router
+        // )
       } catch (error) {
-        this.$store.direct.commit.toaster.setToast({
-          text:
-            'An error occurred while updating filters: <br />' + error.message
+        this.$log.error(error)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title: 'Ooops! Something went wrong while updating filters',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
       }
     },
@@ -176,7 +166,7 @@ export default {
       }
 
       // Execute search with corresponding filters
-      this.performSearch(this.currentFilter.basic || {}, pagination)
+      this.performSearch({ roles: this.currentFilter } || {}, pagination) // TODO
         .then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total
@@ -199,7 +189,33 @@ export default {
     },
     create() {
       this.$router.push({ name: this.routeCreate })
+    },
+    loadFilterFromRoute() {
+      const filter = this.$route.query.filter
+      if (filter && Array.isArray(filter)) {
+        this.currentFilter = filter
+      }
+    },
+    saveFilterToRoute(newFilter) {
+      this.$router.push({ query: { filter: newFilter } })
     }
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler() {
+        this.loadFilterFromRoute()
+      }
+    },
+    currentFilter() {
+      this.fetchProfiles()
+    }
+  },
+  mounted() {
+    // this.currentFilter = Object.assign(
+    //   new filterManager.Filter(),
+    //   filterManager.loadFromRoute(this.$route)
+    // )
   }
 }
 </script>
