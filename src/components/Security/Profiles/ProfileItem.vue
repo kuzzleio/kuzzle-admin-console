@@ -75,33 +75,6 @@
         </div>
       </b-col>
     </b-row>
-    <!-- The following anchor will go to the profile details page -->
-
-    <!-- <div class="ProfileItem-actions right">
-      <a
-        v-title="{
-          active: !canEditProfile(),
-          title: 'You are not allowed to edit this profile'
-        }"
-        href="#"
-        @click.prevent="update"
-      >
-        <i class="fa fa-pencil-alt" :class="{ disabled: !canEditProfile() }" />
-      </a>
-      <dropdown :id="document.id" myclass="icon-black">
-        <li>
-          <a
-            v-title="{
-              active: !canDeleteProfile(),
-              title: 'You are not allowed to delete this profile'
-            }"
-            :class="{ disabled: !canDeleteProfile() }"
-            @click="deleteDocument(document.id)"
-            >Delete</a
-          >
-        </li>
-      </dropdown> 
-    </div>-->
 
     <b-row>
       <b-collapse
@@ -116,7 +89,6 @@
 </template>
 
 <script>
-// import Dropdown from '../../Materialize/Dropdown'
 import jsonFormatter from '../../../directives/json-formatter.directive'
 import {
   canEditProfile,
@@ -157,20 +129,23 @@ export default {
     },
     deleteDocument() {
       if (this.canDeleteProfile()) {
-        this.$emit('delete-document', this.document.id)
+        this.$emit('delete', this.document.id)
       }
     },
     update() {
       if (this.canEditProfile()) {
-        this.$emit(
-          'common-list::edit-document',
-          'SecurityProfilesUpdate',
-          this.document.id
-        )
+        this.$emit('edit', this.document.id)
       }
     },
     canEditProfile,
     canDeleteProfile
+  },
+  watch: {
+    isChecked: {
+      handler(value) {
+        this.checked = value
+      }
+    }
   }
 }
 </script>

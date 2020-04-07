@@ -37,6 +37,14 @@
               </span>
             </b-dropdown-text>
           </b-dropdown>
+          <b-badge
+            v-if="hasFilter"
+            data-cy="ProfileFilters-filterAppliedPill"
+            pill
+            variant="info"
+            class="ml-2 py-2 px-3"
+            >Filters are being applied</b-badge
+          >
         </b-col>
         <b-col class="text-right">
           <b-button class="mr-2" variant="outline-primary" @click="reset">
@@ -68,12 +76,20 @@ export default {
       required: false,
       default: 'search'
     },
-    currentFilter: Object
+    currentFilter: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
       roleList: [],
       selectedRoles: []
+    }
+  },
+  computed: {
+    hasFilter() {
+      return this.selectedRoles.length > 0
     }
   },
   methods: {

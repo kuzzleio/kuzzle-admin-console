@@ -111,16 +111,25 @@
         </b-card>
       </template>
     </template>
+    <delete-modal
+      id="modal-delete-profiles"
+      :candidates-for-deletion="candidatesForDeletion"
+      :is-loading="deleteModalIsLoading"
+      @confirm="onDeleteConfirmed"
+      @hide="resetCandidatesForDeletion"
+    />
   </div>
 </template>
 
 <script>
+import DeleteModal from './DeleteModal'
 import ProfileItem from '../Profiles/ProfileItem'
 import Filters from './Filters'
 
 export default {
   name: 'ProfileList',
   components: {
+    DeleteModal,
     Filters,
     ProfileItem
   },
@@ -139,11 +148,13 @@ export default {
   },
   data() {
     return {
-      selectedDocuments: [],
+      candidatesForDeletion: [],
+      currentFilter: [],
+      deleteModalIsLoading: false,
       documents: [],
-      totalDocuments: 0,
-      documentToDelete: null,
-      currentFilter: []
+      loading: true,
+      selectedDocuments: [],
+      totalDocuments: 0
     }
   },
   computed: {
@@ -165,14 +176,6 @@ export default {
     }
   },
   methods: {
-    async deleteProfiles(index, collection, ids) {
-      await this.performDelete(index, collection, ids)
-      this.$set(
-        this.selectedDocuments,
-        this.selectedDocuments.splice(0, this.selectedDocuments.length)
-      )
-      this.fetchProfiles()
-    },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     },
@@ -195,14 +198,8 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(newFilters) {
-      // newFilters
       try {
-        this.$log.debug(newFilters)
         this.saveFilterToRoute(newFilters)
-        // filterManager.saveToRouter(
-        //   filterManager.stripDefaultValuesFromFilter(newFilters),
-        //   this.$router
-        // )
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast('The complete error has been printed to console', {
@@ -216,6 +213,7 @@ export default {
       }
     },
     fetchProfiles() {
+      this.loading = true
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
@@ -233,16 +231,55 @@ export default {
               'An error occurred while performing search: <br />' + e.message
           })
         })
+      this.loading = false
     },
-    editDocument(route, id) {
+    editProfile(route, id) {
       this.$router.push({
-        name: this.routeUpdate,
+        name: 'SecurityProfilesUpdate',
         params: { id }
       })
     },
-    deleteDocument(id) {
-      this.documentToDelete = id
+
+    // DELETE
+    // =========================================================================
+    async onDeleteConfirmed() {
+      this.deleteModalIsLoading = true
+      try {
+        await this.performDelete(
+          this.index,
+          this.collection,
+          this.candidatesForDeletion
+        )
+        this.$bvModal.hide('modal-delete-profiles')
+        this.selectedDocuments = []
+        this.deleteModalIsLoading = false
+        this.fetchProfiles()
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title: 'Ooops! Something went wrong while deleting the profiles',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
+      }
     },
+    deleteBulk() {
+      this.candidatesForDeletion = this.candidatesForDeletion.concat(
+        this.selectedDocuments
+      )
+      this.$bvModal.show('modal-delete-profiles')
+    },
+    deleteProfile(id) {
+      this.candidatesForDeletion.push(id)
+      this.$bvModal.show('modal-delete-profiles')
+    },
+    resetCandidatesForDeletion() {
+      this.candidatesForDeletion = []
+    },
+
     create() {
       this.$router.push({ name: this.routeCreate })
     },
