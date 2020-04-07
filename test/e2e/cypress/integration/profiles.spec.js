@@ -37,7 +37,7 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileList-items"]').should('not.contain', profileId)
   })
 
-  it.only('Should be able to filter profiles', () => {
+  it('Should be able to filter profiles', () => {
     const profileId = 'dummy'
     cy.request(
       'POST',
