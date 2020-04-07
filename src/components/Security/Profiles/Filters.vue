@@ -13,12 +13,14 @@
             no-flip
           >
             <b-dropdown-text v-for="role of roleList" :key="`dropdown-${role}`">
-              <div class="inlineDisplay pointer">
+              <div
+                class="inlineDisplay pointer"
+                :data-cy="`RoleSelect--${role}`"
+              >
                 <span class="inlineDisplay-item">
                   <b-form-checkbox
                     class="mx-2"
                     :checked="roleIsSelected(role)"
-                    :data-cy="`SelectField--${role}`"
                     :id="role"
                     @change="toggleRole(role, $event)"
                   />
@@ -47,7 +49,12 @@
           >
         </b-col>
         <b-col class="text-right">
-          <b-button class="mr-2" variant="outline-primary" @click="reset">
+          <b-button
+            class="mr-2"
+            data-cy="ProfileFilters-resetBtn"
+            variant="outline-primary"
+            @click="reset"
+          >
             Reset
           </b-button>
           <b-button

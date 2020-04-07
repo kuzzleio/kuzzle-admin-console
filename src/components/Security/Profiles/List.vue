@@ -250,9 +250,8 @@ export default {
           this.collection,
           this.candidatesForDeletion
         )
-        this.$bvModal.hide('modal-delete-profiles')
+
         this.selectedDocuments = []
-        this.deleteModalIsLoading = false
         this.fetchProfiles()
       } catch (error) {
         this.$log.error(error)
@@ -265,6 +264,8 @@ export default {
           noAutoHide: true
         })
       }
+      this.$bvModal.hide('modal-delete-profiles')
+      this.deleteModalIsLoading = false
     },
     deleteBulk() {
       this.candidatesForDeletion = this.candidatesForDeletion.concat(

@@ -1,6 +1,7 @@
 <template>
   <div class="ProfileManagement">
-    <headline title="Profile Management" />
+    <headline title="Profiles" />
+    <!-- TODO Create button -->
 
     <!-- Not allowed -->
     <list-not-allowed v-if="!canSearchProfile()" />
