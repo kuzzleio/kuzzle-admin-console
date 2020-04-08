@@ -74,4 +74,40 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileList-items"]').should('not.contain', 'admin')
     cy.get('[data-cy="ProfileList-items"]').should('contain', 'anonymous')
   })
+
+  it('Should be able to paginate profiles', () => {
+    const profileId = 'dummy'
+    for (let i = 0; i < 14; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/profiles/${profileId}_${i}/_create?refresh=wait_for`,
+        {
+          policies: [{ roleId: 'default' }]
+        }
+      )
+    }
+
+    cy.visit('/#/security/profiles')
+    cy.contains('Profiles')
+    cy.get('[data-cy=ProfileItem]').should('have.length', 10)
+    cy.get(
+      '[data-cy="ProfileManagement-pagination"] .page-link[aria-posinset="2"]'
+    ).click()
+    cy.get('[data-cy=ProfileItem]').should('have.length', 7)
+    cy.url().should('contain', 'from=10')
+  })
+
+  it('Should be able to interact with the links of the page', () => {
+    const profileId = 'anonymous'
+    cy.visit('/#/security/profiles')
+    cy.contains('Profiles')
+    cy.get('[data-cy="ProfilesManagement-createBtn"]').click()
+    cy.url().should('contain', 'security/profiles/create')
+
+    cy.visit('/#/security/profiles')
+    cy.contains('Profiles')
+
+    cy.get(`[data-cy="ProfileListItem-update--${profileId}"]`).click()
+    cy.url().should('contain', `security/profiles/${profileId}`)
+  })
 })

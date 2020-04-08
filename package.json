@@ -8,11 +8,7 @@
     "build": "vue-cli-service build --dest dist$DEPLOY_PATH",
     "test:e2e": "docker-compose -f test/e2e/docker-compose.yml up -d && ./test/e2e/run-test.sh",
     "lint": "vue-cli-service lint",
-    "dev": "vue-cli-service serve",
-    "install_deps": "npm i --unsafe-perm",
-    "prepublishOnly": "npm run build",
     "reset-cache": "rm -rf node_modules/.cache/*",
-    "start": "http-server dist -p 3000",
     "tar_dist": "bash .ci/release_package.sh",
     "test": "npm run test:e2e",
     "test:e2e-local": "e2eLocal=1 ./test/e2e/run-test.sh"

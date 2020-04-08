@@ -1,7 +1,20 @@
 <template>
-  <div class="ProfileManagement">
-    <headline title="Profiles" />
-    <!-- TODO Create button -->
+  <b-container class="ProfileManagement">
+    <b-row>
+      <b-col cols="8">
+        <headline>Profiles</headline>
+      </b-col>
+      <b-col class="text-right mt-3">
+        <b-button
+          class="mr-2"
+          data-cy="ProfilesManagement-createBtn"
+          variant="primary"
+          :disabled="!canCreateProfile()"
+          :to="{ name: 'SecurityProfilesCreate' }"
+          >Create Profile</b-button
+        >
+      </b-col>
+    </b-row>
 
     <!-- Not allowed -->
     <list-not-allowed v-if="!canSearchProfile()" />
@@ -16,46 +29,17 @@
       route-update="SecurityProfilesUpdate"
       @create-clicked="createProfile"
     >
-      <div slot="emptySet" class="card-panel">
-        <div class="row valign-bottom empty-set">
-          <div class="col s1 offset-s1">
-            <i
-              class="fa fa-6x fa-users grey-text text-lighten-1"
-              aria-hidden="true"
-            />
-          </div>
-          <div class="col s10">
-            <p>
-              In this page, you'll be able to manage the
-              <a
-                href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-profiles"
-                >Security Profiles</a
-              >
-              defined in your Kuzzle server.<br />
-              <em
-                >Currently, no Profile is defined. You can create one by pushing
-                the "Create" button above.</em
-              >
-            </p>
-            <router-link
-              :disabled="!canCreateProfile()"
-              :class="!canCreateProfile() ? 'disabled' : ''"
-              :title="
-                !canCreateProfile()
-                  ? 'You are not allowed to create new profiles'
-                  : ''
-              "
-              :to="{ name: 'SecurityProfilesCreate' }"
-              class="btn primary waves-effect waves-light"
-            >
-              <i class="fa fa-plus-circle left" />
-              Create a profile
-            </router-link>
-          </div>
-        </div>
-      </div>
+      <b-card class="EmptyState text-center" slot="emptySet">
+        <i class="text-secondary fas fa-user fa-6x mb-3"></i>
+        <h2 class="text-secondary font-weight-bold">
+          No profile is defined
+        </h2>
+        <p class="text-secondary" v-if="canCreateProfile()">
+          You can create a new profile by hitting the button above
+        </p> </b-card
+      >iv>
     </list>
-  </div>
+  </b-container>
 </template>
 
 <script>
@@ -94,3 +78,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.ProfileManagement {
+  margin-bottom: 3em;
+}
+</style>

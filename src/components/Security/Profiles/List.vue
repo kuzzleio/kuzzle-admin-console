@@ -100,7 +100,7 @@
                       :index="index"
                       :collection="collection"
                       @checkbox-click="toggleSelectDocuments"
-                      @edit="editProfile"
+                      @edit="editProfile(document.id)"
                       @delete="deleteProfile"
                     />
                   </b-list-group-item>
@@ -109,6 +109,15 @@
             </div>
           </b-card-text>
         </b-card>
+        <b-row align-h="center">
+          <b-pagination
+            class="m-2 mt-4"
+            data-cy="ProfileManagement-pagination"
+            v-model="currentPage"
+            :total-rows="totalDocuments"
+            :per-page="paginationSize"
+          ></b-pagination>
+        </b-row>
       </template>
     </template>
     <delete-modal
@@ -150,6 +159,7 @@ export default {
     return {
       candidatesForDeletion: [],
       currentFilter: [],
+      currentPage: 1,
       deleteModalIsLoading: false,
       documents: [],
       loading: true,
@@ -169,10 +179,10 @@ export default {
       return this.selectedDocuments.length === this.documents.length
     },
     paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0
+      return (this.currentPage - 1) * this.paginationSize || 0
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
+      return 10
     }
   },
   methods: {
@@ -212,28 +222,34 @@ export default {
         })
       }
     },
-    fetchProfiles() {
+    async fetchProfiles() {
       this.loading = true
       let pagination = {
         from: this.paginationFrom,
         size: this.paginationSize
       }
 
-      // Execute search with corresponding filters
-      this.performSearch({ roles: this.currentFilter } || {}, pagination) // TODO
-        .then(res => {
-          this.documents = res.documents
-          this.totalDocuments = res.total
+      try {
+        const res = await this.performSearch(
+          { roles: this.currentFilter } || {},
+          pagination
+        )
+        this.documents = res.documents
+        this.totalDocuments = res.total
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title: 'Ooops! Something went wrong while fetching the profiles',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
         })
-        .catch(e => {
-          this.$store.direct.commit.toaster.setToast({
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
-        })
+      }
       this.loading = false
     },
-    editProfile(route, id) {
+    editProfile(id) {
       this.$router.push({
         name: 'SecurityProfilesUpdate',
         params: { id }
@@ -291,7 +307,9 @@ export default {
       }
     },
     saveFilterToRoute(newFilter) {
-      this.$router.push({ query: { filter: newFilter } })
+      this.$router.push({
+        query: { filter: newFilter, from: this.paginationFrom }
+      })
     }
   },
   watch: {
@@ -306,6 +324,10 @@ export default {
       handler() {
         this.fetchProfiles()
       }
+    },
+    currentPage() {
+      this.$router.push({ query: { from: this.paginationFrom } })
+      this.fetchProfiles()
     }
   }
 }
