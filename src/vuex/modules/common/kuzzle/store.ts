@@ -198,14 +198,9 @@ const actions = createActions({
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
-    try {
-      await connectToEnvironment(environment)
-      commit.setConnecting(false)
-      commit.setOnline(true)
-    } catch (error) {
-      commit.setErrorFromKuzzle(error.message)
-      return false
-    }
+    await connectToEnvironment(environment)
+    commit.setConnecting(false)
+    commit.setOnline(true)
 
     await rootDispatch.auth.init(environment)
 

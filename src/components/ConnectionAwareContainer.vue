@@ -1,17 +1,19 @@
 <template>
   <div class="ConnectionAwareContainer h-100">
-    <div
-      data-cy="AntiGlitchOverlay"
-      class="AntiGlitchOverlay"
-      v-if="connecting && !showOfflineSpinner"
-    ></div>
-    <offline-spinner
-      v-if="connecting && showOfflineSpinner"
-      data-cy="App-offline"
-      @environment::create="$emit('environment::create', $event)"
-      @environment::delete="$emit('environment::delete', $event)"
-      @environment::importEnv="$emit('environment::importEnv')"
-    ></offline-spinner>
+    <template v-if="connecting">
+      <div
+        data-cy="AntiGlitchOverlay"
+        class="AntiGlitchOverlay"
+        v-if="!showOfflineSpinner"
+      ></div>
+      <offline-spinner
+        v-if="showOfflineSpinner"
+        data-cy="App-offline"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      ></offline-spinner>
+    </template>
     <router-view
       v-else
       data-cy="App-online"
@@ -45,7 +47,8 @@ export default {
   },
   data() {
     return {
-      showOfflineSpinner: false
+      showOfflineSpinner: false,
+      gaveUp: false
     }
   },
   computed: {
@@ -57,11 +60,48 @@ export default {
     }
   },
   methods: {
+    initListeners() {
+      this.$kuzzle.on('networkError', error => {
+        this.$log.error(error)
+      })
+      this.$kuzzle.addListener('connected', () => {
+        this.$store.direct.commit.kuzzle.setOnline(true)
+      })
+      this.$kuzzle.addListener('reconnected', () => {
+        this.$store.direct.commit.kuzzle.setOnline(true)
+      })
+      this.$kuzzle.addListener('disconnected', () => {
+        this.$store.direct.commit.kuzzle.setOnline(false)
+      })
+    },
+    removeListeners() {
+      this.$kuzzle.removeAllListeners('networkError')
+      this.$kuzzle.removeAllListeners('connected')
+      this.$kuzzle.removeAllListeners('reconnected')
+      this.$kuzzle.removeAllListeners('disconnected')
+    },
+    giveUp() {
+      this.removeListeners()
+      this.gaveUp = true
+      this.$store.direct.commit.kuzzle.setConnecting(false)
+      this.$store.direct.commit.kuzzle.setOnline(false)
+    },
     checkConnection() {
       if (this.online === false && this.connecting === false) {
         this.$bvToast.show('offline-toast')
       } else {
         this.$bvToast.hide('offline-toast')
+      }
+    },
+    async connectAndRetry() {
+      try {
+        await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
+      } catch (error) {
+        // WARNING this error is dumped as "[object Event]" which is weird.
+        // TODO We need to put some conditions on this error to avoid looping on non-network errors.
+        this.$log.error(error)
+        this.$log.debug('Retry connecting to Kuzzle.')
+        this.connectAndRetry()
       }
     },
     async authenticationGuard() {
@@ -85,21 +125,12 @@ export default {
   },
   async mounted() {
     this.$log.debug('ConnectionAwareContainer::mounted')
-    this.$kuzzle.on('networkError', error => {
-      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
-    })
-    this.$kuzzle.addListener('connected', () => {
-      this.$store.direct.commit.kuzzle.setOnline(true)
-    })
-    this.$kuzzle.addListener('reconnected', () => {
-      this.$store.direct.commit.kuzzle.setOnline(true)
-    })
-    this.$kuzzle.addListener('disconnected', () => {
-      this.$store.direct.commit.kuzzle.setOnline(false)
-    })
-
     this.$store.direct.commit.auth.setTokenValid(false)
-    this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
+    this.initListeners()
+    await this.connectAndRetry()
+  },
+  beforeDestroy() {
+    this.removeListeners()
   },
   watch: {
     online: {
