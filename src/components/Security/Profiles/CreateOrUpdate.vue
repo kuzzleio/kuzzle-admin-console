@@ -1,91 +1,80 @@
 <template>
-  <div class="ProfileCreateOrUpdate">
-    <Headline v-if="id"
-      >Update profile <span class="code">{{ id }}</span></Headline
-    >
-    <Headline v-else>Create a new profile</Headline>
-    <Notice />
-    <b-card>
-      <!-- Json view -->
-      <b-row>
-        <b-col lg="7" md="12">
-          <b-form-group
-            label="Profile ID"
-            label-cols="3"
-            :description="!id ? 'This field is mandatory' : ''"
-          >
-            <b-input :disabled="!!id" v-model="idValue"></b-input>
-          </b-form-group>
-          <json-editor
-            id="document"
-            ref="jsoneditor"
-            class="document-json"
-            :content="document"
-            :height="500"
-            @change="onDocumentChange"
-          />
-        </b-col>
+  <b-card class="ProfileCreateOrUpdate">
+    <!-- Json view -->
+    <b-row>
+      <b-col lg="7" md="12">
+        <b-form-group
+          label="Profile ID"
+          label-cols="3"
+          :description="!id ? 'This field is mandatory' : ''"
+        >
+          <b-input :disabled="!!id" v-model="idValue"></b-input>
+        </b-form-group>
+        <json-editor
+          id="document"
+          ref="jsoneditor"
+          class="document-json"
+          :content="document"
+          :height="500"
+          @change="onDocumentChange"
+        />
+      </b-col>
 
-        <!-- Mapping -->
-        <b-col lg="5" md="12">
-          <h3>Cheatsheet</h3>
+      <!-- Mapping -->
+      <b-col lg="5" md="12">
+        <h3>Cheatsheet</h3>
 
-          <!-- <pre
+        <!-- <pre
             v-json-formatter="{
               content: mapping,
               open: true
             }"
             class="DocumentCreateOrUpdate-mapping"
           /> -->
-        </b-col>
-      </b-row>
+      </b-col>
+    </b-row>
 
-      <template v-slot:footer>
-        <div class="text-right">
-          <b-button @click="$emit('cancel')">Cancel</b-button>
-          <b-button v-if="!id" variant="primary" class="ml-2" @click="submit">
-            <i class="fa fa-plus-circle left" />
-            Create
-          </b-button>
-          <b-button
-            v-if="!!id"
-            variant="primary"
-            class="ml-2"
-            data-cy="DocumentUpdate-btn"
-            :disabled="submitting || !isDocumentValid"
-            @click="submit"
-          >
-            <i class="fa fa-pencil-alt left" />
-            Update
-          </b-button>
-          <b-button
-            v-if="!!id"
-            variant="warning"
-            class="ml-2"
-            data-cy="DocumentReplace-btn"
-            :disabled="submitting || !isDocumentValid"
-            @click="submit(true)"
-          >
-            <i class="fa fa-fire-alt left" />
-            Replace
-          </b-button>
-        </div>
-      </template>
-    </b-card>
-  </div>
+    <template v-slot:footer>
+      <div class="text-right">
+        <b-button @click="$emit('cancel')">Cancel</b-button>
+        <b-button v-if="!id" variant="primary" class="ml-2" @click="submit">
+          <i class="fa fa-plus-circle left" />
+          Create
+        </b-button>
+        <b-button
+          v-if="!!id"
+          variant="primary"
+          class="ml-2"
+          data-cy="DocumentUpdate-btn"
+          :disabled="submitting || !isDocumentValid"
+          @click="submit"
+        >
+          <i class="fa fa-pencil-alt left" />
+          Update
+        </b-button>
+        <b-button
+          v-if="!!id"
+          variant="warning"
+          class="ml-2"
+          data-cy="DocumentReplace-btn"
+          :disabled="submitting || !isDocumentValid"
+          @click="submit(true)"
+        >
+          <i class="fa fa-fire-alt left" />
+          Replace
+        </b-button>
+      </div>
+    </template>
+  </b-card>
 </template>
 
 <script>
 import JsonEditor from '../../Common/JsonEditor'
-import Headline from '../../Materialize/Headline'
-import Notice from '../Common/Notice'
 
 export default {
   name: 'ProfileCreateOrUpdate',
   components: {
-    JsonEditor,
-    Headline,
-    Notice
+    JsonEditor
   },
   props: {
     id: {
@@ -95,13 +84,7 @@ export default {
   data() {
     return {
       error: '',
-      document: `{
-  "policies": [
-    {
-      "roleId": "yourRoleId"
-    }
-  ]
-}`,
+      document: '{}',
       idValue: null,
       loading: true,
       submitting: false

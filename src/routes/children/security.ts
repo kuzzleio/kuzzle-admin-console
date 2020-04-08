@@ -67,7 +67,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      require(['../../components/Security/Profiles/CreateOrUpdate'], resolve)
+      require(['../../components/Security/Profiles/Create'], resolve)
     }
   },
   {
@@ -77,7 +77,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      require(['../../components/Security/Profiles/CreateOrUpdate'], resolve)
+      require(['../../components/Security/Profiles/Update'], resolve)
     },
     props: route => ({ id: route.params.id })
   },
