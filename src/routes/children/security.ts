@@ -67,7 +67,7 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      require(['../../components/Security/Profiles/Create'], resolve)
+      require(['../../components/Security/Profiles/CreateOrUpdate'], resolve)
     }
   },
   {
@@ -77,8 +77,9 @@ export default [
       section: 'profiles'
     },
     component(resolve) {
-      require(['../../components/Security/Profiles/Update'], resolve)
-    }
+      require(['../../components/Security/Profiles/CreateOrUpdate'], resolve)
+    },
+    props: route => ({ id: route.params.id })
   },
   {
     path: '/security/roles',
