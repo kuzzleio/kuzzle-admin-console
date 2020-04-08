@@ -5,6 +5,7 @@
   "author": "The Kuzzle team <support@kuzzle.io>",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build --dest dist$DEPLOY_PATH",
     "test:e2e": "docker-compose -f test/e2e/docker-compose.yml up -d && ./test/e2e/run-test.sh",
     "lint": "vue-cli-service lint",
