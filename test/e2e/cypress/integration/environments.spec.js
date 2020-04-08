@@ -138,7 +138,9 @@ describe('Environments', function() {
       `[data-cy="EnvironmentSwitch-env_${fmt(
         reachableEnvName
       )}"]  > .EnvironmentSwitch-env-name`
-    ).click()
+    ).click({
+      force: true
+    })
 
     cy.get('[data-cy="App-online"]')
   })
