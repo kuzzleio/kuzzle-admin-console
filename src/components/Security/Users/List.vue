@@ -206,7 +206,7 @@ export default {
   },
   methods: {
     isChecked(id) {
-      return this.selectedDocuments.indexOf(id) > -1
+      return this.selectedDocuments.includes(id)
     },
     toggleAll() {
       if (this.allChecked) {
