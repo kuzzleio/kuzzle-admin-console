@@ -4,7 +4,7 @@
       Create a new profile
     </Headline>
     <Notice />
-    <create-or-update />
+    <create-or-update @cancel="onCancel" @submit="onSubmit" />
   </div>
 </template>
 
@@ -40,7 +40,7 @@ export default {
     }
   },
   methods: {
-    async update() {
+    async onSubmit() {
       this.error = ''
 
       if (!this.document || !this.document.policies) {
@@ -63,7 +63,7 @@ export default {
         this.submitted = false
       }
     },
-    cancel() {
+    onCancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
         this.$router.go(this.$router._prevTransition.to)
       } else {

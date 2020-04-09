@@ -52,17 +52,6 @@
           <i class="fa fa-pencil-alt left" />
           Update
         </b-button>
-        <b-button
-          v-if="!!id"
-          variant="warning"
-          class="ml-2"
-          data-cy="DocumentReplace-btn"
-          :disabled="submitting || !isDocumentValid"
-          @click="submit(true)"
-        >
-          <i class="fa fa-fire-alt left" />
-          Replace
-        </b-button>
       </div>
     </template>
   </b-card>
