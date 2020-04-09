@@ -213,7 +213,6 @@ export default {
         this.selectedDocuments = []
         return
       }
-      this.selectedDocuments = []
       this.selectedDocuments = this.documents.map(document => document.id)
     },
     toggleSelectDocuments(id) {
