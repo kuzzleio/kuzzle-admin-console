@@ -302,7 +302,7 @@ describe('Users', function() {
     cy.url().should('contain', 'from=10')
   })
 
-  it.skip('updates the user mapping successfully', function() {
+  it('updates the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.contains('Indexes')

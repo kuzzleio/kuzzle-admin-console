@@ -2,8 +2,6 @@
   <b-container fluid data-cy="UserItem">
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
-        <!-- <div class="UserItem" :class="{ collapsed: collapsed }"> -->
-        <!-- class="UserItem-toggle fa fa-caret-down item-toggle" -->
         <i
           :class="
             `fa fa-caret-${
@@ -23,8 +21,6 @@
           :id="checkboxId"
           @change="notifyCheckboxClick"
         />
-        <!-- The following anchor will go to the user details page -->
-        <!-- <label class="UserItem-title item-title"> -->
         <a
           class="d-inline-block align-middle code pointer"
           @click="toggleCollapse"
@@ -107,10 +103,9 @@
         class="mt-3 ml-3 DocumentListItem-content"
       >
         <pre v-json-formatter="{ content: document.content, open: true }" />
-        <pre v-json-formatter="{ content: document.meta, open: false }" />
         <pre
-          v-if="document.aggregations"
-          v-json-formatter="{ content: document.aggregations, open: true }"
+          v-if="document.credentials"
+          v-json-formatter="{ content: document.credentials, open: true }"
         />
       </b-collapse>
     </b-row>
