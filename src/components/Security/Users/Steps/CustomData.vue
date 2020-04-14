@@ -27,13 +27,6 @@
               open: true
             }"
           />
-          <!--<json-editor
-            id="mapping"
-            class="document-json"
-            :content="JSON.stringify(mapping, null, 2)"
-            :readonly="true"
-            :height="300"
-          /> -->
         </b-col>
       </b-row>
     </form>

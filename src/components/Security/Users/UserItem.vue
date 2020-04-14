@@ -2,8 +2,6 @@
   <b-container fluid data-cy="UserItem">
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
-        <!-- <div class="UserItem" :class="{ collapsed: collapsed }"> -->
-        <!-- class="UserItem-toggle fa fa-caret-down item-toggle" -->
         <i
           aria-hidden="true"
           :class="
@@ -24,8 +22,6 @@
           :id="checkboxId"
           @change="notifyCheckboxClick"
         />
-        <!-- The following anchor will go to the user details page -->
-        <!-- <label class="UserItem-title item-title"> -->
         <a
           class="d-inline-block align-middle code pointer"
           @click="toggleCollapse"
