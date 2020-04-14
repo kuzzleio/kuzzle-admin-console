@@ -70,7 +70,7 @@
                 variant="primary"
                 @click.prevent="submit"
               >
-                <span v-if="!!id">Save</span>
+                <span v-if="id">Save</span>
                 <span v-else>Create</span>
               </b-button>
             </b-col>
