@@ -67,7 +67,7 @@ export default {
     availableProfiles() {
       return this.profileList
         .filter(profile => {
-          return this.addedProfiles.indexOf(profile.id) === -1
+          return !this.addedProfiles.includes(profile.id)
         })
         .map(profile => profile.id)
     }
