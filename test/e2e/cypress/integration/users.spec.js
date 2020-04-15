@@ -302,7 +302,7 @@ describe('Users', function() {
     cy.url().should('contain', 'from=10')
   })
 
-  it('Should update the user mapping successfully', function() {
+  it.skip('Should update the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.contains('Indexes')
@@ -323,7 +323,7 @@ describe('Users', function() {
     cy.contains('User Management')
   })
 
-  it.only('Should display a user with a lot of profiles', () => {
+  it('Should display a user with a lot of profiles', () => {
     const profileIdPrefix = 'dummy'
     const profileIds = []
     const kuid = 'dummy'
