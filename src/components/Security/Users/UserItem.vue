@@ -181,7 +181,6 @@ export default {
 
 .UserItem-actions {
   white-space: nowrap;
-  flex-grow: 1;
 }
 
 .UserItem-additionalAttribute {
@@ -194,6 +193,7 @@ export default {
 .UserItem-profileList {
   display: inline-block;
   overflow-x: hidden;
+  flex-grow: 1;
   white-space: nowrap;
   position: relative;
 }
