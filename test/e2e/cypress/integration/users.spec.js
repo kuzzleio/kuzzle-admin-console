@@ -302,7 +302,7 @@ describe('Users', function() {
     cy.url().should('contain', 'from=10')
   })
 
-  it('updates the user mapping successfully', function() {
+  it('Should update the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.contains('Indexes')
@@ -321,5 +321,39 @@ describe('Users', function() {
 
     cy.get('.UserCustomMappingEditor-submit').click()
     cy.contains('User Management')
+  })
+
+  it.only('Should display a user with a lot of profiles', () => {
+    const profileIdPrefix = 'dummy'
+    const profileIds = []
+    const kuid = 'dummy'
+
+    for (let i = 0; i < 14; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/profiles/${profileIdPrefix}_${i}/_create?refresh=wait_for`,
+        {
+          policies: [{ roleId: 'default' }]
+        }
+      )
+      profileIds.push(`${profileIdPrefix}_${i}`)
+    }
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
+      content: {
+        profileIds,
+        name: 'Dummy User'
+      },
+      credentials: {
+        local: {
+          username: 'dummy',
+          password: 'test'
+        }
+      }
+    })
+    cy.visit('/#/security/users')
+
+    profileIds.forEach(profileId => {
+      cy.contains(profileId)
+    })
   })
 })

@@ -1,7 +1,7 @@
 <template>
   <b-container fluid data-cy="UserItem">
     <b-row align-h="between" no-gutters>
-      <b-col cols="10" class="py-1">
+      <b-col cols="12" class="UserItem-titleCol py-1 vertical-align">
         <i
           :class="
             `fa fa-caret-${
@@ -22,35 +22,28 @@
           @change="notifyCheckboxClick"
         />
         <a
-          class="d-inline-block align-middle code pointer"
+          class="d-inline-block align-middle code pointer mr-2"
           @click="toggleCollapse"
           >{{ document.id }}</a
         >
-        <b-badge
-          v-for="profile in profileList"
-          :key="profile"
-          class="mx-2"
-          variant="primary"
-        >
-          <router-link
-            :to="{
-              name: 'SecurityProfilesUpdate',
-              params: { id: profile }
-            }"
-            class="truncate text-white"
-            >{{ profile }}</router-link
+        <div class="UserItem-profileList">
+          <b-badge
+            v-for="profile in profileList"
+            :key="profile"
+            class="ml-1"
+            variant="primary"
           >
-        </b-badge>
-        <b-badge v-if="showAllProfiles" class="mx-2" variant="primary">
-          <router-link
-            :to="{
-              name: 'SecurityProfilesList',
-              params: { userId: document.id }
-            }"
-            >Show all...</router-link
-          >
-        </b-badge>
-
+            <router-link
+              :to="{
+                name: 'SecurityProfilesUpdate',
+                params: { id: profile }
+              }"
+              class="truncate text-white"
+              >{{ profile }}</router-link
+            >
+          </b-badge>
+          <div class="UserItem-whiteGradient"></div>
+        </div>
         <label
           @click="toggleCollapse"
           v-if="
@@ -60,9 +53,7 @@
           >({{ document.additionalAttribute.name }}:
           {{ document.additionalAttribute.value }})</label
         >
-      </b-col>
-      <b-col cols="2">
-        <div class="float-right">
+        <div class="UserItem-actions">
           <b-button
             class="UserListItem-update"
             href=""
@@ -95,6 +86,7 @@
           </b-button>
         </div>
       </b-col>
+      <b-col> </b-col>
     </b-row>
     <b-row>
       <b-collapse
@@ -142,9 +134,7 @@ export default {
         return []
       }
 
-      return this.document.content.profileIds.filter((item, idx) => {
-        return idx < MAX_PROFILES
-      })
+      return this.document.content.profileIds
     },
     showAllProfiles() {
       return this.document.content.profileIds > MAX_PROFILES
@@ -184,51 +174,13 @@ export default {
 </script>
 
 <style lang="scss" rel="stylesheet/scss" scoped>
-.UserItem-toggle {
-  padding: 0 10px;
-  margin-left: -10px;
-  cursor: pointer;
-  transition-duration: 0.2s;
+.UserItem-titleCol {
+  display: flex;
 }
 
-/* HACK for centring the checkbox between the caret and the title */
-[type='checkbox'] + span:not(.lever) {
-  height: 15px;
-  padding-left: 30px;
-}
-
-/* HACK enabling to click on the title without checking the checkbox */
-.UserItem-title {
-  cursor: pointer;
-  font-size: 1rem;
-  color: #272727;
-}
-
-.UserItem-content {
-  transition-duration: 0.2s;
-  max-height: 300px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 10px 10px 0 0;
-
-  pre {
-    margin: 0;
-    width: 70%;
-    display: inline-block;
-  }
-}
-pre {
-  font-size: 16px;
-}
-.collapsed {
-  .UserItem-toggle {
-    transform: rotate(-90deg);
-  }
-  .UserItem-content {
-    max-height: 0;
-    transition-duration: 0;
-    padding: 0 10px 0 0;
-  }
+.UserItem-actions {
+  white-space: nowrap;
+  flex-grow: 1;
 }
 
 .UserItem-additionalAttribute {
@@ -239,15 +191,24 @@ pre {
 }
 
 .UserItem-profileList {
-  display: inline-flex;
+  display: inline-block;
+  overflow-x: hidden;
+  white-space: nowrap;
+  position: relative;
+}
 
-  .profileChip {
-    opacity: 0.7;
-    &:hover,
-    &:focus {
-      opacity: 1;
-    }
-  }
+.UserItem-whiteGradient {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 1) 100%
+  );
 }
 
 .UserItem-actions {
