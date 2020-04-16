@@ -92,6 +92,9 @@ export default {
       })
     },
     onProfileSelected(profile) {
+      if (!profile) {
+        return;
+      }
       this.$emit('selected-profile', profile)
       this.selectedProfiled = 0
     },
