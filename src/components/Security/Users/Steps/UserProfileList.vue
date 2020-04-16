@@ -78,6 +78,7 @@ export default {
           return !this.addedProfiles.includes(profile.id)
         })
         .map(profile => profile.id)
+        .sort()
     }
   },
   mounted() {
