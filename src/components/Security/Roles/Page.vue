@@ -26,7 +26,7 @@
             <p>
               In this page, you'll be able to manage the
               <a
-                href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-roles"
+                href="https://docs.kuzzle.io/core/2/guides/essentials/security/#defining-roles"
                 >Security Roles</a
               >
               defined in your Kuzzle server.<br />
