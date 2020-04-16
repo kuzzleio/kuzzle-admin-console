@@ -12,9 +12,11 @@
           </b-select-option>
           <b-select-option
             v-if="profileList.length && availableProfiles.length === 0"
-            value="The user has all the profiles (are you sure?)"
+            :value="null"
             disabled
-          />
+          >
+          The user has all the profiles (are you sure?)
+          </b-select-option>
           <b-select-option
             v-for="profile of availableProfiles"
             :key="profile.id"
