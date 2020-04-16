@@ -1,73 +1,72 @@
 <template>
   <div class="UsersManagement">
-    <headline>
-      User Management
-      <users-dropdown class="icon-medium icon-black" />
-    </headline>
-
-    <!-- Not allowed -->
-    <list-not-allowed v-if="!canSearchUser()" />
-
-    <common-list
-      v-if="canSearchUser()"
-      item-name="UserItem"
-      collection="users"
-      index="%kuzzle"
-      route-create="SecurityUsersCreate"
-      route-update="SecurityUsersUpdate"
-      :display-create="canCreateUser()"
-      :perform-search="performSearchUsers"
-      :perform-delete="performDeleteUsers"
-      :collection-mapping="userMapping"
-      @create-clicked="createUser"
-    >
-      <div slot="emptySet" class="card-panel">
-        <div class="row valign-bottom empty-set">
-          <div class="col s1 offset-s1">
-            <i
-              class="fa fa-6x fa-user grey-text text-lighten-1"
-              aria-hidden="true"
-            />
-          </div>
-          <div class="col s10">
-            <p>
-              In this page, you'll be able to manage the
-              <a
-                href="https://docs.kuzzle.io/guide/1/essentials/user-authentication/"
-                >users</a
-              >
-              defined in your Kuzzle server.<br />
-              <em
-                >Currently, no user is defined. You can create one by pushing
-                the "Create" button above.</em
-              >
-            </p>
-            <router-link
-              :disabled="!canCreateUser()"
-              :class="!canCreateUser() ? 'disabled' : ''"
-              :title="
-                !canCreateUser()
-                  ? 'You are not allowed to create new users'
-                  : ''
-              "
-              :to="{ name: 'SecurityUsersCreate' }"
-              class="btn primary waves-effect waves-light"
+    <b-container class="UserList--container">
+      <b-row>
+        <b-col cols="8">
+          <headline>Users</headline>
+        </b-col>
+        <b-col class="text-right mt-3">
+          <b-button
+            class="mr-2"
+            data-cy="UsersManagement-createBtn"
+            variant="primary"
+            :disabled="!canCreateUser()"
+            :to="{ name: 'SecurityUsersCreate' }"
+            >Create User</b-button
+          >
+          <b-dropdown
+            data-cy="UsersDropdown"
+            no-caret
+            toggle-class="usersDropdown"
+            variant="light"
+            id="users-dropdown"
+          >
+            <template v-slot:button-content>
+              <i class="fas fa-ellipsis-v" />
+            </template>
+            <b-dropdown-item
+              data-cy="UsersDropdown-editMapping"
+              :to="{ name: 'SecurityUsersEditCustomMapping' }"
             >
-              <i class="fa fa-plus-circle left" />
-              Create a user
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </common-list>
+              Edit user content mapping
+            </b-dropdown-item>
+          </b-dropdown>
+        </b-col>
+      </b-row>
+
+      <!-- Not allowed -->
+      <list-not-allowed v-if="!canSearchUser()" />
+
+      <list
+        v-if="canSearchUser()"
+        item-name="UserItem"
+        collection="users"
+        index="%kuzzle"
+        route-create="SecurityUsersCreate"
+        route-update="SecurityUsersUpdate"
+        :display-create="false"
+        :perform-search="performSearchUsers"
+        :perform-delete="performDeleteUsers"
+        :collection-mapping="userMapping"
+      >
+        <b-card class="EmptyState text-center" slot="emptySet">
+          <i class="text-secondary fas fa-user fa-6x mb-3"></i>
+          <h2 class="text-secondary font-weight-bold">
+            No user is defined
+          </h2>
+          <p class="text-secondary" v-if="canCreateUser()">
+            You can create a new user by hitting the button above
+          </p>
+        </b-card>
+      </list>
+    </b-container>
   </div>
 </template>
 
 <script>
-import CommonList from '../../Common/CommonList'
+import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
-import UsersDropdown from './Dropdown'
 import {
   canSearchUser,
   canCreateUser
@@ -82,9 +81,8 @@ export default {
   name: 'UsersManagement',
   components: {
     ListNotAllowed,
-    CommonList,
-    Headline,
-    UsersDropdown
+    List,
+    Headline
   },
   data() {
     return {
@@ -106,3 +104,17 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+::v-deep .usersDropdown {
+  background-color: $light-grey-color;
+  border: none;
+}
+.UserList--container {
+  transition: max-width 0.6s;
+}
+
+::v-deep .show .usersDropdown i {
+  transform: rotate(90deg);
+}
+</style>

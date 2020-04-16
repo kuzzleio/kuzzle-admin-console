@@ -101,7 +101,9 @@ export default {
         // TODO We need to put some conditions on this error to avoid looping on non-network errors.
         this.$log.error(error)
         this.$log.debug('Retry connecting to Kuzzle.')
-        this.connectAndRetry()
+        setTimeout(async () => {
+          await this.connectAndRetry()
+        }, 2000)
       }
     },
     async authenticationGuard() {

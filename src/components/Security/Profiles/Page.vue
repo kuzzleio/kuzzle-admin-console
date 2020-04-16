@@ -27,7 +27,7 @@
             <p>
               In this page, you'll be able to manage the
               <a
-                href="https://docs.kuzzle.io/guide/1/essentials/security/#defining-profiles"
+                href="https://docs.kuzzle.io/core/2/guides/essentials/security/#defining-profiles"
                 >Security Profiles</a
               >
               defined in your Kuzzle server.<br />

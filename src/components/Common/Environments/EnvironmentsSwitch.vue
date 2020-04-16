@@ -105,7 +105,9 @@ export default {
         // TODO We need to put some conditions on this error to avoid looping on non-network errors.
         this.$log.debug(error)
         this.$log.debug(`Retry connecting to Kuzzle ${id}`)
-        await this.connectAndRetry(id)
+        setTimeout(async () => {
+          await this.connectAndRetry(id)
+        }, 2000)
       }
     },
     async clickSwitch(id) {

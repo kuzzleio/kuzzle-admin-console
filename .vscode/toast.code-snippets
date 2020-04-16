@@ -1,0 +1,25 @@
+{
+	// Place your kuzzle-admin-console workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	"Toast": {
+		"scope": "javascript,typescript",
+		"prefix": "toast",
+		"body": [
+			"this.$bvToast.toast('${2:The complete error has been printed to console}', {",
+      "\ttitle: 'Ooops! ${1:Something went wrong while...}',",
+      "\tvariant: 'warning',",
+			"\ttoaster: 'b-toaster-bottom-right',",
+			"\tappendToast: true,",
+			"\tdismissible: true,",
+			"\tnoAutoHide: true",
+      "})"
+		],
+		"description": "Add a BootstrapVue toast"
+	}
+	
+}
