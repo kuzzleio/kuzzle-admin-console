@@ -381,9 +381,21 @@ describe('Users', function() {
       username: 'trippy',
       password: 'martinez'
     }
+    const profileIdPrefix = 'p-'
+    const profileIds = []
+    for (let i = 0; i < 14; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/profiles/${profileIdPrefix}_${i}/_create?refresh=wait_for`,
+        {
+          policies: [{ roleId: 'default' }]
+        }
+      )
+      profileIds.push(`${profileIdPrefix}_${i}`)
+    }
     cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
       content: {
-        profileIds: ['default'],
+        profileIds: ['default', ...profileIds],
         name: 'Dummy User'
       },
       credentials: {
@@ -395,6 +407,10 @@ describe('Users', function() {
     })
     cy.visit(`/#/security/users/${kuid}`)
     cy.contains(`Edit user - ${kuid}`)
+
+    profileIds.forEach(id => {
+      cy.get(`[data-cy="UserProfileList-badge--${id}"]`).should('be.visible')
+    })
 
     cy.get('[data-cy=UserProfileList-default--delete]').click()
     cy.get('[data-cy="UserProfileList-select"]').select('admin')
@@ -440,7 +456,7 @@ describe('Users', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it('Should update the user mapping successfully', function() {
+  it.skip('Should update the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
     cy.contains('Indexes')

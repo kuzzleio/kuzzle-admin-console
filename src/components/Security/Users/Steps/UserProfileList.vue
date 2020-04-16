@@ -1,6 +1,6 @@
 <template>
   <b-row class="UserProfileList">
-    <b-col
+    <b-col cols="6"
       ><div v-if="profileList.length">
         <b-form-select
           v-model="selectedProfiled"
@@ -14,8 +14,7 @@
             v-if="profileList.length && availableProfiles.length === 0"
             :value="null"
             disabled
-          >
-          The user has all the profiles (are you sure?)
+            >The user has all the profiles (are you sure?)
           </b-select-option>
           <b-select-option
             v-for="profile of availableProfiles"
@@ -37,12 +36,13 @@
         before creating a user)
       </div></b-col
     >
-    <b-col class="vertical-align"
+    <b-col cols="6" class="UserProfileList-badges vertical-align"
       ><b-badge
         v-for="(profile, index) in addedProfiles"
-        :key="index"
-        class="p-2 mr-2"
+        class="p-2 mr-2 my-1"
         title="Click to remove"
+        :data-cy="`UserProfileList-badge--${profile}`"
+        :key="index"
       >
         {{ profile }}&nbsp;
         <i
@@ -93,7 +93,7 @@ export default {
     },
     onProfileSelected(profile) {
       if (!profile) {
-        return;
+        return
       }
       this.$emit('selected-profile', profile)
       this.selectedProfiled = 0
@@ -108,5 +108,8 @@ export default {
 <style type="text/css" scoped>
 .UserProfileList-delete {
   cursor: pointer;
+}
+.UserProfileList-badges {
+  flex-wrap: wrap;
 }
 </style>
