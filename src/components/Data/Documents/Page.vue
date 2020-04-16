@@ -39,6 +39,18 @@
           class="mt-3"
         ></data-not-found>
         <template v-else>
+          <b-row class="justify-content-md-center" no-gutters>
+            <b-col cols="12">
+              <filters
+                class="mb-3"
+                :available-operands="searchFilterOperands"
+                :current-filter="currentFilter"
+                :collection-mapping="collectionMapping"
+                @filters-updated="onFiltersUpdated"
+                @reset="onFiltersUpdated"
+              />
+            </b-col>
+          </b-row>
           <template v-if="fetchingDocuments">
             <b-row class="text-center">
               <b-col>
@@ -51,31 +63,15 @@
             </b-row>
           </template>
           <template v-else>
-            <b-row class="justify-content-md-center" no-gutters>
-              <b-col cols="12">
-                <template v-if="isCollectionEmpty && !fetchingDocuments">
-                  <realtime-only-empty-state
-                    v-if="isRealtimeCollection"
-                    :index="index"
-                    :collection="collection"
-                  />
-                  <empty-state v-else :index="index" :collection="collection" />
-                </template>
-
-                <template v-if="!isCollectionEmpty">
-                  <filters
-                    class="mb-3"
-                    :available-operands="searchFilterOperands"
-                    :current-filter="currentFilter"
-                    :collection-mapping="collectionMapping"
-                    @filters-updated="onFiltersUpdated"
-                    @reset="onFiltersUpdated"
-                  />
-                </template>
-              </b-col>
-            </b-row>
-
-            <template v-if="!isCollectionEmpty">
+            <template v-if="isCollectionEmpty">
+              <realtime-only-empty-state
+                v-if="isRealtimeCollection"
+                :index="index"
+                :collection="collection"
+              />
+              <empty-state v-else :index="index" :collection="collection" />
+            </template>
+            <template v-else>
               <b-card
                 class="light-shadow"
                 :bg-variant="documents.length === 0 ? 'light' : 'default'"
