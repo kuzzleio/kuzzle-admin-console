@@ -20,14 +20,6 @@ export default {
     CreateOrUpdate,
     Notice
   },
-  data() {
-    return {
-      document: {},
-      error: '',
-      id: null,
-      submitted: false
-    }
-  },
   async mounted() {
     try {
       const profile = await this.$kuzzle.security.getProfile(
@@ -40,27 +32,37 @@ export default {
     }
   },
   methods: {
-    async onSubmit() {
-      this.error = ''
-
-      if (!this.document || !this.document.policies) {
-        this.error = 'The document is invalid, please review it'
+    async onSubmit({ profile, id }) {
+      if (!profile || !profile.policies) {
+        this.$bvToast.toast(
+          'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
+          {
+            title: 'The profile is invalid',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
         return
       }
-
-      this.submitted = true
-
+      debugger
       try {
-        await this.$kuzzle.security.updateProfile(this.id, {
-          policies: this.document.policies
+        await this.$kuzzle.security.createProfile(id, profile, {
+          refresh: 'wait_for'
         })
-        setTimeout(() => {
-          // we can't perform refresh index on %kuzzle
-          this.$router.push({ name: 'SecurityProfilesList' })
-        }, 1000)
+        this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({ text: e.message })
-        this.submitted = false
+        this.$log.error(e)
+        this.$bvToast.toast(e.message, {
+          title: 'Ooops! Something went wrong while creating the profile',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
     },
     onCancel() {

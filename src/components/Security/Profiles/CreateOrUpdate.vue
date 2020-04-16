@@ -8,36 +8,60 @@
           label-cols="3"
           :description="!id ? 'This field is mandatory' : ''"
         >
-          <b-input :disabled="!!id" v-model="idValue"></b-input>
+          <b-input :disabled="id" v-model="idValue" :state="idState"></b-input>
         </b-form-group>
         <json-editor
           id="document"
           ref="jsoneditor"
           class="document-json"
-          :content="document"
+          :content="profile"
           :height="500"
-          @change="onDocumentChange"
+          @change="onContentChange"
         />
       </b-col>
 
       <!-- Mapping -->
       <b-col lg="5" md="12">
         <h3>Cheatsheet</h3>
-
-        <!-- <pre
-            v-json-formatter="{
-              content: mapping,
-              open: true
-            }"
-            class="DocumentCreateOrUpdate-mapping"
-          /> -->
+        Your profile is a set of <code>policies</code>, each of which will
+        contain a set of roles, like the example below:
+        <pre class="my-3 ml-3">
+{
+  "policies": [{
+      "roleId": "roleId"
+    }]
+}
+        </pre>
+        You can also restrict your policy to a set of indexes and collections,
+        so that your roles will be valid to a specific subset of your data, like
+        the example below:
+        <pre class="my-3 ml-3">
+{
+  "policies": [{
+      "roleIds": "roleId"
+      "restrictedTo": {
+        "index": "myindex",
+        "collections": [
+          "collection1",
+          "collection2"...
+        ]
+      }
+    }]
+}
+        </pre>
       </b-col>
     </b-row>
 
     <template v-slot:footer>
       <div class="text-right">
         <b-button @click="$emit('cancel')">Cancel</b-button>
-        <b-button v-if="!id" variant="primary" class="ml-2" @click="submit">
+        <b-button
+          v-if="!id"
+          class="ml-2"
+          variant="primary"
+          :disabled="submitting || !isJsonValid || !idState"
+          @click="submit"
+        >
           <i class="fa fa-plus-circle left" />
           Create
         </b-button>
@@ -46,7 +70,7 @@
           variant="primary"
           class="ml-2"
           data-cy="DocumentUpdate-btn"
-          :disabled="submitting || !isDocumentValid"
+          :disabled="submitting || !isJsonValid || !idState"
           @click="submit"
         >
           <i class="fa fa-pencil-alt left" />
@@ -59,67 +83,61 @@
 
 <script>
 import JsonEditor from '../../Common/JsonEditor'
+import JsonFormatter from '../../../directives/json-formatter.directive'
+import { trim } from 'lodash'
 
 export default {
   name: 'ProfileCreateOrUpdate',
   components: {
     JsonEditor
   },
+  directives: {
+    JsonFormatter
+  },
   props: {
     id: {
       type: String
+    },
+    profile: {
+      type: String,
+      default: '{}'
     }
   },
   data() {
     return {
-      error: '',
-      document: '{}',
+      profileValue: '{}',
       idValue: null,
-      loading: true,
       submitting: false
     }
   },
-  methods: {
-    async create(profile) {
-      this.error = ''
-
-      if (!profile) {
-        this.error = 'The document is invalid, please review it'
-        return
+  computed: {
+    idState() {
+      if (!this.idValue || trim(this.idValue, ' ') === '') {
+        return false
       }
-      if (!this.id) {
-        this.error = 'You must set an ID'
-        return
-      }
-
-      this.submitting = true
-
+      return true
+    },
+    isJsonValid() {
       try {
-        await this.$kuzzle.security.createProfile(
-          this.id,
-          { policies: profile.policies },
-          {
-            refresh: 'wait_for'
-          }
-        )
-        setTimeout(() => {
-          // we can't perform refresh index on %kuzzle
-          this.$router.push({ name: 'SecurityProfilesList' })
-        }, 1000)
+        JSON.parse(this.profileValue)
       } catch (e) {
-        this.error =
-          'An error occurred while creating profile: <br />' + e.message
-        this.submitting = false
+        return false
       }
+      return true
+    }
+  },
+  methods: {
+    onContentChange(value) {
+      this.profileValue = value
+    },
+    submit() {
+      this.$emit('submit', {
+        profile: JSON.parse(this.profileValue),
+        id: this.idValue
+      })
     },
     cancel() {
       this.$router.push({ name: 'SecurityProfilesList' })
-    },
-    updateId(id) {
-      this.id = id
-    },
-    setError(payload) {
-      this.error = payload
     }
   }
 }
