@@ -134,8 +134,8 @@ export default {
       if (!this.document.content.profileIds) {
         return []
       }
-
-      return this.document.content.profileIds
+      const sorted = [...this.document.content.profileIds].sort()
+      return sorted
     },
     showAllProfiles() {
       return this.document.content.profileIds > MAX_PROFILES
