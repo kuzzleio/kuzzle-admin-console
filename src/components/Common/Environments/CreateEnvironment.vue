@@ -229,8 +229,8 @@ export default {
     }
   },
   methods: {
-    checkSSL () {
-      if (this.environment.port === "443") {
+    checkSSL() {
+      if (this.environment.port === 443) {
         this.environment.ssl = true
       }
     },

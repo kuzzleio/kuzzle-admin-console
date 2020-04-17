@@ -1,7 +1,7 @@
 <template>
   <div>
     <headline>
-      User - Create
+      Create a new user
     </headline>
 
     <Notice />
