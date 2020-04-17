@@ -36,21 +36,27 @@
         before creating a user)
       </div></b-col
     >
-    <b-col cols="6" class="UserProfileList-badges vertical-align"
-      ><b-badge
-        v-for="(profile, index) in addedProfiles"
-        class="p-2 mr-2 my-1"
-        title="Click to remove"
-        :data-cy="`UserProfileList-badge--${profile}`"
-        :key="index"
-      >
-        {{ profile }}&nbsp;
-        <i
-          class="UserProfileList-delete ml-1 fa fa-trash"
-          :data-cy="`UserProfileList-${profile}--delete`"
-          @click="removeProfile(profile)"
-        /> </b-badge
-    ></b-col>
+    <b-col cols="6" class="UserProfileList-badges vertical-align">
+      <template v-if="addedProfiles.length">
+        <b-badge
+          v-for="(profile, index) in addedProfiles"
+          class="p-2 mr-2 my-1"
+          title="Click to remove"
+          :data-cy="`UserProfileList-badge--${profile}`"
+          :key="index"
+        >
+          {{ profile }}&nbsp;
+          <i
+            class="UserProfileList-delete ml-1 fa fa-trash"
+            :data-cy="`UserProfileList-${profile}--delete`"
+            @click="removeProfile(profile)"
+          />
+        </b-badge>
+      </template>
+      <template v-else>
+        <span class="text-secondary">Please add at least one profile</span>
+      </template>
+    </b-col>
   </b-row>
 </template>
 

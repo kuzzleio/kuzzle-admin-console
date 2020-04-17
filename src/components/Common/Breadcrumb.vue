@@ -8,7 +8,15 @@
         </router-link>
       </li>
 
-      <li v-if="isRouteActive('SecurityUsersList')">
+      <li
+        v-if="
+          isRouteActive([
+            'SecurityUsersList',
+            'SecurityUsersCreate',
+            'SecurityUsersUpdate'
+          ])
+        "
+      >
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link :to="{ name: 'SecurityUsersList' }">
@@ -16,7 +24,15 @@
         </router-link>
       </li>
 
-      <li v-if="isRouteActive('SecurityProfilesList')">
+      <li
+        v-if="
+          isRouteActive([
+            'SecurityProfilesList',
+            'SecurityProfilesCreate',
+            'SecurityProfilesUpdate'
+          ])
+        "
+      >
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link :to="{ name: 'SecurityProfilesList' }">

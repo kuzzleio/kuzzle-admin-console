@@ -361,7 +361,6 @@ describe('Users', function() {
     }
 
     cy.visit(`/#/security/users/create`)
-    cy.get('[data-cy="UserBasic-autoKuidBtn"]').click({ force: true })
     cy.get('[data-cy="UserProfileList-select"]').select('admin')
 
     cy.get('[data-cy=CredentialsSelector-local-username]').type(
