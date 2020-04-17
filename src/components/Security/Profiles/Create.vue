@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <b-container>
     <Headline>
       Create a new profile
     </Headline>
     <Notice />
     <create-or-update @cancel="onCancel" @submit="onSubmit" />
-  </div>
+  </b-container>
 </template>
 
 <script>
