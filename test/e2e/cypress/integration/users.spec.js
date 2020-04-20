@@ -465,4 +465,38 @@ describe('Users', function() {
     cy.get('[data-cy="EditUserMapping-submitBtn"]').click()
     cy.contains('Users')
   })
+
+  it('Should display a user with a lot of profiles', () => {
+    const profileIdPrefix = 'dummy'
+    const profileIds = []
+    const kuid = 'dummy'
+
+    for (let i = 0; i < 14; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/profiles/${profileIdPrefix}_${i}/_create?refresh=wait_for`,
+        {
+          policies: [{ roleId: 'default' }]
+        }
+      )
+      profileIds.push(`${profileIdPrefix}_${i}`)
+    }
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
+      content: {
+        profileIds,
+        name: 'Dummy User'
+      },
+      credentials: {
+        local: {
+          username: 'dummy',
+          password: 'test'
+        }
+      }
+    })
+    cy.visit('/#/security/users')
+
+    profileIds.forEach(profileId => {
+      cy.contains(profileId)
+    })
+  })
 })

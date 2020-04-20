@@ -3,9 +3,9 @@
     For more information about securities policies please visit
     <a
       class="blue-text lighten-2"
-      href="https://docs.kuzzle.io/guide/1/essentials/security/"
+      href="https://docs.kuzzle.io/core/2/guides/essentials/security/"
       target="_blank"
-      >https://docs.kuzzle.io/guide/1/essentials/security
+      >https://docs.kuzzle.io/core/2/guides/essentials/security
       <i class="fa fa-external-link-alt"
     /></a>
   </b-alert>
