@@ -4,16 +4,31 @@
     <b-row>
       <b-col lg="7" md="12">
         <b-form-group
+          v-if="!id"
           label="Profile ID"
           label-cols="3"
           :description="!id ? 'This field is mandatory' : ''"
         >
-          <b-input :disabled="id" v-model="idValue" :state="idState"></b-input>
+          <b-input
+            v-model="idValue"
+            data-cy="ProfileCreateOrUpdate-id"
+            :disabled="id"
+            :state="idState"
+          ></b-input>
         </b-form-group>
+        <b-form-group
+          v-else
+          label="Profile ID"
+          label-cols="3"
+          :description="!id ? 'This field is mandatory' : ''"
+        >
+          <b-input :disabled="true" :value="id"></b-input>
+        </b-form-group>
+
         <json-editor
-          id="document"
-          ref="jsoneditor"
           class="document-json"
+          data-cy="ProfileCreateOrUpdate-jsonEditor"
+          ref="jsoneditor"
           :content="profile"
           :height="500"
           @change="onContentChange"
@@ -58,6 +73,7 @@
         <b-button
           v-if="!id"
           class="ml-2"
+          data-cy="ProfileCreateOrUpdate-createBtn"
           variant="primary"
           :disabled="submitting || !isJsonValid || !idState"
           @click="submit"
@@ -67,10 +83,10 @@
         </b-button>
         <b-button
           v-if="!!id"
-          variant="primary"
           class="ml-2"
-          data-cy="DocumentUpdate-btn"
-          :disabled="submitting || !isJsonValid || !idState"
+          data-cy="ProfileCreateOrUpdate-updateBtn"
+          variant="primary"
+          :disabled="submitting || !isJsonValid"
           @click="submit"
         >
           <i class="fa fa-pencil-alt left" />

@@ -110,4 +110,75 @@ describe('Profiles', () => {
     cy.get(`[data-cy="ProfileListItem-update--${profileId}"]`).click()
     cy.url().should('contain', `security/profiles/${profileId}`)
   })
+
+  it('Should be able to create a new profile', () => {
+    const profileId = 'dummy'
+    cy.visit('/#/security/profiles/create')
+    cy.contains('Create a new profile')
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-id"]').type(profileId)
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
+      'be.visible'
+    )
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+
+    cy.get('textarea.ace_text-input')
+      .clear({ force: true })
+      .type(
+        `{
+"policies": [{
+"roleId": "default"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="ProfileCreateOrUpdate-createBtn"]').click()
+    cy.contains(profileId)
+  })
+
+  it.only('Should be able to update an existing profile', () => {
+    const profileId = 'dummy'
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/profiles/${profileId}/_create?refresh=wait_for`,
+      {
+        policies: [{ roleId: 'default' }]
+      }
+    )
+    cy.visit(`/#/security/profiles/${profileId}`)
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line').should(
+      'be.visible'
+    )
+
+    cy.get('[data-cy="ProfileCreateOrUpdate-jsonEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+
+    cy.get('textarea.ace_text-input')
+      .clear({ force: true })
+      .type(
+        `{
+"policies": [{
+"roleId": "admin"`,
+        {
+          force: true
+        }
+      )
+    cy.get('[data-cy="ProfileCreateOrUpdate-updateBtn"]').click()
+    cy.url().should('not.contain', profileId)
+    cy.contains(profileId)
+    cy.get('[data-cy=ProfileListItem-toggle--dummy]')
+    cy.get(`[data-cy=ProfileListItem-toggle--${profileId}]`).click({
+      force: true
+    })
+    cy.get(`[data-cy=ProfileListItem-collapse--${profileId}]`).should(
+      'contain',
+      '"admin"'
+    )
+  })
 })

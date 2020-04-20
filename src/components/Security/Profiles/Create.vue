@@ -47,11 +47,8 @@ export default {
         )
         return
       }
-      debugger
       try {
-        await this.$kuzzle.security.createProfile(id, profile, {
-          refresh: 'wait_for'
-        })
+        await this.$kuzzle.security.createProfile(id, profile)
         this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
         this.$log.error(e)

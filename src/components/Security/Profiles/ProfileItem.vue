@@ -9,7 +9,7 @@
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          :data-cy="`ProfileItem-${document.id}--toggle`"
+          :data-cy="`ProfileListItem-toggle--${document.id}`"
           @click="toggleCollapse"
         />
         <b-form-checkbox
@@ -79,6 +79,7 @@
     <b-row>
       <b-collapse
         :id="`collapse-${document.id}`"
+        :data-cy="`ProfileListItem-collapse--${document.id}`"
         v-model="expanded"
         class="mt-3 ml-3 DocumentListItem-content"
       >
