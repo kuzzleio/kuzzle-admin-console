@@ -270,6 +270,7 @@ export default {
       this.refreshace = !this.refreshace
     },
     onFiltersUpdated(newFilters) {
+      this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters)
     }
   }
