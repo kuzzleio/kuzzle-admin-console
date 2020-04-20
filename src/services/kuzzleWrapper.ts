@@ -396,7 +396,6 @@ export const isKuzzleActionAllowed = (
       'action parameter is mandatory for isActionAllowed function'
     )
   }
-
   // We filter in all the rights that match the request (including wildcards).
   filteredRights = rights
     .filter(function(right) {

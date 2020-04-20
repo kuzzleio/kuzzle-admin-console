@@ -302,6 +302,159 @@ describe('Users', function() {
     cy.url().should('contain', 'from=10')
   })
 
+  it('Should be able to create a new user with custom KUID', () => {
+    const kuid = 'dummy'
+    const credentials = {
+      username: 'trippy',
+      password: 'martinez'
+    }
+
+    cy.visit(`/#/security/users/create`)
+    cy.get('[data-cy=UserBasic-kuid]').type(kuid)
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+
+    cy.get('[data-cy=CredentialsSelector-local-username]').type(
+      `{selectall}${credentials.username}`
+    )
+    cy.get('[data-cy=CredentialsSelector-local-password]').type(
+      `{selectall}${credentials.password}`
+    )
+
+    cy.get('#UserUpdate-customTab___BV_tab_button__').click()
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').should(
+      'be.visible'
+    )
+    cy.get(
+      '[data-cy="UserCustomContent-jsonEditor"] .ace_line:first-child'
+    ).click({
+      force: true
+    })
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"super_important_field": "LOL"`,
+        {
+          force: true
+        }
+      )
+
+    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
+    cy.get('[data-cy=UserItem]').should('contain', '"admin"')
+    cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
+    cy.get('[data-cy=UserItem]').should('contain', '"LOL"')
+
+    cy.get('[data-cy="MainMenu-logoutBtn"]').click()
+
+    cy.get('[data-cy="Login-username"]').type(credentials.username)
+    cy.get('[data-cy="Login-password"]').type(credentials.password)
+    cy.get('[data-cy="Login-submitBtn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+  })
+
+  it('Should be able to create a new user with auto-generated KUID', () => {
+    const credentials = {
+      username: 'trippy',
+      password: 'martinez'
+    }
+
+    cy.visit(`/#/security/users/create`)
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+
+    cy.get('[data-cy=CredentialsSelector-local-username]').type(
+      `{selectall}${credentials.username}`
+    )
+    cy.get('[data-cy=CredentialsSelector-local-password]').type(
+      `{selectall}${credentials.password}`
+    )
+
+    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy=UserItem]').should('have.length', 1)
+  })
+
+  it('Should be able to update a user', () => {
+    const kuid = 'dummy'
+    const newCredentials = {
+      username: 'trippy',
+      password: 'martinez'
+    }
+    const profileIdPrefix = 'p-'
+    const profileIds = []
+    for (let i = 0; i < 14; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/profiles/${profileIdPrefix}_${i}/_create?refresh=wait_for`,
+        {
+          policies: [{ roleId: 'default' }]
+        }
+      )
+      profileIds.push(`${profileIdPrefix}_${i}`)
+    }
+    cy.request('POST', `${kuzzleUrl}/users/${kuid}/_create?refresh=wait_for`, {
+      content: {
+        profileIds: ['default', ...profileIds],
+        name: 'Dummy User'
+      },
+      credentials: {
+        local: {
+          username: 'dummy',
+          password: 'test'
+        }
+      }
+    })
+    cy.visit(`/#/security/users/${kuid}`)
+    cy.contains(`Edit user - ${kuid}`)
+
+    profileIds.forEach(id => {
+      cy.get(`[data-cy="UserProfileList-badge--${id}"]`).should('be.visible')
+    })
+
+    cy.get('[data-cy=UserProfileList-default--delete]').click()
+    cy.get('[data-cy="UserProfileList-select"]').select('admin')
+
+    cy.get('[data-cy=CredentialsSelector-local-username]').type(
+      `{selectall}${newCredentials.username}`
+    )
+    cy.get('[data-cy=CredentialsSelector-local-password]').type(
+      `{selectall}${newCredentials.password}`
+    )
+
+    cy.get('#UserUpdate-customTab___BV_tab_button__').click()
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] .ace_line').should(
+      'be.visible'
+    )
+    cy.get(
+      '[data-cy="UserCustomContent-jsonEditor"] .ace_line:first-child'
+    ).click({
+      force: true
+    })
+    cy.get('[data-cy="UserCustomContent-jsonEditor"] textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(
+        `{
+"super_important_field": "LOL"`,
+        {
+          force: true
+        }
+      )
+
+    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
+    cy.get('[data-cy=UserItem]').should('contain', '"admin"')
+    cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
+    cy.get('[data-cy=UserItem]').should('contain', '"LOL"')
+
+    cy.get('[data-cy="MainMenu-logoutBtn"]').click()
+
+    cy.get('[data-cy="Login-username"]').type(newCredentials.username)
+    cy.get('[data-cy="Login-password"]').type(newCredentials.password)
+    cy.get('[data-cy="Login-submitBtn"]').click()
+    cy.get('[data-cy="App-loggedIn"]')
+  })
+
   it.skip('Should update the user mapping successfully', function() {
     cy.visit('/')
     cy.get('[data-cy=LoginAsAnonymous-Btn]').click()

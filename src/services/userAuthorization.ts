@@ -145,7 +145,7 @@ export const canSearchUser = () => {
   return isActionAllowed(state.user, 'security', 'searchUsers')
 }
 export const canEditUser = () => {
-  return isActionAllowed(state.user, 'security', 'createOrReplaceUser')
+  return isActionAllowed(state.user, 'security', 'updateUser')
 }
 export const canCreateUser = () => {
   return isActionAllowed(state.user, 'security', 'createUser')

@@ -3,12 +3,13 @@
     <b-row align-h="between" no-gutters>
       <b-col cols="12" class="UserItem-titleCol py-1 vertical-align">
         <i
+          aria-hidden="true"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          aria-hidden="true"
+          :data-cy="`UserItem-${document.id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox

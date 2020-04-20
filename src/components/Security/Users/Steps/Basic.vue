@@ -5,32 +5,19 @@
         <strong>KUID</strong>
       </b-col>
 
-      <b-col cols="6">
-        <input
+      <b-col>
+        <b-input
           v-if="editKuid"
-          id="custom-kuid"
-          type="text"
           class="validate"
-          placeholder="Custom KUID"
+          data-cy="UserBasic-kuid"
+          id="custom-kuid"
+          placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
+          type="text"
           :value="kuid"
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
         />
-        <span v-if="!editKuid">{{ kuid }}</span>
-      </b-col>
-      <b-col cols="3" v-if="editKuid">
-        <label>
-          <input
-            id="user-auto-generate-kuid"
-            type="checkbox"
-            class="filled-in"
-            :checked="autoGenerateKuid"
-            @change="setAutoGenerateKuid"
-          />
-          <span>
-            Auto-generate
-          </span>
-        </label>
+        <span class="code" v-if="!editKuid">{{ kuid }}</span>
       </b-col>
     </b-row>
     <b-row class="mt-2">
@@ -56,6 +43,11 @@ export default {
   components: {
     UserProfileList
   },
+  data() {
+    return {
+      autoGenerateKuidValue: false
+    }
+  },
   props: {
     addedProfiles: {
       type: Array,
@@ -77,17 +69,22 @@ export default {
     }
   },
   methods: {
-    setAutoGenerateKuid(event) {
-      this.$emit('set-auto-generate-kuid', event.target.checked)
-    },
-    setCustomKuid(event) {
-      this.$emit('set-custom-kuid', event.target.value)
+    setCustomKuid(value) {
+      this.$emit('set-custom-kuid', value)
     },
     onProfileSelected(profile) {
       this.$emit('profile-add', profile)
     },
     removeProfile(profile) {
       this.$emit('profile-remove', profile)
+    }
+  },
+  watch: {
+    autoGenerateKuid: {
+      immediate: true,
+      handler(v) {
+        this.autoGenerateKuidValue = v
+      }
     }
   }
 }
