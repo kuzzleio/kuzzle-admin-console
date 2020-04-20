@@ -1,7 +1,7 @@
 <template>
   <b-container>
     <Headline>
-      Edit profile - <span class="bold">{{ $route.params.id }}</span>
+      Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
     <Notice />
     <create-or-update
@@ -29,9 +29,14 @@ export default {
   data() {
     return {
       document: '{}',
-      id: null,
       submitted: false,
       loading: true
+    }
+  },
+  props: {
+    id: {
+      type: String,
+      require: true
     }
   },
   methods: {
@@ -80,10 +85,7 @@ export default {
   async mounted() {
     this.loading = true
     try {
-      const profile = await this.$kuzzle.security.getProfile(
-        this.$route.params.id
-      )
-      this.id = profile._id
+      const profile = await this.$kuzzle.security.getProfile(this.id)
       this.document = JSON.stringify({ policies: profile.policies }, null, 2)
       this.loading = false
     } catch (e) {
