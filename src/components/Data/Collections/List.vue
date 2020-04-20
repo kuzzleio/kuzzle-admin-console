@@ -26,131 +26,134 @@
     </headline>
 
     <list-not-allowed v-if="!canSearchCollection(index)" />
-    <template v-else>
-      <b-row class="mb-3">
-        <b-col sm="8" class="text-secondary">
-          {{ collections.length }}
-          {{ collections.length === 1 ? 'collection' : 'collections' }}
-        </b-col>
-        <b-col sm="4">
-          <b-input-group>
-            <template v-slot:prepend>
-              <b-input-group-text>Filter</b-input-group-text>
-            </template>
-            <b-form-input
-              v-model="filter"
-              :disabled="collections.length === 0"
-            ></b-form-input>
-          </b-input-group>
-        </b-col>
-      </b-row>
-    </template>
+    <div class="CollectionList-content" v-else>
+      <template v-if="loading">
+        <main-spinner />
+      </template>
+      <template v-else>
+        <b-row class="mb-3">
+          <b-col sm="8" class="text-secondary">
+            {{ collections.length }}
+            {{ collections.length === 1 ? 'collection' : 'collections' }}
+          </b-col>
+          <b-col sm="4">
+            <b-input-group>
+              <template v-slot:prepend>
+                <b-input-group-text>Filter</b-input-group-text>
+              </template>
+              <b-form-input
+                v-model="filter"
+                :disabled="collections.length === 0"
+              ></b-form-input>
+            </b-input-group>
+          </b-col>
+        </b-row>
+        <data-not-found v-if="!indexExists" class="mt-3"></data-not-found>
 
-    <template v-if="canSearchCollection(index)">
-      <data-not-found v-if="!indexExists" class="mt-3"></data-not-found>
+        <b-table
+          v-else
+          striped
+          outlined
+          show-empty
+          :items="collections"
+          :fields="tableFields"
+          :filter="filter"
+        >
+          <template v-slot:empty>
+            <h4 class="text-secondary text-center">
+              This index has no collections.
+            </h4>
+            <p
+              v-if="canCreateCollection(index)"
+              class="text-secondary text-center"
+            >
+              You can create the collection by hitting the button above.
+            </p>
+          </template>
+          <template v-slot:emptyfiltered>
+            <h4 class="text-secondary text-center">
+              There is no collection matching your filter.
+            </h4>
+          </template>
+          <template v-slot:cell(type)="type">
+            <i
+              class="fa fa-2x"
+              :class="{
+                'fa-bolt ml-2': type.value === 'realtime',
+                'fa-th-list': type.value === 'stored'
+              }"
+              :title="type.value === 'realtime' ? 'Realtime' : 'Stored'"
+            ></i>
+          </template>
+          <template v-slot:cell(name)="name">
+            <b-link
+              class="code"
+              :data-cy="`CollectionList-name--${name.value}`"
+              :title="name.value"
+              :to="
+                name.item.type === 'realtime'
+                  ? {
+                      name: 'WatchCollection',
+                      params: { index, collection: name.value }
+                    }
+                  : {
+                      name: 'DocumentList',
+                      params: { index, collection: name.value }
+                    }
+              "
+              >{{ truncateName(name.value) }}</b-link
+            >
+          </template>
+          <template v-slot:cell(actions)="row">
+            <b-button
+              class="mx-1"
+              variant="link"
+              title="Browse contents"
+              :to="
+                row.item.type === 'realtime'
+                  ? {
+                      name: 'WatchCollection',
+                      params: { index, collection: row.item.name }
+                    }
+                  : {
+                      name: 'DocumentList',
+                      params: { index, collection: row.item.name }
+                    }
+              "
+              ><i class="fa fa-eye"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
+              variant="link"
+              title="Edit collection"
+              :data-cy="`CollectionList-edit--${row.item.name}`"
+              :disabled="
+                row.item.type !== 'stored' ||
+                  !canEditCollection(index, row.item.name)
+              "
+              :to="
+                canEditCollection(index, row.item.name)
+                  ? {
+                      name: 'EditCollection',
+                      params: { collection: row.item.name, index }
+                    }
+                  : ''
+              "
+              ><i class="fa fa-pencil-alt"></i
+            ></b-button>
+            <b-button
+              class="mx-1"
+              variant="link"
+              title="Delete collection"
+              :data-cy="`CollectionList-delete--${row.item.name}`"
+              @click="onDeleteCollectionClicked(row.item.name)"
+              ><i class="fa fa-trash"></i
+            ></b-button>
+          </template>
+        </b-table>
+      </template>
+    </div>
 
-      <b-table
-        v-else
-        striped
-        outlined
-        show-empty
-        :items="collections"
-        :fields="tableFields"
-        :filter="filter"
-      >
-        <template v-slot:empty>
-          <h4 class="text-secondary text-center">
-            This index has no collections.
-          </h4>
-          <p
-            v-if="canCreateCollection(index)"
-            class="text-secondary text-center"
-          >
-            You can create the collection by hitting the button above.
-          </p>
-        </template>
-        <template v-slot:emptyfiltered>
-          <h4 class="text-secondary text-center">
-            There is no collection matching your filter.
-          </h4>
-        </template>
-        <template v-slot:cell(type)="type">
-          <i
-            class="fa fa-2x"
-            :class="{
-              'fa-bolt ml-2': type.value === 'realtime',
-              'fa-th-list': type.value === 'stored'
-            }"
-            :title="type.value === 'realtime' ? 'Realtime' : 'Persisted'"
-          ></i>
-        </template>
-        <template v-slot:cell(name)="name">
-          <b-link
-            class="code"
-            :data-cy="`CollectionList-name--${name.value}`"
-            :title="name.value"
-            :to="
-              name.item.type === 'realtime'
-                ? {
-                    name: 'WatchCollection',
-                    params: { index, collection: name.value }
-                  }
-                : {
-                    name: 'DocumentList',
-                    params: { index, collection: name.value }
-                  }
-            "
-            >{{ truncateName(name.value) }}</b-link
-          >
-        </template>
-        <template v-slot:cell(actions)="row">
-          <b-button
-            class="mx-1"
-            variant="link"
-            title="Browse contents"
-            :to="
-              row.item.type === 'realtime'
-                ? {
-                    name: 'WatchCollection',
-                    params: { index, collection: row.item.name }
-                  }
-                : {
-                    name: 'DocumentList',
-                    params: { index, collection: row.item.name }
-                  }
-            "
-            ><i class="fa fa-eye"></i
-          ></b-button>
-          <b-button
-            class="mx-1"
-            variant="link"
-            title="Edit collection"
-            :data-cy="`CollectionList-edit--${row.item.name}`"
-            :disabled="
-              row.item.type !== 'stored' ||
-                !canEditCollection(index, row.item.name)
-            "
-            :to="
-              canEditCollection(index, row.item.name)
-                ? {
-                    name: 'EditCollection',
-                    params: { collection: row.item.name, index }
-                  }
-                : ''
-            "
-            ><i class="fa fa-pencil-alt"></i
-          ></b-button>
-          <b-button
-            class="mx-1"
-            variant="link"
-            title="Delete collection"
-            :data-cy="`CollectionList-delete--${row.item.name}`"
-            @click="onDeleteCollectionClicked(row.item.name)"
-            ><i class="fa fa-trash"></i
-          ></b-button>
-        </template>
-      </b-table>
-    </template>
     <b-modal
       size="lg"
       id="deleteCollectionPrompt"
@@ -215,6 +218,7 @@
 <script>
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
+import MainSpinner from '../../Common/MainSpinner'
 import {
   canDeleteIndex,
   canSearchIndex,
@@ -229,9 +233,10 @@ import DataNotFound from '../Data404'
 export default {
   name: 'CollectionList',
   components: {
+    DataNotFound,
     Headline,
     ListNotAllowed,
-    DataNotFound
+    MainSpinner
   },
   directives: {
     Title
@@ -249,6 +254,17 @@ export default {
   computed: {
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
+    },
+    loading() {
+      if (
+        this.$store.state.index.indexesAndCollections.loadingIndexes === true
+      ) {
+        return true
+      }
+      if (!this.indexExists) {
+        return false
+      }
+      return this.$store.state.index.indexesAndCollections[this.index].loading
     },
     deletionConfirmed() {
       return (
