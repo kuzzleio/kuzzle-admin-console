@@ -8,7 +8,11 @@
         </router-link>
       </li>
 
-      <li v-if="isRouteActive('SecurityUsersList')">
+      <li
+        v-if="
+          isRouteActive(['SecurityUsersList', 'SecurityUsersEditCustomMapping'])
+        "
+      >
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link :to="{ name: 'SecurityUsersList' }">
