@@ -5,37 +5,19 @@
         <strong>KUID</strong>
       </b-col>
 
-      <b-col cols="5">
+      <b-col>
         <b-input
           v-if="editKuid"
           class="validate"
           data-cy="UserBasic-kuid"
           id="custom-kuid"
+          placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
           type="text"
-          :placeholder="
-            autoGenerateKuidValue
-              ? 'Will be auto-generated'
-              : 'Please fill-in the KUID'
-          "
           :value="kuid"
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
         />
         <span class="code" v-if="!editKuid">{{ kuid }}</span>
-      </b-col>
-      <b-col cols="3" v-if="editKuid" class="vertical-align">
-        <b-form-checkbox
-          v-model="autoGenerateKuidValue"
-          class="filled-in"
-          data-cy="UserBasic-autoKuidBtn"
-          id="user-auto-generate-kuid"
-          type="checkbox"
-          @input="$emit('set-auto-generate-kuid', $event)"
-        >
-          <span>
-            Auto-generate
-          </span>
-        </b-form-checkbox>
       </b-col>
     </b-row>
     <b-row class="mt-2">
