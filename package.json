@@ -61,7 +61,6 @@
     "vue-class-component": "^7.0.2",
     "vue-color": "^2.7.0",
     "vue-google-charts": "^0.3.2",
-    "vue-multiselect": "2.0.0-beta.15",
     "vue-plugin-kuzzle": "^3.0.0",
     "vue-property-decorator": "^8.3.0",
     "vue-quill-editor": "^3.0.6",

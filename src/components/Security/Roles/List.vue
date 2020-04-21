@@ -1,7 +1,105 @@
 <template>
   <div class="RoleList">
-    <slot v-if="!currentFilter.basic && totalDocuments === 0" name="emptySet" />
-    <crudl-document
+    <template v-if="loading">
+      <b-row class="text-center">
+        <b-col>
+          <b-spinner variant="primary" class="mt-5"></b-spinner>
+        </b-col>
+      </b-row>
+    </template>
+    <template v-else>
+      <slot
+        v-if="!currentFilter.basic && totalDocuments === 0"
+        name="emptySet"
+      />
+      <template v-else>
+        <filters
+          class="mb-3"
+          :current-filter="currentFilter.basic"
+          @filters-updated="onFiltersUpdated"
+          @reset="onFiltersUpdated"
+        />
+        <b-card
+          class="light-shadow"
+          :bg-variant="documents.length === 0 ? 'light' : 'default'"
+        >
+          <b-card-text class="p-0">
+            <div v-show="!documents.length" class="row valign-center empty-set">
+              <b-row align-h="center" class="valign-center empty-set">
+                <b-col cols="2" class="text-center">
+                  <i
+                    class="fa fa-5x fa-search text-secondary mt-3"
+                    aria-hidden="true"
+                  />
+                </b-col>
+                <b-col md="6">
+                  <h3 class="text-secondary font-weight-bold">
+                    There is no result matching your query. Please try with
+                    another filter.
+                  </h3>
+                  <p>
+                    <em
+                      >Learn more about filtering syntax on
+                      <a
+                        href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
+                        target="_blank"
+                        >Kuzzle Elasticsearch Cookbook</a
+                      ></em
+                    >
+                  </p>
+                </b-col>
+              </b-row>
+            </div>
+            <div v-if="documents.length">
+              <b-row no-gutters class="mb-2">
+                <b-col cols="8">
+                  <b-button
+                    variant="outline-dark"
+                    class="mr-2"
+                    data-cy="UserList-toggleAllBtn"
+                    @click="toggleAll"
+                  >
+                    <i
+                      :class="
+                        `far ${
+                          allChecked ? 'fa-check-square' : 'fa-square'
+                        } left`
+                      "
+                    />
+                    Toggle all
+                  </b-button>
+
+                  <b-button
+                    variant="outline-danger"
+                    class="mr-2"
+                    data-cy="UserList-bulkDeleteBtn"
+                    :disabled="!displayBulkDelete"
+                    @click="deleteBulk"
+                  >
+                    <i class="fa fa-minus-circle left" />
+                    Delete selected
+                  </b-button>
+                </b-col>
+              </b-row>
+            </div>
+            <b-list-group class="RoleList-list collection">
+              <b-list-group-item
+                v-for="document in documents"
+                :key="document.id"
+                class="p-2"
+              >
+                <RoleItem
+                  :document="document"
+                  :is-checked="isChecked(document.id)"
+                  @checkbox-click="toggleSelectDocuments"
+                  @common-list::edit-document="editDocument"
+                  @delete-document="deleteDocument"
+                />
+              </b-list-group-item>
+            </b-list-group>
+          </b-card-text>
+        </b-card>
+        <!-- <crudl-document
       v-else
       :pagination-from="paginationFrom"
       :pagination-size="paginationSize"
@@ -18,46 +116,24 @@
       @filters-updated="onFiltersUpdated"
       @create-clicked="create"
       @toggle-all="toggleAll"
-    >
-      <div class="RoleList-list collection">
-        <div
-          v-for="document in documents"
-          :key="document.id"
-          class="collection-item collection-transition"
-        >
-          <component
-            :is="itemName"
-            :document="document"
-            :is-checked="isChecked(document.id)"
-            @checkbox-click="toggleSelectDocuments"
-            @common-list::edit-document="editDocument"
-            @delete-document="deleteDocument"
-          />
-        </div>
-      </div>
-    </crudl-document>
+    > -->
+      </template>
+      <!-- </crudl-document> -->
+    </template>
   </div>
 </template>
 
 <script>
-import CrudlDocument from './CrudlDocument'
-import UserItem from '../Users/UserItem'
+import Filters from './Filters'
 import RoleItem from '../Roles/RoleItem'
-import ProfileItem from '../Profiles/ProfileItem'
-import DocumentItem from '../../Data/Documents/DocumentListItem'
 import * as filterManager from '../../../services/filterManager'
-
 export default {
   name: 'RoleList',
   components: {
-    CrudlDocument,
-    UserItem,
     RoleItem,
-    ProfileItem,
-    DocumentItem
+    Filters
   },
   props: {
-    itemName: String,
     displayCreate: {
       type: Boolean,
       default: false
@@ -69,11 +145,12 @@ export default {
   },
   data() {
     return {
-      selectedDocuments: [],
-      documents: [],
-      totalDocuments: 0,
+      currentFilter: new filterManager.Filter(),
       documentToDelete: null,
-      currentFilter: new filterManager.Filter()
+      documents: [],
+      loading: false,
+      selectedDocuments: [],
+      totalDocuments: 0
     }
   },
   computed: {

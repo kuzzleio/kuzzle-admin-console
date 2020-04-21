@@ -1,52 +1,45 @@
 <template>
-  <div class="RolesFilters">
-    <div class="card-panel card-header">
-      <div class="row filters margin-bottom-0">
-        <form @submit.prevent="submitSearch">
-          <div class="col s7">
-            <div class="RolesFilters-searchBar">
-              <i class="RolesFilters-searchIcon fa fa-search" />
-              <multiselect
-                :options="[]"
-                :taggable="true"
-                tag-placeholder="Add filter on this controller"
-                :value="controllers"
-                placeholder="Search by controller..."
-                :multiple="true"
-                @tag="addController"
-                @remove="removeController"
-              />
-            </div>
+  <b-card no-body data-cy="RolesFilters" class="RolesFilters">
+    <template v-slot:header>
+      <b-row>
+        <b-col cols="9">
+          <div class="RolesFilters-searchBar">
+            <i class="RolesFilters-searchIcon fa fa-search" />
+            <b-form-tags
+              v-model="controllers"
+              placeholder="Search by controller..."
+            />
           </div>
-          <div class="col s3 RolesFilters-actions">
-            <button
-              type="submit"
-              class="btn btn-small waves-effect waves-light"
-            >
-              Search
-            </button>
-            <button
-              class="btn-flat btn-small waves-effect waves-light"
-              @click="resetSearch"
-            >
-              reset
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+        </b-col>
+
+        <b-col class="text-right">
+          <b-button
+            class="mr-2"
+            data-cy="RolesFilters-resetBtn"
+            variant="outline-primary"
+            @click="resetSearch"
+          >
+            Reset
+          </b-button>
+          <b-button
+            data-cy="RolesFilters-submitBtn"
+            variant="primary"
+            @click="submitSearch"
+          >
+            Search
+          </b-button>
+        </b-col>
+      </b-row>
+    </template>
+  </b-card>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 
 export default {
   name: 'RolesFilters',
-  components: {
-    Multiselect
-  },
+  components: {},
   props: {
     currentFilter: Object
   },
@@ -75,18 +68,6 @@ export default {
     resetSearch() {
       this.controllers = []
       this.$emit('reset', null)
-    },
-    addController(value) {
-      if (this.controllers.indexOf(value) !== -1) {
-        return
-      }
-
-      this.controllers.push(value)
-    },
-    removeController(removedValue) {
-      this.controllers = this.controllers.filter(
-        value => value !== removedValue
-      )
     }
   }
 }
