@@ -19,7 +19,6 @@
           unchecked-value="false"
           v-model="checked"
           :data-cy="`RoleItem-checkbox--${document.id}`"
-          :id="checkboxId"
           @change="notifyCheckboxClick"
         />
         <a

@@ -35,8 +35,6 @@
 </template>
 
 <script>
-import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
-
 export default {
   name: 'RolesFilters',
   components: {},

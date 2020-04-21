@@ -93,45 +93,44 @@
                   :is-checked="isChecked(document.id)"
                   @checkbox-click="toggleSelectDocuments"
                   @common-list::edit-document="editDocument"
-                  @delete-document="deleteDocument"
+                  @delete-document="deleteRole"
                 />
               </b-list-group-item>
             </b-list-group>
           </b-card-text>
         </b-card>
-        <!-- <crudl-document
-      v-else
-      :pagination-from="paginationFrom"
-      :pagination-size="paginationSize"
-      :current-filter="currentFilter"
-      :documents="documents"
-      :total-documents="totalDocuments"
-      :display-bulk-delete="displayBulkDelete"
-      :display-create="displayCreate"
-      :all-checked="allChecked"
-      :selected-documents="selectedDocuments"
-      :length-document="selectedDocuments.length"
-      :document-to-delete="documentToDelete"
-      :perform-delete="deleteRoles"
-      @filters-updated="onFiltersUpdated"
-      @create-clicked="create"
-      @toggle-all="toggleAll"
-    > -->
+        <b-row align-h="center">
+          <b-pagination
+            class="m-2 mt-4"
+            data-cy="RolesManagement-pagination"
+            v-model="currentPage"
+            :total-rows="totalDocuments"
+            :per-page="paginationSize"
+          ></b-pagination>
+        </b-row>
       </template>
-      <!-- </crudl-document> -->
     </template>
+    <delete-modal
+      id="modal-delete-roles"
+      :candidates-for-deletion="candidatesForDeletion"
+      :is-loading="deleteModalIsLoading"
+      @confirm="onDeleteConfirmed"
+      @hide="resetCandidatesForDeletion"
+    />
   </div>
 </template>
 
 <script>
+import DeleteModal from './DeleteModal'
 import Filters from './Filters'
 import RoleItem from '../Roles/RoleItem'
 import * as filterManager from '../../../services/filterManager'
 export default {
   name: 'RoleList',
   components: {
-    RoleItem,
-    Filters
+    DeleteModal,
+    Filters,
+    RoleItem
   },
   props: {
     displayCreate: {
@@ -145,7 +144,10 @@ export default {
   },
   data() {
     return {
+      candidatesForDeletion: [],
       currentFilter: new filterManager.Filter(),
+      currentPage: 1,
+      deleteModalIsLoading: false,
       documentToDelete: null,
       documents: [],
       loading: false,
@@ -165,10 +167,10 @@ export default {
       return this.selectedDocuments.length === this.documents.length
     },
     paginationFrom() {
-      return parseInt(this.currentFilter.from) || 0
+      return (this.currentPage - 1) * this.paginationSize || 0
     },
     paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
+      return 10
     }
   },
   watch: {
@@ -192,13 +194,45 @@ export default {
     )
   },
   methods: {
-    async deleteRoles(index, collection, ids) {
-      await this.performDelete(index, collection, ids)
-      this.$set(
-        this.selectedDocuments,
-        this.selectedDocuments.splice(0, this.selectedDocuments.length)
+    // DELETE
+    // =========================================================================
+    async onDeleteConfirmed() {
+      this.deleteModalIsLoading = true
+      try {
+        await this.performDelete(
+          this.index,
+          this.collection,
+          this.candidatesForDeletion
+        )
+        this.$bvModal.hide('modal-delete-roles')
+        this.deleteModalIsLoading = false
+        this.fetchDocuments()
+      } catch (e) {
+        this.$log.error(e)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while deleting the document(s).',
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+    },
+    deleteRole(id) {
+      this.candidatesForDeletion.push(id)
+      this.$bvModal.show('modal-delete-roles')
+    },
+    deleteBulk() {
+      this.candidatesForDeletion = this.candidatesForDeletion.concat(
+        this.selectedDocuments
       )
-      this.fetchRoles()
+      this.$bvModal.show('modal-delete-roles')
+    },
+    resetCandidatesForDeletion() {
+      this.candidatesForDeletion = []
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
@@ -221,17 +255,19 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(filter) {
+      const newFilters = Object.assign(this.currentFilter, {
+        active: filter ? filterManager.ACTIVE_BASIC : filterManager.NO_ACTIVE,
+        basic: filter,
+        from: 0
+      })
       try {
         filterManager.saveToRouter(
           filterManager.stripDefaultValuesFromFilter(newFilters),
           this.$router
         )
       } catch (error) {
-        this.$store.direct.commit.toaster.setToast({
-          text:
-            'An error occurred while updating filters: <br />' + error.message
-        })
+        this.$log.error(error)
       }
     },
     fetchRoles() {
@@ -246,10 +282,18 @@ export default {
           this.totalDocuments = res.total
         })
         .catch(e => {
-          this.$store.direct.commit.toaster.setToast({
-            text:
-              'An error occurred while performing search: <br />' + e.message
-          })
+          this.$log.error(e)
+          this.$bvToast.toast(
+            'The complete error has been printed to console',
+            {
+              title: 'Ooops! Something went wrong while fetching the role list',
+              variant: 'warning',
+              toaster: 'b-toaster-bottom-right',
+              appendToast: true,
+              dismissible: true,
+              noAutoHide: true
+            }
+          )
         })
     },
     editDocument(route, id) {
@@ -257,9 +301,6 @@ export default {
         name: this.routeUpdate,
         params: { id }
       })
-    },
-    deleteDocument(id) {
-      this.documentToDelete = id
     },
     create() {
       this.$router.push({ name: this.routeCreate })
