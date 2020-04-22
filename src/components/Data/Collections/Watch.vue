@@ -37,7 +37,7 @@
                 <em
                   >Learn more about security &amp; permissions on
                   <a
-                    href="https://docs.kuzzle.io/guide/1/essentials/security/"
+                    href="https://docs.kuzzle.io/core/2/guides/essentials/security/"
                     target="_blank"
                     >Kuzzle guide</a
                   ></em

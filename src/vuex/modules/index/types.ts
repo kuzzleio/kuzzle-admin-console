@@ -1,5 +1,10 @@
 export interface IndexState {
-  indexes: Array<string>
   indexesAndCollections: object
-  loading: boolean
+  loadingIndexes: boolean
+}
+
+export class Index {
+  loading = false
+  realtime = []
+  stored = []
 }

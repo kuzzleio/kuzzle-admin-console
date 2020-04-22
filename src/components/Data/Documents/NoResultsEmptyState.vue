@@ -11,7 +11,7 @@
         <em
           >Learn more about filtering syntax on
           <a
-            href="https://docs.kuzzle.io/guide/1/elasticsearch/"
+            href="https://docs.kuzzle.io/core/2/guides/elasticsearch/"
             target="_blank"
             >Kuzzle Elasticsearch Cookbook</a
           ></em

@@ -26,9 +26,7 @@
               <basic
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
-                :auto-generate-kuid="autoGenerateKuid"
                 :kuid="kuid"
-                @set-auto-generate-kuid="setAutoGenerateKuid"
                 @set-custom-kuid="setCustomKuid"
                 @profile-add="onProfileAdded"
                 @profile-remove="onProfileRemoved"
@@ -70,7 +68,7 @@
                 variant="primary"
                 @click.prevent="submit"
               >
-                <span v-if="!!id">Save</span>
+                <span v-if="id">Save</span>
                 <span v-else>Create</span>
               </b-button>
             </b-col>
@@ -122,7 +120,6 @@ export default {
       submitting: false,
       kuid: null,
       addedProfiles: [],
-      autoGenerateKuid: false,
       credentials: {},
       strategies: [],
       credentialsMapping: {},
@@ -154,9 +151,6 @@ export default {
     },
     onProfileRemoved(profile) {
       this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
-    },
-    setAutoGenerateKuid(value) {
-      this.autoGenerateKuid = value
     },
     setCustomKuid(value) {
       this.kuid = value
@@ -191,16 +185,10 @@ export default {
 
       try {
         if (this.id) {
-          await this.$kuzzle.security.replaceUser(
-            this.kuid,
-            {
-              profileIds: this.addedProfiles,
-              ...JSON.parse(this.customContentValue)
-            },
-            {
-              refresh: 'wait_for'
-            }
-          )
+          await this.$kuzzle.security.replaceUser(this.kuid, {
+            profileIds: this.addedProfiles,
+            ...JSON.parse(this.customContentValue)
+          })
           await Promise.all(
             Object.keys(this.credentials).map(async strategy => {
               const credentialsExists = await this.$kuzzle.security.hasCredentials(
@@ -224,19 +212,13 @@ export default {
             })
           )
         } else {
-          await this.$kuzzle.security.createUser(
-            this.kuid,
-            {
-              content: {
-                profileIds: this.addedProfiles,
-                ...JSON.parse(this.customContentValue)
-              },
-              credentials: this.credentials
+          await this.$kuzzle.security.createUser(this.kuid, {
+            content: {
+              profileIds: this.addedProfiles,
+              ...JSON.parse(this.customContentValue)
             },
-            {
-              refresh: 'wait_for'
-            }
-          )
+            credentials: this.credentials
+          })
         }
 
         this.$router.push({ name: 'SecurityUsersList' })
