@@ -134,6 +134,5 @@ describe('Roles', () => {
       '[data-cy="RolesManagement-pagination"] .page-link[aria-posinset="2"]'
     ).click()
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
-    cy.get('[data-cy="RoleList-list"]').should('contain', rolePrefix + '_13')
   })
 })
