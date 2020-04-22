@@ -99,9 +99,7 @@ import title from '../../../directives/title.directive'
 
 export default {
   name: 'ProfileItem',
-  components: {
-    // Dropdown
-  },
+  components: {},
   directives: {
     jsonFormatter,
     title

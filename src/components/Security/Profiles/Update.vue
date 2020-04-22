@@ -63,7 +63,7 @@ export default {
         this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
         this.$log.error(e)
-        this.bvToast.toast('The complete error has been printed to console', {
+        this.$bvToast.toast('The complete error has been printed to console', {
           title: 'Ooops! Something went wrong while updating the profile',
           variant: 'warning',
           toaster: 'b-toaster-bottom-right',
@@ -86,11 +86,13 @@ export default {
     this.loading = true
     try {
       const profile = await this.$kuzzle.security.getProfile(this.id)
+      delete profile._kuzzle
+      delete profile._id
       this.document = JSON.stringify(profile, null, 2)
       this.loading = false
     } catch (e) {
       this.$log.error(e)
-      this.bvToast.toast('The complete error has been printed to console', {
+      this.$bvToast.toast('The complete error has been printed to console', {
         title: 'Ooops! Something went wrong while loading the profile',
         variant: 'warning',
         toaster: 'b-toaster-bottom-right',

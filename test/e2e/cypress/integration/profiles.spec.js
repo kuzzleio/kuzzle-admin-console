@@ -130,6 +130,7 @@ describe('Profiles', () => {
       .clear({ force: true })
       .type(
         `{
+"rateLimit": 100,
 "policies": [{
 "roleId": "default"`,
         {
@@ -140,7 +141,7 @@ describe('Profiles', () => {
     cy.contains(profileId)
   })
 
-  it.only('Should be able to update an existing profile', () => {
+  it('Should be able to update an existing profile', () => {
     const profileId = 'dummy'
     cy.request(
       'POST',
