@@ -124,12 +124,12 @@
                       align-h="center"
                     >
                       <b-pagination
-                        class="m-2 mt-4"
                         v-model="currentPage"
                         aria-controls="my-table"
+                        class="m-2 mt-4"
+                        data-cy="DocumentList-pagination"
                         :total-rows="totalDocuments"
                         :per-page="paginationSize"
-                        @change="fetchDocuments"
                       ></b-pagination>
                     </b-row>
                   </template>
