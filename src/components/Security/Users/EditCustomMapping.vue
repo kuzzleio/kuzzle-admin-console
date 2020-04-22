@@ -97,7 +97,6 @@ export default {
   components: {
     Headline,
     JsonEditor
-    // Mapping
   },
   data() {
     return {
