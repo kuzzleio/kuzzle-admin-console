@@ -5,7 +5,7 @@
         <!-- <div class="UserItem" :class="{ collapsed: collapsed }"> -->
         <!-- class="UserItem-toggle fa fa-caret-down item-toggle" -->
         <i
-          aria-hidden="true"
+          aria-role="button"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'

@@ -3,7 +3,7 @@
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
         <i
-          aria-hidden="true"
+          aria-role="button"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'
@@ -98,9 +98,7 @@ import title from '../../../directives/title.directive'
 
 export default {
   name: 'ProfileItem',
-  components: {
-    // Dropdown
-  },
+  components: {},
   directives: {
     jsonFormatter,
     title
