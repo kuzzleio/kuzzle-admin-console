@@ -97,7 +97,7 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      require(['../../components/Security/Roles/Create'], resolve)
+      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
     }
   },
   {
@@ -107,7 +107,8 @@ export default [
       section: 'roles'
     },
     component(resolve) {
-      require(['../../components/Security/Roles/Update'], resolve)
-    }
+      require(['../../components/Security/Roles/CreateOrUpdate'], resolve)
+    },
+    props: route => ({ id: route.params.id })
   }
 ]
