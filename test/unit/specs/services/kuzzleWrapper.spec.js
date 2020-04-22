@@ -66,6 +66,9 @@ describe('Kuzzle wrapper service', () => {
                       resolve(fakeResponse)
                     }
                   })
+                },
+                count() {
+                  return new Promise(resolve => resolve(42))
                 }
               }
             }
