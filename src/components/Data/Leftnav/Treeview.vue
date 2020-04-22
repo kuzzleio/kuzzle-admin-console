@@ -10,9 +10,10 @@
     <template v-else>
       <div class="Treeview-search p-3">
         <b-form-input
-          type="search"
           v-model="filter"
+          data-cy="Treeview-filter"
           placeholder="Search index &amp; collection"
+          type="search"
         ></b-form-input>
       </div>
       <div class="Treeview-items p-3">
@@ -26,12 +27,13 @@
         </router-link>
         <index-branch
           v-for="indexName in orderedFilteredIndices"
-          :key="indexName"
-          :index-name="indexName"
           :collections="indexesAndCollections[indexName]"
-          :current-index="index"
-          :filter="filter"
           :current-collection="collection"
+          :current-index="index"
+          :data-cy="`Treeview-item-index--${indexName}`"
+          :filter="filter"
+          :index-name="indexName"
+          :key="indexName"
         />
       </div>
     </template>
@@ -76,7 +78,6 @@ export default {
     orderedFilteredIndices() {
       return [
         ...filterIndexesByKeyword(
-          this.$store.direct.getters.index.indexes,
           this.$store.direct.state.index.indexesAndCollections,
           this.filter
         )

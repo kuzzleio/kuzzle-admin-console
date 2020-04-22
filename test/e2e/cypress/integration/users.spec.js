@@ -455,10 +455,7 @@ describe('Users', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it.skip('Should update the user mapping successfully', function() {
-    cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
-    cy.contains('Indexes')
+  it('Should update the user mapping successfully', function() {
     cy.visit('/#/security/users/custom-mapping')
 
     cy.get('[data-cy="EditUserMapping-JSONEditor"] .ace_line').should(

@@ -512,4 +512,44 @@ describe('Search', function() {
 
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
   })
+
+  it('should properly paginate search results', () => {
+    const docCount = 50
+    const documents = []
+    for (let i = 0; i < docCount; i++) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('firstName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Dummy')
+    cy.get('[data-cy=BasicFilter-sortAttributeSelect]').select('lastName')
+
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+
+    cy.get('[data-cy=DocumentList-pagination] [aria-posinset=4]').click()
+
+    cy.contains('dummy-40')
+    cy.contains('dummy-41')
+    cy.contains('dummy-42')
+    cy.url().should('contain', 'from=30')
+  })
 })

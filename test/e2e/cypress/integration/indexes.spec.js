@@ -21,7 +21,7 @@ describe('Indexes', () => {
     localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('is able to create a new index', () => {
+  it('Should be able to create a new index', () => {
     const indexName = 'testindex'
 
     cy.waitOverlay()
@@ -34,7 +34,7 @@ describe('Indexes', () => {
     cy.contains(indexName)
   })
 
-  it('does not allow to create the same index twice', () => {
+  it('Should not allow to create the same index twice', () => {
     const indexName = 'testindex'
     cy.request('POST', `http://localhost:7512/${indexName}/_create`)
 
@@ -51,7 +51,7 @@ describe('Indexes', () => {
     cy.contains(`A public index named "${indexName}" already exists`)
   })
 
-  it('is able to delete an index', () => {
+  it('Should be able to delete an index', () => {
     const indexName = 'testindex'
     cy.request('POST', `http://localhost:7512/${indexName}/_create`)
 
