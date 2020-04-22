@@ -87,7 +87,6 @@
           </b-button>
         </div>
       </b-col>
-      <b-col> </b-col>
     </b-row>
     <b-row>
       <b-collapse
