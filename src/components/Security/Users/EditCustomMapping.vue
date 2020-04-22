@@ -90,7 +90,7 @@ import {
   getMappingUsers,
   updateMappingUsers
 } from '../../../services/kuzzleWrapper'
-import omit from 'lodash'
+import omit from 'lodash/omit'
 
 export default {
   name: 'UsersCustomMappingWizard',
