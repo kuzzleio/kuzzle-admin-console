@@ -86,7 +86,7 @@ export default {
     this.loading = true
     try {
       const profile = await this.$kuzzle.security.getProfile(this.id)
-      this.document = JSON.stringify({ policies: profile.policies }, null, 2)
+      this.document = JSON.stringify(profile, null, 2)
       this.loading = false
     } catch (e) {
       this.$log.error(e)

@@ -20,17 +20,6 @@ export default {
     CreateOrUpdate,
     Notice
   },
-  async mounted() {
-    try {
-      const profile = await this.$kuzzle.security.getProfile(
-        this.$route.params.id
-      )
-      this.id = profile._id
-      this.document = { policies: profile.policies }
-    } catch (e) {
-      this.$store.direct.commit.toaster.setToast({ text: e.message })
-    }
-  },
   methods: {
     async onSubmit({ profile, id }) {
       if (!profile || !profile.policies) {
