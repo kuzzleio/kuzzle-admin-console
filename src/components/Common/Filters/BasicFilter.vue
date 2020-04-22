@@ -360,19 +360,25 @@ export default {
       let attributes = []
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
-        ) {
+        if (attributeValue.properties) {
           attributes = attributes.concat(
             this.buildAttributeList(
               attributeValue.properties,
               path.concat(attributeName)
             )
           )
-        } else if (
-          Object.prototype.hasOwnProperty.call(attributeValue, 'type')
-        ) {
+        } else if (attributeValue.type) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
+
+          // Other attribute types are listed in the "fields" property
+          if (attributeValue.fields) {
+            attributes = attributes.concat(
+              this.buildAttributeList(
+                attributeValue.fields,
+                path.concat(attributeName)
+              )
+            )
+          }
         }
       }
 

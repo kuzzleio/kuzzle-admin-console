@@ -155,7 +155,7 @@ export const performSearchDocuments = async (
     index,
     collection,
     { ...filters, sort },
-    { ...pagination, scroll: '1ms' }
+    { ...pagination }
   )
 
   let additionalAttributeName: any = null
@@ -198,10 +198,20 @@ export const performSearchDocuments = async (
   return { documents, total: result.total }
 }
 
-export const getMappingDocument = (collection, index) => {
-  return Vue.prototype.$kuzzle.collection.getMapping(index, collection, {
+export const getMappingDocument = async (collection, index) => {
+  // @todo Use the SDK method after
+  // https://github.com/kuzzleio/sdk-javascript/pull/507 is merged
+  const request = {
+    controller: 'collection',
+    action: 'getMapping',
+    index,
+    collection,
     includeKuzzleMeta: true
-  })
+  }
+
+  const response = await Vue.prototype.$kuzzle.query(request)
+
+  return response.result
 }
 
 export const performDeleteDocuments = async (index, collection, ids) => {

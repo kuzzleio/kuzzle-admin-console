@@ -1,9 +1,10 @@
 <template>
-  <div :class="{ open: open || filter }" class="index-branch mt-2">
+  <div :class="{ open: open || filter }" class="IndexBranch mt-2">
     <i
       v-if="collectionCount"
-      class="fa fa-caret-right tree-toggle"
       aria-hidden="true"
+      class="fa fa-caret-right tree-toggle"
+      :data-cy="`IndexBranch-toggle--${indexName}`"
       @click="toggleBranch"
     />
     <i v-else class="no-caret"></i>
