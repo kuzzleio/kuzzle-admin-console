@@ -50,7 +50,7 @@ describe('Roles', () => {
     cy.contains(roleId)
   })
 
-  it.only('Should be able to update an existing role', () => {
+  it('Should be able to update an existing role', () => {
     const roleId = 'dummy'
     cy.request('POST', `${kuzzleUrl}/roles/${roleId}/_create`, {
       controllers: {
