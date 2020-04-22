@@ -7,6 +7,7 @@
             <i class="RolesFilters-searchIcon fa fa-search" />
             <b-form-tags
               v-model="controllers"
+              data-cy="RoleFilters-searchBar"
               placeholder="Search by controller..."
             />
           </div>
@@ -81,37 +82,5 @@ export default {
   .RolesFilters-searchIcon {
     margin-right: 10px;
   }
-
-  // vue-multiselect overrides
-  .multiselect {
-    flex-grow: 1;
-  }
-  .multiselect__tags {
-    display: flex;
-    align-items: center;
-    background: none;
-    padding: 0 0 0 0;
-    border: none;
-
-    .multiselect__tag {
-      margin-top: 13px;
-      background-color: $secondary-color;
-    }
-  }
-
-  .multiselect__select {
-    display: none;
-  }
-
-  ul.multiselect__content {
-    z-index: 99;
-    li.multiselect__element {
-      z-index: 99;
-    }
-  }
-}
-.RolesFilters-actions {
-  height: 48px;
-  line-height: 48px;
 }
 </style>

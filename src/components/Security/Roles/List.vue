@@ -54,22 +54,6 @@
               <b-row no-gutters class="mb-2">
                 <b-col cols="8">
                   <b-button
-                    variant="outline-dark"
-                    class="mr-2"
-                    data-cy="UserList-toggleAllBtn"
-                    @click="toggleAll"
-                  >
-                    <i
-                      :class="
-                        `far ${
-                          allChecked ? 'fa-check-square' : 'fa-square'
-                        } left`
-                      "
-                    />
-                    Toggle all
-                  </b-button>
-
-                  <b-button
                     variant="outline-danger"
                     class="mr-2"
                     data-cy="UserList-bulkDeleteBtn"
@@ -85,6 +69,7 @@
             <b-list-group class="RoleList-list collection">
               <b-list-group-item
                 v-for="document in documents"
+                data-cy="RoleList-list"
                 :key="document.id"
                 class="p-2"
               >
@@ -159,13 +144,6 @@ export default {
     displayBulkDelete() {
       return this.selectedDocuments.length > 0
     },
-    allChecked() {
-      if (!this.selectedDocuments || !this.documents) {
-        return false
-      }
-
-      return this.selectedDocuments.length === this.documents.length
-    },
     paginationFrom() {
       return (this.currentPage - 1) * this.paginationSize || 0
     },
@@ -185,6 +163,9 @@ export default {
     },
     currentFilter() {
       this.fetchRoles()
+    },
+    currentPage() {
+      this.fetchRoles()
     }
   },
   mounted() {
@@ -199,14 +180,10 @@ export default {
     async onDeleteConfirmed() {
       this.deleteModalIsLoading = true
       try {
-        await this.performDelete(
-          this.index,
-          this.collection,
-          this.candidatesForDeletion
-        )
+        await this.performDelete(this.candidatesForDeletion)
         this.$bvModal.hide('modal-delete-roles')
         this.deleteModalIsLoading = false
-        this.fetchDocuments()
+        this.fetchRoles()
       } catch (e) {
         this.$log.error(e)
         this.$bvToast.toast(
@@ -236,14 +213,6 @@ export default {
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
-    },
-    toggleAll() {
-      if (this.allChecked) {
-        this.selectedDocuments = []
-        return
-      }
-      this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
     },
     toggleSelectDocuments(id) {
       let index = this.selectedDocuments.indexOf(id)
