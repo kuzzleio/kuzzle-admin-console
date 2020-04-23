@@ -106,6 +106,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.UserManagement {
+  margin-bottom: 3em;
+}
 ::v-deep .usersDropdown {
   background-color: $light-grey-color;
   border: none;
