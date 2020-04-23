@@ -85,6 +85,7 @@ describe('Roles', () => {
       )
     cy.get('[data-cy="RoleCreateOrUpdate-updateBtn"]').click()
     cy.contains(roleId)
+    cy.wait(1000)
     cy.request('GET', `${kuzzleUrl}/roles/${roleId}`).should(response => {
       expect(response.body.result._source).to.deep.include({
         controllers: {

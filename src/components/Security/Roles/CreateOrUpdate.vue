@@ -172,23 +172,13 @@ export default {
       this.submitting = true
 
       try {
-        if (!this.id) {
-          await this.$kuzzle.security.createRole(
-            this.idValue,
-            JSON.parse(this.documentValue),
-            {
-              wait_for: 'refresh'
-            }
-          )
-        } else {
-          await this.$kuzzle.security.updateRole(
-            this.idValue,
-            JSON.parse(this.documentValue),
-            {
-              wait_for: 'refresh'
-            }
-          )
-        }
+        await this.$kuzzle.security.createOrReplaceRole(
+          this.idValue,
+          JSON.parse(this.documentValue),
+          {
+            refresh: 'wait_for'
+          }
+        )
         this.$router.push({ name: 'SecurityRolesList' })
       } catch (e) {
         this.$log.error(e)
