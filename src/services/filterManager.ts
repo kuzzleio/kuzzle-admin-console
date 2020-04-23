@@ -8,6 +8,10 @@ export const SORT_ASC = 'asc'
 export const SORT_DESC = 'desc'
 export const DEFAULT_QUICK = ''
 
+const DEFAULT_FILTER = {
+  '_kuzzle_info.createdAt': 'desc'
+}
+
 export function Filter(this: any) {
   this.active = NO_ACTIVE
   this.quick = DEFAULT_QUICK
@@ -264,23 +268,23 @@ export const rawFilterToSearchQuery = rawFilter => {
 export const toSort = filter => {
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return ['_id']
+      return DEFAULT_FILTER
     case ACTIVE_RAW:
-      return filter.raw ? rawFilterToSort(filter.raw) : ['_id']
+      return filter.raw ? rawFilterToSort(filter.raw) : DEFAULT_FILTER
     case NO_ACTIVE:
     default:
     case ACTIVE_BASIC:
-      return filter.sorting ? formatSort(filter.sorting) : ['_id']
+      return filter.sorting ? formatSort(filter.sorting) : DEFAULT_FILTER
   }
 }
 
 export const rawFilterToSort = rawFilter => {
-  return rawFilter.sort || ['_id']
+  return rawFilter.sort || DEFAULT_FILTER
 }
 
 export const formatSort = sorting => {
   if (!sorting.attribute) {
-    return ['_id']
+    return DEFAULT_FILTER
   }
   return [{ [sorting.attribute]: { order: sorting.order } }]
 }

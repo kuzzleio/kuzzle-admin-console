@@ -3,13 +3,13 @@
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
         <i
-          aria-hidden="true"
+          aria-role="button"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          :data-cy="`ProfileListItem-toggle--${document.id}`"
+          :data-cy="`ProfileItem-${document.id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox

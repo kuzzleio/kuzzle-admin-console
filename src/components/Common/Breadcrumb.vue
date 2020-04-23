@@ -13,7 +13,8 @@
           isRouteActive([
             'SecurityUsersList',
             'SecurityUsersCreate',
-            'SecurityUsersUpdate'
+            'SecurityUsersUpdate',
+            'SecurityUsersEditCustomMapping'
           ])
         "
       >

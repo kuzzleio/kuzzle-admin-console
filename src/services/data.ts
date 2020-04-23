@@ -54,7 +54,8 @@ export const generateHash = s => {
   return hash
 }
 
-export const filterIndexesByKeyword = (indexes, indexTree, word) => {
+export const filterIndexesByKeyword = (indexTree, word) => {
+  const indexes = Object.keys(indexTree)
   if (!word || word === '') {
     return indexes
   }

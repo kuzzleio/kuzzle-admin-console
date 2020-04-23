@@ -57,13 +57,6 @@
           >
             Reset
           </b-button>
-          <b-button
-            type="submit"
-            variant="primary"
-            @click.prevent="submitSearch"
-          >
-            {{ labelSearchButton }}
-          </b-button>
         </b-col>
       </b-row>
     </template>
@@ -115,9 +108,6 @@ export default {
         this.selectedRoles.push(role)
       }
     },
-    submitSearch() {
-      this.$emit('filters-updated', this.selectedRoles)
-    },
     reset() {
       this.selectedRoles = []
       this.$emit('reset')
@@ -129,7 +119,7 @@ export default {
   },
   watch: {
     selectedRoles() {
-      this.submitSearch()
+      this.$emit('filters-updated', this.selectedRoles)
     }
   }
 }

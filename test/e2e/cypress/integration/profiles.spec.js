@@ -173,13 +173,11 @@ describe('Profiles', () => {
     cy.get('[data-cy="ProfileCreateOrUpdate-updateBtn"]').click()
     cy.url().should('not.contain', profileId)
     cy.contains(profileId)
-    cy.get('[data-cy=ProfileListItem-toggle--dummy]')
-    cy.get(`[data-cy=ProfileListItem-toggle--${profileId}]`).click({
-      force: true
+    cy.wait(1000)
+    cy.request('GET', `${kuzzleUrl}/profiles/${profileId}`).should(response => {
+      expect(response.body.result._source).to.deep.include({
+        policies: [{ roleId: 'admin' }]
+      })
     })
-    cy.get(`[data-cy=ProfileListItem-collapse--${profileId}]`).should(
-      'contain',
-      '"admin"'
-    )
   })
 })

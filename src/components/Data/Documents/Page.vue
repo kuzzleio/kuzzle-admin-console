@@ -39,6 +39,29 @@
           class="mt-3"
         ></data-not-found>
         <template v-else>
+          <b-row class="justify-content-md-center" no-gutters>
+            <b-col cols="12">
+              <template v-if="isCollectionEmpty">
+                <realtime-only-empty-state
+                  v-if="isRealtimeCollection"
+                  :index="index"
+                  :collection="collection"
+                />
+                <empty-state v-else :index="index" :collection="collection" />
+              </template>
+
+              <template v-if="!isCollectionEmpty">
+                <filters
+                  class="mb-3"
+                  :available-operands="searchFilterOperands"
+                  :current-filter="currentFilter"
+                  :collection-mapping="collectionMapping"
+                  @filters-updated="onFiltersUpdated"
+                  @reset="onFiltersUpdated"
+                />
+              </template>
+            </b-col>
+          </b-row>
           <template v-if="fetchingDocuments">
             <b-row class="text-center">
               <b-col>
@@ -51,30 +74,6 @@
             </b-row>
           </template>
           <template v-else>
-            <b-row class="justify-content-md-center" no-gutters>
-              <b-col cols="12">
-                <template v-if="isCollectionEmpty && !fetchingDocuments">
-                  <realtime-only-empty-state
-                    v-if="isRealtimeCollection"
-                    :index="index"
-                    :collection="collection"
-                  />
-                  <empty-state v-else :index="index" :collection="collection" />
-                </template>
-
-                <template v-if="!isCollectionEmpty">
-                  <filters
-                    class="mb-3"
-                    :available-operands="searchFilterOperands"
-                    :current-filter="currentFilter"
-                    :collection-mapping="collectionMapping"
-                    @filters-updated="onFiltersUpdated"
-                    @reset="onFiltersUpdated"
-                  />
-                </template>
-              </b-col>
-            </b-row>
-
             <template v-if="!isCollectionEmpty">
               <b-card
                 class="light-shadow"
@@ -125,12 +124,12 @@
                       align-h="center"
                     >
                       <b-pagination
-                        class="m-2 mt-4"
                         v-model="currentPage"
                         aria-controls="my-table"
+                        class="m-2 mt-4"
+                        data-cy="DocumentList-pagination"
                         :total-rows="totalDocuments"
                         :per-page="paginationSize"
-                        @change="fetchDocuments"
                       ></b-pagination>
                     </b-row>
                   </template>
@@ -601,6 +600,7 @@ export default {
         this.collection,
         this.index
       )
+
       this.collectionMapping = properties
 
       this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
@@ -652,7 +652,10 @@ export default {
         for (const [field, value] of Object.entries(document)) {
           if (dateFields.includes(field)) {
             const date = dateFromTimestamp(value)
-            document[field] += ` (${date.toUTCString()})`
+
+            if (date) {
+              document[field] += ` (${date.toUTCString()})`
+            }
           } else if (value && typeof value === 'object') {
             changeField(value)
           }
@@ -673,7 +676,7 @@ function dateFromTimestamp(value) {
     timestamp = parseInt(value, 10)
 
     if (isNaN(timestamp)) {
-      return `Invalid Date value (${value})`
+      return null
     }
   } else if (Number.isInteger(value)) {
     timestamp = value
@@ -689,7 +692,7 @@ function dateFromTimestamp(value) {
   } else if (length === 13) {
     date = new Date(timestamp)
   } else {
-    return `Invalid Date value (${value})`
+    return null
   }
 
   return date
