@@ -34,43 +34,49 @@ describe('Roles', () => {
 
   it('Should be able to search roles by controller', () => {
     const roleId = 'dummy'
-    cy.request('POST', `${kuzzleUrl}/roles/${roleId}/_create`, {
-      controllers: {
-        document: {
-          actions: {
-            get: true,
-            mGet: true,
-            search: true
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/roles/${roleId}/_create?refresh=wait_for`,
+      {
+        controllers: {
+          document: {
+            actions: {
+              get: true,
+              mGet: true,
+              search: true
+            }
           }
         }
       }
-    })
+    )
     cy.visit('#/security/roles')
     cy.contains('Roles')
     cy.contains(roleId)
     cy.get('[data-cy="RoleFilters-searchBar"]').type('document{enter}')
-    cy.get('[data-cy=RolesFilters-submitBtn]').click()
     cy.get('[data-cy="RoleList-list"]').should('contain', roleId)
 
     cy.get('.b-form-tag[title=document] > .b-form-tag-remove').click()
     cy.get('[data-cy="RoleFilters-searchBar"]').type('security{enter}')
-    cy.get('[data-cy=RolesFilters-submitBtn]').click()
     cy.get('[data-cy="RoleList-list"]').should('not.contain', roleId)
   })
 
   it('Should be able to delete a role', () => {
     const roleId = 'dummy'
-    cy.request('POST', `${kuzzleUrl}/roles/${roleId}/_create`, {
-      controllers: {
-        document: {
-          actions: {
-            get: true,
-            mGet: true,
-            search: true
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/roles/${roleId}/_create?refresh=wait_for`,
+      {
+        controllers: {
+          document: {
+            actions: {
+              get: true,
+              mGet: true,
+              search: true
+            }
           }
         }
       }
-    })
+    )
     cy.visit('#/security/roles')
     cy.contains('Roles')
     cy.contains(roleId)
@@ -81,17 +87,21 @@ describe('Roles', () => {
 
   it('Should be able to bulk delete roles via the checkbox and bulk button', () => {
     const roleIds = ['dummy', 'trippy']
-    cy.request('POST', `${kuzzleUrl}/roles/${roleIds[0]}/_create`, {
-      controllers: {
-        document: {
-          actions: {
-            get: true,
-            mGet: true,
-            search: true
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/roles/${roleIds[0]}/_create?refresh=wait_for`,
+      {
+        controllers: {
+          document: {
+            actions: {
+              get: true,
+              mGet: true,
+              search: true
+            }
           }
         }
       }
-    })
+    )
     cy.request('POST', `${kuzzleUrl}/roles/${roleIds[1]}/_create`, {
       controllers: {
         security: {

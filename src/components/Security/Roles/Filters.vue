@@ -2,7 +2,7 @@
   <b-card no-body data-cy="RolesFilters" class="RolesFilters">
     <template v-slot:header>
       <b-row>
-        <b-col cols="9">
+        <b-col cols="10">
           <div class="RolesFilters-searchBar">
             <i class="RolesFilters-searchIcon fa fa-search" />
             <b-form-tags
@@ -22,13 +22,6 @@
           >
             Reset
           </b-button>
-          <b-button
-            data-cy="RolesFilters-submitBtn"
-            variant="primary"
-            @click="submitSearch"
-          >
-            Search
-          </b-button>
         </b-col>
       </b-row>
     </template>
@@ -47,26 +40,22 @@ export default {
       controllers: []
     }
   },
-  watch: {
-    currentFilter: {
-      immediate: true,
-      handler(value) {
-        this.controllers = value && value.controllers ? value.controllers : []
-      }
-    }
-  },
   methods: {
-    submitSearch() {
-      if (this.controllers.length === 0) {
-        this.$emit('filters-updated', null)
-        return
-      }
-
-      this.$emit('filters-updated', { controllers: this.controllers })
-    },
     resetSearch() {
       this.controllers = []
-      this.$emit('reset', null)
+    }
+  },
+  mounted() {
+    this.controllers =
+      this.currentFilter && this.currentFilter.controllers
+        ? this.currentFilter.controllers
+        : []
+  },
+  watch: {
+    controllers: {
+      handler(value) {
+        this.$emit('filters-updated', { controllers: value })
+      }
     }
   }
 }

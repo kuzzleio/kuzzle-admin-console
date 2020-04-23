@@ -225,11 +225,20 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(filter) {
-      const newFilters = Object.assign(this.currentFilter, {
-        active: filter ? filterManager.ACTIVE_BASIC : filterManager.NO_ACTIVE,
-        basic: filter,
-        from: 0
-      })
+      let newFilters
+      if (filter.controllers && filter.controllers.length) {
+        newFilters = Object.assign(this.currentFilter, {
+          active: filterManager.ACTIVE_BASIC,
+          basic: filter,
+          from: 0
+        })
+      } else {
+        newFilters = Object.assign(this.currentFilter, {
+          active: filterManager.NO_ACTIVE,
+          basic: null,
+          from: 0
+        })
+      }
       try {
         filterManager.saveToRouter(
           filterManager.stripDefaultValuesFromFilter(newFilters),
@@ -237,6 +246,15 @@ export default {
         )
       } catch (error) {
         this.$log.error(error)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title:
+            'Ooops! Something went wrong while updating the search filters',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
     },
     fetchRoles() {
@@ -244,8 +262,15 @@ export default {
         from: this.paginationFrom,
         size: this.paginationSize
       }
-
-      this.performSearch(this.currentFilter.basic || {}, pagination)
+      const filter = {}
+      if (
+        this.currentFilter.active === filterManager.ACTIVE_BASIC &&
+        this.currentFilter.basic.controllers &&
+        this.currentFilter.basic.controllers.length
+      ) {
+        filter.controllers = this.currentFilter.basic.controllers
+      }
+      this.performSearch(filter, pagination)
         .then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total
