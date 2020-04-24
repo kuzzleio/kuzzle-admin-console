@@ -5,14 +5,11 @@
   "author": "The Kuzzle team <support@kuzzle.io>",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build --dest dist$DEPLOY_PATH",
     "test:e2e": "docker-compose -f test/e2e/docker-compose.yml up -d && ./test/e2e/run-test.sh",
     "lint": "vue-cli-service lint",
-    "dev": "vue-cli-service serve",
-    "install_deps": "npm i --unsafe-perm",
-    "prepublishOnly": "npm run build",
     "reset-cache": "rm -rf node_modules/.cache/*",
-    "start": "http-server dist -p 3000",
     "tar_dist": "bash .ci/release_package.sh",
     "test": "npm run test:e2e",
     "test:e2e-local": "e2eLocal=1 ./test/e2e/run-test.sh"
@@ -61,7 +58,6 @@
     "vue-class-component": "^7.0.2",
     "vue-color": "^2.7.0",
     "vue-google-charts": "^0.3.2",
-    "vue-multiselect": "2.0.0-beta.15",
     "vue-plugin-kuzzle": "^3.0.0",
     "vue-property-decorator": "^8.3.0",
     "vue-quill-editor": "^3.0.6",

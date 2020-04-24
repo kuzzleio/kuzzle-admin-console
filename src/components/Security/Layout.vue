@@ -88,6 +88,7 @@
   flex-wrap: nowrap;
 }
 .SecurityLayout-sidebarWrapper {
+  padding-top: 1em;
   background-color: $light-grey-color;
   flex-basis: $sidebar-width;
   min-width: $sidebar-width;

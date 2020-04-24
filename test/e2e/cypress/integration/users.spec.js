@@ -455,25 +455,30 @@ describe('Users', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it.skip('Should update the user mapping successfully', function() {
-    cy.visit('/')
-    cy.get('[data-cy=LoginAsAnonymous-Btn]').click()
-    cy.contains('Indexes')
+  it('Should update the user mapping successfully', function() {
     cy.visit('/#/security/users/custom-mapping')
 
-    cy.get('#user-custom-data-mapping-editor .ace_line').should('be.visible')
+    cy.get('[data-cy="EditUserMapping-JSONEditor"] .ace_line').should(
+      'be.visible'
+    )
 
-    cy.get('#user-custom-data-mapping-editor .ace_line')
+    cy.get('[data-cy="EditUserMapping-JSONEditor"] .ace_line')
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
       .clear({ force: true })
-      .type(`{{}"address": {{}"type": "text"},`, {
-        force: true
-      })
+      .type(
+        `{
+"address": {
+"type": "text"
+`,
+        {
+          force: true
+        }
+      )
 
-    cy.get('.UserCustomMappingEditor-submit').click()
-    cy.contains('User Management')
+    cy.get('[data-cy="EditUserMapping-submitBtn"]').click()
+    cy.contains('Users')
   })
 
   it('Should display a user with a lot of profiles', () => {

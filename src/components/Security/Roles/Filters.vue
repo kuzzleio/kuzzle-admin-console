@@ -1,52 +1,37 @@
 <template>
-  <div class="RolesFilters">
-    <div class="card-panel card-header">
-      <div class="row filters margin-bottom-0">
-        <form @submit.prevent="submitSearch">
-          <div class="col s7">
-            <div class="RolesFilters-searchBar">
-              <i class="RolesFilters-searchIcon fa fa-search" />
-              <multiselect
-                :options="[]"
-                :taggable="true"
-                tag-placeholder="Add filter on this controller"
-                :value="controllers"
-                placeholder="Search by controller..."
-                :multiple="true"
-                @tag="addController"
-                @remove="removeController"
-              />
-            </div>
+  <b-card no-body data-cy="RolesFilters" class="RolesFilters">
+    <template v-slot:header>
+      <b-row>
+        <b-col cols="10">
+          <div class="RolesFilters-searchBar">
+            <i class="RolesFilters-searchIcon fa fa-search" />
+            <b-form-tags
+              v-model="controllers"
+              data-cy="RoleFilters-searchBar"
+              placeholder="Search by controller..."
+            />
           </div>
-          <div class="col s3 RolesFilters-actions">
-            <button
-              type="submit"
-              class="btn btn-small waves-effect waves-light"
-            >
-              Search
-            </button>
-            <button
-              class="btn-flat btn-small waves-effect waves-light"
-              @click="resetSearch"
-            >
-              reset
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+        </b-col>
+
+        <b-col class="text-right">
+          <b-button
+            class="mr-2"
+            data-cy="RolesFilters-resetBtn"
+            variant="outline-primary"
+            @click="resetSearch"
+          >
+            Reset
+          </b-button>
+        </b-col>
+      </b-row>
+    </template>
+  </b-card>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
-
 export default {
   name: 'RolesFilters',
-  components: {
-    Multiselect
-  },
+  components: {},
   props: {
     currentFilter: Object
   },
@@ -55,38 +40,22 @@ export default {
       controllers: []
     }
   },
-  watch: {
-    currentFilter: {
-      immediate: true,
-      handler(value) {
-        this.controllers = value && value.controllers ? value.controllers : []
-      }
-    }
-  },
   methods: {
-    submitSearch() {
-      if (this.controllers.length === 0) {
-        this.$emit('filters-updated', null)
-        return
-      }
-
-      this.$emit('filters-updated', { controllers: this.controllers })
-    },
     resetSearch() {
       this.controllers = []
-      this.$emit('reset', null)
-    },
-    addController(value) {
-      if (this.controllers.indexOf(value) !== -1) {
-        return
+    }
+  },
+  mounted() {
+    this.controllers =
+      this.currentFilter && this.currentFilter.controllers
+        ? this.currentFilter.controllers
+        : []
+  },
+  watch: {
+    controllers: {
+      handler(value) {
+        this.$emit('filters-updated', { controllers: value })
       }
-
-      this.controllers.push(value)
-    },
-    removeController(removedValue) {
-      this.controllers = this.controllers.filter(
-        value => value !== removedValue
-      )
     }
   }
 }
@@ -102,37 +71,5 @@ export default {
   .RolesFilters-searchIcon {
     margin-right: 10px;
   }
-
-  // vue-multiselect overrides
-  .multiselect {
-    flex-grow: 1;
-  }
-  .multiselect__tags {
-    display: flex;
-    align-items: center;
-    background: none;
-    padding: 0 0 0 0;
-    border: none;
-
-    .multiselect__tag {
-      margin-top: 13px;
-      background-color: $secondary-color;
-    }
-  }
-
-  .multiselect__select {
-    display: none;
-  }
-
-  ul.multiselect__content {
-    z-index: 99;
-    li.multiselect__element {
-      z-index: 99;
-    }
-  }
-}
-.RolesFilters-actions {
-  height: 48px;
-  line-height: 48px;
 }
 </style>

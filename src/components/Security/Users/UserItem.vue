@@ -3,7 +3,7 @@
     <b-row align-h="between" no-gutters>
       <b-col cols="12" class="UserItem-titleCol py-1 vertical-align">
         <i
-          aria-hidden="true"
+          aria-role="button"
           :class="
             `fa fa-caret-${
               expanded ? 'down' : 'right'
@@ -87,7 +87,6 @@
           </b-button>
         </div>
       </b-col>
-      <b-col> </b-col>
     </b-row>
     <b-row>
       <b-collapse
