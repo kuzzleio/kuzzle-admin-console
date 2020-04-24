@@ -1,6 +1,20 @@
 <template>
-  <div class="RolesManagement">
-    <headline title="Role Management" />
+  <b-container class="RolesManagement">
+    <b-row>
+      <b-col cols="8">
+        <headline>Roles</headline>
+      </b-col>
+      <b-col class="text-right mt-3">
+        <b-button
+          class="mr-2"
+          data-cy="RolesManagement-createBtn"
+          variant="primary"
+          :disabled="!canCreateRole()"
+          :to="{ name: 'SecurityRolesCreate' }"
+          >Create Role</b-button
+        >
+      </b-col>
+    </b-row>
 
     <list-not-allowed v-if="!canSearchRole()" />
 
@@ -12,48 +26,18 @@
       :perform-delete="performDeleteRoles"
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
-      @create-clicked="createRole"
     >
-      <div slot="emptySet" class="card-panel">
-        <div class="row valign-bottom empty-set">
-          <div class="col s1 offset-s1">
-            <i
-              class="fa fa-6x fa-unlock-alt grey-text text-lighten-1"
-              aria-hidden="true"
-            />
-          </div>
-          <div class="col s10">
-            <p>
-              In this page, you'll be able to manage the
-              <a
-                href="https://docs.kuzzle.io/core/2/guides/essentials/security/#defining-roles"
-                >Security Roles</a
-              >
-              defined in your Kuzzle server.<br />
-              <em
-                >Currently, no Security Role is defined. You can create one by
-                pushing the "Create" button above.</em
-              >
-            </p>
-            <router-link
-              :disabled="!canCreateRole()"
-              :class="!canCreateRole() ? 'disabled' : ''"
-              :title="
-                !canCreateRole()
-                  ? 'You are not allowed to create new roles'
-                  : ''
-              "
-              :to="{ name: 'SecurityRolesCreate' }"
-              class="btn primary waves-effect waves-light"
-            >
-              <i class="fa fa-plus-circle left" />
-              Create a role
-            </router-link>
-          </div>
-        </div>
-      </div>
+      <b-card class="EmptyState text-center" slot="emptySet">
+        <i class="text-secondary fas fa-unlock-alt fa-6x mb-3"></i>
+        <h2 class="text-secondary font-weight-bold">
+          No role is defined
+        </h2>
+        <p class="text-secondary" v-if="canCreateRole()">
+          You can create a new role by hitting the button above
+        </p>
+      </b-card>
     </role-list>
-  </div>
+  </b-container>
 </template>
 
 <script>
@@ -77,18 +61,10 @@ export default {
     Headline
   },
   methods: {
-    createRole() {
-      this.$router.push({ name: 'SecurityRolesCreate' })
-    },
     canSearchRole,
     canCreateRole,
     performSearchRoles,
     performDeleteRoles
-  },
-  route: {
-    data() {
-      this.$emit('crudl-refresh-search')
-    }
   }
 }
 </script>
