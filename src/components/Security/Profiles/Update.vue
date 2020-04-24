@@ -1,25 +1,21 @@
 <template>
-  <div>
+  <b-container>
     <Headline>
-      Edit profile - <span class="bold">{{ $route.params.id }}</span>
+      Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
     <Notice />
     <create-or-update
-      v-model="document"
-      title="Update profile"
-      :update-id="id"
-      :error="error"
-      :hide-id="true"
-      :submitted="submitted"
-      @document-create::create="update"
-      @document-create::cancel="cancel"
-      @document-create::error="setError"
+      v-if="!loading"
+      :id="id"
+      :profile="document"
+      @cancel="onCancel"
+      @submit="onSubmit"
     />
-  </div>
+  </b-container>
 </template>
 
 <script>
-import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
+import CreateOrUpdate from './CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 
@@ -32,56 +28,78 @@ export default {
   },
   data() {
     return {
-      document: {},
-      error: '',
-      id: null,
-      submitted: false
+      document: '{}',
+      submitted: false,
+      loading: true
     }
   },
-  async mounted() {
-    try {
-      const profile = await this.$kuzzle.security.getProfile(
-        this.$route.params.id
-      )
-      this.id = profile._id
-      this.document = { policies: profile.policies }
-    } catch (e) {
-      this.$store.direct.commit.toaster.setToast({ text: e.message })
+  props: {
+    id: {
+      type: String,
+      require: true
     }
   },
   methods: {
-    async update() {
-      this.error = ''
-
-      if (!this.document || !this.document.policies) {
-        this.error = 'The document is invalid, please review it'
+    async onSubmit({ profile }) {
+      if (!profile || !profile.policies) {
+        this.$bvToast.toast(
+          'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
+          {
+            title: 'The profile is invalid',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
         return
       }
 
       this.submitted = true
 
       try {
-        await this.$kuzzle.security.updateProfile(this.id, {
-          policies: this.document.policies
-        })
-        setTimeout(() => {
-          // we can't perform refresh index on %kuzzle
-          this.$router.push({ name: 'SecurityProfilesList' })
-        }, 1000)
+        await this.$kuzzle.security.updateProfile(this.id, profile)
+        this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
-        this.$store.direct.commit.toaster.setToast({ text: e.message })
+        this.$log.error(e)
+        this.$bvToast.toast('The complete error has been printed to console', {
+          title: 'Ooops! Something went wrong while updating the profile',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
         this.submitted = false
       }
     },
-    cancel() {
+    onCancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
         this.$router.go(this.$router._prevTransition.to)
       } else {
         this.$router.push({ name: 'SecurityProfilesList' })
       }
-    },
-    setError(payload) {
-      this.error = payload
+    }
+  },
+  async mounted() {
+    this.loading = true
+    try {
+      const profile = await this.$kuzzle.security.getProfile(this.id)
+      delete profile._kuzzle
+      delete profile._id
+      this.document = JSON.stringify(profile, null, 2)
+      this.loading = false
+    } catch (e) {
+      this.$log.error(e)
+      this.$bvToast.toast('The complete error has been printed to console', {
+        title: 'Ooops! Something went wrong while loading the profile',
+        variant: 'warning',
+        toaster: 'b-toaster-bottom-right',
+        appendToast: true,
+        dismissible: true,
+        noAutoHide: true
+      })
     }
   }
 }

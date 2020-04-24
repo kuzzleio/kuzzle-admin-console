@@ -79,6 +79,7 @@
     <b-row>
       <b-collapse
         :id="`collapse-${document.id}`"
+        :data-cy="`ProfileListItem-collapse--${document.id}`"
         v-model="expanded"
         class="mt-3 ml-3 DocumentListItem-content"
       >

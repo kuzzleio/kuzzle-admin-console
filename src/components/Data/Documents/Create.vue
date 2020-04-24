@@ -2,7 +2,7 @@
   <b-container class="DocumentCreate">
     <template v-if="hasRights" class="wrapper">
       <headline>
-        Create Document
+        Create a new document
       </headline>
 
       <create-or-update

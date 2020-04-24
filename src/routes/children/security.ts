@@ -78,7 +78,8 @@ export default [
     },
     component(resolve) {
       require(['../../components/Security/Profiles/Update'], resolve)
-    }
+    },
+    props: route => ({ id: route.params.id })
   },
   {
     path: '/security/roles',

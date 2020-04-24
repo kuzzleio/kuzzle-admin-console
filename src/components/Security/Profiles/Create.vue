@@ -1,86 +1,62 @@
 <template>
-  <div>
-    <Headline>Profile - Create</Headline>
+  <b-container>
+    <Headline>
+      Create a new profile
+    </Headline>
     <Notice />
-    <create-or-update
-      v-model="document"
-      title="Create a profile"
-      :error="error"
-      :submitted="submitted"
-      :mandatory-id="true"
-      @document-create::reset-error="error = ''"
-      @document-create::create="create"
-      @document-create::cancel="cancel"
-      @document-create::error="setError"
-      @change-id="updateId"
-    />
-  </div>
+    <create-or-update @cancel="onCancel" @submit="onSubmit" />
+  </b-container>
 </template>
 
 <script>
+import CreateOrUpdate from './CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
-import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Notice from '../Common/Notice'
 
 export default {
-  name: 'ProfilesSecurityCreate',
+  name: 'SecurityUpdate',
   components: {
     Headline,
     CreateOrUpdate,
     Notice
   },
-  data() {
-    return {
-      error: '',
-      document: {
-        policies: [
-          {
-            roleId: 'yourRoleId'
-          }
-        ]
-      },
-      id: null,
-      submitted: false
-    }
-  },
   methods: {
-    async create(profile) {
-      this.error = ''
-
-      if (!profile) {
-        this.error = 'The document is invalid, please review it'
-        return
-      }
-      if (!this.id) {
-        this.error = 'You must set an ID'
-        return
-      }
-
-      this.submitted = true
-
-      try {
-        await this.$kuzzle.security.createProfile(
-          this.id,
-          { policies: profile.policies },
+    async onSubmit({ profile, id }) {
+      if (!profile || !profile.policies) {
+        this.$bvToast.toast(
+          'Please, ensure you submit an object with at least a <code>policies</code> attribute inside',
           {
-            refresh: 'wait_for'
+            title: 'The profile is invalid',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
           }
         )
-        setTimeout(() => {
-          // we can't perform refresh index on %kuzzle
-          this.$router.push({ name: 'SecurityProfilesList' })
-        }, 1000)
+        return
+      }
+      try {
+        await this.$kuzzle.security.createProfile(id, profile)
+        this.$router.push({ name: 'SecurityProfilesList' })
       } catch (e) {
-        this.error =
-          'An error occurred while creating profile: <br />' + e.message
-        this.submitted = false
+        this.$log.error(e)
+        this.$bvToast.toast(e.message, {
+          title: 'Ooops! Something went wrong while creating the profile',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
     },
-    cancel() {
-      this.$router.push({ name: 'SecurityProfilesList' })
-    },
-    updateId(id) {
-      this.id = id
+    onCancel() {
+      if (this.$router._prevTransition && this.$router._prevTransition.to) {
+        this.$router.go(this.$router._prevTransition.to)
+      } else {
+        this.$router.push({ name: 'SecurityProfilesList' })
+      }
     },
     setError(payload) {
       this.error = payload
