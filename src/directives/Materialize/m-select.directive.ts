@@ -9,7 +9,7 @@ export default {
     setTimeout(() => {
       $el.material_select()
       // $el.on('change', () => {
-        // this.set(el.value)
+      // this.set(el.value)
       // })
     }, 0)
   }

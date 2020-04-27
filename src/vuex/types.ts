@@ -1,3 +1,2 @@
 // types.ts
-export interface RootState {
-}
+export interface RootState {}

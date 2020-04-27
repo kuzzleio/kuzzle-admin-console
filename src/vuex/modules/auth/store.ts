@@ -153,6 +153,20 @@ const actions = createActions({
     commit.setCurrentUser(new SessionUser())
     commit.setTokenValid(false)
     return dispatch.checkFirstAdmin()
+  },
+  async doResetPassword(context, data) {
+    const { dispatch } = authActionContext(context)
+    Vue.prototype.$kuzzle.jwt = null
+
+    const request = {
+      controller: 'kuzzle-plugin-auth-passport-local/password',
+      action: 'reset',
+      body: data
+    }
+
+    const response = await Vue.prototype.$kuzzle.query(request)
+    const jwt = response.result.jwt
+    return dispatch.prepareSession(jwt)
   }
 })
 
