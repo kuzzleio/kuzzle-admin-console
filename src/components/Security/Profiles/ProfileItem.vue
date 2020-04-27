@@ -9,7 +9,7 @@
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          :data-cy="`ProfileItem-${document.id}--toggle`"
+          :data-cy="`ProfileItem-${document._id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox
@@ -18,14 +18,14 @@
           value="true"
           unchecked-value="false"
           v-model="checked"
-          :data-cy="`ProfileListItem-checkbox--${document.id}`"
+          :data-cy="`ProfileListItem-checkbox--${document._id}`"
           :id="checkboxId"
           @change="notifyCheckboxClick"
         />
         <a
           class="d-inline-block align-middle code pointer"
           @click="toggleCollapse"
-          >{{ document.id }}</a
+          >{{ document._id }}</a
         >
         <label
           v-if="
@@ -43,7 +43,7 @@
             class="ProfileListItem-update"
             href=""
             variant="link"
-            :data-cy="`ProfileListItem-update--${document.id}`"
+            :data-cy="`ProfileListItem-update--${document._id}`"
             :disabled="!canEditProfile()"
             :title="
               canEditProfile()
@@ -61,14 +61,14 @@
             class="ProfileListItem-delete"
             href=""
             variant="link"
-            :data-cy="`ProfileListItem-delete--${document.id}`"
+            :data-cy="`ProfileListItem-delete--${document._id}`"
             :disabled="!canDeleteProfile()"
             :title="
               canDeleteProfile()
                 ? 'Delete profile'
                 : 'You are not allowed to delete this profile'
             "
-            @click.prevent="deleteDocument(document.id)"
+            @click.prevent="deleteDocument(document._id)"
           >
             <i class="fa fa-trash" :class="{ disabled: !canDeleteProfile() }" />
           </b-button>
@@ -78,12 +78,12 @@
 
     <b-row>
       <b-collapse
-        :id="`collapse-${document.id}`"
-        :data-cy="`ProfileListItem-collapse--${document.id}`"
+        :id="`collapse-${document._id}`"
+        :data-cy="`ProfileListItem-collapse--${document._id}`"
         v-model="expanded"
         class="mt-3 ml-3 DocumentListItem-content"
       >
-        <pre v-json-formatter="{ content: document.content, open: true }" />
+        <pre v-json-formatter="{ content: document, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
@@ -116,7 +116,7 @@ export default {
   },
   computed: {
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.document._id}`
     }
   },
   methods: {
@@ -124,16 +124,16 @@ export default {
       this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.document._id)
     },
     deleteDocument() {
       if (this.canDeleteProfile()) {
-        this.$emit('delete', this.document.id)
+        this.$emit('delete', this.document._id)
       }
     },
     update() {
       if (this.canEditProfile()) {
-        this.$emit('edit', this.document.id)
+        this.$emit('edit', this.document._id)
       }
     },
     canEditProfile,

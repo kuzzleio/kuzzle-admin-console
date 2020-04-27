@@ -123,10 +123,6 @@ export default {
       return `checkbox-${this.document.id}`
     }
   },
-  mounted() {
-    const date = new Date(this.document.meta.createdAt)
-    this.document.meta.createdAt += ` (${date.toUTCString()})`
-  },
   methods: {
     toggleCollapse() {
       this.expanded = !this.expanded

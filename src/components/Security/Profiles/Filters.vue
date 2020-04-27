@@ -96,7 +96,7 @@ export default {
     truncateName,
     async fetchRoleList() {
       const res = await performSearchRoles()
-      this.roleList = res.documents.map(role => role.id)
+      this.roleList = res.documents.map(role => role._id)
     },
     roleIsSelected(role) {
       return this.selectedRoles.includes(role)

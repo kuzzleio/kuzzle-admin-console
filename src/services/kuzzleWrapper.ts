@@ -262,44 +262,6 @@ export const performSearchUsers = async (
     users.push(u)
   }
 
-  // for (const document of result.hits) {
-  //   let object: IKuzzleDocument = {
-  //     content: new Content(document.content),
-  //     id: document._id,
-  //     credentials: new Credentials({}),
-  //     meta: new Meta(document.meta || {}),
-  //     aggregations: new Aggregations({}),
-  //     additionalAttribute: null
-  //   }
-
-  //   if (result.aggregations) {
-  //     object.aggregations = result.aggregations
-  //   }
-
-  //   if (additionalAttributeName) {
-  //     object.additionalAttribute = {
-  //       name: additionalAttributeName,
-  //       value: getValueAdditionalAttribute(
-  //         document.content,
-  //         additionalAttributeName.split('.')
-  //       )
-  //     }
-  //   }
-
-  //   for (const strategy of strategies) {
-  //     try {
-  //       const res = await Vue.prototype.$kuzzle.security.getCredentials(
-  //         strategy,
-  //         document._id
-  //       )
-  //       object.credentials[strategy] = res
-  //     } catch (e) {
-  //       object.credentials[strategy] = {}
-  //     }
-  //   }
-  //   users.push(object)
-  // }
-
   return { documents: users, total: result.total }
 }
 
@@ -331,11 +293,8 @@ export const performSearchProfiles = async (filters = {}, pagination = {}) => {
   )
 
   const profiles = result.hits.map(document => {
-    return {
-      content: { policies: document.policies },
-      meta: new Meta(document.meta || {}),
-      id: document._id
-    }
+    delete document._kuzzle
+    return document
   })
   return { documents: profiles, total: result.total }
 }
@@ -356,13 +315,8 @@ export const performSearchRoles = async (controllers = {}, pagination = {}) => {
     ...pagination
   })
   let roles = result.hits.map(document => {
-    let object = {
-      content: { controllers: document.controllers },
-      meta: new Meta(document.meta || {}),
-      id: document._id
-    }
-
-    return object
+    delete document._kuzzle
+    return document
   })
 
   return { documents: roles, total: result.total }

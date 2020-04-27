@@ -9,7 +9,7 @@
               expanded ? 'down' : 'right'
             } mr-2  d-inline-block align-middle`
           "
-          :data-cy="`RoleItem-${document.id}--toggle`"
+          :data-cy="`RoleItem-${document._id}--toggle`"
           @click="toggleCollapse"
         />
         <b-form-checkbox
@@ -18,13 +18,13 @@
           value="true"
           unchecked-value="false"
           v-model="checked"
-          :data-cy="`RoleItem-checkbox--${document.id}`"
+          :data-cy="`RoleItem-checkbox--${document._id}`"
           @change="notifyCheckboxClick"
         />
         <a
           class="d-inline-block align-middle code pointer mr-2"
           @click="toggleCollapse"
-          >{{ document.id }}</a
+          >{{ document._id }}</a
         >
       </b-col>
       <b-col class="text-right">
@@ -32,7 +32,7 @@
           class="RoleItem-update"
           href=""
           variant="link"
-          :data-cy="`RoleItem-update--${document.id}`"
+          :data-cy="`RoleItem-update--${document._id}`"
           :disabled="!canEditRole()"
           :title="
             canEditRole()
@@ -47,14 +47,14 @@
           class="RoleItem-delete"
           href=""
           variant="link"
-          :data-cy="`RoleItem-delete--${document.id}`"
+          :data-cy="`RoleItem-delete--${document._id}`"
           :disabled="!canDeleteRole()"
           :title="
             canDeleteRole()
               ? 'Delete role'
               : 'You are not allowed to delete this role'
           "
-          @click.prevent="deleteDocument(document.id)"
+          @click.prevent="deleteDocument(document._id)"
         >
           <i class="fa fa-trash" :class="{ disabled: !canDeleteRole() }" />
         </b-button>
@@ -63,7 +63,7 @@
 
     <b-row>
       <b-collapse v-model="expanded" class="mt-3 ml-3 RoleItem-content">
-        <pre v-json-formatter="{ content: document.content, open: true }" />
+        <pre v-json-formatter="{ content: document, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
@@ -96,11 +96,11 @@ export default {
       this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.document._id)
     },
     deleteDocument() {
       if (this.canDeleteRole()) {
-        this.$emit('delete-document', this.document.id)
+        this.$emit('delete-document', this.document._id)
       }
     },
     update() {
@@ -108,7 +108,7 @@ export default {
         this.$emit(
           'common-list::edit-document',
           'SecurityRolesUpdate',
-          this.document.id
+          this.document._id
         )
       }
     },
