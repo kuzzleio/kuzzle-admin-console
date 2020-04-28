@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import CreateOrUpdate from '../../Data/Documents/Common/CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
@@ -44,7 +45,8 @@ export default {
         this.$route.params.id
       )
       this.id = profile._id
-      this.document = { policies: profile.policies }
+
+      this.document = _.omit(profile, ['_id', '_kuzzle'])
     } catch (e) {
       this.$store.direct.commit.toaster.setToast({ text: e.message })
     }
@@ -53,7 +55,7 @@ export default {
     async update() {
       this.error = ''
 
-      if (!this.document || !this.document.policies) {
+      if (!this.document) {
         this.error = 'The document is invalid, please review it'
         return
       }
@@ -61,9 +63,7 @@ export default {
       this.submitted = true
 
       try {
-        await this.$kuzzle.security.updateProfile(this.id, {
-          policies: this.document.policies
-        })
+        await this.$kuzzle.security.updateProfile(this.id, this.document)
         setTimeout(() => {
           // we can't perform refresh index on %kuzzle
           this.$router.push({ name: 'SecurityProfilesList' })
