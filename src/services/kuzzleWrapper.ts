@@ -171,7 +171,9 @@ export const performSearchDocuments = async (
   const documents = result.hits.map(d => ({
     id: d._id,
     ...d._source,
-    _kuzzle_info: formatMeta(d._source._kuzzle_info)
+    _kuzzle_info: d._source._kuzzle_info
+      ? formatMeta(d._source._kuzzle_info)
+      : undefined
   }))
   return { documents, aggregations: result.aggregations, total: result.total }
 }
