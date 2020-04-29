@@ -71,7 +71,7 @@ const mutations = createMutations<IndexState>()({
 })
 
 const actions = createActions({
-  async createIndex(context, index: string): Promise<void> {
+  async createIndex(context, index: string) {
     const { commit } = indexActionContext(context)
 
     await Vue.prototype.$kuzzle.index.create(index)
