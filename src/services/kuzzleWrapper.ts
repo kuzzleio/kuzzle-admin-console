@@ -143,7 +143,7 @@ interface IKuzzleDocument {
 export const performSearchDocuments = async (
   collection,
   index,
-  filters = {},
+  filters = { query: {} },
   pagination = {},
   sort = []
 ) => {
@@ -156,6 +156,12 @@ export const performSearchDocuments = async (
     collection,
     { ...filters, sort },
     { ...pagination }
+  )
+
+  const totalDocument = await Vue.prototype.$kuzzle.document.count(
+    index,
+    collection,
+    { query: filters.query }
   )
 
   let additionalAttributeName: any = null
@@ -195,7 +201,7 @@ export const performSearchDocuments = async (
 
     return object
   })
-  return { documents, total: result.total }
+  return { documents, total: totalDocument }
 }
 
 export const getMappingDocument = async (collection, index) => {
