@@ -2,7 +2,7 @@ import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
 import sortJson from 'sort-json'
-import { get } from 'lodash'
+import { omit } from 'lodash'
 import moment from 'moment'
 
 export const waitForConnected = (timeout = 1000) => {
@@ -295,8 +295,7 @@ export const performSearchProfiles = async (filters = {}, pagination = {}) => {
   )
 
   const profiles = result.hits.map(document => {
-    delete document._kuzzle
-    return document
+    return omit(document, '_kuzzle')
   })
   return { documents: profiles, total: result.total }
 }
@@ -317,8 +316,7 @@ export const performSearchRoles = async (controllers = {}, pagination = {}) => {
     ...pagination
   })
   let roles = result.hits.map(document => {
-    delete document._kuzzle
-    return document
+    return omit(document, '_kuzzle')
   })
 
   return { documents: roles, total: result.total }
