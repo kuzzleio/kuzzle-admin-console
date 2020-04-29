@@ -84,10 +84,10 @@
     "url": "git://github.com/kuzzleio/kuzzle-admin-console.git"
   },
   "devDependencies": {
-    "cypress": "^4.2.0",
+    "babel-plugin-istanbul": "^5.2.0",
+    "cypress": "^4.5.0",
     "cypress-file-upload": "^4.0.4",
     "cypress-plugin-retries": "^1.5.2",
-    "babel-plugin-istanbul": "^5.2.0",
     "eslint-plugin-cypress": "^2.7.0",
     "prettier-eslint": "^9.0.1"
   }

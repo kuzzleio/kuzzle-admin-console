@@ -132,6 +132,12 @@
                         :per-page="paginationSize"
                       ></b-pagination>
                     </b-row>
+                    <div class="text-center mt-2" v-if="totalDocuments > 10000">
+                      <small class="text-secondary"
+                        >Due to limitations imposed by Elasticsearch, you won't
+                        be able to browse documents beyond 10000.</small
+                      >
+                    </div>
                   </template>
                 </b-card-text>
               </b-card>
