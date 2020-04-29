@@ -127,7 +127,11 @@ export const performSearchDocuments = async (
   // without being limited by its own limitation (10k documents)
   const result = await Vue.prototype.$kuzzle
     .document
-    .search(index, collection, { ...filters, sort }, { ...pagination, scroll: '1ms' })
+    .search(index, collection, { ...filters, sort }, { ...pagination })
+
+  const totalDocument = await Vue.prototype.$kuzzle
+    .document
+    .count(index, collection, { query: filters.query })
 
   let additionalAttributeName = null
 
@@ -162,7 +166,7 @@ export const performSearchDocuments = async (
 
     return object
   })
-  return { documents, total: result.total }
+  return { documents, total: totalDocument }
 }
 
 export const getMappingDocument = (collection, index) => {
