@@ -104,7 +104,7 @@ describe('Search', function() {
       '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
+      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(6)'
     ).click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
       delay: 60
@@ -208,7 +208,7 @@ describe('Search', function() {
       '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
+      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(6)'
     ).click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger', {
       delay: 60
@@ -248,7 +248,7 @@ describe('Search', function() {
       '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
+      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(6)'
     ).click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
       delay: 60
@@ -311,7 +311,7 @@ describe('Search', function() {
       '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
+      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(6)'
     ).click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
     cy.get('.BasicFilter-submitBtn').click()
@@ -365,7 +365,7 @@ describe('Search', function() {
       '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
+      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(6)'
     ).click()
     cy.get('.BasicFilter-query input[placeholder=Value]').type('Blockchain', {
       delay: 60
@@ -375,7 +375,7 @@ describe('Search', function() {
       '.BasicFilter-sortBlock > .row > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(3)'
+      '.block-content > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(2)'
     ).click()
     cy.get('.BasicFilter-sortingValue')
       .click()

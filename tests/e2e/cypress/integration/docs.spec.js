@@ -250,7 +250,7 @@ describe('Document List', function() {
     cy.get('.col > .col > .col > .Autocomplete > input').click()
     cy.get(
       '.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result'
-    ).click()
+    ).click({ force: true, multiple: true })
     cy.get(
       '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'
     ).click()
