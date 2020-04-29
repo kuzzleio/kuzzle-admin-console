@@ -2,8 +2,7 @@ describe('Profiles', function() {
   const kuzzleUrl = 'http://localhost:7512'
 
   beforeEach(() => {
-    // reset all the indexes
-    cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
+    cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
 
     // create environment
     const validEnvName = 'valid'
@@ -76,19 +75,17 @@ describe('Profiles', function() {
     cy.contains('chef')
   })
 
-  it.only('should update a profile', function() {
+  it('should update a profile', function() {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.contains('Indexes')
 
     cy.visit('/#/security/profiles')
 
-    cy.contains('anonymous')
-      .get('.ProfileItem:nth-child(1) .fa-pencil-alt')
-      .click({
-        force: true,
-        multiple: true
-      })
+    cy.get('div[data-cy="ProfileItem-admin"] .fa-pencil-alt').click({
+      force: true,
+      multiple: true
+    })
 
     cy.get(
       '.col > .card-content > #document > .ace_scroller > .ace_content'
@@ -123,7 +120,7 @@ describe('Profiles', function() {
 
     cy.get('.CrudlDocument').should('be.visible')
 
-    cy.request('GET', `${kuzzleUrl}/profiles/default`).then(res => {
+    cy.request('GET', `${kuzzleUrl}/profiles/admin`).then(res => {
       expect(res.body.result._source.rateLimit).to.be.equals(42)
     })
   })
