@@ -6,9 +6,6 @@ kuzzleHost="localhost"
 adminConsolePort="8080"
 kuzzlePort="7512"
 
-# Cypress can't be installed as a dev dependency since it
-# makes the Netlify build extremely slow.
-npm install --no-save cypress
 if [ -z $e2eLocal ]; then
   npm run dev &
 fi
@@ -20,7 +17,7 @@ echo
 
 if [ -z $e2eLocal ]; then
   echo " Launching Kuzzle"
-  docker-compose -f test/e2e/docker-compose.yml up -d
+  docker-compose -f tests/e2e/docker-compose.yml up -d
 fi
 
 echo " Waiting for Kuzzle to be up at http://$kuzzleHost:$kuzzlePort"
