@@ -128,6 +128,7 @@
               v-if="!hideId"
               type="submit"
               class="btn primary waves-effect waves-light"
+              data-cy="CreateDocument-btn"
               :disabled="submitted"
             >
               <i class="fa fa-plus-circle left" />
@@ -141,6 +142,7 @@
               class="btn primary waves-effect waves-light DocumentUpdate"
               data-position="top"
               data-tooltip="Update some of a document's fields (does not remove unset attributes)."
+              data-cy="UpdateDocument-btn"
               :disabled="submitted"
             >
               <i class="fa fa-pencil-alt left" />

@@ -47,6 +47,7 @@
 
           <button
             class="btn btn-small waves-effect waves-light margin-right-5 primary"
+            data-cy="CreateProfile-btn"
             :class="!displayCreate ? 'disabled' : ''"
             :disabled="!displayCreate"
             :title="
