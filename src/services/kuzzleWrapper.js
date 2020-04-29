@@ -131,7 +131,7 @@ export const performSearchDocuments = async (
 
   const totalDocument = await Vue.prototype.$kuzzle
     .document
-    .count(index, collection, { ...filters })
+    .count(index, collection, { query: filters.query })
 
   let additionalAttributeName = null
 
