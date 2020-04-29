@@ -21,7 +21,6 @@
     "chromium": "^1.0.2",
     "commander": "^2.15.1",
     "core-js": "^3.4.3",
-    "cypress-plugin-retries": "^1.4.0",
     "finalhandler": "^1.1.1",
     "http-server": "^0.11.1",
     "serve-static": "^1.13.2",
@@ -61,8 +60,9 @@
     "cross-env": "^3.1.4",
     "cross-spawn": "^5.0.1",
     "css-loader": "^0.26.1",
-    "cypress-file-upload": "^3.1.1",
-    "cypress-plugin-retries": "^1.4.0",
+    "cypress": "^4.2.0",
+    "cypress-file-upload": "3.5.3",
+    "cypress-plugin-retries": "^1.5.2",
     "direct-vuex": "^0.9.3",
     "eslint": "^6.0.0",
     "eslint-plugin-cypress": "^2.7.0",
@@ -111,9 +111,6 @@
     "vuex": "^3.1.2",
     "webpack": "^4.41.2",
     "webpack-dev-server": "^3.9.0"
-  },
-  "peerDependencies": {
-    "cypress": "^3.1.0"
   },
   "bin": "./bin/kuzzle-admin-console",
   "engines": {
