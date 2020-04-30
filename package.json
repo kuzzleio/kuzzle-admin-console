@@ -101,7 +101,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.4",
-    "cypress": "^4.2.0",
+    "cypress": "4.2.0",
     "webpack-dev-server": "^3.9.0",
     "prettier-eslint": "^9.0.1",
     "babel-plugin-istanbul": "^5.2.0",
