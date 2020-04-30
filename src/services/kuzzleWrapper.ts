@@ -127,7 +127,7 @@ interface IKuzzleDocument {
 export const performSearchDocuments = async (
   collection,
   index,
-  filters = {},
+  filters = { query: {} },
   pagination = {},
   sort = []
 ) => {
@@ -135,11 +135,19 @@ export const performSearchDocuments = async (
     throw new Error('Missing collection or index')
   }
 
+  // Use a scroll in order for ES to return the total number of document that match the search
+  // without being limited by its own limitation (10k documents)
   const result = await Vue.prototype.$kuzzle.document.search(
     index,
     collection,
     { ...filters, sort },
     { ...pagination }
+  )
+
+  const totalDocument = await Vue.prototype.$kuzzle.document.count(
+    index,
+    collection,
+    { query: filters.query }
   )
 
   let additionalAttributeName: any = null
@@ -179,7 +187,7 @@ export const performSearchDocuments = async (
 
     return object
   })
-  return { documents, total: result.total }
+  return { documents, total: totalDocument }
 }
 
 export const getMappingDocument = (collection, index) => {
@@ -383,22 +391,22 @@ export const isKuzzleActionAllowed = (
 
   // We filter in all the rights that match the request (including wildcards).
   filteredRights = rights
-    .filter(function(right) {
+    .filter(function (right) {
       return right.controller === controller || right.controller === '*'
     })
-    .filter(function(right) {
+    .filter(function (right) {
       return right.action === action || right.action === '*'
     })
-    .filter(function(right) {
+    .filter(function (right) {
       return right.index === index || right.index === '*'
     })
-    .filter(function(right) {
+    .filter(function (right) {
       return right.collection === collection || right.collection === '*'
     })
 
   // Then, if at least one right allows the action, we return 'allowed'
   if (
-    filteredRights.some(function(item) {
+    filteredRights.some(function (item) {
       return item.value === 'allowed'
     })
   ) {
