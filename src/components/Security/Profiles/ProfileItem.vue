@@ -1,5 +1,9 @@
 <template>
-  <div class="ProfileItem" :class="{ collapsed: collapsed }">
+  <div
+    class="ProfileItem"
+    :class="{ collapsed: collapsed }"
+    :data-cy="`ProfileItem-${document.id}`"
+  >
     <i
       class="ProfileItem-toggle fa fa-caret-down item-toggle"
       aria-hidden="true"

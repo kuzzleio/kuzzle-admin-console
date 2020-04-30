@@ -2,6 +2,7 @@ import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
 import sortJson from 'sort-json'
+import _ from 'lodash'
 
 // ### Environment
 
@@ -305,7 +306,7 @@ export const performSearchProfiles = async (filters = {}, pagination = {}) => {
 
   const profiles = result.hits.map(document => {
     return {
-      content: { policies: document.policies },
+      content: _.omit(document, ['_id', '_kuzzle']),
       meta: new Meta(document.meta || {}),
       id: document._id
     }

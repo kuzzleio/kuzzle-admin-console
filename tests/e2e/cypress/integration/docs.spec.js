@@ -249,7 +249,7 @@ describe('Document List', function() {
     ).click()
     cy.get('.col > .col > .col > .Autocomplete > input').click()
     cy.get(
-      '.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result'
+      '.col > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(1)'
     ).click()
     cy.get(
       '.TimeSeriesValueSelector > .row > .col > .Autocomplete > input'

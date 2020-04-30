@@ -33,6 +33,7 @@ export default {
     return {
       error: '',
       document: {
+        rateLimit: 0,
         policies: [
           {
             roleId: 'yourRoleId'
