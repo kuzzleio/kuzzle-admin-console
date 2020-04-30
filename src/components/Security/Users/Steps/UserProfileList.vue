@@ -18,7 +18,7 @@
           </b-select-option>
           <b-select-option
             v-for="profile of availableProfiles"
-            :key="profile.id"
+            :key="profile._id"
             :value="profile"
           >
             {{ profile }}
@@ -81,9 +81,9 @@ export default {
     availableProfiles() {
       return this.profileList
         .filter(profile => {
-          return !this.addedProfiles.includes(profile.id)
+          return !this.addedProfiles.includes(profile._id)
         })
-        .map(profile => profile.id)
+        .map(profile => profile._id)
         .sort()
     }
   },

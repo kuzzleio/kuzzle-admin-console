@@ -92,15 +92,15 @@
                     v-for="document in documents"
                     class="p-2"
                     data-cy="ProfileList-item"
-                    :key="document.id"
+                    :key="document._id"
                   >
                     <ProfileItem
                       :document="document"
-                      :is-checked="isChecked(document.id)"
+                      :is-checked="isChecked(document._id)"
                       :index="index"
                       :collection="collection"
                       @checkbox-click="toggleSelectDocuments"
-                      @edit="editProfile(document.id)"
+                      @edit="editProfile(document._id)"
                       @delete="deleteProfile"
                     />
                   </b-list-group-item>
@@ -195,7 +195,7 @@ export default {
         return
       }
       this.selectedDocuments = []
-      this.selectedDocuments = this.documents.map(document => document.id)
+      this.selectedDocuments = this.documents.map(document => document._id)
     },
     toggleSelectDocuments(id) {
       let index = this.selectedDocuments.indexOf(id)

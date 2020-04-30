@@ -386,8 +386,8 @@ export default {
     },
     parseDocument(attr, doc) {
       const ret = attr.includes('.')
-        ? this.getNestedField(doc.content, attr)
-        : doc.content[attr]
+        ? this.getNestedField(doc, attr)
+        : doc[attr]
 
       if (typeof ret === 'object' && ret !== null) {
         return {
