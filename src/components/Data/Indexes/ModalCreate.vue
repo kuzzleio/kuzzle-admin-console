@@ -1,13 +1,6 @@
 <template>
-  <form
-    class="CreateIndexModal"
-    @submit.prevent="tryCreateIndex(index)"
-  >
-    <modal
-      :id="id"
-      :is-open="isOpen"
-      :close="close"
-    >
+  <form class="CreateIndexModal" @submit.prevent="tryCreateIndex(index)">
+    <modal :id="id" :is-open="isOpen" :close="close">
       <div class="row">
         <div class="col s12">
           <h4>Index creation</h4>
@@ -25,32 +18,29 @@
               v-focus
               class="CreateIndexModal-name"
               type="text"
-              :class="{'invalid': error}"
-            >
+              :class="{ invalid: error }"
+            />
           </div>
         </div>
 
-        <div
-          v-if="error"
-          class="CreateIndexModal-error col s5 error"
-        >
+        <div v-if="error" class="CreateIndexModal-error col s5 error">
           <div class="red-text">
             An error has occurred during index creation:
           </div>
-          <span :class="{'truncate': errorTruncated}">
+          <span :class="{ truncate: errorTruncated }">
             {{ error }}
           </span>
-          <a
-            href="#!"
-            @click.prevent="toggleTruncatedError()"
-          >
+          <a href="#!" @click.prevent="toggleTruncatedError()">
             <span v-if="errorTruncated">view more</span>
             <span v-if="!errorTruncated">view less</span>
           </a>
         </div>
 
         <div class="col s7">
-          <span class="helper-text">The index name should contain only lowercase characters and cannot begin with an underscore (_)</span>
+          <span class="helper-text"
+            >The index name should contain only lowercase characters and cannot
+            begin with an underscore (_)</span
+          >
         </div>
       </div>
 
@@ -102,7 +92,6 @@ button {
 <script>
 import Modal from '../../Materialize/Modal'
 import Focus from '../../../directives/focus.directive'
-import { CREATE_INDEX } from '../../../vuex/modules/index/mutation-types'
 
 export default {
   name: 'CreateIndexModal',
@@ -130,7 +119,7 @@ export default {
       }
 
       try {
-        await this.$store.dispatch(CREATE_INDEX, index)
+        await this.$store.direct.dispatch.index.createIndex(index)
         this.index = ''
         this.error = ''
         this.close()

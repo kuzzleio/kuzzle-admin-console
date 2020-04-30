@@ -1,23 +1,21 @@
 <template>
-  <form
-    class="CreateEnvironmentPage login"
-    @submit.prevent="createEnvironment"
-  >
+  <form class="CreateEnvironmentPage login" @submit.prevent="createEnvironment">
     <div class="container">
       <div class="row">
         <div class="col card wrapper s10 offset-s1 m8 offset-m2 l6 offset-l3">
           <h2 class="center-align logo">
             <img
-              src="../../../assets/logo.svg"
+              src="/src/assets/logo.svg"
               alt="Welcome to the Kuzzle Admin Console"
               style="width: 70%"
-            >
+            />
           </h2>
           <div class="row message-warning">
             <h5>Create a Connection</h5>
             <div class="divider" />
             <p class="message">
-              Please provide the details below to connect to your Kuzzle instance.
+              Please provide the details below to connect to your Kuzzle
+              instance.
             </p>
           </div>
 
@@ -53,12 +51,9 @@ export default {
   },
   methods: {
     createEnvironment() {
-      try {
-        this.$refs.createEnvironmentComponent
-          .createEnvironment()
-          .then(() => this.$router.push({ name: 'Home' }))
-          .catch(e => console.error(e))
-      } catch (e) {}
+      this.$refs.createEnvironmentComponent
+        .createEnvironment()
+        .then(() => this.$router.push({ name: 'Home' }))
     },
     importEnv() {
       this.$emit('environment::importEnv')

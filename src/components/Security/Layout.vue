@@ -1,19 +1,18 @@
 <template>
   <div>
     <aside>
-      <ul class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y">
+      <ul
+        class="Treeview-container sidenav fixed leftside-navigation ps-container ps-active-y"
+      >
         <router-link
           v-if="canManageUsers()"
           class="bold"
           tag="li"
-          :to="{name: 'SecurityUsersList'}"
+          :to="{ name: 'SecurityUsersList' }"
           active-class="active"
         >
           <a class="waves-effect">
-            <i
-              class="fa fa-user"
-              aria-hidden="true"
-            />
+            <i class="fa fa-user" aria-hidden="true" />
             <span>Users</span>
           </a>
         </router-link>
@@ -21,14 +20,11 @@
           v-if="canManageProfiles()"
           class="bold"
           tag="li"
-          :to="{name: 'SecurityProfilesList'}"
+          :to="{ name: 'SecurityProfilesList' }"
           active-class="active"
         >
           <a class="waves-effect">
-            <i
-              class="fa fa-users"
-              aria-hidden="true"
-            />
+            <i class="fa fa-users" aria-hidden="true" />
             <span>Profiles</span>
           </a>
         </router-link>
@@ -36,14 +32,11 @@
           v-if="canManageRoles()"
           class="bold"
           tag="li"
-          :to="{name: 'SecurityRolesList'}"
+          :to="{ name: 'SecurityRolesList' }"
           active-class="active"
         >
           <a class="waves-effect">
-            <i
-              class="fa fa-unlock-alt"
-              aria-hidden="true"
-            />
+            <i class="fa fa-unlock-alt" aria-hidden="true" />
             <span>Roles</span>
           </a>
         </router-link>
@@ -91,7 +84,6 @@ aside {
 </style>
 
 <script>
-import * as types from '../../vuex/modules/security/mutation-types'
 import {
   canManageUsers,
   canManageRoles,
@@ -118,13 +110,13 @@ export default {
       }
       switch (v.meta.section) {
         case 'users':
-          this.$store.dispatch(types.FETCH_USER_MAPPING)
+          this.$store.direct.dispatch.security.fetchUserMapping()
           break
         case 'profiles':
-          this.$store.dispatch(types.FETCH_PROFILE_MAPPING)
+          this.$store.direct.dispatch.security.fetchProfileMapping()
           break
         case 'roles':
-          this.$store.dispatch(types.FETCH_ROLE_MAPPING)
+          this.$store.direct.dispatch.security.fetchRoleMapping()
           break
       }
     }

@@ -1,9 +1,6 @@
 <template>
   <div class="App">
-    <div
-      v-if="$store.state.kuzzle.errorFromKuzzle"
-      class="App-errored"
-    >
+    <div v-if="$store.direct.state.kuzzle.errorFromKuzzle" class="App-errored">
       <error-layout>
         <kuzzle-error-page
           @environment::create="editEnvironment"
@@ -14,30 +11,25 @@
     </div>
     <div v-else>
       <div
-        v-if="!$store.getters.hasEnvironment"
+        v-if="!$store.direct.getters.kuzzle.hasEnvironment"
         class="App-noEnvironments"
       >
-        <create-environment-page
-          @environment::importEnv="importEnv"
-        />
+        <create-environment-page @environment::importEnv="importEnv" />
       </div>
       <div v-else>
         <div
-          v-if="!$store.getters.currentEnvironmentId"
+          v-if="!$store.direct.getters.kuzzle.currentEnvironmentId"
           class="App-disconnected"
         >
           <!-- This is not supposed to happen, see error case above -->
         </div>
-        <div
-          v-else
-          class="App-connected"
-        >
+        <div v-else class="App-connected">
           <div
-            v-if="!$store.getters.isAuthenticated"
+            v-if="!$store.direct.getters.auth.isAuthenticated"
             class="App-loggedOut"
           >
             <div
-              v-if="!$store.getters.adminAlreadyExists"
+              v-if="!$store.direct.getters.auth.adminAlreadyExists"
               class="App-noAdmin"
             >
               <sign-up
@@ -46,10 +38,7 @@
                 @environment::importEnv="importEnv"
               />
             </div>
-            <div
-              v-else
-              class="App-hasAdmin"
-            >
+            <div v-else class="App-hasAdmin">
               <login
                 @environment::create="editEnvironment"
                 @environment::delete="deleteEnvironment"
@@ -57,10 +46,7 @@
               />
             </div>
           </div>
-          <div
-            v-else
-            class="App-loggedIn"
-          >
+          <div v-else class="App-loggedIn">
             <router-view
               @environment::create="editEnvironment"
               @environment::delete="deleteEnvironment"
@@ -81,19 +67,15 @@
       :close="close"
       :is-open="deleteIsOpen"
     />
-    <modal-import
-      :close="close"
-      :is-open="importIsOpen"
-    />
+    <modal-import :close="close" :is-open="importIsOpen" />
 
     <toaster />
   </div>
 </template>
 
 <script>
-import {} from '../node_modules/ace-builds/src-min-noconflict/ace.js'
-import {} from '../node_modules/ace-builds/src-min-noconflict/theme-tomorrow.js'
-import {} from '../node_modules/ace-builds/src-min-noconflict/mode-json.js'
+require('ace-builds')
+require('ace-builds/webpack-resolver')
 
 import {} from './assets/global.scss'
 import KuzzleErrorPage from './components/Error/KuzzleErrorPage'
@@ -101,20 +83,13 @@ import ErrorLayout from './components/Error/Layout'
 import SignUp from './components/Signup'
 import Login from './components/Login'
 import CreateEnvironmentPage from './components/Common/Environments/CreateEnvironmentPage'
-
 import ModalCreate from './components/Common/Environments/ModalCreate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
-
 import Toaster from './components/Materialize/Toaster.vue'
-
-import * as types from './vuex/modules/auth/mutation-types'
-import * as kuzzleTypes from './vuex/modules/common/kuzzle/mutation-types'
-import { SET_TOAST } from './vuex/modules/common/toaster/mutation-types'
 
 // @TODO we'll have to import FA from global.scss one day...
 import '@fortawesome/fontawesome-free/css/all.css'
-
 window.jQuery = window.$ = require('jquery')
 // eslint-disable-next-line
 require('imports-loader?$=jquery!materialize-css/dist/js/materialize')
@@ -141,34 +116,34 @@ export default {
     }
   },
   mounted() {
+    this.$store.direct.commit.auth.setTokenValid(false)
     this.$kuzzle.removeAllListeners()
-
     this.$kuzzle.on('queryError', error => {
       if (error && error.message) {
         switch (error.message) {
           case 'Token expired':
           case 'Invalid token':
           case 'Json Web Token Error':
-            this.$store.commit(types.SET_TOKEN_VALID, false)
+            this.$store.direct.commit.auth.setTokenValid(false)
             this.$kuzzle.connect()
             break
         }
       }
     })
     this.$kuzzle.on('networkError', error => {
-      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, error)
+      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(error.message)
     })
     this.$kuzzle.on('connected', () => {
-      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
-      this.$store.dispatch(types.CHECK_FIRST_ADMIN)
+      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
+      this.$store.direct.dispatch.auth.checkFirstAdmin()
     })
     this.$kuzzle.on('reconnected', () => {
-      this.$store.commit(kuzzleTypes.SET_ERROR_FROM_KUZZLE, null)
-      this.$store.dispatch(kuzzleTypes.SWITCH_LAST_ENVIRONMENT)
+      this.$store.direct.commit.kuzzle.setErrorFromKuzzle(null)
+      this.$store.direct.dispatch.kuzzle.switchLastEnvironment()
     })
     this.$kuzzle.on('discarded', function(data) {
       if (this.$store) {
-        this.$store.commit(SET_TOAST, { text: data.message })
+        this.$store.direct.commit.toaster.setToast({ text: data.message })
       }
     })
   },

@@ -8,15 +8,23 @@
     </div>
     <div class="col s8 m9 l10">
       <p>
-        Here you'll see the documents in <strong>{{ collection }}</strong> <br>
+        Here you'll see the documents in <strong>{{ collection }}</strong>
+        <br />
         <em>Currently there is no document in this collection.</em>
       </p>
       <router-link
         :disabled="!canCreateDocument(index, collection)"
-        :to="{name: 'DataCreateDocument', params: {index: index, collection: collection}}"
+        :to="{
+          name: 'DataCreateDocument',
+          params: { index: index, collection: collection }
+        }"
         class="btn primary waves-effect waves-light"
         :class="!canCreateDocument(index, collection) ? 'disabled' : ''"
-        :title="!canCreateDocument(index, collection) ? 'You are not allowed to create documents in this collection' : ''"
+        :title="
+          !canCreateDocument(index, collection)
+            ? 'You are not allowed to create documents in this collection'
+            : ''
+        "
       >
         <i class="fa fa-plus-circle left" />
         Create a document

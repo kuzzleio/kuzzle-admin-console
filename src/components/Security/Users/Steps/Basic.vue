@@ -15,15 +15,10 @@
           :value="kuid"
           :disabled="autoGenerateKuid"
           @change="setCustomKuid"
-        >
-        <span
-          v-if="!editKuid"
-        >{{ kuid }}</span>
+        />
+        <span v-if="!editKuid">{{ kuid }}</span>
       </div>
-      <div
-        v-if="editKuid"
-        class="col s3"
-      >
+      <div v-if="editKuid" class="col s3">
         <label>
           <input
             id="user-auto-generate-kuid"
@@ -31,7 +26,7 @@
             class="filled-in"
             :checked="autoGenerateKuid"
             @change="setAutoGenerateKuid"
-          >
+          />
           <span>
             Auto-generate
           </span>

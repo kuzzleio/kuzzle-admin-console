@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="lastNotification-container"
-    class="card-panel col s4"
-  >
+  <div id="lastNotification-container" class="card-panel col s4">
     <h5>Latest notification :</h5>
     <div class="lastNotification-body">
       <p
@@ -11,7 +8,7 @@
             id: lastNotification.source.id,
             body: lastNotification.source.body,
             meta: lastNotification.source.meta,
-            volatile: lastNotification.source.volatile,
+            volatile: lastNotification.source.volatile
           },
           open: true
         }"

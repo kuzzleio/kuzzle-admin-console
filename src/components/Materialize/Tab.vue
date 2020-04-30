@@ -1,9 +1,5 @@
 <template>
-  <li
-    class="tab col"
-    :class="computedClasses"
-    @click.prevent="setAsSelected"
-  >
+  <li class="tab col" :class="computedClasses" @click.prevent="setAsSelected">
     <slot />
   </li>
 </template>

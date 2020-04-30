@@ -4,10 +4,7 @@
       <div class="card-title row">
         <div class="col s10 truncate">
           <!-- collection browse link -->
-          <router-link
-            class="fluid-hover"
-            :to="collectionLink"
-          >
+          <router-link class="fluid-hover" :to="collectionLink">
             <i
               class="fa grey-text text-darken-1"
               :class="isRealtime ? 'fa-bolt' : 'fa-th-list'"
@@ -31,19 +28,47 @@
       <div class="card-action right-align">
         <router-link
           v-if="isRealtime"
-          v-title="{active: !canManageRealtime(index, collection), title: 'Your rights disallow you to watch realtime messages on collection ' + collection + ' of index ' + index}"
+          v-title="{
+            active: !canManageRealtime(index, collection),
+            title:
+              'Your rights disallow you to watch realtime messages on collection ' +
+              collection +
+              ' of index ' +
+              index
+          }"
           class="btn btn-small"
-          :class="{unauthorized: !canManageRealtime(index, collection)}"
-          :to="canManageRealtime(index, collection) ? {name: 'DataCollectionWatch', params: {index: index, collection: collection}} : ''"
+          :class="{ unauthorized: !canManageRealtime(index, collection) }"
+          :to="
+            canManageRealtime(index, collection)
+              ? {
+                  name: 'DataCollectionWatch',
+                  params: { index: index, collection: collection }
+                }
+              : ''
+          "
         >
           Watch messages
         </router-link>
         <router-link
           v-else
-          v-title="{active: !canCreateDocument(index, collection), title: 'Your rights disallow you to create documents on collection ' + collection + ' of index ' + index}"
+          v-title="{
+            active: !canCreateDocument(index, collection),
+            title:
+              'Your rights disallow you to create documents on collection ' +
+              collection +
+              ' of index ' +
+              index
+          }"
           class="btn btn-small"
-          :class="{unauthorized: !canCreateDocument(index, collection)}"
-          :to="canCreateDocument(index, collection) ? {name: 'DataCreateDocument', params: {index: index, collection: collection}}: ''"
+          :class="{ unauthorized: !canCreateDocument(index, collection) }"
+          :to="
+            canCreateDocument(index, collection)
+              ? {
+                  name: 'DataCreateDocument',
+                  params: { index: index, collection: collection }
+                }
+              : ''
+          "
         >
           Create a document
         </router-link>

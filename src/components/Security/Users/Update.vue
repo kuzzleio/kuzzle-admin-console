@@ -49,11 +49,9 @@
       <!-- Actions -->
       <div class="row">
         <div class="col s3">
-          <a
-            tabindex="6"
-            class="btn-flat waves-effect"
-            @click.prevent="cancel"
-          >Cancel</a>
+          <a tabindex="6" class="btn-flat waves-effect" @click.prevent="cancel"
+            >Cancel</a
+          >
           <button
             type="submit"
             class="btn primary waves-effect waves-light"
@@ -63,14 +61,8 @@
           </button>
         </div>
         <div class="col s9">
-          <div
-            v-if="error"
-            class="card error red-color white-text"
-          >
-            <i
-              class="fa fa-times dismiss-error"
-              @click="dismissError()"
-            />
+          <div v-if="error" class="card error red-color white-text">
+            <i class="fa fa-times dismiss-error" @click="dismissError()" />
             {{ error }}
           </div>
         </div>
@@ -159,10 +151,15 @@ export default {
       }
 
       try {
-        await this.$kuzzle.security.replaceUser(this.user.kuid, userObject, { refresh: 'wait_for' })
+        await this.$kuzzle.security.replaceUser(this.user.kuid, userObject, {
+          refresh: 'wait_for'
+        })
         await Promise.all(
           Object.keys(this.user.credentials).map(async strategy => {
-            const credentialsExists = await this.$kuzzle.security.hasCredentials(strategy, this.user.kuid)
+            const credentialsExists = await this.$kuzzle.security.hasCredentials(
+              strategy,
+              this.user.kuid
+            )
 
             if (credentialsExists) {
               await this.$kuzzle.security.updateCredentials(

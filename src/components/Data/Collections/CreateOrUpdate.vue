@@ -10,7 +10,9 @@
 
     <stepper
       :current-step="editionStep"
-      :disabled-steps="$store.getters.isRealtimeOnly ? [1] : []"
+      :disabled-steps="
+        $store.direct.getters.collection.isRealtimeOnly ? [1] : []
+      "
       :steps="['Mapping', 'Form']"
       class="card-panel card-header"
       @changed-step="setEditionStep"
@@ -34,16 +36,12 @@
           @cancel="cancel"
         />
 
-        <div
-          v-if="error || mappingError"
-          class="col s7 m8 l8"
-        >
+        <div v-if="error || mappingError" class="col s7 m8 l8">
           <div class="card error red-color white-text">
-            <i
-              class="fa fa-times dismiss-error"
-              @click="dismissError()"
-            />
-            An error occurred while {{ $route.params.collection ? 'updating' : 'creating' }} collection: <br>{{ error ? error : mappingError }}
+            <i class="fa fa-times dismiss-error" @click="dismissError()" />
+            An error occurred while
+            {{ $route.params.collection ? 'updating' : 'creating' }} collection:
+            <br />{{ error ? error : mappingError }}
           </div>
         </div>
       </div>

@@ -1,9 +1,6 @@
 <template>
   <div class="CommonList">
-    <slot
-      v-if="isCollectionEmpty"
-      name="emptySet"
-    />
+    <slot v-if="isCollectionEmpty" name="emptySet" />
     <crudl-document
       v-else
       :search-filter-operands="searchFilterOperands"
@@ -57,7 +54,6 @@ import RoleItem from '../Security/Roles/RoleItem'
 import ProfileItem from '../Security/Profiles/ProfileItem'
 import DocumentItem from '../Data/Documents/DocumentListItem'
 import * as filterManager from '../../services/filterManager'
-import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'CommonList',
@@ -123,7 +119,7 @@ export default {
   watch: {
     $route: {
       immediate: false,
-      handler(newValue, oldValue) {
+      handler(newValue) {
         this.currentFilter = filterManager.load(
           this.index,
           this.collection,
@@ -185,7 +181,7 @@ export default {
           this.collection
         )
       } catch (error) {
-        this.$store.commit(SET_TOAST, {
+        this.$store.direct.commit.toaster.setToast({
           text:
             'An error occurred while updating filters: <br />' + error.message
         })
@@ -226,7 +222,7 @@ export default {
           this.totalDocuments = res.total
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, {
+          this.$store.direct.commit.toaster.setToast({
             text:
               'An error occurred while performing search: <br />' + e.message
           })
@@ -241,7 +237,7 @@ export default {
     deleteDocument(id) {
       this.documentToDelete = id
     },
-    create(route) {
+    create() {
       this.$router.push({ name: this.routeCreate })
     }
   }

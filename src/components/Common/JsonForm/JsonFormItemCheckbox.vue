@@ -1,12 +1,12 @@
 <template>
-  <label>
+  <label class="JsonFormItemCheckbox">
     <input
       :id="name"
       type="checkbox"
       name="name"
       :checked="value"
       @change="update"
-    >
+    />
     <span>{{ name }}</span>
   </label>
 </template>
@@ -50,3 +50,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.JsonFormItemCheckbox {
+  position: relative !important;
+}
+</style>

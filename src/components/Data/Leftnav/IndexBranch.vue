@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="{ 'open': open || filter }"
-    class="index-branch"
-  >
+  <div :class="{ open: open || filter }" class="index-branch">
     <i
       v-if="collectionCount"
       class="fa fa-caret-right tree-toggle"
@@ -10,14 +7,11 @@
       @click="toggleBranch"
     />
     <router-link
-      :to="{name: 'DataIndexSummary', params: {index: indexName}}"
+      :to="{ name: 'DataIndexSummary', params: { index: indexName } }"
       class="tree-item truncate"
-      :class="{ 'active': isIndexActive(indexName) }"
+      :class="{ active: isIndexActive(indexName) }"
     >
-      <i
-        class="fa fa-database"
-        aria-hidden="true"
-      />
+      <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
     </router-link>
     <ul class="collections">
@@ -27,8 +21,11 @@
       >
         <router-link
           class="tree-item truncate"
-          :to="{name: 'DataDocumentsList', params: {index: indexName, collection: collectionName}}"
-          :class="{ 'active': isCollectionActive(indexName, collectionName) }"
+          :to="{
+            name: 'DataDocumentsList',
+            params: { index: indexName, collection: collectionName }
+          }"
+          :class="{ active: isCollectionActive(indexName, collectionName) }"
         >
           <i
             class="fa fa-th-list"
@@ -44,8 +41,11 @@
       >
         <router-link
           class="tree-item"
-          :to="{name: 'DataCollectionWatch', params: {index: indexName, collection: collectionName}}"
-          :class="{ 'active': isCollectionActive(indexName, collectionName) }"
+          :to="{
+            name: 'DataCollectionWatch',
+            params: { index: indexName, collection: collectionName }
+          }"
+          :class="{ active: isCollectionActive(indexName, collectionName) }"
         >
           <i
             class="fa fa-bolt"
@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import { REMOVE_REALTIME_COLLECTION } from '../../../vuex/modules/index/mutation-types'
-
 export default {
   props: {
     forceOpen: {
@@ -92,27 +90,21 @@ export default {
 
       return this.collections.realtime.length + this.collections.stored.length
     },
-    filteredStoredCollections() {
-      if (this.collections) {
-        return this.collections.stored.filter(
-          col => col.indexOf(this.filter) !== -1
-        )
-      }
-      return []
-    },
-    filteredRealtimeCollections() {
-      if (this.collections) {
-        return this.collections.realtime.filter(
-          col => col.indexOf(this.filter) !== -1
-        )
-      }
-      return []
-    },
     orderedFilteredStoredCollections() {
-      return this.filteredStoredCollections.sort()
+      if (this.collections) {
+        return this.collections.stored
+          .filter(col => col.indexOf(this.filter) !== -1)
+          .sort()
+      }
+      return []
     },
     orderedFilteredRealtimeCollections() {
-      return this.filteredRealtimeCollections.sort()
+      if (this.collections) {
+        return this.collections.realtime
+          .filter(col => col.indexOf(this.filter) !== -1)
+          .sort()
+      }
+      return []
     }
   },
   watch: {
@@ -172,7 +164,7 @@ export default {
       return value
     },
     removeRealtimeCollection(indexName, collectionName) {
-      this.$store.dispatch(REMOVE_REALTIME_COLLECTION, {
+      this.$store.direct.dispatch.index.removeRealtimeCollection({
         index: indexName,
         collection: collectionName
       })

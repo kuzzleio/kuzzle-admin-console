@@ -1,22 +1,18 @@
 <template>
-  <div
-    class="row bordered"
-  >         
-    <div 
-      class="col s12 relative"
-    >
+  <div class="row bordered">
+    <div class="col s12 relative">
       <i
         v-if="isUpdatable"
         class="far fa-times-circle TimeSeriesColorPickerRemoveBtn"
         @click.prevent="$emit('timeseriesitem::remove', index)"
       />
-      <button 
+      <button
         class="TimeSeriesColorPickerBtn btn btn-small"
-        :style="{'background-color': newColor}"
+        :style="{ 'background-color': newColor }"
         @click.prevent="togglePicker"
       />
       <color-picker
-        v-show="showColorPicker" 
+        v-show="showColorPicker"
         v-model="newColor"
         class="TimeSeriesColorPicker"
         @input="updateColor"
@@ -31,11 +27,7 @@
         :notify-change="false"
         @autocomplete::change="attribute => addItem(attribute)"
       />
-      <input
-        v-else
-        :value="value"
-        :disabled="true"
-      >
+      <input v-else :value="value" :disabled="true" />
     </div>
   </div>
 </template>
@@ -88,15 +80,15 @@ export default {
       default: 0
     }
   },
-  data () {
+  data() {
     return {
       showColorPicker: false,
       newColor: this.color
     }
   },
-  mounted () {
+  mounted() {
     document.addEventListener('click', this.handleClickOutside)
-  
+
     this.newColor = this.color
   },
   destroyed() {
@@ -108,17 +100,17 @@ export default {
         this.showColorPicker = false
       }
     },
-    togglePicker () {
+    togglePicker() {
       this.showColorPicker = !this.showColorPicker
     },
-    updateColor (color) {
+    updateColor(color) {
       this.newColor = color.hex
       if (this.isUpdatable) {
         this.$emit('update-color', { color: this.newColor, index: this.index })
       }
       this.newColor = this.getColor()
     },
-    addItem (attr) { 
+    addItem(attr) {
       this.$emit('autocomplete::change', { name: attr, color: this.newColor })
       this.newColor = getRandomColor()
     }
@@ -136,7 +128,7 @@ export default {
   margin-top: 10px;
 }
 .bordered {
-  border: .5px solid grey;
+  border: 0.5px solid grey;
 }
 .TimeSeriesColorPicker {
   position: absolute;

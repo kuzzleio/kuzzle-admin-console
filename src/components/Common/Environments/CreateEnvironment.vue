@@ -7,11 +7,7 @@
 
     <div class="row">
       <div class="col s12">
-        <a
-          v-if="environmentId"
-          ref="export"
-          class="btn"
-        >Export</a>
+        <a v-if="environmentId" ref="export" class="btn">Export</a>
         <button
           v-else
           class="CreateEnvironment-import btn"
@@ -32,13 +28,14 @@
             class="CreateEnvironment-name"
             type="text"
             required
-            :class="{invalid: errors.name || errors.environmentAlreadyExists}"
-          >
+            :class="{ invalid: errors.name || errors.environmentAlreadyExists }"
+          />
           <label
             for="env-name"
-            :class="{'active': environment.name}"
+            :class="{ active: environment.name }"
             data-error="Name is required and must be unique"
-          >Name</label>
+            >Name</label
+          >
         </div>
       </div>
     </div>
@@ -52,13 +49,14 @@
             class="CreateEnvironment-host"
             type="text"
             required
-            :class="{invalid: errors.host}"
-          >
+            :class="{ invalid: errors.host }"
+          />
           <label
             for="host"
-            :class="{'active': environment.host}"
+            :class="{ active: environment.host }"
             data-error="The host must be something like 'mydomain.com'"
-          >Host</label>
+            >Host</label
+          >
         </div>
       </div>
     </div>
@@ -72,13 +70,14 @@
             class="CreateEnvironment-port"
             type="number"
             required
-            :class="{invalid: errors.port}"
-          >
+            :class="{ invalid: errors.port }"
+          />
           <label
             for="port"
-            :class="{'active': environment.port}"
+            :class="{ active: environment.port }"
             data-error="port number must be an integer"
-          >Port</label>
+            >Port</label
+          >
         </div>
       </div>
       <div class="col s6">
@@ -89,7 +88,7 @@
             class="CreateEnvironment-ssl"
             type="checkbox"
             :checked="environment.ssl"
-          >
+          />
           <span>use SSL</span>
         </label>
       </div>
@@ -107,20 +106,17 @@
       </div>
       <div class="col s12">
         <div class="CreateEnvironment-colorBtns row">
-          <div
-            v-for="(color, index) in colors"
-            :key="color"
-            class="col s6 m3"
-          >
+          <div v-for="(color, index) in colors" :key="color" class="col s6 m3">
             <div
               class="color card valign-wrapper"
-              :style="{backgroundColor: color}"
+              :style="{ backgroundColor: color }"
               @click="selectColor(index)"
             >
               <span
                 v-if="environment.color === color"
                 class="selected valign center-align"
-              >Selected</span>
+                >Selected</span
+              >
             </div>
           </div>
         </div>
@@ -134,10 +130,6 @@ import WarningHeader from '../WarningHeader'
 
 import Focus from '../../../directives/focus.directive'
 import { DEFAULT_COLOR } from '../../../services/environment'
-import {
-  UPDATE_ENVIRONMENT,
-  CREATE_ENVIRONMENT
-} from '../../../vuex/modules/common/kuzzle/mutation-types'
 
 const useHttps = window.location.protocol === 'https:'
 
@@ -179,23 +171,28 @@ export default {
   },
   computed: {
     environments() {
-      return this.$store.state.kuzzle.environments
+      return this.$store.direct.state.kuzzle.environments
     },
     useHttps() {
       return useHttps
     }
   },
-  mounted () {
+  mounted() {
     if (this.environmentId) {
       const env = {}
 
-      env[this.$store.getters.currentEnvironment.name] = Object.assign({}, this.$store.getters.currentEnvironment)
+      env[
+        this.$store.direct.getters.kuzzle.currentEnvironment.name
+      ] = Object.assign(
+        {},
+        this.$store.direct.getters.kuzzle.currentEnvironment
+      )
 
-      delete env[this.$store.getters.currentEnvironment.name].token
+      delete env[this.$store.direct.getters.currentEnvironment.name].token
       const blob = new Blob([JSON.stringify(env)], { type: 'application/json' })
 
       this.$refs.export.href = URL.createObjectURL(blob)
-      this.$refs.export.download = `${this.$store.getters.currentEnvironment.name}.json`
+      this.$refs.export.download = `${this.$store.direct.getters.currentEnvironment.name}.json`
     }
   },
   created() {
@@ -226,7 +223,7 @@ export default {
 
       if (!this.environmentId || this.environmentId !== _name) {
         this.errors.environmentAlreadyExists =
-          this.$store.state.kuzzle.environments[_name] !== undefined
+          this.$store.direct.state.kuzzle.environments[_name] !== undefined
       } else {
         this.errors.environmentAlreadyExists = false
       }
@@ -240,7 +237,7 @@ export default {
       }
 
       if (this.environmentId) {
-        return this.$store.dispatch(UPDATE_ENVIRONMENT, {
+        return this.$store.direct.dispatch.kuzzle.updateEnvironment({
           id: this.environmentId,
           environment: {
             name: _name,
@@ -251,7 +248,7 @@ export default {
           }
         })
       } else {
-        return this.$store.dispatch(CREATE_ENVIRONMENT, {
+        return this.$store.direct.dispatch.kuzzle.createEnvironment({
           id: _name,
           environment: {
             name: _name,

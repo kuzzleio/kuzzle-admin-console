@@ -3,7 +3,7 @@
     <div class="navbar-fixed">
       <nav
         id="mainnav"
-        :style="{backgroundColor: currentEnvironmentColor}"
+        :style="{ backgroundColor: currentEnvironmentColor }"
         class="MainMenu-nav"
       >
         <ul>
@@ -11,19 +11,13 @@
             <div class="logo-container">
               <div
                 class="version-container right-align"
-                :style="{color: versionColor}"
+                :style="{ color: versionColor }"
               >
                 {{ adminConsoleVersion }}
               </div>
               <div>
-                <a
-                  href="#"
-                  class=""
-                >
-                  <img
-                    src="../../assets/logo-white.svg"
-                    alt="Kuzzle.io"
-                  >
+                <a href="#" class="">
+                  <img src="~../../assets/logo-white.svg" alt="Kuzzle.io" />
                 </a>
               </div>
             </div>
@@ -31,7 +25,7 @@
           <router-link
             tag="li"
             class="nav"
-            :to="{name: 'Data'}"
+            :to="{ name: 'Data' }"
             active-class="active"
           >
             <a>Data</a>
@@ -40,7 +34,7 @@
             v-if="hasSecurityRights()"
             tag="li"
             class="nav"
-            :to="{name: 'Security'}"
+            :to="{ name: 'Security' }"
             active-class="active"
           >
             <a>Security</a>
@@ -61,10 +55,9 @@
             />
           </li>
           <li>
-            <a
-              title="Logout"
-              @click="doLogout"
-            ><i class="logout fa fa-power-off" /></a>
+            <a title="Logout" @click="doLogout"
+              ><i class="logout fas fa-power-off"
+            /></a>
           </li>
         </ul>
       </nav>
@@ -74,7 +67,6 @@
 
 <script>
 import { hasSecurityRights } from '../../services/userAuthorization'
-import { DO_LOGOUT } from '../../vuex/modules/auth/mutation-types'
 import { DEFAULT_COLOR } from '../../services/environment'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 
@@ -85,11 +77,11 @@ export default {
   },
   computed: {
     currentEnvironmentColor() {
-      if (!this.$store.getters.currentEnvironment) {
+      if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
         return DEFAULT_COLOR
       }
 
-      return this.$store.getters.currentEnvironment.color
+      return this.$store.direct.getters.kuzzle.currentEnvironment.color
     },
 
     versionColor() {
@@ -97,14 +89,14 @@ export default {
     },
 
     currentUserName() {
-      if (this.$store.state.auth.user) {
+      if (this.$store.direct.state.auth.user) {
         if (
-          this.$store.state.auth.user.params &&
-          this.$store.state.auth.user.params.name
+          this.$store.direct.state.auth.user.params &&
+          this.$store.direct.state.auth.user.params.name
         ) {
-          return this.$store.state.auth.user.params.name
+          return this.$store.direct.state.auth.user.params.name
         }
-        return this.$store.state.auth.user.id
+        return this.$store.direct.state.auth.user.id
       }
       return ''
     },
@@ -116,7 +108,7 @@ export default {
 
   methods: {
     doLogout() {
-      return this.$store.dispatch(DO_LOGOUT).then(() => {
+      return this.$store.direct.dispatch.auth.doLogout().then(() => {
         this.$router.push({ name: 'Login' })
       })
     },

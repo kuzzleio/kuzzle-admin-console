@@ -1,9 +1,6 @@
 <template>
   <div class="ProfileList">
-    <slot
-      v-if="currentFilter.basic && totalDocuments === 0"
-      name="emptySet"
-    />
+    <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <crudl-document
       v-else
       :current-filter="currentFilter"
@@ -54,7 +51,6 @@ import RoleItem from '../Roles/RoleItem'
 import ProfileItem from '../Profiles/ProfileItem'
 import DocumentItem from '../../Data/Documents/DocumentListItem'
 import * as filterManager from '../../../services/filterManager'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'ProfileList',
@@ -108,7 +104,7 @@ export default {
   watch: {
     $route: {
       immediate: true,
-      handler(newValue, oldValue) {
+      handler() {
         this.currentFilter = Object.assign(
           new filterManager.Filter(),
           filterManager.loadFromRoute(this.$route)
@@ -130,7 +126,8 @@ export default {
       await this.performDelete(index, collection, ids)
       this.$set(
         this.selectedDocuments,
-        this.selectedDocuments.splice(0, this.selectedDocuments.length))
+        this.selectedDocuments.splice(0, this.selectedDocuments.length)
+      )
       this.fetchProfiles()
     },
     isChecked(id) {
@@ -161,7 +158,7 @@ export default {
           this.$router
         )
       } catch (error) {
-        this.$store.commit(SET_TOAST, {
+        this.$store.direct.commit.toaster.setToast({
           text:
             'An error occurred while updating filters: <br />' + error.message
         })
@@ -180,7 +177,7 @@ export default {
           this.totalDocuments = res.total
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, {
+          this.$store.direct.commit.toaster.setToast({
             text:
               'An error occurred while performing search: <br />' + e.message
           })
@@ -195,7 +192,7 @@ export default {
     deleteDocument(id) {
       this.documentToDelete = id
     },
-    create(route) {
+    create() {
       this.$router.push({ name: this.routeCreate })
     }
   }

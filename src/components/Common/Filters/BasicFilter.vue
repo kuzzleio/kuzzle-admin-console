@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="BasicFilter"
-    @submit.prevent="submitSearch"
-  >
+  <form class="BasicFilter" @submit.prevent="submitSearch">
     <div class="row">
       <div class="col s12">
         <div class="BasicFilter-query row">
@@ -18,27 +15,31 @@
               :key="`andBlock-${filterIndex}`"
               class="BasicFilter-andBlock row dots"
             >
-              <div
-                v-if="!toggleAutoComplete"
-                class="col s4"
-              >
-                <input 
+              <div class="col s4">
+                <input
+                  v-if="!toggleAutoComplete"
                   v-model="filters.basic[groupIndex][filterIndex].attribute"
                   placeholder="key"
                   type="text"
                   class="BasicFilter--key"
-                >
+                />
+
+                <autocomplete
+                  v-else
+                  class="BasicFilter--key"
+                  input-class="validate"
+                  placeholder="Attribute"
+                  :items="attributeItems"
+                  :value="
+                    filters.basic[groupIndex][filterIndex].attribute || ''
+                  "
+                  @autocomplete::change="
+                    attribute =>
+                      selectAttribute(attribute, groupIndex, filterIndex)
+                  "
+                />
               </div>
-              <autocomplete
-                v-else
-                class="BasicFilter--key"
-                input-class="validate"
-                placeholder="Attribute"
-                :items="attributeItems"
-                :value="filters.basic[groupIndex][filterIndex].attribute || ''"
-                @autocomplete::change="(attribute) => selectAttribute(attribute, groupIndex, filterIndex)"
-              />
-              
+
               <div class="col s3">
                 <m-select v-model="andBlock.operator">
                   <option
@@ -50,14 +51,20 @@
                   </option>
                 </m-select>
               </div>
-              <div v-if="andBlock.operator !== 'range'">
+              <div
+                v-if="andBlock.operator !== 'range'"
+                v-show="
+                  andBlock.operator !== 'exists' &&
+                    andBlock.operator !== 'not_exists'
+                "
+              >
                 <div class="col s3">
                   <input
                     v-model="andBlock.value"
                     placeholder="Value"
                     type="text"
                     class="BasicFilter--value validate"
-                  >
+                  />
                 </div>
               </div>
               <div v-else>
@@ -67,7 +74,7 @@
                     placeholder="Value 1"
                     type="text"
                     class="BasicFilter--gtValue validate"
-                  >
+                  />
                 </div>
                 <div class="col s1">
                   <input
@@ -75,7 +82,7 @@
                     placeholder="Value 2"
                     type="text"
                     class="BasicFilter--ltValue validate"
-                  >
+                  />
                 </div>
               </div>
               <div class="col s2">
@@ -107,10 +114,7 @@
           </a>
         </div>
 
-        <div
-          v-if="sortingEnabled"
-          class="BasicFilter-sortBlock row"
-        >
+        <div v-if="sortingEnabled" class="BasicFilter-sortBlock row">
           <p><i class="fa fa-sort-amount-asc" />Sorting</p>
           <div class="row block-content">
             <div class="col s4">
@@ -120,7 +124,7 @@
                 placeholder="Attribute"
                 :items="attributeItems"
                 :value="filters.sorting.attribute || ''"
-                @autocomplete::change="(attribute) => setSortAttr(attribute)"
+                @autocomplete::change="attribute => setSortAttr(attribute)"
               />
             </div>
             <div class="BasicFilter-sortingValue col s2">
@@ -137,10 +141,7 @@
         </div>
       </div>
     </div>
-    <div
-      v-if="actionButtonsVisible"
-      class="row card-action"
-    >
+    <div v-if="actionButtonsVisible" class="row card-action">
       <button
         type="submit"
         class="BasicFilter-submitBtn btn waves-effect waves-light primary"
@@ -200,7 +201,7 @@ export default {
     },
     toggleAutoComplete: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -221,8 +222,18 @@ export default {
       for (const orBlock of this.filters.basic) {
         for (const andBlock of orBlock) {
           if (
+            (andBlock.operator === 'exists' ||
+              andBlock.operator === 'not_exists') &&
+            andBlock.attribute
+          ) {
+            return true
+          }
+          if (
             (!andBlock.attribute && andBlock.value) ||
-            (andBlock.attribute && (!andBlock.value) && (!andBlock.lt_value && !andBlock.gt_value))
+            (andBlock.attribute &&
+              !andBlock.value &&
+              !andBlock.lt_value &&
+              !andBlock.gt_value)
           ) {
             return false
           }
@@ -333,14 +344,18 @@ export default {
       let attributes = []
 
       for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (attributeValue.hasOwnProperty('properties')) {
+        if (
+          Object.prototype.hasOwnProperty.call(attributeValue, 'properties')
+        ) {
           attributes = attributes.concat(
             this.buildAttributeList(
               attributeValue.properties,
               path.concat(attributeName)
             )
           )
-        } else if (attributeValue.hasOwnProperty('type')) {
+        } else if (
+          Object.prototype.hasOwnProperty.call(attributeValue, 'type')
+        ) {
           attributes = attributes.concat(path.concat(attributeName).join('.'))
         }
       }

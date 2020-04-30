@@ -5,10 +5,7 @@
         <div class="col card wrapper s6 offset-s3">
           <div class="col s12">
             <h1 class="center-align logo">
-              <img
-                src="../../assets/logo.svg"
-                alt="Kuzzle Backoffice"
-              >
+              <img src="../../assets/logo.svg" alt="Kuzzle Backoffice" />
             </h1>
           </div>
           <slot>

@@ -1,7 +1,7 @@
 <template>
   <div
     class="row collection-form-line valign-wrapper"
-    :class="{odd: (index % 2) === 0}"
+    :class="{ odd: index % 2 === 0 }"
   >
     <p class="col s3 attribute-title truncate">
       {{ name }}
@@ -25,13 +25,15 @@
     </div>
     <i
       v-if="type === 'force-json'"
-      v-title="{active: true, position: 'bottom', title: 'This object has too many levels, the view json is forced for this attribute.'}"
+      v-title="{
+        active: true,
+        position: 'bottom',
+        title:
+          'This object has too many levels, the view json is forced for this attribute.'
+      }"
       class="fa fa-question-circle info"
     />
-    <div
-      v-if="chooseValues"
-      class="col s4"
-    >
+    <div v-if="chooseValues" class="col s4">
       <multiselect
         :options="[]"
         :taggable="true"

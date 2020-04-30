@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="hasRights"
-    class="wrapper"
-  >
+  <div v-if="hasRights" class="wrapper">
     <headline>
       {{ collection }}
       <collection-dropdown
@@ -42,7 +39,6 @@ import Headline from '../../Materialize/Headline'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import CollectionTabs from '../Collections/Tabs'
-import { FETCH_COLLECTION_DETAIL } from '../../../vuex/modules/collection/mutation-types'
 
 export default {
   name: 'DocumentCreateOrUpdate',
@@ -93,8 +89,14 @@ export default {
       }
 
       try {
-        await this.$kuzzle.document.create(this.index, this.collection, document, id, { refresh: 'wait_for' })
-        await this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+        await this.$kuzzle.document.create(
+          this.index,
+          this.collection,
+          document,
+          id,
+          { refresh: 'wait_for' }
+        )
+        await this.$store.direct.dispatch.collection.fetchCollectionDetail({
           index: this.index,
           collection: this.collection
         })

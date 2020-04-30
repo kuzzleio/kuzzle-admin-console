@@ -1,9 +1,6 @@
 <template>
   <div class="document-create-update">
-    <form
-      class="wrapper"
-      @submit.prevent="submit"
-    >
+    <form class="wrapper" @submit.prevent="submit">
       <div class="row">
         <div class="switch right">
           <label>
@@ -12,17 +9,14 @@
               type="checkbox"
               :checked="!isFormView"
               @change="switchView"
-            >
+            />
             <span class="lever" />
             JSON
           </label>
         </div>
       </div>
 
-      <div
-        v-if="isFormView"
-        class="row"
-      >
+      <div v-if="isFormView" class="row">
         <div class="col s12 card">
           <div class="card-content">
             <json-form
@@ -35,13 +29,10 @@
       </div>
 
       <!-- Json view -->
-      <div
-        v-if="!isFormView"
-        class="row json-view"
-      >
+      <div v-if="!isFormView" class="row json-view">
         <div
           class="col s6 card"
-          :class="{s12: $store.state.collection.isRealtimeOnly}"
+          :class="{ s12: $store.state.collection.isRealtimeOnly }"
         >
           <div class="card-content">
             <span class="card-title">Custom content</span>
@@ -57,10 +48,7 @@
         </div>
 
         <!-- Mapping -->
-        <div
-          v-if="!$store.state.collection.isRealtimeOnly"
-          class="col s6 card"
-        >
+        <div v-if="!$store.state.collection.isRealtimeOnly" class="col s6 card">
           <div class="card-content">
             <span class="card-title">Mapping</span>
             <json-editor

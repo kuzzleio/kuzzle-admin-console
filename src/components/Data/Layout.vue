@@ -20,11 +20,8 @@
 
 <script>
 import { canSearchIndex } from '../../services/userAuthorization'
-import { LIST_INDEXES_AND_COLLECTION } from '../../vuex/modules/index/mutation-types'
-import { FETCH_COLLECTION_DETAIL } from '../../vuex/modules/collection/mutation-types'
 import Treeview from './Leftnav/Treeview'
 import NotFound from '../404'
-import { SET_TOAST } from '../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'DataLayout',
@@ -42,34 +39,40 @@ export default {
       if (canSearchIndex()) {
         try {
           this.setRouteExist()
-          return this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+          return this.$store.direct.dispatch.collection.fetchCollectionDetail({
             index: this.$route.params.index,
             collection: this.$route.params.collection
           })
         } catch (err) {
-          this.$store.commit(SET_TOAST, { text: err.message })
+          this.$store.direct.commit.toaster.setToast({ text: err.message })
         }
       }
-    }
-  },
-  mounted() {
-    this.$store.watch((state) => state.index.indexes, (n) => {
-      if (n.includes(this.$route.params.index) && !this.$route.params.collection) {
-        this.routeExist = true
-      }
-    })
-    this.$store.watch((_, getters) => getters.indexCollections(this.$route.params.index), (n) => {
+    },
+    '$store.direct.getters.index.indexCollections'(n) {
       if (n.stored.includes(this.$route.params.collection)) {
         this.routeExist = true
       } else if (n.realtime.includes(this.$route.params.collection)) {
         this.routeExist = true
       }
-    })
+    }
+  },
+  mounted() {
+    this.$store.watch(
+      state => state.index.indexes,
+      n => {
+        if (
+          n.includes(this.$route.params.index) &&
+          !this.$route.params.collection
+        ) {
+          this.routeExist = true
+        }
+      }
+    )
     if (canSearchIndex()) {
-      this.$store.dispatch(LIST_INDEXES_AND_COLLECTION)
+      this.$store.direct.dispatch.index.listIndexesAndCollections()
       this.setRouteExist()
-      
-      this.$store.dispatch(FETCH_COLLECTION_DETAIL, {
+
+      this.$store.direct.dispatch.collection.fetchCollectionDetail({
         index: this.$route.params.index,
         collection: this.$route.params.collection
       })
@@ -81,16 +84,16 @@ export default {
       const { index, collection } = this.$route.params
       if (
         typeof index !== 'undefined' &&
-        this.$store.state.index.indexes.indexOf(index) === -1
+        this.$store.direct.state.index.indexes.indexOf(index) === -1
       ) {
         this.routeExist = false
       } else {
         if (
           typeof collection !== 'undefined' &&
-          this.$store.getters
+          this.$store.direct.getters.index
             .indexCollections(index)
             .stored.indexOf(collection) === -1 &&
-          this.$store.getters
+          this.$store.direct.getters.index
             .indexCollections(index)
             .realtime.indexOf(collection) === -1
         ) {

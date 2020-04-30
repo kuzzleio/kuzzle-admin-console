@@ -2,7 +2,7 @@
   <div>
     <ul class="pagination">
       <li
-        :class="{disabled: currentPage == 1}"
+        :class="{ disabled: currentPage == 1 }"
         class="chevron"
         @click.prevent="firstPage"
       >
@@ -11,14 +11,11 @@
         </a>
       </li>
       <li
-        :class="{disabled: currentPage == 1}"
+        :class="{ disabled: currentPage == 1 }"
         class="chevron"
         @click.prevent="previousPage"
       >
-        <a
-          href="#"
-          class="waves-effect"
-        >
+        <a href="#" class="waves-effect">
           <i class="fa fa-chevron-left" />
         </a>
       </li>
@@ -26,7 +23,7 @@
       <li
         v-for="(n, index) in pager"
         :key="index"
-        :class="{active: currentPage === n}"
+        :class="{ active: currentPage === n }"
         class="waves-effect"
         @click.prevent="setCurrentPage(n)"
       >
@@ -34,7 +31,7 @@
       </li>
 
       <li
-        :class="{disabled: currentPage == pages}"
+        :class="{ disabled: currentPage == pages }"
         class="chevron"
         @click.prevent="nextPage"
       >
@@ -43,7 +40,7 @@
         </a>
       </li>
       <li
-        :class="{disabled: currentPage == pages}"
+        :class="{ disabled: currentPage == pages }"
         class="chevron"
         @click.prevent="lastPage"
       >
@@ -52,15 +49,11 @@
         </a>
       </li>
     </ul>
-    <p class="pagination-info">
-      {{ from + numberInPage }} / {{ total }}
-    </p>
-    <p
-      v-if="lastPageLimitation"
-      class="pagination-info"
-    >
+    <p class="pagination-info">{{ from + numberInPage }} / {{ total }}</p>
+    <p v-if="lastPageLimitation" class="pagination-info">
       <span class="fa fa-info-circle" />
-      Due to a limitation, we can't display more than 1000 pages. Please, filter your search.
+      Due to a limitation, we can't display more than 1000 pages. Please, filter
+      your search.
     </p>
   </div>
 </template>

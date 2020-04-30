@@ -1,8 +1,5 @@
 <template>
-  <form
-    class="UserCustomMappingEditor wrapper"
-    @submit.prevent="submit"
-  >
+  <form class="UserCustomMappingEditor wrapper" @submit.prevent="submit">
     <div class="row">
       <div class="col s8">
         <div class="row">
@@ -19,22 +16,23 @@
 
       <div class="col s4">
         <div class="row">
-          <p class="help">
-            Mapping is the process of defining how a document,
-            and the fields it contains, are stored and indexed.
+          <div class="help">
+            Mapping is the process of defining how a document, and the fields it
+            contains, are stored and indexed.
             <a
               href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
               target="_blank"
-            >Read more about mapping</a>
-            <br>
+              >Read more about mapping</a
+            >
+            <br />
             You should omit the root "properties" field in this form.
             <pre>
-{
-  "age": { "type": "integer" },
-  "name": { "type": "string" }
-}
+              {
+                "age": { "type": "integer" },
+                "name": { "type": "string" }
+              }
             </pre>
-          </p>
+          </div>
         </div>
       </div>
     </div>
@@ -46,7 +44,8 @@
           tabindex="6"
           class="btn-flat waves-effect"
           @click.prevent="$emit('cancel')"
-        >Cancel</a>
+          >Cancel</a
+        >
         <button
           type="submit"
           class="UserCustomMappingEditor-submit btn primary waves-effect waves-light"
@@ -78,7 +77,7 @@ export default {
     }
   },
   watch: {
-    currentStep(value) {
+    currentStep() {
       let newMapping = this.$refs.jsoneditor.getJson()
       this.$emit('submit', newMapping)
     }

@@ -7,10 +7,7 @@
     />
 
     <div class="card-panel card-body">
-      <div
-        v-show="!documents.length"
-        class="row valign-center empty-set"
-      >
+      <div v-show="!documents.length" class="row valign-center empty-set">
         <div class="col s2 offset-s1">
           <i
             class="fa fa-6x fa-search grey-text text-lighten-1"
@@ -19,16 +16,13 @@
         </div>
         <div class="col s12">
           <p>
-            There is no result matching your query.<br>
+            There is no result matching your query.<br />
             Please try with another filter.
           </p>
         </div>
       </div>
 
-      <div
-        v-if="documents.length"
-        class="row actions"
-      >
+      <div v-if="documents.length" class="row actions">
         <div class="col s8">
           <button
             class="btn btn-small waves-effect waves-light tertiary"
@@ -45,7 +39,11 @@
             class="btn btn-small waves-effect waves-light margin-right-5 primary"
             :class="!displayCreate ? 'disabled' : ''"
             :disabled="!displayCreate"
-            :title="displayCreate ? '' : 'You are not allowed to create a document in this collection'"
+            :title="
+              displayCreate
+                ? ''
+                : 'You are not allowed to create a document in this collection'
+            "
             @click.prevent="create"
           >
             <i class="fa fa-plus-circle left" />
@@ -56,7 +54,9 @@
             class="btn btn-small waves-effect waves-light"
             :class="displayBulkDelete ? 'red-color' : 'disabled'"
             :disabled="!displayBulkDelete"
-            :title="displayBulkDelete ? '' : 'You need to select at least one element'"
+            :title="
+              displayBulkDelete ? '' : 'You need to select at least one element'
+            "
             @click="deleteBulk"
           >
             <i class="fa fa-minus-circle left" />
@@ -65,22 +65,13 @@
         </div>
       </div>
 
-      <div
-        v-show="documents.length"
-        class="CrudlDocument-collection row"
-      >
+      <div v-show="documents.length" class="CrudlDocument-collection row">
         <div class="col s12">
-          <slot
-            v-if="documents.length"
-            @delete-document="deleteDocument"
-          />
+          <slot v-if="documents.length" @delete-document="deleteDocument" />
         </div>
       </div>
 
-      <div
-        v-show="documents.length"
-        class="row"
-      >
+      <div v-show="documents.length" class="row">
         <div class="col s12">
           <pagination
             :total="totalDocuments"
@@ -111,11 +102,7 @@
         >
           I'm sure!
         </button>
-        <button
-          href="#"
-          class="btn-flat"
-          @click.prevent="close"
-        >
+        <button href="#" class="btn-flat" @click.prevent="close">
           Cancel
         </button>
       </span>
@@ -137,10 +124,7 @@
         >
           I'm sure!
         </button>
-        <button
-          class="btn-flat"
-          @click.prevent="close"
-        >
+        <button class="btn-flat" @click.prevent="close">
           Cancel
         </button>
       </span>
@@ -152,13 +136,11 @@
 import Pagination from '../../Materialize/Pagination'
 import Modal from '../../Materialize/Modal'
 import Filters from './Filters'
-import { SET_BASIC_FILTER } from '../../../vuex/modules/common/crudlDocument/mutation-types'
 import {
   formatFromBasicSearch,
   ACTIVE_BASIC,
   NO_ACTIVE
 } from '../../../services/filterManager'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 export default {
   name: 'CrudlDocument',
@@ -232,7 +214,7 @@ export default {
           return null
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
+          this.$store.direct.commit.toaster.setToast({ text: e.message })
         })
     },
     confirmSingleDelete(id) {
@@ -243,7 +225,7 @@ export default {
           return null
         })
         .catch(e => {
-          this.$store.commit(SET_TOAST, { text: e.message })
+          this.$store.direct.commit.toaster.setToast({ text: e.message })
         })
     },
     onFiltersUpdated(newFilters) {
@@ -262,7 +244,7 @@ export default {
       this.$emit('toggle-all')
     },
     setBasicFilter(value) {
-      this.$store.commit(SET_BASIC_FILTER, value)
+      this.$store.direct.commit.crudlDocument.setBasicFilter(value)
     },
     deleteBulk() {
       this.bulkDeleteIsOpen = true

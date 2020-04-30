@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="hasRights"
-    class="wrapper"
-  >
+  <div v-if="hasRights" class="wrapper">
     <headline>
       Edit document - <span class="bold">{{ $route.params.id }}</span>
       <collection-dropdown
@@ -13,18 +10,13 @@
     </headline>
 
     <collection-tabs />
-    <div
-      v-if="show"
-      class="row"
-    >
+    <div v-if="show" class="row">
       <div class="card horizontal tertiary col m5">
         <div class="card-content">
           <span class="card-title">Warning</span>
           <p>
-            This document has been edited while you were editing it. <a
-              href="#"
-              @click.prevent="refresh"
-            >Click here to refresh it</a>
+            This document has been edited while you were editing it.
+            <a href="#" @click.prevent="refresh">Click here to refresh it</a>
           </p>
         </div>
       </div>
@@ -63,7 +55,6 @@ import Headline from '../../Materialize/Headline'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import CollectionTabs from '../Collections/Tabs'
-import { SET_TOAST } from '../../../vuex/modules/common/toaster/mutation-types'
 
 let room
 
@@ -95,11 +86,14 @@ export default {
   },
   async mounted() {
     this.fetch()
-    this.room = await this.$kuzzle.realtime.subscribe(this.index, this.collection,
+    this.room = await this.$kuzzle.realtime.subscribe(
+      this.index,
+      this.collection,
       { ids: { values: [this.$route.params.id] } },
       () => {
         this.show = true
-      })
+      }
+    )
   },
   destroyed() {
     if (room) {
@@ -122,7 +116,13 @@ export default {
         if (replace === true) {
           action = 'replace'
         }
-        await this.$kuzzle.document[action](this.index, this.collection, this.$route.params.id, document, { refresh: 'wait_for' })
+        await this.$kuzzle.document[action](
+          this.index,
+          this.collection,
+          this.$route.params.id,
+          document,
+          { refresh: 'wait_for' }
+        )
         this.$router.push({
           name: 'DataDocumentsList',
           params: { index: this.index, collection: this.collection }
@@ -147,11 +147,15 @@ export default {
     async fetch() {
       this.show = false
       try {
-        const res = await this.$kuzzle.document.get(this.index, this.collection, this.$route.params.id)
+        const res = await this.$kuzzle.document.get(
+          this.index,
+          this.collection,
+          this.$route.params.id
+        )
         this.document = res._source
         this.$emit('document-create::fill', res._source)
       } catch (err) {
-        this.$store.commit(SET_TOAST, { text: err.message })
+        this.$store.direct.commit.toaster.setToast({ text: err.message })
       }
     },
     setError(payload) {
