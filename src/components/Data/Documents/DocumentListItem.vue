@@ -123,7 +123,7 @@ export default {
     checkboxId() {
       return `checkbox-${this.document.id}`
     },
-    formatedDocument () {
+    formattedDocument () {
       const document = _.omit(this.document, ['id', '_kuzzle_info'])
       document._kuzzle_info = this.document._kuzzle_info
       return document
