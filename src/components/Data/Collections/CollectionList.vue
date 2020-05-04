@@ -321,7 +321,6 @@ export default {
       const rawStoredCollections = this.rawStoredCollections
         ? this.rawStoredCollections
         : this.$store.state.index.indexesAndCollections[this.index].stored
-      console.log({ rawStoredCollections})
       return rawStoredCollections
         .map(({ collection, count }) => ({
           name: collection,
