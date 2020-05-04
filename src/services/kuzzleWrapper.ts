@@ -1,9 +1,7 @@
 import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
-import sortJson from 'sort-json'
 import { omit } from 'lodash'
-import moment from 'moment'
 
 export const waitForConnected = (timeout = 1000) => {
   if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
@@ -61,95 +59,12 @@ let getValueAdditionalAttribute = (content, attributePath) => {
   return content[attribute]
 }
 
-/**
- * Constructor only used for displaying the constructor name in the list
- * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
- * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
- */
-class Content {
-  constructor(content) {
-    Object.keys(content).forEach(key => {
-      if (key !== '_kuzzle_info') {
-        this[key] = content[key]
-      }
-    })
-  }
-}
-
-/**
- * Constructor only used for displaying the constructor name in the list
- * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
- * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
- */
-class Meta {
-  constructor(_kuzzle_info) {
-    if (!_kuzzle_info) {
-      return
-    }
-    this['author'] =
-      _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author
-
-    this['updater'] =
-      _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater
-
-    if (_kuzzle_info.createdAt) {
-      this['createdAt'] = `${moment(_kuzzle_info.createdAt).format(
-        'YYYY-MM-DD HH:mm:ss'
-      )} (${_kuzzle_info.createdAt})`
-    }
-    if (_kuzzle_info.updatedAt) {
-      this['updatedAt'] = `${moment(_kuzzle_info.updatedAt).format(
-        'YYYY-MM-DD HH:mm:ss'
-      )} (${_kuzzle_info.updatedAt})`
-    }
-  }
-}
-
 const formatMeta = _kuzzle_info => ({
-  author: _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author,
-  updater: _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater,
-  createdAt: _kuzzle_info.createdAt
-    ? `${new Date(_kuzzle_info.createdAt)} (${_kuzzle_info.createdAt})`
-    : undefined,
+  author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
+  updater: _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
+  createdAt: _kuzzle_info.createdAt,
   updatedAt: _kuzzle_info.updatedAt
-    ? `${new Date(_kuzzle_info.updatedAt)} (${_kuzzle_info.updatedAt})`
-    : undefined
 })
-
-/**
- * Constructor only used for displaying the constructor name in the list
- * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
- * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
- */
-class Credentials {
-  constructor(credentials) {
-    Object.keys(credentials).forEach(key => {
-      this[key] = credentials[key]
-    })
-  }
-}
-
-/**
- * Constructor only used for displaying the constructor name in the list
- * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
- * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
- */
-class Aggregations {
-  constructor(aggregations) {
-    Object.keys(aggregations).forEach(key => {
-      this[key] = aggregations[key]
-    })
-  }
-}
-
-interface IKuzzleDocument {
-  content: Content
-  id: string
-  meta: Meta
-  credentials: Credentials
-  aggregations: Aggregations
-  additionalAttribute: any
-}
 
 export const performSearchDocuments = async (
   collection,

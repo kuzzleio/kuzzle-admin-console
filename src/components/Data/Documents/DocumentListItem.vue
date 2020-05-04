@@ -67,13 +67,14 @@
         v-model="expanded"
         class="ml-3 DocumentListItem-content w-100"
       >
-        <pre v-json-formatter="{ content: document, open: true }" />
+        <pre v-json-formatter="{ content: formattedDocument, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
 </template>
 
 <script>
+import _ from 'lodash'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import {
   canEditDocument,
@@ -121,6 +122,15 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
+    },
+    /**
+     * Deletes the "id" who should not be displayed in the document body.
+     * Also put the "_kuzzle_info" field in last position
+     */
+    formattedDocument () {
+      const document = _.omit(this.document, ['id', '_kuzzle_info'])
+      document._kuzzle_info = this.document._kuzzle_info
+      return document
     }
   },
   methods: {
