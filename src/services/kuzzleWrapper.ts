@@ -60,8 +60,8 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 }
 
 const formatMeta = _kuzzle_info => ({
-  author: _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author,
-  updater: _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater,
+  author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
+  updater: _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
   createdAt: _kuzzle_info.createdAt,
   updatedAt: _kuzzle_info.updatedAt
 })
