@@ -143,7 +143,7 @@ const actions = createActions({
     }
 
     return rootDispatch.collection
-      .createCollection(index)
+      .createCollection({ index })
       .then(() => {
         commit.addStoredCollection({ index: index, name: collection })
       })
