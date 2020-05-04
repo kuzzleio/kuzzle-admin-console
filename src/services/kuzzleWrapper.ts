@@ -76,44 +76,11 @@ class Content {
   }
 }
 
-/**
- * Constructor only used for displaying the constructor name in the list
- * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
- * to display the name https://github.com/mohsen1/json-formatter-js/blob/master/src/helpers.ts#L28
- */
-class Meta {
-  constructor(_kuzzle_info) {
-    if (!_kuzzle_info) {
-      return
-    }
-    this['author'] =
-      _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author
-
-    this['updater'] =
-      _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater
-
-    if (_kuzzle_info.createdAt) {
-      this['createdAt'] = `${moment(_kuzzle_info.createdAt).format(
-        'YYYY-MM-DD HH:mm:ss'
-      )} (${_kuzzle_info.createdAt})`
-    }
-    if (_kuzzle_info.updatedAt) {
-      this['updatedAt'] = `${moment(_kuzzle_info.updatedAt).format(
-        'YYYY-MM-DD HH:mm:ss'
-      )} (${_kuzzle_info.updatedAt})`
-    }
-  }
-}
-
 const formatMeta = _kuzzle_info => ({
   author: _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author,
   updater: _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater,
-  createdAt: _kuzzle_info.createdAt
-    ? `${new Date(_kuzzle_info.createdAt)} (${_kuzzle_info.createdAt})`
-    : undefined,
+  createdAt: _kuzzle_info.createdAt,
   updatedAt: _kuzzle_info.updatedAt
-    ? `${new Date(_kuzzle_info.updatedAt)} (${_kuzzle_info.updatedAt})`
-    : undefined
 })
 
 /**
