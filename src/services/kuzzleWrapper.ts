@@ -2,7 +2,7 @@ import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
 import sortJson from 'sort-json'
-import { get } from 'lodash'
+import { omit } from 'lodash'
 import moment from 'moment'
 
 export const waitForConnected = (timeout = 1000) => {
@@ -105,6 +105,17 @@ class Meta {
   }
 }
 
+const formatMeta = _kuzzle_info => ({
+  author: _kuzzle_info.author === '-1' ? 'Anonymous' : _kuzzle_info.author,
+  updater: _kuzzle_info.updater === '-1' ? 'Anonymous' : _kuzzle_info.updater,
+  createdAt: _kuzzle_info.createdAt
+    ? `${new Date(_kuzzle_info.createdAt)} (${_kuzzle_info.createdAt})`
+    : undefined,
+  updatedAt: _kuzzle_info.updatedAt
+    ? `${new Date(_kuzzle_info.updatedAt)} (${_kuzzle_info.updatedAt})`
+    : undefined
+})
+
 /**
  * Constructor only used for displaying the constructor name in the list
  * JSON formatter (http://azimi.me/json-formatter-js/) check the constructor in order
@@ -158,49 +169,20 @@ export const performSearchDocuments = async (
     { ...pagination }
   )
 
+  const documents = result.hits.map(d => ({
+    id: d._id,
+    ...d._source,
+    _kuzzle_info: d._source._kuzzle_info
+      ? formatMeta(d._source._kuzzle_info)
+      : undefined
+  }))
+
   const totalDocument = await Vue.prototype.$kuzzle.document.count(
     index,
     collection,
     { query: filters.query }
   )
 
-  let additionalAttributeName: any = null
-
-  if (sort.length > 0) {
-    if (typeof sort[0] === 'string' && sort[0] !== '_id') {
-      additionalAttributeName = sort[0]
-    } else {
-      additionalAttributeName = Object.keys(sort[0])[0]
-    }
-  }
-
-  const documents = result.hits.map(document => {
-    const sorted = sortJson(document)
-    const object: IKuzzleDocument = {
-      content: new Content(sorted._source),
-      id: document._id,
-      meta: new Meta(get(sorted, '_source._kuzzle_info', {})),
-      credentials: new Credentials({}),
-      aggregations: new Aggregations({}),
-      additionalAttribute: null
-    }
-
-    if (result.aggregations) {
-      object.aggregations = new Aggregations(result.aggregations)
-    }
-
-    if (additionalAttributeName) {
-      object.additionalAttribute = {
-        name: additionalAttributeName,
-        value: getValueAdditionalAttribute(
-          sorted._source,
-          additionalAttributeName.split('.')
-        )
-      }
-    }
-
-    return object
-  })
   return { documents, total: totalDocument }
 }
 
@@ -258,7 +240,6 @@ export const performSearchUsers = async (
     { ...pagination }
   )
   let additionalAttributeName: any = null
-  let users: any = []
 
   if (sort.length > 0) {
     if (typeof sort[0] === 'string') {
@@ -268,42 +249,27 @@ export const performSearchUsers = async (
     }
   }
 
-  for (const document of result.hits) {
-    let object: IKuzzleDocument = {
-      content: new Content(document.content),
-      id: document._id,
-      credentials: new Credentials({}),
-      meta: new Meta(document.meta || {}),
-      aggregations: new Aggregations({}),
-      additionalAttribute: null
+  const users: Array<any> = []
+  for (const d of result.hits) {
+    const u: any = {
+      id: d._id,
+      ...d.content,
+      _kuzzle_info: formatMeta(d.content._kuzzle_info),
+      credentials: {}
     }
-
-    if (result.aggregations) {
-      object.aggregations = result.aggregations
-    }
-
-    if (additionalAttributeName) {
-      object.additionalAttribute = {
-        name: additionalAttributeName,
-        value: getValueAdditionalAttribute(
-          document.content,
-          additionalAttributeName.split('.')
-        )
-      }
-    }
-
     for (const strategy of strategies) {
       try {
         const res = await Vue.prototype.$kuzzle.security.getCredentials(
           strategy,
-          document._id
+          d._id
         )
-        object.credentials[strategy] = res
+        u.credentials[strategy] = res
       } catch (e) {
-        object.credentials[strategy] = {}
+        u.credentials[strategy] = {}
       }
     }
-    users.push(object)
+
+    users.push(u)
   }
 
   return { documents: users, total: result.total }
@@ -337,11 +303,7 @@ export const performSearchProfiles = async (filters = {}, pagination = {}) => {
   )
 
   const profiles = result.hits.map(document => {
-    return {
-      content: { policies: document.policies },
-      meta: new Meta(document.meta || {}),
-      id: document._id
-    }
+    return omit(document, '_kuzzle')
   })
   return { documents: profiles, total: result.total }
 }
@@ -362,13 +324,7 @@ export const performSearchRoles = async (controllers = {}, pagination = {}) => {
     ...pagination
   })
   let roles = result.hits.map(document => {
-    let object = {
-      content: { controllers: document.controllers },
-      meta: new Meta(document.meta || {}),
-      id: document._id
-    }
-
-    return object
+    return omit(document, '_kuzzle')
   })
 
   return { documents: roles, total: result.total }

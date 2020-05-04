@@ -436,7 +436,7 @@ describe('Search', function() {
       .and('contain', 'bar')
   })
 
-  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+  it.skip('should show aggregations in search result when aggregations are specified in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -479,7 +479,7 @@ describe('Search', function() {
     })
   })
 
-  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+  it.skip('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,

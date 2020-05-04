@@ -65,14 +65,9 @@
       <b-collapse
         :id="`collapse-${document.id}`"
         v-model="expanded"
-        class="mt-3 ml-3 DocumentListItem-content w-100"
+        class="ml-3 DocumentListItem-content w-100"
       >
-        <pre v-json-formatter="{ content: document.content, open: true }" />
-        <pre v-json-formatter="{ content: document.meta, open: false }" />
-        <pre
-          v-if="document.aggregations"
-          v-json-formatter="{ content: document.aggregations, open: true }"
-        />
+        <pre v-json-formatter="{ content: document, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
@@ -127,10 +122,6 @@ export default {
     checkboxId() {
       return `checkbox-${this.document.id}`
     }
-  },
-  mounted() {
-    const date = new Date(this.document.meta.createdAt)
-    this.document.meta.createdAt += ` (${date.toUTCString()})`
   },
   methods: {
     toggleCollapse() {

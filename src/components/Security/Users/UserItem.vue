@@ -92,13 +92,9 @@
       <b-collapse
         :id="`collapse-${document.id}`"
         v-model="expanded"
-        class="mt-3 ml-3 DocumentListItem-content"
+        class="ml-3 DocumentListItem-content"
       >
-        <pre v-json-formatter="{ content: document.content, open: true }" />
-        <pre
-          v-if="document.credentials"
-          v-json-formatter="{ content: document.credentials, open: true }"
-        />
+        <pre v-json-formatter="{ content: document, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
@@ -130,14 +126,14 @@ export default {
   },
   computed: {
     profileList() {
-      if (!this.document.content.profileIds) {
+      if (!this.document.profileIds) {
         return []
       }
-      const sorted = [...this.document.content.profileIds].sort()
+      const sorted = [...this.document.profileIds].sort()
       return sorted
     },
     showAllProfiles() {
-      return this.document.content.profileIds > MAX_PROFILES
+      return this.document.profileIds > MAX_PROFILES
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
