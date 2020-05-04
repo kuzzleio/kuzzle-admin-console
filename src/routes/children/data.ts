@@ -14,7 +14,7 @@ export default [
       auth: true
     },
     component(resolve) {
-      require(['../../components/Data/Collections/List'], resolve)
+      require(['../../components/Data/Collections/CollectionList'], resolve)
     },
     props: route => ({
       index: route.params.index
