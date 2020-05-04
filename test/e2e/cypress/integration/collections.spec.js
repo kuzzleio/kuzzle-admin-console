@@ -89,7 +89,7 @@ describe('Collection management', function() {
     cy.contains('This collection is empty')
   })
 
-  it.only('is able to delete a collection', function() {
+  it('is able to delete a collection', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
