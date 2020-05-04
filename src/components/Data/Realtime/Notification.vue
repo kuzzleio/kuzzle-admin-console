@@ -82,15 +82,33 @@ export default {
       switch (this.notification.action) {
         case 'publish':
           return 'Volatile notification'
+
+        case 'mWrite':
+        case 'mCreate':
+        case 'mCreateOrReplace':
+          return `New documents created (${this.notificationId})`
+        case 'write':
         case 'create':
         case 'createOrReplace':
           return `New document created (${this.notificationId})`
+
+        case 'mReplace':
+          return `Documents replaced (${this.notificationId})`
         case 'replace':
           return `Document replaced (${this.notificationId})`
+
+        case 'updateByQuery':
+        case 'mUpdate':
+          return `Documents updated (${this.notificationId})`
         case 'update':
           return `Document updated (${this.notificationId})`
+
+        case 'deleteByQuery':
+        case 'mDelete':
+          return `Documents deleted (${this.notificationId})`
         case 'delete':
           return `Document deleted (${this.notificationId})`
+
         case 'subscribe':
           return 'A new user is listening to this room'
 
