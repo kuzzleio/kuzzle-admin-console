@@ -67,7 +67,7 @@ jobs:
       if: type != pull_request && branch = master
 
       env:
-        - DEPLOY_PATH=/kuzzle-v1/
+        - DEPLOY_PATH=/kuzzle-v2/
       addons:
         apt:
           packages:
