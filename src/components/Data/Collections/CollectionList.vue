@@ -318,7 +318,11 @@ export default {
       }))
     },
     storedCollections() {
-      return this.rawStoredCollections
+      const rawStoredCollections = this.rawStoredCollections
+        ? this.rawStoredCollections
+        : this.$store.state.index.indexesAndCollections[this.index].stored
+      console.log({ rawStoredCollections})
+      return rawStoredCollections
         .map(({ collection, count }) => ({
           name: collection,
           documents: count,
@@ -401,7 +405,7 @@ export default {
       }
     }
   },
-  mounted () {
+  mounted() {
     this.fetchStoredCollections()
   }
 }

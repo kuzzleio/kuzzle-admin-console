@@ -89,10 +89,13 @@ describe('Collection management', function() {
     cy.contains('This collection is empty')
   })
 
-  it('is able to delete a collection', function() {
+  it.only('is able to delete a collection', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
+    cy.visit(`/#/data/`)
+    cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
+
 
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
     cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
