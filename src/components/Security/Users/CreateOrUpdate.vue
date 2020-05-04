@@ -301,7 +301,7 @@ export default {
         delete content.profileIds
         delete content._kuzzle_info
         this.customContent = JSON.stringify(content, null, 2)
-        this.customContentValue = this.customContentValue
+        this.customContentValue = this.customContent
       }
 
       this.loading = false
