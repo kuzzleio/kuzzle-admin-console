@@ -16,14 +16,14 @@
               class="text-center"
               variant="warning"
               data-cy="resetPasswordAlert"
-              :show="$route.params.showIntro"
+              :show="showIntro"
             >
               <b>Warning!</b> You must update your password to continue
             </b-alert>
           </b-card-body>
 
           <reset-password-form
-            :reset-token="$route.params.token"
+            :reset-token="token"
             @reset-password::after="onReset"
           />
         </b-card>
@@ -37,6 +37,10 @@ import ResetPasswordForm from './Common/Login/ResetPasswordForm'
 
 export default {
   name: 'ResetPassword',
+  props: {
+    showIntro: Boolean,
+    token: String
+  },
   components: {
     ResetPasswordForm
   },

@@ -95,7 +95,8 @@ export default function createRoutes(log, kuzzle) {
             component: ResetPassword,
             meta: {
               skipLogin: true
-            }
+            },
+            props: true
           },
           {
             path: '/signup',

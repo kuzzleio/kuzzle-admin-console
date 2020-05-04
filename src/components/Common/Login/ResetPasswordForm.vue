@@ -1,9 +1,5 @@
 <template>
-  <form
-    id="resetPasswordForm"
-    method="post"
-    @submit.prevent="resetPassword()"
-  >
+  <form id="resetPasswordForm" method="post" @submit.prevent="resetPassword()">
     <div class="resetPasswordForm-inputs">
       <b-form-group
         invalid-feedback="Password must not be empty"
