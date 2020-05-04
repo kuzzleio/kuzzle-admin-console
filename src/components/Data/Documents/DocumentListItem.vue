@@ -67,7 +67,7 @@
         v-model="expanded"
         class="ml-3 DocumentListItem-content w-100"
       >
-        <pre v-json-formatter="{ content: formatedDocument, open: true }" />
+        <pre v-json-formatter="{ content: formattedDocument, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
