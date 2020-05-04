@@ -307,7 +307,9 @@ export default {
       ]
     },
     realtimeCollections() {
-      const collections = this.$store.state.index.indexesAndCollections[this.index]
+      const collections = this.$store.state.index.indexesAndCollections[
+        this.index
+      ]
         ? this.$store.state.index.indexesAndCollections[this.index].realtime
         : []
 
@@ -321,19 +323,15 @@ export default {
       const rawStoredCollections = this.rawStoredCollections
         ? this.rawStoredCollections
         : this.$store.state.index.indexesAndCollections[this.index].stored
-      console.log({ rawStoredCollections})
-      return rawStoredCollections
-        .map(({ collection, count }) => ({
-          name: collection,
-          documents: count,
-          type: 'stored'
-        }))
+      console.log({ rawStoredCollections })
+      return rawStoredCollections.map(({ collection, count }) => ({
+        name: collection,
+        documents: count,
+        type: 'stored'
+      }))
     },
     collections() {
-      return [
-        ...this.realtimeCollections,
-        ...this.storedCollections
-      ]
+      return [...this.realtimeCollections, ...this.storedCollections]
     }
   },
   methods: {
@@ -351,25 +349,28 @@ export default {
       this.deleteConfirmation = ''
     },
     truncateName,
-    async fetchStoredCollections () {
-      const storedCollections = this.$store.state.index.indexesAndCollections[this.index]
+    async fetchStoredCollections() {
+      const storedCollections = this.$store.state.index.indexesAndCollections[
+        this.index
+      ]
         ? this.$store.state.index.indexesAndCollections[this.index].stored
         : []
 
       const promises = storedCollections.map(collection => {
-        return this.$kuzzle.document.count(this.index, collection)
+        return this.$kuzzle.document
+          .count(this.index, collection)
           .then(count => ({ collection, count }))
       })
 
       try {
         this.rawStoredCollections = await Promise.all(promises)
-      }
-      catch (error) {
+      } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
-            title: 'Ooops! Something went wrong while counting documents in collections.',
+            title:
+              'Ooops! Something went wrong while counting documents in collections.',
             variant: 'warning',
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
