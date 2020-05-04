@@ -1,7 +1,12 @@
 <template>
-  <form id="resetPasswordForm" method="post" @submit.prevent="resetPassword()">
+  <form
+    id="resetPasswordForm"
+    method="post"
+    @submit.prevent="resetPassword()"
+  >
     <div class="resetPasswordForm-inputs">
       <b-form-group
+        invalid-feedback="Password must not be empty"
         label="New password"
         label-for="password"
         label-cols-sm="4"
@@ -13,10 +18,12 @@
           data-cy="ResetPassword-password"
           id="password"
           name="password"
+          pattern=".*[^ ].*"
           required
           tabindex="1"
           type="password"
           v-model="password"
+          @blur="setValidated"
         />
       </b-form-group>
 
@@ -26,6 +33,7 @@
         label-cols-sm="4"
         label-cols-lg="3"
         label-for="password2"
+        :invalid-feedback="password2Feedback"
       >
         <b-input
           class="validate"
@@ -36,6 +44,8 @@
           tabindex="2"
           type="password"
           v-model="password2"
+          :pattern="password2Pattern"
+          @blur="setValidated"
         />
       </b-form-group>
 
@@ -72,29 +82,36 @@ export default {
       password2: ''
     }
   },
+  computed: {
+    password2Feedback() {
+      if (this.password !== this.password2) {
+        return 'Passwords do not match'
+      }
+      return 'Password must not be empty'
+    },
+    password2Pattern() {
+      // html validation pattern use regular expressions
+      // We need to escape special chars to match against the password field
+      // taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Escaping
+      return this.password.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&')
+    }
+  },
   methods: {
     async resetPassword() {
       this.error = ''
 
-      if (this.password.trim() === '' || this.password2.trim() === '') {
-        this.error = 'All fields are mandatory'
-        return
-      }
-
-      if (this.password !== this.password2) {
-        this.error = 'Passwords do not match'
-        return
-      }
-
       try {
         await this.$store.direct.dispatch.auth.doResetPassword({
           password: this.password,
-          token: this.$route.params.token
+          token: this.resetToken
         })
         this.$emit('reset-password::after')
       } catch (error) {
         this.error = error.message
       }
+    },
+    setValidated(event) {
+      event.target.parentNode.classList.add('was-validated')
     }
   }
 }

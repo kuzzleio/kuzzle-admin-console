@@ -43,12 +43,11 @@ export default {
   methods: {
     onReset() {
       if (this.$store.getters.routeBeforeRedirect) {
+        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
         this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
       } else {
-        this.$router.push('/').catch(() => {})
+        this.$router.push('/')
       }
-
-      this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
     }
   }
 }
