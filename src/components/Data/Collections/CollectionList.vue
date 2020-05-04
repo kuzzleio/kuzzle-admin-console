@@ -248,7 +248,8 @@ export default {
     return {
       filter: '',
       collectionToDelete: '',
-      deleteConfirmation: ''
+      deleteConfirmation: '',
+      rawStoredCollections: []
     }
   },
   computed: {
@@ -293,37 +294,45 @@ export default {
           class: 'CollectionList-name align-middle'
         },
         {
+          key: 'documents',
+          label: 'Documents',
+          sortable: true,
+          class: 'CollectionList-document align-middle'
+        },
+        {
           class: 'CollectionList-actions align-middle text-right',
           key: 'actions',
           label: ''
         }
       ]
     },
-    storedCollections() {
-      if (!this.$store.state.index.indexesAndCollections[this.index]) {
-        return []
-      }
-
-      return this.$store.state.index.indexesAndCollections[this.index].stored
-    },
     realtimeCollections() {
-      if (!this.$store.state.index.indexesAndCollections[this.index]) {
-        return []
-      }
+      const collections = this.$store.state.index.indexesAndCollections[
+        this.index
+      ]
+        ? this.$store.state.index.indexesAndCollections[this.index].realtime
+        : []
 
-      return this.$store.state.index.indexesAndCollections[this.index].realtime
+      return collections.map(collection => ({
+        name: collection,
+        documents: 'N/A',
+        type: 'realtime'
+      }))
     },
-    collections() {
-      return [
-        ...this.realtimeCollections.map(c => ({
-          name: c,
-          type: 'realtime'
-        })),
-        ...this.storedCollections.map(c => ({
-          name: c,
+    storedCollections() {
+      const rawStoredCollections = this.rawStoredCollections
+        ? this.rawStoredCollections
+        : this.$store.state.index.indexesAndCollections[this.index].stored
+
+      return rawStoredCollections
+        .map(({ collection, count }) => ({
+          name: collection,
+          documents: count,
           type: 'stored'
         }))
-      ].sort((a, b) => (a.name < b.name ? -1 : 1))
+    },
+    collections() {
+      return [...this.realtimeCollections, ...this.storedCollections]
     }
   },
   methods: {
@@ -341,6 +350,37 @@ export default {
       this.deleteConfirmation = ''
     },
     truncateName,
+    async fetchStoredCollections() {
+      const storedCollections = this.$store.state.index.indexesAndCollections[
+        this.index
+      ]
+        ? this.$store.state.index.indexesAndCollections[this.index].stored
+        : []
+
+      const promises = storedCollections.map(collection => {
+        return this.$kuzzle.document
+          .count(this.index, collection)
+          .then(count => ({ collection, count }))
+      })
+
+      try {
+        this.rawStoredCollections = await Promise.all(promises)
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title:
+              'Ooops! Something went wrong while counting documents in collections.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+    },
     async onDeleteCollectionConfirmed() {
       if (!this.deleteConfirmation) {
         return
@@ -366,6 +406,9 @@ export default {
         )
       }
     }
+  },
+  mounted() {
+    this.fetchStoredCollections()
   }
 }
 </script>
