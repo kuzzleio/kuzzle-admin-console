@@ -67,13 +67,14 @@
         v-model="expanded"
         class="ml-3 DocumentListItem-content w-100"
       >
-        <pre v-json-formatter="{ content: document, open: true }" />
+        <pre v-json-formatter="{ content: formatedDocument, open: true }" />
       </b-collapse>
     </b-row>
   </b-container>
 </template>
 
 <script>
+import _ from 'lodash'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import {
   canEditDocument,
@@ -121,6 +122,11 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
+    },
+    formatedDocument () {
+      const document = _.omit(this.document, ['id', '_kuzzle_info'])
+      document._kuzzle_info = this.document._kuzzle_info
+      return document
     }
   },
   methods: {
