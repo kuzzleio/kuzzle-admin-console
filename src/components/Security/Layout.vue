@@ -12,8 +12,8 @@
           "
         >
           <b-row no-gutters>
-            <b-col cols="2" class="text-center">
-              <i class="fa fa-user fa-lg align-bottom" aria-hidden="true" />
+            <b-col cols="2">
+              <i class="fa fa-user fa-lg align-middle" aria-hidden="true" />
             </b-col>
             <b-col cols="10" class="sideEntry pl-2 pt-1">
               Users
@@ -30,8 +30,8 @@
           "
         >
           <b-row no-gutters>
-            <b-col cols="2" class="text-center">
-              <i class="fa fa-users fa-lg align-bottom" aria-hidden="true" />
+            <b-col cols="2">
+              <i class="fa fa-id-badge fa-lg align-middle" aria-hidden="true" />
             </b-col>
             <b-col cols="10" class="sideEntry pl-2 pt-1">
               Profiles
@@ -48,9 +48,9 @@
           "
         >
           <b-row no-gutters>
-            <b-col cols="2" class="text-center">
+            <b-col cols="2">
               <i
-                class="fa fa-unlock-alt fa-lg align-bottom"
+                class="fa fa-unlock-alt fa-lg align-middle"
                 aria-hidden="true"
               />
             </b-col>
@@ -75,10 +75,6 @@
 .inactiveItemClass {
   font-weight: 100;
   opacity: 0.6;
-}
-
-.sideEntry {
-  font-size: 18px;
 }
 
 .SecurityLayout {
