@@ -16,7 +16,7 @@
       :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(truncateName(indexName, 12), filter)" /> ({{
+      <span v-html="highlight(truncateName(indexName, 16), filter)" /> ({{
         collectionCount
       }})
     </router-link>
@@ -40,7 +40,7 @@
             aria-hidden="true"
             title="Persisted collection"
           />
-          <span v-html="highlight(truncateName(collectionName, 15), filter)" />
+          <span v-html="highlight(truncateName(collectionName, 20), filter)" />
         </router-link>
       </div>
 
