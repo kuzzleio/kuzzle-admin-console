@@ -4,6 +4,7 @@
     v-model="value"
     v-bind="$attrs"
     @blur="looseFocus"
+    data-auto-focus="true"
   />
 </template>
 
@@ -18,10 +19,6 @@ export default {
     initialValue: {
       type: String,
       default: ''
-    },
-    activated: {
-      type: Boolean,
-      default: true
     }
   },
   computed: {
@@ -41,11 +38,26 @@ export default {
     }
   },
   methods: {
+    // AutoFocusInput is only activated
+    enable () {
+      const tagType = document.activeElement.tagName
+
+      // If we are currently selecting another input
+      if (tagType === 'INPUT' && !document.activeElement.dataset.autoFocus) {
+        return false
+      }
+
+      return true
+    },
     looseFocus() {
       this.isFocus = false
     },
     listenKeypress () {
       document.onkeypress = keyEvent => {
+        if (! this.enable()) {
+          return
+        }
+
         if (this.isFocus) {
           if (keyEvent.code === 'Enter') {
             this.$emit('submit')
@@ -76,17 +88,9 @@ export default {
     }
   },
   mounted () {
-    if (! this.activated) {
-      return
-    }
-
     this.listenKeypress()
   },
   beforeDestroy() {
-    if (! this.activated) {
-      return
-    }
-
     this.stopListenKeypress()
   }
 
