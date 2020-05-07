@@ -19,6 +19,10 @@ export default {
       type: String,
       default: ''
     },
+    activated: {
+      type: Boolean,
+      default: true
+    }
   },
   computed: {
     refName() {
@@ -72,9 +76,17 @@ export default {
     }
   },
   mounted () {
+    if (! this.activated) {
+      return
+    }
+
     this.listenKeypress()
   },
   beforeDestroy() {
+    if (! this.activated) {
+      return
+    }
+
     this.stopListenKeypress()
   }
 
