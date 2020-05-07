@@ -30,6 +30,7 @@
           @update-filter="onQuickFilterUpdated"
           @refresh="onRefresh"
           @reset="onReset"
+          @enter-pressed="onEnterPressed"
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
@@ -272,6 +273,9 @@ export default {
     onFiltersUpdated(newFilters) {
       this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters)
+    },
+    onEnterPressed () {
+      this.$emit('enter-pressed')
     }
   }
 }

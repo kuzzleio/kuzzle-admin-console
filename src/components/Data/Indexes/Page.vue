@@ -36,7 +36,7 @@
                 name="index"
                 v-model="filter"
                 :disabled="tableItems.length === 0"
-                @submit="submitFilter"
+                @submit="navigateToIndex"
               />
 
             </b-input-group>
@@ -211,7 +211,7 @@ export default {
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
     },
-    submitFilter () {
+    navigateToIndex () {
       const index = this.filteredIndexes[0]
 
       if (! index) {

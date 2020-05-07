@@ -45,7 +45,7 @@
               <auto-focus-input
                 name="collection"
                 v-model="filter"
-                @submit="submitFilter"
+                @submit="navigateToCollection"
                 :disabled="collections.length === 0"
               />
 
@@ -415,7 +415,7 @@ export default {
         )
       }
     },
-    submitFilter () {
+    navigateToCollection () {
       const collection = this.filteredCollections[0]
 
       if (! collection) {

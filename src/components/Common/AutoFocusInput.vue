@@ -34,11 +34,9 @@ export default {
   },
   methods: {
     looseFocus() {
-      console.log('loose foc')
       this.isFocus = false
     },
     listenKeypress () {
-      console.log('listen')
       document.onkeypress = keyEvent => {
         if (this.isFocus) {
           if (keyEvent.code === 'Enter') {
@@ -54,7 +52,6 @@ export default {
       }
     },
     stopListenKeypress () {
-      console.log('stop')
       document.onkeypress = null
     }
   },

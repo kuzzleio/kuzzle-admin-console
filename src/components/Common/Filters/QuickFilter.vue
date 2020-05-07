@@ -8,15 +8,15 @@
               <i class="fa fa-search search" />
             </b-input-group-prepend>
 
-            <b-form-input
+            <auto-focus-input
+              name="quick-filter"
               data-cy="QuickFilter-input"
               debounce="300"
               :placeholder="placeholder"
               type="search"
               v-model="inputSearchTerm"
-              v-focus
-            >
-            </b-form-input>
+              @submit="inputSubmit"
+            />
           </b-input-group>
         </div>
       </b-col>
@@ -75,12 +75,12 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
+import AutoFocusInput from '../AutoFocusInput'
 
 export default {
   name: 'QuickFilter',
-  directives: {
-    Focus
+  components: {
+    AutoFocusInput
   },
   props: {
     searchTerm: String,
@@ -125,6 +125,9 @@ export default {
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
+    },
+    inputSubmit () {
+      this.$emit('enter-pressed')
     }
   },
   watch: {
