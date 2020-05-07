@@ -13,8 +13,9 @@
               data-cy="QuickFilter-input"
               debounce="300"
               :placeholder="placeholder"
+              :initialValue="this.initialValue"
               type="search"
-              v-model="inputSearchTerm"
+              v-model="value"
               @submit="inputSubmit"
             />
           </b-input-group>
@@ -83,7 +84,6 @@ export default {
     AutoFocusInput
   },
   props: {
-    searchTerm: String,
     advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
       type: String,
@@ -109,16 +109,20 @@ export default {
     submitOnType: {
       type: Boolean,
       default: true
+    },
+    initialValue: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm
+      value: this.initialValue
     }
   },
   methods: {
     submitSearch() {
-      this.$emit('update-filter', this.inputSearchTerm)
+      this.$emit('update-filter', this.value)
     },
     resetSearch() {
       this.$emit('reset')
@@ -131,16 +135,11 @@ export default {
     }
   },
   watch: {
-    inputSearchTerm() {
-      if (!this.submitOnType) {
-        return
-      }
-      this.submitSearch()
-    },
-    searchTerm: {
-      immediate: true,
-      handler(val) {
-        this.inputSearchTerm = val
+    value () {
+      this.$emit('input', this.value)
+
+    if (this.submitOnType) {
+        this.submitSearch()
       }
     }
   }

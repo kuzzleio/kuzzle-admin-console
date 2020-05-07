@@ -15,13 +15,14 @@
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
+          v-model="quickFilter"
+          :initialValue="quickFilter"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
           :enabled="quickFilterEnabled"
           :placeholder="quickFilterPlaceholder"
-          :search-term="quickFilter"
           :submit-button-label="submitButtonLabel"
           :submit-on-type="quickFilterSubmitOnType"
           @display-advanced-filters="
@@ -116,7 +117,7 @@
 import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
-import Vue from 'vue'
+
 import {
   NO_ACTIVE,
   ACTIVE_QUICK,
@@ -198,11 +199,17 @@ export default {
           this.currentFilter.raw !== null)
       )
     },
-    quickFilter() {
-      if (!this.currentFilter) {
-        return null
+    quickFilter: {
+      get () {
+        if (!this.currentFilter) {
+          return null
+        }
+
+        return this.currentFilter.quick
+      },
+      set (value) {
+        this.currentFilter.quick = value
       }
-      return this.currentFilter.quick
     },
     basicFilter() {
       if (!this.currentFilter) {
@@ -219,14 +226,6 @@ export default {
     sorting() {
       return this.currentFilter.sorting
     }
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      window.document.addEventListener('keydown', this.handleEsc)
-    })
-  },
-  destroyed() {
-    window.document.removeEventListener('keydown', this.handleEsc)
   },
   methods: {
     onQuickFilterUpdated(term) {
