@@ -67,7 +67,6 @@ export default {
         }
 
         this.isFocus = true;
-        this.value = ''
         this.$refs[this.refName].focus()
 
         // Firefox does not follow the key event to the input but Chrome does
