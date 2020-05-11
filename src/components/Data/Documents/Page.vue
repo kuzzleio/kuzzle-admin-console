@@ -270,6 +270,7 @@ import Headline from '../../Materialize/Headline'
 import Pagination from '../../Materialize/Pagination'
 import ViewMap from './ViewMap'
 import * as filterManager from '../../../services/filterManager'
+import Vue from 'vue'
 import {
   canSearchIndex,
   canSearchDocument,
@@ -280,7 +281,8 @@ import {
 import {
   performSearchDocuments,
   performDeleteDocuments,
-  getMappingDocument
+  getMappingDocument,
+  waitForConnected
 } from '../../../services/kuzzleWrapper'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
@@ -395,7 +397,7 @@ export default {
   watch: {
     collection: {
       immediate: true,
-      handler() {
+      async handler() {
         this.loadMappingInfo()
         this.loadListView()
         this.saveListView()
@@ -411,7 +413,10 @@ export default {
           this.index,
           this.collection
         )
-        this.fetchDocuments()
+        await waitForConnected(1000)
+        if (Vue.prototype.$kuzzle.protocol.state === 'connected') {
+          this.fetchDocuments()
+        }
       }
     },
     documents: {
