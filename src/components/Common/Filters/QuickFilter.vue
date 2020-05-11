@@ -61,7 +61,7 @@
       <div class="align-middle pt-2">
         Warning: a filter has been set, some documents might be hidden.
       </div>
-      <div>
+      <b-row>
         <b-button
           class="align-middle d-inline ml-3 font-weight-bold"
           data-cy="QuickFilter-displayActiveFilters"
@@ -69,7 +69,15 @@
           @click.prevent="displayAdvancedFilters"
           >Display the advanced filters</b-button
         >
-      </div>
+        <b-button
+          class="align-right d-inline ml-3 font-weight-bold"
+          data-cy="QuickFilter-resetBtn"
+          variant="outline-secondary"
+          @click="resetSearch"
+        >
+          Reset
+        </b-button>
+      </b-row>
     </div>
   </div>
 </template>
