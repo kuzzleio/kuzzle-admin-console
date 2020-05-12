@@ -88,23 +88,23 @@ const mutations = createMutations<IndexState>()({
 })
 
 const actions = createActions({
-  async createIndex(context, index: string): Promise<void> {
-    const { commit } = indexActionContext(context)
+  async createIndex(context, index: string) {
+    const { commit, rootGetters } = indexActionContext(context)
 
-    await Vue.prototype.$kuzzle.index.create(index)
+    await rootGetters.kuzzle.sdk.index.create(index)
     commit.addIndex(index)
   },
   async deleteIndex(context, index) {
-    const { commit } = indexActionContext(context)
+    const { commit, rootGetters } = indexActionContext(context)
 
-    await Vue.prototype.$kuzzle.index.delete(index)
+    await rootGetters.kuzzle.sdk.index.delete(index)
     removeIndex(index)
     commit.deleteIndex(index)
   },
   async listIndexes(context) {
-    const { commit } = indexActionContext(context)
+    const { commit, rootGetters } = indexActionContext(context)
     commit.setLoadingIndexes(true)
-    let result = await Vue.prototype.$kuzzle.index.list()
+    let result = await rootGetters.kuzzle.sdk.index.list()
     result = result.filter(index => index !== '%kuzzle')
 
     for (const index of result) {
@@ -113,9 +113,9 @@ const actions = createActions({
     commit.setLoadingIndexes(false)
   },
   async listCollectionsForIndex(context, index) {
-    const { commit } = indexActionContext(context)
+    const { commit, rootGetters } = indexActionContext(context)
     commit.setLoadingCollectionsForIndex({ index, loading: true })
-    const res = await Vue.prototype.$kuzzle.collection.list(index, {
+    const res = await rootGetters.kuzzle.sdk.collection.list(index, {
       size: 0
     })
     // debugger
@@ -201,10 +201,10 @@ const actions = createActions({
     commit.removeRealtimeCollection({ index, collection })
   },
   async deleteCollection(context, { index, collection }) {
-    const { commit, dispatch } = indexActionContext(context)
+    const { commit, dispatch, rootGetters } = indexActionContext(context)
 
     if (state.indexesAndCollections[index].stored.indexOf(collection) !== -1) {
-      await Vue.prototype.$kuzzle.query({
+      await rootGetters.kuzzle.sdk.query({
         index,
         collection,
         controller: 'collection',

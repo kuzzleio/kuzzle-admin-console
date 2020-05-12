@@ -1,4 +1,4 @@
-import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
+import { Kuzzle, WebSocket } from 'kuzzle-sdk-v6'
 import Promise from 'bluebird'
 import Vue from 'vue'
 import omit from 'lodash/omit'

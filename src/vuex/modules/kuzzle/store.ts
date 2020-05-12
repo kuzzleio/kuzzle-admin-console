@@ -3,10 +3,6 @@ import { createMutations, createModule, createActions } from 'direct-vuex'
 import { KuzzleState } from './types'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
-import {
-  connectToEnvironment,
-  disconnect
-} from '../../../../services/kuzzleWrapper'
 
 export const LS_ENVIRONMENTS = 'environments'
 export const LS_CURRENT_ENV = 'currentEnv'
@@ -181,9 +177,13 @@ const actions = createActions({
     return dispatch.switchEnvironment(currentId)
   },
   async switchEnvironment(context, id) {
-    const { rootDispatch, commit, dispatch, state } = kuzzleActionContext(
-      context
-    )
+    const {
+      rootDispatch,
+      commit,
+      dispatch,
+      state,
+      getters
+    } = kuzzleActionContext(context)
     if (!id) {
       throw new Error('No id provided')
     }
@@ -194,11 +194,11 @@ const actions = createActions({
     }
     commit.setErrorFromKuzzle(null)
 
-    disconnect()
+    getters.wrapper.disconnect()
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
-    await connectToEnvironment(environment)
+    await getters.wrapper.connectToEnvironment(environment)
     commit.setConnecting(false)
     commit.setOnline(true)
 

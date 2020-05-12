@@ -108,10 +108,7 @@
 </template>
 
 <script>
-import {
-  DEFAULT_COLOR,
-  envColors
-} from '../../../vuex/modules/common/kuzzle/store'
+import { DEFAULT_COLOR, envColors } from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
 
 export default {
