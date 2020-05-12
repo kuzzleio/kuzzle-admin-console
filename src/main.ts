@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import VueKuzzle from 'vue-plugin-kuzzle'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import createRoutes from './routes/index'
 import './plugins/logger'
@@ -10,7 +9,7 @@ import store from './vuex/store'
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 
-const router = createRoutes(Vue.prototype.$log, Vue.prototype.$kuzzle)
+const router = createRoutes(Vue.prototype.$log)
 
 /* eslint-disable no-new */
 new Vue({

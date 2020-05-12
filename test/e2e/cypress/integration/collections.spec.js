@@ -65,7 +65,7 @@ describe('Collection management', function() {
       .should('contain', '"type": "keyword"')
   })
 
-  it('Should be able to clear a collection', () => {
+  it.only('Should be able to clear a collection', () => {
     const documentId = 'newDoc'
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
       dynamic: 'true'
@@ -95,7 +95,6 @@ describe('Collection management', function() {
     cy.visit(`/#/data/`)
     cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
-
 
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
     cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)

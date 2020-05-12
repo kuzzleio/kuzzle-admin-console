@@ -157,7 +157,8 @@ const actions = createActions({
     localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
     return commit.setCollectionDefaultViewJson({ jsonView })
   },
-  async clearCollection({ rootGetters }, { index, collection }) {
+  async clearCollection(context, { index, collection }) {
+    const { rootGetters } = collectionActionContext(context)
     await rootGetters.kuzzle.$kuzzle.query({
       controller: 'collection',
       action: 'truncate',
