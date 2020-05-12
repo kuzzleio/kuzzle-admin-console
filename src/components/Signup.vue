@@ -134,7 +134,7 @@
 
 <script>
 import EnvironmentSwitch from './Common/Environments/EnvironmentsSwitch'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'Signup',
   components: {
@@ -149,6 +149,9 @@ export default {
       error: null,
       waiting: false
     }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
   },
   methods: {
     async signup() {

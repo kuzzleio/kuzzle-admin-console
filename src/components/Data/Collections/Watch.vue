@@ -246,7 +246,7 @@ import { truncateName } from '@/utils'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
 import { isEqual } from 'lodash'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionWatch',
   directives: {
@@ -276,6 +276,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     hasFilter() {
       return (
         !!this.realtimeQuery &&

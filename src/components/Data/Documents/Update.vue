@@ -46,7 +46,7 @@ import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import { omit } from 'lodash'
-
+import { mapGetters } from 'vuex'
 let room
 
 export default {
@@ -70,6 +70,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     hasRights() {
       return canEditDocument(this.index, this.collection)
     }

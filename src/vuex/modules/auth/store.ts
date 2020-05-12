@@ -49,12 +49,12 @@ const actions = createActions({
     commit.setInitializing(true)
     const sessionUser = new SessionUser()
     rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
-    const user = await rootGetters.kuzzle.sdk.auth.getCurrentUser()
+    const user = await rootGetters.kuzzle.$kuzzle.auth.getCurrentUser()
 
     sessionUser.id = user._id
     sessionUser.token = token
     sessionUser.params = user.content
-    const rights = await rootGetters.kuzzle.sdk.auth.getMyRights()
+    const rights = await rootGetters.kuzzle.$kuzzle.auth.getMyRights()
     sessionUser.rights = rights
     commit.setCurrentUser(sessionUser)
     commit.setTokenValid(true)
@@ -64,9 +64,9 @@ const actions = createActions({
   },
   async doLogin(context, data) {
     const { dispatch, rootGetters } = authActionContext(context)
-    rootGetters.kuzzle.sdk.jwt = null
+    rootGetters.kuzzle.$kuzzle.jwt = null
 
-    const jwt = await rootGetters.kuzzle.sdk.auth.login('local', data, '2h')
+    const jwt = await rootGetters.kuzzle.$kuzzle.auth.login('local', data, '2h')
     return dispatch.prepareSession(jwt)
   },
   async loginByToken(context, data) {
@@ -82,28 +82,28 @@ const actions = createActions({
     if (!data.token) {
       commit.setCurrentUser(new SessionUser())
       commit.setTokenValid(false)
-      rootGetters.kuzzle.sdk.jwt = null
+      rootGetters.kuzzle.$kuzzle.jwt = null
       rootDispatch.kuzzle.updateTokenCurrentEnvironment(null)
       return user
     }
 
-    const res = await rootGetters.kuzzle.sdk.auth.checkToken(data.token)
+    const res = await rootGetters.kuzzle.$kuzzle.auth.checkToken(data.token)
     if (!res.valid) {
       commit.setCurrentUser(new SessionUser())
       commit.setTokenValid(false)
       rootDispatch.kuzzle.updateTokenCurrentEnvironment(null)
-      rootGetters.kuzzle.sdk.jwt = null
+      rootGetters.kuzzle.$kuzzle.jwt = null
       return new SessionUser()
     }
 
-    rootGetters.kuzzle.sdk.jwt = data.token
+    rootGetters.kuzzle.$kuzzle.jwt = data.token
     return dispatch.prepareSession(data.token)
   },
   async checkFirstAdmin(context) {
     const { commit, rootGetters } = authActionContext(context)
 
     try {
-      if (!(await rootGetters.kuzzle.sdk.server.adminExists())) {
+      if (!(await rootGetters.kuzzle.$kuzzle.server.adminExists())) {
         return commit.setAdminExists(false)
       }
 
@@ -118,7 +118,7 @@ const actions = createActions({
   },
   async checkToken(context) {
     const { dispatch, getters, rootGetters } = authActionContext(context)
-    const kuzzle = rootGetters.kuzzle.sdk
+    const kuzzle = rootGetters.kuzzle.$kuzzle
     const jwt = rootGetters.kuzzle.currentEnvironment.token
 
     if (!jwt) {
@@ -149,10 +149,10 @@ const actions = createActions({
       context
     )
 
-    if (rootGetters.kuzzle.sdk.jwt) {
-      await rootGetters.kuzzle.sdk.auth.logout()
+    if (rootGetters.kuzzle.$kuzzle.jwt) {
+      await rootGetters.kuzzle.$kuzzle.auth.logout()
     }
-    rootGetters.kuzzle.sdk.jwt = null
+    rootGetters.kuzzle.$kuzzle.jwt = null
     rootDispatch.kuzzle.updateTokenCurrentEnvironment(null)
     commit.setCurrentUser(new SessionUser())
     commit.setTokenValid(false)

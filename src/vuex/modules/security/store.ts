@@ -6,7 +6,7 @@ const actions = createActions({
   async fetchUserMapping(context) {
     const { rootCommit, rootGetters } = securityActionContext(context)
 
-    const res = await rootGetters.kuzzle.sdk.query({
+    const res = await rootGetters.kuzzle.$kuzzle.query({
       controller: 'security',
       action: 'getUserMapping'
     })
@@ -16,7 +16,7 @@ const actions = createActions({
   async fetchProfileMapping(context) {
     const { rootCommit, rootGetters } = securityActionContext(context)
 
-    const res = await rootGetters.kuzzle.sdk.query({
+    const res = await rootGetters.kuzzle.$kuzzle.query({
       controller: 'security',
       action: 'getProfileMapping'
     })
@@ -26,7 +26,7 @@ const actions = createActions({
   async fetchRoleMapping(context) {
     const { rootCommit, rootGetters } = securityActionContext(context)
 
-    const res = await rootGetters.kuzzle.sdk.query({
+    const res = await rootGetters.kuzzle.$kuzzle.query({
       controller: 'security',
       action: 'getRoleMapping'
     })

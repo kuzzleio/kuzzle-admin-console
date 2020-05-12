@@ -34,7 +34,7 @@ import { getMappingUsers } from '../../../../services/kuzzleWrapper'
 import Basic from './Basic'
 import CredentialsSelector from './CredentialsSelector'
 import CustomData from './CustomData'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'StepsContent',
   components: {
@@ -54,6 +54,9 @@ export default {
       customContent: {},
       customContentMapping: {}
     }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
   },
   async mounted() {
     this.loading = true

@@ -18,7 +18,7 @@
 import CreateOrUpdate from './CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'SecurityUpdate',
   components: {
@@ -38,6 +38,9 @@ export default {
       type: String,
       require: true
     }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
   },
   methods: {
     async onSubmit({ profile }) {

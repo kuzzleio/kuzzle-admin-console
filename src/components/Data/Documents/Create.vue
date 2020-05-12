@@ -28,7 +28,7 @@
 <script>
 import { canCreateDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
-
+import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
@@ -51,6 +51,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     hasRights() {
       return canCreateDocument(this.index, this.collection)
     }

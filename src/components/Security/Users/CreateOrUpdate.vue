@@ -99,7 +99,7 @@ import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import MainSpinner from '../../Common/MainSpinner'
 import Promise from 'bluebird'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CreateOrUpdateUser',
   components: {
@@ -134,6 +134,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     stepNumber() {
       switch (this.activeTab) {
         case 'basic':

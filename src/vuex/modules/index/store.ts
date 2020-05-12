@@ -91,20 +91,20 @@ const actions = createActions({
   async createIndex(context, index: string) {
     const { commit, rootGetters } = indexActionContext(context)
 
-    await rootGetters.kuzzle.sdk.index.create(index)
+    await rootGetters.kuzzle.$kuzzle.index.create(index)
     commit.addIndex(index)
   },
   async deleteIndex(context, index) {
     const { commit, rootGetters } = indexActionContext(context)
 
-    await rootGetters.kuzzle.sdk.index.delete(index)
+    await rootGetters.kuzzle.$kuzzle.index.delete(index)
     removeIndex(index)
     commit.deleteIndex(index)
   },
   async listIndexes(context) {
     const { commit, rootGetters } = indexActionContext(context)
     commit.setLoadingIndexes(true)
-    let result = await rootGetters.kuzzle.sdk.index.list()
+    let result = await rootGetters.kuzzle.$kuzzle.index.list()
     result = result.filter(index => index !== '%kuzzle')
 
     for (const index of result) {
@@ -115,7 +115,7 @@ const actions = createActions({
   async listCollectionsForIndex(context, index) {
     const { commit, rootGetters } = indexActionContext(context)
     commit.setLoadingCollectionsForIndex({ index, loading: true })
-    const res = await rootGetters.kuzzle.sdk.collection.list(index, {
+    const res = await rootGetters.kuzzle.$kuzzle.collection.list(index, {
       size: 0
     })
     // debugger
@@ -203,7 +203,7 @@ const actions = createActions({
     const { commit, dispatch, rootGetters } = indexActionContext(context)
 
     if (state.indexesAndCollections[index].stored.indexOf(collection) !== -1) {
-      await rootGetters.kuzzle.sdk.query({
+      await rootGetters.kuzzle.$kuzzle.query({
         index,
         collection,
         controller: 'collection',

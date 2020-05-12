@@ -58,7 +58,7 @@ const actions = createActions({
   createCollection(context, { index, collection, mapping, dynamic }) {
     const { state, rootGetters } = collectionActionContext(context)
 
-    return rootGetters.kuzzle.sdk.collection.create(
+    return rootGetters.kuzzle.$kuzzle.collection.create(
       index,
       collection,
       mergeMetaAttributes({
@@ -75,7 +75,7 @@ const actions = createActions({
       return Promise.resolve()
     }
 
-    return rootGetters.kuzzle.sdk.query({
+    return rootGetters.kuzzle.$kuzzle.query({
       controller: 'collection',
       action: 'updateMapping',
       collection: name,
@@ -95,7 +95,7 @@ const actions = createActions({
       return
     }
 
-    let mappings = await rootGetters.kuzzle.sdk.collection.getMapping(
+    let mappings = await rootGetters.kuzzle.$kuzzle.collection.getMapping(
       index,
       collection
     )
@@ -158,7 +158,7 @@ const actions = createActions({
     return commit.setCollectionDefaultViewJson({ jsonView })
   },
   async clearCollection({ rootGetters }, { index, collection }) {
-    await rootGetters.kuzzle.sdk.query({
+    await rootGetters.kuzzle.$kuzzle.query({
       controller: 'collection',
       action: 'truncate',
       index,

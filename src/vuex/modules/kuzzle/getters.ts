@@ -15,7 +15,7 @@ export const getters = createGetters<KuzzleState>()({
         return require('../../../services/kuzzleWrapper-v2')
     }
   },
-  sdk(state, getters) {
+  $kuzzle(state, getters) {
     return getters.wrapper.kuzzle
   },
   currentEnvironment(state, getters) {

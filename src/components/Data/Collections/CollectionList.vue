@@ -229,7 +229,7 @@ import {
 import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
 import DataNotFound from '../Data404'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionList',
   components: {
@@ -253,6 +253,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
     },

@@ -42,6 +42,7 @@
 import MainMenu from './Common/MainMenu'
 import MainSpinner from './Common/MainSpinner'
 import LoginForm from './Common/Login/Form'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -58,6 +59,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     tokenValid() {
       return this.$store.direct.state.auth.tokenValid
     },

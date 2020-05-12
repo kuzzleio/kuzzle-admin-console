@@ -39,6 +39,7 @@
 <script>
 import OfflineSpinner from './Common/Offline'
 import { antiGlitchOverlayTimeout } from '../utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ConnectionAwareContainer',
@@ -52,6 +53,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     online() {
       return this.$store.direct.state.kuzzle.online
     },
