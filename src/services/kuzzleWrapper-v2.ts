@@ -1,6 +1,5 @@
 import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
 import Promise from 'bluebird'
-import Vue from 'vue'
 import omit from 'lodash/omit'
 
 export const kuzzle = new Kuzzle(new WebSocket('localhost'))

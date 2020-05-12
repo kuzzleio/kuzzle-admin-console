@@ -75,6 +75,12 @@
           :unchecked-value="false"
         ></b-form-checkbox>
       </b-form-group>
+      <b-form-group label="Kuzzle version" label-cols-sm="4" label-cols-lg="3">
+        <b-form-select
+          v-model="environment.backendMajorVersion"
+          :options="majorVersions"
+        ></b-form-select>
+      </b-form-group>
 
       <b-row>
         <b-col sm="4" lg="3">
@@ -127,13 +133,22 @@ export default {
         host: null,
         port: 7512,
         color: DEFAULT_COLOR,
-        ssl: useHttps
+        ssl: useHttps,
+        backendMajorVersion: 2
       },
-
       submitting: false
     }
   },
   computed: {
+    majorVersions() {
+      return [
+        { value: 1, text: 'v1.x' },
+        {
+          value: 2,
+          text: 'v2.x'
+        }
+      ]
+    },
     colors() {
       return envColors
     },
@@ -217,12 +232,16 @@ export default {
       this.environment.port = this.environments[this.environmentId].port
       this.environment.color = this.environments[this.environmentId].color
       this.environment.ssl = this.environments[this.environmentId].ssl
+      this.environment.backendMajorVersion = this.environments[
+        this.environmentId
+      ].backendMajorVersion
     } else {
       this.environment.name = null
       this.environment.host = null
       this.environment.port = 7512
       this.environment.color = DEFAULT_COLOR
       this.environment.ssl = useHttps
+      this.environment.backendMajorVersion = 2
     }
   },
   methods: {
@@ -245,7 +264,8 @@ export default {
               color: this.environment.color,
               host: this.environment.host,
               port: parseInt(this.environment.port),
-              ssl: this.environment.ssl
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion
             }
           })
         } else {
@@ -256,7 +276,8 @@ export default {
               color: this.environment.color,
               host: this.environment.host,
               port: parseInt(this.environment.port),
-              ssl: this.environment.ssl
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion
             }
           })
         }
