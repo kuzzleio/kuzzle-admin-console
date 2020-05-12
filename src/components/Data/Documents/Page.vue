@@ -182,13 +182,9 @@ import {
   canDeleteDocument,
   canEditDocument
 } from '../../../services/userAuthorization'
-import {
-  performSearchDocuments,
-  performDeleteDocuments,
-  getMappingDocument
-} from '../../../services/kuzzleWrapper'
 import DataNotFound from '../Data404'
 import { truncateName } from '@/utils'
+import { mapGetters } from 'vuex'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -238,6 +234,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     geoDocuments() {
       return this.documents.filter(document => {
         const [lat, lng] = this.getCoordinates(document)
@@ -387,11 +384,10 @@ export default {
 
     // DELETE
     // =========================================================================
-    performDeleteDocuments,
     async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
       try {
-        await this.performDeleteDocuments(
+        await this.wrapper.performDeleteDocuments(
           this.index,
           this.collection,
           documentsToDelete
@@ -451,7 +447,6 @@ export default {
       )
       this.fetchDocuments()
     },
-    performSearchDocuments,
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
       try {
@@ -501,7 +496,7 @@ export default {
 
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
-        const res = await this.performSearchDocuments(
+        const res = await this.wrapper.performSearchDocuments(
           this.collection,
           this.index,
           searchQuery,
@@ -606,7 +601,7 @@ export default {
     // Collection Metadata management
     // =========================================================================
     async loadMappingInfo() {
-      const { properties } = await getMappingDocument(
+      const { properties } = await this.wrapper.getMappingDocument(
         this.collection,
         this.index
       )

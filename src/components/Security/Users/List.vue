@@ -140,7 +140,7 @@ import DeleteModal from './DeleteModal'
 import Filters from '../../Common/Filters/Filters'
 import UserItem from './UserItem'
 import * as filterManager from '../../../services/filterManager'
-import { performDeleteUsers } from '../../../services/kuzzleWrapper'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'UserList',
@@ -181,6 +181,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
@@ -271,7 +272,7 @@ export default {
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       try {
-        const res = await this.performSearch(
+        const res = await this.wrapper.performSearchUsers(
           this.collection,
           this.index,
           searchQuery,
@@ -306,7 +307,7 @@ export default {
     async onDeleteConfirmed() {
       this.deleteModalIsLoading = true
       try {
-        await performDeleteUsers(
+        await this.wrapper.performDeleteUsers(
           this.index,
           this.collection,
           this.candidatesForDeletion

@@ -61,8 +61,7 @@
 </template>
 
 <script type="text/javascript">
-import { performSearchProfiles } from '../../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'UserProfileList',
   components: {},
@@ -78,6 +77,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     availableProfiles() {
       return this.profileList
         .filter(profile => {
@@ -92,7 +92,7 @@ export default {
   },
   methods: {
     fetchProfileList() {
-      return performSearchProfiles().then(result => {
+      return this.wrapper.performSearchProfiles().then(result => {
         result.documents.forEach(profile => {
           this.profileList.push(profile)
         })

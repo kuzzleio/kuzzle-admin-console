@@ -21,10 +21,6 @@
 
     <list
       v-if="canSearchProfile()"
-      item-name="ProfileItem"
-      :display-create="canCreateProfile()"
-      :perform-search="performSearchProfiles"
-      :perform-delete="performDeleteProfiles"
       route-create="SecurityProfilesCreate"
       route-update="SecurityProfilesUpdate"
       @create-clicked="createProfile"
@@ -50,10 +46,6 @@ import {
   canSearchProfile,
   canCreateProfile
 } from '../../../services/userAuthorization'
-import {
-  performSearchProfiles,
-  performDeleteProfiles
-} from '../../../services/kuzzleWrapper'
 
 export default {
   name: 'ProfileManagement',
@@ -67,9 +59,7 @@ export default {
       this.$router.push({ name: 'SecurityProfilesCreate' })
     },
     canSearchProfile,
-    canCreateProfile,
-    performSearchProfiles,
-    performDeleteProfiles
+    canCreateProfile
   },
   route: {
     data() {

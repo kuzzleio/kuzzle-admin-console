@@ -21,9 +21,6 @@
     <role-list
       v-if="canSearchRole()"
       item-name="RoleItem"
-      :display-create="canCreateRole()"
-      :perform-search="performSearchRoles"
-      :perform-delete="performDeleteRoles"
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
     >
@@ -48,10 +45,6 @@ import {
   canCreateRole
 } from '../../../services/userAuthorization'
 import Headline from '../../Materialize/Headline'
-import {
-  performSearchRoles,
-  performDeleteRoles
-} from '../../../services/kuzzleWrapper'
 
 export default {
   name: 'RolesManagement',
@@ -62,9 +55,7 @@ export default {
   },
   methods: {
     canSearchRole,
-    canCreateRole,
-    performSearchRoles,
-    performDeleteRoles
+    canCreateRole
   }
 }
 </script>

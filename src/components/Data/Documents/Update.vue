@@ -41,7 +41,6 @@
 
 <script>
 import { canEditDocument } from '../../../services/userAuthorization'
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
@@ -92,7 +91,6 @@ export default {
     }
   },
   methods: {
-    getMappingDocument,
     async onSubmit(document, id, replace = false) {
       this.submitted = true
       this.error = ''

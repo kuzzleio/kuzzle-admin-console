@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import { getMappingUsers } from '../../../../services/kuzzleWrapper'
 import Basic from './Basic'
 import CredentialsSelector from './CredentialsSelector'
 import CustomData from './CustomData'
@@ -56,7 +55,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle'])
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper'])
   },
   async mounted() {
     this.loading = true
@@ -73,7 +72,7 @@ export default {
       })
       this.credentialsMapping = credentialsMapping
 
-      const { mapping } = await getMappingUsers()
+      const { mapping } = await this.wrapper.getMappingUsers()
       if (mapping) {
         this.customContentMapping = mapping
         delete this.customContentMapping.profileIds

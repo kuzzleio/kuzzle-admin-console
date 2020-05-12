@@ -134,6 +134,7 @@
 import DeleteModal from './DeleteModal'
 import ProfileItem from '../Profiles/ProfileItem'
 import Filters from './Filters'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ProfileList',
@@ -150,8 +151,6 @@ export default {
       type: Boolean,
       default: false
     },
-    performSearch: Function,
-    performDelete: Function,
     routeCreate: String,
     routeUpdate: String
   },
@@ -168,6 +167,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     displayBulkDelete() {
       return this.selectedDocuments.length > 0
     },
@@ -230,7 +230,7 @@ export default {
       }
 
       try {
-        const res = await this.performSearch(
+        const res = await this.wrapper.performSearchProfiles(
           { roles: this.currentFilter } || {},
           pagination
         )
@@ -261,7 +261,7 @@ export default {
     async onDeleteConfirmed() {
       this.deleteModalIsLoading = true
       try {
-        await this.performDelete(
+        await this.wrapper.performDeleteProfiles(
           this.index,
           this.collection,
           this.candidatesForDeletion

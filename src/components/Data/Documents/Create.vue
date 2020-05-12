@@ -30,7 +30,6 @@ import { canCreateDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 
 export default {
@@ -57,7 +56,6 @@ export default {
     }
   },
   methods: {
-    getMappingDocument,
     async onSubmit(document, id) {
       if (!document) {
         this.error = 'The document is invalid, please review it'

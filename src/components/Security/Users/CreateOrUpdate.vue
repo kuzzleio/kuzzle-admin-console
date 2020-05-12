@@ -91,7 +91,6 @@
 </style>
 
 <script>
-import { getMappingUsers } from '../../../services/kuzzleWrapper'
 import Basic from './Steps/Basic'
 import CredentialsSelector from './Steps/CredentialsSelector'
 import CustomData from './Steps/CustomData'
@@ -134,7 +133,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     stepNumber() {
       switch (this.activeTab) {
         case 'basic':
@@ -263,7 +262,7 @@ export default {
       })
       this.credentialsMapping = credentialsMapping
 
-      const { mapping } = await getMappingUsers()
+      const { mapping } = await this.wrapper.getMappingUsers()
       if (mapping) {
         this.customContentMapping = mapping
         delete this.customContentMapping.profileIds

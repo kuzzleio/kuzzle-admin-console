@@ -44,9 +44,6 @@
         index="%kuzzle"
         route-create="SecurityUsersCreate"
         route-update="SecurityUsersUpdate"
-        :display-create="false"
-        :perform-search="performSearchUsers"
-        :perform-delete="performDeleteUsers"
         :collection-mapping="userMapping"
       >
         <b-card class="EmptyState text-center" slot="emptySet">
@@ -71,12 +68,7 @@ import {
   canSearchUser,
   canCreateUser
 } from '../../../services/userAuthorization'
-import {
-  performSearchUsers,
-  performDeleteUsers,
-  getMappingUsers
-} from '../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'UsersManagement',
   components: {
@@ -89,8 +81,11 @@ export default {
       userMapping: {}
     }
   },
+  computed: {
+    ...mapGetters('kuzzle', ['wrapper'])
+  },
   async mounted() {
-    const mapping = await getMappingUsers()
+    const mapping = await this.wrapper.getMappingUsers()
     this.userMapping = mapping.mapping
   },
   methods: {
@@ -98,9 +93,7 @@ export default {
       this.$router.push({ name: 'SecurityUsersCreate' })
     },
     canSearchUser,
-    canCreateUser,
-    performSearchUsers,
-    performDeleteUsers
+    canCreateUser
   }
 }
 </script>
