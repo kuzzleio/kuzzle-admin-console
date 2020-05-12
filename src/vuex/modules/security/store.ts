@@ -4,9 +4,9 @@ import Vue from 'vue'
 
 const actions = createActions({
   async fetchUserMapping(context) {
-    const { rootCommit } = securityActionContext(context)
+    const { rootCommit, rootGetters } = securityActionContext(context)
 
-    const res = await Vue.prototype.$kuzzle.query({
+    const res = await rootGetters.kuzzle.sdk.query({
       controller: 'security',
       action: 'getUserMapping'
     })
@@ -14,9 +14,9 @@ const actions = createActions({
     rootCommit.collection.receiveCollectionDetail(res.result)
   },
   async fetchProfileMapping(context) {
-    const { rootCommit } = securityActionContext(context)
+    const { rootCommit, rootGetters } = securityActionContext(context)
 
-    const res = await Vue.prototype.$kuzzle.query({
+    const res = await rootGetters.kuzzle.sdk.query({
       controller: 'security',
       action: 'getProfileMapping'
     })
@@ -24,9 +24,9 @@ const actions = createActions({
     rootCommit.collection.receiveCollectionDetail(res.result)
   },
   async fetchRoleMapping(context) {
-    const { rootCommit } = securityActionContext(context)
+    const { rootCommit, rootGetters } = securityActionContext(context)
 
-    const res = await Vue.prototype.$kuzzle.query({
+    const res = await rootGetters.kuzzle.sdk.query({
       controller: 'security',
       action: 'getRoleMapping'
     })

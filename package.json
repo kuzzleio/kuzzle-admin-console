@@ -43,6 +43,7 @@
     "eslint-plugin-vue": "^6.0.0",
     "direct-vuex": "^0.9.3",
     "json-formatter-js": "^1.3.0",
+    "kuzzle-sdk": "7.1.0",
     "kuzzle-sdk-v7": "npm:kuzzle-sdk@^7.1.0",
     "kuzzle-sdk-v6": "npm:kuzzle-sdk@^6.2.7",
     "lodash": "^4.17.11",

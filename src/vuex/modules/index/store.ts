@@ -165,8 +165,7 @@ const actions = createActions({
       getters.indexCollections(index).stored.indexOf(collection) !== -1 ||
       getters.indexCollections(index).realtime.indexOf(collection) !== -1
     ) {
-      return
-      new Error(`Collection "${collection}" already exist`)
+      return new Error(`Collection "${collection}" already exist`)
     }
 
     if (isRealtimeOnly) {
