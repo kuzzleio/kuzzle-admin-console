@@ -13,7 +13,8 @@ import { moduleActionContext } from '@/vuex/store'
 
 const state: IndexState = {
   indexesAndCollections: {},
-  loadingIndexes: false
+  loadingIndexes: false,
+  loadingCollections: false
 }
 
 const mutations = createMutations<IndexState>()({
@@ -22,7 +23,7 @@ const mutations = createMutations<IndexState>()({
     state.loadingIndexes = false
   },
   setLoadingIndexes(state, value) {
-    state.loadingIndexes = value
+    Vue.set(state, 'loadingIndexes', value)
   },
   receiveIndexesCollections(state, indexesAndCollections) {
     const indexes = Object.keys(indexesAndCollections)
@@ -38,6 +39,9 @@ const mutations = createMutations<IndexState>()({
   },
   setLoadingCollectionsForIndex(state, { index, loading }) {
     Vue.set(state.indexesAndCollections[index], 'loading', loading)
+  },
+  setLoadingCollections(state, value) {
+    Vue.set(state, 'loadingCollections', value)
   },
   addStoredCollection(state, payload) {
     if (!state.indexesAndCollections[payload.index]) {
@@ -88,7 +92,7 @@ const mutations = createMutations<IndexState>()({
 })
 
 const actions = createActions({
-  async createIndex(context, index: string): Promise<void> {
+  async createIndex(context, index: string) {
     const { commit } = indexActionContext(context)
 
     await Vue.prototype.$kuzzle.index.create(index)
@@ -104,12 +108,14 @@ const actions = createActions({
   async listIndexes(context) {
     const { commit } = indexActionContext(context)
     commit.setLoadingIndexes(true)
+
     let result = await Vue.prototype.$kuzzle.index.list()
     result = result.filter(index => index !== '%kuzzle')
 
     for (const index of result) {
       commit.addIndex(index)
     }
+
     commit.setLoadingIndexes(false)
   },
   async listCollectionsForIndex(context, index) {
@@ -139,17 +145,21 @@ const actions = createActions({
       collections: collections.realtime,
       type: 'realtime'
     })
+
     commit.setLoadingCollectionsForIndex({ index, loading: false })
   },
 
   async listIndexesAndCollections(context) {
     const { commit, dispatch } = indexActionContext(context)
+    commit.setLoadingCollections(true)
     commit.reset()
-
     await dispatch.listIndexes()
-    Object.keys(state.indexesAndCollections).forEach(async index => {
-      dispatch.listCollectionsForIndex(index)
-    })
+
+    for (let index in state.indexesAndCollections) {
+      await dispatch.listCollectionsForIndex(index)
+    }
+
+    commit.setLoadingCollections(false)
   },
   async createCollectionInIndex(
     context,
@@ -165,8 +175,7 @@ const actions = createActions({
       getters.indexCollections(index).stored.indexOf(collection) !== -1 ||
       getters.indexCollections(index).realtime.indexOf(collection) !== -1
     ) {
-      return
-      new Error(`Collection "${collection}" already exist`)
+      throw new Error(`Collection "${collection}" already exist`)
     }
 
     if (isRealtimeOnly) {
