@@ -270,7 +270,6 @@ import Headline from '../../Materialize/Headline'
 import Pagination from '../../Materialize/Pagination'
 import ViewMap from './ViewMap'
 import * as filterManager from '../../../services/filterManager'
-import Vue from 'vue'
 import {
   canSearchIndex,
   canSearchDocument,
