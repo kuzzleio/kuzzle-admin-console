@@ -30,22 +30,7 @@ describe('Document List', function() {
       }
     )
 
-    // create environment
-    const validEnvName = 'valid'
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: 'anonymous'
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
   it('Should be able to set and persist the listViewType param accessing a collection', function() {
@@ -246,21 +231,7 @@ describe('Document update/replace', () => {
       }
     )
 
-    const validEnvName = 'valid'
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: 'anonymous'
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
   it('Should be able to update a document', () => {

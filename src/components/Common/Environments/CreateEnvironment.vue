@@ -77,6 +77,7 @@
       </b-form-group>
       <b-form-group label="Kuzzle version" label-cols-sm="4" label-cols-lg="3">
         <b-form-select
+          data-cy="CreateEnvironment-backendVersion"
           v-model="environment.backendMajorVersion"
           :options="majorVersions"
         ></b-form-select>

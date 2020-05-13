@@ -3,6 +3,8 @@ const fmt = word => {
 }
 
 describe('Environments', function() {
+  const backendVersion = Cypress.env('BACKEND_VERSION') || 2
+
   this.beforeEach(() => {
     localStorage.removeItem('environments')
   })
@@ -17,6 +19,9 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
@@ -32,6 +37,7 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
+          backendMajorVersion: backendVersion || 2,
           token: null
         },
         [envNames[1]]: {
@@ -40,6 +46,7 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
+          backendMajorVersion: backendVersion || 2,
           token: null
         }
       })
@@ -76,6 +83,9 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy="EnvColor--green"]')
       .as('colorEl')
       .click()
@@ -101,6 +111,7 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
+          backendMajorVersion: backendVersion,
           token: null
         }
       })
@@ -118,6 +129,9 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('unreachable-host', {
       force: true
     })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -158,6 +172,7 @@ describe('Environments', function() {
           host: hosts[0],
           ssl: false,
           port: ports[0],
+          backendMajorVersion: backendVersion,
           token: null
         }
       })
