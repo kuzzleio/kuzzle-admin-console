@@ -55,7 +55,7 @@ export default {
     importEnv() {
       for (const name in this.env) {
         try {
-          this.$store.direct.dispatch.kuzzle.createEnvurinlent({
+          this.$store.direct.dispatch.kuzzle.createEnvironment({
             id: name,
             environment: this.env[name]
           })
