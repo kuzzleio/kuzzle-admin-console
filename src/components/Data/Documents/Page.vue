@@ -280,7 +280,8 @@ import {
 import {
   performSearchDocuments,
   performDeleteDocuments,
-  getMappingDocument
+  getMappingDocument,
+  waitForConnected
 } from '../../../services/kuzzleWrapper'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
@@ -395,7 +396,7 @@ export default {
   watch: {
     collection: {
       immediate: true,
-      handler() {
+      async handler() {
         this.loadMappingInfo()
         this.loadListView()
         this.saveListView()
@@ -411,7 +412,10 @@ export default {
           this.index,
           this.collection
         )
-        this.fetchDocuments()
+        await waitForConnected(1000)
+        if (this.$kuzzle.protocol.state === 'connected') {
+          this.fetchDocuments()
+        }
       }
     },
     documents: {
