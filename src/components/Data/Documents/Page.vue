@@ -413,7 +413,7 @@ export default {
           this.collection
         )
         await waitForConnected(1000)
-        if (Vue.prototype.$kuzzle.protocol.state === 'connected') {
+        if (this.$kuzzle.protocol.state === 'connected') {
           this.fetchDocuments()
         }
       }
