@@ -15,7 +15,13 @@
       ></offline-spinner>
     </template>
     <template v-else>
-      <error-page v-if="kuzzleError" />
+      <error-page
+        v-if="kuzzleError"
+        data-cy="App-connectionError"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      />
       <router-view
         v-else
         data-cy="App-online"
