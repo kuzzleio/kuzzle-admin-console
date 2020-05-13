@@ -128,7 +128,6 @@ export default {
   props: {
     basicFilter: Array,
     sorting: Object,
-    setBasicFilter: Function,
     availableFilters: {
       type: Object,
       required: true
