@@ -200,13 +200,42 @@ const actions = createActions({
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
-    await getters.wrapper.connectToEnvironment(environment)
-    commit.setConnecting(false)
-    commit.setOnline(true)
+    try {
+      await dispatch.connectAndRetry(environment)
+      commit.setConnecting(false)
+      commit.setOnline(true)
 
-    await rootDispatch.auth.init(environment)
+      await rootDispatch.auth.init(environment)
 
-    return true
+      return true
+    } catch (error) {
+      commit.setErrorFromKuzzle(error.message)
+      return false
+    }
+  },
+  async connectAndRetry(context, environment) {
+    const { commit, dispatch, getters } = kuzzleActionContext(context)
+    try {
+      if (!getters.wrapper) {
+        const error = new Error('InternalError: no Kuzzle wrapper selected')
+        error['id'] = 'internal.wrapper.null'
+        throw error
+      }
+      await getters.wrapper.connectToEnvironment(environment)
+    } catch (error) {
+      /* eslint-disable no-console */
+      console.error(error)
+
+      if (error.id) {
+        throw error
+      } else {
+        console.debug('Retry connecting to ${id}...')
+        setTimeout(async () => {
+          await dispatch.connectAndRetry(environment)
+        }, 2000)
+      }
+      /* eslint-enable no-console */
+    }
   },
   loadEnvironments(context) {
     let loadedEnv

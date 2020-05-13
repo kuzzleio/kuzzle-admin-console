@@ -97,23 +97,10 @@ export default {
   },
   mounted() {},
   methods: {
-    async connectAndRetry(id) {
-      try {
-        await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
-      } catch (error) {
-        // WARNING this error is dumped as "[object Event]" which is weird.
-        // TODO We need to put some conditions on this error to avoid looping on non-network errors.
-        this.$log.debug(error)
-        this.$log.debug(`Retry connecting to Kuzzle ${id}`)
-        setTimeout(async () => {
-          await this.connectAndRetry(id)
-        }, 2000)
-      }
-    },
     async clickSwitch(id) {
       try {
         this.$log.debug(`Switching to environment ${id}...`)
-        await this.connectAndRetry(id)
+        await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(

@@ -14,13 +14,16 @@
         @environment::importEnv="$emit('environment::importEnv')"
       ></offline-spinner>
     </template>
-    <router-view
-      v-else
-      data-cy="App-online"
-      @environment::create="$emit('environment::create', $event)"
-      @environment::delete="$emit('environment::delete', $event)"
-      @environment::importEnv="$emit('environment::importEnv')"
-    ></router-view>
+    <template v-else>
+      <error-page v-if="kuzzleError" />
+      <router-view
+        v-else
+        data-cy="App-online"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      ></router-view>
+    </template>
 
     <b-toast
       id="offline-toast"
@@ -38,12 +41,14 @@
 
 <script>
 import OfflineSpinner from './Common/Offline'
+import ErrorPage from './Error/KuzzleErrorPage'
 import { antiGlitchOverlayTimeout } from '../utils'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'ConnectionAwareContainer',
   components: {
+    ErrorPage,
     OfflineSpinner
   },
   data() {
@@ -54,6 +59,9 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
+    kuzzleError() {
+      return this.$store.state.kuzzle.errorFromKuzzle
+    },
     online() {
       return this.$store.direct.state.kuzzle.online
     },
@@ -101,19 +109,6 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
-    async connectAndRetry() {
-      try {
-        await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
-      } catch (error) {
-        // WARNING this error is dumped as "[object Event]" which is weird.
-        // TODO We need to put some conditions on this error to avoid looping on non-network errors.
-        this.$log.error(error)
-        this.$log.debug('Retry connecting to Kuzzle.')
-        setTimeout(async () => {
-          await this.connectAndRetry()
-        }, 2000)
-      }
-    },
     async authenticationGuard() {
       // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
       // the code from router.authenticationGuard by refactoring it into a separate
@@ -137,7 +132,7 @@ export default {
     this.$log.debug('ConnectionAwareContainer::mounted')
     this.$store.direct.commit.auth.setTokenValid(false)
     this.initListeners()
-    await this.connectAndRetry()
+    await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
   },
   beforeDestroy() {
     this.removeListeners()
