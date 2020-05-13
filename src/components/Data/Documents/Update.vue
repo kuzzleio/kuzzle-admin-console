@@ -69,7 +69,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     hasRights() {
       return canEditDocument(this.index, this.collection)
     }
@@ -145,7 +145,7 @@ export default {
           this.id
         )
         this.document = omit(res._source, '_kuzzle_info')
-        this.mapping = await this.getMappingDocument(
+        this.mapping = await this.wrapper.getMappingDocument(
           this.collection,
           this.index
         )

@@ -194,7 +194,9 @@ const actions = createActions({
     }
     commit.setErrorFromKuzzle(null)
 
-    getters.wrapper.disconnect()
+    if (getters.$kuzzle) {
+      getters.$kuzzle.disconnect()
+    }
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 

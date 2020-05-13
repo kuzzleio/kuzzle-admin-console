@@ -62,10 +62,12 @@ describe('Document List', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-list"]').click()
     cy.url().should('contain', 'listViewType=list')
   })
@@ -133,6 +135,7 @@ describe('Document List', function() {
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="CollectionDropdown"').click()
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
 
@@ -260,7 +263,7 @@ describe('Document update/replace', () => {
     localStorage.setItem('currentEnv', validEnvName)
   })
 
-  it('should update a document', () => {
+  it('Should be able to update a document', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)

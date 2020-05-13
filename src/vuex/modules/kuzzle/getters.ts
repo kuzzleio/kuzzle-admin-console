@@ -16,6 +16,9 @@ export const getters = createGetters<KuzzleState>()({
     }
   },
   $kuzzle(state, getters) {
+    if (!getters.wrapper) {
+      return null
+    }
     return getters.wrapper.kuzzle
   },
   currentEnvironment(state, getters) {

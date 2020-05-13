@@ -63,6 +63,9 @@ export default {
   },
   methods: {
     initListeners() {
+      if (!this.$kuzzle) {
+        return
+      }
       this.$kuzzle.on('networkError', error => {
         this.$log.error(error)
       })
@@ -77,6 +80,9 @@ export default {
       })
     },
     removeListeners() {
+      if (!this.$kuzzle) {
+        return
+      }
       this.$kuzzle.removeAllListeners('networkError')
       this.$kuzzle.removeAllListeners('connected')
       this.$kuzzle.removeAllListeners('reconnected')
