@@ -122,7 +122,7 @@ export default {
   },
   methods: {
     submitSearch() {
-      this.$emit('update-filter', this.value)
+      this.$emit('filter-submitted', this.value)
     },
     resetSearch() {
       this.$emit('reset')

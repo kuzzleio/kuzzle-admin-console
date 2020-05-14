@@ -102,4 +102,18 @@ describe('Collection management', function() {
     cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
     cy.should('not.contain', collectionName)
   })
+
+  it('Should be able to autofocus collection search', () => {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/foobar`)
+
+    cy.waitOverlay()
+
+    cy.visit(`/#/data/${indexName}/`)
+    cy.wait(500)
+
+    cy.get('body').type('f{enter}')
+
+    cy.contains('This collection is empty')
+  })
 })

@@ -21,25 +21,20 @@ export default {
       default: ''
     }
   },
-  computed: {
-    refName() {
-      return `auto-focus-input-${this.name}`
-    }
-  },
-  watch: {
-    value () {
-      this.$emit('input', this.value)
-    }
-  },
-  data () {
+  data() {
     return {
       value: this.initialValue,
       isFocus: false
     }
   },
+  computed: {
+    refName() {
+      return `auto-focus-input-${this.name}`
+    }
+  },
   methods: {
-    // AutoFocusInput is only activated
-    enable () {
+    // AutoFocusInput is only activated when user is not using another input
+    shouldAcquireFocus() {
       const tagType = document.activeElement.tagName
 
       // If we are currently selecting another input
@@ -52,9 +47,9 @@ export default {
     looseFocus() {
       this.isFocus = false
     },
-    listenKeypress () {
+    listenKeypress() {
       document.onkeypress = keyEvent => {
-        if (! this.enable()) {
+        if (!this.shouldAcquireFocus()) {
           return
         }
 
@@ -63,10 +58,10 @@ export default {
             this.$emit('submit')
           }
 
-          return;
+          return
         }
 
-        this.isFocus = true;
+        this.isFocus = true
         this.$refs[this.refName].focus()
 
         // Firefox does not follow the key event to the input but Chrome does
@@ -82,16 +77,20 @@ export default {
         }, 1)
       }
     },
-    stopListenKeypress () {
+    stopListenKeypress() {
       document.onkeypress = null
     }
   },
-  mounted () {
+  mounted() {
     this.listenKeypress()
+  },
+  watch: {
+    value() {
+      this.$emit('input', this.value)
+    }
   },
   beforeDestroy() {
     this.stopListenKeypress()
   }
-
 }
 </script>

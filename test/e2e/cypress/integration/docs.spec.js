@@ -126,6 +126,17 @@ describe('Document List', function() {
     cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
   })
 
+  it('should be able to autofocus document quick-filter', () => {
+    cy.waitOverlay()
+
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.wait(500)
+
+    cy.get('body').type('L{enter}')
+
+    cy.contains('Edit document')
+  })
+
   // it('should handle the time series view properly', function() {
   //   cy.request(
   //     'POST',

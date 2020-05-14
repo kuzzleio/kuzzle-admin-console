@@ -28,7 +28,7 @@
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
-          @update-filter="onQuickFilterUpdated"
+          @filter-submitted="onQuickFilterUpdated"
           @refresh="onRefresh"
           @reset="onReset"
           @enter-pressed="onEnterPressed"
@@ -64,7 +64,7 @@
         :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
         :refresh-ace="refreshace"
-        @update-filter="onRawFilterUpdated"
+        @filter-submitted="onRawFilterUpdated"
         @reset="onReset"
       />
       <basic-filter
@@ -77,7 +77,7 @@
         :action-buttons-visible="actionButtonsVisible"
         :sorting="sorting"
         :collection-mapping="collectionMapping"
-        @update-filter="onBasicFilterUpdated"
+        @filter-submitted="onBasicFilterUpdated"
         @reset="onReset"
       />
     </template>

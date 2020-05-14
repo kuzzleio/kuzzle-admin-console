@@ -64,4 +64,15 @@ describe('Indexes', () => {
 
     cy.get('.IndexesPage').should('not.contain', indexName)
   })
+
+  it('Should be able to autofocus index search', () => {
+    cy.request('POST', 'http://localhost:7512/nyc-open-data/_create')
+    cy.request('POST', 'http://localhost:7512/iot-data/_create')
+
+    cy.waitOverlay()
+
+    cy.get('body').type('n{enter}')
+
+    cy.contains('This index has no collections.')
+  })
 })
