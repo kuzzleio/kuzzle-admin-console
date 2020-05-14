@@ -80,12 +80,10 @@ export default {
       if (!this.$kuzzle) {
         return
       }
-      // this.$kuzzle.on('networkError', error => {
-      //   this.$log.error(
-      //     `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
-      //   )
-      //   this.$store.direct.dispatch.kuzzle.onConnectionError(error)
-      // })
+      this.$kuzzle.on('networkError', error => {
+        this.$log.error(error)
+        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+      })
       this.$kuzzle.addListener('connected', () => {
         this.$store.direct.commit.kuzzle.setOnline(true)
       })
@@ -118,6 +116,14 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
+    async connect() {
+      try {
+        await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
+      } catch (error) {
+        this.$log.error(error)
+        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+      }
+    },
     async authenticationGuard() {
       // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
       // the code from router.authenticationGuard by refactoring it into a separate
@@ -137,18 +143,10 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
     this.$log.debug('ConnectionAwareContainer::mounted')
     this.$store.direct.commit.auth.setTokenValid(false)
-    return this.$store.direct.dispatch.kuzzle
-      .connectToCurrentEnvironment()
-      .then(() => {
-        return this.$store.direct.dispatch.auth.init()
-      })
-      .catch(error => {
-        this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
-      })
+    await this.connect()
   },
   beforeDestroy() {
     this.removeListeners()

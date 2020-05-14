@@ -22,7 +22,7 @@ export default function createRoutes(log) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard')
     try {
-      store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+      store.dispatch.kuzzle.loadEnvironments() //moduleActionContext
     } catch (error) {
       log.error(
         'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.'

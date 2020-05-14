@@ -97,63 +97,21 @@ export default {
   },
   mounted() {},
   methods: {
-    clickSwitch(id) {
-      this.$log.debug(`Switching to environment ${id}...`)
-      return this.$store.direct.dispatch.kuzzle
-        .switchEnvironment(id)
-        .then(switched => {
-          if (switched) {
-            this.$log.debug(`Switched.`)
-            if (this.$store.direct.state.auth.tokenValid) {
-              this.$log.debug(`Token is valid, going to /...`)
-              this.$router.push({ path: '/' })
-            } else {
-              this.$log.debug(`Token is invalid, going to Login...`)
-              this.$router.push({ name: 'Login' })
-            }
-          }
-        })
-      // try {
-      //   await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
-      // } catch (error) {
-      //   this.$log.error(error)
-      //   this.$bvToast.toast(
-      //     'The complete error has been printed to the console.',
-      //     {
-      //       title: 'Ooops! Something went wrong while switching connections.',
-      //       variant: 'warning',
-      //       toaster: 'b-toaster-bottom-right',
-      //       appendToast: true,
-      //       dismissible: true,
-      //       noAutoHide: true
-      //     }
-      //   )
-      //   return
-      // }
-      // try {
-      //   this.$log.debug(`Switched.`)
-      //   if (this.$store.direct.state.auth.tokenValid) {
-      //     this.$log.debug(`Token is valid, going to /...`)
-      //     this.$router.push({ path: '/' })
-      //   } else {
-      //     this.$log.debug(`Token is invalid, going to Login...`)
-      //     this.$router.push({ name: 'Login' })
-      //   }
-      // } catch (error) {
-      //   this.$log.error(error)
-      //   this.$bvToast.toast(
-      //     'The complete error has been printed to the console.',
-      //     {
-      //       title:
-      //         'Ooops! Something went wrong while authenticating to the new environment.',
-      //       variant: 'warning',
-      //       toaster: 'b-toaster-bottom-right',
-      //       appendToast: true,
-      //       dismissible: true,
-      //       noAutoHide: true
-      //     }
-      //   )
-      // }
+    async clickSwitch(id) {
+      try {
+        await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
+        this.$log.debug(`Switched.`)
+        if (this.$store.direct.state.auth.tokenValid) {
+          this.$log.debug(`Token is valid, going to /...`)
+          this.$router.push({ path: '/' })
+        } else {
+          this.$log.debug(`Token is invalid, going to Login...`)
+          this.$router.push({ name: 'Login' })
+        }
+      } catch (error) {
+        this.$log.error(error)
+        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+      }
     },
     formatForDom
   }

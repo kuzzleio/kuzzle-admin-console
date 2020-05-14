@@ -183,7 +183,7 @@ const actions = createActions({
 
     await dispatch.switchEnvironment(currentId)
   },
-  switchEnvironment(context, id) {
+  async switchEnvironment(context, id) {
     const {
       rootDispatch,
       commit,
@@ -207,52 +207,39 @@ const actions = createActions({
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
-    return dispatch
-      .connectAndRetry({ ...environment, id })
-      .then(() => {
-        commit.setConnecting(false)
-        commit.setOnline(true)
-        return true
-      })
-      .catch(error => {
-        commit.setErrorFromKuzzle(error.message)
-        return false
-      })
+    try {
+      await dispatch.connectAndRetry({ ...environment, id })
+      commit.setConnecting(false)
+      commit.setOnline(true)
+    } catch (error) {
+      dispatch.onConnectionError(error)
+      return false
+    }
+    await rootDispatch.auth.init(environment)
+
+    return true
   },
   onConnectionError(context, error: Error) {
     const { commit } = kuzzleActionContext(context)
 
     commit.setConnecting(false)
-    commit.setOnline(false)
+    commit.setOnline(true)
     commit.setErrorFromKuzzle(error.message)
   },
   async connectAndRetry(context, environment) {
-    /* eslint-disable no-console */
     const { state, dispatch, getters } = kuzzleActionContext(context)
-    if (!getters.wrapper) {
-      throw new Error('InternalError: no Kuzzle wrapper selected')
+    try {
+      await getters.wrapper.connectToEnvironment(environment)
+    } catch (error) {
+      if (error.id) {
+        throw error
+      }
+      if (state.currentId !== environment.id) {
+        return
+      }
+      await wait(2000)
+      await dispatch.connectAndRetry(environment)
     }
-    console.debug(getters.$kuzzle.sdkVersion)
-    return getters.wrapper.connectToEnvironment(environment)
-    // .catch(error => {
-    //   console.error(`Store.kuzzle: Error: ${error.message}, id: ${error.id}`)
-    // })
-    // try {
-    //   await getters.wrapper.connectToEnvironment(environment)
-    // } catch (error) {
-    //   // if (error.id) {
-    //   //   throw error
-    //   // } else {
-    //   if (state.currentId !== environment.id) {
-    //     // Avoid retrying if the user has switched to another environment
-    //     return
-    //   }
-    //   console.debug(`Retry connecting to ${environment.id}...`)
-    //   await wait(2000)
-    //   await dispatch.connectAndRetry(environment)
-    //   // }
-    // }
-    /* eslint-enable no-console */
   },
   loadEnvironments(context) {
     let loadedEnv
