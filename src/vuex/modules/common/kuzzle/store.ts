@@ -235,7 +235,6 @@ const actions = createActions({
       if (state.currentId !== environment.id) {
         return
       }
-      console.debug(`Retry connecting to ${environment.id}...`)
       await wait(2000)
       await dispatch.connectAndRetry(environment)
     }
