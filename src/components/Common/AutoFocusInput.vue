@@ -3,8 +3,7 @@
     :ref="refName"
     v-model="value"
     v-bind="$attrs"
-    @blur="looseFocus"
-    data-auto-focus="true"
+    data-auto-focus-input="true"
   />
 </template>
 
@@ -24,7 +23,6 @@ export default {
   data() {
     return {
       value: this.initialValue,
-      isFocus: false
     }
   },
   computed: {
@@ -33,27 +31,27 @@ export default {
     }
   },
   methods: {
-    // AutoFocusInput is only activated when user is not using another input
-    shouldAcquireFocus() {
+    // AutoFocusInput should not handle keypress when user is using another input
+    shouldHandleKeypress() {
       const tagType = document.activeElement.tagName
 
       // If we are currently selecting another input
-      if (tagType === 'INPUT' && !document.activeElement.dataset.autoFocus) {
+      if (tagType === 'INPUT' && !document.activeElement.dataset.autoFocusInput) {
         return false
       }
 
       return true
     },
-    looseFocus() {
-      this.isFocus = false
+    isFocus() {
+      return this.$refs[this.refName].$refs.input === document.activeElement
     },
     listenKeypress() {
       document.onkeypress = keyEvent => {
-        if (!this.shouldAcquireFocus()) {
+        if (!this.shouldHandleKeypress()) {
           return
         }
 
-        if (this.isFocus) {
+        if (this.isFocus()) {
           if (keyEvent.code === 'Enter') {
             this.$emit('submit')
           }
@@ -61,7 +59,6 @@ export default {
           return
         }
 
-        this.isFocus = true
         this.$refs[this.refName].focus()
 
         // Firefox does not follow the key event to the input but Chrome does
