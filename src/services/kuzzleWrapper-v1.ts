@@ -23,7 +23,15 @@ export const connectToEnvironment = async environment => {
     sslConnection: environment.ssl
   })
 
-  await kuzzle.connect()
+  try {
+    await kuzzle.connect()
+  } catch (error) {
+    if (error.message.match(/^Incompatible SDK client/)) {
+      const e = new Error(error)
+      e['id'] = 'api.process.incompatible_sdk_version'
+      throw e
+    }
+  }
 }
 
 // ### Data

@@ -80,9 +80,12 @@ export default {
       if (!this.$kuzzle) {
         return
       }
-      this.$kuzzle.on('networkError', error => {
-        this.$log.error(error)
-      })
+      // this.$kuzzle.on('networkError', error => {
+      //   this.$log.error(
+      //     `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
+      //   )
+      //   this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+      // })
       this.$kuzzle.addListener('connected', () => {
         this.$store.direct.commit.kuzzle.setOnline(true)
       })
@@ -134,16 +137,33 @@ export default {
       }
     }
   },
-  async mounted() {
+  mounted() {
     this.$log.debug('ConnectionAwareContainer::mounted')
     this.$store.direct.commit.auth.setTokenValid(false)
-    this.initListeners()
-    await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
+    return this.$store.direct.dispatch.kuzzle
+      .connectToCurrentEnvironment()
+      .then(() => {
+        return this.$store.direct.dispatch.auth.init()
+      })
+      .catch(error => {
+        this.$log.error(error)
+        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+      })
   },
   beforeDestroy() {
     this.removeListeners()
   },
   watch: {
+    $kuzzle: {
+      immediate: true,
+      handler(instance) {
+        if (!instance) {
+          return
+        }
+        this.removeListeners()
+        this.initListeners()
+      }
+    },
     online: {
       immediate: true,
       handler() {
@@ -153,17 +173,18 @@ export default {
     connecting: {
       immediate: true,
       handler(val) {
-        if (val === false) {
+        this.$nextTick(() => {
+          if (val === false && this.online) {
+            this.$log.debug(
+              'ConnectionAwareContainer::checking authentication after (re)connection...'
+            )
+            this.authenticationGuard()
+          }
           this.showOfflineSpinner = false
-          this.$log.debug(
-            'ConnectionAwareContainer::checking authentication after (re)connection...'
-          )
-          this.authenticationGuard()
-        }
-        this.showOfflineSpinner = false
-        setTimeout(() => {
-          this.showOfflineSpinner = true
-        }, antiGlitchOverlayTimeout)
+          setTimeout(() => {
+            this.showOfflineSpinner = true
+          }, antiGlitchOverlayTimeout)
+        })
       }
     }
   }

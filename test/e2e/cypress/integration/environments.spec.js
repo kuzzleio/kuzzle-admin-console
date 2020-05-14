@@ -99,7 +99,7 @@ describe('Environments', function() {
     })
   })
 
-  it('Should be able to create an unreachable environment and switch back to the reachable one', function() {
+  it.only('Should be able to create an unreachable environment and switch back to the reachable one', function() {
     const reachableEnvName = 'reachable'
     const unreachableEnvName = 'unreachable'
     localStorage.setItem(

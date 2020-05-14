@@ -27,6 +27,13 @@ export const envColors = [
   'magenta'
 ]
 
+const wait = async ms =>
+  new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, ms)
+  })
+
 const checkEnvironment = e => {
   if (!e.name) {
     throw new Error(`Invalid environment name: ${e.name}`)
@@ -174,9 +181,9 @@ const actions = createActions({
       throw new Error('No current environment selected')
     }
 
-    return dispatch.switchEnvironment(currentId)
+    await dispatch.switchEnvironment(currentId)
   },
-  async switchEnvironment(context, id) {
+  switchEnvironment(context, id) {
     const {
       rootDispatch,
       commit,
@@ -200,42 +207,52 @@ const actions = createActions({
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
-    try {
-      await dispatch.connectAndRetry(environment)
-      commit.setConnecting(false)
-      commit.setOnline(true)
+    return dispatch
+      .connectAndRetry({ ...environment, id })
+      .then(() => {
+        commit.setConnecting(false)
+        commit.setOnline(true)
+        return true
+      })
+      .catch(error => {
+        commit.setErrorFromKuzzle(error.message)
+        return false
+      })
+  },
+  onConnectionError(context, error: Error) {
+    const { commit } = kuzzleActionContext(context)
 
-      await rootDispatch.auth.init(environment)
-
-      return true
-    } catch (error) {
-      commit.setErrorFromKuzzle(error.message)
-      return false
-    }
+    commit.setConnecting(false)
+    commit.setOnline(false)
+    commit.setErrorFromKuzzle(error.message)
   },
   async connectAndRetry(context, environment) {
-    const { commit, dispatch, getters } = kuzzleActionContext(context)
-    try {
-      if (!getters.wrapper) {
-        const error = new Error('InternalError: no Kuzzle wrapper selected')
-        error['id'] = 'internal.wrapper.null'
-        throw error
-      }
-      await getters.wrapper.connectToEnvironment(environment)
-    } catch (error) {
-      /* eslint-disable no-console */
-      console.error(error)
-
-      if (error.id) {
-        throw error
-      } else {
-        console.debug('Retry connecting to ${id}...')
-        setTimeout(async () => {
-          await dispatch.connectAndRetry(environment)
-        }, 2000)
-      }
-      /* eslint-enable no-console */
+    /* eslint-disable no-console */
+    const { state, dispatch, getters } = kuzzleActionContext(context)
+    if (!getters.wrapper) {
+      throw new Error('InternalError: no Kuzzle wrapper selected')
     }
+    console.debug(getters.$kuzzle.sdkVersion)
+    return getters.wrapper.connectToEnvironment(environment)
+    // .catch(error => {
+    //   console.error(`Store.kuzzle: Error: ${error.message}, id: ${error.id}`)
+    // })
+    // try {
+    //   await getters.wrapper.connectToEnvironment(environment)
+    // } catch (error) {
+    //   // if (error.id) {
+    //   //   throw error
+    //   // } else {
+    //   if (state.currentId !== environment.id) {
+    //     // Avoid retrying if the user has switched to another environment
+    //     return
+    //   }
+    //   console.debug(`Retry connecting to ${environment.id}...`)
+    //   await wait(2000)
+    //   await dispatch.connectAndRetry(environment)
+    //   // }
+    // }
+    /* eslint-enable no-console */
   },
   loadEnvironments(context) {
     let loadedEnv

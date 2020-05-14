@@ -23,7 +23,7 @@ export const connectToEnvironment = async environment => {
     sslConnection: environment.ssl
   })
 
-  await kuzzle.connect()
+  return kuzzle.connect()
 }
 
 // ### Data

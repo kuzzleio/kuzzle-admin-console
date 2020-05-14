@@ -37,12 +37,12 @@ const mutations = createMutations<AuthState>()({
 })
 
 const actions = createActions({
-  async init(context, environment) {
+  async init(context) {
     const { commit, dispatch } = authActionContext(context)
 
     commit.reset()
     await dispatch.checkFirstAdmin()
-    await dispatch.loginByToken(environment)
+    await dispatch.loginByToken()
   },
   async prepareSession(context, token) {
     const { rootDispatch, commit, rootGetters } = authActionContext(context)
@@ -75,11 +75,13 @@ const actions = createActions({
     )
     const user = new SessionUser()
 
-    if (data.token === 'anonymous') {
-      return dispatch.prepareSession(data.token)
+    if (rootGetters.kuzzle.currentEnvironment.token === 'anonymous') {
+      return dispatch.prepareSession(
+        rootGetters.kuzzle.currentEnvironment.token
+      )
     }
 
-    if (!data.token) {
+    if (!rootGetters.kuzzle.currentEnvironment.token) {
       commit.setCurrentUser(new SessionUser())
       commit.setTokenValid(false)
       rootGetters.kuzzle.$kuzzle.jwt = null
@@ -87,7 +89,9 @@ const actions = createActions({
       return user
     }
 
-    const res = await rootGetters.kuzzle.$kuzzle.auth.checkToken(data.token)
+    const res = await rootGetters.kuzzle.$kuzzle.auth.checkToken(
+      rootGetters.kuzzle.currentEnvironment.token
+    )
     if (!res.valid) {
       commit.setCurrentUser(new SessionUser())
       commit.setTokenValid(false)
@@ -96,8 +100,8 @@ const actions = createActions({
       return new SessionUser()
     }
 
-    rootGetters.kuzzle.$kuzzle.jwt = data.token
-    return dispatch.prepareSession(data.token)
+    rootGetters.kuzzle.$kuzzle.jwt = rootGetters.kuzzle.currentEnvironment.token
+    return dispatch.prepareSession(rootGetters.kuzzle.currentEnvironment.token)
   },
   async checkFirstAdmin(context) {
     const { commit, rootGetters } = authActionContext(context)
