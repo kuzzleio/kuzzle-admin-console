@@ -9,7 +9,7 @@
             height="60"
             src="../../assets/logo.svg"
           />
-          <h2>Something went wrong connecting to Kuzzle</h2>
+          <h2>Something went wrong while connecting to Kuzzle</h2>
         </template>
 
         <hr class="my-4" />
