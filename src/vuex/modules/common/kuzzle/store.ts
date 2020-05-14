@@ -31,6 +31,13 @@ export const envColors = [
   'magenta'
 ]
 
+const wait = async ms =>
+  new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, ms)
+  })
+
 const checkEnvironment = e => {
   if (!e.name) {
     throw new Error(`Invalid environment name: ${e.name}`)
@@ -198,13 +205,40 @@ const actions = createActions({
     commit.setConnecting(true)
     dispatch.setCurrentEnvironment(id)
 
-    await connectToEnvironment(environment)
-    commit.setConnecting(false)
-    commit.setOnline(true)
-
+    try {
+      await dispatch.connectAndRetry({ ...environment, id })
+      commit.setConnecting(false)
+      commit.setOnline(true)
+    } catch (error) {
+      dispatch.onConnectionError(error)
+      return false
+    }
     await rootDispatch.auth.init(environment)
 
     return true
+  },
+  onConnectionError(context, error: Error) {
+    const { commit } = kuzzleActionContext(context)
+
+    commit.setConnecting(false)
+    commit.setOnline(true)
+    commit.setErrorFromKuzzle(error.message)
+  },
+  async connectAndRetry(context, environment) {
+    const { state, dispatch, getters } = kuzzleActionContext(context)
+    try {
+      await connectToEnvironment(environment)
+    } catch (error) {
+      if (error.id) {
+        throw error
+      }
+      if (state.currentId !== environment.id) {
+        return
+      }
+      console.debug(`Retry connecting to ${environment.id}...`)
+      await wait(2000)
+      await dispatch.connectAndRetry(environment)
+    }
   },
   loadEnvironments(context) {
     let loadedEnv

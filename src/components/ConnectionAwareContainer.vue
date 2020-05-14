@@ -14,14 +14,22 @@
         @environment::importEnv="$emit('environment::importEnv')"
       ></offline-spinner>
     </template>
-    <router-view
-      v-else
-      data-cy="App-online"
-      @environment::create="$emit('environment::create', $event)"
-      @environment::delete="$emit('environment::delete', $event)"
-      @environment::importEnv="$emit('environment::importEnv')"
-    ></router-view>
-
+    <template v-else>
+      <error-page
+        v-if="kuzzleError"
+        data-cy="App-connectionError"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      />
+      <router-view
+        v-else
+        data-cy="App-online"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      ></router-view>
+    </template>
     <b-toast
       id="offline-toast"
       title="Offline"
@@ -37,13 +45,15 @@
 </template>
 
 <script>
+import ErrorPage from './Error/KuzzleErrorPage'
 import OfflineSpinner from './Common/Offline'
 import { antiGlitchOverlayTimeout } from '../utils'
 
 export default {
   name: 'ConnectionAwareContainer',
   components: {
-    OfflineSpinner
+    OfflineSpinner,
+    ErrorPage
   },
   data() {
     return {
@@ -52,6 +62,9 @@ export default {
     }
   },
   computed: {
+    kuzzleError() {
+      return this.$store.state.kuzzle.errorFromKuzzle
+    },
     online() {
       return this.$store.direct.state.kuzzle.online
     },
@@ -63,6 +76,7 @@ export default {
     initListeners() {
       this.$kuzzle.on('networkError', error => {
         this.$log.error(error)
+        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
       })
       this.$kuzzle.addListener('connected', () => {
         this.$store.direct.commit.kuzzle.setOnline(true)
@@ -93,17 +107,12 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
-    async connectAndRetry() {
+    async connect() {
       try {
         await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
       } catch (error) {
-        // WARNING this error is dumped as "[object Event]" which is weird.
-        // TODO We need to put some conditions on this error to avoid looping on non-network errors.
         this.$log.error(error)
-        this.$log.debug('Retry connecting to Kuzzle.')
-        setTimeout(async () => {
-          await this.connectAndRetry()
-        }, 2000)
+        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
       }
     },
     async authenticationGuard() {
@@ -129,7 +138,7 @@ export default {
     this.$log.debug('ConnectionAwareContainer::mounted')
     this.$store.direct.commit.auth.setTokenValid(false)
     this.initListeners()
-    await this.connectAndRetry()
+    await this.connect()
   },
   beforeDestroy() {
     this.removeListeners()
