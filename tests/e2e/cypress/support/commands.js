@@ -28,13 +28,19 @@ import 'cypress-file-upload'
 
 /**
  * Workaround to make file upload functional with Cypress...
- * Usage: cy.uploadFile('input[type=file]', 'environment.json', blob)
+ * Usage:
+ * const file = {
+ *   name: 'environment.json',
+ *   type: 'application/json',
+ *   content: JSON.stringify(fileJson)
+ * }
+ * cy.uploadFile('input[type=file]', file)
  */
-Cypress.Commands.add('uploadFile', (inputFileSelector, filename, blob) => {
+Cypress.Commands.add('uploadFile', (inputFileSelector, file) => {
   cy.get(inputFileSelector).then(subject => {
     const el = subject[0]
-    const testFile = new File([blob], filename, {
-      type: 'application/json'
+    const testFile = new File([file.content], file.name, {
+      type: file.type
     })
     const dataTransfer = new DataTransfer()
 

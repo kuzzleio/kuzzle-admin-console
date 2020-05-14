@@ -121,9 +121,13 @@ describe('Environments', function() {
     })
 
     cy.fixture('environment.json').then(fileJson => {
-      const blob = JSON.stringify(fileJson)
+      const file = {
+        name: 'environment.json',
+        type: 'application/json',
+        content: JSON.stringify(fileJson)
+      }
 
-      cy.uploadFile('input[type=file]', 'environment.json', blob)
+      cy.uploadFile('input[type=file]', file)
 
       cy.get(
         '.EnvironmentsCreateModal-import.Environment-SubmitButton.btn'
