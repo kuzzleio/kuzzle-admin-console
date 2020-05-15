@@ -206,16 +206,13 @@ const actions = createActions({
     dispatch.setCurrentEnvironment(id)
 
     try {
-      await connectToEnvironment(environment) //await dispatch.connectAndRetry({ ...environment, id })
-      commit.setConnecting(false)
-      commit.setOnline(true)
+      await connectToEnvironment(environment)
     } catch (error) {
       if (error.id) {
         dispatch.onConnectionError(error)
         return false
       }
     }
-    await rootDispatch.auth.init(environment)
 
     return true
   },

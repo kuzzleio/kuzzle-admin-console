@@ -81,12 +81,23 @@ export default {
         }
       })
       this.$kuzzle.addListener('connected', () => {
+        this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
+        this.$log.debug(
+          'ConnectionAwareContainer::initializing auth upon connection...'
+        )
+        this.$store.direct.dispatch.auth.init()
       })
       this.$kuzzle.addListener('reconnected', () => {
+        this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
+        this.$log.debug(
+          'ConnectionAwareContainer::checking authentication after reconnection...'
+        )
+        this.authenticationGuard()
       })
       this.$kuzzle.addListener('disconnected', () => {
+        this.$log.debug('ConnectionAwareContainer::backend went offline...')
         this.$store.direct.commit.kuzzle.setOnline(false)
       })
     },
@@ -157,14 +168,7 @@ export default {
     connecting: {
       immediate: true,
       handler(val) {
-        if (val === false) {
-          this.showOfflineSpinner = false
-          this.$log.debug(
-            'ConnectionAwareContainer::checking authentication after (re)connection...'
-          )
-          this.authenticationGuard()
-        }
-        this.showOfflineSpinner = false
+        this.showOfflineSpinner = val
         setTimeout(() => {
           this.showOfflineSpinner = true
         }, antiGlitchOverlayTimeout)
