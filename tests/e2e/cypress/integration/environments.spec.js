@@ -4,10 +4,10 @@ const fmt = word => {
   return word.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~ ]/g, '-')
 }
 
-describe('Environments', function () {
-  this.beforeEach(() => { })
+describe('Environments', function() {
+  this.beforeEach(() => {})
 
-  it('is able to create a new environment', function () {
+  it('is able to create a new environment', function() {
     const newEnvName = 'local'
     cy.visit('/')
     cy.contains('Create a Connection')
@@ -21,7 +21,7 @@ describe('Environments', function () {
     cy.get(`.EnvironmentsSwitch-env[data-env=env_${fmt(newEnvName)}]`)
   })
 
-  it('is able to delete an environment', function () {
+  it('is able to delete an environment', function() {
     const envToDeleteName = 'local'
     localStorage.setItem(
       'environments',
@@ -49,7 +49,7 @@ describe('Environments', function () {
     cy.contains('Create a Connection')
   })
 
-  it('is able to set the color of an environment', function () {
+  it('is able to set the color of an environment', function() {
     cy.visit('/')
     cy.get('.CreateEnvironment-name').type('local', {
       force: true
@@ -74,7 +74,7 @@ describe('Environments', function () {
     })
   })
 
-  it('is able to create an invalid environment and switch back to the valid one', function () {
+  it('is able to create an invalid environment and switch back to the valid one', function() {
     const validEnvName = 'valid'
     const invalidEnvName = 'invalid'
     localStorage.setItem(
@@ -113,22 +113,28 @@ describe('Environments', function () {
     cy.get('.App-connected')
   })
 
-  it.skip('should import environment', () => {
+  it('should import environment', () => {
     cy.visit('/')
     cy.contains('Create a Connection')
     cy.get('.CreateEnvironment-import').click({
       force: true
     })
 
-    cy.fixture('environment.json').then(fileContent => {
-      cy.get('input[type=file').upload(
-        {
-          fileContent,
-          fileName: 'environment.json',
-          mimeType: 'application/json'
-        },
-        { subjectType: 'input' }
-      )
+    cy.fixture('environment.json').then(fileJson => {
+      const file = {
+        name: 'environment.json',
+        type: 'application/json',
+        content: JSON.stringify(fileJson)
+      }
+
+      cy.uploadFile('input[type=file]', file)
+
+      cy.get(
+        '.EnvironmentsCreateModal-import.Environment-SubmitButton.btn'
+      ).click()
+
+      cy.wait(200)
+      cy.contains('uat')
     })
   })
 })
