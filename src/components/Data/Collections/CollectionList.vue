@@ -55,6 +55,7 @@
           striped
           outlined
           show-empty
+          data-cy="CollectionList-table"
           :items="collections"
           :fields="tableFields"
           :filter="filter"
