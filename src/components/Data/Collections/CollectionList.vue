@@ -324,12 +324,11 @@ export default {
         ? this.rawStoredCollections
         : this.$store.state.index.indexesAndCollections[this.index].stored
 
-      return rawStoredCollections
-        .map(({ collection, count }) => ({
-          name: collection,
-          documents: count,
-          type: 'stored'
-        }))
+      return rawStoredCollections.map(({ collection, count }) => ({
+        name: collection,
+        documents: count,
+        type: 'stored'
+      }))
     },
     collections() {
       return [...this.realtimeCollections, ...this.storedCollections]
@@ -409,6 +408,13 @@ export default {
   },
   mounted() {
     this.fetchStoredCollections()
+  },
+  watch: {
+    index: {
+      handler() {
+        this.fetchStoredCollections()
+      }
+    }
   }
 }
 </script>
