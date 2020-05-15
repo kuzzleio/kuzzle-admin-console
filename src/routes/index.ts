@@ -43,28 +43,28 @@ export default function createRoutes(log, kuzzle) {
     }
   }
 
-  const authenticationGuard = async (to, from, next) => {
-    if (store.state.kuzzle.online === false) {
-      // NOTE (@xbill82) This is necessary because this guard is called
-      // before the ConnectionAwareContainer is mounted (thus triggering
-      // the connection to Kuzzle). It is the ConnectionAwareItself that
-      // will check the token once connected.
-      return next()
-    }
-    try {
-      if (await store.dispatch.auth.checkToken(moduleActionContext)) {
-        log.debug('Token bueno')
-        next()
-      } else {
-        log.debug('Token no bueno')
-        next({ name: 'Login', query: { to: to.name } })
-      }
-    } catch (error) {
-      log.debug('Token no bueno (error)')
-      log.error(error)
-      next({ name: 'Login', query: { to: to.name } })
-    }
-  }
+  // const authenticationGuard = async (to, from, next) => {
+  //   if (store.state.kuzzle.online === false) {
+  //     // NOTE (@xbill82) This is necessary because this guard is called
+  //     // before the ConnectionAwareContainer is mounted (thus triggering
+  //     // the connection to Kuzzle). It is the ConnectionAwareItself that
+  //     // will check the token once connected.
+  //     return next()
+  //   }
+  //   try {
+  //     if (await store.dispatch.auth.checkToken(moduleActionContext)) {
+  //       log.debug('Token bueno')
+  //       next()
+  //     } else {
+  //       log.debug('Token no bueno')
+  //       next({ name: 'Login', query: { to: to.name } })
+  //     }
+  //   } catch (error) {
+  //     log.debug('Token no bueno (error)')
+  //     log.error(error)
+  //     next({ name: 'Login', query: { to: to.name } })
+  //   }
+  // }
 
   const router = new VueRouter({
     routes: [
@@ -96,7 +96,7 @@ export default function createRoutes(log, kuzzle) {
           {
             path: '/',
             component: Home,
-            beforeEnter: authenticationGuard,
+            // beforeEnter: authenticationGuard,
             children: [
               {
                 path: '/',

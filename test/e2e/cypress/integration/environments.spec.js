@@ -21,7 +21,7 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it('Should be able to delete environments', function() {
+  it.only('Should be able to delete environments', function() {
     const envNames = ['local', 'another']
     localStorage.setItem(
       'environments',

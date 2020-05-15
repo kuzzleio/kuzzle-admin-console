@@ -80,13 +80,14 @@ export default {
           this.$store.direct.dispatch.kuzzle.onConnectionError(error)
         }
       })
-      this.$kuzzle.addListener('connected', () => {
+      this.$kuzzle.addListener('connected', async () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
         this.$log.debug(
           'ConnectionAwareContainer::initializing auth upon connection...'
         )
-        this.$store.direct.dispatch.auth.init()
+        await this.$store.direct.dispatch.auth.init()
+        this.authenticationGuard()
       })
       this.$kuzzle.addListener('reconnected', () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
@@ -131,20 +132,7 @@ export default {
       }
     },
     async authenticationGuard() {
-      // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
-      // the code from router.authenticationGuard by refactoring it into a separate
-      // function, but I can't pass `this.$router.push` as the `next` parameter:
-      // I get a `this$1` doesn't exist error.
-      try {
-        if (await this.$store.direct.dispatch.auth.checkToken()) {
-          this.$log.debug('ConnectionAwareContainer::Token bueno')
-        } else {
-          this.$log.debug('ConnectionAwareContainer::Token no bueno')
-          this.$router.push({ name: 'Login', query: { to: this.$route.name } })
-        }
-      } catch (error) {
-        this.$log.debug('ConnectionAwareContainer::Token no bueno (error)')
-        this.$log.error(error)
+      if (await !this.$store.direct.getters.auth.isAuthenticated) {
         this.$router.push({ name: 'Login', query: { to: this.$route.name } })
       }
     }
