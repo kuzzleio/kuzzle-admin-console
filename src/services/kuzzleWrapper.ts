@@ -1,7 +1,7 @@
 import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 export const waitForConnected = (timeout = 1000) => {
   if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
@@ -61,7 +61,8 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 
 const formatMeta = _kuzzle_info => ({
   author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
-  updater: _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
+  updater:
+    _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
   createdAt: _kuzzle_info.createdAt,
   updatedAt: _kuzzle_info.updatedAt
 })

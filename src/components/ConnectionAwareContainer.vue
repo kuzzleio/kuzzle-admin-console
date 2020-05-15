@@ -76,7 +76,9 @@ export default {
     initListeners() {
       this.$kuzzle.on('networkError', error => {
         this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        if (error.code) {
+          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        }
       })
       this.$kuzzle.addListener('connected', () => {
         this.$store.direct.commit.kuzzle.setOnline(true)
@@ -112,7 +114,9 @@ export default {
         await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
       } catch (error) {
         this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        if (error.code) {
+          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        }
       }
     },
     async authenticationGuard() {

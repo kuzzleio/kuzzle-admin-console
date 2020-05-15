@@ -206,12 +206,14 @@ const actions = createActions({
     dispatch.setCurrentEnvironment(id)
 
     try {
-      await dispatch.connectAndRetry({ ...environment, id })
+      await connectToEnvironment(environment) //await dispatch.connectAndRetry({ ...environment, id })
       commit.setConnecting(false)
       commit.setOnline(true)
     } catch (error) {
-      dispatch.onConnectionError(error)
-      return false
+      if (error.id) {
+        dispatch.onConnectionError(error)
+        return false
+      }
     }
     await rootDispatch.auth.init(environment)
 
@@ -223,21 +225,6 @@ const actions = createActions({
     commit.setConnecting(false)
     commit.setOnline(true)
     commit.setErrorFromKuzzle(error.message)
-  },
-  async connectAndRetry(context, environment) {
-    const { state, dispatch, getters } = kuzzleActionContext(context)
-    try {
-      await connectToEnvironment(environment)
-    } catch (error) {
-      if (error.id) {
-        throw error
-      }
-      if (state.currentId !== environment.id) {
-        return
-      }
-      await wait(2000)
-      await dispatch.connectAndRetry(environment)
-    }
   },
   loadEnvironments(context) {
     let loadedEnv

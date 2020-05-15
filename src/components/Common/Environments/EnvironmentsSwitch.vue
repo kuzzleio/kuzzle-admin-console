@@ -110,7 +110,9 @@ export default {
         }
       } catch (error) {
         this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        if (error.code) {
+          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        }
       }
     },
     formatForDom
