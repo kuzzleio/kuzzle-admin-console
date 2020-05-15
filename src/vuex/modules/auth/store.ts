@@ -59,6 +59,7 @@ const actions = createActions({
       const sessionUser = new SessionUser()
       const rights = await Vue.prototype.$kuzzle.auth.getMyRights()
       sessionUser.rights = rights
+
       commit.setCurrentUser(sessionUser)
       commit.setTokenValid(true)
       commit.setInitializing(false)
