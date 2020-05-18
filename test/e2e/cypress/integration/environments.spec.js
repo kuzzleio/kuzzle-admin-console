@@ -21,7 +21,7 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it.only('Should be able to delete environments', function() {
+  it('Should be able to delete environments', function() {
     const envNames = ['local', 'another']
     localStorage.setItem(
       'environments',
@@ -81,7 +81,16 @@ describe('Environments', function() {
       .click()
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
+    cy.wait(500)
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(
+      `[data-cy=EnvironmentSwitch-env_local] > .EnvironmentSwitch-env-name`
+    ).click({
+      force: true
+    })
     cy.wait(1000)
+
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
     cy.get('nav').should($nav => {

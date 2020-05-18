@@ -62,6 +62,9 @@ export default {
     }
   },
   computed: {
+    currentEnvironment() {
+      return this.$store.state.kuzzle.currentId
+    },
     kuzzleError() {
       return this.$store.state.kuzzle.errorFromKuzzle
     },
@@ -131,22 +134,31 @@ export default {
         }
       }
     },
+    async onEnvironmentSwitch() {
+      this.$log.debug('ConnectionAwareContainer::environmentSwitched')
+      this.$store.direct.commit.auth.setTokenValid(false)
+      this.removeListeners()
+      this.initListeners()
+      await this.connect()
+    },
     async authenticationGuard() {
-      if (await !this.$store.direct.getters.auth.isAuthenticated) {
+      this.$log.debug('ConnectionAwareContainer::authentication guard')
+      if (!this.$store.direct.getters.auth.isAuthenticated) {
+        this.$log.debug('ConnectionAwareContainer::not authenticated')
         this.$router.push({ name: 'Login', query: { to: this.$route.name } })
       }
     }
-  },
-  async mounted() {
-    this.$log.debug('ConnectionAwareContainer::mounted')
-    this.$store.direct.commit.auth.setTokenValid(false)
-    this.initListeners()
-    await this.connect()
   },
   beforeDestroy() {
     this.removeListeners()
   },
   watch: {
+    currentEnvironment: {
+      immediate: true,
+      async handler() {
+        await this.onEnvironmentSwitch()
+      }
+    },
     online: {
       immediate: true,
       handler() {

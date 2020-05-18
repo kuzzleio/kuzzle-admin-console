@@ -45,8 +45,9 @@ const actions = createActions({
     await dispatch.loginByToken()
   },
   async prepareSession(context, token) {
-    const { commit } = authActionContext(context)
+    const { commit, rootDispatch } = authActionContext(context)
     commit.setInitializing(true)
+    await rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
 
     if (token === null) {
       commit.setCurrentUser(null)
@@ -59,7 +60,6 @@ const actions = createActions({
       const sessionUser = new SessionUser()
       const rights = await Vue.prototype.$kuzzle.auth.getMyRights()
       sessionUser.rights = rights
-
       commit.setCurrentUser(sessionUser)
       commit.setTokenValid(true)
       commit.setInitializing(false)

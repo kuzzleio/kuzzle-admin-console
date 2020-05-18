@@ -86,13 +86,7 @@ export default {
       if (!this.errors.length) {
         this.$log.debug(`Finished import must switch: ${mustSwitch}, env:`)
         this.$log.debug(this.$store.direct.state.kuzzle.environments)
-        if (
-          mustSwitch &&
-          Object.keys(this.$store.direct.state.kuzzle.environments).length > 0
-        ) {
-          await this.$store.direct.dispatch.kuzzle.switchEnvironment(
-            Object.keys(this.$store.direct.state.kuzzle.environments)[0]
-          )
+        if (!this.$store.direct.getters.kuzzle.currentEnvironment) {
           this.$router.push({ name: 'SelectEnvironment' })
         }
         this.$bvModal.hide(this.id)

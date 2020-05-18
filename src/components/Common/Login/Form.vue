@@ -98,17 +98,15 @@ export default {
         this.error = err.message
       }
     },
-    loginAsAnonymous() {
+    async loginAsAnonymous() {
       this.error = ''
       this.$kuzzle.jwt = null
-      this.$store.direct.dispatch.auth
-        .prepareSession('anonymous')
-        .then(() => {
-          this.onLogin()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      try {
+        await this.$store.direct.dispatch.auth.prepareSession('anonymous')
+        await this.onLogin()
+      } catch (error) {
+        this.error = error.message
+      }
     }
   }
 }
