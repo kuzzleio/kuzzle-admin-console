@@ -1,29 +1,33 @@
 <template>
-  <div class="DataLayout">
+  <Multipane class="DataLayout">
     <div class="DataLayout-sidebarWrapper">
       <treeview
         :index="$route.params.index"
         :collection="$route.params.collection"
       />
     </div>
+    <MultipaneResizer></MultipaneResizer>
     <div class="DataLayout-contentWrapper">
       <template v-if="loading">
         <main-spinner></main-spinner>
       </template>
       <router-view v-else />
     </div>
-  </div>
+  </Multipane>
 </template>
 
 <script>
 import Treeview from './Leftnav/Treeview'
 import MainSpinner from '../Common/MainSpinner'
+import { Multipane, MultipaneResizer } from 'vue-multipane'
 
 export default {
   name: 'DataLayout',
   components: {
     MainSpinner,
-    Treeview
+    Treeview,
+    Multipane,
+    MultipaneResizer
   },
   computed: {
     loading() {
@@ -53,8 +57,8 @@ export default {
 }
 .DataLayout-sidebarWrapper {
   background-color: $light-grey-color;
-  flex-basis: $sidebar-width;
   min-width: $sidebar-width;
+  width: $sidebar-width;
   height: 100%;
   overflow: auto;
   box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
