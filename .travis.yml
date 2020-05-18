@@ -42,7 +42,6 @@ jobs:
 
     # ---------------------------------------
     # Unit Testing
-    # End-to-end Testing
     # ---------------------------------------
     - stage: tests
       name: 'Unit Tests'
