@@ -89,8 +89,8 @@ jobs:
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_SECRET_ACCESS_KEY
         bucket: $AWS_S3_BUCKET_PROD
-        upload-dir: $DEPLOY_PATH
         skip_cleanup: true
+        upload-dir: $DEPLOY_PATH
         local-dir: dist
         region: $AWS_S3_REGION
         on:
@@ -213,8 +213,8 @@ jobs:
         secret_access_key: $AWS_SECRET_ACCESS_KEY
         bucket: $AWS_S3_BUCKET_DEV
         skip_cleanup: true
-        local-dir: dist
         upload-dir: $DEPLOY_PATH
+        local-dir: dist
         region: $AWS_S3_REGION
         on:
           all_branches: true
