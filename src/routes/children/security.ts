@@ -1,12 +1,4 @@
 /* istanbul ignore next */
-import {
-  canCreateUser,
-  canEditUser,
-  canCreateRole,
-  canEditRole,
-  canCreateProfile,
-  canEditProfile
-} from '../../services/userAuthorization'
 
 export default [
   {

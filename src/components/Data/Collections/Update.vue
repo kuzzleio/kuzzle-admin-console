@@ -20,10 +20,9 @@
 </template>
 
 <script>
-import { canEditCollection } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
-
 import CreateOrUpdate from './CreateOrUpdate'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionUpdate',
@@ -44,8 +43,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditCollection']),
     hasRights() {
-      return canEditCollection(this.index, this.collection)
+      return this.canEditCollection(this.index, this.collection)
     }
   },
   async mounted() {

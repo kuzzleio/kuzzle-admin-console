@@ -91,12 +91,8 @@
 
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
-import {
-  canEditProfile,
-  canDeleteProfile
-} from '../../../services/userAuthorization'
 import title from '../../../directives/title.directive'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'ProfileItem',
   components: {},
@@ -115,6 +111,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditProfile', 'canDeleteProfile']),
     checkboxId() {
       return `checkbox-${this.document._id}`
     }
@@ -135,9 +132,7 @@ export default {
       if (this.canEditProfile()) {
         this.$emit('edit', this.document._id)
       }
-    },
-    canEditProfile,
-    canDeleteProfile
+    }
   },
   watch: {
     isChecked: {

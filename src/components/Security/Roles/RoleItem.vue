@@ -71,9 +71,8 @@
 
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
-import { canEditRole, canDeleteRole } from '../../../services/userAuthorization'
 import title from '../../../directives/title.directive'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'RoleItem',
   components: {},
@@ -90,6 +89,9 @@ export default {
       expanded: false,
       checked: false
     }
+  },
+  computed: {
+    ...mapGetters('auth', [' canEditRole', 'canDeleteRole'])
   },
   methods: {
     toggleCollapse() {
@@ -111,9 +113,7 @@ export default {
           this.document._id
         )
       }
-    },
-    canEditRole,
-    canDeleteRole
+    }
   },
   watch: {
     isChecked: {

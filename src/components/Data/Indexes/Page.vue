@@ -5,10 +5,10 @@
       <b-button
         class="float-right mt-3"
         data-cy="IndexesPage-createBtn"
-        v-if="canCreateIndex()"
+        v-if="canCreateIndex"
         variant="primary"
         :title="
-          !canCreateIndex() ? `Your rights disallow you to create indexes` : ''
+          !canCreateIndex ? `Your rights disallow you to create indexes` : ''
         "
         @click.prevent="openCreateModal"
       >
@@ -17,7 +17,7 @@
       </b-button>
     </headline>
 
-    <list-not-allowed v-if="!canSearchIndex()" />
+    <list-not-allowed v-if="!canSearchIndex" />
     <template v-else>
       <template v-if="loading"></template>
       <template v-else>
@@ -51,7 +51,7 @@
         >
           <template v-slot:empty>
             <h4 class="text-secondary text-center">There is no index.</h4>
-            <p class="text-secondary text-center" v-if="canCreateIndex()">
+            <p class="text-secondary text-center" v-if="canCreateIndex">
               You can create one by hitting the button above.
             </p>
           </template>
@@ -123,12 +123,8 @@ import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-
 import Title from '../../../directives/title.directive'
-import {
-  canCreateIndex,
-  canSearchIndex
-} from '../../../services/userAuthorization'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'IndexesPage',
@@ -174,6 +170,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canSearchIndex', 'canCreateIndex']),
     loading() {
       return this.$store.direct.state.index.loadingIndexes
     },
@@ -194,8 +191,6 @@ export default {
     }
   },
   methods: {
-    canSearchIndex,
-    canCreateIndex,
     openCreateModal() {
       this.$bvModal.show(this.createIndexModalId)
     },

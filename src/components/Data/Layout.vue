@@ -32,9 +32,6 @@ export default {
   },
   methods: {
     async loadStuff() {
-      if (this.loading) {
-        return
-      }
       await this.$store.direct.dispatch.index.listIndexesAndCollections()
     }
   },

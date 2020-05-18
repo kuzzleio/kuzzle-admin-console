@@ -40,12 +40,12 @@
 </style>
 
 <script>
-import { canEditDocument } from '../../../services/userAuthorization'
 import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import { omit } from 'lodash'
+import { mapGetters } from 'vuex'
 
 let room
 
@@ -70,8 +70,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditDocument']),
     hasRights() {
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     }
   },
   async mounted() {

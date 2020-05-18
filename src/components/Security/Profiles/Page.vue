@@ -47,14 +47,10 @@ import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
 import {
-  canSearchProfile,
-  canCreateProfile
-} from '../../../services/userAuthorization'
-import {
   performSearchProfiles,
   performDeleteProfiles
 } from '../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'ProfileManagement',
   components: {
@@ -62,12 +58,13 @@ export default {
     ListNotAllowed,
     Headline
   },
+  computed: {
+    ...mapGetters('auth', ['canSearchProfile', 'canCreateProfile'])
+  },
   methods: {
     createProfile() {
       this.$router.push({ name: 'SecurityProfilesCreate' })
     },
-    canSearchProfile,
-    canCreateProfile,
     performSearchProfiles,
     performDeleteProfiles
   },

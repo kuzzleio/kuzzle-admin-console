@@ -83,13 +83,13 @@
 </style>
 
 <script>
-import {
-  canCreateDocument,
-  canSubscribe
-} from '../../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionTabs',
+  computed: {
+        ...mapGetters('auth', ['canCreateDocument',
+  'canSubscribe']),,
+  },
   methods: {
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {
@@ -98,8 +98,6 @@ export default {
 
       return this.$route.name === routeName
     },
-    canCreateDocument,
-    canSubscribe
   }
 }
 </script>

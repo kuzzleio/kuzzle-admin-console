@@ -241,11 +241,11 @@ import Notification from '../Realtime/Notification'
 import CollectionDropdown from '../Collections/Dropdown'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
-import { canSubscribe } from '../../../services/userAuthorization'
 import { truncateName } from '@/utils'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
 import { isEqual } from 'lodash'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionWatch',
@@ -276,6 +276,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canSubscribe']),
     hasFilter() {
       return (
         !!this.realtimeQuery &&
@@ -315,7 +316,6 @@ export default {
     }
   },
   methods: {
-    canSubscribe,
     truncateName,
     onFilterChanged(value) {
       this.rawFilter = value

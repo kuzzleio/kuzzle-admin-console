@@ -15,10 +15,9 @@
 </template>
 
 <script>
-import { canCreateCollection } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import CreateOrUpdate from './CreateOrUpdate'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionCreate',
   components: {
@@ -29,8 +28,9 @@ export default {
     index: String
   },
   computed: {
+    ...mapGetters('auth', ['canCreateCollection']),
     hasRights() {
-      return canCreateCollection(this.index, this.collection)
+      return this.canCreateCollection(this.index, this.collection)
     }
   },
   methods: {

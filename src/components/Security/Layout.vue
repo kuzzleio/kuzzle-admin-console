@@ -103,14 +103,16 @@
 </style>
 
 <script>
-import {
-  canManageUsers,
-  canManageRoles,
-  canManageProfiles
-} from '../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'SecurityLayout',
+  computed: {
+    ...mapGetters('auth', [
+      'canManageUsers',
+      'canManageRoles',
+      'canManageProfiles'
+    ])
+  },
   watch: {
     $route(v) {
       this.fetchMapping(v)
@@ -120,9 +122,6 @@ export default {
     this.fetchMapping(this.$route)
   },
   methods: {
-    canManageUsers,
-    canManageRoles,
-    canManageProfiles,
     fetchMapping(v) {
       if (!v.meta) {
         return

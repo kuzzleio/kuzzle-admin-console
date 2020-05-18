@@ -2,7 +2,7 @@
   <b-overlay class="h-100" opacity="1" :show="this.isLoading">
     <aside class="Treeview h-100">
       <div
-        v-if="!canSearchIndex()"
+        v-if="!canSearchIndex"
         class="Treeview-notAuth px-3 text-center"
         v-show="!isLoading"
       >
@@ -62,9 +62,9 @@
 </style>
 
 <script>
-import { canSearchIndex } from '../../../services/userAuthorization'
 import IndexBranch from './IndexBranch'
 import { filterIndexesByKeyword } from '../../../services/data'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Treeview',
@@ -81,6 +81,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canSearchIndex']),
     orderedFilteredIndices() {
       return [
         ...filterIndexesByKeyword(
@@ -100,9 +101,6 @@ export default {
         this.$store.direct.getters.index.loadingCollections
       )
     }
-  },
-  methods: {
-    canSearchIndex
   }
 }
 </script>

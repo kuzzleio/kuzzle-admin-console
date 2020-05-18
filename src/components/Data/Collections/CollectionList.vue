@@ -216,19 +216,13 @@
 </style>
 
 <script>
+import DataNotFound from '../Data404'
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
-import {
-  canDeleteIndex,
-  canSearchIndex,
-  canSearchCollection,
-  canCreateCollection,
-  canEditCollection
-} from '../../../services/userAuthorization'
-import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
-import DataNotFound from '../Data404'
+import { truncateName } from '../../../utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionList',
@@ -253,6 +247,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', [
+      'canSearchCollection',
+      'canCreateCollection',
+      'canEditCollection'
+    ]),
+
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
     },
@@ -324,23 +324,17 @@ export default {
         ? this.rawStoredCollections
         : this.$store.state.index.indexesAndCollections[this.index].stored
 
-      return rawStoredCollections
-        .map(({ collection, count }) => ({
-          name: collection,
-          documents: count,
-          type: 'stored'
-        }))
+      return rawStoredCollections.map(({ collection, count }) => ({
+        name: collection,
+        documents: count,
+        type: 'stored'
+      }))
     },
     collections() {
       return [...this.realtimeCollections, ...this.storedCollections]
     }
   },
   methods: {
-    canDeleteIndex,
-    canSearchIndex,
-    canSearchCollection,
-    canCreateCollection,
-    canEditCollection,
     onDeleteCollectionClicked(name) {
       this.collectionToDelete = name
       this.$bvModal.show('deleteCollectionPrompt')

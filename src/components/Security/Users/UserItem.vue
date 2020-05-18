@@ -102,9 +102,8 @@
 
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
-import { canEditUser, canDeleteUser } from '../../../services/userAuthorization'
 import title from '../../../directives/title.directive'
-
+import { mapGetters } from 'vuex'
 const MAX_PROFILES = 5
 
 export default {
@@ -125,6 +124,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditUser', 'canDeleteUser']),
     profileList() {
       if (!this.document.profileIds) {
         return []
@@ -162,9 +162,7 @@ export default {
       if (this.canEditUser()) {
         this.$emit('edit', this.document.id)
       }
-    },
-    canEditUser,
-    canDeleteUser
+    }
   }
 }
 </script>

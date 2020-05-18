@@ -43,16 +43,12 @@
 <script>
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import RoleList from './List'
-import {
-  canSearchRole,
-  canCreateRole
-} from '../../../services/userAuthorization'
 import Headline from '../../Materialize/Headline'
 import {
   performSearchRoles,
   performDeleteRoles
 } from '../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'RolesManagement',
   components: {
@@ -60,9 +56,10 @@ export default {
     RoleList,
     Headline
   },
+  computed: {
+    ...mapGetters('auth', ['canSearchRole', 'canCreateRole'])
+  },
   methods: {
-    canSearchRole,
-    canCreateRole,
     performSearchRoles,
     performDeleteRoles
   }

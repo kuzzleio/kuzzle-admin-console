@@ -68,15 +68,11 @@ import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
 import {
-  canSearchUser,
-  canCreateUser
-} from '../../../services/userAuthorization'
-import {
   performSearchUsers,
   performDeleteUsers,
   getMappingUsers
 } from '../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'UsersManagement',
   components: {
@@ -93,12 +89,13 @@ export default {
     const mapping = await getMappingUsers()
     this.userMapping = mapping.mapping
   },
+  computed: {
+    ...mapGetters('auth', ['canSearchUser', 'canCreateUser'])
+  },
   methods: {
     createUser() {
       this.$router.push({ name: 'SecurityUsersCreate' })
     },
-    canSearchUser,
-    canCreateUser,
     performSearchUsers,
     performDeleteUsers
   }
