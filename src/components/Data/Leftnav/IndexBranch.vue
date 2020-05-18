@@ -197,7 +197,6 @@ export default {
 <style scoped lang="scss">
 .IndexBranch {
   white-space: nowrap;
-  padding-left: 25px;
   overflow-y: hidden;
   overflow-x: hidden;
 }
