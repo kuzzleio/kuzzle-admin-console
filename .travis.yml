@@ -41,6 +41,16 @@ jobs:
         - npm run lint
 
     # ---------------------------------------
+    # Unit Testing
+    # End-to-end Testing
+    # ---------------------------------------
+    - stage: tests
+      name: 'Unit Tests'
+      script:
+        - npm install
+        - npm run test:unit
+
+    # ---------------------------------------
     # End-to-end Testing
     # ---------------------------------------
     - stage: tests
@@ -54,7 +64,7 @@ jobs:
 
       script:
         - npm install
-        - CYPRESS_RETRIES=5 npm run e2e
+        - CYPRESS_RETRIES=5 npm run test:e2e
 
     # ---------------------------------------
     # Regular Build & Deploy
