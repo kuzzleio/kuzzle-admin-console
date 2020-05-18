@@ -54,7 +54,7 @@ jobs:
 
       script:
         - npm install
-        - CYPRESS_RETRIES=5 npm run e2e
+        - CYPRESS_RETRIES=5 npm run test:e2e
 
     # ---------------------------------------
     # Regular Build & Deploy
