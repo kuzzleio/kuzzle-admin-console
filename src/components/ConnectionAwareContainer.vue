@@ -78,7 +78,9 @@ export default {
   methods: {
     initListeners() {
       this.$kuzzle.on('networkError', error => {
-        this.$log.error(error)
+        this.$log.error(
+          `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
+        )
         if (error.code) {
           this.$store.direct.dispatch.kuzzle.onConnectionError(error)
         }
@@ -89,8 +91,17 @@ export default {
         this.$log.debug(
           'ConnectionAwareContainer::initializing auth upon connection...'
         )
-        await this.$store.direct.dispatch.auth.init()
-        this.authenticationGuard()
+        try {
+          await this.$store.direct.dispatch.auth.init()
+          this.authenticationGuard()
+        } catch (error) {
+          this.$log.error(
+            `ConnectionAwareContainer:connected: ${error.message}`
+          )
+          if (error.code) {
+            this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+          }
+        }
       })
       this.$kuzzle.addListener('reconnected', () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
@@ -124,22 +135,21 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
-    async connect() {
-      try {
-        await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
-      } catch (error) {
-        this.$log.error(error)
-        if (error.code) {
-          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
-        }
-      }
-    },
     async onEnvironmentSwitch() {
       this.$log.debug('ConnectionAwareContainer::environmentSwitched')
       this.$store.direct.commit.auth.setTokenValid(false)
       this.removeListeners()
       this.initListeners()
-      await this.connect()
+      try {
+        await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
+      } catch (error) {
+        this.$log.error(
+          `ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`
+        )
+        if (error.code) {
+          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        }
+      }
     },
     async authenticationGuard() {
       this.$log.debug('ConnectionAwareContainer::authentication guard')
@@ -156,7 +166,16 @@ export default {
     currentEnvironment: {
       immediate: true,
       async handler() {
-        await this.onEnvironmentSwitch()
+        try {
+          await this.onEnvironmentSwitch()
+        } catch (error) {
+          this.$log.error(
+            `ConnectionAwareContainer:currentEnvironmentWatch: ${error.message}`
+          )
+          if (error.code) {
+            this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+          }
+        }
       }
     },
     online: {
