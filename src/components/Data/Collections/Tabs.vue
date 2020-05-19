@@ -87,8 +87,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionTabs',
   computed: {
-        ...mapGetters('auth', ['canCreateDocument',
-  'canSubscribe']),,
+    ...mapGetters('auth', ['canCreateDocument', 'canSubscribe'])
   },
   methods: {
     isRouteActive(routeName) {
@@ -97,7 +96,7 @@ export default {
       }
 
       return this.$route.name === routeName
-    },
+    }
   }
 }
 </script>
