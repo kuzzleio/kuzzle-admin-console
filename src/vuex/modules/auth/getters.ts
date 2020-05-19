@@ -1,28 +1,60 @@
 import { AuthState } from './types'
 import { SessionUser } from '@/models/SessionUser'
 import { createGetters } from 'direct-vuex'
-import { isKuzzleActionAllowed } from '../../../services/kuzzleWrapper'
 
-function isActionAllowed(
+const isActionAllowed = (
   user,
   controller,
   action,
   index = '*',
   collection = '*'
-) {
+) => {
   if (!user) {
     return false
   }
-  const allowed = isKuzzleActionAllowed(
-    user.rights,
-    controller,
-    action,
-    index,
-    collection
-  )
 
-  return allowed !== 'denied'
+  const rights = user.rights || []
+
+  if (!rights || typeof rights !== 'object') {
+    throw new Error(
+      'rights parameter is mandatory for isActionAllowed function'
+    )
+  }
+  if (!controller || typeof controller !== 'string') {
+    throw new Error(
+      'controller parameter is mandatory for isActionAllowed function'
+    )
+  }
+  if (!action || typeof action !== 'string') {
+    throw new Error(
+      'action parameter is mandatory for isActionAllowed function'
+    )
+  }
+  // We filter in all the rights that match the request (including wildcards).
+  const filteredRights = rights
+    .filter(function(right) {
+      return right.controller === controller || right.controller === '*'
+    })
+    .filter(function(right) {
+      return right.action === action || right.action === '*'
+    })
+    .filter(function(right) {
+      return right.index === index || right.index === '*'
+    })
+    .filter(function(right) {
+      return right.collection === collection || right.collection === '*'
+    })
+
+  if (
+    filteredRights.some(function(item) {
+      return item.value === 'allowed'
+    })
+  ) {
+    return true
+  }
+  return false
 }
+
 export const getters = createGetters<AuthState>()({
   isAuthenticated(state): boolean {
     return !!state?.user?.id
