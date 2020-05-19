@@ -81,9 +81,6 @@ export default {
         this.$log.error(
           `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
         )
-        if (error.code) {
-          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
-        }
       })
       this.$kuzzle.addListener('connected', async () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
@@ -93,15 +90,15 @@ export default {
         )
         try {
           await this.$store.direct.dispatch.auth.init()
-          this.authenticationGuard()
         } catch (error) {
           this.$log.error(
-            `ConnectionAwareContainer:connected: ${error.message}`
+            `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`
           )
-          if (error.code) {
-            this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+          if (error.id === 'api.process.incompatible_sdk_version') {
+            return this.$store.direct.dispatch.kuzzle.onConnectionError(error)
           }
         }
+        this.authenticationGuard()
       })
       this.$kuzzle.addListener('reconnected', () => {
         this.$store.direct.commit.kuzzle.setConnecting(false)
@@ -109,6 +106,8 @@ export default {
         this.$log.debug(
           'ConnectionAwareContainer::checking authentication after reconnection...'
         )
+        // TODO this must be a different logic (show the re-login modal instead of
+        // redirecting to the login page)
         this.authenticationGuard()
       })
       this.$kuzzle.addListener('disconnected', () => {
@@ -146,9 +145,6 @@ export default {
         this.$log.error(
           `ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`
         )
-        if (error.code) {
-          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
-        }
       }
     },
     async authenticationGuard() {
@@ -172,9 +168,6 @@ export default {
           this.$log.error(
             `ConnectionAwareContainer:currentEnvironmentWatch: ${error.message}`
           )
-          if (error.code) {
-            this.$store.direct.dispatch.kuzzle.onConnectionError(error)
-          }
         }
       }
     },
