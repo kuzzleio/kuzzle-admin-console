@@ -44,9 +44,9 @@
             href=""
             variant="link"
             :data-cy="`ProfileListItem-update--${document._id}`"
-            :disabled="!canEditProfile()"
+            :disabled="!canEditProfile"
             :title="
-              canEditProfile()
+              canEditProfile
                 ? 'Edit Profile'
                 : 'You are not allowed to edit this profile'
             "
@@ -54,7 +54,7 @@
           >
             <i
               class="fa fa-pencil-alt"
-              :class="{ disabled: !canEditProfile() }"
+              :class="{ disabled: !canEditProfile }"
             />
           </b-button>
           <b-button
@@ -62,15 +62,15 @@
             href=""
             variant="link"
             :data-cy="`ProfileListItem-delete--${document._id}`"
-            :disabled="!canDeleteProfile()"
+            :disabled="!canDeleteProfile"
             :title="
-              canDeleteProfile()
+              canDeleteProfile
                 ? 'Delete profile'
                 : 'You are not allowed to delete this profile'
             "
             @click.prevent="deleteDocument(document._id)"
           >
-            <i class="fa fa-trash" :class="{ disabled: !canDeleteProfile() }" />
+            <i class="fa fa-trash" :class="{ disabled: !canDeleteProfile }" />
           </b-button>
         </div>
       </b-col>
@@ -124,12 +124,12 @@ export default {
       this.$emit('checkbox-click', this.document._id)
     },
     deleteDocument() {
-      if (this.canDeleteProfile()) {
+      if (this.canDeleteProfile) {
         this.$emit('delete', this.document._id)
       }
     },
     update() {
-      if (this.canEditProfile()) {
+      if (this.canEditProfile) {
         this.$emit('edit', this.document._id)
       }
     }

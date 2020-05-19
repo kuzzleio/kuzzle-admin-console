@@ -3,7 +3,7 @@
     <div class="SecurityLayout-sidebarWrapper">
       <b-nav vertical>
         <b-nav-item
-          v-if="canManageUsers()"
+          v-if="canManageUsers"
           :to="{ name: 'SecurityUsersList' }"
           :class="
             $route.path.includes('users')
@@ -21,7 +21,7 @@
           </b-row>
         </b-nav-item>
         <b-nav-item
-          v-if="canManageProfiles()"
+          v-if="canManageProfiles"
           :to="{ name: 'SecurityProfilesList' }"
           :class="
             $route.path.includes('profiles')
@@ -39,7 +39,7 @@
           </b-row>
         </b-nav-item>
         <b-nav-item
-          v-if="canManageRoles()"
+          v-if="canManageRoles"
           :to="{ name: 'SecurityRolesList' }"
           :class="
             $route.path.includes('roles')

@@ -60,30 +60,30 @@
             href=""
             variant="link"
             :data-cy="`UserListItem-update--${document.id}`"
-            :disabled="!canEditUser()"
+            :disabled="!canEditUser"
             :title="
-              canEditUser()
+              canEditUser
                 ? 'Edit User'
                 : 'You are not allowed to edit this user'
             "
             @click.prevent="update"
           >
-            <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser() }" />
+            <i class="fa fa-pencil-alt" :class="{ disabled: !canEditUser }" />
           </b-button>
           <b-button
             class="UserListItem-delete"
             href=""
             variant="link"
             :data-cy="`UserListItem-delete--${document.id}`"
-            :disabled="!canDeleteUser()"
+            :disabled="!canDeleteUser"
             :title="
-              canDeleteUser()
+              canDeleteUser
                 ? 'Delete user'
                 : 'You are not allowed to delete this user'
             "
             @click.prevent="deleteDocument(document.id)"
           >
-            <i class="fa fa-trash" :class="{ disabled: !canDeleteUser() }" />
+            <i class="fa fa-trash" :class="{ disabled: !canDeleteUser }" />
           </b-button>
         </div>
       </b-col>
@@ -154,12 +154,12 @@ export default {
       this.$emit('checkbox-click', this.document.id)
     },
     deleteDocument() {
-      if (this.canDeleteUser()) {
+      if (this.canDeleteUser) {
         this.$emit('delete', this.document.id)
       }
     },
     update() {
-      if (this.canEditUser()) {
+      if (this.canEditUser) {
         this.$emit('edit', this.document.id)
       }
     }
