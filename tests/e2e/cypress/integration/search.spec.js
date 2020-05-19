@@ -1,4 +1,4 @@
-describe('Search', function() {
+describe('Search', function () {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -10,14 +10,7 @@ describe('Search', function() {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`, {
       properties: {
         firstName: {
-          type: 'text',
-          fielddata: true,
-          fields: {
-            keyword: {
-              type: 'keyword',
-              ignore_above: 256
-            }
-          }
+          type: 'text'
         },
         job: {
           type: 'text',
@@ -29,13 +22,7 @@ describe('Search', function() {
           }
         },
         lastName: {
-          type: 'keyword',
-          fields: {
-            keyword: {
-              type: 'keyword',
-              ignore_above: 256
-            }
-          }
+          type: 'keyword'
         }
       }
     })
@@ -66,7 +53,7 @@ describe('Search', function() {
     )
   })
 
-  it('perists the Quick Search query in the URL', function() {
+  it('persists the Quick Search query in the URL', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -85,7 +72,7 @@ describe('Search', function() {
     cy.url().should('contain', 'active=quick')
   })
 
-  it('persists the Basic Search query in the URL', function() {
+  it('persists the Basic Search query in the URL', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -117,7 +104,7 @@ describe('Search', function() {
     cy.url().should('contain', 'Blockchain')
   })
 
-  it('remembers the Quick Search query across collections', function() {
+  it('remembers the Quick Search query across collections', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -167,7 +154,7 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 1)
   })
 
-  it('remembers the Basic Search query across collections', function() {
+  it('remembers the Basic Search query across collections', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -237,7 +224,7 @@ describe('Search', function() {
     )
   })
 
-  it('refreshes search when the Search button is hit twice', function() {
+  it('refreshes search when the Search button is hit twice', function () {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.get('.IndexesPage').should('be.visible')
@@ -271,7 +258,8 @@ describe('Search', function() {
     cy.get('.DocumentListItem').should('have.length', 2)
   })
 
-  it('resets the search query but not the list view type, when the RESET button is hit', function() {
+  it('resets the search query but not the list view type, when the RESET button is hit', function () {
+    const searchTerm = 'Adrien'
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -286,9 +274,9 @@ describe('Search', function() {
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('.QuickFilter-searchBar input').type('Keylogger', { delay: 60 })
+    cy.get('.QuickFilter-searchBar input').type(searchTerm, { delay: 60 })
 
-    cy.url().should('contain', 'Keylogger')
+    cy.url().should('contain', searchTerm)
     cy.get('.DocumentListItem').should('have.length', 1)
 
     cy.get('.ListViewButtons-btn[title~="boxes"]').click()
@@ -299,7 +287,7 @@ describe('Search', function() {
 
     cy.get('.QuickFilter-resetBtn').click()
 
-    cy.url().should('not.contain', 'Keylogger')
+    cy.url().should('not.contain', searchTerm)
     cy.url().should('contain', 'listViewType=boxes')
     cy.get('.DocumentList-boxes')
       .children()
@@ -311,14 +299,14 @@ describe('Search', function() {
       '.BasicFilter-orBlock > .BasicFilter-andBlock > .col > .Autocomplete > .validate'
     ).click()
     cy.get(
-      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(6)'
+      '.BasicFilter-andBlock > .col > .Autocomplete > .Autocomplete-results > .Autocomplete-result:nth-child(5)'
     ).click()
-    cy.get('.BasicFilter-query input[placeholder=Value]').type('Keylogger')
+    cy.get('.BasicFilter-query input[placeholder=Value]').type(searchTerm)
     cy.get('.BasicFilter-submitBtn').click()
     cy.get('.DocumentBoxItem').should('have.length', 1)
 
     cy.get('.BasicFilter-resetBtn').click()
-    cy.url().should('not.contain', 'Keylogger')
+    cy.url().should('not.contain', searchTerm)
     cy.url().should('contain', 'listViewType=boxes')
     cy.get('.DocumentList-boxes')
       .children()
@@ -326,7 +314,7 @@ describe('Search', function() {
     cy.get('.DocumentBoxItem').should('have.length', 2)
   })
 
-  it('sorts the results when sorting is selected in the basic filter', function() {
+  it('sorts the results when sorting is selected in the basic filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -384,13 +372,13 @@ describe('Search', function() {
 
     cy.get('.BasicFilter-submitBtn').click()
 
-    cy.get('.DocumentListItem').should(function($el) {
+    cy.get('.DocumentListItem').should(function ($el) {
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function() {
+  it('sorts the results when sorting is specfied in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -441,8 +429,8 @@ describe('Search', function() {
       "query": { 
       "bool": {
       "must": {
-      "match_phrase_prefix": {
-      "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+      "prefix": {
+      "lastName": "Mar"{downarrow}{downarrow}{downarrow}{downarrow},
       "sort": {
       "lastName": "desc"
       }`,
@@ -453,13 +441,13 @@ describe('Search', function() {
 
     cy.get('.RawFilter-submitBtn').click()
 
-    cy.get('.DocumentListItem').should(function($el) {
+    cy.get('.DocumentListItem').should(function ($el) {
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
   })
 
-  it('transforms a search query from basic filter to raw filter', function() {
+  it('transforms a search query from basic filter to raw filter', function () {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.get('.IndexesPage').should('be.visible')
@@ -478,11 +466,11 @@ describe('Search', function() {
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
-      .and('contain', 'match_phrase_prefix')
+      .and('contain', 'prefix')
       .and('contain', 'bar')
   })
 
-  it('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+  it('should show aggregations in search result when aggregations are specified in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -523,12 +511,12 @@ describe('Search', function() {
 
     cy.get('.RawFilter-submitBtn').click()
 
-    cy.get('.DocumentListItem').should(function($el) {
+    cy.get('.DocumentListItem').should(function ($el) {
       expect($el.first()).to.contain('Aggregations')
     })
   })
 
-  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+  it('should not show aggregations in search result when no aggregations are specified in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
