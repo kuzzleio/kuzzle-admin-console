@@ -1,8 +1,7 @@
 <template>
   <b-card
-    class="Filters"
-    :bg-variant="
-      complexFilterActive && !advancedFiltersVisible ? 'warning' : ''
+    :class="
+      complexFilterActive && !advancedFiltersVisible ? 'Filters' : ''
     "
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
@@ -83,6 +82,12 @@
 </template>
 
 <style lang="scss" scoped>
+.Filters {
+  border-color: #ffc107;
+  border-width: 2px 2px 3px 2px;
+  background-color: #fafafa;
+}
+
 .Filters-btnClose {
   cursor: pointer;
   color: grey;

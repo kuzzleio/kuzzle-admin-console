@@ -57,20 +57,23 @@
         </b-button>
       </b-col>
     </b-row>
-    <div v-else class="QuickFilter-warning mx-3 mb-2 font-weight-bold">
-      <div class="align-middle pt-2">
-        Warning: a filter has been set, some documents might be hidden.
+    <div v-else class="QuickFilter-warning mx-3 mb-2">
+      <div class="align-middle pt-1 QuickFilter-warning-message">
+          <i class="fas fa-exclamation-triangle fa-2x QuickFilter-warning-icon"></i>
+          <span class="pt-2 ml-2 font-weight-bold">
+            Warning: a filter has been set, some documents might be hidden.
+          </span>
       </div>
       <b-row>
         <b-button
-          class="align-middle d-inline ml-3 font-weight-bold"
+          class="QuickFilter-displayActiveFilters align-middle d-inline ml-3"
           data-cy="QuickFilter-displayActiveFilters"
-          variant="outline-light"
+          variant="outline-warning"
           @click.prevent="displayAdvancedFilters"
           >Display the advanced filters</b-button
         >
         <b-button
-          class="align-right d-inline ml-3 font-weight-bold"
+          class="align-right d-inline ml-3"
           data-cy="QuickFilter-resetBtn"
           variant="outline-secondary"
           @click="resetSearch"
@@ -155,6 +158,7 @@ export default {
 <style lang="scss" scoped>
 .QuickFilter {
   margin-bottom: 0;
+  color: #002835;
 }
 .QuickFilter-searchBar {
   position: relative;
@@ -209,5 +213,20 @@ export default {
   flex-direction: row;
   justify-items: center;
   justify-content: space-between;
+}
+
+.QuickFilter-warning-message {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+}
+
+.QuickFilter-warning-icon {
+  color: #ffc107;
+}
+
+.QuickFilter-displayActiveFilters {
+  color: #002835;
+  border-width: 2px;
 }
 </style>
