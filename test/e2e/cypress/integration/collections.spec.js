@@ -114,6 +114,8 @@ describe('Collection management', function() {
 
     cy.get('body').type('f{enter}')
 
+    cy.url().should('contain', 'foobar')
+    cy.contains('foobar')
     cy.contains('This collection is empty')
   })
 })

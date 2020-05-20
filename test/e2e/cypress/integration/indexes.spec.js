@@ -73,6 +73,8 @@ describe('Indexes', () => {
 
     cy.get('body').type('n{enter}')
 
+    cy.url().should('contain', 'nyc-open-data')
+    cy.contains('nyc-open-data')
     cy.contains('This index has no collections.')
   })
 })
