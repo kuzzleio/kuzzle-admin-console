@@ -8,6 +8,19 @@
 </template>
 
 <script>
+
+// Keep the first mounted component parent in global to ensure developers never
+// mount two AutoFocusInput component on the same page
+let componentParents = []
+
+function getParents (component, parents = []) {
+  if (!component.$parent) {
+    return parents
+  }
+
+  return getParents(component.$parent, [component.$options.name, ...parents])
+}
+
 export default {
   name: 'AutoFocusInput',
   props: {
@@ -78,7 +91,14 @@ export default {
       document.onkeypress = null
     }
   },
+  //Cannot mount AutoFocusInput at: KuzzleAdminConsole > ConnectionAwareContainer > Home > DataLayout > DocumentsPage > Filters > QuickFilter > AutoFocusInput. An AutoFocusInput is already mounted at: KuzzleAdminConsole > ConnectionAwareContainer > Home > DataLayout > DocumentsPage > AutoFocusInput.
   mounted() {
+    if (componentParents.length !== 0) {
+      throw new Error(`Cannot mount AutoFocusInput at: ${getParents(this).join(' > ')}. \nAn AutoFocusInput is already mounted at: ${componentParents.join(' > ')}.`)
+    }
+
+    componentParents = getParents(this)
+
     this.listenKeypress()
   },
   watch: {
@@ -88,6 +108,7 @@ export default {
   },
   beforeDestroy() {
     this.stopListenKeypress()
+    componentParents = []
   }
 }
 </script>
