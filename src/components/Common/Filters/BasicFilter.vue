@@ -310,9 +310,9 @@ export default {
           sorting = null
         }
 
-        this.$emit('update-filter', filters, sorting)
+        this.$emit('filter-submitted', filters, sorting)
       } else {
-        this.$emit('update-filter', filters)
+        this.$emit('filter-submitted', filters)
       }
     },
     resetSearch() {
