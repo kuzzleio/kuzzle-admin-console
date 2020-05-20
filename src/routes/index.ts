@@ -73,6 +73,9 @@ export default function createRoutes(log, kuzzle) {
           {
             path: '/',
             component: Home,
+            meta: {
+              requiresAuth: true
+            },
             children: [
               {
                 path: '/',

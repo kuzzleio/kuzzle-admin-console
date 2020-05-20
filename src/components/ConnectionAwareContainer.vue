@@ -149,7 +149,10 @@ export default {
     },
     async authenticationGuard() {
       this.$log.debug('ConnectionAwareContainer::authentication guard')
-      if (!this.$store.direct.getters.auth.isAuthenticated) {
+      if (
+        this.$route.matched.some(record => record.meta.requiresAuth) &&
+        !this.$store.direct.getters.auth.isAuthenticated
+      ) {
         this.$log.debug('ConnectionAwareContainer::not authenticated')
         this.$router.push({ name: 'Login', query: { to: this.$route.name } })
       }
