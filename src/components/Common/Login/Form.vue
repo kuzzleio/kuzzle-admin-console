@@ -73,7 +73,7 @@ export default {
     Focus
   },
   props: {
-    onLogin: Function
+    onLogin: { type: Function, default: () => {} }
   },
   data() {
     return {
@@ -102,7 +102,7 @@ export default {
       this.error = ''
       this.$kuzzle.jwt = null
       try {
-        await this.$store.direct.dispatch.auth.prepareSession('anonymous')
+        await this.$store.direct.dispatch.auth.setSession('anonymous')
         await this.onLogin()
       } catch (error) {
         this.error = error.message

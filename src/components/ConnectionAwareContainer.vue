@@ -104,11 +104,9 @@ export default {
         this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
         this.$log.debug(
-          'ConnectionAwareContainer::checking authentication after reconnection...'
+          'ConnectionAwareContainer::checking token after reconnection...'
         )
-        // TODO this must be a different logic (show the re-login modal instead of
-        // redirecting to the login page)
-        this.authenticationGuard()
+        this.$store.direct.dispatch.auth.checkToken()
       })
       this.$kuzzle.addListener('disconnected', () => {
         this.$log.debug('ConnectionAwareContainer::backend went offline...')
