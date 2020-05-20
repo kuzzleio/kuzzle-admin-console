@@ -38,7 +38,7 @@
     "@vue/test-utils": "^1.0.0-beta.30",
     "ace-builds": "git://github.com/ajaxorg/ace-builds.git#v1.4.7",
     "babel-polyfill": "^6.26.0",
-    "bootstrap-vue": "^2.2.1",
+    "bootstrap-vue": "^2.13.0",
     "core-js": "^3.4.3",
     "eslint": "^6.0.0",
     "eslint-plugin-vue": "^6.0.0",
@@ -84,10 +84,10 @@
     "url": "git://github.com/kuzzleio/kuzzle-admin-console.git"
   },
   "devDependencies": {
-    "cypress": "^4.2.0",
+    "babel-plugin-istanbul": "^5.2.0",
+    "cypress": "^4.5.0",
     "cypress-file-upload": "^4.0.4",
     "cypress-plugin-retries": "^1.5.2",
-    "babel-plugin-istanbul": "^5.2.0",
     "eslint-plugin-cypress": "^2.7.0",
     "prettier-eslint": "^9.0.1"
   }

@@ -41,7 +41,11 @@
         </router-link>
       </li>
 
-      <li v-if="isRouteActive('SecurityRolesList')">
+      <li v-if="isRouteActive([
+        'SecurityRolesList',
+        'SecurityRolesCreate',
+        'SecurityRolesUpdate'
+      ])">
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link :to="{ name: 'SecurityRolesList' }">

@@ -69,7 +69,7 @@ const formatMeta = _kuzzle_info => ({
 export const performSearchDocuments = async (
   collection,
   index,
-  filters = {},
+  filters = { query: {} },
   pagination = {},
   sort = []
 ) => {
@@ -83,6 +83,7 @@ export const performSearchDocuments = async (
     { ...filters, sort },
     { ...pagination }
   )
+
   const documents = result.hits.map(d => ({
     id: d._id,
     ...d._source,
@@ -90,7 +91,14 @@ export const performSearchDocuments = async (
       ? formatMeta(d._source._kuzzle_info)
       : undefined
   }))
-  return { documents, aggregations: result.aggregations, total: result.total }
+
+  const totalDocument = await Vue.prototype.$kuzzle.document.count(
+    index,
+    collection,
+    { query: filters.query }
+  )
+
+  return { documents, total: totalDocument }
 }
 
 export const getMappingDocument = async (collection, index) => {
