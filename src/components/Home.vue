@@ -76,11 +76,9 @@ export default {
     noop() {}
   },
   mounted() {
-    const invalidTokenRegex = /Invalid token/
     this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
     this.$kuzzle.on('queryError', e => {
-      // TODO use the error codes when available
-      if (invalidTokenRegex.test(e.message)) {
+      if (e.id === 'security.token.invalid') {
         this.onTokenExpired()
         this.tokenExpiredIsOpen = true
       }
