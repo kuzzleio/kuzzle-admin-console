@@ -91,7 +91,6 @@ export default {
       document.onkeypress = null
     }
   },
-  //Cannot mount AutoFocusInput at: KuzzleAdminConsole > ConnectionAwareContainer > Home > DataLayout > DocumentsPage > Filters > QuickFilter > AutoFocusInput. An AutoFocusInput is already mounted at: KuzzleAdminConsole > ConnectionAwareContainer > Home > DataLayout > DocumentsPage > AutoFocusInput.
   mounted() {
     if (componentParents.length !== 0) {
       throw new Error(`Cannot mount AutoFocusInput at: ${getParents(this).join(' > ')}. \nAn AutoFocusInput is already mounted at: ${componentParents.join(' > ')}.`)
