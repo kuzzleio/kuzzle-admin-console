@@ -1,12 +1,12 @@
 <template>
-  <Multipane class="DataLayout">
+  <Multipane class="DataLayout Custom-resizer" layout="vertical">
     <div class="DataLayout-sidebarWrapper">
       <treeview
         :index="$route.params.index"
         :collection="$route.params.collection"
       />
     </div>
-    <MultipaneResizer></MultipaneResizer>
+    <MultipaneResizer/>
     <div class="DataLayout-contentWrapper">
       <template v-if="loading">
         <main-spinner></main-spinner>
@@ -70,5 +70,28 @@ export default {
   height: 100%;
   overflow: auto;
   padding: $content-gutter;
+}
+
+.Custom-resizer > .multipane-resizer {
+  margin: 0; left: 0;
+  position: relative;
+  padding: 3px;
+  border: 1px solid #ccc;
+  &:before {
+    display: block;
+    content: "";
+    width: 1px;
+    height: 50px;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    border-left: 1px solid #aaa;
+  }
+  &:hover {
+    &:before {
+      border-color: #777;
+      background-color: #f5f5f5;
+    }
+  }
 }
 </style>
