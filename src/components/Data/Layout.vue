@@ -61,7 +61,6 @@ export default {
   width: $sidebar-width;
   height: 100%;
   overflow: auto;
-  box-shadow: 0px 0px 5px 0px rgba(112, 112, 112, 1);
   z-index: 1;
 }
 
@@ -77,6 +76,7 @@ export default {
   position: relative;
   padding: 3px;
   border: 1px solid #ccc;
+  box-shadow: 2px 0px 5px -2px rgba(112, 112, 112, 1);
   &:before {
     display: block;
     content: "";
