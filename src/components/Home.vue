@@ -29,8 +29,9 @@
 
     <b-modal
       id="tokenExpired"
+      data-cy="Modal-tokenExpired"
       hide-footer
-      title="You must login in order to continue"
+      title="Sorry, your session has expired"
       v-model="tokenExpiredIsOpen"
     >
       <login-form />
