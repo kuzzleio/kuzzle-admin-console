@@ -298,11 +298,24 @@ export const formatFromBasicSearch = (groups = [[]]) => {
 
       if (filter.operator === 'match') {
         formattedFilter.bool.must.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
+          // Apologies. I know it's ugly to make a multimatch query here,
+          // its ugly and not pedagogic for the inexperienced users, but
+          // it's the only way to have one same query for both text and
+          // keyword fields.
+          multi_match: {
+            query: filter.value,
+            type: 'phrase_prefix',
+            fields: [filter.attribute]
+          }
         })
       } else if (filter.operator === 'not_match') {
         formattedFilter.bool.must_not.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
+          // Same as above.
+          multi_match: {
+            query: filter.value,
+            type: 'phrase_prefix',
+            fields: [filter.attribute]
+          }
         })
       } else if (filter.operator === 'equal') {
         formattedFilter.bool.must.push({
