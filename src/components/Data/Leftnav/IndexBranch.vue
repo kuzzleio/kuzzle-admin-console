@@ -148,6 +148,19 @@ export default {
     },
     currentCollection() {
       this.testOpen()
+    },
+    filter() {
+      if (
+        this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
+          .length > 0 ||
+        this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
+          .length > 0
+      ) {
+        this.open = true
+      }
+      if (this.filter == '') {
+        this.open = false
+      }
     }
   },
   mounted() {
