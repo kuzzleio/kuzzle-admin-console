@@ -107,6 +107,10 @@ export default {
       }
     },
     async authenticationGuard() {
+      if (this.$route.meta.skipLogin) {
+        return
+      }
+
       // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
       // the code from router.authenticationGuard by refactoring it into a separate
       // function, but I can't pass `this.$router.push` as the `next` parameter:
