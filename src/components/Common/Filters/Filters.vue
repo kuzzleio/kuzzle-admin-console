@@ -1,8 +1,5 @@
 <template>
   <b-card
-    :class="
-      complexFilterActive && !advancedFiltersVisible ? 'Filters' : ''
-    "
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
     "
@@ -10,7 +7,7 @@
     :no-body="!advancedFiltersVisible"
   >
     <template v-slot:header>
-      <b-nav card-header tabs>
+      <b-nav card-header>
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
@@ -82,12 +79,6 @@
 </template>
 
 <style lang="scss" scoped>
-.Filters {
-  border-color: #ffc107;
-  border-width: 2px 2px 3px 2px;
-  background-color: #fafafa;
-}
-
 .Filters-btnClose {
   cursor: pointer;
   color: grey;
