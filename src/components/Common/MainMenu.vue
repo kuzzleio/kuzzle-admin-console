@@ -1,6 +1,6 @@
 <template>
   <b-navbar
-    toggleable="lg"
+    toggleable="sm"
     type="dark"
     :class="`MainMenu EnvColor--${currentEnvironmentColor}`"
   >
