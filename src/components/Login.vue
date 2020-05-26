@@ -66,12 +66,11 @@ export default {
       window.document.body.style.overflow = 'visible'
 
       if (this.$store.getters.routeBeforeRedirect) {
+        this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
         this.$router.push({ name: this.$store.getters.routeBeforeRedirect })
       } else {
-        this.$router.push('/').catch(() => {})
+        this.$router.push('/')
       }
-
-      this.$store.direct.commit.routing.setRouteBeforeRedirect(undefined)
     },
     editEnvironment(id) {
       this.$emit('environment::create', id)

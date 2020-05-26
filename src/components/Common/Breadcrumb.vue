@@ -70,7 +70,7 @@
 
         <router-link
           :to="{
-            name: 'Indexes',
+            name: 'Collections',
             params: { index: $route.params.index }
           }"
         >
