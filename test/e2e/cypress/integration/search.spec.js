@@ -383,7 +383,7 @@ describe('Search', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="QuickFilter-optionBtn"]').click()
-
+    cy.get('[data-cy="Filters-rawTab"]').click()
     cy.get('#rawsearch .ace_line').should('be.visible')
     cy.wait(1000)
 

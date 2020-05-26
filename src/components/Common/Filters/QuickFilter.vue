@@ -57,7 +57,7 @@
         </b-button>
       </b-col>
     </b-row>
-    <div v-else class="QuickFilter-warning mx-3">
+    <div v-else class="QuickFilter-warning mx-4 mb-3">
       <div class="align-middle QuickFilter-warning-message">
         <b-row align-v="center">
           <b-button
