@@ -10,6 +10,7 @@ import Home from '../components/Home.vue'
 import Login from '../components/Login.vue'
 import Signup from '../components/Signup.vue'
 import DataLayout from '../components/Data/Layout.vue'
+import ResetPassword from '../components/ResetPassword.vue'
 import SecurityLayout from '../components/Security/Layout.vue'
 
 import SecuritySubRoutes from './children/security'
@@ -89,9 +90,21 @@ export default function createRoutes(log, kuzzle) {
             component: Login
           },
           {
+            path: '/reset-password/:token',
+            name: 'ResetPassword',
+            component: ResetPassword,
+            meta: {
+              skipLogin: true
+            },
+            props: true
+          },
+          {
             path: '/signup',
             name: 'Signup',
-            component: Signup
+            component: Signup,
+            meta: {
+              skipLogin: true
+            }
           },
           {
             path: '/',

@@ -8,15 +8,16 @@
               <i class="fa fa-search search" />
             </b-input-group-prepend>
 
-            <b-form-input
+            <auto-focus-input
+              name="quick-filter"
               data-cy="QuickFilter-input"
               debounce="300"
               :placeholder="placeholder"
+              :initialValue="this.initialValue"
               type="search"
-              v-model="inputSearchTerm"
-              v-focus
-            >
-            </b-form-input>
+              v-model="value"
+              @submit="inputSubmit"
+            />
           </b-input-group>
         </div>
       </b-col>
@@ -83,15 +84,14 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
+import AutoFocusInput from '../AutoFocusInput'
 
 export default {
   name: 'QuickFilter',
-  directives: {
-    Focus
+  components: {
+    AutoFocusInput
   },
   props: {
-    searchTerm: String,
     advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
       type: String,
@@ -117,35 +117,37 @@ export default {
     submitOnType: {
       type: Boolean,
       default: true
+    },
+    initialValue: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm
+      value: this.initialValue
     }
   },
   methods: {
     submitSearch() {
-      this.$emit('update-filter', this.inputSearchTerm)
+      this.$emit('filter-submitted', this.value)
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
+    },
+    inputSubmit () {
+      this.$emit('enter-pressed')
     }
   },
   watch: {
-    inputSearchTerm() {
-      if (!this.submitOnType) {
-        return
-      }
-      this.submitSearch()
-    },
-    searchTerm: {
-      immediate: true,
-      handler(val) {
-        this.inputSearchTerm = val
+    value () {
+      this.$emit('input', this.value)
+
+    if (this.submitOnType) {
+        this.submitSearch()
       }
     }
   }

@@ -1,5 +1,5 @@
 <template>
-  <b-container class="IndexesPage">
+  <b-container class="IndexesPage" ref="page-indexes">
     <headline>
       Indexes
       <b-button
@@ -31,10 +31,14 @@
               <template v-slot:prepend>
                 <b-input-group-text>Filter</b-input-group-text>
               </template>
-              <b-form-input
+
+              <auto-focus-input
+                name="index"
                 v-model="filter"
                 :disabled="tableItems.length === 0"
-              ></b-form-input>
+                @submit="navigateToIndex"
+              />
+
             </b-input-group>
           </b-col>
         </b-row>
@@ -48,6 +52,7 @@
           :items="tableItems"
           :fields="tableFields"
           :filter="filter"
+          @filtered="updateFilteredIndexes"
         >
           <template v-slot:empty>
             <h4 class="text-secondary text-center">There is no index.</h4>
@@ -123,6 +128,7 @@ import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
+import AutoFocusInput from '../../Common/AutoFocusInput'
 
 import Title from '../../../directives/title.directive'
 import {
@@ -136,7 +142,8 @@ export default {
     Headline,
     CreateIndexModal,
     DeleteIndexModal,
-    ListNotAllowed
+    ListNotAllowed,
+    AutoFocusInput
   },
   directives: {
     Title
@@ -170,7 +177,8 @@ export default {
           label: '',
           class: 'text-right align-middle'
         }
-      ]
+      ],
+      filteredIndexes: []
     }
   },
   computed: {
@@ -202,8 +210,25 @@ export default {
     openDeleteModal(index) {
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
+    },
+    navigateToIndex () {
+      const index = this.filteredIndexes[0]
+
+      if (! index) {
+        return
+      }
+
+      const route = {
+        name: 'Collections',
+        params: { index: index.indexName }
+      }
+
+      this.$router.push(route)
+    },
+    updateFilteredIndexes (filteredIndexes) {
+      this.filteredIndexes = filteredIndexes
     }
-  }
+  },
 }
 </script>
 

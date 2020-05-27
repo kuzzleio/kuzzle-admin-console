@@ -147,7 +147,10 @@ export default {
     },
     editDocument() {
       if (this.canEdit) {
-        this.$emit('edit', this.document.id)
+        this.$router.push({
+          name: 'UpdateDocument',
+          params: { id: this.document.id }
+        })
       }
     }
   }
