@@ -63,7 +63,7 @@ describe('Document List', function() {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="CollectionDropdown"').click()
-    cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.get('[data-cy="CollectionDropdown-column"]').click({ force: true })
     cy.url().should('contain', 'listViewType=column')
     cy.get('[data-cy="CollectionDropdown"').click()
     cy.get('[data-cy="CollectionDropdown-list"]').click()
