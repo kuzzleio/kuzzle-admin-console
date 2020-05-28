@@ -125,12 +125,18 @@ describe('Users', function() {
     cy.get('#user-custom-data-mapping-editor .ace_line')
       .contains('keyword')
       .click({ force: true })
-    cy.get('textarea.ace_text-input').type(`{ctrl}{rightarrow}{backspace}`, {
+
+    cy.get('textarea.ace_text-input').type(`{selectall}{backspace}`, {
+      delay: 400,
       force: true
     })
-    cy.get('textarea.ace_text-input').type(`text`, {
-      force: true
-    })
+
+    cy.get('textarea.ace_text-input').type(
+      '{"name": {"type": "text"},"profileIds": {"type": "keyword"}}',
+      {
+        parseSpecialCharSequences: false
+      }
+    )
     cy.get('.UserCustomMappingEditor-submit').click()
     cy.wait(2000)
     cy.contains('Field "name" already has a mapping, and it cannot be changed')
