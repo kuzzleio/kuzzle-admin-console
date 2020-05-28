@@ -76,8 +76,9 @@ describe('Environments', function() {
   })
 
   it('Should be able to set the color of an environment', function() {
+    const envName = 'local'
     cy.visit('/')
-    cy.get('[data-cy="CreateEnvironment-name"]').type('local', {
+    cy.get('[data-cy="CreateEnvironment-name"]').type(envName, {
       force: true
     })
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
@@ -92,6 +93,8 @@ describe('Environments', function() {
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.wait(1000)
+    localStorage.setItem('currentEnv', envName)
+    cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
     cy.get('nav').should($nav => {
