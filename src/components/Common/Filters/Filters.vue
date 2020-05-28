@@ -1,9 +1,5 @@
 <template>
   <b-card
-    class="Filters"
-    :bg-variant="
-      complexFilterActive && !advancedFiltersVisible ? 'warning' : ''
-    "
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
     "
@@ -35,18 +31,17 @@
         />
         <template v-if="advancedFiltersVisible">
           <b-nav-item
-            data-cy="Filters-rawTab"
-            :active="complexFiltersSelectedTab === 'raw'"
-            @click="complexFiltersSelectedTab = 'raw'"
-            >Raw JSON Filter</b-nav-item
-          >
-          <b-nav-item
             data-cy="Filters-basicTab"
             :active="complexFiltersSelectedTab === 'basic'"
             @click="complexFiltersSelectedTab = 'basic'"
             >Advanced Filter</b-nav-item
           >
-
+          <b-nav-item
+            data-cy="Filters-rawTab"
+            :active="complexFiltersSelectedTab === 'raw'"
+            @click="complexFiltersSelectedTab = 'raw'"
+            >Raw JSON Filter</b-nav-item
+          >
           <i
             class="Filters-btnClose fa fa-times close"
             @click="advancedFiltersVisible = false"
@@ -184,7 +179,7 @@ export default {
   data() {
     return {
       advancedFiltersVisible: false,
-      complexFiltersSelectedTab: ACTIVE_RAW,
+      complexFiltersSelectedTab: ACTIVE_BASIC,
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
