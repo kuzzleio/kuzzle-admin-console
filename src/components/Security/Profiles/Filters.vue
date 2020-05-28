@@ -12,7 +12,7 @@
             text="Select roles to be contained in the profiles"
             no-flip
           >
-            <b-dropdown-text v-for="role of roleList" :key="`dropdown-${role}`">
+            <b-dropdown-item v-for="role of roleList" :key="`dropdown-${role}`">
               <div
                 class="inlineDisplay pointer"
                 :data-cy="`RoleSelect--${role}`"
@@ -29,15 +29,15 @@
                   class="inlineDisplay-item code pointer"
                   :for="role"
                   :title="role"
-                  >{{ truncateName(role, 20) }}</label
+                  >{{ role }}</label
                 >
               </div>
-            </b-dropdown-text>
-            <b-dropdown-text v-if="roleList.length === 0">
+            </b-dropdown-item>
+            <b-dropdown-item v-if="roleList.length === 0">
               <span class="inlineDisplay-item">
                 No roles found.
               </span>
-            </b-dropdown-text>
+            </b-dropdown-item>
           </b-dropdown>
           <b-badge
             v-if="hasFilter"

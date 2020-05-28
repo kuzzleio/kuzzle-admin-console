@@ -10,7 +10,7 @@
           text="Select columns to display"
           no-flip
         >
-          <b-dropdown-text
+          <b-dropdown-item
             v-for="field of formattedSelectFields"
             :key="`dropdown-${field.text}`"
           >
@@ -28,15 +28,15 @@
                 class="inlineDisplay-item code pointer"
                 :for="field.text"
                 :title="field.text"
-                >{{ truncateName(field.text, 20) }}</label
+                >{{ field.text }}</label
               >
             </div>
-          </b-dropdown-text>
-          <b-dropdown-text v-if="formattedSelectFields.length === 0">
+          </b-dropdown-item>
+          <b-dropdown-item v-if="formattedSelectFields.length === 0">
             <span class="inlineDisplay-item">
               No searchable field
             </span>
-          </b-dropdown-text>
+          </b-dropdown-item>
         </b-dropdown>
         <b-button
           variant="outline-dark"
