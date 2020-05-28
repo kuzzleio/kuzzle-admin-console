@@ -10,28 +10,27 @@
           text="Select columns to display"
           no-flip
         >
-          <b-dropdown-item
+          <b-dropdown-text
+            class="dropdown-text inlineDisplay pointer p-0"
             v-for="field of formattedSelectFields"
             :key="`dropdown-${field.text}`"
           >
-            <div class="inlineDisplay pointer">
-              <span class="inlineDisplay-item">
-                <b-form-checkbox
-                  class="mx-2"
-                  :checked="field.displayed"
-                  :data-cy="`SelectField--${field.text}`"
-                  :id="field.text"
-                  @change="toggleColumn(field.text, $event)"
-                />
-              </span>
-              <label
-                class="inlineDisplay-item code pointer"
-                :for="field.text"
-                :title="field.text"
-                >{{ field.text }}</label
-              >
-            </div>
-          </b-dropdown-item>
+            <span class="inlineDisplay-item">
+              <b-form-checkbox
+                class="mx-2"
+                :checked="field.displayed"
+                :data-cy="`SelectField--${field.text}`"
+                :id="field.text"
+                @change="toggleColumn(field.text, $event)"
+              />
+            </span>
+            <label
+              class="inlineDisplay-item code pointer"
+              :for="field.text"
+              :title="field.text"
+              >{{ field.text }}</label
+            >
+          </b-dropdown-text>
           <b-dropdown-item v-if="formattedSelectFields.length === 0">
             <span class="inlineDisplay-item">
               No searchable field
@@ -102,7 +101,7 @@
           no-border-collapse
           small
           sort-icon-left
-          sticky-header="600px"
+          sticky-header
           striped
           :fields="formattedTableFields"
           :items="formattedItems"
@@ -110,10 +109,10 @@
           <template v-slot:head()="data">
             <div class="inlineDisplay mx-1">
               <span
-                class="inlineDisplay-item text-secondary m-3"
+                class="inlineDisplay-item text-secondary m-3 text-nowrap"
                 :data-cy="`ColumnViewHead--${data.label}`"
                 :title="data.label"
-                >{{ truncateName(getLastKeyPath(data.label), 20) }}</span
+                >{{ data.label }}</span
               >
             </div>
           </template>
@@ -174,11 +173,6 @@
               >
                 [...]
               </span>
-              <span
-                v-if="typeof data.value !== 'object'"
-                class="inlineDisplay-item px-3 code valueDisplayer"
-                >{{ data.value }}</span
-              >
               <b-badge
                 pill
                 class="mx-1"
@@ -195,6 +189,11 @@
                 This value cannot be displayed because it contains or is
                 contained in an array.
               </b-tooltip>
+              <span
+                v-if="typeof data.value !== 'object'"
+                class="inlineDisplay-item px-3 code valueDisplayer"
+                >{{ data.value }}</span
+              >
             </div>
           </template>
         </b-table>
@@ -488,7 +487,6 @@ export default {
 }
 
 .columnClass {
-  max-width: 300px;
   min-width: 100px;
   overflow: hidden;
 }
@@ -496,5 +494,17 @@ export default {
 .valueDisplayer {
   white-space: nowrap;
   display: inline-block;
+}
+
+.dropdown-text {
+  display: block;
+  width: 100%;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
 }
 </style>

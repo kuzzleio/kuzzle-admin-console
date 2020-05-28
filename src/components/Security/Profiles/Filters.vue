@@ -12,27 +12,27 @@
             text="Select roles to be contained in the profiles"
             no-flip
           >
-            <b-dropdown-item v-for="role of roleList" :key="`dropdown-${role}`">
-              <div
-                class="inlineDisplay pointer"
-                :data-cy="`RoleSelect--${role}`"
+            <b-dropdown-text
+              class="dropdown-text inlineDisplay pointer p-0"
+              :data-cy="`RoleSelect--${role}`"
+              v-for="role of roleList"
+              :key="`dropdown-${role}`"
+            >
+              <span class="inlineDisplay-item">
+                <b-form-checkbox
+                  class="mx-2"
+                  :checked="roleIsSelected(role)"
+                  :id="role"
+                  @change="toggleRole(role, $event)"
+                />
+              </span>
+              <label
+                class="inlineDisplay-item code pointer"
+                :for="role"
+                :title="role"
+                >{{ role }}</label
               >
-                <span class="inlineDisplay-item">
-                  <b-form-checkbox
-                    class="mx-2"
-                    :checked="roleIsSelected(role)"
-                    :id="role"
-                    @change="toggleRole(role, $event)"
-                  />
-                </span>
-                <label
-                  class="inlineDisplay-item code pointer"
-                  :for="role"
-                  :title="role"
-                  >{{ role }}</label
-                >
-              </div>
-            </b-dropdown-item>
+            </b-dropdown-text>
             <b-dropdown-item v-if="roleList.length === 0">
               <span class="inlineDisplay-item">
                 No roles found.
@@ -136,5 +136,16 @@ export default {
   &-item {
     display: table-cell;
   }
+}
+.dropdown-text {
+  display: block;
+  width: 100%;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
 }
 </style>
