@@ -10,6 +10,13 @@
           text="Select columns to display"
           no-flip
         >
+          <b-dropdown-item-button
+            v-if="selectedFields.length !== 0"
+            class="pl-4"
+            @click="resetColumns"
+          >
+            Unselect all
+          </b-dropdown-item-button>
           <b-dropdown-text
             class="dropdown-text inlineDisplay pointer p-0"
             v-for="field of formattedSelectFields"
@@ -329,6 +336,10 @@ export default {
     }
   },
   methods: {
+    resetColumns() {
+      this.selectedFields = []
+      this.saveSelectedFieldsToLocalStorage()
+    },
     truncateName,
     canDeleteDocument,
     isChecked(id) {
