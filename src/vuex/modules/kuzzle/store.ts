@@ -170,27 +170,33 @@ const actions = createActions({
     }
   },
   async connectToCurrentEnvironment(context) {
-    const { dispatch, state, getters } = kuzzleActionContext(context)
+    const { dispatch, state, getters, commit } = kuzzleActionContext(context)
     if (!getters.hasEnvironment) {
       return
     }
 
-    let currentId = state.currentId
-
-    if (!currentId) {
+    if (!getters.currentEnvironment) {
       throw new Error('No current environment selected')
     }
 
-    await dispatch.switchEnvironment(currentId)
+    commit.setErrorFromKuzzle(null)
+
+    getters.wrapper.disconnect()
+    commit.setConnecting(true)
+
+    try {
+      await getters.wrapper.connectToEnvironment(getters.currentEnvironment)
+    } catch (error) {
+      if (error.id) {
+        dispatch.onConnectionError(error)
+        return false
+      }
+    }
+
+    return true
   },
   async switchEnvironment(context, id) {
-    const {
-      rootDispatch,
-      commit,
-      dispatch,
-      state,
-      getters
-    } = kuzzleActionContext(context)
+    const { dispatch, state } = kuzzleActionContext(context)
     if (!id) {
       throw new Error('No id provided')
     }
@@ -199,25 +205,8 @@ const actions = createActions({
     if (!environment) {
       throw new Error(`Id ${id} does not match any environment`)
     }
-    commit.setErrorFromKuzzle(null)
-
-    if (getters.$kuzzle) {
-      getters.$kuzzle.disconnect()
-    }
-    commit.setConnecting(true)
-    dispatch.setCurrentEnvironment(id)
-
-    try {
-      await dispatch.connectAndRetry({ ...environment, id })
-      commit.setConnecting(false)
-      commit.setOnline(true)
-    } catch (error) {
-      dispatch.onConnectionError(error)
-      return false
-    }
-    await rootDispatch.auth.init(environment)
-
-    return true
+    await dispatch.setCurrentEnvironment(id)
+    return await dispatch.connectToCurrentEnvironment()
   },
   onConnectionError(context, error: Error) {
     const { commit } = kuzzleActionContext(context)
@@ -225,21 +214,6 @@ const actions = createActions({
     commit.setConnecting(false)
     commit.setOnline(true)
     commit.setErrorFromKuzzle(error.message)
-  },
-  async connectAndRetry(context, environment) {
-    const { state, dispatch, getters } = kuzzleActionContext(context)
-    try {
-      await getters.wrapper.connectToEnvironment(environment)
-    } catch (error) {
-      if (error.id) {
-        throw error
-      }
-      if (state.currentId !== environment.id) {
-        return
-      }
-      await wait(2000)
-      await dispatch.connectAndRetry(environment)
-    }
   },
   loadEnvironments(context) {
     let loadedEnv

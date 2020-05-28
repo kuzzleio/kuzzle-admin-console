@@ -59,12 +59,14 @@ export default {
   },
   data() {
     return {
-      showOfflineSpinner: false,
-      gaveUp: false
+      showOfflineSpinner: false
     }
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
+    currentEnvironment() {
+      return this.$store.state.kuzzle.currentId
+    },
     kuzzleError() {
       return this.$store.state.kuzzle.errorFromKuzzle
     },
@@ -81,16 +83,38 @@ export default {
         return
       }
       this.$kuzzle.on('networkError', error => {
-        this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        this.$log.error(
+          `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
+        )
       })
-      this.$kuzzle.addListener('connected', () => {
+      this.$kuzzle.addListener('connected', async () => {
+        this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
+        this.$log.debug(
+          'ConnectionAwareContainer::initializing auth upon connection...'
+        )
+        try {
+          await this.$store.direct.dispatch.auth.init()
+        } catch (error) {
+          this.$log.error(
+            `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`
+          )
+          if (error.id === 'api.process.incompatible_sdk_version') {
+            return this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+          }
+        }
+        this.authenticationGuard()
       })
       this.$kuzzle.addListener('reconnected', () => {
+        this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
+        this.$log.debug(
+          'ConnectionAwareContainer::checking token after reconnection...'
+        )
+        this.$store.direct.dispatch.auth.checkToken()
       })
       this.$kuzzle.addListener('disconnected', () => {
+        this.$log.debug('ConnectionAwareContainer::backend went offline...')
         this.$store.direct.commit.kuzzle.setOnline(false)
       })
     },
@@ -103,12 +127,6 @@ export default {
       this.$kuzzle.removeAllListeners('reconnected')
       this.$kuzzle.removeAllListeners('disconnected')
     },
-    giveUp() {
-      this.removeListeners()
-      this.gaveUp = true
-      this.$store.direct.commit.kuzzle.setConnecting(false)
-      this.$store.direct.commit.kuzzle.setOnline(false)
-    },
     checkConnection() {
       if (this.online === false && this.connecting === false) {
         this.$bvToast.show('offline-toast')
@@ -116,37 +134,29 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
-    async connect() {
+    async onEnvironmentSwitch() {
+      this.$log.debug('ConnectionAwareContainer::environmentSwitched')
+      this.$store.direct.commit.auth.setTokenValid(false)
+      this.removeListeners()
+      this.initListeners()
       try {
         await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
       } catch (error) {
-        this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        this.$log.error(
+          `ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`
+        )
       }
     },
     async authenticationGuard() {
-      // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
-      // the code from router.authenticationGuard by refactoring it into a separate
-      // function, but I can't pass `this.$router.push` as the `next` parameter:
-      // I get a `this$1` doesn't exist error.
-      try {
-        if (await this.$store.direct.dispatch.auth.checkToken()) {
-          this.$log.debug('ConnectionAwareContainer::Token bueno')
-        } else {
-          this.$log.debug('ConnectionAwareContainer::Token no bueno')
-          this.$router.push({ name: 'Login', query: { to: this.$route.name } })
-        }
-      } catch (error) {
-        this.$log.debug('ConnectionAwareContainer::Token no bueno (error)')
-        this.$log.error(error)
+      this.$log.debug('ConnectionAwareContainer::authentication guard')
+      if (
+        this.$route.matched.some(record => record.meta.requiresAuth) &&
+        !this.$store.direct.getters.auth.isAuthenticated
+      ) {
+        this.$log.debug('ConnectionAwareContainer::not authenticated')
         this.$router.push({ name: 'Login', query: { to: this.$route.name } })
       }
     }
-  },
-  async mounted() {
-    this.$log.debug('ConnectionAwareContainer::mounted')
-    this.$store.direct.commit.auth.setTokenValid(false)
-    await this.connect()
   },
   beforeDestroy() {
     this.removeListeners()
@@ -162,6 +172,18 @@ export default {
         this.initListeners()
       }
     },
+    currentEnvironment: {
+      immediate: true,
+      async handler() {
+        try {
+          await this.onEnvironmentSwitch()
+        } catch (error) {
+          this.$log.error(
+            `ConnectionAwareContainer:currentEnvironmentWatch: ${error.message}`
+          )
+        }
+      }
+    },
     online: {
       immediate: true,
       handler() {
@@ -171,18 +193,10 @@ export default {
     connecting: {
       immediate: true,
       handler(val) {
-        this.$nextTick(() => {
-          if (val === false && this.online) {
-            this.$log.debug(
-              'ConnectionAwareContainer::checking authentication after (re)connection...'
-            )
-            this.authenticationGuard()
-          }
-          this.showOfflineSpinner = false
-          setTimeout(() => {
-            this.showOfflineSpinner = true
-          }, antiGlitchOverlayTimeout)
-        })
+        this.showOfflineSpinner = val
+        setTimeout(() => {
+          this.showOfflineSpinner = true
+        }, antiGlitchOverlayTimeout)
       }
     }
   }

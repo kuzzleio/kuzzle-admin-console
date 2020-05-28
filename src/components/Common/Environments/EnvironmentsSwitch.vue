@@ -99,18 +99,14 @@ export default {
   methods: {
     async clickSwitch(id) {
       try {
-        await this.$store.direct.dispatch.kuzzle.switchEnvironment(id)
+        await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
         this.$log.debug(`Switched.`)
-        if (this.$store.direct.state.auth.tokenValid) {
-          this.$log.debug(`Token is valid, going to /...`)
-          this.$router.push({ path: '/' })
-        } else {
-          this.$log.debug(`Token is invalid, going to Login...`)
-          this.$router.push({ name: 'Login' })
-        }
+        this.$router.push({ path: '/' })
       } catch (error) {
         this.$log.error(error)
-        this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        if (error.code) {
+          this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+        }
       }
     },
     formatForDom

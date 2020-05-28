@@ -64,6 +64,7 @@
 <script>
 import { hasSecurityRights } from '../../services/userAuthorization'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'MainMenu',
@@ -71,27 +72,26 @@ export default {
     EnvironmentSwitch
   },
   computed: {
+    ...mapGetters('auth', ['user']),
     currentEnvironmentColor() {
       return this.$store.direct.getters.kuzzle.currentEnvironment.color
     },
     currentUserName() {
-      if (this.$store.direct.state.auth.user) {
-        if (
-          this.$store.direct.state.auth.user.params &&
-          this.$store.direct.state.auth.user.params.name
-        ) {
-          return this.$store.direct.state.auth.user.params.name
-        }
-        return this.$store.direct.state.auth.user.id
+      if (!this.user) {
+        return 'Not authentified'
       }
-      return ''
+      if (this.user.id === -1) {
+        return 'Anonymous'
+      }
+      if (this.user.params && this.user.params.name) {
+        return this.user.params.name
+      }
+      return this.user.id
     },
-
     adminConsoleVersion() {
       return require('../../../package.json').version
     }
   },
-
   methods: {
     async doLogout() {
       try {

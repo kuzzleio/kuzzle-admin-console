@@ -105,7 +105,7 @@ export default {
       this.error = ''
       this.$kuzzle.jwt = null
       this.$store.direct.dispatch.auth
-        .prepareSession('anonymous')
+        .setSession('anonymous')
         .then(() => {
           this.onLogin()
         })

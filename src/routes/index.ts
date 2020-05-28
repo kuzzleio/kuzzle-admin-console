@@ -22,7 +22,7 @@ export default function createRoutes(log) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard')
     try {
-      store.dispatch.kuzzle.loadEnvironments() //moduleActionContext
+      store.dispatch.kuzzle.loadEnvironments(moduleActionContext) //
     } catch (error) {
       log.error(
         'Something went wrong while loading the connections. The JSON content saved in the LocalStorage seems to be malformed.'
@@ -40,29 +40,6 @@ export default function createRoutes(log) {
       log.debug('No environments')
 
       next({ name: 'CreateEnvironment' })
-    }
-  }
-
-  const authenticationGuard = async (to, from, next) => {
-    if (store.state.kuzzle.online === false) {
-      // NOTE (@xbill82) This is necessary because this guard is called
-      // before the ConnectionAwareContainer is mounted (thus triggering
-      // the connection to Kuzzle). It is the ConnectionAwareItself that
-      // will check the token once connected.
-      return next()
-    }
-    try {
-      if (await store.dispatch.auth.checkToken(moduleActionContext)) {
-        log.debug('Token bueno')
-        next()
-      } else {
-        log.debug('Token no bueno')
-        next({ name: 'Login', query: { to: to.name } })
-      }
-    } catch (error) {
-      log.debug('Token no bueno (error)')
-      log.error(error)
-      next({ name: 'Login', query: { to: to.name } })
     }
   }
 
@@ -96,7 +73,9 @@ export default function createRoutes(log) {
           {
             path: '/',
             component: Home,
-            beforeEnter: authenticationGuard,
+            meta: {
+              requiresAuth: true
+            },
             children: [
               {
                 path: '/',
