@@ -53,13 +53,13 @@
             <pre class="my-3 ml-3">
 {
   "controllers": {
-      "document": {
-        "actions": {
-          "get": true,
-          "search": true
-        }
+    "document": {
+      "actions": {
+        "get": true,
+        "search": true
       }
     }
+  }
 }
             </pre>
           </b-col>

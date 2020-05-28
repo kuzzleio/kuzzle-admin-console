@@ -16,9 +16,7 @@
       :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(truncateName(indexName, 16), filter)" /> ({{
-        collectionCount
-      }})
+      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
     </router-link>
     <div class="collections">
       <div
@@ -40,7 +38,7 @@
             aria-hidden="true"
             title="Persisted collection"
           />
-          <span v-html="highlight(truncateName(collectionName, 20), filter)" />
+          <span v-html="highlight(collectionName, filter)" />
         </router-link>
       </div>
 
@@ -197,10 +195,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.IndexBranch {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
 .collections {
   padding-left: 25px;
   overflow-y: hidden;
   max-height: 0;
+  overflow: hidden;
 }
 
 .open .collections {

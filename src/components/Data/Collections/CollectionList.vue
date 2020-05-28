@@ -41,10 +41,14 @@
               <template v-slot:prepend>
                 <b-input-group-text>Filter</b-input-group-text>
               </template>
-              <b-form-input
+
+              <auto-focus-input
+                name="collection"
                 v-model="filter"
+                @submit="navigateToCollection"
                 :disabled="collections.length === 0"
-              ></b-form-input>
+              />
+
             </b-input-group>
           </b-col>
         </b-row>
@@ -55,9 +59,11 @@
           striped
           outlined
           show-empty
+          data-cy="CollectionList-table"
           :items="collections"
           :fields="tableFields"
           :filter="filter"
+          @filtered="updateFilteredCollections"
         >
           <template v-slot:empty>
             <h4 class="text-secondary text-center">
@@ -219,6 +225,8 @@
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
+import AutoFocusInput from '../../Common/AutoFocusInput'
+
 import {
   canDeleteIndex,
   canSearchIndex,
@@ -236,7 +244,8 @@ export default {
     DataNotFound,
     Headline,
     ListNotAllowed,
-    MainSpinner
+    MainSpinner,
+    AutoFocusInput
   },
   directives: {
     Title
@@ -249,7 +258,8 @@ export default {
       filter: '',
       collectionToDelete: '',
       deleteConfirmation: '',
-      rawStoredCollections: []
+      rawStoredCollections: [],
+      filteredCollections: []
     }
   },
   computed: {
@@ -405,10 +415,34 @@ export default {
           }
         )
       }
+    },
+    navigateToCollection () {
+      const collection = this.filteredCollections[0]
+
+      if (! collection) {
+        return
+      }
+
+      const route = {
+        name: collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
+        params: { index: this.index, collection: collection.name }
+      }
+
+      this.$router.push(route)
+    },
+    updateFilteredCollections (filteredCollections) {
+      this.filteredCollections = filteredCollections
     }
   },
   mounted() {
     this.fetchStoredCollections()
+  },
+  watch: {
+    index: {
+      handler() {
+        this.fetchStoredCollections()
+      }
+    }
   }
 }
 </script>

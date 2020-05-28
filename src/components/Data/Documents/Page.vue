@@ -58,6 +58,7 @@
                   :collection-mapping="collectionMapping"
                   @filters-updated="onFiltersUpdated"
                   @reset="onFiltersUpdated"
+                  @enter-pressed="navigateToDocument"
                 />
               </template>
             </b-col>
@@ -95,7 +96,6 @@
                       @change-page-size="changePaginationSize"
                       @checkbox-click="toggleSelectDocuments"
                       @delete="onDeleteClicked"
-                      @edit="onEditDocumentClicked"
                       @refresh="onRefresh"
                       @toggle-all="onToggleAllClicked"
                     ></List>
@@ -110,7 +110,6 @@
                       :all-checked="allChecked"
                       :current-page-size="paginationSize"
                       :total-documents="totalDocuments"
-                      @edit="onEditDocumentClicked"
                       @delete="onDeleteClicked"
                       @bulk-delete="onBulkDeleteClicked"
                       @change-page-size="changePaginationSize"
@@ -373,15 +372,6 @@ export default {
       this.$router.push({ name: 'CreateDocument' })
     },
 
-    // UPDATE
-    // =========================================================================
-    onEditDocumentClicked(id) {
-      this.$router.push({
-        name: 'UpdateDocument',
-        params: { id }
-      })
-    },
-
     // DELETE
     // =========================================================================
     async onDeleteConfirmed(documentsToDelete) {
@@ -446,6 +436,18 @@ export default {
         this.collection
       )
       this.fetchDocuments()
+    },
+    navigateToDocument() {
+      const document = this.documents[0]
+
+      if (!document) {
+        return
+      }
+
+      this.$router.push({
+        name: 'UpdateDocument',
+        params: { id: document.id }
+      })
     },
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters

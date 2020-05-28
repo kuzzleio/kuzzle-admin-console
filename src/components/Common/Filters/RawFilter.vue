@@ -109,7 +109,7 @@ export default {
     submit() {
       if (this.isFilterValid) {
         this.showError = false
-        this.$emit('update-filter', this.filterState)
+        this.$emit('filter-submitted', this.filterState)
       } else {
         this.showError = true
       }

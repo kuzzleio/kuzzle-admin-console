@@ -149,6 +149,9 @@ export default {
     },
     async authenticationGuard() {
       this.$log.debug('ConnectionAwareContainer::authentication guard')
+      if (this.$route.meta.skipLogin) {
+        return
+      }
       if (
         this.$route.matched.some(record => record.meta.requiresAuth) &&
         !this.$store.direct.getters.auth.isAuthenticated

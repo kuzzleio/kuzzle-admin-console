@@ -98,7 +98,22 @@ export default {
         })
         this.onLogin() // TODO change this to $emit
       } catch (err) {
-        this.error = err.message
+        if (
+          [
+            'plugin.kuzzle-plugin-auth-passport-local.expired_password',
+            'plugin.kuzzle-plugin-auth-passport-local.must_change_password'
+          ].includes(err.id)
+        ) {
+          this.$router.push({
+            name: 'ResetPassword',
+            params: {
+              showIntro: true,
+              token: err.resetToken
+            }
+          })
+        } else {
+          this.error = err.message
+        }
       }
     },
     loginAsAnonymous() {
