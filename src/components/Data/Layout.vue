@@ -6,7 +6,7 @@
         :collection="$route.params.collection"
       />
     </div>
-    <MultipaneResizer/>
+    <MultipaneResizer />
     <div class="DataLayout-contentWrapper">
       <template v-if="loading">
         <main-spinner></main-spinner>
@@ -72,14 +72,15 @@ export default {
 }
 
 .Custom-resizer > .multipane-resizer {
-  margin: 0; left: 0;
+  margin: 0;
+  left: 0;
   position: relative;
   padding: 3px;
   border: 1px solid #ccc;
   box-shadow: 2px 0px 5px -2px rgba(112, 112, 112, 1);
   &:before {
     display: block;
-    content: "";
+    content: '';
     width: 1px;
     height: 50px;
     position: absolute;

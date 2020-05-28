@@ -36,8 +36,8 @@
             </b-col>
             <b-col md="6">
               <h3 class="text-secondary font-weight-bold">
-                There is no result matching your query. Please try with
-                another filter.
+                There is no result matching your query. Please try with another
+                filter.
               </h3>
               <p>
                 <em
@@ -64,9 +64,7 @@
               >
                 <i
                   :class="
-                    `far ${
-                      allChecked ? 'fa-check-square' : 'fa-square'
-                    } left`
+                    `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
                   "
                 />
                 Toggle all

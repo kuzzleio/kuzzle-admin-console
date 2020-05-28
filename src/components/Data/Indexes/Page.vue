@@ -38,7 +38,6 @@
                 :disabled="tableItems.length === 0"
                 @submit="navigateToIndex"
               />
-
             </b-input-group>
           </b-col>
         </b-row>
@@ -211,10 +210,10 @@ export default {
       this.indexToDelete = index
       this.$bvModal.show(this.deleteIndexModalId)
     },
-    navigateToIndex () {
+    navigateToIndex() {
       const index = this.filteredIndexes[0]
 
-      if (! index) {
+      if (!index) {
         return
       }
 
@@ -225,10 +224,10 @@ export default {
 
       this.$router.push(route)
     },
-    updateFilteredIndexes (filteredIndexes) {
+    updateFilteredIndexes(filteredIndexes) {
       this.filteredIndexes = filteredIndexes
     }
-  },
+  }
 }
 </script>
 

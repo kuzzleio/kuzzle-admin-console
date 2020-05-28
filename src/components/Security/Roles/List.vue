@@ -1,9 +1,6 @@
 <template>
   <div class="RoleList">
-    <slot
-      v-if="!currentFilter.basic && totalDocuments === 0"
-      name="emptySet"
-    />
+    <slot v-if="!currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
       <filters
         class="mb-3"

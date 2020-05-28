@@ -1,9 +1,6 @@
 <template>
   <div class="ProfileList">
-    <slot
-      v-if="currentFilter.basic && totalDocuments === 0"
-      name="emptySet"
-    />
+    <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
       <filters
         :current-filter="currentFilter"
@@ -58,9 +55,7 @@
                 >
                   <i
                     :class="
-                      `far ${
-                        allChecked ? 'fa-check-square' : 'fa-square'
-                      } left`
+                      `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
                     "
                   />
                   Toggle all

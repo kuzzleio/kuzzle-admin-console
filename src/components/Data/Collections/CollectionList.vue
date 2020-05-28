@@ -48,7 +48,6 @@
                 @submit="navigateToCollection"
                 :disabled="collections.length === 0"
               />
-
             </b-input-group>
           </b-col>
         </b-row>
@@ -416,21 +415,22 @@ export default {
         )
       }
     },
-    navigateToCollection () {
+    navigateToCollection() {
       const collection = this.filteredCollections[0]
 
-      if (! collection) {
+      if (!collection) {
         return
       }
 
       const route = {
-        name: collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
+        name:
+          collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
         params: { index: this.index, collection: collection.name }
       }
 
       this.$router.push(route)
     },
-    updateFilteredCollections (filteredCollections) {
+    updateFilteredCollections(filteredCollections) {
       this.filteredCollections = filteredCollections
     }
   },
