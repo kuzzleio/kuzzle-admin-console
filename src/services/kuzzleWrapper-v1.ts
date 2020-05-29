@@ -23,6 +23,7 @@ const formatMeta = _kuzzle_info => ({
 })
 
 export class KuzzleWrapperV1 {
+  version: string = '1'
   kuzzle: any = null
 
   constructor(sdk) {

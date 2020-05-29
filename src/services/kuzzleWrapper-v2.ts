@@ -4,6 +4,8 @@ import { KuzzleWrapperV1 } from './kuzzleWrapper-v1'
 export const kuzzle = new Kuzzle(new WebSocket('localhost'))
 
 export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
+  version: string = '2'
+
   async connectToEnvironment(environment) {
     // fix default port for users that have an old environment settings in their localStorage:
     if (environment.port === undefined) environment.port = 7512
