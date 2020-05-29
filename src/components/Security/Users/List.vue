@@ -212,9 +212,6 @@ export default {
     paginationFrom() {
       return parseInt(this.currentFilter.from) || 0
     }
-    // paginationSize() {
-    //   return parseInt(this.currentFilter.size) || 10
-    // }
   },
   methods: {
     changePaginationSize(e) {
