@@ -18,10 +18,17 @@ export const getters = createGetters<KuzzleState>()({
     }
   },
   $kuzzle(state, getters) {
-    if (!getters.wrapper) {
+    if (!getters.currentEnvironment) {
       return null
     }
-    return getters.wrapper.kuzzle
+    switch (getters.currentEnvironment.backendMajorVersion) {
+      case 1:
+        return kuzzleV1.kuzzle
+      case 2:
+        return kuzzleV2.kuzzle
+      default:
+        return kuzzleV2.kuzzle
+    }
   },
   currentEnvironment(state, getters) {
     if (!getters.hasEnvironment) {
