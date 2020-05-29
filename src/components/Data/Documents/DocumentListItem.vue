@@ -76,11 +76,8 @@
 <script>
 import _ from 'lodash'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import {
-  canEditDocument,
-  canDeleteDocument
-} from '../../../services/userAuthorization'
 import title from '../../../directives/title.directive'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentListItem',
@@ -108,17 +105,18 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     canEdit() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
@@ -127,7 +125,7 @@ export default {
      * Deletes the "id" who should not be displayed in the document body.
      * Also put the "_kuzzle_info" field in last position
      */
-    formattedDocument () {
+    formattedDocument() {
       const document = _.omit(this.document, ['id', '_kuzzle_info'])
       document._kuzzle_info = this.document._kuzzle_info
       return document

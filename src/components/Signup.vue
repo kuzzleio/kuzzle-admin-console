@@ -214,7 +214,7 @@ export default {
     loginAsGuest() {
       this.error = null
       this.$store.direct.dispatch.auth
-        .prepareSession('anonymous')
+        .setSession('anonymous')
         .then(() => {
           this.$router.go({ name: 'Data' })
         })

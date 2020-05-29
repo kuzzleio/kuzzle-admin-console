@@ -48,7 +48,6 @@
                 @submit="navigateToCollection"
                 :disabled="collections.length === 0"
               />
-
             </b-input-group>
           </b-col>
         </b-row>
@@ -222,21 +221,14 @@
 </style>
 
 <script>
+import DataNotFound from '../Data404'
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
-
-import {
-  canDeleteIndex,
-  canSearchIndex,
-  canSearchCollection,
-  canCreateCollection,
-  canEditCollection
-} from '../../../services/userAuthorization'
 import { truncateName } from '../../../utils'
 import Title from '../../../directives/title.directive'
-import DataNotFound from '../Data404'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionList',
@@ -263,6 +255,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', [
+      'canSearchCollection',
+      'canCreateCollection',
+      'canEditCollection'
+    ]),
+
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
     },
@@ -345,11 +343,6 @@ export default {
     }
   },
   methods: {
-    canDeleteIndex,
-    canSearchIndex,
-    canSearchCollection,
-    canCreateCollection,
-    canEditCollection,
     onDeleteCollectionClicked(name) {
       this.collectionToDelete = name
       this.$bvModal.show('deleteCollectionPrompt')
@@ -415,21 +408,22 @@ export default {
         )
       }
     },
-    navigateToCollection () {
+    navigateToCollection() {
       const collection = this.filteredCollections[0]
 
-      if (! collection) {
+      if (!collection) {
         return
       }
 
       const route = {
-        name: collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
+        name:
+          collection.type === 'realtime' ? 'WatchCollection' : 'DocumentList',
         params: { index: this.index, collection: collection.name }
       }
 
       this.$router.push(route)
     },
-    updateFilteredCollections (filteredCollections) {
+    updateFilteredCollections(filteredCollections) {
       this.filteredCollections = filteredCollections
     }
   },

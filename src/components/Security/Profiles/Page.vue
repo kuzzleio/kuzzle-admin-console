@@ -9,7 +9,7 @@
           class="mr-2"
           data-cy="ProfilesManagement-createBtn"
           variant="primary"
-          :disabled="!canCreateProfile()"
+          :disabled="!canCreateProfile"
           :to="{ name: 'SecurityProfilesCreate' }"
           >Create Profile</b-button
         >
@@ -17,12 +17,12 @@
     </b-row>
 
     <!-- Not allowed -->
-    <list-not-allowed v-if="!canSearchProfile()" />
+    <list-not-allowed v-if="!canSearchProfile" />
 
     <list
-      v-if="canSearchProfile()"
+      v-if="canSearchProfile"
       item-name="ProfileItem"
-      :display-create="canCreateProfile()"
+      :display-create="canCreateProfile"
       :perform-search="performSearchProfiles"
       :perform-delete="performDeleteProfiles"
       route-create="SecurityProfilesCreate"
@@ -34,7 +34,7 @@
         <h2 class="text-secondary font-weight-bold">
           No profile is defined
         </h2>
-        <p class="text-secondary" v-if="canCreateProfile()">
+        <p class="text-secondary" v-if="canCreateProfile">
           You can create a new profile by hitting the button above
         </p> </b-card
       >iv>
@@ -47,14 +47,10 @@ import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
 import {
-  canSearchProfile,
-  canCreateProfile
-} from '../../../services/userAuthorization'
-import {
   performSearchProfiles,
   performDeleteProfiles
 } from '../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'ProfileManagement',
   components: {
@@ -62,12 +58,13 @@ export default {
     ListNotAllowed,
     Headline
   },
+  computed: {
+    ...mapGetters('auth', ['canSearchProfile', 'canCreateProfile'])
+  },
   methods: {
     createProfile() {
       this.$router.push({ name: 'SecurityProfilesCreate' })
     },
-    canSearchProfile,
-    canCreateProfile,
     performSearchProfiles,
     performDeleteProfiles
   },

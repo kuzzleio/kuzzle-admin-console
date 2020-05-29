@@ -69,7 +69,8 @@
 
 <script>
 import DocumentListItem from '../DocumentListItem'
-import { canDeleteDocument } from '../../../../services/userAuthorization'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'DocumentsListView',
   components: {
@@ -110,6 +111,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canDeleteDocument']),
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -121,7 +123,6 @@ export default {
     }
   },
   methods: {
-    canDeleteDocument,
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     }

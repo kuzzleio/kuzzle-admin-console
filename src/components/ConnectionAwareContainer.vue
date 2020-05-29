@@ -14,14 +14,22 @@
         @environment::importEnv="$emit('environment::importEnv')"
       ></offline-spinner>
     </template>
-    <router-view
-      v-else
-      data-cy="App-online"
-      @environment::create="$emit('environment::create', $event)"
-      @environment::delete="$emit('environment::delete', $event)"
-      @environment::importEnv="$emit('environment::importEnv')"
-    ></router-view>
-
+    <template v-else>
+      <error-page
+        v-if="kuzzleError"
+        data-cy="App-connectionError"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      />
+      <router-view
+        v-else
+        data-cy="App-online"
+        @environment::create="$emit('environment::create', $event)"
+        @environment::delete="$emit('environment::delete', $event)"
+        @environment::importEnv="$emit('environment::importEnv')"
+      ></router-view>
+    </template>
     <b-toast
       id="offline-toast"
       title="Offline"
@@ -37,13 +45,15 @@
 </template>
 
 <script>
+import ErrorPage from './Error/KuzzleErrorPage'
 import OfflineSpinner from './Common/Offline'
 import { antiGlitchOverlayTimeout } from '../utils'
 
 export default {
   name: 'ConnectionAwareContainer',
   components: {
-    OfflineSpinner
+    OfflineSpinner,
+    ErrorPage
   },
   data() {
     return {
@@ -52,6 +62,12 @@ export default {
     }
   },
   computed: {
+    currentEnvironment() {
+      return this.$store.state.kuzzle.currentId
+    },
+    kuzzleError() {
+      return this.$store.state.kuzzle.errorFromKuzzle
+    },
     online() {
       return this.$store.direct.state.kuzzle.online
     },
@@ -62,15 +78,38 @@ export default {
   methods: {
     initListeners() {
       this.$kuzzle.on('networkError', error => {
-        this.$log.error(error)
+        this.$log.error(
+          `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
+        )
       })
-      this.$kuzzle.addListener('connected', () => {
+      this.$kuzzle.addListener('connected', async () => {
+        this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
+        this.$log.debug(
+          'ConnectionAwareContainer::initializing auth upon connection...'
+        )
+        try {
+          await this.$store.direct.dispatch.auth.init()
+        } catch (error) {
+          this.$log.error(
+            `ConnectionAwareContainer:initializing auth: "${error.message}" - code: ${error.code} - id: ${error.id}`
+          )
+          if (error.id === 'api.process.incompatible_sdk_version') {
+            return this.$store.direct.dispatch.kuzzle.onConnectionError(error)
+          }
+        }
+        this.authenticationGuard()
       })
       this.$kuzzle.addListener('reconnected', () => {
+        this.$store.direct.commit.kuzzle.setConnecting(false)
         this.$store.direct.commit.kuzzle.setOnline(true)
+        this.$log.debug(
+          'ConnectionAwareContainer::checking token after reconnection...'
+        )
+        this.$store.direct.dispatch.auth.checkToken()
       })
       this.$kuzzle.addListener('disconnected', () => {
+        this.$log.debug('ConnectionAwareContainer::backend went offline...')
         this.$store.direct.commit.kuzzle.setOnline(false)
       })
     },
@@ -93,52 +132,46 @@ export default {
         this.$bvToast.hide('offline-toast')
       }
     },
-    async connectAndRetry() {
+    async onEnvironmentSwitch() {
+      this.$log.debug('ConnectionAwareContainer::environmentSwitched')
+      this.$store.direct.commit.auth.setTokenValid(false)
+      this.removeListeners()
+      this.initListeners()
       try {
         await this.$store.direct.dispatch.kuzzle.connectToCurrentEnvironment()
       } catch (error) {
-        // WARNING this error is dumped as "[object Event]" which is weird.
-        // TODO We need to put some conditions on this error to avoid looping on non-network errors.
-        this.$log.error(error)
-        this.$log.debug('Retry connecting to Kuzzle.')
-        setTimeout(async () => {
-          await this.connectAndRetry()
-        }, 2000)
+        this.$log.error(
+          `ConnectionAwareContainer:onEnvironmentSwitch: ${error.message}`
+        )
       }
     },
     async authenticationGuard() {
-      if (this.$route.meta.skipLogin) {
-        return
-      }
-
-      // NOTE (@xbill82) this is duplicated code from the router. I tried to reuse
-      // the code from router.authenticationGuard by refactoring it into a separate
-      // function, but I can't pass `this.$router.push` as the `next` parameter:
-      // I get a `this$1` doesn't exist error.
-      try {
-        if (await this.$store.direct.dispatch.auth.checkToken()) {
-          this.$log.debug('ConnectionAwareContainer::Token bueno')
-        } else {
-          this.$log.debug('ConnectionAwareContainer::Token no bueno')
-          this.$router.push({ name: 'Login', query: { to: this.$route.name } })
-        }
-      } catch (error) {
-        this.$log.debug('ConnectionAwareContainer::Token no bueno (error)')
-        this.$log.error(error)
+      this.$log.debug('ConnectionAwareContainer::authentication guard')
+      if (
+        this.$route.matched.some(record => record.meta.requiresAuth) &&
+        !this.$store.direct.getters.auth.isAuthenticated
+      ) {
+        this.$log.debug('ConnectionAwareContainer::not authenticated')
         this.$router.push({ name: 'Login', query: { to: this.$route.name } })
       }
     }
-  },
-  async mounted() {
-    this.$log.debug('ConnectionAwareContainer::mounted')
-    this.$store.direct.commit.auth.setTokenValid(false)
-    this.initListeners()
-    await this.connectAndRetry()
   },
   beforeDestroy() {
     this.removeListeners()
   },
   watch: {
+    currentEnvironment: {
+      immediate: true,
+      async handler() {
+        try {
+          await this.onEnvironmentSwitch()
+        } catch (error) {
+          this.$log.error(
+            `ConnectionAwareContainer:currentEnvironmentWatch: ${error.message}`
+          )
+        }
+      }
+    },
     online: {
       immediate: true,
       handler() {
@@ -148,14 +181,7 @@ export default {
     connecting: {
       immediate: true,
       handler(val) {
-        if (val === false) {
-          this.showOfflineSpinner = false
-          this.$log.debug(
-            'ConnectionAwareContainer::checking authentication after (re)connection...'
-          )
-          this.authenticationGuard()
-        }
-        this.showOfflineSpinner = false
+        this.showOfflineSpinner = val
         setTimeout(() => {
           this.showOfflineSpinner = true
         }, antiGlitchOverlayTimeout)

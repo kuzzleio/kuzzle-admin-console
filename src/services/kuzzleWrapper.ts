@@ -1,7 +1,7 @@
 import { WebSocket } from 'kuzzle-sdk/dist/kuzzle'
 import Promise from 'bluebird'
 import Vue from 'vue'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 export const waitForConnected = (timeout = 1000) => {
   if (Vue.prototype.$kuzzle.protocol.state !== 'connected') {
@@ -61,7 +61,8 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 
 const formatMeta = _kuzzle_info => ({
   author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
-  updater: _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
+  updater:
+    _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
   createdAt: _kuzzle_info.createdAt,
   updatedAt: _kuzzle_info.updatedAt
 })
@@ -257,55 +258,4 @@ export const performDeleteRoles = async ids => {
   await Vue.prototype.$kuzzle.security.mDeleteRoles(ids, {
     refresh: 'wait_for'
   })
-}
-
-export const isKuzzleActionAllowed = (
-  rights,
-  controller,
-  action,
-  index,
-  collection
-) => {
-  var filteredRights
-
-  if (!rights || typeof rights !== 'object') {
-    throw new Error(
-      'rights parameter is mandatory for isActionAllowed function'
-    )
-  }
-  if (!controller || typeof controller !== 'string') {
-    throw new Error(
-      'controller parameter is mandatory for isActionAllowed function'
-    )
-  }
-  if (!action || typeof action !== 'string') {
-    throw new Error(
-      'action parameter is mandatory for isActionAllowed function'
-    )
-  }
-  // We filter in all the rights that match the request (including wildcards).
-  filteredRights = rights
-    .filter(function(right) {
-      return right.controller === controller || right.controller === '*'
-    })
-    .filter(function(right) {
-      return right.action === action || right.action === '*'
-    })
-    .filter(function(right) {
-      return right.index === index || right.index === '*'
-    })
-    .filter(function(right) {
-      return right.collection === collection || right.collection === '*'
-    })
-
-  // Then, if at least one right allows the action, we return 'allowed'
-  if (
-    filteredRights.some(function(item) {
-      return item.value === 'allowed'
-    })
-  ) {
-    return 'allowed'
-  }
-  // Otherwise we return 'denied'.
-  return 'denied'
 }

@@ -212,12 +212,9 @@
 <script>
 import Title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
-import {
-  canEditDocument,
-  canDeleteDocument
-} from '../../../../services/userAuthorization'
 import _ from 'lodash'
 import { truncateName } from '@/utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Column',
@@ -243,6 +240,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -323,13 +321,13 @@ export default {
       if (!this.index || !this.collection) {
         return false
       }
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
@@ -341,7 +339,6 @@ export default {
       this.saveSelectedFieldsToLocalStorage()
     },
     truncateName,
-    canDeleteDocument,
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     },
