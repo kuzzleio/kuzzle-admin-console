@@ -14,7 +14,7 @@
           />
         </b-col>
       </b-row>
-      <template v-if="fetchingUsers">
+      <template v-if="loading">
         <b-row class="text-center">
           <b-col>
             <b-spinner variant="primary" class="mt-5"></b-spinner>
@@ -113,7 +113,7 @@
           </div>
         </b-card-text>
       </b-card>
-      <b-row align-h="center">
+      <b-row align-h="center" v-if="!loading">
         <b-pagination
           class="m-2 mt-4"
           data-cy="UserManagement-pagination"
@@ -171,7 +171,7 @@ export default {
       currentPage: 1,
       deleteModalIsLoading: false,
       documents: [],
-      fetchingUsers: false,
+      loading: true,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       totalDocuments: 0,
@@ -244,7 +244,7 @@ export default {
       }
     },
     async fetchDocuments() {
-      this.fetchingUsers = true
+      this.loading = true
 
       this.$forceUpdate()
 
@@ -290,7 +290,7 @@ export default {
           noAutoHide: true
         })
       }
-      this.fetchingUsers = false
+      this.loading = false
     },
     editUser(id) {
       this.$router.push({
@@ -303,17 +303,19 @@ export default {
     // =========================================================================
     async onDeleteConfirmed() {
       this.deleteModalIsLoading = true
+      this.loading = true
       try {
         await performDeleteUsers(
           this.index,
           this.collection,
           this.candidatesForDeletion
         )
-        this.$bvModal.hide('modal-delete-users')
         this.deleteModalIsLoading = false
-        this.fetchDocuments()
+        this.$bvModal.hide('modal-delete-users')
+        await this.fetchDocuments()
       } catch (e) {
         this.$log.error(e)
+        this.deleteModalIsLoading = false
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
@@ -325,6 +327,7 @@ export default {
           }
         )
       }
+      this.loading = false
     },
     deleteUser(id) {
       this.candidatesForDeletion.push(id)
