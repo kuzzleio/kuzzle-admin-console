@@ -1,5 +1,7 @@
 import { KuzzleState } from './types'
 import { createGetters } from 'direct-vuex'
+import * as kuzzleV1 from '../../../services/kuzzleWrapper-v1'
+import * as kuzzleV2 from '../../../services/kuzzleWrapper-v2'
 
 export const getters = createGetters<KuzzleState>()({
   wrapper(state, getters) {
@@ -8,11 +10,11 @@ export const getters = createGetters<KuzzleState>()({
     }
     switch (getters.currentEnvironment.backendMajorVersion) {
       case 1:
-        return require('../../../services/kuzzleWrapper-v1')
+        return kuzzleV1.wrapper
       case 2:
-        return require('../../../services/kuzzleWrapper-v2')
+        return kuzzleV2.wrapper
       default:
-        return require('../../../services/kuzzleWrapper-v2')
+        return kuzzleV2.wrapper
     }
   },
   $kuzzle(state, getters) {
