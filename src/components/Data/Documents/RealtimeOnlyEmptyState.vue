@@ -34,15 +34,14 @@
 </template>
 
 <script>
-import { canEditCollection } from '../../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   props: {
     index: String,
     collection: String
   },
-  methods: {
-    canEditCollection
+  computed: {
+    ...mapGetters('auth', ['canEditCollection'])
   }
 }
 </script>

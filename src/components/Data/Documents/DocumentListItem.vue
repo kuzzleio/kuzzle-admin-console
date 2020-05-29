@@ -76,10 +76,7 @@
 <script>
 import _ from 'lodash'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import {
-  canEditDocument,
-  canDeleteDocument
-} from '../../../services/userAuthorization'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentListItem',
@@ -106,17 +103,18 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     canEdit() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
       return `checkbox-${this.document.id}`

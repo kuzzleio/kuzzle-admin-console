@@ -221,20 +221,12 @@
 </style>
 
 <script>
+import DataNotFound from '../Data404'
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
-
-import {
-  canDeleteIndex,
-  canSearchIndex,
-  canSearchCollection,
-  canCreateCollection,
-  canEditCollection
-} from '../../../services/userAuthorization'
 import { truncateName } from '../../../utils'
-import DataNotFound from '../Data404'
 import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionList',
@@ -259,6 +251,11 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', [
+      'canSearchCollection',
+      'canCreateCollection',
+      'canEditCollection'
+    ]),
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
     },
@@ -341,11 +338,6 @@ export default {
     }
   },
   methods: {
-    canDeleteIndex,
-    canSearchIndex,
-    canSearchCollection,
-    canCreateCollection,
-    canEditCollection,
     onDeleteCollectionClicked(name) {
       this.collectionToDelete = name
       this.$bvModal.show('deleteCollectionPrompt')

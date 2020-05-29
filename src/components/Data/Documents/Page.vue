@@ -164,6 +164,7 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
+import DataNotFound from '../Data404'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
@@ -174,14 +175,6 @@ import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
-import {
-  canSearchIndex,
-  canSearchDocument,
-  canCreateDocument,
-  canDeleteDocument,
-  canEditDocument
-} from '../../../services/userAuthorization'
-import DataNotFound from '../Data404'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 
@@ -234,6 +227,12 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
+    ...mapGetters('auth', [
+      'canSearchDocument',
+      'canCreateDocument',
+      'canDeleteDocument',
+      'canEditDocument'
+    ]),
     geoDocuments() {
       return this.documents.filter(document => {
         const [lat, lng] = this.getCoordinates(document)
@@ -548,14 +547,6 @@ export default {
         })
       )
     },
-
-    // PERMISSIONS
-    // =========================================================================
-    canSearchIndex,
-    canSearchDocument,
-    canCreateDocument,
-    canDeleteDocument,
-    canEditDocument,
 
     // SELECT ITEMS
     // =========================================================================

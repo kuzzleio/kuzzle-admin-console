@@ -9,15 +9,14 @@
 </template>
 
 <script>
-import { canCreateDocument } from '../../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   props: {
     index: String,
     collection: String
   },
-  methods: {
-    canCreateDocument
+  computed: {
+    ...mapGetters('auth', ['canCreateDocument'])
   }
 }
 </script>

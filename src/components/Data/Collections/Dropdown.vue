@@ -103,12 +103,7 @@
 
 <script>
 import ModalClear from './ModalClear.vue'
-import {
-  canEditCollection,
-  canSubscribe,
-  canTruncateCollection
-} from '../../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionDropdown',
   components: {
@@ -122,15 +117,16 @@ export default {
     myclass: String
   },
   computed: {
-    // WARNING THIS IS EVIL
+    ...mapGetters('auth', [
+      'canEditCollection',
+      'canSubscribe',
+      'canTruncateCollection'
+    ]),
     isList() {
       return this.$route.name === 'DocumentList'
     }
   },
   methods: {
-    canEditCollection,
-    canSubscribe,
-    canTruncateCollection,
     removeRealtimeCollection() {
       this.$store.direct.dispatch.collection.removeRealtimeCollection({
         index: this.index,

@@ -40,7 +40,6 @@
 </style>
 
 <script>
-import { canEditDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
@@ -70,8 +69,9 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
+    ...mapGetters('auth', ['canEditDocument']),
     hasRights() {
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     }
   },
   async mounted() {

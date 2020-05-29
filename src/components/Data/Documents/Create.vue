@@ -26,7 +26,6 @@
 </style>
 
 <script>
-import { canCreateDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
@@ -51,8 +50,9 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', ['canCreateDocument']),
     hasRights() {
-      return canCreateDocument(this.index, this.collection)
+      return this.canCreateDocument(this.index, this.collection)
     }
   },
   methods: {

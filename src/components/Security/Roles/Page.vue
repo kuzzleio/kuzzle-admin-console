@@ -9,17 +9,17 @@
           class="mr-2"
           data-cy="RolesManagement-createBtn"
           variant="primary"
-          :disabled="!canCreateRole()"
+          :disabled="!canCreateRole"
           :to="{ name: 'SecurityRolesCreate' }"
           >Create Role</b-button
         >
       </b-col>
     </b-row>
 
-    <list-not-allowed v-if="!canSearchRole()" />
+    <list-not-allowed v-if="!canSearchRole" />
 
     <role-list
-      v-if="canSearchRole()"
+      v-if="canSearchRole"
       item-name="RoleItem"
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
@@ -29,7 +29,7 @@
         <h2 class="text-secondary font-weight-bold">
           No role is defined
         </h2>
-        <p class="text-secondary" v-if="canCreateRole()">
+        <p class="text-secondary" v-if="canCreateRole">
           You can create a new role by hitting the button above
         </p>
       </b-card>
@@ -40,11 +40,8 @@
 <script>
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import RoleList from './List'
-import {
-  canSearchRole,
-  canCreateRole
-} from '../../../services/userAuthorization'
 import Headline from '../../Materialize/Headline'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'RolesManagement',
@@ -53,9 +50,8 @@ export default {
     RoleList,
     Headline
   },
-  methods: {
-    canSearchRole,
-    canCreateRole
+  computed: {
+    ...mapGetters('auth', ['canSearchRole', 'canCreateRole'])
   }
 }
 </script>

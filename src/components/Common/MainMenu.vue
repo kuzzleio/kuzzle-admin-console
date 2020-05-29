@@ -30,7 +30,7 @@
               ? $route.path.match('/security').length > 0
               : false
           "
-          v-if="hasSecurityRights()"
+          v-if="hasSecurityRights"
           :to="{ name: 'Security' }"
         >
           Security
@@ -62,17 +62,15 @@
 </template>
 
 <script>
-import { hasSecurityRights } from '../../services/userAuthorization'
 import EnvironmentSwitch from './Environments/EnvironmentsSwitch'
 import { mapGetters } from 'vuex'
-
 export default {
   name: 'MainMenu',
   components: {
     EnvironmentSwitch
   },
   computed: {
-    ...mapGetters('auth', ['user']),
+    ...mapGetters('auth', ['hasSecurityRights', 'user']),
     currentEnvironmentColor() {
       return this.$store.direct.getters.kuzzle.currentEnvironment.color
     },
@@ -112,7 +110,7 @@ export default {
         )
       }
     },
-    hasSecurityRights,
+
     editEnvironment(id) {
       this.$emit('environment::create', id)
     },

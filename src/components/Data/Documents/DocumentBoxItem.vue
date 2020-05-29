@@ -39,11 +39,7 @@
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import JsonFormat from '../../../directives/json-formatter.directive'
-import {
-  canEditDocument,
-  canDeleteDocument
-} from '../../../services/userAuthorization'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'DocumentBoxItem',
   directives: {
@@ -61,6 +57,7 @@ export default {
     return {}
   },
   computed: {
+    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     documentContent() {
       let content = Object.assign(this.document.content, {})
       delete content._kuzzle_info
@@ -70,13 +67,13 @@ export default {
       if (!this.index || !this.collection) {
         return false
       }
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection)
     },
     checkboxId() {
       return `checkbox-${this.document.id}`

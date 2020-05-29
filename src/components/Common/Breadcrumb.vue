@@ -140,11 +140,9 @@
 </style>
 
 <script>
-import { canSearchIndex } from '../../services/userAuthorization'
 export default {
   name: 'CommonBreadcrumb',
   methods: {
-    canSearchIndex,
     isCollectionRealtime() {
       if (
         !this.$store.direct.state.index.indexesAndCollections[

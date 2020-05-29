@@ -10,7 +10,7 @@
             class="mr-2"
             data-cy="UsersManagement-createBtn"
             variant="primary"
-            :disabled="!canCreateUser()"
+            :disabled="!canCreateUser"
             :to="{ name: 'SecurityUsersCreate' }"
             >Create User</b-button
           >
@@ -35,10 +35,10 @@
       </b-row>
 
       <!-- Not allowed -->
-      <list-not-allowed v-if="!canSearchUser()" />
+      <list-not-allowed v-if="!canSearchUser" />
 
       <list
-        v-if="canSearchUser()"
+        v-if="canSearchUser"
         item-name="UserItem"
         collection="users"
         index="%kuzzle"
@@ -51,7 +51,7 @@
           <h2 class="text-secondary font-weight-bold">
             No user is defined
           </h2>
-          <p class="text-secondary" v-if="canCreateUser()">
+          <p class="text-secondary" v-if="canCreateUser">
             You can create a new user by hitting the button above
           </p>
         </b-card>
@@ -64,10 +64,6 @@
 import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
-import {
-  canSearchUser,
-  canCreateUser
-} from '../../../services/userAuthorization'
 import { mapGetters } from 'vuex'
 export default {
   name: 'UsersManagement',
@@ -82,7 +78,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['wrapper'])
+    ...mapGetters('kuzzle', ['wrapper']),
+    ...mapGetters('auth', ['canSearchUser', 'canCreateUser'])
   },
   async mounted() {
     const mapping = await this.wrapper.getMappingUsers()
@@ -91,9 +88,7 @@ export default {
   methods: {
     createUser() {
       this.$router.push({ name: 'SecurityUsersCreate' })
-    },
-    canSearchUser,
-    canCreateUser
+    }
   }
 }
 </script>

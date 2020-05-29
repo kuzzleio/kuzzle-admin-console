@@ -30,7 +30,6 @@
         @environment::importEnv="$emit('environment::importEnv')"
       ></router-view>
     </template>
-
     <b-toast
       id="offline-toast"
       title="Offline"
@@ -46,16 +45,16 @@
 </template>
 
 <script>
-import OfflineSpinner from './Common/Offline'
 import ErrorPage from './Error/KuzzleErrorPage'
+import OfflineSpinner from './Common/Offline'
 import { antiGlitchOverlayTimeout } from '../utils'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'ConnectionAwareContainer',
   components: {
-    ErrorPage,
-    OfflineSpinner
+    OfflineSpinner,
+    ErrorPage
   },
   data() {
     return {

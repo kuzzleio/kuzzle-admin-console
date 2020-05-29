@@ -33,30 +33,28 @@
           href=""
           variant="link"
           :data-cy="`RoleItem-update--${document._id}`"
-          :disabled="!canEditRole()"
+          :disabled="!canEditRole"
           :title="
-            canEditRole()
-              ? 'Edit Role'
-              : 'You are not allowed to edit this role'
+            canEditRole ? 'Edit Role' : 'You are not allowed to edit this role'
           "
           @click.prevent="update"
         >
-          <i class="fa fa-pencil-alt" :class="{ disabled: !canEditRole() }" />
+          <i class="fa fa-pencil-alt" :class="{ disabled: !canEditRole }" />
         </b-button>
         <b-button
           class="RoleItem-delete"
           href=""
           variant="link"
           :data-cy="`RoleItem-delete--${document._id}`"
-          :disabled="!canDeleteRole()"
+          :disabled="!canDeleteRole"
           :title="
-            canDeleteRole()
+            canDeleteRole
               ? 'Delete role'
               : 'You are not allowed to delete this role'
           "
           @click.prevent="deleteDocument(document._id)"
         >
-          <i class="fa fa-trash" :class="{ disabled: !canDeleteRole() }" />
+          <i class="fa fa-trash" :class="{ disabled: !canDeleteRole }" />
         </b-button>
       </b-col>
     </b-row>
@@ -71,7 +69,7 @@
 
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
-import { canEditRole, canDeleteRole } from '../../../services/userAuthorization'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'RoleItem',
@@ -89,6 +87,9 @@ export default {
       checked: false
     }
   },
+  computed: {
+    ...mapGetters('auth', ['canEditRole', 'canDeleteRole'])
+  },
   methods: {
     toggleCollapse() {
       this.expanded = !this.expanded
@@ -97,21 +98,19 @@ export default {
       this.$emit('checkbox-click', this.document._id)
     },
     deleteDocument() {
-      if (this.canDeleteRole()) {
+      if (this.canDeleteRole) {
         this.$emit('delete-document', this.document._id)
       }
     },
     update() {
-      if (this.canEditRole()) {
+      if (this.canEditRole) {
         this.$emit(
           'common-list::edit-document',
           'SecurityRolesUpdate',
           this.document._id
         )
       }
-    },
-    canEditRole,
-    canDeleteRole
+    }
   },
   watch: {
     isChecked: {

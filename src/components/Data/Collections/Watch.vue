@@ -240,7 +240,6 @@ import Notification from '../Realtime/Notification'
 import CollectionDropdown from '../Collections/Dropdown'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
-import { canSubscribe } from '../../../services/userAuthorization'
 import { truncateName } from '@/utils'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
@@ -275,6 +274,7 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('auth', ['canSubscribe']),
     hasFilter() {
       return (
         !!this.realtimeQuery &&
@@ -314,7 +314,6 @@ export default {
     }
   },
   methods: {
-    canSubscribe,
     truncateName,
     onFilterChanged(value) {
       this.rawFilter = value

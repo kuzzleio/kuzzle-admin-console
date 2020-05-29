@@ -92,6 +92,14 @@ describe('Environments', function() {
       .click()
 
     cy.get('[data-cy="Environment-SubmitButton"]').click()
+    cy.wait(500)
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+
+    cy.get(
+      `[data-cy=EnvironmentSwitch-env_local] > .EnvironmentSwitch-env-name`
+    ).click({
+      force: true
+    })
     cy.wait(1000)
     localStorage.setItem('currentEnv', envName)
     cy.visit('/')
@@ -149,6 +157,7 @@ describe('Environments', function() {
 
     cy.contains('Connecting to Kuzzle')
     cy.get('[data-cy="App-offline"]')
+    cy.wait(2000)
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
     cy.get(
