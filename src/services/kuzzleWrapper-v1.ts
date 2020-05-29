@@ -149,23 +149,23 @@ export const performSearchUsers = async (
   }
 
   const users: Array<any> = []
-  for (const d of result.hits) {
-    const u: any = {
-      id: d._id,
-      ...d.content,
-      _kuzzle_info: formatMeta(d.content._kuzzle_info),
+  for (const user of result.hits) {
+    const formattedUser: any = {
+      id: user._id,
+      ...user.content,
+      _kuzzle_info: formatMeta(user.content._kuzzle_info),
       credentials: {}
     }
     for (const strategy of strategies) {
       try {
-        const res = await kuzzle.security.getCredentials(strategy, d._id)
-        u.credentials[strategy] = res
+        const res = await kuzzle.security.getCredentials(strategy, user._id)
+        formattedUser.credentials[strategy] = res
       } catch (e) {
-        u.credentials[strategy] = {}
+        formattedUser.credentials[strategy] = {}
       }
     }
 
-    users.push(u)
+    users.push(formattedUser)
   }
 
   return { documents: users, total: result.total }
