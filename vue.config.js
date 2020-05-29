@@ -12,6 +12,8 @@ module.exports = {
     disableHostCheck: true
   },
 
+  publicPath: process.env.DEPLOY_PATH ? `/${process.env.DEPLOY_PATH}/` : '',
+
   configureWebpack: {
     devtool: 'source-map'
   },
