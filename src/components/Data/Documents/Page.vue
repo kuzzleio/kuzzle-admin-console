@@ -643,6 +643,10 @@ export default {
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
+      if (!this.collectionMapping) {
+        return
+      }
+
       const dateFields = []
 
       const findDateFields = (mapping, previousKey) => {

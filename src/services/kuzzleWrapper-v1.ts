@@ -14,7 +14,6 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 
   return content[attribute]
 }
-
 const formatMeta = _kuzzle_info => ({
   author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
   updater:
@@ -183,6 +182,39 @@ export class KuzzleWrapperV1 {
     await this.kuzzle.security.mDeleteProfiles(ids, {
       refresh: 'wait_for'
     })
+  }
+
+  async performSearchDocuments(
+    collection,
+    index,
+    filters = { query: {} },
+    pagination = {},
+    sort = []
+  ) {
+    if (!collection || !index) {
+      throw new Error('Missing collection or index')
+    }
+
+    const result = await this.kuzzle.document.search(
+      index,
+      collection,
+      { ...filters, sort },
+      { ...pagination }
+    )
+
+    const documents = result.hits.map(d => ({
+      id: d._id,
+      ...d._source,
+      _kuzzle_info: d._source._kuzzle_info
+        ? formatMeta(d._source._kuzzle_info)
+        : undefined
+    }))
+
+    const totalDocument = await this.kuzzle.document.count(index, collection, {
+      query: filters.query
+    })
+
+    return { documents, total: totalDocument }
   }
 
   async performSearchRoles(controllers = {}, pagination = {}) {
