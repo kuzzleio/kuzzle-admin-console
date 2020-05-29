@@ -194,6 +194,7 @@ export default {
   methods: {
     changePaginationSize(e) {
       this.paginationSize = e
+      this.fetchProfiles()
     },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1

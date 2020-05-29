@@ -186,6 +186,7 @@ export default {
   methods: {
     changePaginationSize(e) {
       this.paginationSize = e
+      this.fetchRoles()
     },
     // DELETE
     // =========================================================================

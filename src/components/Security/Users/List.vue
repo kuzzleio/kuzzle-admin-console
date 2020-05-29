@@ -217,6 +217,10 @@ export default {
     // }
   },
   methods: {
+    changePaginationSize(e) {
+      this.paginationSize = e
+      this.fetchDocuments()
+    },
     isChecked(id) {
       return this.selectedDocuments.includes(id)
     },
