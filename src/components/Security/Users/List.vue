@@ -1,7 +1,14 @@
 <template>
   <div class="UserList">
+    <template v-if="loading">
+      <b-row class="text-center">
+        <b-col>
+          <b-spinner variant="primary" class="mt-5"></b-spinner>
+        </b-col>
+      </b-row>
+    </template>
     <slot v-if="isCollectionEmpty" name="emptySet" />
-    <template v-else>
+    <template v-if="!isCollectionEmpty && !loading">
       <b-row class="justify-content-md-center" no-gutters>
         <b-col cols="12">
           <filters
@@ -14,15 +21,7 @@
           />
         </b-col>
       </b-row>
-      <template v-if="loading">
-        <b-row class="text-center">
-          <b-col>
-            <b-spinner variant="primary" class="mt-5"></b-spinner>
-          </b-col>
-        </b-row>
-      </template>
       <b-card
-        v-else
         class="light-shadow"
         :bg-variant="documents.length === 0 ? 'light' : 'default'"
       >
