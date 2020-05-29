@@ -95,14 +95,12 @@ import {
   canEditProfile,
   canDeleteProfile
 } from '../../../services/userAuthorization'
-import title from '../../../directives/title.directive'
 
 export default {
   name: 'ProfileItem',
   components: {},
   directives: {
-    jsonFormatter,
-    title
+    jsonFormatter
   },
   props: {
     document: Object,

@@ -72,14 +72,12 @@
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
 import { canEditRole, canDeleteRole } from '../../../services/userAuthorization'
-import title from '../../../directives/title.directive'
 
 export default {
   name: 'RoleItem',
   components: {},
   directives: {
-    jsonFormatter,
-    title
+    jsonFormatter
   },
   props: {
     document: Object,

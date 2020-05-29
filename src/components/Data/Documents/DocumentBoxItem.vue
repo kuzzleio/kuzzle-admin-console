@@ -39,7 +39,6 @@
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import JsonFormat from '../../../directives/json-formatter.directive'
-import Title from '../../../directives/title.directive'
 import {
   canEditDocument,
   canDeleteDocument
@@ -48,8 +47,7 @@ import {
 export default {
   name: 'DocumentBoxItem',
   directives: {
-    JsonFormat,
-    Title
+    JsonFormat
   },
   components: {
     Dropdown

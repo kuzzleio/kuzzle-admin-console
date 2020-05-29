@@ -38,10 +38,7 @@
           <dropdown :id="currentDocument.id" myclass="icon-black">
             <li>
               <a
-                v-title="{
-                  active: !canDelete,
-                  title: 'You are not allowed to delete this document'
-                }"
+                title="You are not allowed to delete this document"
                 :class="{ disabled: !canDelete }"
                 @click="deleteCurrentDocument()"
               >
@@ -71,7 +68,6 @@ import L from 'leaflet'
 import Dropdown from '../../Materialize/Dropdown'
 import '../../../../src/assets/leaflet.css'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import title from '../../../directives/title.directive'
 import {
   canEditDocument,
   canDeleteDocument
@@ -86,8 +82,7 @@ export default {
     Dropdown
   },
   directives: {
-    JsonFormatter,
-    title
+    JsonFormatter
   },
   props: {
     documents: {

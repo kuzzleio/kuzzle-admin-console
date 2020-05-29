@@ -85,7 +85,6 @@
 <script>
 import JsonEditor from '../../../Common/JsonEditor'
 import Focus from '../../../../directives/focus.directive'
-import title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
 
 export default {
@@ -95,7 +94,6 @@ export default {
   },
   directives: {
     Focus,
-    title,
     JsonFormatter
   },
   props: {

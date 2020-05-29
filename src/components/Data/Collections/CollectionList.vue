@@ -234,7 +234,6 @@ import {
   canEditCollection
 } from '../../../services/userAuthorization'
 import { truncateName } from '../../../utils'
-import Title from '../../../directives/title.directive'
 import DataNotFound from '../Data404'
 import { mapGetters } from 'vuex'
 export default {
@@ -245,9 +244,6 @@ export default {
     ListNotAllowed,
     MainSpinner,
     AutoFocusInput
-  },
-  directives: {
-    Title
   },
   props: {
     index: String

@@ -40,13 +40,11 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
-import Title from '../../../directives/title.directive'
 
 export default {
   name: 'ClearCollectionModal',
   directives: {
-    Focus,
-    Title
+    Focus
   },
   props: {
     id: String,

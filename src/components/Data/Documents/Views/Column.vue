@@ -204,7 +204,6 @@
 </template>
 
 <script>
-import Title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
 import {
   canEditDocument,
@@ -216,7 +215,6 @@ import { truncateName } from '@/utils'
 export default {
   name: 'Column',
   directives: {
-    Title,
     JsonFormatter
   },
   props: {

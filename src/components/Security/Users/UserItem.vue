@@ -103,7 +103,6 @@
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
 import { canEditUser, canDeleteUser } from '../../../services/userAuthorization'
-import title from '../../../directives/title.directive'
 
 const MAX_PROFILES = 5
 
@@ -111,8 +110,7 @@ export default {
   name: 'UserItem',
   components: {},
   directives: {
-    jsonFormatter,
-    title
+    jsonFormatter
   },
   props: {
     document: Object,

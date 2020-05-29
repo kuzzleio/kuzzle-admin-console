@@ -80,13 +80,11 @@ import {
   canEditDocument,
   canDeleteDocument
 } from '../../../services/userAuthorization'
-import title from '../../../directives/title.directive'
 
 export default {
   name: 'DocumentListItem',
   directives: {
-    JsonFormatter,
-    title
+    JsonFormatter
   },
   props: {
     index: String,

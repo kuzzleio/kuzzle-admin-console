@@ -236,7 +236,6 @@
 
 <script>
 import Headline from '../../Materialize/Headline'
-import collapsible from '../../../directives/Materialize/collapsible.directive'
 import Notification from '../Realtime/Notification'
 import CollectionDropdown from '../Collections/Dropdown'
 import JsonEditor from '../../Common/JsonEditor'
@@ -250,7 +249,6 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'CollectionWatch',
   directives: {
-    collapsible,
     JsonFormatter
   },
   components: {
