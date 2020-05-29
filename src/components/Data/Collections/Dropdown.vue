@@ -121,7 +121,7 @@ export default {
       'canEditCollection',
       'canSubscribe',
       'canTruncateCollection'
-    ]), // WARNING THIS IS EVIL
+    ]),
     isList() {
       return this.$route.name === 'DocumentList'
     }

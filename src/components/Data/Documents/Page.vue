@@ -442,10 +442,10 @@ export default {
       this.fetchDocuments()
     },
     performSearchDocuments,
-    navigateToDocument () {
+    navigateToDocument() {
       const document = this.documents[0]
 
-      if (! document) {
+      if (!document) {
         return
       }
 
@@ -553,9 +553,6 @@ export default {
         })
       )
     },
-
-    // PERMISSIONS
-    // =========================================================================
 
     // SELECT ITEMS
     // =========================================================================
