@@ -95,9 +95,9 @@ const actions = createActions({
       return
     }
 
-    let mappings = await rootGetters.kuzzle.$kuzzle.collection.getMapping(
-      index,
-      collection
+    let mappings = await rootGetters.kuzzle.wrapper.getMappingDocument(
+      collection,
+      index
     )
     let schema = {}
     let allowForm = false

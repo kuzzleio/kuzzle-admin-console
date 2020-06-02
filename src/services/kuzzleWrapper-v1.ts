@@ -67,13 +67,12 @@ export class KuzzleWrapperV1 {
       controller: 'collection',
       action: 'getMapping',
       index,
-      collection,
-      includeKuzzleMeta: true
+      collection
     }
 
     const response = await this.kuzzle.query(request)
 
-    return response.result
+    return response.result[index].mappings[collection]
   }
 
   async performDeleteDocuments(index, collection, ids) {

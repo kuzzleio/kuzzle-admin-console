@@ -97,8 +97,8 @@ describe('Collection management', function() {
 
     cy.get('[data-cy="Treeview-item-index--anotherindex"]').click()
     cy.get('[data-cy="CollectionList-table"]').contains('foo')
-   })
-  
+  })
+
   it('Should be able to autofocus collection search', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/foobar`)
