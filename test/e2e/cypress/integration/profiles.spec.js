@@ -2,6 +2,7 @@ const kuzzleUrl = 'http://localhost:7512'
 
 describe('Profiles', () => {
   beforeEach(function() {
+    cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 

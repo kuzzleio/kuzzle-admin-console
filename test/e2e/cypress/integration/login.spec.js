@@ -5,7 +5,7 @@ const admin = {
 const validEnvName = 'valid'
 describe('Login', function() {
   beforeEach(() => {
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null)
   })
 
   it('Should be able to login as anonymous', () => {
