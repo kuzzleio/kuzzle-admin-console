@@ -1,9 +1,9 @@
 <template>
   <div :class="{ open }" class="IndexBranch mt-2">
     <i
-      v-if="collectionCount"
+      v-if="collectionsCount"
       aria-hidden="true"
-      class="fa fa-caret-right pointer ree-toggle"
+      class="fa fa-caret-right pointer tree-toggle"
       :data-cy="`IndexBranch-toggle--${indexName}`"
       @click="toggleBranch"
     />
@@ -17,7 +17,7 @@
     >
       <i class="fa fa-database" aria-hidden="true" />
       <span v-html="highlight(truncateName(indexName, 16), filter)" /> ({{
-        collectionCount
+        collectionsCount
       }})
     </router-link>
     <div class="collections">
@@ -44,11 +44,11 @@
         </router-link>
       </div>
       <div
-        v-if="showMoreCollectionDisplay"
-        @click="toggleShowMoreCollection"
+        v-if="showMoreCollectionsDisplay"
+        @click="toggleShowMoreCollections"
         class="tree-item truncate pointer"
       >
-        <u v-if="!showMoreCollection">Show More</u>
+        <u v-if="!showMoreCollections">Show More</u>
         <u v-else>Show only results</u>
       </div>
 
@@ -100,22 +100,24 @@ export default {
   data: function() {
     return {
       open: false,
-      showMoreCollection: false
+      showMoreCollections: false
     }
   },
   computed: {
-    collectionCount() {
+    collectionsCount() {
       if (!this.collections) {
         return 0
       }
 
       return this.collections.realtime.length + this.collections.stored.length
     },
-    showMoreCollectionDisplay() {
+    showMoreCollectionsDisplay() {
       if (
         this.filter.length > 0 &&
-        this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
-          .length !== this.collections.stored.length
+        (this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
+          .length !== this.collections.stored.length ||
+        this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
+        .length !== this.collections.realtime.length)
       ) {
         return 1
       }
@@ -125,7 +127,7 @@ export default {
       if (this.collections) {
         return this.collections.stored
           .filter(
-            col => col.indexOf(this.filter) !== -1 || this.showMoreCollection
+            col => col.indexOf(this.filter) !== -1 || this.showMoreCollections
           )
           .sort()
       }
@@ -135,7 +137,7 @@ export default {
       if (this.collections) {
         return this.collections.realtime
           .filter(
-            col => col.indexOf(this.filter) !== -1 || this.showMoreCollection
+            col => col.indexOf(this.filter) !== -1 || this.showMoreCollections
           )
           .sort()
       }
@@ -183,8 +185,8 @@ export default {
           return 'DocumentList'
       }
     },
-    toggleShowMoreCollection() {
-      this.showMoreCollection = !this.showMoreCollection
+    toggleShowMoreCollections() {
+      this.showMoreCollections = !this.showMoreCollections
     },
     testOpen() {
       if (this.currentIndex === this.indexName) {
