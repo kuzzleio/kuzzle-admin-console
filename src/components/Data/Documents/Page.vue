@@ -58,6 +58,7 @@
                   :collection-mapping="collectionMapping"
                   @filters-updated="onFiltersUpdated"
                   @reset="onFiltersUpdated"
+                  @enter-pressed="navigateToDocument"
                 />
               </template>
             </b-col>
@@ -95,7 +96,6 @@
                       @change-page-size="changePaginationSize"
                       @checkbox-click="toggleSelectDocuments"
                       @delete="onDeleteClicked"
-                      @edit="onEditDocumentClicked"
                       @refresh="onRefresh"
                       @toggle-all="onToggleAllClicked"
                     ></List>
@@ -110,7 +110,6 @@
                       :all-checked="allChecked"
                       :current-page-size="paginationSize"
                       :total-documents="totalDocuments"
-                      @edit="onEditDocumentClicked"
                       @delete="onDeleteClicked"
                       @bulk-delete="onBulkDeleteClicked"
                       @change-page-size="changePaginationSize"
@@ -175,20 +174,14 @@ import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
-import {
-  canSearchIndex,
-  canSearchDocument,
-  canCreateDocument,
-  canDeleteDocument,
-  canEditDocument
-} from '../../../services/userAuthorization'
+import DataNotFound from '../Data404'
 import {
   performSearchDocuments,
   performDeleteDocuments,
   getMappingDocument
 } from '../../../services/kuzzleWrapper'
-import DataNotFound from '../Data404'
 import { truncateName } from '@/utils'
+import { mapGetters } from 'vuex'
 
 const LOCALSTORAGE_PREFIX = 'current-list-view'
 const LIST_VIEW_LIST = 'list'
@@ -238,6 +231,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', [
+      'canSearchDocument',
+      'canCreateDocument',
+      'canDeleteDocument',
+      'canEditDocument'
+    ]),
     geoDocuments() {
       return this.documents.filter(document => {
         const [lat, lng] = this.getCoordinates(document)
@@ -376,15 +375,6 @@ export default {
       this.$router.push({ name: 'CreateDocument' })
     },
 
-    // UPDATE
-    // =========================================================================
-    onEditDocumentClicked(id) {
-      this.$router.push({
-        name: 'UpdateDocument',
-        params: { id }
-      })
-    },
-
     // DELETE
     // =========================================================================
     performDeleteDocuments,
@@ -452,6 +442,18 @@ export default {
       this.fetchDocuments()
     },
     performSearchDocuments,
+    navigateToDocument() {
+      const document = this.documents[0]
+
+      if (!document) {
+        return
+      }
+
+      this.$router.push({
+        name: 'UpdateDocument',
+        params: { id: document.id }
+      })
+    },
     async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
       try {
@@ -551,14 +553,6 @@ export default {
         })
       )
     },
-
-    // PERMISSIONS
-    // =========================================================================
-    canSearchIndex,
-    canSearchDocument,
-    canCreateDocument,
-    canDeleteDocument,
-    canEditDocument,
 
     // SELECT ITEMS
     // =========================================================================

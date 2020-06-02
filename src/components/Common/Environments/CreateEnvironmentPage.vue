@@ -60,12 +60,8 @@ export default {
   },
   methods: {
     async createEnvironment() {
-      const newEnvId = await this.$refs.createEnvironmentComponent.createEnvironment()
-
-      if (newEnvId) {
-        this.$store.direct.dispatch.kuzzle.switchEnvironment(newEnvId)
-        this.$router.push('/')
-      }
+      await this.$refs.createEnvironmentComponent.createEnvironment()
+      this.$router.push('/')
     },
     importEnv() {
       this.$emit('environment::importEnv')

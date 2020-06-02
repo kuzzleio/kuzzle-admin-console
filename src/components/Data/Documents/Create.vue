@@ -26,12 +26,11 @@
 </style>
 
 <script>
-import { canCreateDocument } from '../../../services/userAuthorization'
 import PageNotAllowed from '../../Common/PageNotAllowed'
-
 import Headline from '../../Materialize/Headline'
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import CreateOrUpdate from './Common/CreateOrUpdate'
+import { getMappingDocument } from '../../../services/kuzzleWrapper'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentCreate',
@@ -51,8 +50,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canCreateDocument']),
     hasRights() {
-      return canCreateDocument(this.index, this.collection)
+      return this.canCreateDocument(this.index, this.collection)
     }
   },
   methods: {

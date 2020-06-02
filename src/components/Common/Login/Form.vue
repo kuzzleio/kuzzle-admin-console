@@ -73,7 +73,7 @@ export default {
     Focus
   },
   props: {
-    onLogin: Function
+    onLogin: { type: Function, default: () => {} }
   },
   data() {
     return {
@@ -95,20 +95,33 @@ export default {
         })
         this.onLogin() // TODO change this to $emit
       } catch (err) {
-        this.error = err.message
+        if (
+          [
+            'plugin.kuzzle-plugin-auth-passport-local.expired_password',
+            'plugin.kuzzle-plugin-auth-passport-local.must_change_password'
+          ].includes(err.id)
+        ) {
+          this.$router.push({
+            name: 'ResetPassword',
+            params: {
+              showIntro: true,
+              token: err.resetToken
+            }
+          })
+        } else {
+          this.error = err.message
+        }
       }
     },
-    loginAsAnonymous() {
+    async loginAsAnonymous() {
       this.error = ''
       this.$kuzzle.jwt = null
-      this.$store.direct.dispatch.auth
-        .prepareSession('anonymous')
-        .then(() => {
-          this.onLogin()
-        })
-        .catch(err => {
-          this.error = err.message
-        })
+      try {
+        await this.$store.direct.dispatch.auth.setSession('anonymous')
+        await this.onLogin()
+      } catch (error) {
+        this.error = error.message
+      }
     }
   }
 }

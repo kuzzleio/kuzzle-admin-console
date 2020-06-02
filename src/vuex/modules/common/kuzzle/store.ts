@@ -167,23 +167,33 @@ const actions = createActions({
     }
   },
   async connectToCurrentEnvironment(context) {
-    const { dispatch, state, getters } = kuzzleActionContext(context)
+    const { dispatch, state, getters, commit } = kuzzleActionContext(context)
     if (!getters.hasEnvironment) {
       return
     }
 
-    let currentId = state.currentId
-
-    if (!currentId) {
+    if (!getters.currentEnvironment) {
       throw new Error('No current environment selected')
     }
 
-    return dispatch.switchEnvironment(currentId)
+    commit.setErrorFromKuzzle(null)
+
+    disconnect()
+    commit.setConnecting(true)
+
+    try {
+      await connectToEnvironment(getters.currentEnvironment)
+    } catch (error) {
+      if (error.id) {
+        dispatch.onConnectionError(error)
+        return false
+      }
+    }
+
+    return true
   },
   async switchEnvironment(context, id) {
-    const { rootDispatch, commit, dispatch, state } = kuzzleActionContext(
-      context
-    )
+    const { dispatch, state } = kuzzleActionContext(context)
     if (!id) {
       throw new Error('No id provided')
     }
@@ -192,19 +202,15 @@ const actions = createActions({
     if (!environment) {
       throw new Error(`Id ${id} does not match any environment`)
     }
-    commit.setErrorFromKuzzle(null)
+    await dispatch.setCurrentEnvironment(id)
+    return await dispatch.connectToCurrentEnvironment()
+  },
+  onConnectionError(context, error: Error) {
+    const { commit } = kuzzleActionContext(context)
 
-    disconnect()
-    commit.setConnecting(true)
-    dispatch.setCurrentEnvironment(id)
-
-    await connectToEnvironment(environment)
     commit.setConnecting(false)
     commit.setOnline(true)
-
-    await rootDispatch.auth.init(environment)
-
-    return true
+    commit.setErrorFromKuzzle(error.message)
   },
   loadEnvironments(context) {
     let loadedEnv

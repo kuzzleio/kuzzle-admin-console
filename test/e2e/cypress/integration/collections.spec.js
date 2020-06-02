@@ -96,10 +96,37 @@ describe('Collection management', function() {
     cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
 
-
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
     cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
     cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
     cy.should('not.contain', collectionName)
+  })
+
+  it('is able to fetch collections when index change', function() {
+    cy.request('POST', `${kuzzleUrl}/anotherindex/_create`)
+    cy.request('PUT', `${kuzzleUrl}/anotherindex/foo`)
+
+    cy.visit(`/#/data/`)
+    cy.wait(500)
+    cy.visit(`/#/data/${indexName}/`)
+
+    cy.get('[data-cy="Treeview-item-index--anotherindex"]').click()
+    cy.get('[data-cy="CollectionList-table"]').contains('foo')
+   })
+  
+  it('Should be able to autofocus collection search', () => {
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/foobar`)
+
+    cy.waitOverlay()
+
+    cy.visit(`/#/data/${indexName}/`)
+    cy.wait(500)
+
+    cy.get('body').type('f{enter}')
+
+    cy.url().should('contain', 'foobar')
+    cy.contains('foobar')
+    cy.contains('This collection is empty')
   })
 })

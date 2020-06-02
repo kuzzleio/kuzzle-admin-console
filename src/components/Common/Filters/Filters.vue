@@ -1,9 +1,5 @@
 <template>
   <b-card
-    class="Filters"
-    :bg-variant="
-      complexFilterActive && !advancedFiltersVisible ? 'warning' : ''
-    "
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
     "
@@ -15,36 +11,37 @@
         <quick-filter
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
+          v-model="quickFilter"
+          :initialValue="quickFilter"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
           :enabled="quickFilterEnabled"
           :placeholder="quickFilterPlaceholder"
-          :search-term="quickFilter"
           :submit-button-label="submitButtonLabel"
           :submit-on-type="quickFilterSubmitOnType"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
-          @update-filter="onQuickFilterUpdated"
+          @filter-submitted="onQuickFilterUpdated"
           @refresh="onRefresh"
           @reset="onReset"
+          @enter-pressed="onEnterPressed"
         />
         <template v-if="advancedFiltersVisible">
-          <b-nav-item
-            data-cy="Filters-rawTab"
-            :active="complexFiltersSelectedTab === 'raw'"
-            @click="complexFiltersSelectedTab = 'raw'"
-            >Raw JSON Filter</b-nav-item
-          >
           <b-nav-item
             data-cy="Filters-basicTab"
             :active="complexFiltersSelectedTab === 'basic'"
             @click="complexFiltersSelectedTab = 'basic'"
             >Advanced Filter</b-nav-item
           >
-
+          <b-nav-item
+            data-cy="Filters-rawTab"
+            :active="complexFiltersSelectedTab === 'raw'"
+            @click="complexFiltersSelectedTab = 'raw'"
+            >Raw JSON Filter</b-nav-item
+          >
           <i
             class="Filters-btnClose fa fa-times close"
             @click="advancedFiltersVisible = false"
@@ -62,7 +59,7 @@
         :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
         :refresh-ace="refreshace"
-        @update-filter="onRawFilterUpdated"
+        @filter-submitted="onRawFilterUpdated"
         @reset="onReset"
       />
       <basic-filter
@@ -75,7 +72,7 @@
         :action-buttons-visible="actionButtonsVisible"
         :sorting="sorting"
         :collection-mapping="collectionMapping"
-        @update-filter="onBasicFilterUpdated"
+        @filter-submitted="onBasicFilterUpdated"
         @reset="onReset"
       />
     </template>
@@ -115,7 +112,7 @@
 import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
-import Vue from 'vue'
+
 import {
   NO_ACTIVE,
   ACTIVE_QUICK,
@@ -182,7 +179,7 @@ export default {
   data() {
     return {
       advancedFiltersVisible: false,
-      complexFiltersSelectedTab: ACTIVE_RAW,
+      complexFiltersSelectedTab: ACTIVE_BASIC,
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
@@ -197,11 +194,17 @@ export default {
           this.currentFilter.raw !== null)
       )
     },
-    quickFilter() {
-      if (!this.currentFilter) {
-        return null
+    quickFilter: {
+      get () {
+        if (!this.currentFilter) {
+          return null
+        }
+
+        return this.currentFilter.quick
+      },
+      set (value) {
+        this.currentFilter.quick = value
       }
-      return this.currentFilter.quick
     },
     basicFilter() {
       if (!this.currentFilter) {
@@ -218,14 +221,6 @@ export default {
     sorting() {
       return this.currentFilter.sorting
     }
-  },
-  mounted() {
-    Vue.nextTick(() => {
-      window.document.addEventListener('keydown', this.handleEsc)
-    })
-  },
-  destroyed() {
-    window.document.removeEventListener('keydown', this.handleEsc)
   },
   methods: {
     onQuickFilterUpdated(term) {
@@ -272,6 +267,9 @@ export default {
     onFiltersUpdated(newFilters) {
       this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters)
+    },
+    onEnterPressed () {
+      this.$emit('enter-pressed')
     }
   }
 }

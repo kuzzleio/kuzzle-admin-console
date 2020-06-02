@@ -189,24 +189,32 @@ export default {
         this.$store.direct.commit.auth.setAdminExists(true)
         this.$router.push({ name: 'Login' })
       } catch (err) {
-        this.$log.error(err)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while creating the administrator.',
-            variant: 'danger',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          }
-        )
+        if (
+          [
+            'plugin.kuzzle-plugin-auth-passport-local.login_in_password',
+            'plugin.kuzzle-plugin-auth-passport-local.weak_password'
+          ].includes(err.id)
+        ) {
+          this.error = err.message
+        } else {
+          this.$log.error(err)
+          this.$bvToast.toast(
+            'The complete error has been printed to the console.',
+            {
+              title: err.message,
+              variant: 'danger',
+              toaster: 'b-toaster-bottom-right',
+              appendToast: true
+            }
+          )
+        }
       }
       this.waiting = false
     },
     loginAsGuest() {
       this.error = null
       this.$store.direct.dispatch.auth
-        .prepareSession('anonymous')
+        .setSession('anonymous')
         .then(() => {
           this.$router.go({ name: 'Data' })
         })

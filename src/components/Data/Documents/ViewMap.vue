@@ -72,10 +72,7 @@ import Dropdown from '../../Materialize/Dropdown'
 import '../../../../src/assets/leaflet.css'
 import JsonFormatter from '../../../directives/json-formatter.directive'
 import title from '../../../directives/title.directive'
-import {
-  canEditDocument,
-  canDeleteDocument
-} from '../../../services/userAuthorization'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ViewMap',
@@ -129,6 +126,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
     coordinates() {
       return this.documents.map(this.getCoordinates)
     },
@@ -136,13 +134,13 @@ export default {
       if (!this.index || !this.collection) {
         return false
       }
-      return canEditDocument(this.index, this.collection)
+      return this.canEditDocument(this.index, this.collection)
     },
     canDelete() {
       if (!this.index || !this.collection) {
         return false
       }
-      return canDeleteDocument(this.index, this.collection)
+      return this.canDeleteDocument(this.index, this.collection)
     }
   },
   watch: {},

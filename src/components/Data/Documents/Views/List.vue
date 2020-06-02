@@ -60,7 +60,6 @@
           :index="index"
           :is-checked="isChecked(document.id)"
           @checkbox-click="$emit('checkbox-click', $event)"
-          @edit="$emit('edit', $event)"
           @delete="$emit('delete', $event)"
         />
       </b-list-group-item>
@@ -70,7 +69,8 @@
 
 <script>
 import DocumentListItem from '../DocumentListItem'
-import { canDeleteDocument } from '../../../../services/userAuthorization'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'DocumentsListView',
   components: {
@@ -111,6 +111,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('auth', ['canDeleteDocument']),
     hasSelectedDocuments() {
       return this.selectedDocuments.length > 0
     },
@@ -122,7 +123,6 @@ export default {
     }
   },
   methods: {
-    canDeleteDocument,
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     }

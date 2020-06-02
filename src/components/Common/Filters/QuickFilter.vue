@@ -1,5 +1,5 @@
 <template>
-  <div class="QuickFilter mb-1">
+  <div class="QuickFilter">
     <b-row no-gutters v-if="!complexFilterActive">
       <b-col cols="6">
         <div class="QuickFilter-searchBar">
@@ -8,15 +8,16 @@
               <i class="fa fa-search search" />
             </b-input-group-prepend>
 
-            <b-form-input
+            <auto-focus-input
+              name="quick-filter"
               data-cy="QuickFilter-input"
               debounce="300"
               :placeholder="placeholder"
+              :initialValue="this.initialValue"
               type="search"
-              v-model="inputSearchTerm"
-              v-focus
-            >
-            </b-form-input>
+              v-model="value"
+              @submit="inputSubmit"
+            />
           </b-input-group>
         </div>
       </b-col>
@@ -57,20 +58,31 @@
         </b-button>
       </b-col>
     </b-row>
-    <div v-else class="QuickFilter-warning mx-3 mb-2 font-weight-bold">
-      <div class="align-middle pt-2">
-        Warning: a filter has been set, some documents might be hidden.
+    <div v-else class="QuickFilter-warning mx-4 mb-3">
+      <div class="align-middle QuickFilter-warning-message">
+        <b-row align-v="center">
+          <b-button
+            data-cy="QuickFilter-displayActiveFilters"
+            variant="outline-info"
+            @click.prevent="displayAdvancedFilters"
+          >
+            <i class="fa left fa-filter mr-2" />{{
+              advancedFiltersVisible ? 'Hide filters' : 'Show filters'
+            }}</b-button
+          >
+          <b-badge
+            v-if="!advancedFiltersVisible"
+            pill
+            variant="info"
+            class="ml-2 py-2 px-3"
+            align-v
+            >Filters are being applied</b-badge
+          >
+        </b-row>
       </div>
       <b-row>
         <b-button
-          class="align-middle d-inline ml-3 font-weight-bold"
-          data-cy="QuickFilter-displayActiveFilters"
-          variant="outline-light"
-          @click.prevent="displayAdvancedFilters"
-          >Display the advanced filters</b-button
-        >
-        <b-button
-          class="align-right d-inline ml-3 font-weight-bold"
+          class="align-right d-inline ml-3"
           data-cy="QuickFilter-resetBtn"
           variant="outline-secondary"
           @click="resetSearch"
@@ -83,15 +95,14 @@
 </template>
 
 <script>
-import Focus from '../../../directives/focus.directive'
+import AutoFocusInput from '../AutoFocusInput'
 
 export default {
   name: 'QuickFilter',
-  directives: {
-    Focus
+  components: {
+    AutoFocusInput
   },
   props: {
-    searchTerm: String,
     advancedFiltersVisible: Boolean,
     advancedQueryLabel: {
       type: String,
@@ -117,35 +128,37 @@ export default {
     submitOnType: {
       type: Boolean,
       default: true
+    },
+    initialValue: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      inputSearchTerm: this.searchTerm
+      value: this.initialValue
     }
   },
   methods: {
     submitSearch() {
-      this.$emit('update-filter', this.inputSearchTerm)
+      this.$emit('filter-submitted', this.value)
     },
     resetSearch() {
       this.$emit('reset')
     },
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
+    },
+    inputSubmit () {
+      this.$emit('enter-pressed')
     }
   },
   watch: {
-    inputSearchTerm() {
-      if (!this.submitOnType) {
-        return
-      }
-      this.submitSearch()
-    },
-    searchTerm: {
-      immediate: true,
-      handler(val) {
-        this.inputSearchTerm = val
+    value () {
+      this.$emit('input', this.value)
+
+    if (this.submitOnType) {
+        this.submitSearch()
       }
     }
   }
@@ -155,6 +168,7 @@ export default {
 <style lang="scss" scoped>
 .QuickFilter {
   margin-bottom: 0;
+  color: #002835;
 }
 .QuickFilter-searchBar {
   position: relative;
@@ -209,5 +223,20 @@ export default {
   flex-direction: row;
   justify-items: center;
   justify-content: space-between;
+}
+
+.QuickFilter-warning-message {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+}
+
+.QuickFilter-warning-icon {
+  color: #ffc107;
+}
+
+.QuickFilter-displayActiveFilters {
+  color: #002835;
+  border-width: 2px;
 }
 </style>

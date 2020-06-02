@@ -41,11 +41,15 @@
         </router-link>
       </li>
 
-      <li v-if="isRouteActive([
-        'SecurityRolesList',
-        'SecurityRolesCreate',
-        'SecurityRolesUpdate'
-      ])">
+      <li
+        v-if="
+          isRouteActive([
+            'SecurityRolesList',
+            'SecurityRolesCreate',
+            'SecurityRolesUpdate'
+          ])
+        "
+      >
         <i class="fa fa-angle-right separator" aria-hidden="true" />
 
         <router-link :to="{ name: 'SecurityRolesList' }">
@@ -66,7 +70,7 @@
 
         <router-link
           :to="{
-            name: 'Indexes',
+            name: 'Collections',
             params: { index: $route.params.index }
           }"
         >
@@ -136,11 +140,9 @@
 </style>
 
 <script>
-import { canSearchIndex } from '../../services/userAuthorization'
 export default {
   name: 'CommonBreadcrumb',
   methods: {
-    canSearchIndex,
     isCollectionRealtime() {
       if (
         !this.$store.direct.state.index.indexesAndCollections[
