@@ -140,6 +140,7 @@ jobs:
         bucket: $AWS_S3_BUCKET_DEV
         skip_cleanup: true
         local-dir: dist
+        upload-dir: $DEPLOY_PATH
         region: $AWS_S3_REGION
         on:
           all_branches: true
