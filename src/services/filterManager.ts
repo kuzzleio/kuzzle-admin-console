@@ -176,8 +176,8 @@ export const stripDefaultValuesFromFilter = filter => {
 }
 
 export const searchFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'Contains',
+  not_contains: 'Not Contains',
   equal: 'Equal',
   not_equal: 'Not equal',
   range: 'Range',
@@ -186,8 +186,8 @@ export const searchFilterOperands = {
 }
 
 export const realtimeFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'contains',
+  not_contains: 'Not Contains',
   regexp: 'Regexp',
   exists: 'Exists',
   missing: 'Missing'
@@ -203,9 +203,9 @@ export const basicFilterToRealtimeQuery = (groups = [[]]) => {
       })
       .map(function(filter: any) {
         switch (filter.operator) {
-          case 'match':
+          case 'contains':
             return { equals: { [filter.attribute]: filter.value } }
-          case 'not_match':
+          case 'not_contains':
             return { not: { equals: { [filter.attribute]: filter.value } } }
           case 'regexp':
             return { regexp: { [filter.attribute]: filter.value } }
@@ -300,13 +300,13 @@ export const formatFromBasicSearch = (groups = [[]]) => {
         return
       }
 
-      if (filter.operator === 'match') {
+      if (filter.operator === 'contains') {
         formattedFilter.bool.must.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
+          regexp: { [filter.attribute]: '.*' + filter.value + '.*' }
         })
-      } else if (filter.operator === 'not_match') {
+      } else if (filter.operator === 'not_contains') {
         formattedFilter.bool.must_not.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
+          regexp: { [filter.attribute]: '.*' + filter.value + '.*' }
         })
       } else if (filter.operator === 'equal') {
         formattedFilter.bool.must.push({
