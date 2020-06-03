@@ -54,7 +54,7 @@ jobs:
       
       install:
         - npm ci
-        - cd test/e2e/run-test; npm ci
+        - cd test/e2e/run-test; npm ci; cd -
 
       script:
         - CYPRESS_RETRIES=3 npm run e2e -- --backend=1
@@ -70,7 +70,7 @@ jobs:
       
       install:
         - npm ci
-        - cd test/e2e/run-test; npm ci
+        - cd test/e2e/run-test; npm ci; cd -
       
       script:
         - CYPRESS_RETRIES=3 npm run e2e -- --backend=2
