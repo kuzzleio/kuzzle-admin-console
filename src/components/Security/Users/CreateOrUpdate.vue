@@ -181,6 +181,7 @@ export default {
         this.setError(e.message)
         return
       }
+      this.loading = true
       this.submitting = true
 
       try {
@@ -222,12 +223,14 @@ export default {
         }
 
         this.$router.push({ name: 'SecurityUsersList' })
+        this.loading = false
       } catch (err) {
         if (err) {
           this.$log.error(err)
           this.setError(err.message)
           this.submitting = false
         }
+        this.loading = false
       }
     },
     setError(msg) {
