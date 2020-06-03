@@ -110,17 +110,21 @@ class RunTest extends Command {
       local ? 'open' : 'run',
       process.env.CYPRESS_RECORD_KEY ? '--record' : ''
     ]
-    const cy = execa('cypress', npmArgs, {
-      env: {
-        CYPRESS_BACKEND_VERSION: version
-      }
-    })
-    cy.stdout.pipe(process.stdout)
-    cy.stderr.pipe(process.stderr)
+    try {
+      const cy = execa('cypress', npmArgs, {
+        env: {
+          CYPRESS_BACKEND_VERSION: version
+        }
+      })
+      cy.stdout.pipe(process.stdout)
+      cy.stderr.pipe(process.stderr)
 
-    const exitCode = (await cy).exitCode
-
-    process.exit(exitCode)
+      const exitCode = (await cy).exitCode
+      process.exit(exitCode)
+    } catch (error) {
+      this.log(`\n ${emoji.get('red_circle')} Sorry, tests are red.`)
+      process.exit(1)
+    }
   }
 
   async multiBackend() {
