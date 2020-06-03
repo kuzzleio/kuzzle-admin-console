@@ -69,7 +69,6 @@
                   />
                   Toggle all
                 </b-button>
-
                 <b-button
                   variant="outline-danger"
                   class="mr-2"
@@ -81,9 +80,22 @@
                   Delete selected
                 </b-button>
               </b-col>
+              <b-col cols="4" class="text-right"
+                >Show
+                <b-form-select
+                  class="mx-2"
+                  style="width: unset"
+                  :options="itemsPerPage"
+                  :value="paginationSize"
+                  @change="changePaginationSize($event)"
+                >
+                </b-form-select>
+                <span v-if="totalDocuments"
+                  >of {{ totalDocuments }} total items.</span
+                ></b-col
+              >
             </b-row>
           </div>
-
           <div
             v-show="documents.length"
             class="row CrudlDocument-collection"
@@ -174,7 +186,9 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       totalDocuments: 0,
-      candidatesForDeletion: []
+      candidatesForDeletion: [],
+      paginationSize: 10,
+      itemsPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
@@ -196,12 +210,13 @@ export default {
     },
     paginationFrom() {
       return parseInt(this.currentFilter.from) || 0
-    },
-    paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
     }
   },
   methods: {
+    changePaginationSize(e) {
+      this.paginationSize = e
+      this.fetchDocuments()
+    },
     isChecked(id) {
       return this.selectedDocuments.includes(id)
     },
