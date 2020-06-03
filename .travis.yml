@@ -41,20 +41,37 @@ jobs:
         - npm run lint
 
     # ---------------------------------------
-    # Functionnal Testing
+    # End-to-end Testing
     # ---------------------------------------
     - stage: tests
-      name: 'End to end Tests'
+      name: 'End to end Tests - v1'
 
       services:
         - docker
 
       before_install:
         - sudo sysctl -w vm.max_map_count=262144
+      
+      install:
+        - npm ci
 
       script:
-        - npm install
-        - CYPRESS_RETRIES=5 npm run test:e2e
+        - CYPRESS_RETRIES=3 npm run e2e -- --backend=1
+      
+    - stage: tests
+      name: 'End to end Tests - v2'
+
+      services:
+        - docker
+
+      before_install:
+        - sudo sysctl -w vm.max_map_count=262144
+      
+      install:
+        - npm ci
+      
+      script:
+        - CYPRESS_RETRIES=3 npm run e2e -- --backend=2
 
     # ---------------------------------------
     # Regular Build & Deploy

@@ -4,7 +4,7 @@ npm-debug.log
 selenium-debug.log
 coverage
 .nyc_output
-tests/e2e/reports
+test/e2e/reports
 .idea
 dump/
 docker-compose-custom.yml
@@ -12,9 +12,8 @@ bower_components
 phantomjsdriver.log
 *.sublime-*
 dist
-tests/e2e/test-error.png
-tests/e2e/visual-regression/current
-tests/e2e/visual-regression/diff
-tests/e2e/falied-tests/
-tests/e2e/failed-tests/
-tests/e2e/videos
+test/e2e/test-error.png
+test/e2e/visual-regression/current
+test/e2e/visual-regression/diff
+test/e2e/failed-test/
+test/e2e/videos

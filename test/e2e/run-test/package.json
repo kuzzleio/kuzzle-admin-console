@@ -14,10 +14,16 @@
     "chalk": "^4.0.0",
     "cli-ux": "^5.4.6",
     "execa": "^4.0.2",
-    "tslib": "^1.13.0"
+    "tslib": "^1.13.0",
+    "listr": "^0.14.3",
+    "node-emoji": "^1.10.0",
+    "request-promise": "^4.2.5"
   },
   "devDependencies": {
+    "@types/listr": "^0.14.2",
     "@types/node": "^10.17.24",
+    "@types/node-emoji": "^1.8.1",
+    "@types/request-promise": "^4.1.46",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
