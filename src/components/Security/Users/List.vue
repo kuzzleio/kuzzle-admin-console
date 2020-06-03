@@ -36,8 +36,8 @@
             </b-col>
             <b-col md="6">
               <h3 class="text-secondary font-weight-bold">
-                There is no result matching your query. Please try with
-                another filter.
+                There is no result matching your query. Please try with another
+                filter.
               </h3>
               <p>
                 <em
@@ -64,9 +64,7 @@
               >
                 <i
                   :class="
-                    `far ${
-                      allChecked ? 'fa-check-square' : 'fa-square'
-                    } left`
+                    `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
                   "
                 />
                 Toggle all
@@ -83,6 +81,20 @@
                 Delete selected
               </b-button>
             </b-col>
+            <b-col cols="4" class="text-right"
+              >Show
+              <b-form-select
+                class="mx-2"
+                style="width: unset"
+                :options="itemsPerPage"
+                :value="paginationSize"
+                @change="changePaginationSize($event)"
+              >
+              </b-form-select>
+              <span v-if="totalDocuments"
+                >of {{ totalDocuments }} total items.</span
+              ></b-col
+            >
           </b-row>
         </div>
 
@@ -175,7 +187,9 @@ export default {
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       totalDocuments: 0,
-      candidatesForDeletion: []
+      candidatesForDeletion: [],
+      paginationSize: 10,
+      itemsPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
@@ -197,12 +211,13 @@ export default {
     },
     paginationFrom() {
       return parseInt(this.currentFilter.from) || 0
-    },
-    paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
     }
   },
   methods: {
+    changePaginationSize(e) {
+      this.paginationSize = e
+      this.fetchDocuments()
+    },
     isChecked(id) {
       return this.selectedDocuments.includes(id)
     },

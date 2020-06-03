@@ -1,9 +1,6 @@
 <template>
   <div class="ProfileList">
-    <slot
-      v-if="currentFilter.basic && totalDocuments === 0"
-      name="emptySet"
-    />
+    <slot v-if="currentFilter.basic && totalDocuments === 0" name="emptySet" />
     <template v-else>
       <filters
         :current-filter="currentFilter"
@@ -58,9 +55,7 @@
                 >
                   <i
                     :class="
-                      `far ${
-                        allChecked ? 'fa-check-square' : 'fa-square'
-                      } left`
+                      `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
                     "
                   />
                   Toggle all
@@ -77,6 +72,20 @@
                   Delete selected
                 </b-button>
               </b-col>
+              <b-col cols="4" class="text-right"
+                >Show
+                <b-form-select
+                  class="mx-2"
+                  style="width: unset"
+                  :options="itemsPerPage"
+                  :value="paginationSize"
+                  @change="changePaginationSize($event)"
+                >
+                </b-form-select>
+                <span v-if="totalDocuments"
+                  >of {{ totalDocuments }} total items.</span
+                ></b-col
+              >
             </b-row>
           </div>
 
@@ -162,7 +171,9 @@ export default {
       documents: [],
       loading: true,
       selectedDocuments: [],
-      totalDocuments: 0
+      totalDocuments: 0,
+      paginationSize: 10,
+      itemsPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
@@ -178,12 +189,13 @@ export default {
     },
     paginationFrom() {
       return (this.currentPage - 1) * this.paginationSize || 0
-    },
-    paginationSize() {
-      return 10
     }
   },
   methods: {
+    changePaginationSize(e) {
+      this.paginationSize = e
+      this.fetchProfiles()
+    },
     isChecked(id) {
       return this.selectedDocuments.indexOf(id) > -1
     },
