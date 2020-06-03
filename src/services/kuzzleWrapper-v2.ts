@@ -23,7 +23,7 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
     return kuzzle.connect()
   }
 
-  async getMappingDocument(collection, index) {
+  async getMappingDocument(collection, index, includeKuzzleMeta = true) {
     // @todo Use the SDK method after
     // https://github.com/kuzzleio/sdk-javascript/pull/507 is merged
     const request = {
@@ -31,7 +31,7 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
       action: 'getMapping',
       index,
       collection,
-      includeKuzzleMeta: true
+      includeKuzzleMeta
     }
 
     const response = await this.kuzzle.query(request)
