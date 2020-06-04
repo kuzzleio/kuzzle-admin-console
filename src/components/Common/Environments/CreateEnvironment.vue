@@ -124,6 +124,13 @@ export default {
   props: ['environmentId'],
   data() {
     return {
+      majorVersions: [
+        { value: 1, text: 'v1.x' },
+        {
+          value: 2,
+          text: 'v2.x'
+        }
+      ],
       errors: {
         name: false,
         host: false,
@@ -141,15 +148,6 @@ export default {
     }
   },
   computed: {
-    majorVersions() {
-      return [
-        { value: 1, text: 'v1.x' },
-        {
-          value: 2,
-          text: 'v2.x'
-        }
-      ]
-    },
     colors() {
       return envColors
     },
