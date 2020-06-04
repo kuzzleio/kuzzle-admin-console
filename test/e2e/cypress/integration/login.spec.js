@@ -52,7 +52,7 @@ describe('Login', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it.only('Should be able to login without losing context when token expires', () => {
+  it('Should be able to login without losing context when token expires', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
     cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
