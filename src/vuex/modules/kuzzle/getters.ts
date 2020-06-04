@@ -37,7 +37,6 @@ export const getters = createGetters<KuzzleState>()({
 
     if (!state.currentId) {
       return null
-      // return state.environments[firstKey]
     }
 
     return state.environments[state.currentId]
