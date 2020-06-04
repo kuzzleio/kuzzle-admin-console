@@ -137,6 +137,12 @@ export default {
     display: table-cell;
   }
 }
+
+::v-deep .dropdownScroll {
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
 .dropdown-text {
   display: block;
   width: 100%;
