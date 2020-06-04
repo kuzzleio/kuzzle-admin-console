@@ -38,6 +38,41 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
 
     return response.result
   }
+
+  quickSearchToESQuery(searchTerm): object {
+    if (searchTerm === '' || !searchTerm) {
+      return {}
+    }
+
+    return {
+      query: {
+        bool: {
+          should: [
+            {
+              multi_match: {
+                query: searchTerm,
+                type: 'phrase_prefix',
+                fields: ['*']
+              }
+            },
+            {
+              match: {
+                _id: searchTerm
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+
+  performCreateUser(kuid, body) {
+    return this.kuzzle.security.createUser(kuid, body)
+  }
+
+  performReplaceUser(kuid, body) {
+    return this.kuzzle.security.replaceUser(kuid, body)
+  }
 }
 
 export const wrapper = new KuzzleWrapperV2(kuzzle)

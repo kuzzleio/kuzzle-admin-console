@@ -255,15 +255,15 @@ export default {
       }
 
       let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(this.currentFilter)
+      searchQuery = filterManager.toSearchQuery(
+        this.currentFilter,
+        this.wrapper
+      )
       if (!searchQuery) {
         searchQuery = {}
       }
 
-      let sorting = ['_id'] // by default, sort on _id: prevent random order
-      if (this.currentFilter.sorting) {
-        sorting = filterManager.toSort(this.currentFilter)
-      }
+      const sorting = filterManager.toSort(this.currentFilter)
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery

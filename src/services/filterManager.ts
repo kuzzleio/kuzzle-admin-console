@@ -128,16 +128,24 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const toSearchQuery = filter => {
+export const toSearchQuery = (filter, kuzzleWrapper) => {
   if (!filter) {
     throw new Error('No filter specified')
   }
 
+  if (!kuzzleWrapper) {
+    throw new Error('No Kuzzle Wrapper specified')
+  }
+
   switch (filter.active) {
     case ACTIVE_QUICK:
-      return filter.quick ? formatFromQuickSearch(filter.quick) : {}
+      return filter.quick
+        ? kuzzleWrapper.quickSearchToESQuery(filter.quick)
+        : {}
     case ACTIVE_BASIC:
-      return filter.basic ? formatFromBasicSearch(filter.basic) : {}
+      return filter.basic
+        ? kuzzleWrapper.basicSearchToESQuery(filter.basic)
+        : {}
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
     case NO_ACTIVE:
@@ -226,33 +234,6 @@ export const basicFilterToRealtimeQuery = (groups = [[]]) => {
   return { or }
 }
 
-export const formatFromQuickSearch = searchTerm => {
-  if (searchTerm === '' || !searchTerm) {
-    return {}
-  }
-
-  return {
-    query: {
-      bool: {
-        should: [
-          {
-            multi_match: {
-              query: searchTerm,
-              type: 'phrase_prefix',
-              fields: ['*']
-            }
-          },
-          {
-            match: {
-              _id: searchTerm
-            }
-          }
-        ]
-      }
-    }
-  }
-}
-
 export const rawFilterToSearchQuery = rawFilter => {
   if (!rawFilter.query) {
     return null
@@ -287,93 +268,6 @@ export const formatSort = sorting => {
     return DEFAULT_FILTER
   }
   return [{ [sorting.attribute]: { order: sorting.order } }]
-}
-
-// TODO rename to basicFilterToSearchQuery
-export const formatFromBasicSearch = (groups = [[]]) => {
-  let bool: any = {}
-
-  bool.should = groups.map(filters => {
-    let formattedFilter: any = { bool: { must: [], must_not: [] } }
-    filters.forEach((filter: any) => {
-      if (filter.attribute === null) {
-        return
-      }
-
-      if (filter.operator === 'match') {
-        formattedFilter.bool.must.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
-        })
-      } else if (filter.operator === 'not_match') {
-        formattedFilter.bool.must_not.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
-        })
-      } else if (filter.operator === 'equal') {
-        formattedFilter.bool.must.push({
-          range: {
-            [filter.attribute]: {
-              gte: filter.value,
-              lte: filter.value
-            }
-          }
-        })
-      } else if (filter.operator === 'not_equal') {
-        formattedFilter.bool.must_not.push({
-          range: {
-            [filter.attribute]: {
-              gte: filter.value,
-              lte: filter.value
-            }
-          }
-        })
-      } else if (filter.operator === 'range') {
-        const range = { range: {} }
-        if (filter.gt_value && filter.lt_value) {
-          range.range = {
-            [filter.attribute]: {
-              gt: filter.gt_value,
-              lt: filter.lt_value
-            }
-          }
-        } else if (filter.gt_value && !filter.lt_value) {
-          range.range = {
-            [filter.attribute]: {
-              gt: filter.gt_value
-            }
-          }
-        } else {
-          range.range = {
-            [filter.attribute]: {
-              lt: filter.lt_value
-            }
-          }
-        }
-        formattedFilter.bool.must.push(range)
-      } else if (filter.operator === 'exists') {
-        const exists = {
-          exists: {
-            field: filter.attribute
-          }
-        }
-        formattedFilter.bool.must.push(exists)
-      } else if (filter.operator === 'not_exists') {
-        const exists = {
-          exists: {
-            field: filter.attribute
-          }
-        }
-        formattedFilter.bool.must_not.push(exists)
-      }
-    })
-
-    return formattedFilter
-  })
-
-  if (bool.should.length === 0) {
-    return {}
-  }
-
-  return { query: { bool } }
 }
 
 export const formatPagination = (currentPage, limit) => {

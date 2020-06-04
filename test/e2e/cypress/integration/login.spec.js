@@ -52,7 +52,7 @@ describe('Login', function() {
     cy.get('[data-cy="App-loggedIn"]')
   })
 
-  it('Should be able to login without losing context when token expires', () => {
+  it.only('Should be able to login without losing context when token expires', () => {
     cy.request('POST', 'http://localhost:7512/admin/_resetSecurity')
     cy.request('POST', 'http://localhost:7512/admin/_resetDatabase')
     cy.request('POST', 'http://localhost:7512/_createFirstAdmin', {
@@ -78,6 +78,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
             token: response.body.result.jwt
           }
         })

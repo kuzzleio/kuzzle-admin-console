@@ -488,7 +488,10 @@ export default {
       }
       try {
         let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(this.currentFilter)
+        searchQuery = filterManager.toSearchQuery(
+          this.currentFilter,
+          this.wrapper
+        )
         if (!searchQuery) {
           searchQuery = {}
         }

@@ -32,8 +32,11 @@ describe('Indexes', () => {
       force: true
     })
     cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
-    cy.get('[data-cy="CreateIndexModal-alert"]')
-    cy.contains(`A public index named "${indexName}" already exists`)
+    cy.get('[data-cy="CreateIndexModal-alert"]').should('be.visible')
+    cy.get('[data-cy="CreateIndexModal-alert"]').should(
+      'contain',
+      'already exists'
+    )
   })
 
   it('Should be able to delete an index', () => {

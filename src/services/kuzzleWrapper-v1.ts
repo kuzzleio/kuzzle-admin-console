@@ -14,13 +14,6 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 
   return content[attribute]
 }
-const formatMeta = _kuzzle_info => ({
-  author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
-  updater:
-    _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
-  createdAt: _kuzzle_info.createdAt,
-  updatedAt: _kuzzle_info.updatedAt
-})
 
 export class KuzzleWrapperV1 {
   version: string = '1'
@@ -28,6 +21,17 @@ export class KuzzleWrapperV1 {
 
   constructor(sdk) {
     this.kuzzle = sdk
+  }
+
+  formatMeta(_kuzzle_info) {
+    return {
+      author:
+        _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
+      updater:
+        _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
+      createdAt: _kuzzle_info.createdAt,
+      updatedAt: _kuzzle_info.updatedAt
+    }
   }
 
   disconnect() {
@@ -121,7 +125,7 @@ export class KuzzleWrapperV1 {
       const formattedUser: any = {
         id: user._id,
         ...user.content,
-        _kuzzle_info: formatMeta(user.content._kuzzle_info),
+        _kuzzle_info: this.formatMeta(user.content._kuzzle_info),
         credentials: {}
       }
       for (const strategy of strategies) {
@@ -149,6 +153,18 @@ export class KuzzleWrapperV1 {
   updateMappingUsers(newMapping) {
     return this.kuzzle.security.updateUserMapping({
       properties: newMapping
+    })
+  }
+
+  performCreateUser(kuid, body) {
+    return this.kuzzle.security.createUser(kuid, body, {
+      refresh: 'wait_for'
+    })
+  }
+
+  performReplaceUser(kuid, body) {
+    return this.kuzzle.security.replaceUser(kuid, body, {
+      refresh: 'wait_for'
     })
   }
 
@@ -184,6 +200,119 @@ export class KuzzleWrapperV1 {
     })
   }
 
+  quickSearchToESQuery(searchTerm): object {
+    if (searchTerm === '' || !searchTerm) {
+      return {}
+    }
+
+    return {
+      query: {
+        bool: {
+          should: [
+            {
+              match_phrase_prefix: {
+                _all: {
+                  query: searchTerm
+                }
+              }
+            },
+            {
+              match: {
+                _id: searchTerm
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+
+  basicSearchToESQuery(groups = [[]]): object {
+    let bool: any = {}
+
+    bool.should = groups.map(filters => {
+      let formattedFilter: any = { bool: { must: [], must_not: [] } }
+      filters.forEach((filter: any) => {
+        if (filter.attribute === null) {
+          return
+        }
+
+        if (filter.operator === 'match') {
+          formattedFilter.bool.must.push({
+            match_phrase_prefix: { [filter.attribute]: filter.value }
+          })
+        } else if (filter.operator === 'not_match') {
+          formattedFilter.bool.must_not.push({
+            match_phrase_prefix: { [filter.attribute]: filter.value }
+          })
+        } else if (filter.operator === 'equal') {
+          formattedFilter.bool.must.push({
+            range: {
+              [filter.attribute]: {
+                gte: filter.value,
+                lte: filter.value
+              }
+            }
+          })
+        } else if (filter.operator === 'not_equal') {
+          formattedFilter.bool.must_not.push({
+            range: {
+              [filter.attribute]: {
+                gte: filter.value,
+                lte: filter.value
+              }
+            }
+          })
+        } else if (filter.operator === 'range') {
+          const range = { range: {} }
+          if (filter.gt_value && filter.lt_value) {
+            range.range = {
+              [filter.attribute]: {
+                gt: filter.gt_value,
+                lt: filter.lt_value
+              }
+            }
+          } else if (filter.gt_value && !filter.lt_value) {
+            range.range = {
+              [filter.attribute]: {
+                gt: filter.gt_value
+              }
+            }
+          } else {
+            range.range = {
+              [filter.attribute]: {
+                lt: filter.lt_value
+              }
+            }
+          }
+          formattedFilter.bool.must.push(range)
+        } else if (filter.operator === 'exists') {
+          const exists = {
+            exists: {
+              field: filter.attribute
+            }
+          }
+          formattedFilter.bool.must.push(exists)
+        } else if (filter.operator === 'not_exists') {
+          const exists = {
+            exists: {
+              field: filter.attribute
+            }
+          }
+          formattedFilter.bool.must_not.push(exists)
+        }
+      })
+
+      return formattedFilter
+    })
+
+    if (bool.should.length === 0) {
+      return {}
+    }
+
+    return { query: { bool } }
+  }
+
   async performSearchDocuments(
     collection,
     index,
@@ -206,7 +335,7 @@ export class KuzzleWrapperV1 {
       id: d._id,
       ...d._source,
       _kuzzle_info: d._source._kuzzle_info
-        ? formatMeta(d._source._kuzzle_info)
+        ? this.formatMeta(d._source._kuzzle_info)
         : undefined
     }))
 

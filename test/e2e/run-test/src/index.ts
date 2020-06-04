@@ -109,8 +109,8 @@ class RunTest extends Command {
     const npmArgs = [
       local ? 'open' : 'run',
       process.env.CYPRESS_RECORD_KEY ? '--record' : '',
-      '--group',
-      `kuzzle-v${version}`
+      local ? '' : '--group',
+      local ? '' : `kuzzle-v${version}`
     ]
     try {
       const cy = execa('cypress', npmArgs, {
