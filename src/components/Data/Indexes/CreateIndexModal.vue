@@ -6,6 +6,7 @@
     title="Index creation"
     :id="id"
     @hide="resetForm"
+    @close="hideModal"
   >
     <template v-slot:modal-footer>
       <b-button variant="secondary" @click="hideModal">
@@ -30,6 +31,7 @@
         <b-form-input
           data-cy="CreateIndexModal-name"
           id="indexName"
+          autofocus
           required
           type="text"
           v-model="index"
@@ -68,7 +70,8 @@ export default {
       this.index = ''
       this.error = ''
     },
-    hideModal() {
+    async hideModal() {
+      await this.$store.direct.dispatch.index.listIndexes()
       this.resetForm()
       this.$bvModal.hide(this.id)
     },
@@ -79,6 +82,7 @@ export default {
 
       try {
         await this.$store.direct.dispatch.index.createIndex(this.index)
+        await this.$store.direct.dispatch.index.listIndexes()
         this.hideModal()
       } catch (err) {
         this.error = err.message

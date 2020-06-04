@@ -1,133 +1,147 @@
 <template>
   <div class="UserList">
-    <slot v-if="isCollectionEmpty" name="emptySet" />
-    <b-row class="justify-content-md-center" no-gutters>
-      <b-col cols="12">
-        <filters
-          class="mb-3"
-          :available-operands="searchFilterOperands"
-          :current-filter="currentFilter"
-          :collection-mapping="collectionMapping"
-          @filters-updated="onFiltersUpdated"
-          @reset="onFiltersUpdated"
-        />
-      </b-col>
-    </b-row>
-    <template v-if="fetchingUsers">
+    <template v-if="loading">
       <b-row class="text-center">
         <b-col>
           <b-spinner variant="primary" class="mt-5"></b-spinner>
         </b-col>
       </b-row>
     </template>
-    <b-card
-      v-else
-      class="light-shadow"
-      :bg-variant="documents.length === 0 ? 'light' : 'default'"
-    >
-      <b-card-text class="p-0">
-        <div v-show="!documents.length" class="row valign-center empty-set">
-          <b-row align-h="center" class="valign-center empty-set">
-            <b-col cols="2" class="text-center">
-              <i
-                class="fa fa-5x fa-search text-secondary mt-3"
-                aria-hidden="true"
-              />
-            </b-col>
-            <b-col md="6">
-              <h3 class="text-secondary font-weight-bold">
-                There is no result matching your query. Please try with another
-                filter.
-              </h3>
-              <p>
-                <em
-                  >Learn more about filtering syntax on
-                  <a
-                    href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
-                    target="_blank"
-                    >Kuzzle Elasticsearch Cookbook</a
-                  ></em
-                >
-              </p>
-            </b-col>
-          </b-row>
-        </div>
 
-        <div v-if="documents.length">
-          <b-row no-gutters class="mb-2">
-            <b-col cols="8">
-              <b-button
-                variant="outline-dark"
-                class="mr-2"
-                data-cy="UserList-toggleAllBtn"
-                @click="toggleAll"
-              >
+    <slot v-if="isCollectionEmpty" name="emptySet" />
+    <template v-if="!isCollectionEmpty && !loading">
+      <b-row class="justify-content-md-center" no-gutters>
+        <b-col cols="12">
+          <filters
+            class="mb-3"
+            :available-operands="searchFilterOperands"
+            :current-filter="currentFilter"
+            :collection-mapping="collectionMapping"
+            @filters-updated="onFiltersUpdated"
+            @reset="onFiltersUpdated"
+          />
+        </b-col>
+      </b-row>
+      <b-card
+        class="light-shadow"
+        :bg-variant="documents.length === 0 ? 'light' : 'default'"
+      >
+        <b-card-text class="p-0">
+          <div v-show="!documents.length" class="row valign-center empty-set">
+            <b-row align-h="center" class="valign-center empty-set">
+              <b-col cols="2" class="text-center">
                 <i
-                  :class="
-                    `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
-                  "
+                  class="fa fa-5x fa-search text-secondary mt-3"
+                  aria-hidden="true"
                 />
-                Toggle all
-              </b-button>
-
-              <b-button
-                variant="outline-danger"
-                class="mr-2"
-                data-cy="UserList-bulkDeleteBtn"
-                :disabled="!displayBulkDelete"
-                @click="deleteBulk"
-              >
-                <i class="fa fa-minus-circle left" />
-                Delete selected
-              </b-button>
-            </b-col>
-          </b-row>
-        </div>
-
-        <div
-          v-show="documents.length"
-          class="row CrudlDocument-collection"
-          data-cy="UserList-items"
-        >
-          <div class="col s12">
-            <b-list-group class="w-100">
-              <b-list-group-item
-                v-for="document in documents"
-                class="p-2"
-                data-cy="UserList-item"
-                :key="document.id"
-              >
-                <UserItem
-                  :document="document"
-                  :is-checked="isChecked(document.id)"
-                  :index="index"
-                  :collection="collection"
-                  @checkbox-click="toggleSelectDocuments"
-                  @edit="editUser"
-                  @delete="deleteUser"
-                />
-              </b-list-group-item>
-            </b-list-group>
+              </b-col>
+              <b-col md="6">
+                <h3 class="text-secondary font-weight-bold">
+                  There is no result matching your query. Please try with
+                  another filter.
+                </h3>
+                <p>
+                  <em
+                    >Learn more about filtering syntax on
+                    <a
+                      href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
+                      target="_blank"
+                      >Kuzzle Elasticsearch Cookbook</a
+                    ></em
+                  >
+                </p>
+              </b-col>
+            </b-row>
           </div>
-        </div>
-      </b-card-text>
-    </b-card>
-    <b-row align-h="center">
-      <b-pagination
-        class="m-2 mt-4"
-        data-cy="UserManagement-pagination"
-        v-model="currentPage"
-        :total-rows="totalDocuments"
-        :per-page="paginationSize"
-      ></b-pagination>
-    </b-row>
-    <delete-modal
-      id="modal-delete-users"
-      :candidates-for-deletion="candidatesForDeletion"
-      :is-loading="deleteModalIsLoading"
-      @confirm="onDeleteConfirmed"
-      @hide="resetCandidatesForDeletion"
-    />
+
+          <div v-if="documents.length">
+            <b-row no-gutters class="mb-2">
+              <b-col cols="8">
+                <b-button
+                  variant="outline-dark"
+                  class="mr-2"
+                  data-cy="UserList-toggleAllBtn"
+                  @click="toggleAll"
+                >
+                  <i
+                    :class="
+                      `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
+                    "
+                  />
+                  Toggle all
+                </b-button>
+                <b-button
+                  variant="outline-danger"
+                  class="mr-2"
+                  data-cy="UserList-bulkDeleteBtn"
+                  :disabled="!displayBulkDelete"
+                  @click="deleteBulk"
+                >
+                  <i class="fa fa-minus-circle left" />
+                  Delete selected
+                </b-button>
+              </b-col>
+              <b-col cols="4" class="text-right"
+                >Show
+                <b-form-select
+                  class="mx-2"
+                  style="width: unset"
+                  :options="itemsPerPage"
+                  :value="paginationSize"
+                  @change="changePaginationSize($event)"
+                >
+                </b-form-select>
+                <span v-if="totalDocuments"
+                  >of {{ totalDocuments }} total items.</span
+                ></b-col
+              >
+            </b-row>
+          </div>
+          <div
+            v-show="documents.length"
+            class="row CrudlDocument-collection"
+            data-cy="UserList-items"
+          >
+            <div class="col s12">
+              <b-list-group class="w-100">
+                <b-list-group-item
+                  v-for="document in documents"
+                  class="p-2"
+                  data-cy="UserList-item"
+                  :key="document.id"
+                >
+                  <UserItem
+                    :document="document"
+                    :is-checked="isChecked(document.id)"
+                    :index="index"
+                    :collection="collection"
+                    @checkbox-click="toggleSelectDocuments"
+                    @edit="editUser"
+                    @delete="deleteUser"
+                  />
+                </b-list-group-item>
+              </b-list-group>
+            </div>
+          </div>
+        </b-card-text>
+      </b-card>
+      <b-row align-h="center" v-if="!loading">
+        <b-pagination
+          class="m-2 mt-4"
+          data-cy="UserManagement-pagination"
+          v-model="currentPage"
+          :total-rows="totalDocuments"
+          :per-page="paginationSize"
+        ></b-pagination>
+      </b-row>
+      <delete-modal
+        id="modal-delete-users"
+        :candidates-for-deletion="candidatesForDeletion"
+        :is-loading="deleteModalIsLoading"
+        @confirm="onDeleteConfirmed"
+        @hide="resetCandidatesForDeletion"
+      />
+    </template>
   </div>
 </template>
 
@@ -169,11 +183,13 @@ export default {
       currentPage: 1,
       deleteModalIsLoading: false,
       documents: [],
-      fetchingUsers: false,
+      loading: true,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       totalDocuments: 0,
-      candidatesForDeletion: []
+      candidatesForDeletion: [],
+      paginationSize: 10,
+      itemsPerPage: [10, 25, 50, 100, 500]
     }
   },
   computed: {
@@ -196,12 +212,13 @@ export default {
     },
     paginationFrom() {
       return parseInt(this.currentFilter.from) || 0
-    },
-    paginationSize() {
-      return parseInt(this.currentFilter.size) || 10
     }
   },
   methods: {
+    changePaginationSize(e) {
+      this.paginationSize = e
+      this.fetchDocuments()
+    },
     isChecked(id) {
       return this.selectedDocuments.includes(id)
     },
@@ -243,7 +260,7 @@ export default {
       }
     },
     async fetchDocuments() {
-      this.fetchingUsers = true
+      this.loading = true
 
       this.$forceUpdate()
 
@@ -289,7 +306,7 @@ export default {
           noAutoHide: true
         })
       }
-      this.fetchingUsers = false
+      this.loading = false
     },
     editUser(id) {
       this.$router.push({
@@ -302,17 +319,19 @@ export default {
     // =========================================================================
     async onDeleteConfirmed() {
       this.deleteModalIsLoading = true
+      this.loading = true
       try {
         await this.wrapper.performDeleteUsers(
           this.index,
           this.collection,
           this.candidatesForDeletion
         )
-        this.$bvModal.hide('modal-delete-users')
         this.deleteModalIsLoading = false
-        this.fetchDocuments()
+        this.$bvModal.hide('modal-delete-users')
+        await this.fetchDocuments()
       } catch (e) {
         this.$log.error(e)
+        this.deleteModalIsLoading = false
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
@@ -324,6 +343,7 @@ export default {
           }
         )
       }
+      this.loading = false
     },
     deleteUser(id) {
       this.candidatesForDeletion.push(id)
