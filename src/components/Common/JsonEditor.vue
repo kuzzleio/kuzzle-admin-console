@@ -9,8 +9,7 @@
     v-model="jsonContent"
     @keydown.tab.exact.prevent
     @keyup.tab.exact="addTab"
-  >
-  </b-form-textarea>
+  />
 </template>
 
 <script>

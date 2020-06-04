@@ -16,7 +16,7 @@
       :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
+      <span v-html="highlight(indexName, filter)" /> ({{ collectionsCount }})
     </router-link>
     <div class="collections">
       <div
@@ -114,8 +114,9 @@ export default {
         this.filter.length > 0 &&
         (this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
           .length !== this.collections.stored.length ||
-        this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
-        .length !== this.collections.realtime.length)
+          this.collections.realtime.filter(
+            col => col.indexOf(this.filter) !== -1
+          ).length !== this.collections.realtime.length)
       ) {
         return 1
       }
