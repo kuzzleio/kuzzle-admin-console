@@ -174,7 +174,7 @@
 </template>
 
 <script>
-const emptyBasicFilter = { attribute: null, operator: 'match', value: null }
+const emptyBasicFilter = { attribute: null, operator: 'contains', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
 
 export default {

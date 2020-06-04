@@ -109,7 +109,7 @@ describe('Search', function() {
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
     cy.url().should('contain', 'job')
-    cy.url().should('contain', 'match')
+    cy.url().should('contain', 'contains')
     cy.url().should('contain', 'Blockchain')
   })
 
@@ -432,7 +432,7 @@ describe('Search', function() {
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
-      .and('contain', 'match_phrase_prefix')
+      .and('contain', 'regexp')
       .and('contain', 'bar')
   })
 

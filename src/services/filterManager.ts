@@ -302,11 +302,11 @@ export const formatFromBasicSearch = (groups = [[]]) => {
 
       if (filter.operator === 'contains') {
         formattedFilter.bool.must.push({
-          regexp: { [filter.attribute]: '.*' + filter.value + '.*' }
+          regexp: { [filter.attribute]: '.*' + filter.value.toLowerCase() + '.*' }
         })
       } else if (filter.operator === 'not_contains') {
         formattedFilter.bool.must_not.push({
-          regexp: { [filter.attribute]: '.*' + filter.value + '.*' }
+          regexp: { [filter.attribute]: '.*' + filter.value.toLowerCase() + '.*' }
         })
       } else if (filter.operator === 'equal') {
         formattedFilter.bool.must.push({

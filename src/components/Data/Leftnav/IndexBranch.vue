@@ -16,7 +16,7 @@
       :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
+      <span v-html="highlight(indexName, filter)" /> ({{ collectionsCount }})
     </router-link>
     <div class="collections">
       <div
