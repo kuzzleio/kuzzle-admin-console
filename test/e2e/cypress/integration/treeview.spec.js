@@ -20,6 +20,13 @@ describe('Treeview', () => {
     )
     localStorage.setItem('currentEnv', validEnvName)
   })
+  function movePiece (name, x, y) {
+    cy.get(name)
+    .trigger('mousedown', { which: 1 })
+    .trigger('mousemove',  x, y , { force: true })
+    .trigger('mouseup', { force: true })
+  }
+
 
   it('Should show the index and collection tree', () => {
     const indexName = 'testindex'
@@ -49,5 +56,14 @@ describe('Treeview', () => {
 
     cy.get('[data-cy=Treeview-filter]').type(`{selectall}${indexes[0]}`)
     cy.get(`[data-cy=Treeview-item-index--${indexes[0]}]`).should('be.visible')
+  })
+
+  it('Should be able to resize the LeftBar', () => {
+    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should('not.have.attr', 'style')
+    movePiece(`[data-cy=sidebarResizer]`, 40, 200)
+    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should('have.css', 'width', '287px')
+    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should('have.attr', 'style')
+    movePiece(`[data-cy=sidebarResizer]`, 240, 200)
+    cy.get(`[data-cy=DataLayout-sidebarWrapper]`).should('have.attr', 'style')
   })
 })
