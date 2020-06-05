@@ -26,6 +26,7 @@
 
 import 'cypress-file-upload'
 import { antiGlitchOverlayTimeout } from '../../../../src/utils.ts'
+import axios from 'axios'
 
 Cypress.Commands.add('waitOverlay', () => {
   cy.visit('/')
@@ -53,3 +54,30 @@ Cypress.Commands.add(
     localStorage.setItem('currentEnv', validEnvName)
   }
 )
+
+function wait(ms) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), ms)
+  })
+}
+
+async function poll(url) {
+  for (let i = 15; i > 0; i--) {
+    try {
+      const r = await axios.get(url)
+      if (r) {
+        console.log('response is present')
+        console.log(r)
+        return
+      }
+    } catch (error) {
+      console.error(error)
+      await wait(3000)
+    }
+  }
+  throw new Error('Service is unreachable')
+}
+
+Cypress.Commands.add('pollingRequest', url => {
+  return poll(url)
+})
