@@ -1,7 +1,7 @@
 <template>
   <div :class="{ open }" class="IndexBranch mt-2">
     <i
-      v-if="collectionsCount"
+      v-if="collectionCount"
       aria-hidden="true"
       class="fa fa-caret-right pointer tree-toggle"
       :data-cy="`IndexBranch-toggle--${indexName}`"
@@ -102,7 +102,7 @@ export default {
     }
   },
   computed: {
-    collectionsCount() {
+    collectionCount() {
       if (!this.collections) {
         return 0
       }
