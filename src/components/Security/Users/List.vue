@@ -327,6 +327,14 @@ export default {
         this.deleteModalIsLoading = false
         this.$bvModal.hide('modal-delete-users')
         await this.fetchDocuments()
+        if (this.$store.direct.getters.auth.adminAlreadyExists) {
+          try {
+            await this.$store.direct.dispatch.auth.checkFirstAdmin()
+          } catch (err) {
+            this.$log.error(err)
+            this.setError(err.message)
+          }
+        }
       } catch (e) {
         this.$log.error(e)
         this.deleteModalIsLoading = false
