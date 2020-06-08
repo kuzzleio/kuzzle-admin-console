@@ -31,7 +31,7 @@
           >
             <i
               class="fa fa-pencil-alt pointer"
-              :class="{ disabled: !canEdit }"
+              :class="{ 'text-secondary': !canEdit }"
             />
           </a>
 
@@ -39,7 +39,7 @@
             <li>
               <a
                 title="You are not allowed to delete this document"
-                :class="{ disabled: !canDelete }"
+                :class="{ 'text-secondary': !canDelete }"
                 @click="deleteCurrentDocument()"
               >
                 Delete

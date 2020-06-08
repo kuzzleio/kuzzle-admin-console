@@ -282,18 +282,15 @@ export default {
         }
       } catch (error) {
         this.$log.error(error.message)
-        this.$bvToast.toast(
-          'The complete error has been dumped to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while creating the new environment.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
+        this.$bvToast.toast(error.message, {
+          title:
+            'Ooops! Something went wrong while creating the new environment.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
       this.submitting = false
     },

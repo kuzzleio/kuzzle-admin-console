@@ -1,6 +1,5 @@
 describe('Users', function() {
   const kuzzleUrl = 'http://localhost:7512'
-  const backendVersion = Cypress.env('BACKEND_VERSION') || 2
 
   before(function() {
     cy.request('PUT', `${kuzzleUrl}/users/_mapping`, {
@@ -12,7 +11,7 @@ describe('Users', function() {
 
   beforeEach(function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
-    cy.initLocalEnv(backendVersion)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
   it('Should be able to search users via the quick search', () => {
