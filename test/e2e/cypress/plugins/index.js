@@ -15,7 +15,7 @@ const execa = require('execa')
 
 module.exports = on => {
   on('task', {
-    doco({ version, docoArgs, port }) {
+    doco({ version, docoArgs, port, stackPrefix }) {
       const docoFile = path.join(
         process.cwd(),
         'test',
@@ -25,6 +25,9 @@ module.exports = on => {
       if (!port) {
         port = '7512'
       }
+      if (!stackPrefix) {
+        stackPrefix = 'stack'
+      }
       console.log(
         `cy.task('doco') -- $ KUZZLE_PORT=${port} docker-compose -f ${docoFile} -p stack-${version} ${docoArgs.join(
           ' '
@@ -33,7 +36,7 @@ module.exports = on => {
 
       execa(
         'docker-compose',
-        ['-f', docoFile, '-p', `stack-${version}`].concat(docoArgs),
+        ['-f', docoFile, '-p', `${stackPrefix}-${version}`].concat(docoArgs),
         {
           env: {
             KUZZLE_PORT: port,

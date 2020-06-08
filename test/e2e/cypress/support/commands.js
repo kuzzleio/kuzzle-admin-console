@@ -35,7 +35,7 @@ Cypress.Commands.add('waitOverlay', () => {
 
 Cypress.Commands.add(
   'initLocalEnv',
-  (backendVersion = 2, token = 'anonymous') => {
+  (backendVersion = 2, token = 'anonymous', port = 7512) => {
     const validEnvName = 'valid'
     localStorage.setItem(
       'environments',
@@ -45,7 +45,7 @@ Cypress.Commands.add(
           color: 'darkblue',
           host: 'localhost',
           ssl: false,
-          port: 7512,
+          port,
           backendMajorVersion: backendVersion,
           token
         }

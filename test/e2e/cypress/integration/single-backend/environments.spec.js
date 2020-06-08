@@ -277,7 +277,7 @@ describe('Environments', function() {
     cy.url().should('contain', 'create-connection')
   })
 
-  it('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
+  it.only('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
     cy.initLocalEnv(backendVersion)
     cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
     cy.wait(5000)
@@ -290,7 +290,7 @@ describe('Environments', function() {
     cy.get('[data-cy=App-online]').should('be.visible')
   })
 
-  it('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
+  it.only('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
     cy.initLocalEnv(backendVersion)
     cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
     cy.pollingRequest('http://localhost:7512')
