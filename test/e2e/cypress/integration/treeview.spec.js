@@ -20,7 +20,7 @@ describe('Treeview', () => {
     )
     localStorage.setItem('currentEnv', validEnvName)
   })
-  function movePiece (name, x, y) {
+  function movePiece(name, x, y) {
     cy.get(name)
     .trigger('mousedown', { which: 1 })
     .trigger('mousemove',  x, y , { force: true })
