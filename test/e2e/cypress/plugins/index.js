@@ -36,7 +36,8 @@ module.exports = on => {
         ['-f', docoFile, '-p', `stack-${version}`].concat(docoArgs),
         {
           env: {
-            KUZZLE_PORT: port
+            KUZZLE_PORT: port,
+            ES_JAVA_OPTS: '-Xms512m -Xmx512m'
           }
         }
       )
