@@ -110,7 +110,7 @@ class RunTest extends Command {
       local ? 'open' : 'run',
       process.env.CYPRESS_RECORD_KEY ? '--record' : '',
       local ? '' : '--spec',
-      local ? '' : 'cypress/integration/single-backend/**/*.spec.js',
+      local ? '' : "'test/e2e/cypress/integration/single-backend/**/*.spec.js'",
       local ? '' : '--group',
       local ? '' : `kuzzle-v${version}`
     ]
@@ -131,13 +131,53 @@ class RunTest extends Command {
     }
   }
 
-  async multiBackend() {
+  async multiBackend(local: boolean = false) {
+    this.log(chalk.blueBright(` Preparing multi-backend stack`))
+
+    const tasks = new Listr([
+      {
+        title: `Launch the Admin Console`,
+        skip: () => {
+          if (local) {
+            return 'Using local Admin Console'
+          }
+        },
+        task: () => {
+          execa('npm', ['run', 'serve'])
+        }
+      },
+      {
+        title: 'Wait for the Admin Console to be up',
+        task: () => this.waitFor('the Admin Console', 'http://localhost:8080')
+      }
+    ])
+
+    await tasks.run()
+
     this.log(
-      `\n ${emoji.get(
-        'no_entry_sign'
-      )} Multi-backend tests aren't ready yet. \n`
+      chalk.blueBright(
+        `\n ${emoji.get('raised_hands')} Stack is up. Ready to run the tests!`
+      )
     )
-    process.exit(1)
+    const npmArgs = [
+      local ? 'open' : 'run',
+      process.env.CYPRESS_RECORD_KEY ? '--record' : '',
+      local ? '' : '--spec',
+      local ? '' : 'cypress/integration/multi-backend/**/*.spec.js',
+      local ? '' : '--group',
+      local ? '' : `multi-backend`
+    ]
+    try {
+      const cy = execa('cypress', npmArgs)
+      cy.stdout.pipe(process.stdout)
+      cy.stderr.pipe(process.stderr)
+
+      const exitCode = (await cy).exitCode
+      process.exit(exitCode)
+    } catch (error) {
+      this.log(`\n ${emoji.get('red_circle')} Sorry, tests are red.`)
+      process.exit(1)
+    }
   }
 
   async waitFor(name: string, uri: string) {
