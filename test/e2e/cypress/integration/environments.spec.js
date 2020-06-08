@@ -314,7 +314,7 @@ describe('Environments', function() {
     cy.url().should('contain', 'create-connection')
   })
 
-  it.only('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
+  it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
     const wrongBackendVersion = backendVersion === 2 ? 1 : 2
     cy.initLocalEnv(wrongBackendVersion)
     cy.visit('/')
