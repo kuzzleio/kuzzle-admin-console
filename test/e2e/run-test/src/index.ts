@@ -109,6 +109,8 @@ class RunTest extends Command {
     const npmArgs = [
       local ? 'open' : 'run',
       process.env.CYPRESS_RECORD_KEY ? '--record' : '',
+      local ? '' : '--spec',
+      local ? '' : 'cypress/integration/single-backend/**/*.spec.js',
       local ? '' : '--group',
       local ? '' : `kuzzle-v${version}`
     ]
