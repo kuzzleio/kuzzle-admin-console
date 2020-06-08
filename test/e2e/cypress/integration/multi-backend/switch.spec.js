@@ -1,37 +1,21 @@
-describe('Skip between two backends', () => {
+describe('Switch between two backends', () => {
   beforeEach(() => {
     cy.task('doco', { version: '1', docoArgs: ['down'] })
     cy.task('doco', { version: '2', docoArgs: ['down'] })
     cy.wait(3000)
   })
 
-  it.skip('Should raise doco task', () => {
-    cy.task('doco', { version: '2', docoArgs: ['up'] })
-    cy.task('doco', { version: '1', docoArgs: ['up'], port: '7513' })
-    cy.pollingRequest('http://localhost:7513')
-  })
-
-  it('Should be able to switch between two backends v1', () => {
+  function switchBackend(backends) {
     const indexName = 'testindex'
-    const backends = [
-      {
-        name: 'local',
-        port: 7512
-      },
-      {
-        name: 'another',
-        port: 7513
-      }
-    ]
 
     backends.forEach(backend => {
       cy.task('doco', {
-        version: '1',
+        version: backend.version,
         docoArgs: ['up'],
         port: backend.port,
         stackPrefix: backend.name
       })
-      cy.pollingRequest(`http://localhost:${backend.port}`)
+      cy.waitForService(`http://localhost:${backend.port}`)
       cy.request(
         'POST',
         `http://localhost:${backend.port}/${indexName}${backend.name}/_create`
@@ -46,7 +30,7 @@ describe('Skip between two backends', () => {
           host: 'localhost',
           ssl: false,
           port: backends[0].port,
-          backendMajorVersion: 1,
+          backendMajorVersion: backends[0].version,
           token: 'anonymous'
         },
         [backends[1].name]: {
@@ -55,7 +39,7 @@ describe('Skip between two backends', () => {
           host: 'localhost',
           ssl: false,
           port: backends[1].port,
-          backendMajorVersion: 1,
+          backendMajorVersion: backends[1].version,
           token: 'anonymous'
         }
       })
@@ -85,7 +69,52 @@ describe('Skip between two backends', () => {
         port: backend.port,
         stackPrefix: backend.name
       })
-      cy.wait(3000)
+      cy.waitForService(`http://localhost:${backend.port}`, 'down')
     })
+  }
+  it('Should be able to switch between two backends v1', () => {
+    const backends = [
+      {
+        name: 'local',
+        port: 7512,
+        version: 1
+      },
+      {
+        name: 'another',
+        port: 7513,
+        version: 1
+      }
+    ]
+    switchBackend(backends)
+  })
+  it('Should be able to switch between two backends v2', () => {
+    const backends = [
+      {
+        name: 'local',
+        port: 7512,
+        version: 2
+      },
+      {
+        name: 'another',
+        port: 7513,
+        version: 2
+      }
+    ]
+    switchBackend(backends)
+  })
+  it('Should be able to switch between two backends of different versions', () => {
+    const backends = [
+      {
+        name: 'local',
+        port: 7512,
+        version: 1
+      },
+      {
+        name: 'another',
+        port: 7513,
+        version: 2
+      }
+    ]
+    switchBackend(backends)
   })
 })

@@ -61,23 +61,31 @@ function wait(ms) {
   })
 }
 
-async function poll(url) {
-  for (let i = 15; i > 0; i--) {
+async function poll(url, state = 'up') {
+  for (let i = 30; i > 0; i--) {
     try {
       const r = await axios.get(url)
       if (r) {
-        console.log('response is present')
-        console.log(r)
-        return
+        console.log('Service is up')
+        if (state === 'up') {
+          return
+        } else {
+          await wait(3000)
+        }
       }
     } catch (error) {
+      console.log('Service is down')
       console.error(error)
-      await wait(3000)
+      if (state === 'up') {
+        await wait(3000)
+      } else {
+        return
+      }
     }
   }
-  throw new Error('Service is unreachable')
+  throw new Error('Poll timeout expired')
 }
 
-Cypress.Commands.add('pollingRequest', url => {
-  return poll(url)
+Cypress.Commands.add('waitForService', (url, state = 'up') => {
+  return poll(url, state)
 })
