@@ -290,7 +290,7 @@ describe('Environments', function() {
     cy.get('[data-cy=App-online]').should('be.visible')
   })
 
-  it.only('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
+  it('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
     cy.initLocalEnv(backendVersion)
     cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
     cy.waitForService('http://localhost:7512')
