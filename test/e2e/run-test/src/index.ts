@@ -163,7 +163,7 @@ class RunTest extends Command {
       local ? 'open' : 'run',
       process.env.CYPRESS_RECORD_KEY ? '--record' : '',
       local ? '' : '--spec',
-      local ? '' : "'cypress/integration/multi-backend/**/*.spec.js'",
+      local ? '' : "'test/e2e/cypress/integration/multi-backend/**/*.spec.js'",
       local ? '' : '--group',
       local ? '' : `multi-backend`
     ]
