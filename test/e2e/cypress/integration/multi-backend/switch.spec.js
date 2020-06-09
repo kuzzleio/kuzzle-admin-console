@@ -47,6 +47,7 @@ describe('Switch between two backends', () => {
     localStorage.setItem('currentEnv', backends[0].name)
 
     cy.visit('/')
+    cy.wait(5000)
     cy.get('[data-cy=App-online]').should('be.visible')
     cy.get(`[data-cy=IndexesPage-name--testindex${backends[0].name}]`).should(
       'be.visible'
@@ -57,6 +58,8 @@ describe('Switch between two backends', () => {
     ).click({
       force: true
     })
+
+    cy.wait(5000)
     cy.get('[data-cy=App-online]').should('be.visible')
     cy.get(`[data-cy=IndexesPage-name--testindex${backends[1].name}]`).should(
       'be.visible'
