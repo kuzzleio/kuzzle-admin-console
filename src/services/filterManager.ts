@@ -128,16 +128,15 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const toSearchQuery = filter => {
+export const toSearchQuery = (filter, mappings) => {
   if (!filter) {
     throw new Error('No filter specified')
   }
-
   switch (filter.active) {
     case ACTIVE_QUICK:
       return filter.quick ? formatFromQuickSearch(filter.quick) : {}
     case ACTIVE_BASIC:
-      return filter.basic ? formatFromBasicSearch(filter.basic) : {}
+      return filter.basic ? formatFromBasicSearch(filter.basic, mappings) : {}
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
     case NO_ACTIVE:
@@ -289,8 +288,23 @@ export const formatSort = sorting => {
   return [{ [sorting.attribute]: { order: sorting.order } }]
 }
 
+export function buildCaseInsensitiveRegexp(searchString) {
+  return searchString
+    .split('')
+    .map(e => {
+      if ('.-'.indexOf(e) >= 0) {
+        return `\\${e}`;
+      }
+      if ('#@'.indexOf(e) >= 0) {
+        return e;
+      }
+      return `[${e.toLowerCase()}${e.toUpperCase()}]`;
+    })
+    .join('');
+}
+
 // TODO rename to basicFilterToSearchQuery
-export const formatFromBasicSearch = (groups = [[]]) => {
+export const formatFromBasicSearch = (groups = [[]], mappings) => {
   let bool: any = {}
 
   bool.should = groups.map(filters => {
@@ -301,13 +315,28 @@ export const formatFromBasicSearch = (groups = [[]]) => {
       }
 
       if (filter.operator === 'contains') {
-        formattedFilter.bool.must.push({
-          regexp: { [filter.attribute]: '.*' + filter.value.toLowerCase() + '.*' }
-        })
+        if (mappings[filter.attribute].type === "text") {
+          formattedFilter.bool.must.push({
+            match_phrase_prefix: { [filter.attribute]: filter.value }
+          })
+        }
+        if (mappings[filter.attribute].type === "keyword") {
+          formattedFilter.bool.must.push({
+            regexp: { [filter.attribute]: ".*" + buildCaseInsensitiveRegexp(filter.value) + ".*" }
+          })
+        }
       } else if (filter.operator === 'not_contains') {
-        formattedFilter.bool.must_not.push({
-          regexp: { [filter.attribute]: '.*' + filter.value.toLowerCase() + '.*' }
-        })
+        
+        if (mappings[filter.attribute].type === "text") {
+          formattedFilter.bool.must_not.push({
+            match_phrase_prefix: { [filter.attribute]: filter.value }
+          })
+        }
+        if (mappings[filter.attribute].type === "keyword") {
+          formattedFilter.bool.must_not.push({
+            regexp: { [filter.attribute]: ".*" + buildCaseInsensitiveRegexp(filter.value) + ".*" }
+          })
+        }
       } else if (filter.operator === 'equal') {
         formattedFilter.bool.must.push({
           range: {

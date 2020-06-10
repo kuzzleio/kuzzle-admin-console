@@ -59,6 +59,7 @@
         :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
         :refresh-ace="refreshace"
+        :collectionMapping="collectionMapping"
         @filter-submitted="onRawFilterUpdated"
         @reset="onReset"
       />

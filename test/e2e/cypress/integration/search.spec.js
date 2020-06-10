@@ -432,7 +432,7 @@ describe('Search', function() {
     cy.get('.ace_content')
       .should('contain', 'query')
       .and('contain', 'must')
-      .and('contain', 'regexp')
+      .and('contain', 'match_phrase_prefix')
       .and('contain', 'bar')
   })
 

@@ -63,11 +63,11 @@
               </template>
             </b-col>
           </b-row>
-          <template v-if="fetchingDocuments">
+          <template v-if="loading">
             <b-row class="text-center">
               <b-col>
                 <b-spinner
-                  v-if="fetchingDocuments"
+                  v-if="loading"
                   variant="primary"
                   class="mt-5"
                 ></b-spinner>
@@ -211,7 +211,7 @@ export default {
   },
   data() {
     return {
-      fetchingDocuments: false,
+      loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -423,8 +423,13 @@ export default {
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
-    loadAllTheThings() {
-      this.loadMappingInfo()
+    async loadAllTheThings() {
+      this.loading = true
+      try {
+        await this.loadMappingInfo()
+      } catch {
+        this.loading = false
+      }
       this.loadListView()
       this.saveListView()
 
@@ -439,7 +444,8 @@ export default {
         this.index,
         this.collection
       )
-      this.fetchDocuments()
+      await this.fetchDocuments()
+      this.loading = false
     },
     performSearchDocuments,
     navigateToDocument() {
@@ -482,7 +488,6 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
-      this.fetchingDocuments = true
       this.$forceUpdate()
       this.indexOrCollectionNotFound = false
 
@@ -493,8 +498,8 @@ export default {
         size: this.paginationSize
       }
       try {
-        let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(this.currentFilter)
+        let searchQuery = null        
+        searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping)
         if (!searchQuery) {
           searchQuery = {}
         }
@@ -540,7 +545,6 @@ export default {
           })
         }
       }
-      this.fetchingDocuments = false
     },
 
     // PAGINATION
