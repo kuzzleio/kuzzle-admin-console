@@ -181,6 +181,7 @@ export default {
         this.setError(e.message)
         return
       }
+      this.loading = true
       this.submitting = true
 
       try {
@@ -219,15 +220,24 @@ export default {
             },
             credentials: this.credentials
           })
+          if (!this.$store.direct.getters.auth.adminAlreadyExists) {
+            try {
+              await this.$store.direct.dispatch.auth.checkFirstAdmin()
+            } catch (err) {
+              this.$log.error(err)
+              this.setError(err.message)
+            }
+          }
         }
-
         this.$router.push({ name: 'SecurityUsersList' })
+        this.loading = false
       } catch (err) {
         if (err) {
           this.$log.error(err)
           this.setError(err.message)
           this.submitting = false
         }
+        this.loading = false
       }
     },
     setError(msg) {

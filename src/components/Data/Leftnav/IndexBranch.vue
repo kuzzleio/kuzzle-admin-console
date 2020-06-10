@@ -1,9 +1,9 @@
 <template>
-  <div :class="{ open: open || filter }" class="IndexBranch mt-2">
+  <div :class="{ open }" class="IndexBranch mt-2">
     <i
       v-if="collectionCount"
       aria-hidden="true"
-      class="fa fa-caret-right tree-toggle"
+      class="fa fa-caret-right pointer tree-toggle"
       :data-cy="`IndexBranch-toggle--${indexName}`"
       @click="toggleBranch"
     />
@@ -40,6 +40,14 @@
           />
           <span v-html="highlight(collectionName, filter)" />
         </router-link>
+      </div>
+      <div
+        v-if="showMoreCollectionsDisplay"
+        @click="toggleShowMoreCollections"
+        class="tree-item truncate pointer"
+      >
+        <u v-if="!showMoreCollections">Show More</u>
+        <u v-else>Show only results</u>
       </div>
 
       <div
@@ -89,7 +97,8 @@ export default {
   },
   data: function() {
     return {
-      open: false
+      open: false,
+      showMoreCollections: false
     }
   },
   computed: {
@@ -100,10 +109,24 @@ export default {
 
       return this.collections.realtime.length + this.collections.stored.length
     },
+    showMoreCollectionsDisplay() {
+      if (
+        this.filter.length > 0 &&
+        (this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
+          .length !== this.collections.stored.length ||
+        this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
+        .length !== this.collections.realtime.length)
+      ) {
+        return 1
+      }
+      return 0
+    },
     orderedFilteredStoredCollections() {
       if (this.collections) {
         return this.collections.stored
-          .filter(col => col.indexOf(this.filter) !== -1)
+          .filter(
+            col => col.indexOf(this.filter) !== -1 || this.showMoreCollections
+          )
           .sort()
       }
       return []
@@ -111,7 +134,9 @@ export default {
     orderedFilteredRealtimeCollections() {
       if (this.collections) {
         return this.collections.realtime
-          .filter(col => col.indexOf(this.filter) !== -1)
+          .filter(
+            col => col.indexOf(this.filter) !== -1 || this.showMoreCollections
+          )
           .sort()
       }
       return []
@@ -123,6 +148,19 @@ export default {
     },
     currentCollection() {
       this.testOpen()
+    },
+    filter() {
+      if (
+        this.collections.realtime.filter(col => col.indexOf(this.filter) !== -1)
+          .length > 0 ||
+        this.collections.stored.filter(col => col.indexOf(this.filter) !== -1)
+          .length > 0
+      ) {
+        this.open = true
+      }
+      if (this.filter == '') {
+        this.open = false
+      }
     }
   },
   mounted() {
@@ -144,6 +182,9 @@ export default {
         default:
           return 'DocumentList'
       }
+    },
+    toggleShowMoreCollections() {
+      this.showMoreCollections = !this.showMoreCollections
     },
     testOpen() {
       if (this.currentIndex === this.indexName) {
@@ -235,8 +276,11 @@ a {
   }
 }
 
-.tree-toggle {
+.pointer {
   cursor: pointer;
+}
+
+.tree-toggle {
   transition-duration: 0.2s;
   transform-origin: 50% 50%;
 }

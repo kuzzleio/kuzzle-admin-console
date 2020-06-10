@@ -26,6 +26,43 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
+  it('Should not be able to create an environment with the same name of an existing one', () => {
+    const localEnvName = 'local'
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [localEnvName]: {
+          name: localEnvName,
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          backendMajorVersion: backendVersion,
+          token: null
+        }
+      })
+    )
+    cy.visit('/')
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy=EnvironmentSwitch-newConnectionBtn]').click()
+    cy.get('[data-cy="CreateEnvironment-name"]').type(localEnvName, {
+      force: true
+    })
+    cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
+      force: true
+    })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.get('.b-toast')
+      .should('be.visible')
+      .should(
+        'contain',
+        `An environment with name ${localEnvName} already exists. Please specify a different one.`
+      )
+  })
+
   it('Should be able to delete environments', function() {
     const envNames = ['local', 'another']
     localStorage.setItem(
@@ -277,7 +314,7 @@ describe('Environments', function() {
     cy.url().should('contain', 'create-connection')
   })
 
-  it.only('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
+  it('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
     cy.initLocalEnv(backendVersion)
     cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
     cy.wait(5000)
@@ -304,5 +341,23 @@ describe('Environments', function() {
     cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
     cy.waitForService('http://localhost:7512')
     cy.get('.toast-header').should('not.be.visible')
+  })
+
+  it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
+    const wrongBackendVersion = backendVersion === 2 ? 1 : 2
+    cy.initLocalEnv(wrongBackendVersion)
+    cy.visit('/')
+    cy.get('[data-cy=App-connectionError]')
+      .should('be.visible')
+      .should('contain', 'Incompatible SDK client.')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_valid-edit"]`).click()
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.get('[data-cy=App-online]').should('be.visible')
+    cy.contains('Connected to')
   })
 })

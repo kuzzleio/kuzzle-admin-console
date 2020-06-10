@@ -124,6 +124,13 @@ export default {
   props: ['environmentId'],
   data() {
     return {
+      majorVersions: [
+        { value: 1, text: 'v1.x' },
+        {
+          value: 2,
+          text: 'v2.x'
+        }
+      ],
       errors: {
         name: false,
         host: false,
@@ -284,18 +291,15 @@ export default {
         }
       } catch (error) {
         this.$log.error(error.message)
-        this.$bvToast.toast(
-          'The complete error has been dumped to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while creating the new environment.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
+        this.$bvToast.toast(error.message, {
+          title:
+            'Ooops! Something went wrong while creating the new environment.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
       this.submitting = false
     },

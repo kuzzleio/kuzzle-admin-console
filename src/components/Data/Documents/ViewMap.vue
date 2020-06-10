@@ -31,7 +31,7 @@
           >
             <i
               class="fa fa-pencil-alt pointer"
-              :class="{ disabled: !canEdit }"
+              :class="{ 'text-secondary': !canEdit }"
             />
           </a>
 
