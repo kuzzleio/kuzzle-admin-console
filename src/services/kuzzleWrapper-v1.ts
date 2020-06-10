@@ -2,6 +2,12 @@ import { Kuzzle, WebSocket } from 'kuzzle-sdk-v6'
 import Promise from 'bluebird'
 import omit from 'lodash/omit'
 
+// NOTE - We instantiate a new Kuzzle SDK with Websocket protocol
+// pointing to `localhost` because we cannot instantiate the `WebSocket`
+// class with `null` argument. The SDK will not initiate a connection to
+// `localhost` as the call to `connect()` is performed in the `connectToEnvironment`
+// method, which instantiates a new `WebSocket` class with the hostname
+// corresponding to the selected environment.
 export const kuzzle = new Kuzzle(new WebSocket('localhost'))
 
 // Helper for performSearch
