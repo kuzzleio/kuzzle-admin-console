@@ -91,7 +91,6 @@
 </style>
 
 <script>
-import { getMappingUsers } from '../../../services/kuzzleWrapper'
 import Basic from './Steps/Basic'
 import CredentialsSelector from './Steps/CredentialsSelector'
 import CustomData from './Steps/CustomData'
@@ -99,7 +98,7 @@ import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import MainSpinner from '../../Common/MainSpinner'
 import Promise from 'bluebird'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'CreateOrUpdateUser',
   components: {
@@ -134,6 +133,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     stepNumber() {
       switch (this.activeTab) {
         case 'basic':
@@ -181,6 +181,7 @@ export default {
         this.setError(e.message)
         return
       }
+      this.loading = true
       this.submitting = true
 
       try {
@@ -219,15 +220,24 @@ export default {
             },
             credentials: this.credentials
           })
+          if (!this.$store.direct.getters.auth.adminAlreadyExists) {
+            try {
+              await this.$store.direct.dispatch.auth.checkFirstAdmin()
+            } catch (err) {
+              this.$log.error(err)
+              this.setError(err.message)
+            }
+          }
         }
-
         this.$router.push({ name: 'SecurityUsersList' })
+        this.loading = false
       } catch (err) {
         if (err) {
           this.$log.error(err)
           this.setError(err.message)
           this.submitting = false
         }
+        this.loading = false
       }
     },
     setError(msg) {
@@ -262,7 +272,7 @@ export default {
       })
       this.credentialsMapping = credentialsMapping
 
-      const { mapping } = await getMappingUsers()
+      const { mapping } = await this.wrapper.getMappingUsers()
       if (mapping) {
         this.customContentMapping = mapping
         delete this.customContentMapping.profileIds

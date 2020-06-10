@@ -22,9 +22,6 @@
     <list
       v-if="canSearchProfile"
       item-name="ProfileItem"
-      :display-create="canCreateProfile"
-      :perform-search="performSearchProfiles"
-      :perform-delete="performDeleteProfiles"
       route-create="SecurityProfilesCreate"
       route-update="SecurityProfilesUpdate"
       @create-clicked="createProfile"
@@ -46,11 +43,8 @@
 import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
-import {
-  performSearchProfiles,
-  performDeleteProfiles
-} from '../../../services/kuzzleWrapper'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'ProfileManagement',
   components: {
@@ -64,9 +58,7 @@ export default {
   methods: {
     createProfile() {
       this.$router.push({ name: 'SecurityProfilesCreate' })
-    },
-    performSearchProfiles,
-    performDeleteProfiles
+    }
   },
   route: {
     data() {

@@ -48,6 +48,7 @@
 import ErrorPage from './Error/KuzzleErrorPage'
 import OfflineSpinner from './Common/Offline'
 import { antiGlitchOverlayTimeout } from '../utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ConnectionAwareContainer',
@@ -57,11 +58,11 @@ export default {
   },
   data() {
     return {
-      showOfflineSpinner: false,
-      gaveUp: false
+      showOfflineSpinner: false
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     currentEnvironment() {
       return this.$store.state.kuzzle.currentId
     },
@@ -77,6 +78,9 @@ export default {
   },
   methods: {
     initListeners() {
+      if (!this.$kuzzle) {
+        return
+      }
       this.$kuzzle.on('networkError', error => {
         this.$log.error(
           `ConnectionAwareContainer:kuzzle.on('networkError'): ${error.message}`
@@ -114,16 +118,13 @@ export default {
       })
     },
     removeListeners() {
+      if (!this.$kuzzle) {
+        return
+      }
       this.$kuzzle.removeAllListeners('networkError')
       this.$kuzzle.removeAllListeners('connected')
       this.$kuzzle.removeAllListeners('reconnected')
       this.$kuzzle.removeAllListeners('disconnected')
-    },
-    giveUp() {
-      this.removeListeners()
-      this.gaveUp = true
-      this.$store.direct.commit.kuzzle.setConnecting(false)
-      this.$store.direct.commit.kuzzle.setOnline(false)
     },
     checkConnection() {
       if (this.online === false && this.connecting === false) {
@@ -147,6 +148,9 @@ export default {
     },
     async authenticationGuard() {
       this.$log.debug('ConnectionAwareContainer::authentication guard')
+      if (this.$route.meta.skipLogin) {
+        return
+      }
       if (
         this.$route.matched.some(record => record.meta.requiresAuth) &&
         !this.$store.direct.getters.auth.isAuthenticated
@@ -160,6 +164,16 @@ export default {
     this.removeListeners()
   },
   watch: {
+    $kuzzle: {
+      immediate: true,
+      handler(instance) {
+        if (!instance) {
+          return
+        }
+        this.removeListeners()
+        this.initListeners()
+      }
+    },
     currentEnvironment: {
       immediate: true,
       async handler() {

@@ -30,22 +30,7 @@ describe('Document List', function() {
       }
     )
 
-    // create environment
-    const validEnvName = 'valid'
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: 'anonymous'
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
   it('Should be able to set and persist the listViewType param accessing a collection', function() {
@@ -62,10 +47,12 @@ describe('Document List', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="CollectionDropdown"').click()
-    cy.get('[data-cy="CollectionDropdown-column"]').click({ force: true })
+    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.wait(500)
+    cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-list"]').click()
     cy.url().should('contain', 'listViewType=list')
   })
@@ -133,6 +120,7 @@ describe('Document List', function() {
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy="CollectionDropdown"').click()
+    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
 
@@ -243,24 +231,10 @@ describe('Document update/replace', () => {
       }
     )
 
-    const validEnvName = 'valid'
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: 'anonymous'
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it('should update a document', () => {
+  it('Should be able to update a document', () => {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)

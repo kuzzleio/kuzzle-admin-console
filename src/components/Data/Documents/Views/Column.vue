@@ -210,7 +210,6 @@
 </template>
 
 <script>
-import Title from '../../../../directives/title.directive'
 import JsonFormatter from '../../../../directives/json-formatter.directive'
 import _ from 'lodash'
 import { truncateName } from '@/utils'
@@ -219,7 +218,6 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'Column',
   directives: {
-    Title,
     JsonFormatter
   },
   props: {

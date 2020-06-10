@@ -31,3 +31,25 @@ Cypress.Commands.add('waitOverlay', () => {
   cy.visit('/')
   cy.wait(antiGlitchOverlayTimeout + 50)
 })
+
+Cypress.Commands.add(
+  'initLocalEnv',
+  (backendVersion = 2, token = 'anonymous') => {
+    const validEnvName = 'valid'
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [validEnvName]: {
+          name: validEnvName,
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          backendMajorVersion: backendVersion,
+          token
+        }
+      })
+    )
+    localStorage.setItem('currentEnv', validEnvName)
+  }
+)

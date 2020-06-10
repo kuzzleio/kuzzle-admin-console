@@ -227,9 +227,7 @@ import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
 import { truncateName } from '../../../utils'
-import Title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
-
 export default {
   name: 'CollectionList',
   components: {
@@ -238,9 +236,6 @@ export default {
     ListNotAllowed,
     MainSpinner,
     AutoFocusInput
-  },
-  directives: {
-    Title
   },
   props: {
     index: String
@@ -255,12 +250,12 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', [
       'canSearchCollection',
       'canCreateCollection',
       'canEditCollection'
     ]),
-
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
     },

@@ -39,13 +39,11 @@
 <script>
 import Dropdown from '../../Materialize/Dropdown'
 import JsonFormat from '../../../directives/json-formatter.directive'
-import Title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
 export default {
   name: 'DocumentBoxItem',
   directives: {
-    JsonFormat,
-    Title
+    JsonFormat
   },
   components: {
     Dropdown

@@ -86,12 +86,8 @@
 
 import Headline from '../../Materialize/Headline'
 import JsonEditor from '../../Common/JsonEditor'
-import {
-  getMappingUsers,
-  updateMappingUsers
-} from '../../../services/kuzzleWrapper'
 import omit from 'lodash/omit'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'UsersCustomMappingWizard',
   components: {
@@ -106,6 +102,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     isMappingValid() {
       if (!this.mappingValue) {
         return true
@@ -120,7 +117,7 @@ export default {
   },
   async mounted() {
     this.loading = true
-    const result = await getMappingUsers()
+    const result = await this.wrapper.getMappingUsers()
     this.mappingValue = JSON.stringify(
       omit(result.mapping, 'profileIds') || {},
       null,
@@ -137,7 +134,7 @@ export default {
     },
     async onSubmit() {
       try {
-        await updateMappingUsers(JSON.parse(this.mappingValue))
+        await this.wrapper.updateMappingUsers(JSON.parse(this.mappingValue))
         this.$router.push({ name: 'SecurityUsersList' })
       } catch (error) {
         this.$log.error(error)

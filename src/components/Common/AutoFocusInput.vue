@@ -8,12 +8,11 @@
 </template>
 
 <script>
-
 // Keep the first mounted component parent in global to ensure developers never
 // mount two AutoFocusInput component on the same page
 let componentParents = []
 
-function getParents (component, parents = []) {
+function getParents(component, parents = []) {
   if (!component.$parent) {
     return parents
   }
@@ -35,7 +34,7 @@ export default {
   },
   data() {
     return {
-      value: this.initialValue,
+      value: this.initialValue
     }
   },
   computed: {
@@ -49,7 +48,10 @@ export default {
       const tagType = document.activeElement.tagName
 
       // If we are currently selecting another input
-      if (tagType === 'INPUT' && !document.activeElement.dataset.autoFocusInput) {
+      if (
+        tagType === 'INPUT' &&
+        !document.activeElement.dataset.autoFocusInput
+      ) {
         return false
       }
 
@@ -93,7 +95,13 @@ export default {
   },
   mounted() {
     if (componentParents.length !== 0) {
-      throw new Error(`Cannot mount AutoFocusInput at: ${getParents(this).join(' > ')}. \nAn AutoFocusInput is already mounted at: ${componentParents.join(' > ')}.`)
+      throw new Error(
+        `Cannot mount AutoFocusInput at: ${getParents(this).join(
+          ' > '
+        )}. \nAn AutoFocusInput is already mounted at: ${componentParents.join(
+          ' > '
+        )}.`
+      )
     }
 
     componentParents = getParents(this)

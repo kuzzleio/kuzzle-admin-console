@@ -64,9 +64,8 @@
 </template>
 
 <script>
-import { performSearchRoles } from '../../../services/kuzzleWrapper'
 import { truncateName } from '@/utils'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'Filters',
   components: {},
@@ -88,6 +87,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     hasFilter() {
       return this.selectedRoles.length > 0
     }
@@ -95,7 +95,7 @@ export default {
   methods: {
     truncateName,
     async fetchRoleList() {
-      const res = await performSearchRoles()
+      const res = await this.wrapper.performSearchRoles()
       this.roleList = res.documents.map(role => role._id)
     },
     roleIsSelected(role) {

@@ -164,6 +164,7 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
+import DataNotFound from '../Data404'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
@@ -174,12 +175,6 @@ import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
-import DataNotFound from '../Data404'
-import {
-  performSearchDocuments,
-  performDeleteDocuments,
-  getMappingDocument
-} from '../../../services/kuzzleWrapper'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 
@@ -231,6 +226,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     ...mapGetters('auth', [
       'canSearchDocument',
       'canCreateDocument',
@@ -377,11 +373,10 @@ export default {
 
     // DELETE
     // =========================================================================
-    performDeleteDocuments,
     async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
       try {
-        await this.performDeleteDocuments(
+        await this.wrapper.performDeleteDocuments(
           this.index,
           this.collection,
           documentsToDelete
@@ -441,7 +436,6 @@ export default {
       )
       this.fetchDocuments()
     },
-    performSearchDocuments,
     navigateToDocument() {
       const document = this.documents[0]
 
@@ -503,7 +497,7 @@ export default {
 
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
-        const res = await this.performSearchDocuments(
+        const res = await this.wrapper.performSearchDocuments(
           this.collection,
           this.index,
           searchQuery,
@@ -600,7 +594,7 @@ export default {
     // Collection Metadata management
     // =========================================================================
     async loadMappingInfo() {
-      const { properties } = await getMappingDocument(
+      const { properties } = await this.wrapper.getMappingDocument(
         this.collection,
         this.index
       )
@@ -640,6 +634,10 @@ export default {
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
+      if (!this.collectionMapping) {
+        return
+      }
+
       const dateFields = []
 
       const findDateFields = (mapping, previousKey) => {

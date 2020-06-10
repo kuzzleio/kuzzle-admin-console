@@ -15,9 +15,9 @@
         <hr class="my-4" />
 
         <b-row align-v="center">
-          <b-col sm="7" class="align-middle">{{ kuzzleError }}</b-col>
+          <b-col sm="7" class="align-middle code">{{ kuzzleError }}</b-col>
           <b-col sm="2" class="text-right">
-            <span class="text-muted align-middle">Connected to</span>
+            <span class="text-muted align-middle">Connecting to</span>
           </b-col>
           <b-col sm="2" class="text-right">
             <environment-switch
