@@ -5,3 +5,5 @@ export interface KuzzleState {
   online: boolean
   errorFromKuzzle?: string
 }
+
+// TODO define Environment type

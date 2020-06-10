@@ -20,6 +20,12 @@ module.exports = {
       return `${name.substring(0, maxLength)}...`
     }
   },
+  wait: async ms =>
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve()
+      }, ms)
+    }),
   antiGlitchOverlayTimeout: 900,
   LS_ENVIRONMENTS: 'environments',
   LS_CURRENT_ENV: 'currentEnvironment'

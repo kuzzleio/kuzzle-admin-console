@@ -3,10 +3,6 @@ import { createMutations, createModule, createActions } from 'direct-vuex'
 import { KuzzleState } from './types'
 import { moduleActionContext } from '@/vuex/store'
 import { getters } from './getters'
-import {
-  connectToEnvironment,
-  disconnect
-} from '../../../../services/kuzzleWrapper'
 
 export const LS_ENVIRONMENTS = 'environments'
 export const LS_CURRENT_ENV = 'currentEnv'
@@ -30,6 +26,13 @@ export const envColors = [
   'grey',
   'magenta'
 ]
+
+const wait = async ms =>
+  new Promise(resolve => {
+    setTimeout(() => {
+      resolve()
+    }, ms)
+  })
 
 const checkEnvironment = e => {
   if (!e.name) {
@@ -117,6 +120,12 @@ const actions = createActions({
   createEnvironment(context, payload) {
     const { dispatch, commit, state } = kuzzleActionContext(context)
 
+    if (Object.keys(state.environments).indexOf(payload.id) !== -1) {
+      throw new Error(
+        `An environment with name ${payload.id} already exists. Please specify a different one.`
+      )
+    }
+
     commit.createEnvironment(payload)
     localStorage.setItem(LS_ENVIRONMENTS, JSON.stringify(state.environments))
 
@@ -153,7 +162,9 @@ const actions = createActions({
       payload.id === state.currentId &&
       (payload.environment.host !== getters.currentEnvironment.host ||
         payload.environment.port !== getters.currentEnvironment.port ||
-        payload.environment.ssl !== getters.currentEnvironment.ssl)
+        payload.environment.ssl !== getters.currentEnvironment.ssl ||
+        payload.backendMajorVersion !==
+          getters.currentEnvironment.backendMajorVersion)
     ) {
       mustReconnect = true
     }
@@ -178,11 +189,11 @@ const actions = createActions({
 
     commit.setErrorFromKuzzle(null)
 
-    disconnect()
+    getters.wrapper.disconnect()
     commit.setConnecting(true)
 
     try {
-      await connectToEnvironment(getters.currentEnvironment)
+      await getters.wrapper.connectToEnvironment(getters.currentEnvironment)
     } catch (error) {
       if (error.id) {
         dispatch.onConnectionError(error)

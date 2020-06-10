@@ -102,16 +102,15 @@
 
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
-import title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
+
 const MAX_PROFILES = 5
 
 export default {
   name: 'UserItem',
   components: {},
   directives: {
-    jsonFormatter,
-    title
+    jsonFormatter
   },
   props: {
     document: Object,

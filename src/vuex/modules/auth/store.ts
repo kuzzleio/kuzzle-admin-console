@@ -42,12 +42,11 @@ const actions = createActions({
 
     commit.reset()
     commit.setInitializing(true)
-
     await dispatch.checkFirstAdmin()
     await dispatch.loginByToken()
   },
   async setSession(context, token) {
-    const { commit, rootDispatch } = authActionContext(context)
+    const { rootDispatch, commit, rootGetters } = authActionContext(context)
     await rootDispatch.kuzzle.updateTokenCurrentEnvironment(token)
 
     if (token === null) {
@@ -59,7 +58,7 @@ const actions = createActions({
 
     if (token === 'anonymous') {
       const sessionUser = new SessionUser()
-      const rights = await Vue.prototype.$kuzzle.auth.getMyRights()
+      const rights = await rootGetters.kuzzle.$kuzzle.auth.getMyRights()
       sessionUser.rights = rights
       commit.setCurrentUser(sessionUser)
       commit.setTokenValid(true)
@@ -68,11 +67,11 @@ const actions = createActions({
     }
 
     const sessionUser = new SessionUser()
-    const user = await Vue.prototype.$kuzzle.auth.getCurrentUser()
+    const user = await rootGetters.kuzzle.$kuzzle.auth.getCurrentUser()
     sessionUser.id = user._id
     sessionUser.token = token
     sessionUser.params = user.content
-    const rights = await Vue.prototype.$kuzzle.auth.getMyRights()
+    const rights = await rootGetters.kuzzle.$kuzzle.auth.getMyRights()
     sessionUser.rights = rights
     commit.setCurrentUser(sessionUser)
     commit.setTokenValid(true)
@@ -80,40 +79,41 @@ const actions = createActions({
     return sessionUser
   },
   async doLogin(context, data) {
-    const { dispatch } = authActionContext(context)
-    Vue.prototype.$kuzzle.jwt = null
+    const { dispatch, rootGetters } = authActionContext(context)
+    rootGetters.kuzzle.$kuzzle.jwt = null
 
-    const jwt = await Vue.prototype.$kuzzle.auth.login('local', data, '2h')
+    const jwt = await rootGetters.kuzzle.$kuzzle.auth.login('local', data, '2h')
     return dispatch.setSession(jwt)
   },
   async loginByToken(context) {
     const { dispatch, rootGetters } = authActionContext(context)
 
     if (rootGetters.kuzzle.currentEnvironment.token === 'anonymous') {
-      Vue.prototype.$kuzzle.jwt = null
+      rootGetters.kuzzle.$kuzzle.jwt = null
       return dispatch.setSession('anonymous')
     }
     if (!rootGetters.kuzzle.currentEnvironment.token) {
-      Vue.prototype.$kuzzle.jwt = null
+      rootGetters.kuzzle.$kuzzle.jwt = null
       return dispatch.setSession(null)
     } else {
-      const res = await Vue.prototype.$kuzzle.auth.checkToken(
+      const res = await rootGetters.kuzzle.$kuzzle.auth.checkToken(
         rootGetters.kuzzle.currentEnvironment.token
       )
       if (!res.valid) {
-        Vue.prototype.$kuzzle.jwt = null
+        rootGetters.kuzzle.$kuzzle.jwt = null
         return dispatch.setSession(null)
       } else {
-        Vue.prototype.$kuzzle.jwt = rootGetters.kuzzle.currentEnvironment.token
+        rootGetters.kuzzle.$kuzzle.jwt =
+          rootGetters.kuzzle.currentEnvironment.token
         return dispatch.setSession(rootGetters.kuzzle.currentEnvironment.token)
       }
     }
   },
   async checkFirstAdmin(context) {
-    const { commit } = authActionContext(context)
+    const { commit, rootGetters } = authActionContext(context)
 
     try {
-      if (!(await Vue.prototype.$kuzzle.server.adminExists())) {
+      if (!(await rootGetters.kuzzle.$kuzzle.server.adminExists())) {
         return commit.setAdminExists(false)
       }
 
@@ -128,7 +128,7 @@ const actions = createActions({
   },
   async checkToken(context) {
     const { dispatch, getters, rootGetters } = authActionContext(context)
-    const kuzzle = Vue.prototype.$kuzzle
+    const kuzzle = rootGetters.kuzzle.$kuzzle
     const jwt = rootGetters.kuzzle.currentEnvironment.token
 
     if (!jwt) {
@@ -156,12 +156,12 @@ const actions = createActions({
     return true
   },
   async doLogout(context) {
-    const { dispatch } = authActionContext(context)
+    const { dispatch, rootGetters } = authActionContext(context)
 
-    if (Vue.prototype.$kuzzle.jwt) {
-      await Vue.prototype.$kuzzle.auth.logout()
+    if (rootGetters.kuzzle.$kuzzle.jwt) {
+      await rootGetters.kuzzle.$kuzzle.auth.logout()
     }
-    Vue.prototype.$kuzzle.jwt = null
+    rootGetters.kuzzle.$kuzzle.jwt = null
     dispatch.setSession(null)
     return dispatch.checkFirstAdmin()
   },

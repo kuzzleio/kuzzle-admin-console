@@ -110,16 +110,12 @@
 </template>
 
 <script>
-import title from '../../../../directives/title.directive'
 import CollectionFormLine from './CollectionFormLine'
 
 export default {
   name: 'CollectionForm',
   components: {
     CollectionFormLine
-  },
-  directives: {
-    title
   },
   props: {
     mapping: Object,

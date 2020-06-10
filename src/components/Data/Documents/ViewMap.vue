@@ -31,18 +31,15 @@
           >
             <i
               class="fa fa-pencil-alt pointer"
-              :class="{ disabled: !canEdit }"
+              :class="{ 'text-secondary': !canEdit }"
             />
           </a>
 
           <dropdown :id="currentDocument.id" myclass="icon-black">
             <li>
               <a
-                v-title="{
-                  active: !canDelete,
-                  title: 'You are not allowed to delete this document'
-                }"
-                :class="{ disabled: !canDelete }"
+                title="You are not allowed to delete this document"
+                :class="{ 'text-secondary': !canDelete }"
                 @click="deleteCurrentDocument()"
               >
                 Delete
@@ -71,7 +68,6 @@ import L from 'leaflet'
 import Dropdown from '../../Materialize/Dropdown'
 import '../../../../src/assets/leaflet.css'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -83,8 +79,7 @@ export default {
     Dropdown
   },
   directives: {
-    JsonFormatter,
-    title
+    JsonFormatter
   },
   props: {
     documents: {

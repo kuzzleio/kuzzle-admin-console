@@ -25,12 +25,7 @@
     </div>
     <i
       v-if="type === 'force-json'"
-      v-title="{
-        active: true,
-        position: 'bottom',
-        title:
-          'This object has too many levels, the view json is forced for this attribute.'
-      }"
+      title="This object has too many levels, the view json is forced for this attribute."
       class="fa fa-question-circle info"
     />
     <div class="col s6">
@@ -57,16 +52,12 @@ import {
 import Multiselect from 'vue-multiselect'
 import {} from 'vue-multiselect/dist/vue-multiselect.min.css'
 import MSelect from '../../../Common/MSelect'
-import title from '../../../../directives/title.directive'
 
 export default {
   name: 'CollectionFormLine',
   components: {
     Multiselect,
     MSelect
-  },
-  directives: {
-    title
   },
   props: {
     name: String,

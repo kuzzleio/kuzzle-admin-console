@@ -100,9 +100,9 @@
 <script>
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
-import { getMappingRoles } from '../../../services/kuzzleWrapper'
 import JsonEditor from '../../Common/JsonEditor'
 import trim from 'lodash/trim'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CreateOrUpdateRole',
@@ -125,6 +125,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     idState() {
       if (!this.idValue || trim(this.idValue, ' ') === '') {
         return false
@@ -141,7 +142,6 @@ export default {
     }
   },
   methods: {
-    getMappingRoles,
     onContentChange(value) {
       this.documentValue = value
     },

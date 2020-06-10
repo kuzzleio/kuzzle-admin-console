@@ -195,14 +195,14 @@ export default {
       )
     },
     quickFilter: {
-      get () {
+      get() {
         if (!this.currentFilter) {
           return null
         }
 
         return this.currentFilter.quick
       },
-      set (value) {
+      set(value) {
         this.currentFilter.quick = value
       }
     },
@@ -268,7 +268,7 @@ export default {
       this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters)
     },
-    onEnterPressed () {
+    onEnterPressed() {
       this.$emit('enter-pressed')
     }
   }

@@ -19,7 +19,7 @@ import { splitRealtimeStoredCollections } from '@/services/data'
 
 Vue.use(VueRouter)
 
-export default function createRoutes(log, kuzzle) {
+export default function createRoutes(log) {
   const environmentsGuard = async (from, to, next) => {
     log.debug('Router:EnvironmentsGuard')
     try {

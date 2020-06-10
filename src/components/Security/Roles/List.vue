@@ -120,6 +120,7 @@ import DeleteModal from './DeleteModal'
 import Filters from './Filters'
 import RoleItem from '../Roles/RoleItem'
 import * as filterManager from '../../../services/filterManager'
+import { mapGetters } from 'vuex'
 export default {
   name: 'RoleList',
   components: {
@@ -132,8 +133,6 @@ export default {
       type: Boolean,
       default: false
     },
-    performSearch: Function,
-    performDelete: Function,
     routeCreate: String,
     routeUpdate: String
   },
@@ -153,6 +152,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     displayBulkDelete() {
       return this.selectedDocuments.length > 0
     },
@@ -193,7 +193,7 @@ export default {
     async onDeleteConfirmed() {
       this.deleteModalIsLoading = true
       try {
-        await this.performDelete(this.candidatesForDeletion)
+        await this.wrapper.performDeleteRoles(this.candidatesForDeletion)
         this.$bvModal.hide('modal-delete-roles')
         this.deleteModalIsLoading = false
         this.fetchRoles()
@@ -283,7 +283,8 @@ export default {
       ) {
         filter.controllers = this.currentFilter.basic.controllers
       }
-      this.performSearch(filter, pagination)
+      this.wrapper
+        .performSearchRoles(filter, pagination)
         .then(res => {
           this.documents = res.documents
           this.totalDocuments = res.total

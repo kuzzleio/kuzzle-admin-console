@@ -128,8 +128,6 @@ import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import AutoFocusInput from '../../Common/AutoFocusInput'
-
-import Title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -140,9 +138,6 @@ export default {
     DeleteIndexModal,
     ListNotAllowed,
     AutoFocusInput
-  },
-  directives: {
-    Title
   },
   data() {
     return {

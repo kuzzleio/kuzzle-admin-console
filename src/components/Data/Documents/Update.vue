@@ -40,13 +40,11 @@
 </style>
 
 <script>
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
 import { omit } from 'lodash'
 import { mapGetters } from 'vuex'
-
 let room
 
 export default {
@@ -70,6 +68,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
     ...mapGetters('auth', ['canEditDocument']),
     hasRights() {
       return this.canEditDocument(this.index, this.collection)
@@ -92,7 +91,6 @@ export default {
     }
   },
   methods: {
-    getMappingDocument,
     async onSubmit(document, id, replace = false) {
       this.submitted = true
       this.error = ''
@@ -147,7 +145,7 @@ export default {
           this.id
         )
         this.document = omit(res._source, '_kuzzle_info')
-        this.mapping = await this.getMappingDocument(
+        this.mapping = await this.wrapper.getMappingDocument(
           this.collection,
           this.index
         )
