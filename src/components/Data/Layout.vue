@@ -1,12 +1,12 @@
 <template>
   <Multipane class="DataLayout Custom-resizer" layout="vertical">
-    <div class="DataLayout-sidebarWrapper">
+    <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
       <treeview
         :index="$route.params.index"
         :collection="$route.params.collection"
       />
     </div>
-    <MultipaneResizer />
+    <MultipaneResizer data-cy="sidebarResizer"/>
     <div class="DataLayout-contentWrapper">
       <template v-if="loading">
         <main-spinner></main-spinner>
