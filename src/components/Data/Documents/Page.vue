@@ -441,11 +441,17 @@ export default {
           this.index,
           this.collection
         )
-        await this.fetchDocuments()
         this.loading = false
       } catch {
+        this.$bvToast.toast(
+          'The complete error has been printed to console.', {
+          title: 'Ooops! Something went wrong.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+        })
         this.loading = false
       }
+      await this.fetchDocuments()
     },
     performSearchDocuments,
     navigateToDocument() {
