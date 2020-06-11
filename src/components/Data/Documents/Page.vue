@@ -424,28 +424,28 @@ export default {
     // LIST (FETCH & SEARCH)
     // =========================================================================
     async loadAllTheThings() {
-      this.loading = true
       try {
+        this.loading = true
         await this.loadMappingInfo()
+        this.loadListView()
+        this.saveListView()
+
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          this.$route
+        )
+        filterManager.save(
+          this.currentFilter,
+          this.$router,
+          this.index,
+          this.collection
+        )
+        await this.fetchDocuments()
+        this.loading = false
       } catch {
         this.loading = false
       }
-      this.loadListView()
-      this.saveListView()
-
-      this.currentFilter = filterManager.load(
-        this.index,
-        this.collection,
-        this.$route
-      )
-      filterManager.save(
-        this.currentFilter,
-        this.$router,
-        this.index,
-        this.collection
-      )
-      await this.fetchDocuments()
-      this.loading = false
     },
     performSearchDocuments,
     navigateToDocument() {
@@ -498,7 +498,7 @@ export default {
         size: this.paginationSize
       }
       try {
-        let searchQuery = null        
+        let searchQuery = null
         searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping)
         if (!searchQuery) {
           searchQuery = {}
