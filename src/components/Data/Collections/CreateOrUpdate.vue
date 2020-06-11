@@ -214,12 +214,24 @@ export default {
     },
     onSubmit() {
       if (this.isMappingValid) {
-        this.$emit('submit', {
-          dynamic: this.dynamicState,
-          name: this.name,
-          mapping: this.mappingState,
-          realtimeOnly: this.realtimeOnlyState
-        })
+        if (this.name) {
+          this.$emit('submit', {
+            dynamic: this.dynamicState,
+            name: this.name,
+            mapping: this.mappingState,
+            realtimeOnly: this.realtimeOnlyState
+          })
+        } else {
+          this.$bvToast.toast(
+          'You must specify a collection name',
+          {
+            title: 'You cannot proceed',
+            variant: 'info',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+        }
       } else {
         this.$bvToast.toast(
           'The JSON specification of the mapping contains syntax errors',
