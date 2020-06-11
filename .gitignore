@@ -17,3 +17,4 @@ test/e2e/visual-regression/current
 test/e2e/visual-regression/diff
 test/e2e/failed-test/
 test/e2e/videos
+test/e2e/screenshots

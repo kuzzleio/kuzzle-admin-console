@@ -46,7 +46,7 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
   }
 
   quickSearchToESQuery(searchTerm): object {
-    if (searchTerm === '' || !searchTerm) {
+    if (!searchTerm) {
       return {}
     }
 
