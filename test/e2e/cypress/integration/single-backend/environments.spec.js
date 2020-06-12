@@ -208,7 +208,7 @@ describe('Environments', function() {
     cy.get('[data-cy="App-online"]')
   })
 
-  it.only('Should be able to update an environment', () => {
+  it('Should be able to update an environment', () => {
     const envNames = ['local', 'another']
     const hosts = ['localhost', '123.123.123.123']
     const ports = [7512, 7514]
