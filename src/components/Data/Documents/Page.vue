@@ -63,11 +63,11 @@
               </template>
             </b-col>
           </b-row>
-          <template v-if="fetchingDocuments">
+          <template v-if="loading">
             <b-row class="text-center">
               <b-col>
                 <b-spinner
-                  v-if="fetchingDocuments"
+                  v-if="loading"
                   variant="primary"
                   class="mt-5"
                 ></b-spinner>
@@ -206,7 +206,7 @@ export default {
   },
   data() {
     return {
-      fetchingDocuments: false,
+      loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -418,23 +418,35 @@ export default {
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
-    loadAllTheThings() {
-      this.loadMappingInfo()
-      this.loadListView()
-      this.saveListView()
+    async loadAllTheThings() {
+      try {
+        this.loading = true
+        await this.loadMappingInfo()
+        this.loadListView()
+        this.saveListView()
 
-      this.currentFilter = filterManager.load(
-        this.index,
-        this.collection,
-        this.$route
-      )
-      filterManager.save(
-        this.currentFilter,
-        this.$router,
-        this.index,
-        this.collection
-      )
-      this.fetchDocuments()
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          this.$route
+        )
+        filterManager.save(
+          this.currentFilter,
+          this.$router,
+          this.index,
+          this.collection
+        )
+        this.loading = false
+      } catch {
+        this.$bvToast.toast(
+          'The complete error has been printed to console.', {
+          title: 'Ooops! Something went wrong.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+        })
+        this.loading = false
+      }
+      await this.fetchDocuments()
     },
     navigateToDocument() {
       const document = this.documents[0]
@@ -476,7 +488,6 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
-      this.fetchingDocuments = true
       this.$forceUpdate()
       this.indexOrCollectionNotFound = false
 
@@ -488,7 +499,7 @@ export default {
       }
       try {
         let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(this.currentFilter)
+        searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping)
         if (!searchQuery) {
           searchQuery = {}
         }
@@ -534,7 +545,6 @@ export default {
           })
         }
       }
-      this.fetchingDocuments = false
     },
 
     // PAGINATION

@@ -128,16 +128,15 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const toSearchQuery = filter => {
+export const toSearchQuery = (filter, mappings) => {
   if (!filter) {
     throw new Error('No filter specified')
   }
-
   switch (filter.active) {
     case ACTIVE_QUICK:
       return filter.quick ? formatFromQuickSearch(filter.quick) : {}
     case ACTIVE_BASIC:
-      return filter.basic ? formatFromBasicSearch(filter.basic) : {}
+      return filter.basic ? formatFromBasicSearch(filter.basic, mappings) : {}
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
     case NO_ACTIVE:
@@ -176,8 +175,8 @@ export const stripDefaultValuesFromFilter = filter => {
 }
 
 export const searchFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'Contains',
+  not_contains: 'Not Contains',
   equal: 'Equal',
   not_equal: 'Not equal',
   range: 'Range',
@@ -186,8 +185,8 @@ export const searchFilterOperands = {
 }
 
 export const realtimeFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'contains',
+  not_contains: 'Not Contains',
   regexp: 'Regexp',
   exists: 'Exists',
   missing: 'Missing'
@@ -203,9 +202,9 @@ export const basicFilterToRealtimeQuery = (groups = [[]]) => {
       })
       .map(function(filter: any) {
         switch (filter.operator) {
-          case 'match':
+          case 'contains':
             return { equals: { [filter.attribute]: filter.value } }
-          case 'not_match':
+          case 'not_contains':
             return { not: { equals: { [filter.attribute]: filter.value } } }
           case 'regexp':
             return { regexp: { [filter.attribute]: filter.value } }
@@ -289,8 +288,23 @@ export const formatSort = sorting => {
   return [{ [sorting.attribute]: { order: sorting.order } }]
 }
 
+export function buildCaseInsensitiveRegexp(searchString) {
+  return searchString
+    .split('')
+    .map(e => {
+      if ('.-'.indexOf(e) >= 0) {
+        return `\\${e}`;
+      }
+      if ('#@'.indexOf(e) >= 0) {
+        return e;
+      }
+      return `[${e.toLowerCase()}${e.toUpperCase()}]`;
+    })
+    .join('');
+}
+
 // TODO rename to basicFilterToSearchQuery
-export const formatFromBasicSearch = (groups = [[]]) => {
+export const formatFromBasicSearch = (groups = [[]], mappings) => {
   let bool: any = {}
 
   bool.should = groups.map(filters => {
@@ -300,14 +314,29 @@ export const formatFromBasicSearch = (groups = [[]]) => {
         return
       }
 
-      if (filter.operator === 'match') {
-        formattedFilter.bool.must.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
-        })
-      } else if (filter.operator === 'not_match') {
-        formattedFilter.bool.must_not.push({
-          match_phrase_prefix: { [filter.attribute]: filter.value }
-        })
+      if (filter.operator === 'contains') {
+        if (mappings[filter.attribute].type === "text") {
+          formattedFilter.bool.must.push({
+            match_phrase_prefix: { [filter.attribute]: filter.value }
+          })
+        }
+        if (mappings[filter.attribute].type === "keyword") {
+          formattedFilter.bool.must.push({
+            regexp: { [filter.attribute]: ".*" + buildCaseInsensitiveRegexp(filter.value) + ".*" }
+          })
+        }
+      } else if (filter.operator === 'not_contains') {
+        
+        if (mappings[filter.attribute].type === "text") {
+          formattedFilter.bool.must_not.push({
+            match_phrase_prefix: { [filter.attribute]: filter.value }
+          })
+        }
+        if (mappings[filter.attribute].type === "keyword") {
+          formattedFilter.bool.must_not.push({
+            regexp: { [filter.attribute]: ".*" + buildCaseInsensitiveRegexp(filter.value) + ".*" }
+          })
+        }
       } else if (filter.operator === 'equal') {
         formattedFilter.bool.must.push({
           range: {

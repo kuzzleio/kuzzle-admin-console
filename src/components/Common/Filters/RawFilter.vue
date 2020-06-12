@@ -77,6 +77,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    collectionMapping: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -127,7 +131,7 @@ export default {
         }
         if (val.basic) {
           this.rawFilter = JSON.stringify(
-            this.formatFromBasicSearch(val.basic),
+            this.formatFromBasicSearch(val.basic, this.collectionMapping),
             null,
             2
           )
