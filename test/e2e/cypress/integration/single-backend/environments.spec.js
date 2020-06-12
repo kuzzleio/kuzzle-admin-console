@@ -208,7 +208,7 @@ describe('Environments', function() {
     cy.get('[data-cy="App-online"]')
   })
 
-  it('Should be able to update an environment', () => {
+  it.only('Should be able to update an environment', () => {
     const envNames = ['local', 'another']
     const hosts = ['localhost', '123.123.123.123']
     const ports = [7512, 7514]
@@ -235,7 +235,10 @@ describe('Environments', function() {
 
     cy.get('[data-cy=CreateEnvironment-name]').type(`{selectall}${envNames[1]}`)
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.wait(1000)
+    cy.get('[data-cy="EnvironmentSwitch"]')
+      .should('be.visible')
+      .click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}`)
 
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
