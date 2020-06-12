@@ -78,6 +78,10 @@ export default {
       default: () => {
         return {}
       }
+    },
+    collectionMapping: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -129,7 +133,10 @@ export default {
         }
         if (val.basic) {
           this.rawFilter = JSON.stringify(
-            this.wrapper.basicSearchToESQuery(val.basic),
+            this.wrapper.basicSearchToESQuery(
+              val.basic,
+              this.collectionMapping
+            ),
             null,
             2
           )

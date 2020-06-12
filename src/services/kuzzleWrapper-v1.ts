@@ -21,6 +21,21 @@ let getValueAdditionalAttribute = (content, attributePath) => {
   return content[attribute]
 }
 
+function buildCaseInsensitiveRegexp(searchString) {
+  return searchString
+    .split('')
+    .map(e => {
+      if ('.-'.indexOf(e) >= 0) {
+        return `\\${e}`
+      }
+      if ('#@'.indexOf(e) >= 0) {
+        return e
+      }
+      return `[${e.toLowerCase()}${e.toUpperCase()}]`
+    })
+    .join('')
+}
+
 export class KuzzleWrapperV1 {
   version: string = '1'
   kuzzle: any = null
@@ -233,7 +248,7 @@ export class KuzzleWrapperV1 {
     }
   }
 
-  basicSearchToESQuery(groups = [[]]): object {
+  basicSearchToESQuery(groups = [[]], mappings): object {
     let bool: any = {}
 
     bool.should = groups.map(filters => {
@@ -243,14 +258,34 @@ export class KuzzleWrapperV1 {
           return
         }
 
-        if (filter.operator === 'match') {
-          formattedFilter.bool.must.push({
-            match_phrase_prefix: { [filter.attribute]: filter.value }
-          })
-        } else if (filter.operator === 'not_match') {
-          formattedFilter.bool.must_not.push({
-            match_phrase_prefix: { [filter.attribute]: filter.value }
-          })
+        if (filter.operator === 'contains') {
+          if (mappings[filter.attribute].type === 'text') {
+            formattedFilter.bool.must.push({
+              match_phrase_prefix: { [filter.attribute]: filter.value }
+            })
+          }
+          if (mappings[filter.attribute].type === 'keyword') {
+            formattedFilter.bool.must.push({
+              regexp: {
+                [filter.attribute]:
+                  '.*' + buildCaseInsensitiveRegexp(filter.value) + '.*'
+              }
+            })
+          }
+        } else if (filter.operator === 'not_contains') {
+          if (mappings[filter.attribute].type === 'text') {
+            formattedFilter.bool.must_not.push({
+              match_phrase_prefix: { [filter.attribute]: filter.value }
+            })
+          }
+          if (mappings[filter.attribute].type === 'keyword') {
+            formattedFilter.bool.must_not.push({
+              regexp: {
+                [filter.attribute]:
+                  '.*' + buildCaseInsensitiveRegexp(filter.value) + '.*'
+              }
+            })
+          }
         } else if (filter.operator === 'equal') {
           formattedFilter.bool.must.push({
             range: {

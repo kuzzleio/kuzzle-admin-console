@@ -168,7 +168,11 @@ class RunTest extends Command {
       local ? '' : `multi-backend`
     ]
     try {
-      const cy = execa('cypress', npmArgs)
+      const cy = execa('cypress', npmArgs, {
+        env: {
+          CYPRESS_RETRIES: local ? '1' : '3'
+        }
+      })
       cy.stdout.pipe(process.stdout)
       cy.stderr.pipe(process.stderr)
 

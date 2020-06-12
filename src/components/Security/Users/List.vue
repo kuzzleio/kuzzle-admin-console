@@ -273,6 +273,7 @@ export default {
       let searchQuery = null
       searchQuery = filterManager.toSearchQuery(
         this.currentFilter,
+        this.collectionMapping,
         this.wrapper
       )
       if (!searchQuery) {

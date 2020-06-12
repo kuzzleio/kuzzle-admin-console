@@ -128,7 +128,7 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const toSearchQuery = (filter, kuzzleWrapper) => {
+export const toSearchQuery = (filter, mappings, kuzzleWrapper) => {
   if (!filter) {
     throw new Error('No filter specified')
   }
@@ -144,7 +144,7 @@ export const toSearchQuery = (filter, kuzzleWrapper) => {
         : {}
     case ACTIVE_BASIC:
       return filter.basic
-        ? kuzzleWrapper.basicSearchToESQuery(filter.basic)
+        ? kuzzleWrapper.basicSearchToESQuery(filter.basic, mappings)
         : {}
     case ACTIVE_RAW:
       return filter.raw ? rawFilterToSearchQuery(filter.raw) : {}
@@ -184,8 +184,8 @@ export const stripDefaultValuesFromFilter = filter => {
 }
 
 export const searchFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'Contains',
+  not_contains: 'Not Contains',
   equal: 'Equal',
   not_equal: 'Not equal',
   range: 'Range',
@@ -194,8 +194,8 @@ export const searchFilterOperands = {
 }
 
 export const realtimeFilterOperands = {
-  match: 'Match',
-  not_match: 'Not Match',
+  contains: 'contains',
+  not_contains: 'Not Contains',
   regexp: 'Regexp',
   exists: 'Exists',
   missing: 'Missing'
@@ -211,9 +211,9 @@ export const basicFilterToRealtimeQuery = (groups = [[]]) => {
       })
       .map(function(filter: any) {
         switch (filter.operator) {
-          case 'match':
+          case 'contains':
             return { equals: { [filter.attribute]: filter.value } }
-          case 'not_match':
+          case 'not_contains':
             return { not: { equals: { [filter.attribute]: filter.value } } }
           case 'regexp':
             return { regexp: { [filter.attribute]: filter.value } }

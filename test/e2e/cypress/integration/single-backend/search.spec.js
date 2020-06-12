@@ -94,7 +94,7 @@ describe('Search', function() {
     cy.url().should('contain', 'active=basic')
     cy.url().should('contain', 'attribute')
     cy.url().should('contain', 'job')
-    cy.url().should('contain', 'match')
+    cy.url().should('contain', 'contains')
     cy.url().should('contain', 'Blockchain')
   })
 
