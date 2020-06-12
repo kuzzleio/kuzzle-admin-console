@@ -58,7 +58,7 @@ describe('Roles', () => {
     cy.get('textarea.ace_text-input')
       .clear({ force: true })
       .type(
-        `{
+        `{selectall}{
 "controllers": {
 "document": {
 "actions": {
