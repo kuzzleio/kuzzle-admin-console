@@ -24,14 +24,14 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 function buildCaseInsensitiveRegexp(searchString) {
   return searchString
     .split('')
-    .map(e => {
-      if ('.-'.indexOf(e) >= 0) {
-        return `\\${e}`
+    .map(letter => {
+      if ('.-'.indexOf(letter) >= 0) {
+        return `\\${letter}`
       }
-      if ('#@'.indexOf(e) >= 0) {
-        return e
+      if ('#@'.indexOf(letter) >= 0) {
+        return letter
       }
-      return `[${e.toLowerCase()}${e.toUpperCase()}]`
+      return `[${letter.toLowerCase()}${letter.toUpperCase()}]`
     })
     .join('')
 }
@@ -258,6 +258,7 @@ export class KuzzleWrapperV1 {
           return
         }
 
+        // TODO Convert this into a big switch/case
         if (filter.operator === 'contains') {
           if (mappings[filter.attribute].type === 'text') {
             formattedFilter.bool.must.push({
