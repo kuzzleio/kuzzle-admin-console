@@ -7,7 +7,6 @@
         </b-col>
       </b-row>
     </template>
-
     <slot v-if="isCollectionEmpty" name="emptySet" />
     <template v-if="!isCollectionEmpty && !loading">
       <b-row class="justify-content-md-center" no-gutters>
@@ -272,15 +271,16 @@ export default {
       }
 
       let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping)
+      searchQuery = filterManager.toSearchQuery(
+        this.currentFilter,
+        this.collectionMapping,
+        this.wrapper
+      )
       if (!searchQuery) {
         searchQuery = {}
       }
 
-      let sorting = ['_id'] // by default, sort on _id: prevent random order
-      if (this.currentFilter.sorting) {
-        sorting = filterManager.toSort(this.currentFilter)
-      }
+      const sorting = filterManager.toSort(this.currentFilter)
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery

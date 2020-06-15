@@ -186,7 +186,7 @@ export default {
 
       try {
         if (this.id) {
-          await this.$kuzzle.security.replaceUser(this.kuid, {
+          await this.wrapper.performReplaceUser(this.kuid, {
             profileIds: this.addedProfiles,
             ...JSON.parse(this.customContentValue)
           })
@@ -213,7 +213,7 @@ export default {
             })
           )
         } else {
-          await this.$kuzzle.security.createUser(this.kuid, {
+          await this.wrapper.performCreateUser(this.kuid, {
             content: {
               profileIds: this.addedProfiles,
               ...JSON.parse(this.customContentValue)

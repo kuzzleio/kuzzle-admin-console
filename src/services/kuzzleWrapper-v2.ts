@@ -1,6 +1,12 @@
 import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
 import { KuzzleWrapperV1 } from './kuzzleWrapper-v1'
 
+// NOTE - We instantiate a new Kuzzle SDK with Websocket protocol
+// pointing to `localhost` because we cannot instantiate the `WebSocket`
+// class with `null` argument. The SDK will not initiate a connection to
+// `localhost` as the call to `connect()` is performed in the `connectToEnvironment`
+// method, which instantiates a new `WebSocket` class with the hostname
+// corresponding to the selected environment.
 export const kuzzle = new Kuzzle(new WebSocket('localhost'))
 
 export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
@@ -21,6 +27,57 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
     })
 
     return kuzzle.connect()
+  }
+
+  async getMappingDocument(collection, index, includeKuzzleMeta = true) {
+    // @todo Use the SDK method after
+    // https://github.com/kuzzleio/sdk-javascript/pull/507 is merged
+    const request = {
+      controller: 'collection',
+      action: 'getMapping',
+      index,
+      collection,
+      includeKuzzleMeta
+    }
+
+    const response = await this.kuzzle.query(request)
+
+    return response.result
+  }
+
+  quickSearchToESQuery(searchTerm): object {
+    if (!searchTerm) {
+      return {}
+    }
+
+    return {
+      query: {
+        bool: {
+          should: [
+            {
+              multi_match: {
+                query: searchTerm,
+                type: 'phrase_prefix',
+                fields: ['*']
+              }
+            },
+            {
+              match: {
+                _id: searchTerm
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+
+  performCreateUser(kuid, body) {
+    return this.kuzzle.security.createUser(kuid, body)
+  }
+
+  performReplaceUser(kuid, body) {
+    return this.kuzzle.security.replaceUser(kuid, body)
   }
 }
 

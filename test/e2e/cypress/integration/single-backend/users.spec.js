@@ -288,7 +288,7 @@ describe('Users', function() {
   })
 
   it('Should be able to create a new user with custom KUID', () => {
-    const kuid = 'dummy'
+    const kuid = 'trippy'
     const credentials = {
       username: 'trippy',
       password: 'martinez'

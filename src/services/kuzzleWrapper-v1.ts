@@ -2,6 +2,12 @@ import { Kuzzle, WebSocket } from 'kuzzle-sdk-v6'
 import Promise from 'bluebird'
 import omit from 'lodash/omit'
 
+// NOTE - We instantiate a new Kuzzle SDK with Websocket protocol
+// pointing to `localhost` because we cannot instantiate the `WebSocket`
+// class with `null` argument. The SDK will not initiate a connection to
+// `localhost` as the call to `connect()` is performed in the `connectToEnvironment`
+// method, which instantiates a new `WebSocket` class with the hostname
+// corresponding to the selected environment.
 export const kuzzle = new Kuzzle(new WebSocket('localhost'))
 
 // Helper for performSearch
@@ -14,13 +20,21 @@ let getValueAdditionalAttribute = (content, attributePath) => {
 
   return content[attribute]
 }
-const formatMeta = _kuzzle_info => ({
-  author: _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
-  updater:
-    _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
-  createdAt: _kuzzle_info.createdAt,
-  updatedAt: _kuzzle_info.updatedAt
-})
+
+function buildCaseInsensitiveRegexp(searchString) {
+  return searchString
+    .split('')
+    .map(letter => {
+      if ('.-'.indexOf(letter) >= 0) {
+        return `\\${letter}`
+      }
+      if ('#@'.indexOf(letter) >= 0) {
+        return letter
+      }
+      return `[${letter.toLowerCase()}${letter.toUpperCase()}]`
+    })
+    .join('')
+}
 
 export class KuzzleWrapperV1 {
   version: string = '1'
@@ -28,6 +42,17 @@ export class KuzzleWrapperV1 {
 
   constructor(sdk) {
     this.kuzzle = sdk
+  }
+
+  formatMeta(_kuzzle_info) {
+    return {
+      author:
+        _kuzzle_info.author === '-1' ? 'Anonymous (-1)' : _kuzzle_info.author,
+      updater:
+        _kuzzle_info.updater === '-1' ? 'Anonymous (-1)' : _kuzzle_info.updater,
+      createdAt: _kuzzle_info.createdAt,
+      updatedAt: _kuzzle_info.updatedAt
+    }
   }
 
   disconnect() {
@@ -67,13 +92,12 @@ export class KuzzleWrapperV1 {
       controller: 'collection',
       action: 'getMapping',
       index,
-      collection,
-      includeKuzzleMeta: true
+      collection
     }
 
     const response = await this.kuzzle.query(request)
 
-    return response.result
+    return response.result[index].mappings[collection]
   }
 
   async performDeleteDocuments(index, collection, ids) {
@@ -122,7 +146,7 @@ export class KuzzleWrapperV1 {
       const formattedUser: any = {
         id: user._id,
         ...user.content,
-        _kuzzle_info: formatMeta(user.content._kuzzle_info),
+        _kuzzle_info: this.formatMeta(user.content._kuzzle_info),
         credentials: {}
       }
       for (const strategy of strategies) {
@@ -150,6 +174,18 @@ export class KuzzleWrapperV1 {
   updateMappingUsers(newMapping) {
     return this.kuzzle.security.updateUserMapping({
       properties: newMapping
+    })
+  }
+
+  performCreateUser(kuid, body) {
+    return this.kuzzle.security.createUser(kuid, body, {
+      refresh: 'wait_for'
+    })
+  }
+
+  performReplaceUser(kuid, body) {
+    return this.kuzzle.security.replaceUser(kuid, body, {
+      refresh: 'wait_for'
     })
   }
 
@@ -185,6 +221,140 @@ export class KuzzleWrapperV1 {
     })
   }
 
+  quickSearchToESQuery(searchTerm): object {
+    if (!searchTerm) {
+      return {}
+    }
+
+    return {
+      query: {
+        bool: {
+          should: [
+            {
+              match_phrase_prefix: {
+                _all: {
+                  query: searchTerm
+                }
+              }
+            },
+            {
+              match: {
+                _id: searchTerm
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+
+  basicSearchToESQuery(groups = [[]], mappings): object {
+    let bool: any = {}
+
+    bool.should = groups.map(filters => {
+      let formattedFilter: any = { bool: { must: [], must_not: [] } }
+      filters.forEach((filter: any) => {
+        if (filter.attribute === null) {
+          return
+        }
+
+        // TODO Convert this into a big switch/case
+        if (filter.operator === 'contains') {
+          if (mappings[filter.attribute].type === 'text') {
+            formattedFilter.bool.must.push({
+              match_phrase_prefix: { [filter.attribute]: filter.value }
+            })
+          }
+          if (mappings[filter.attribute].type === 'keyword') {
+            formattedFilter.bool.must.push({
+              regexp: {
+                [filter.attribute]:
+                  '.*' + buildCaseInsensitiveRegexp(filter.value) + '.*'
+              }
+            })
+          }
+        } else if (filter.operator === 'not_contains') {
+          if (mappings[filter.attribute].type === 'text') {
+            formattedFilter.bool.must_not.push({
+              match_phrase_prefix: { [filter.attribute]: filter.value }
+            })
+          }
+          if (mappings[filter.attribute].type === 'keyword') {
+            formattedFilter.bool.must_not.push({
+              regexp: {
+                [filter.attribute]:
+                  '.*' + buildCaseInsensitiveRegexp(filter.value) + '.*'
+              }
+            })
+          }
+        } else if (filter.operator === 'equal') {
+          formattedFilter.bool.must.push({
+            range: {
+              [filter.attribute]: {
+                gte: filter.value,
+                lte: filter.value
+              }
+            }
+          })
+        } else if (filter.operator === 'not_equal') {
+          formattedFilter.bool.must_not.push({
+            range: {
+              [filter.attribute]: {
+                gte: filter.value,
+                lte: filter.value
+              }
+            }
+          })
+        } else if (filter.operator === 'range') {
+          const range = { range: {} }
+          if (filter.gt_value && filter.lt_value) {
+            range.range = {
+              [filter.attribute]: {
+                gt: filter.gt_value,
+                lt: filter.lt_value
+              }
+            }
+          } else if (filter.gt_value && !filter.lt_value) {
+            range.range = {
+              [filter.attribute]: {
+                gt: filter.gt_value
+              }
+            }
+          } else {
+            range.range = {
+              [filter.attribute]: {
+                lt: filter.lt_value
+              }
+            }
+          }
+          formattedFilter.bool.must.push(range)
+        } else if (filter.operator === 'exists') {
+          const exists = {
+            exists: {
+              field: filter.attribute
+            }
+          }
+          formattedFilter.bool.must.push(exists)
+        } else if (filter.operator === 'not_exists') {
+          const exists = {
+            exists: {
+              field: filter.attribute
+            }
+          }
+          formattedFilter.bool.must_not.push(exists)
+        }
+      })
+
+      return formattedFilter
+    })
+
+    if (bool.should.length === 0) {
+      return {}
+    }
+
+    return { query: { bool } }
+  }
+
   async performSearchDocuments(
     collection,
     index,
@@ -207,7 +377,7 @@ export class KuzzleWrapperV1 {
       id: d._id,
       ...d._source,
       _kuzzle_info: d._source._kuzzle_info
-        ? formatMeta(d._source._kuzzle_info)
+        ? this.formatMeta(d._source._kuzzle_info)
         : undefined
     }))
 

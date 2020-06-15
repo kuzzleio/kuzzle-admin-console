@@ -39,7 +39,7 @@
             <li>
               <a
                 title="You are not allowed to delete this document"
-                :class="{ 'text-secondary': !canDelete }"
+                :class="{ disabled: !canDelete }"
                 @click="deleteCurrentDocument()"
               >
                 Delete

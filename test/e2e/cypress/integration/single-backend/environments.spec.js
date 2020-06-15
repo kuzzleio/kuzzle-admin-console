@@ -235,7 +235,10 @@ describe('Environments', function() {
 
     cy.get('[data-cy=CreateEnvironment-name]').type(`{selectall}${envNames[1]}`)
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.wait(1000)
+    cy.get('[data-cy="EnvironmentSwitch"]')
+      .should('be.visible')
+      .click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}`)
 
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
@@ -312,6 +315,35 @@ describe('Environments', function() {
     cy.visit('/')
     cy.contains('Ooops! Something went wrong while loading the connections.')
     cy.url().should('contain', 'create-connection')
+  })
+
+  it('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
+    cy.initLocalEnv(backendVersion)
+    cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
+    cy.wait(5000)
+    cy.visit('/')
+    cy.get('[data-cy=App-offline]')
+      .should('be.visible')
+      .should('contain', 'Connecting to Kuzzle')
+    cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
+    cy.waitForService('http://localhost:7512')
+    cy.get('[data-cy=App-online]').should('be.visible')
+  })
+
+  it('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
+    cy.initLocalEnv(backendVersion)
+    cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
+    cy.waitForService('http://localhost:7512')
+    cy.visit('/')
+    cy.get('[data-cy=App-online]').should('be.visible')
+    cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
+    cy.wait(3000)
+    cy.get('.toast-header')
+      .should('be.visible')
+      .should('contain', 'Offline')
+    cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
+    cy.waitForService('http://localhost:7512')
+    cy.get('.toast-header').should('not.be.visible')
   })
 
   it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {

@@ -49,6 +49,7 @@
 <script>
 import JsonEditor from '../../Common/JsonEditor'
 import { formatFromBasicSearch } from '../../../services/filterManager'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -90,6 +91,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     filterState() {
       try {
         return JSON.parse(this.rawFilter)
@@ -131,7 +133,10 @@ export default {
         }
         if (val.basic) {
           this.rawFilter = JSON.stringify(
-            this.formatFromBasicSearch(val.basic, this.collectionMapping),
+            this.wrapper.basicSearchToESQuery(
+              val.basic,
+              this.collectionMapping
+            ),
             null,
             2
           )

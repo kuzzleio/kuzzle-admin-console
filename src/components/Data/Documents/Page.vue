@@ -438,11 +438,10 @@ export default {
         )
         this.loading = false
       } catch {
-        this.$bvToast.toast(
-          'The complete error has been printed to console.', {
+        this.$bvToast.toast('The complete error has been printed to console.', {
           title: 'Ooops! Something went wrong.',
           variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
+          toaster: 'b-toaster-bottom-right'
         })
         this.loading = false
       }
@@ -499,7 +498,11 @@ export default {
       }
       try {
         let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping)
+        searchQuery = filterManager.toSearchQuery(
+          this.currentFilter,
+          this.collectionMapping,
+          this.wrapper
+        )
         if (!searchQuery) {
           searchQuery = {}
         }

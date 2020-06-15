@@ -14,7 +14,9 @@ export const getters = createGetters<KuzzleState>()({
       case 2:
         return kuzzleV2.wrapper
       default:
-        return kuzzleV2.wrapper
+        throw new Error(
+          `No Kuzzle wrapper found for version ${getters.currentEnvironment.backendMajorVersion}`
+        )
     }
   },
   $kuzzle(state, getters) {
@@ -27,7 +29,9 @@ export const getters = createGetters<KuzzleState>()({
       case 2:
         return kuzzleV2.kuzzle
       default:
-        return kuzzleV2.kuzzle
+        throw new Error(
+          `No Kuzzle SDK found for version ${getters.currentEnvironment.backendMajorVersion}`
+        )
     }
   },
   currentEnvironment(state, getters) {
