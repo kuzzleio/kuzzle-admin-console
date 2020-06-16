@@ -34,33 +34,6 @@ const wait = async ms =>
     }, ms)
   })
 
-const checkEnvironment = e => {
-  if (!e.name) {
-    throw new Error(`Invalid environment name: ${e.name}`)
-  }
-  if (!e.host) {
-    throw new Error(`Invalid environment host: ${e.host}`)
-  }
-  if (!e.port) {
-    throw new Error(`Invalid environment port: ${e.port}`)
-  }
-  if (typeof e.port !== 'number') {
-    throw new Error(
-      `Type of environment port is invalid: ${e.port} (must be a number)`
-    )
-  }
-  if (e.ssl === undefined || e.ssl === null) {
-    throw new Error('SSL parameter not found (must be a boolean)')
-  }
-  if (!e.color) {
-    throw new Error(`Invalid environment color: ${e.color}`)
-  }
-  if (!envColors.includes(e.color)) {
-    throw new Error(`Invalid environment color: ${e.color}`)
-  }
-  return true
-}
-
 const mutations = createMutations<KuzzleState>()({
   createEnvironment(state, payload) {
     if (!payload) {
@@ -70,11 +43,9 @@ const mutations = createMutations<KuzzleState>()({
       return
     }
     try {
-      if (checkEnvironment(payload.environment)) {
-        state.environments = {
-          ...state.environments,
-          [payload.id]: payload.environment
-        }
+      state.environments = {
+        ...state.environments,
+        [payload.id]: payload.environment
       }
     } catch (error) {
       throw new Error(`[${payload.id}] - ${error.message}`)
