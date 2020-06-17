@@ -310,7 +310,7 @@ describe('Environments', function() {
     })
   })
 
-  it.only('Should open edit modal when an environment is malformed', () => {
+  it('Should open edit modal when an environment is malformed', () => {
     localStorage.setItem(
       'environments',
       JSON.stringify({
