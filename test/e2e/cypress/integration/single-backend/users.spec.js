@@ -451,7 +451,7 @@ describe('Users', function() {
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .clear({ force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
 "address": {
