@@ -11,22 +11,7 @@ describe('Users', function() {
 
   beforeEach(function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetSecurity`)
-    // create environment
-    const validEnvName = 'valid'
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: 'anonymous'
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
   it('Should be able to search users via the quick search', () => {
@@ -303,7 +288,7 @@ describe('Users', function() {
   })
 
   it('Should be able to create a new user with custom KUID', () => {
-    const kuid = 'dummy'
+    const kuid = 'trippy'
     const credentials = {
       username: 'trippy',
       password: 'martinez'

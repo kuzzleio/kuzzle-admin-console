@@ -78,7 +78,6 @@ export default {
       if (!this.user) {
         return 'Not authentified'
       }
-
       if (this.user.id === -1) {
         return 'Anonymous'
       }

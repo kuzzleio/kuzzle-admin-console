@@ -3,6 +3,8 @@ const fmt = word => {
 }
 
 describe('Environments', function() {
+  const backendVersion = Cypress.env('BACKEND_VERSION') || 2
+
   this.beforeEach(() => {
     localStorage.removeItem('environments')
   })
@@ -17,8 +19,48 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy="Environment-SubmitButton"]').click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
+  })
+
+  it('Should not be able to create an environment with the same name of an existing one', () => {
+    const localEnvName = 'local'
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [localEnvName]: {
+          name: localEnvName,
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          backendMajorVersion: backendVersion,
+          token: null
+        }
+      })
+    )
+    cy.visit('/')
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy=EnvironmentSwitch-newConnectionBtn]').click()
+    cy.get('[data-cy="CreateEnvironment-name"]').type(localEnvName, {
+      force: true
+    })
+    cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
+      force: true
+    })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.get('.b-toast')
+      .should('be.visible')
+      .should(
+        'contain',
+        `An environment with name ${localEnvName} already exists. Please specify a different one.`
+      )
   })
 
   it('Should be able to delete environments', function() {
@@ -32,6 +74,7 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
+          backendMajorVersion: backendVersion || 2,
           token: null
         },
         [envNames[1]]: {
@@ -40,6 +83,7 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
+          backendMajorVersion: backendVersion || 2,
           token: null
         }
       })
@@ -69,13 +113,17 @@ describe('Environments', function() {
   })
 
   it('Should be able to set the color of an environment', function() {
+    const envName = 'local'
     cy.visit('/')
-    cy.get('[data-cy="CreateEnvironment-name"]').type('local', {
+    cy.get('[data-cy="CreateEnvironment-name"]').type(envName, {
       force: true
     })
     cy.get('[data-cy="CreateEnvironment-host"]').type('localhost', {
       force: true
     })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy="EnvColor--green"]')
       .as('colorEl')
       .click()
@@ -90,7 +138,8 @@ describe('Environments', function() {
       force: true
     })
     cy.wait(1000)
-
+    localStorage.setItem('currentEnv', envName)
+    cy.visit('/')
     cy.get('[data-cy="LoginAsAnonymous-Btn"]').click()
 
     cy.get('nav').should($nav => {
@@ -110,6 +159,7 @@ describe('Environments', function() {
           host: 'localhost',
           ssl: false,
           port: 7512,
+          backendMajorVersion: backendVersion,
           token: null
         }
       })
@@ -127,6 +177,9 @@ describe('Environments', function() {
     cy.get('[data-cy="CreateEnvironment-host"]').type('unreachable-host', {
       force: true
     })
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy="EnvironmentCreateModal-submit"]').click()
 
     cy.get('[data-cy="EnvironmentSwitch"]').click()
@@ -168,6 +221,7 @@ describe('Environments', function() {
           host: hosts[0],
           ssl: false,
           port: ports[0],
+          backendMajorVersion: backendVersion,
           token: null
         }
       })
@@ -181,7 +235,10 @@ describe('Environments', function() {
 
     cy.get('[data-cy=CreateEnvironment-name]').type(`{selectall}${envNames[1]}`)
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.wait(1000)
+    cy.get('[data-cy="EnvironmentSwitch"]')
+      .should('be.visible')
+      .click()
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}`)
 
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(envNames[1])}-edit`).click()
@@ -258,5 +315,52 @@ describe('Environments', function() {
     cy.visit('/')
     cy.contains('Ooops! Something went wrong while loading the connections.')
     cy.url().should('contain', 'create-connection')
+  })
+
+  it('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
+    cy.initLocalEnv(backendVersion)
+    cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
+    cy.wait(5000)
+    cy.visit('/')
+    cy.get('[data-cy=App-offline]')
+      .should('be.visible')
+      .should('contain', 'Connecting to Kuzzle')
+    cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
+    cy.waitForService('http://localhost:7512')
+    cy.get('[data-cy=App-online]').should('be.visible')
+  })
+
+  it('Should display a toast when the backend goes down and hide it when the backend goes up again', () => {
+    cy.initLocalEnv(backendVersion)
+    cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
+    cy.waitForService('http://localhost:7512')
+    cy.visit('/')
+    cy.get('[data-cy=App-online]').should('be.visible')
+    cy.task('doco', { version: backendVersion, docoArgs: ['down'] })
+    cy.wait(3000)
+    cy.get('.toast-header')
+      .should('be.visible')
+      .should('contain', 'Offline')
+    cy.task('doco', { version: backendVersion, docoArgs: ['up'] })
+    cy.waitForService('http://localhost:7512')
+    cy.get('.toast-header').should('not.be.visible')
+  })
+
+  it('Should see an error when specifying the wrong backend version and should be able to fix it', () => {
+    const wrongBackendVersion = backendVersion === 2 ? 1 : 2
+    cy.initLocalEnv(wrongBackendVersion)
+    cy.visit('/')
+    cy.get('[data-cy=App-connectionError]')
+      .should('be.visible')
+      .should('contain', 'Incompatible SDK client.')
+
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get(`[data-cy="EnvironmentSwitch-env_valid-edit"]`).click()
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
+    cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
+    cy.get('[data-cy=App-online]').should('be.visible')
+    cy.contains('Connected to')
   })
 })

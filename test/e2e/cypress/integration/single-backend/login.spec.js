@@ -5,20 +5,7 @@ const admin = {
 const validEnvName = 'valid'
 describe('Login', function() {
   beforeEach(() => {
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: null
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'), null)
   })
 
   it('Should be able to login as anonymous', () => {
@@ -91,6 +78,7 @@ describe('Login', function() {
             host: 'localhost',
             ssl: false,
             port: 7512,
+            backendMajorVersion: Cypress.env('BACKEND_VERSION') || '2',
             token: response.body.result.jwt
           }
         })

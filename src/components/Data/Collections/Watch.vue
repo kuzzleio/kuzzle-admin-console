@@ -236,7 +236,6 @@
 
 <script>
 import Headline from '../../Materialize/Headline'
-import collapsible from '../../../directives/Materialize/collapsible.directive'
 import Notification from '../Realtime/Notification'
 import CollectionDropdown from '../Collections/Dropdown'
 import JsonEditor from '../../Common/JsonEditor'
@@ -246,11 +245,9 @@ import JsonFormatter from '../../../directives/json-formatter.directive'
 import moment from 'moment'
 import { isEqual } from 'lodash'
 import { mapGetters } from 'vuex'
-
 export default {
   name: 'CollectionWatch',
   directives: {
-    collapsible,
     JsonFormatter
   },
   components: {
@@ -276,6 +273,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canSubscribe']),
     hasFilter() {
       return (

@@ -1,6 +1,5 @@
 import Promise from 'bluebird'
 import { mergeMetaAttributes } from '../../../services/collectionHelper'
-import Vue from 'vue'
 import { formatSchema } from '../../../services/collectionHelper'
 import { CollectionState, CollectionActions } from './types'
 import { createModule, createMutations, createActions } from 'direct-vuex'
@@ -57,9 +56,9 @@ export const mutations = createMutations<CollectionState>()({
 
 const actions = createActions({
   createCollection(context, { index, collection, mapping, dynamic }) {
-    const { state } = collectionActionContext(context)
+    const { state, rootGetters } = collectionActionContext(context)
 
-    return Vue.prototype.$kuzzle.collection.create(
+    return rootGetters.kuzzle.$kuzzle.collection.create(
       index,
       collection,
       mergeMetaAttributes({
@@ -70,13 +69,13 @@ const actions = createActions({
     )
   },
   updateCollection(context, { name, index, mapping, dynamic, realtimeOnly }) {
-    const { state } = collectionActionContext(context)
+    const { state, rootGetters } = collectionActionContext(context)
 
     if (realtimeOnly) {
       return Promise.resolve()
     }
 
-    return Vue.prototype.$kuzzle.query({
+    return rootGetters.kuzzle.$kuzzle.query({
       controller: 'collection',
       action: 'updateMapping',
       collection: name,
@@ -96,9 +95,10 @@ const actions = createActions({
       return
     }
 
-    let mappings = await Vue.prototype.$kuzzle.collection.getMapping(
+    let mappings = await rootGetters.kuzzle.wrapper.getMappingDocument(
+      collection,
       index,
-      collection
+      false
     )
     let schema = {}
     let allowForm = false
@@ -158,8 +158,9 @@ const actions = createActions({
     localStorage.setItem('defaultJsonView', JSON.stringify(indexes))
     return commit.setCollectionDefaultViewJson({ jsonView })
   },
-  async clearCollection({ state }, { index, collection }) {
-    await Vue.prototype.$kuzzle.query({
+  async clearCollection(context, { index, collection }) {
+    const { rootGetters } = collectionActionContext(context)
+    await rootGetters.kuzzle.$kuzzle.query({
       controller: 'collection',
       action: 'truncate',
       index,

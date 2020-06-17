@@ -149,15 +149,15 @@ export default {
     displayAdvancedFilters() {
       this.$emit('display-advanced-filters')
     },
-    inputSubmit () {
+    inputSubmit() {
       this.$emit('enter-pressed')
     }
   },
   watch: {
-    value () {
+    value() {
       this.$emit('input', this.value)
 
-    if (this.submitOnType) {
+      if (this.submitOnType) {
         this.submitSearch()
       }
     }

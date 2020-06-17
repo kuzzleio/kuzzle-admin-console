@@ -30,11 +30,10 @@
 </template>
 
 <script>
-import { getMappingUsers } from '../../../../services/kuzzleWrapper'
 import Basic from './Basic'
 import CredentialsSelector from './CredentialsSelector'
 import CustomData from './CustomData'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'StepsContent',
   components: {
@@ -55,6 +54,9 @@ export default {
       customContentMapping: {}
     }
   },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper'])
+  },
   async mounted() {
     this.loading = true
 
@@ -70,7 +72,7 @@ export default {
       })
       this.credentialsMapping = credentialsMapping
 
-      const { mapping } = await getMappingUsers()
+      const { mapping } = await this.wrapper.getMappingUsers()
       if (mapping) {
         this.customContentMapping = mapping
         delete this.customContentMapping.profileIds

@@ -258,9 +258,6 @@ export default {
     dispatchToggle() {
       this.$emit('toggle-all')
     },
-    setBasicFilter(value) {
-      this.$store.direct.commit.crudlDocument.setBasicFilter(value)
-    },
     deleteBulk() {
       this.bulkDeleteIsOpen = true
     },

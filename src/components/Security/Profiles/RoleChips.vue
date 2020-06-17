@@ -27,8 +27,7 @@
 
 <script type="text/javascript">
 import MSelect from '../../Common/MSelect'
-import { performSearchRoles } from '../../../services/kuzzleWrapper'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'RoleChips',
   components: {
@@ -45,6 +44,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     availableRoles() {
       return this.roleList.filter(role => {
         return this.addedRoles.indexOf(role.id) === -1
@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     fetchRoleList() {
-      return performSearchRoles().then(result => {
+      return this.wrapper.performSearchRoles().then(result => {
         result.documents.forEach(role => {
           this.roleList.push(role)
         })

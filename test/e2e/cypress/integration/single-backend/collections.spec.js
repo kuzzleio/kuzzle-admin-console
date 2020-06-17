@@ -8,22 +8,7 @@ describe('Collection management', function() {
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
     cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
 
-    // create environment
-    const validEnvName = 'valid'
-    localStorage.setItem(
-      'environments',
-      JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
-          color: 'darkblue',
-          host: 'localhost',
-          ssl: false,
-          port: 7512,
-          token: 'anonymous'
-        }
-      })
-    )
-    localStorage.setItem('currentEnv', validEnvName)
+    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
   it('Should be able to create a collection and access it', function() {
@@ -112,8 +97,8 @@ describe('Collection management', function() {
 
     cy.get('[data-cy="Treeview-item-index--anotherindex"]').click()
     cy.get('[data-cy="CollectionList-table"]').contains('foo')
-   })
-  
+  })
+
   it('Should be able to autofocus collection search', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/foobar`)

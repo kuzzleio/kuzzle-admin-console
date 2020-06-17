@@ -75,6 +75,13 @@
           :unchecked-value="false"
         ></b-form-checkbox>
       </b-form-group>
+      <b-form-group label="Kuzzle version" label-cols-sm="4" label-cols-lg="3">
+        <b-form-select
+          data-cy="CreateEnvironment-backendVersion"
+          v-model="environment.backendMajorVersion"
+          :options="majorVersions"
+        ></b-form-select>
+      </b-form-group>
 
       <b-row>
         <b-col sm="4" lg="3">
@@ -108,10 +115,7 @@
 </template>
 
 <script>
-import {
-  DEFAULT_COLOR,
-  envColors
-} from '../../../vuex/modules/common/kuzzle/store'
+import { DEFAULT_COLOR, envColors } from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
 
 export default {
@@ -120,6 +124,13 @@ export default {
   props: ['environmentId'],
   data() {
     return {
+      majorVersions: [
+        { value: 1, text: 'v1.x' },
+        {
+          value: 2,
+          text: 'v2.x'
+        }
+      ],
       errors: {
         name: false,
         host: false,
@@ -130,9 +141,9 @@ export default {
         host: null,
         port: 7512,
         color: DEFAULT_COLOR,
-        ssl: useHttps
+        ssl: useHttps,
+        backendMajorVersion: 2
       },
-
       submitting: false
     }
   },
@@ -220,12 +231,16 @@ export default {
       this.environment.port = this.environments[this.environmentId].port
       this.environment.color = this.environments[this.environmentId].color
       this.environment.ssl = this.environments[this.environmentId].ssl
+      this.environment.backendMajorVersion = this.environments[
+        this.environmentId
+      ].backendMajorVersion
     } else {
       this.environment.name = null
       this.environment.host = null
       this.environment.port = 7512
       this.environment.color = DEFAULT_COLOR
       this.environment.ssl = useHttps
+      this.environment.backendMajorVersion = 2
     }
   },
   methods: {
@@ -248,7 +263,8 @@ export default {
               color: this.environment.color,
               host: this.environment.host,
               port: parseInt(this.environment.port),
-              ssl: this.environment.ssl
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion
             }
           })
         } else {
@@ -259,24 +275,22 @@ export default {
               color: this.environment.color,
               host: this.environment.host,
               port: parseInt(this.environment.port),
-              ssl: this.environment.ssl
+              ssl: this.environment.ssl,
+              backendMajorVersion: this.environment.backendMajorVersion
             }
           })
         }
       } catch (error) {
         this.$log.error(error.message)
-        this.$bvToast.toast(
-          'The complete error has been dumped to the console.',
-          {
-            title:
-              'Ooops! Something went wrong while creating the new environment.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
+        this.$bvToast.toast(error.message, {
+          title:
+            'Ooops! Something went wrong while creating the new environment.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true,
+          dismissible: true,
+          noAutoHide: true
+        })
       }
       this.submitting = false
     },

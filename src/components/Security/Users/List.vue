@@ -149,7 +149,7 @@ import DeleteModal from './DeleteModal'
 import Filters from '../../Common/Filters/Filters'
 import UserItem from './UserItem'
 import * as filterManager from '../../../services/filterManager'
-import { performDeleteUsers } from '../../../services/kuzzleWrapper'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'UserList',
@@ -192,6 +192,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     isDocumentListFiltered() {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
@@ -270,20 +271,21 @@ export default {
       }
 
       let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(this.currentFilter)
+      searchQuery = filterManager.toSearchQuery(
+        this.currentFilter,
+        this.collectionMapping,
+        this.wrapper
+      )
       if (!searchQuery) {
         searchQuery = {}
       }
 
-      let sorting = ['_id'] // by default, sort on _id: prevent random order
-      if (this.currentFilter.sorting) {
-        sorting = filterManager.toSort(this.currentFilter)
-      }
+      const sorting = filterManager.toSort(this.currentFilter)
 
       // TODO: refactor how search is done
       // Execute search with corresponding searchQuery
       try {
-        const res = await this.performSearch(
+        const res = await this.wrapper.performSearchUsers(
           this.collection,
           this.index,
           searchQuery,
@@ -319,7 +321,7 @@ export default {
       this.deleteModalIsLoading = true
       this.loading = true
       try {
-        await performDeleteUsers(
+        await this.wrapper.performDeleteUsers(
           this.index,
           this.collection,
           this.candidatesForDeletion
@@ -327,6 +329,14 @@ export default {
         this.deleteModalIsLoading = false
         this.$bvModal.hide('modal-delete-users')
         await this.fetchDocuments()
+        if (this.$store.direct.getters.auth.adminAlreadyExists) {
+          try {
+            await this.$store.direct.dispatch.auth.checkFirstAdmin()
+          } catch (err) {
+            this.$log.error(err)
+            this.setError(err.message)
+          }
+        }
       } catch (e) {
         this.$log.error(e)
         this.deleteModalIsLoading = false

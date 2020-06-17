@@ -26,8 +26,66 @@
 
 import 'cypress-file-upload'
 import { antiGlitchOverlayTimeout } from '../../../../src/utils.ts'
+import axios from 'axios'
 
 Cypress.Commands.add('waitOverlay', () => {
   cy.visit('/')
   cy.wait(antiGlitchOverlayTimeout + 50)
+})
+
+Cypress.Commands.add(
+  'initLocalEnv',
+  (backendVersion = 2, token = 'anonymous', port = 7512) => {
+    const validEnvName = 'valid'
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        [validEnvName]: {
+          name: validEnvName,
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port,
+          backendMajorVersion: backendVersion,
+          token
+        }
+      })
+    )
+    localStorage.setItem('currentEnv', validEnvName)
+  }
+)
+
+function wait(ms) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(), ms)
+  })
+}
+
+async function poll(url, state = 'up') {
+  for (let i = 30; i > 0; i--) {
+    try {
+      const r = await axios.get(url)
+      if (r) {
+        console.log('Service is up')
+        if (state === 'up') {
+          return
+        } else {
+          await wait(3000)
+        }
+      }
+    } catch (error) {
+      console.log('Service is down')
+      console.error(error)
+      if (state === 'up') {
+        await wait(3000)
+      } else {
+        return
+      }
+    }
+  }
+  throw new Error('Poll timeout expired')
+}
+
+Cypress.Commands.add('waitForService', (url, state = 'up') => {
+  return poll(url, state)
 })

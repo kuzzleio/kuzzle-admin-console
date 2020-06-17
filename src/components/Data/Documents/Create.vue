@@ -27,10 +27,9 @@
 
 <script>
 import PageNotAllowed from '../../Common/PageNotAllowed'
+import { mapGetters } from 'vuex'
 import Headline from '../../Materialize/Headline'
 import CreateOrUpdate from './Common/CreateOrUpdate'
-import { getMappingDocument } from '../../../services/kuzzleWrapper'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentCreate',
@@ -50,13 +49,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canCreateDocument']),
     hasRights() {
       return this.canCreateDocument(this.index, this.collection)
     }
   },
   methods: {
-    getMappingDocument,
     async onSubmit(document, id) {
       if (!document) {
         this.error = 'The document is invalid, please review it'

@@ -69,14 +69,13 @@
 
 <script>
 import jsonFormatter from '../../../directives/json-formatter.directive'
-import title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'RoleItem',
   components: {},
   directives: {
-    jsonFormatter,
-    title
+    jsonFormatter
   },
   props: {
     document: Object,

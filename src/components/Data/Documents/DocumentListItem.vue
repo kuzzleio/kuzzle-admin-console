@@ -76,14 +76,12 @@
 <script>
 import _ from 'lodash'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import title from '../../../directives/title.directive'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentListItem',
   directives: {
-    JsonFormatter,
-    title
+    JsonFormatter
   },
   props: {
     index: String,

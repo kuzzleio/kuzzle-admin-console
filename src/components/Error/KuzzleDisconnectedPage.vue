@@ -19,7 +19,7 @@
 <script>
 import Connecting from './Connecting'
 import EnvironmentSwitch from '../Common/Environments/EnvironmentsSwitch'
-
+import { mapGetters } from 'vuex'
 let idConnect
 let idReconnect
 
@@ -34,6 +34,9 @@ export default {
       host: null,
       port: null
     }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
   },
   mounted() {
     this.host = this.$kuzzle.protocol.host

@@ -63,11 +63,11 @@
               </template>
             </b-col>
           </b-row>
-          <template v-if="fetchingDocuments">
+          <template v-if="loading">
             <b-row class="text-center">
               <b-col>
                 <b-spinner
-                  v-if="fetchingDocuments"
+                  v-if="loading"
                   variant="primary"
                   class="mt-5"
                 ></b-spinner>
@@ -164,6 +164,7 @@
 import _ from 'lodash'
 
 import Column from './Views/Column'
+import DataNotFound from '../Data404'
 import List from './Views/List'
 import DeleteModal from './DeleteModal'
 import EmptyState from './EmptyState'
@@ -174,12 +175,6 @@ import ListNotAllowed from '../../Common/ListNotAllowed'
 import CollectionDropdown from '../Collections/Dropdown'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
-import DataNotFound from '../Data404'
-import {
-  performSearchDocuments,
-  performDeleteDocuments,
-  getMappingDocument
-} from '../../../services/kuzzleWrapper'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 
@@ -211,7 +206,7 @@ export default {
   },
   data() {
     return {
-      fetchingDocuments: false,
+      loading: false,
       searchFilterOperands: filterManager.searchFilterOperands,
       selectedDocuments: [],
       documents: [],
@@ -231,6 +226,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     ...mapGetters('auth', [
       'canSearchDocument',
       'canCreateDocument',
@@ -377,11 +373,10 @@ export default {
 
     // DELETE
     // =========================================================================
-    performDeleteDocuments,
     async onDeleteConfirmed(documentsToDelete) {
       this.deleteModalIsLoading = true
       try {
-        await this.performDeleteDocuments(
+        await this.wrapper.performDeleteDocuments(
           this.index,
           this.collection,
           documentsToDelete
@@ -423,25 +418,35 @@ export default {
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
-    loadAllTheThings() {
-      this.loadMappingInfo()
-      this.loadListView()
-      this.saveListView()
+    async loadAllTheThings() {
+      try {
+        this.loading = true
+        await this.loadMappingInfo()
+        this.loadListView()
+        this.saveListView()
 
-      this.currentFilter = filterManager.load(
-        this.index,
-        this.collection,
-        this.$route
-      )
-      filterManager.save(
-        this.currentFilter,
-        this.$router,
-        this.index,
-        this.collection
-      )
-      this.fetchDocuments()
+        this.currentFilter = filterManager.load(
+          this.index,
+          this.collection,
+          this.$route
+        )
+        filterManager.save(
+          this.currentFilter,
+          this.$router,
+          this.index,
+          this.collection
+        )
+        this.loading = false
+      } catch {
+        this.$bvToast.toast('The complete error has been printed to console.', {
+          title: 'Ooops! Something went wrong.',
+          variant: 'warning',
+          toaster: 'b-toaster-bottom-right'
+        })
+        this.loading = false
+      }
+      await this.fetchDocuments()
     },
-    performSearchDocuments,
     navigateToDocument() {
       const document = this.documents[0]
 
@@ -482,7 +487,6 @@ export default {
       this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
-      this.fetchingDocuments = true
       this.$forceUpdate()
       this.indexOrCollectionNotFound = false
 
@@ -494,7 +498,11 @@ export default {
       }
       try {
         let searchQuery = null
-        searchQuery = filterManager.toSearchQuery(this.currentFilter)
+        searchQuery = filterManager.toSearchQuery(
+          this.currentFilter,
+          this.collectionMapping,
+          this.wrapper
+        )
         if (!searchQuery) {
           searchQuery = {}
         }
@@ -503,7 +511,7 @@ export default {
 
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
-        const res = await this.performSearchDocuments(
+        const res = await this.wrapper.performSearchDocuments(
           this.collection,
           this.index,
           searchQuery,
@@ -540,7 +548,6 @@ export default {
           })
         }
       }
-      this.fetchingDocuments = false
     },
 
     // PAGINATION
@@ -600,7 +607,7 @@ export default {
     // Collection Metadata management
     // =========================================================================
     async loadMappingInfo() {
-      const { properties } = await getMappingDocument(
+      const { properties } = await this.wrapper.getMappingDocument(
         this.collection,
         this.index
       )
@@ -640,6 +647,10 @@ export default {
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
+      if (!this.collectionMapping) {
+        return
+      }
+
       const dateFields = []
 
       const findDateFields = (mapping, previousKey) => {

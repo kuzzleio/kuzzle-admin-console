@@ -21,9 +21,6 @@
     <role-list
       v-if="canSearchRole"
       item-name="RoleItem"
-      :display-create="canCreateRole"
-      :perform-search="performSearchRoles"
-      :perform-delete="performDeleteRoles"
       route-create="SecurityRolesCreate"
       route-update="SecurityRolesUpdate"
     >
@@ -44,11 +41,8 @@
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import RoleList from './List'
 import Headline from '../../Materialize/Headline'
-import {
-  performSearchRoles,
-  performDeleteRoles
-} from '../../../services/kuzzleWrapper'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'RolesManagement',
   components: {
@@ -58,10 +52,6 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['canSearchRole', 'canCreateRole'])
-  },
-  methods: {
-    performSearchRoles,
-    performDeleteRoles
   }
 }
 </script>

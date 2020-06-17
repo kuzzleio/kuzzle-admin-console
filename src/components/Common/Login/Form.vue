@@ -66,7 +66,7 @@
 
 <script>
 import Focus from '../../../directives/focus.directive'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'LoginForm',
   directives: {
@@ -81,6 +81,9 @@ export default {
       password: null,
       error: ''
     }
+  },
+  computed: {
+    ...mapGetters('kuzzle', ['$kuzzle'])
   },
   methods: {
     dismissError() {
