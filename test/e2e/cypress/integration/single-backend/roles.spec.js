@@ -56,6 +56,7 @@ describe('Roles', () => {
       .click({ force: true })
 
     cy.get('textarea.ace_text-input')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .clear({ force: true })
       .type(
         `{selectall}{
