@@ -5,7 +5,6 @@
     ref="jsoneditor"
     :id="id"
     :options="options"
-    :class="classes"
     :plus="true"
     :height="editorHeight"
     @error="onError"
@@ -21,10 +20,6 @@
   position: relative;
 }
 
-.ace_content {
-  // font-size: 15px;
-}
-
 .ace-tomorrow.ace_editor.readonly {
   background-color: #d6d6d6;
   .ace_gutter,
@@ -38,17 +33,10 @@
 </style>
 
 <script>
-// import Vue from 'vue'
-// let editor
-
 export default {
   name: 'JsonEditor',
   props: {
     content: String,
-    myclass: {
-      type: String,
-      default: ''
-    },
     readonly: Boolean,
     id: String,
     height: { type: Number, default: 400 },
@@ -66,14 +54,11 @@ export default {
     }
   },
   computed: {
-    classes() {
-      return (this.readonly ? 'readonly ' : '') + this.myclass
-    },
     editorHeight() {
       if (this.height === undefined) {
         return '400px'
       } else {
-        return this.height + 'px!important'
+        return this.height + 'px'
       }
     }
   },
@@ -106,5 +91,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" rel="stylesheet/scss"></style>

@@ -14,7 +14,6 @@
               <json-editor
                 id="user-custom-data-mapping-editor"
                 data-cy="EditUserMapping-JSONEditor"
-                myclass="pre_ace"
                 ref="jsoneditor"
                 tabindex="4"
                 :content="mappingValue"

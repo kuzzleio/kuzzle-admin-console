@@ -12,7 +12,6 @@
           <json-editor
             id="rawsearch"
             ref="jsoneditor"
-            myclass="pre_ace"
             :content="rawFilter"
             @change="onFilterChange"
           />

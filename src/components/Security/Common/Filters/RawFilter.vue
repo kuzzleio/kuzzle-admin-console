@@ -1,11 +1,6 @@
 <template>
   <form>
-    <json-editor
-      id="rawsearch"
-      ref="jsoneditor"
-      myclass="pre_ace"
-      :content="filters.raw"
-    />
+    <json-editor id="rawsearch" ref="jsoneditor" :content="filters.raw" />
     <div class="row card-action">
       <button
         type="submit"

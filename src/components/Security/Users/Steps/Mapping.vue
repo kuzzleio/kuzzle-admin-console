@@ -8,7 +8,6 @@
             id="user-custom-data-mapping-editor"
             ref="jsoneditor"
             tabindex="4"
-            myclass="pre_ace"
             :content="mapping"
           />
         </div>
