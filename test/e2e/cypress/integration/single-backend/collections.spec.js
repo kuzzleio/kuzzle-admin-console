@@ -23,7 +23,7 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click({
       force: true
     })
-    cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click()
+    cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click({force: true})
     cy.contains(collectionName)
   })
 
