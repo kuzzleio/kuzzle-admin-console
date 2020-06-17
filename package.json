@@ -53,6 +53,7 @@
     "sort-json": "^2.0.0",
     "ts-mock-imports": "^1.2.6",
     "typescript": "^3.7.3",
+    "v-jsoneditor": "^1.4.1",
     "velocity-animate": "^1.5.1",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",

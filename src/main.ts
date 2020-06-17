@@ -6,7 +6,9 @@ import './plugins/logger'
 
 import App from './App.vue'
 import store from './vuex/store'
+import VJsoneditor from 'v-jsoneditor'
 
+Vue.use(VJsoneditor)
 Vue.use(VueKuzzle, {})
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)

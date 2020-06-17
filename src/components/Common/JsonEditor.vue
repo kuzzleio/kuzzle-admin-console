@@ -1,16 +1,28 @@
 <template>
-  <div
+  <v-jsoneditor
+    v-model="json"
     data-cy="JSONEditor"
     ref="jsoneditor"
-    :class="classes"
     :id="id"
-    :style="style"
+    :options="options"
+    :class="classes"
+    :plus="true"
+    :height="editorHeight"
+    @error="onError"
   />
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
+.jsoneditor-poweredBy {
+  visibility: hidden;
+}
+
 .ace_text-input {
   position: relative;
+}
+
+.ace_content {
+  // font-size: 15px;
 }
 
 .ace-tomorrow.ace_editor.readonly {
@@ -26,8 +38,8 @@
 </style>
 
 <script>
-import Vue from 'vue'
-let editor
+// import Vue from 'vue'
+// let editor
 
 export default {
   name: 'JsonEditor',
@@ -39,67 +51,58 @@ export default {
     },
     readonly: Boolean,
     id: String,
-    height: { type: Number, default: 250 },
+    height: { type: Number, default: 400 },
     refreshAce: {
       type: Boolean,
       default: false
+    }
+  },
+  data() {
+    return {
+      json: {},
+      options: {
+        mode: 'code'
+      }
     }
   },
   computed: {
     classes() {
       return (this.readonly ? 'readonly ' : '') + this.myclass
     },
-    style() {
+    editorHeight() {
       if (this.height === undefined) {
-        return { 'min-height': '250px' }
+        return '400px'
       } else {
-        return { 'min-height': this.height + 'px!important' }
+        return this.height + 'px!important'
       }
     }
   },
   methods: {
-    getRawValue() {
-      return editor.getValue()
+    onError() {
+      console.error('error')
     },
-    getEditor() {
-      return editor
+    getRawValue() {
+      return JSON.stringify(this.json)
     },
     setContent(value) {
-      this.$log.debug('Setting content', value)
-      editor.getSession().setValue(value)
+      this.json = JSON.parse(value)
+      // editor.getSession().setValue(value)
     }
   },
   watch: {
+    json: {
+      handler() {
+        this.$emit('change', this.getRawValue())
+      }
+    },
     refreshAce() {
-      setTimeout(() => {
-        editor.focus()
-      }, 500)
+      // setTimeout(() => {
+      //   editor.focus()
+      // }, 500)
     }
   },
   mounted() {
-    Vue.nextTick(() => {
-      /* eslint no-undef: 0 */
-      editor = ace.edit(this.$refs.jsoneditor)
-      editor.setTheme('ace/theme/tomorrow')
-      editor.getSession().setMode('ace/mode/json')
-      editor.setFontSize(15)
-      editor.getSession().setTabSize(2)
-      editor.setReadOnly(this.readonly)
-      editor.$blockScrolling = Infinity
-      this.setContent(this.content)
-
-      // WARNING - Beware of update loops!
-      // This event is triggered both when the content changes after
-      // user interaction and when it is set programmatically.
-      editor.on('change', () => {
-        this.$emit('change', this.getRawValue())
-      })
-    })
-  },
-  beforeDestroy() {
-    if (editor) {
-      editor.removeAllListeners('change')
-    }
+    this.json = JSON.parse(this.content)
   }
 }
 </script>
