@@ -310,11 +310,29 @@ describe('Environments', function() {
     })
   })
 
-  it('Should display a toast when environment list is malformed', () => {
-    localStorage.setItem('environments', `{   Som3 m@l4rm3D CODEZ jayzon}}]}`)
+  it.only('Should open edit modal when an environment is malformed', () => {
+    localStorage.setItem(
+      'environments',
+      JSON.stringify({
+        ['malformedEnv']: {
+          name: 'malformedEnv',
+          color: 'darkblue',
+          host: 'localhost',
+          ssl: false,
+          port: 7512,
+          token: null
+          // missing backendMajorVersion
+        }
+      })
+    )
     cy.visit('/')
-    cy.contains('Ooops! Something went wrong while loading the connections.')
-    cy.url().should('contain', 'create-connection')
+    cy.get('[data-cy="EnvironmentSwitch"]').click()
+    cy.get('[data-cy="EnvironmentSwitch-env_malformedEnv"]').click()
+
+    cy.contains('Update Connection')
+    cy.get('[data-cy="CreateEnvironment-backendVersion"]').should($select => {
+      expect($select.attr('class')).to.contain('is-invalid')
+    })
   })
 
   it('Should display a spinner when connecting to an unavailable backend and connect automatically whe the backend is up', () => {
