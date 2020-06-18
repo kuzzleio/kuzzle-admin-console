@@ -127,6 +127,7 @@ export default {
   data() {
     return {
       majorVersions: [
+        { value: null, text: 'Select version' },
         { value: 1, text: 'v1.x' },
         {
           value: 2,
