@@ -17,10 +17,18 @@
       :data-cy="`EnvironmentSwitch-env_${formatForDom(env.name)}`"
     >
       <div
-        @click="clickSwitch(index)"
+        @click="
+          checkEnvironment(env)
+            ? switchEnv(index)
+            : $emit('environment::create', index)
+        "
         class="EnvironmentSwitch-env-name text-truncate mr-3"
       >
         {{ env.name }}
+        <i
+          v-if="!checkEnvironment(env)"
+          class="fas fa-exclamation-triangle text-danger"
+        ></i>
         <div class="text-muted">{{ env.host }}</div>
       </div>
       <div class="EnvironmentSwitch-env-inputs">
@@ -54,6 +62,7 @@
 <script>
 import { formatForDom } from '../../../utils'
 import { mapValues, omit } from 'lodash'
+import { envColors } from '../../../vuex/modules/kuzzle/store'
 
 export default {
   name: 'EnvironmentSwitch',
@@ -95,9 +104,8 @@ export default {
       return URL.createObjectURL(blob)
     }
   },
-  mounted() {},
   methods: {
-    async clickSwitch(id) {
+    async switchEnv(id) {
       try {
         await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
         this.$log.debug(`Switched.`)
@@ -108,6 +116,22 @@ export default {
           this.$store.direct.dispatch.kuzzle.onConnectionError(error)
         }
       }
+    },
+    checkEnvironment(env) {
+      if (
+        !env.name ||
+        !env.host ||
+        !env.port ||
+        !env.backendMajorVersion ||
+        typeof env.port !== 'number' ||
+        env.ssl === undefined ||
+        env.ssl === null ||
+        !env.color ||
+        !envColors.includes(env.color)
+      ) {
+        return false
+      }
+      return true
     },
     formatForDom
   }
