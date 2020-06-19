@@ -67,7 +67,7 @@ jobs:
       if: type != pull_request && branch = master
 
       env:
-        - DEPLOY_PATH=kuzzle-v2
+        - DEPLOY_PATH=/kuzzle-v2/
       addons:
         apt:
           packages:
@@ -82,7 +82,7 @@ jobs:
         - npm run build
 
       before_deploy:
-        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_PROD/$DEPLOY_PATH --recursive --region $AWS_S3_REGION
+        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_PROD$DEPLOY_PATH --recursive --region $AWS_S3_REGION
 
       deploy:
         provider: s3
@@ -96,44 +96,4 @@ jobs:
           all_branches: true
 
       after_deploy:
-        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "/$DEPLOY_PATH/*"
-
-    # ---------------------------------------
-    # next.console.kuzzle.io/kuzzle-v2
-    # ---------------------------------------
-    - stage: build & deploy
-      name: 'Build & Deploy to next-console.kuzzle.io'
-
-      if: type != pull_request && branch = 3-dev
-
-      env:
-        - DEPLOY_PATH=kuzzle-v2
-      addons:
-        apt:
-          packages:
-            - python
-            - python-pip
-
-      install:
-        - pip install awscli --upgrade --user
-
-      script:
-        - npm ci
-        - npm run build
-
-      before_deploy:
-        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_DEV/$DEPLOY_PATH --recursive --region $AWS_S3_REGION
-
-      deploy:
-        provider: s3
-        access_key_id: $AWS_ACCESS_KEY_ID
-        secret_access_key: $AWS_SECRET_ACCESS_KEY
-        bucket: $AWS_S3_BUCKET_DEV
-        skip_cleanup: true
-        local-dir: dist
-        region: $AWS_S3_REGION
-        on:
-          all_branches: true
-
-      after_deploy:
-        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/$DEPLOY_PATH/*"
+        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_PROD --paths "$DEPLOY_PATH*"
