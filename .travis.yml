@@ -1,5 +1,5 @@
-sudo: required
-dist: trusty
+os: linux
+dist: bionic
 
 language: node_js
 node_js:
@@ -129,4 +129,4 @@ jobs:
           all_branches: true
 
       after_deploy:
-        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV
+        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/*"

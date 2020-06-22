@@ -50,11 +50,13 @@ export default function createRoutes(log) {
       {
         path: '/create-connection',
         name: 'CreateEnvironment',
+        beforeEnter: environmentsGuard,
         component: CreateEnvironmentPage
       },
       {
         path: '/select-connection',
         name: 'SelectEnvironment',
+        beforeEnter: environmentsGuard,
         component: SelectEnvironmentPage
       },
       {
@@ -112,6 +114,7 @@ export default function createRoutes(log) {
       {
         path: '*',
         name: '404',
+        beforeEnter: environmentsGuard,
         component: PageNotFound
       }
     ]
