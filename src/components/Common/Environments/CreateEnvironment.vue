@@ -104,7 +104,7 @@
               class="CreateEnvironment-box-feedback text-danger ml-2"
               v-if="!colorState"
             >
-              You must select an environment color</span
+              <small> You must select an environment color</small></span
             >
           </b-row>
         </b-col>
