@@ -122,7 +122,8 @@ jobs:
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_SECRET_ACCESS_KEY
         bucket: $AWS_S3_BUCKET_DEV
-        local-dir: dist
+        local_dir: dist
+        skip_cleanup: true
         region: $AWS_S3_REGION
         on:
           all_branches: true
