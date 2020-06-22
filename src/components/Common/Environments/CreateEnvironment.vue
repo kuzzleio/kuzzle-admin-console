@@ -233,8 +233,8 @@ export default {
       if (this.submitting) {
         return true
       }
-      // need ternary conditon because version can be null
-      return this.environment.backendMajorVersion ? true : false
+
+      return this.environment.backendMajorVersion ? null : false
     },
     colorState() {
       if (this.submitting) {
