@@ -1,4 +1,4 @@
-describe('Collection management', function() {
+describe('Collection management', function () {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -25,7 +25,26 @@ describe('Collection management', function() {
     )
   })
 
-  it('is able to create a realtime collection and access it', function() {
+  it('is able to create a persisted collection and access it', () => {
+    const collectionName = 'testcollection'
+    cy.visit('/')
+    cy.get('.LoginAsAnonymous-Btn').click()
+    cy.visit(`/#/data/${indexName}/create`)
+
+    cy.get('div > .row > .col > .Mapping-name > #collection-name').type(
+      collectionName
+    )
+    cy.get('.col > .Mapping > .row > .col > .Mapping-submitBtn').click({
+      force: true
+    })
+    cy.get('.CollectionForm-submit').click({
+      force: true
+    })
+
+    cy.contains(collectionName)
+  })
+
+  it('is able to create a realtime collection and access it', function () {
     cy.visit('/')
     cy.get('.LoginAsAnonymous-Btn').click()
     cy.visit(`/#/data/${indexName}/create`)
