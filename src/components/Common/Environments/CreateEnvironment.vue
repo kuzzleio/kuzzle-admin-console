@@ -100,6 +100,12 @@
                 <span v-if="environment.color === color">Selected</span>
               </div>
             </b-col>
+            <span
+              class="CreateEnvironment-box-feedback text-danger ml-2"
+              v-if="!colorState"
+            >
+              You must select an environment color</span
+            >
           </b-row>
         </b-col>
       </b-row>
@@ -230,9 +236,19 @@ export default {
       // need ternary conditon because version can be null
       return this.environment.backendMajorVersion ? true : false
     },
+    colorState() {
+      if (this.submitting) {
+        return true
+      }
+      return this.colors.includes(this.environment.color)
+    },
     canSubmit() {
       return (
-        this.hostState && this.nameState && this.portState && this.versionState
+        this.hostState &&
+        this.nameState &&
+        this.portState &&
+        this.versionState &&
+        this.colorState
       )
     }
   },
