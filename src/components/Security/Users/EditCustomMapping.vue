@@ -1,7 +1,34 @@
 <template>
   <b-container data-cy="EditUserMapping">
-    <headline>Edit User Custom Data Mapping</headline>
+    <b-row>
+      <b-col cols="10">
+        <headline>Edit User Custom Data Mapping</headline>
+      </b-col>
+      <b-col class="text-right mt-2">
+        <b-dropdown
+          data-cy="customMappingDropdown"
+          no-caret
+          toggle-class="customMappingDropdown"
+          variant="light"
+        >
+          <template v-slot:button-content>
+            <i class="fas fa-ellipsis-v" />
+          </template>
 
+          <b-dropdown-group id="collection-dd-group-views" header="Action">
+            <b-dropdown-item @click="downloadMappingValue">
+              Download Mapping
+            </b-dropdown-item>
+            <input
+              class="dropdown-item"
+              type="file"
+              @change="loadMappingValue($event)"
+            />
+          </b-dropdown-group>
+          <b-dropdown-divider />
+        </b-dropdown>
+      </b-col>
+    </b-row>
     <div v-if="!loading" class="wrapper collection-edit">
       <b-alert class="flow-text">
         Here, you will be able to define the fields to be included in Users'
@@ -77,6 +104,15 @@
     float: right;
   }
 }
+
+::v-deep .customMappingDropdown {
+  background-color: $light-grey-color;
+  border: none;
+}
+
+::v-deep .show .customMappingDropdown i {
+  transform: rotate(90deg);
+}
 </style>
 
 <script type="text/javascript">
@@ -126,6 +162,26 @@ export default {
     this.loading = false
   },
   methods: {
+    loadMappingValue(event) {
+      var file = event.target.files[0]
+      var reader = new FileReader()
+      reader.onload = async e => {
+        this.mappingValue = e.target.result
+        await this.onSubmit()
+      }
+      reader.readAsText(file)
+    },
+    downloadMappingValue() {
+      var a = document.createElement('a')
+      var jsonse = JSON.stringify(this.mappingValue)
+      var blob = new Blob([jsonse], { type: 'application/json'})
+      var url = window.URL.createObjectURL(blob)
+      a.href = url
+      a.download = 'userMapping.json'
+      a.click()
+      window.URL.revokeObjectURL(url)
+      a.remove()
+    },
     onMappingChange(value) {
       this.mappingValue = value
     },
