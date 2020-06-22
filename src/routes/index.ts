@@ -12,6 +12,7 @@ import Signup from '../components/Signup.vue'
 import DataLayout from '../components/Data/Layout.vue'
 import ResetPassword from '../components/ResetPassword.vue'
 import SecurityLayout from '../components/Security/Layout.vue'
+import PageNotFound from '../components/404.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
@@ -107,6 +108,11 @@ export default function createRoutes(log) {
             ]
           }
         ]
+      },
+      {
+        path: '*',
+        name: '404',
+        component: PageNotFound
       }
     ]
   })
