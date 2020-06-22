@@ -16,7 +16,6 @@ import PageNotFound from '../components/404.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
-import { splitRealtimeStoredCollections } from '@/services/data'
 
 Vue.use(VueRouter)
 
@@ -50,13 +49,19 @@ export default function createRoutes(log) {
       {
         path: '/create-connection',
         name: 'CreateEnvironment',
-        beforeEnter: environmentsGuard,
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
         component: CreateEnvironmentPage
       },
       {
         path: '/select-connection',
         name: 'SelectEnvironment',
-        beforeEnter: environmentsGuard,
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
         component: SelectEnvironmentPage
       },
       {
