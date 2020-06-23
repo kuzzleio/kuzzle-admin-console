@@ -230,6 +230,9 @@ export default {
       return ''
     },
     versionState() {
+      if (this.submitting) {
+        return true
+      }
       return this.environment.backendMajorVersion ? true : false
     },
     versionFeedback() {
