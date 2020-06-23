@@ -80,7 +80,7 @@
           data-cy="CreateEnvironment-backendVersion"
           v-model="environment.backendMajorVersion"
           required
-          :state="versionState"
+          :state="versionFeedback"
           :options="majorVersions"
         ></b-form-select>
       </b-form-group>
@@ -133,7 +133,7 @@ export default {
   data() {
     return {
       majorVersions: [
-        { value: null, text: 'Select version' },
+        { value: undefined, text: 'Select version' },
         { value: 1, text: 'v1.x' },
         {
           value: 2,
@@ -230,10 +230,9 @@ export default {
       return ''
     },
     versionState() {
-      if (this.submitting) {
-        return true
-      }
-
+      return this.environment.backendMajorVersion ? true : false
+    },
+    versionFeedback() {
       return this.environment.backendMajorVersion ? null : false
     },
     colorState() {
