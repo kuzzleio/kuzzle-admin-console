@@ -42,6 +42,12 @@
             @click="complexFiltersSelectedTab = 'raw'"
             >Raw JSON Filter</b-nav-item
           >
+          <b-nav-item
+            data-cy="Filters-rawTab"
+            :active="complexFiltersSelectedTab === 'history'"
+            @click="complexFiltersSelectedTab = 'history'"
+            >Filter History</b-nav-item
+          >
           <i
             class="Filters-btnClose fa fa-times close"
             @click="advancedFiltersVisible = false"
@@ -75,6 +81,11 @@
         :collection-mapping="collectionMapping"
         @filter-submitted="onBasicFilterUpdated"
         @reset="onReset"
+      />
+      <history-filter
+        v-if="complexFiltersSelectedTab === 'history'"
+        :index="index"
+        :collection="collection"
       />
     </template>
   </b-card>
@@ -113,6 +124,7 @@
 import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
+import HistoryFilter from './HistoryFilter'
 
 import {
   NO_ACTIVE,
@@ -127,9 +139,18 @@ export default {
   components: {
     QuickFilter,
     BasicFilter,
-    RawFilter
+    RawFilter,
+    HistoryFilter
   },
   props: {
+    index: {
+      type: String,
+      required: true
+    },
+    collection: {
+      type: String,
+      required: true
+    },
     actionButtonsVisible: {
       type: Boolean,
       required: false,

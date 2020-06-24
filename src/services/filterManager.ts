@@ -23,6 +23,7 @@ export function Filter(this: any) {
 }
 
 const LOCALSTORAGE_PREFIX = 'search-filter-current'
+const HISTORY_LOCALSTORAGE_PREFIX = 'history-filter'
 
 export const load = (index, collection, route) => {
   if (!index || !collection) {
@@ -126,6 +127,44 @@ export const saveToLocalStorage = (filter, index, collection) => {
     `${LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filter)
   )
+}
+
+export const saveHistoyToLocalStorage = (filter, index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot save filters to localstorage if no index or collection are specified'
+    )
+  }
+  let filters = loadHistoyToLocalStorage(index, collection)
+  let date = new Date(Date.now())
+  filter.name = date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes()
+  filter.id = Date.now()
+  filters.push(filter)
+  console.log(filters.length);
+  
+  if (filters.length >= 10) {
+    filters.shift();
+  }
+  localStorage.setItem(
+    `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
+    JSON.stringify(filters)
+  )
+}
+
+export const loadHistoyToLocalStorage = (index, collection) => {
+  if (!index || !collection) {
+    throw new Error(
+      'Cannot load filters from localstorage if no index or collection are specified'
+    )
+  }
+  const filterStr = localStorage.getItem(
+    `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`
+  )
+  if (filterStr) {
+    return JSON.parse(filterStr)
+  }
+
+  return []
 }
 
 export const toSearchQuery = (filter, mappings, kuzzleWrapper) => {

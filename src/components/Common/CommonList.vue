@@ -131,6 +131,13 @@ export default {
           this.index,
           this.collection
         )
+        console.log("save");
+        
+        filterManager.saveHistoyToLocalStorage(
+          newFilters,
+          this.index,
+          this.collection
+        )
       }
     },
     currentFilter() {
@@ -177,6 +184,13 @@ export default {
         filterManager.save(
           newFilters,
           this.$router,
+          this.index,
+          this.collection
+        )
+        console.log("save");
+        
+        filterManager.saveHistoyToLocalStorage(
+          newFilters,
           this.index,
           this.collection
         )

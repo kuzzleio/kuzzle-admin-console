@@ -16,6 +16,8 @@
             :available-operands="searchFilterOperands"
             :current-filter="currentFilter"
             :collection-mapping="collectionMapping"
+            :index="index"
+            :collection="collection"
             @filters-updated="onFiltersUpdated"
             @reset="onFiltersUpdated"
           />
@@ -243,6 +245,13 @@ export default {
         filterManager.save(
           newFilters,
           this.$router,
+          this.index,
+          this.collection
+        )
+        console.log("save");
+        
+        filterManager.saveHistoyToLocalStorage(
+          newFilters,
           this.index,
           this.collection
         )
