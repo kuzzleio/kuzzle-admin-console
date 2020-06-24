@@ -79,6 +79,8 @@
         <b-form-select
           data-cy="CreateEnvironment-backendVersion"
           v-model="environment.backendMajorVersion"
+          required
+          :state="versionState"
           :options="majorVersions"
         ></b-form-select>
       </b-form-group>
@@ -125,6 +127,7 @@ export default {
   data() {
     return {
       majorVersions: [
+        { value: null, text: 'Select version' },
         { value: 1, text: 'v1.x' },
         {
           value: 2,
@@ -142,7 +145,7 @@ export default {
         port: 7512,
         color: DEFAULT_COLOR,
         ssl: useHttps,
-        backendMajorVersion: 2
+        backendMajorVersion: null
       },
       submitting: false
     }
@@ -220,8 +223,17 @@ export default {
       }
       return ''
     },
+    versionState() {
+      if (this.submitting) {
+        return true
+      }
+      // need ternary conditon because version can be null
+      return this.environment.backendMajorVersion ? true : false
+    },
     canSubmit() {
-      return this.hostState && this.nameState && this.portState
+      return (
+        this.hostState && this.nameState && this.portState && this.versionState
+      )
     }
   },
   mounted() {
@@ -240,7 +252,7 @@ export default {
       this.environment.port = 7512
       this.environment.color = DEFAULT_COLOR
       this.environment.ssl = useHttps
-      this.environment.backendMajorVersion = 2
+      this.environment.backendMajorVersion = null
     }
   },
   methods: {

@@ -152,6 +152,7 @@ describe('Profiles', () => {
 "policies": [{
 "roleId": "admin"`,
         {
+          delay: 200,
           force: true
         }
       )

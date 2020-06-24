@@ -12,10 +12,10 @@ import Signup from '../components/Signup.vue'
 import DataLayout from '../components/Data/Layout.vue'
 import ResetPassword from '../components/ResetPassword.vue'
 import SecurityLayout from '../components/Security/Layout.vue'
+import PageNotFound from '../components/404.vue'
 
 import SecuritySubRoutes from './children/security'
 import DataSubRoutes from './children/data'
-import { splitRealtimeStoredCollections } from '@/services/data'
 
 Vue.use(VueRouter)
 
@@ -49,11 +49,19 @@ export default function createRoutes(log) {
       {
         path: '/create-connection',
         name: 'CreateEnvironment',
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
         component: CreateEnvironmentPage
       },
       {
         path: '/select-connection',
         name: 'SelectEnvironment',
+        beforeEnter: async (from, to, next) => {
+          await store.dispatch.kuzzle.loadEnvironments(moduleActionContext)
+          next()
+        },
         component: SelectEnvironmentPage
       },
       {
@@ -107,6 +115,12 @@ export default function createRoutes(log) {
             ]
           }
         ]
+      },
+      {
+        path: '*',
+        name: '404',
+        beforeEnter: environmentsGuard,
+        component: PageNotFound
       }
     ]
   })

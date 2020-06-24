@@ -1,5 +1,5 @@
-sudo: required
-dist: trusty
+os: linux
+dist: bionic
 
 language: node_js
 node_js:
@@ -99,10 +99,8 @@ jobs:
     - stage: build & deploy
       name: 'Build & Deploy to next-console.kuzzle.io'
 
-      if: type != pull_request && branch = 3-dev
+      if: type != pull_request && branch = 4-dev
 
-      env:
-        - DEPLOY_PATH=kuzzle-v2
       addons:
         apt:
           packages:
@@ -117,17 +115,18 @@ jobs:
         - npm run build
 
       before_deploy:
-        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_DEV/$DEPLOY_PATH --recursive --region $AWS_S3_REGION
+        - ~/.local/bin/aws s3 rm s3://$AWS_S3_BUCKET_DEV --recursive --region $AWS_S3_REGION
 
       deploy:
         provider: s3
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_SECRET_ACCESS_KEY
         bucket: $AWS_S3_BUCKET_DEV
-        local-dir: dist
+        local_dir: dist
+        skip_cleanup: true
         region: $AWS_S3_REGION
         on:
           all_branches: true
 
       after_deploy:
-        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/$DEPLOY_PATH/*"
+        - ~/.local/bin/aws cloudfront create-invalidation --distribution-id $AWS_CLOUDFRONT_DISTRIBUTION_ID_DEV --paths "/*"

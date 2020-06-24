@@ -282,7 +282,7 @@ describe('Users', function() {
 
     cy.get(
       '[data-cy="UserManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click()
+    ).click({force: true})
     cy.get('[data-cy=UserItem]').should('have.length', 4)
     cy.url().should('contain', 'from=10')
   })
@@ -451,7 +451,7 @@ describe('Users', function() {
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .clear({ force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
 "address": {
