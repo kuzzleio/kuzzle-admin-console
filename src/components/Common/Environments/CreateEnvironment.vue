@@ -80,7 +80,7 @@
           data-cy="CreateEnvironment-backendVersion"
           v-model="environment.backendMajorVersion"
           required
-          :state="versionState"
+          :state="versionFeedback"
           :options="majorVersions"
         ></b-form-select>
       </b-form-group>
@@ -100,6 +100,12 @@
                 <span v-if="environment.color === color">Selected</span>
               </div>
             </b-col>
+            <span
+              class="CreateEnvironment-box-feedback text-danger ml-2"
+              v-if="!colorState"
+            >
+              <small> You must select an environment color</small></span
+            >
           </b-row>
         </b-col>
       </b-row>
@@ -127,7 +133,7 @@ export default {
   data() {
     return {
       majorVersions: [
-        { value: null, text: 'Select version' },
+        { value: undefined, text: 'Select version' },
         { value: 1, text: 'v1.x' },
         {
           value: 2,
@@ -227,12 +233,24 @@ export default {
       if (this.submitting) {
         return true
       }
-      // need ternary conditon because version can be null
       return this.environment.backendMajorVersion ? true : false
+    },
+    versionFeedback() {
+      return this.environment.backendMajorVersion ? null : false
+    },
+    colorState() {
+      if (this.submitting) {
+        return true
+      }
+      return this.colors.includes(this.environment.color)
     },
     canSubmit() {
       return (
-        this.hostState && this.nameState && this.portState && this.versionState
+        this.hostState &&
+        this.nameState &&
+        this.portState &&
+        this.versionState &&
+        this.colorState
       )
     }
   },
