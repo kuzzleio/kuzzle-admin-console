@@ -1,32 +1,29 @@
 <template>
   <b-container data-cy="EditUserMapping">
     <b-row>
-      <b-col cols="10">
+      <b-col cols="7">
         <headline>Edit User Custom Data Mapping</headline>
       </b-col>
-      <b-col class="text-right mt-2">
-        <b-dropdown
-          data-cy="customMappingDropdown"
-          no-caret
-          toggle-class="customMappingDropdown"
-          variant="light"
-        >
-          <template v-slot:button-content>
-            <i class="fas fa-ellipsis-v" />
-          </template>
-
-          <b-dropdown-group id="collection-dd-group-views" header="Action">
-            <b-dropdown-item @click="downloadMappingValue">
-              Download Mapping
-            </b-dropdown-item>
-            <input
-              class="dropdown-item"
-              type="file"
+      <b-col class="mt-2">
+        <b-row>
+          <b-col cols="5">
+            <b-button download="mappring.json" :href="downloadMappingValue">
+              Export Mapping
+            </b-button>
+          </b-col>
+          <b-col cols="7">
+            <b-form-file
+              ref="file-input"
+              class="custom-file-input"
+              id="import-mapping"
               @change="loadMappingValue($event)"
+              title="Choose a video please"
             />
-          </b-dropdown-group>
-          <b-dropdown-divider />
-        </b-dropdown>
+            <label class="custom-file-label" for="import-mapping"
+              >Import file</label
+            >
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
     <div v-if="!loading" class="wrapper collection-edit">
@@ -69,7 +66,6 @@
             </b-col>
           </b-row>
         </div>
-
         <template v-slot:footer>
           <div class="text-right">
             <b-button class="mr-2" variant="outline-primary" @click="onCancel"
@@ -149,6 +145,12 @@ export default {
       } catch (error) {
         return false
       }
+    },
+    downloadMappingValue() {
+      const blob = new Blob([JSON.stringify(this.mappingValue)], {
+        type: 'application/json'
+      })
+      return window.URL.createObjectURL(blob)
     }
   },
   async mounted() {
@@ -163,24 +165,24 @@ export default {
   },
   methods: {
     loadMappingValue(event) {
-      var file = event.target.files[0]
-      var reader = new FileReader()
+      let file = event.target.files[0]
+      let reader = new FileReader()
       reader.onload = async e => {
         this.mappingValue = e.target.result
-        await this.onSubmit()
+        this.$refs.jsoneditor.setContent(this.mappingValue)
+        this.$bvToast.toast(
+          'The file has been written in the json editor. Correct it before saving it if necessary.',
+          {
+            title: 'Import successfully',
+            variant: 'success',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
       }
       reader.readAsText(file)
-    },
-    downloadMappingValue() {
-      var a = document.createElement('a')
-      var jsonse = JSON.stringify(this.mappingValue)
-      var blob = new Blob([jsonse], { type: 'application/json'})
-      var url = window.URL.createObjectURL(blob)
-      a.href = url
-      a.download = 'userMapping.json'
-      a.click()
-      window.URL.revokeObjectURL(url)
-      a.remove()
     },
     onMappingChange(value) {
       this.mappingValue = value
