@@ -23,7 +23,9 @@ describe('Collection management', function() {
     cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click({
       force: true
     })
-    cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click({force: true})
+    cy.get(`[data-cy="CollectionList-name--${collectionName}"]`).click({
+      force: true
+    })
     cy.contains(collectionName)
   })
 
@@ -84,7 +86,11 @@ describe('Collection management', function() {
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
     cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
     cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
-    cy.should('not.contain', collectionName)
+
+    cy.get('[data-cy="CollectionList-table"]').should(
+      'not.contain',
+      collectionName
+    )
   })
 
   it('is able to fetch collections when index change', function() {
