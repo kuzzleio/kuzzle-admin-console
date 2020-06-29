@@ -309,7 +309,7 @@ describe('Document update/replace', () => {
     )
   })
 
-  it.only('Should be able edit a document on column view', function() {
+  it('Should be able edit a document on column view', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
