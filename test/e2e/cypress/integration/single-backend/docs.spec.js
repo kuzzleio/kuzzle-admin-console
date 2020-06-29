@@ -314,8 +314,8 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="CollectionDropdown"]').click()
-    cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.wait(500)
     cy.get('[data-cy="ColumnView-table-edit-btn--myId"]').click()
     cy.wait(500)
     cy.contains('Edit document')
