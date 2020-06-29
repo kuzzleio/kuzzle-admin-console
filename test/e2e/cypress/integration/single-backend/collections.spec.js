@@ -77,6 +77,8 @@ describe('Collection management', function() {
   })
 
   it('is able to delete a collection', function() {
+    cy.skipOnBackendVersion(1)
+
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
