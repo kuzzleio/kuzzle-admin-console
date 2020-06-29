@@ -387,7 +387,10 @@ export default {
           index: this.index,
           collection: this.collectionToDelete
         })
+
         this.$bvModal.hide('deleteCollectionPrompt')
+
+        await this.fetchStoredCollections()
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
