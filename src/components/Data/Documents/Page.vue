@@ -110,6 +110,7 @@
                       :all-checked="allChecked"
                       :current-page-size="paginationSize"
                       :total-documents="totalDocuments"
+                      @edit="onEditClicked"
                       @delete="onDeleteClicked"
                       @bulk-delete="onBulkDeleteClicked"
                       @change-page-size="changePaginationSize"
@@ -412,6 +413,12 @@ export default {
     onDeleteClicked(id) {
       this.candidatesForDeletion.push(id)
       this.$bvModal.show('modal-delete')
+    },
+    onEditClicked(id) {
+      this.$router.push({
+        name: 'UpdateDocument',
+        params: { id }
+      })
     },
     onRefresh() {
       this.fetchDocuments()
