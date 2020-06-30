@@ -132,7 +132,7 @@ export default {
           this.collection
         )
         filterManager.saveHistoyToLocalStorage(
-          newFilters,
+          newValue,
           this.index,
           this.collection
         )
