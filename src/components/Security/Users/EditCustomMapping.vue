@@ -17,7 +17,7 @@
               class="custom-file-input"
               id="import-mapping"
               @change="loadMappingValue($event)"
-              title="Choose a video please"
+              title="Import mapping from JSON file"
             />
             <label class="custom-file-label" for="import-mapping"
               >Import file</label
@@ -171,7 +171,7 @@ export default {
         this.mappingValue = e.target.result
         this.$refs.jsoneditor.setContent(this.mappingValue)
         this.$bvToast.toast(
-          'The file has been written in the json editor. Correct it before saving it if necessary.',
+          'The file has been written in the json editor. You can still edit it before saving if necessary.',
           {
             title: 'Import successfully',
             variant: 'success',
