@@ -131,9 +131,11 @@ export const saveToLocalStorage = (filter, index, collection) => {
 
 export const removeHistoryRawFromLocalStorage = (id, index, collection) => {
   let filters = loadHistoyToLocalStorage(index, collection)
-  let idIndex = filters.map(filter => {
-    return filter.id
-  }).indexOf(id)
+  let idIndex = filters
+    .map(filter => {
+      return filter.id
+    })
+    .indexOf(id)
   filters.splice(idIndex, 1)
   localStorage.setItem(
     `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
@@ -141,7 +143,13 @@ export const removeHistoryRawFromLocalStorage = (id, index, collection) => {
   )
 }
 
-export const modifieHistoryRawFromLocalStorage = (id, newName, bookmark, index, collection) => {
+export const modifieHistoryRawFromLocalStorage = (
+  id,
+  newName,
+  bookmark,
+  index,
+  collection
+) => {
   let filters = loadHistoyToLocalStorage(index, collection)
   let filtersModified = filters.map(filter => {
     if (filter.id === id) {
@@ -164,17 +172,25 @@ export const saveHistoyToLocalStorage = (filter, index, collection) => {
       'Cannot save filters to localstorage if no index or collection are specified'
     )
   }
-  if (filter.active === null)
+  if (filter.active === null) {
     return
+  }
   let filters = loadHistoyToLocalStorage(index, collection)
   let date = new Date(Date.now())
-  filter.name = date.getDate() + '/' + date.getMonth() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes()
+  filter.name =
+    date.getDate() +
+    '/' +
+    date.getMonth() +
+    '/' +
+    date.getFullYear() +
+    ' ' +
+    date.getHours() +
+    ':' +
+    date.getMinutes()
   filter.id = Date.now()
   filter.bookmark = false
   for (let index = filters.length; index > 0 && filters.length >= 9; index--) {
-    console.log(filters[index - 1]);
-    
-    if(filters[index - 1].bookmark == false) {
+    if (filters[index - 1].bookmark == false) {
       filters.splice(index - 1, 1)
     }
   }

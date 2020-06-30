@@ -1,13 +1,13 @@
 <template>
   <div>
-   <HistoryFilterRaw
-    v-for="(filter, i) in filters"
-    :key="i"
-    :index="index"
-    :collection="collection"
-    :filter="filter"
-    class="HistoryFilterRaw p-1"
-   />
+    <HistoryFilterRaw
+      v-for="(filter, i) in filters"
+      :key="i"
+      :index="index"
+      :collection="collection"
+      :filter="filter"
+      class="HistoryFilterRaw p-1"
+    />
   </div>
 </template>
 
@@ -26,16 +26,19 @@ export default {
   },
   props: {
     index: String,
-    collection: String,
+    collection: String
   },
   data() {
     return {
-      filters: [],
+      filters: []
     }
   },
   mounted() {
-    this.filters = filterManager.loadHistoyToLocalStorage(this.index, this.collection)
-  },
+    this.filters = filterManager.loadHistoyToLocalStorage(
+      this.index,
+      this.collection
+    )
+  }
 }
 </script>
 
