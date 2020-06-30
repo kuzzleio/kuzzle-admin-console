@@ -308,4 +308,16 @@ describe('Document update/replace', () => {
       }
     )
   })
+
+  it('Should be able edit a document on column view', function() {
+    cy.waitOverlay()
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.wait(500)
+    cy.get('[data-cy="ColumnView-table-edit-btn--myId"]').click()
+    cy.wait(500)
+    cy.contains('Edit document')
+  })
 })
