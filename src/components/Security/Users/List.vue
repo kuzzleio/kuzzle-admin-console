@@ -240,7 +240,7 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(newFilters, isLoadHistory) {
       try {
         filterManager.save(
           newFilters,
@@ -248,13 +248,13 @@ export default {
           this.index,
           this.collection
         )
-        console.log("save");
-        
-        filterManager.saveHistoyToLocalStorage(
-          newFilters,
-          this.index,
-          this.collection
-        )
+        if (!isLoadHistory) {
+          filterManager.saveHistoyToLocalStorage(
+            newFilters,
+            this.index,
+            this.collection
+          )
+        }
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast('The complete error has been printed to console', {

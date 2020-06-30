@@ -131,8 +131,6 @@ export default {
           this.index,
           this.collection
         )
-        console.log("save");
-        
         filterManager.saveHistoyToLocalStorage(
           newFilters,
           this.index,
@@ -187,8 +185,6 @@ export default {
           this.index,
           this.collection
         )
-        console.log("save");
-        
         filterManager.saveHistoyToLocalStorage(
           newFilters,
           this.index,

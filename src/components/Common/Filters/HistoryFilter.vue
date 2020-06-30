@@ -6,6 +6,7 @@
     :index="index"
     :collection="collection"
     :filter="filter"
+    class="HistoryFilterRaw p-1"
    />
   </div>
 </template>
@@ -29,31 +30,19 @@ export default {
   },
   data() {
     return {
-      expanded: false,
       filters: [],
-    }
-  },
-  computed: {
-    formattedDocument() {
-      var document = {
-        plop: 'oui'
-      }
-      return document
     }
   },
   mounted() {
     this.filters = filterManager.loadHistoyToLocalStorage(this.index, this.collection)
   },
-  watch: {},
-  methods: {
-    toggleCollapse() {
-      console.log(filterManager.loadHistoyToLocalStorage(this.index, this.collection));
-
-      this.expanded = !this.expanded
-    }
-  }
 }
 </script>
 
 <style lang="scss" scoped>
+.HistoryFilterRaw {
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+}
 </style>

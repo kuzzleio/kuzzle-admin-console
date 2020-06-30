@@ -461,7 +461,7 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters) {
+    async onFiltersUpdated(newFilters, isLoadHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -470,13 +470,13 @@ export default {
           this.index,
           this.collection
         )
-        console.log("save");
-        
-        filterManager.saveHistoyToLocalStorage(
-          newFilters,
-          this.index,
-          this.collection
-        )
+        if (!isLoadHistory) {
+          filterManager.saveHistoyToLocalStorage(
+            newFilters,
+            this.index,
+            this.collection
+          )
+        }
         await this.fetchDocuments()
       } catch (e) {
         this.$bvToast.toast(e.message, {

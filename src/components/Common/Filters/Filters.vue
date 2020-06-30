@@ -86,6 +86,8 @@
         v-if="complexFiltersSelectedTab === 'history'"
         :index="index"
         :collection="collection"
+        @filter-basic-submitted="onBasicFilterUpdated"
+        @filter-raw-submitted="onRawFilterUpdated"
       />
     </template>
   </b-card>
@@ -254,22 +256,23 @@ export default {
         })
       )
     },
-    onBasicFilterUpdated(filter, sorting) {
+    onBasicFilterUpdated(filter, sorting, isLoadHistory) {
       const newFilter = new Filter()
       newFilter.basic = filter
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
       newFilter.sorting = sorting
       newFilter.from = 0
-      this.onFiltersUpdated(newFilter)
+      this.onFiltersUpdated(newFilter, isLoadHistory)
     },
-    onRawFilterUpdated(filter) {
+    onRawFilterUpdated(filter, isLoadHistory) {
       this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter,
           from: 0
-        })
+        }),
+        isLoadHistory
       )
     },
     onRefresh() {
@@ -280,15 +283,16 @@ export default {
       )
     },
     onReset() {
+      this.advancedFiltersVisible = false
       this.$emit('reset', new Filter())
     },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(newFilters, isLoadHistory) {
       this.advancedFiltersVisible = false
-      this.$emit('filters-updated', newFilters)
+      this.$emit('filters-updated', newFilters, isLoadHistory)
     },
     onEnterPressed() {
       this.$emit('enter-pressed')
