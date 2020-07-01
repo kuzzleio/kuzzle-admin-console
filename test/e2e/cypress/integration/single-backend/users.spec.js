@@ -325,7 +325,7 @@ describe('Users', function() {
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -426,7 +426,7 @@ describe('Users', function() {
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')

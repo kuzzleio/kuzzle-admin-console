@@ -43,7 +43,7 @@
             >Raw JSON Filter</b-nav-item
           >
           <b-nav-item
-            data-cy="Filters-rawTab"
+            data-cy="Filters-historyTab"
             :active="complexFiltersSelectedTab === 'history'"
             @click="complexFiltersSelectedTab = 'history'"
             >Filter History</b-nav-item
