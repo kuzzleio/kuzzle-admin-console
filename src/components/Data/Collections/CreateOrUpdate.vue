@@ -222,15 +222,12 @@ export default {
             realtimeOnly: this.realtimeOnlyState
           })
         } else {
-          this.$bvToast.toast(
-          'You must specify a collection name',
-          {
+          this.$bvToast.toast('You must specify a collection name', {
             title: 'You cannot proceed',
             variant: 'info',
             toaster: 'b-toaster-bottom-right',
             appendToast: true
-          }
-        )
+          })
         }
       } else {
         this.$bvToast.toast(
