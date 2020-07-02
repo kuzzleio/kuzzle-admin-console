@@ -7,28 +7,36 @@
     :options="options"
     :plus="true"
     :height="editorHeight"
-    @error="onError"
   />
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
+.max-btn {
+  display: block;
+  right: 5px;
+}
+
+.jsoneditor {
+  border-color: $primary-color;
+}
+
+.jsoneditor-menu {
+  background-color: $primary-color !important;
+}
 .jsoneditor-poweredBy {
-  visibility: hidden;
+  display: none;
+}
+
+.jsoneditor-sort {
+  display: none;
+}
+
+.jsoneditor-transform {
+  display: none;
 }
 
 .ace_text-input {
   position: relative;
-}
-
-.ace-tomorrow.ace_editor.readonly {
-  background-color: #d6d6d6;
-  .ace_gutter,
-  .ace_active-line {
-    background-color: #d6d6d6;
-  }
-  .ace_selection {
-    background: #a7c4de;
-  }
 }
 </style>
 
@@ -63,15 +71,11 @@ export default {
     }
   },
   methods: {
-    onError() {
-      console.error('error')
-    },
     getRawValue() {
       return JSON.stringify(this.json)
     },
     setContent(value) {
       this.json = JSON.parse(value)
-      // editor.getSession().setValue(value)
     }
   },
   watch: {
@@ -79,11 +83,6 @@ export default {
       handler() {
         this.$emit('change', this.getRawValue())
       }
-    },
-    refreshAce() {
-      // setTimeout(() => {
-      //   editor.focus()
-      // }, 500)
     }
   },
   mounted() {
