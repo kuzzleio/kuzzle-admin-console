@@ -136,6 +136,7 @@
                   title="Edit document"
                   variant="link"
                   class="px-0 mx-1"
+                  :data-cy="`ColumnView-table-edit-btn--${data.item.id}`"
                   :disabled="!canEdit"
                   @click="editDocument(data.item.id)"
                 >

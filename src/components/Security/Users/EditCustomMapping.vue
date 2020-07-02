@@ -1,7 +1,31 @@
 <template>
   <b-container data-cy="EditUserMapping">
-    <headline>Edit User Custom Data Mapping</headline>
-
+    <b-row>
+      <b-col cols="7">
+        <headline>Edit User Custom Data Mapping</headline>
+      </b-col>
+      <b-col class="mt-2">
+        <b-row>
+          <b-col cols="5">
+            <b-button download="mappring.json" :href="downloadMappingValue">
+              Export Mapping
+            </b-button>
+          </b-col>
+          <b-col cols="7">
+            <b-form-file
+              ref="file-input"
+              class="custom-file-input"
+              id="import-mapping"
+              @change="loadMappingValue($event)"
+              title="Import mapping from JSON file"
+            />
+            <label class="custom-file-label" for="import-mapping"
+              >Import file</label
+            >
+          </b-col>
+        </b-row>
+      </b-col>
+    </b-row>
     <div v-if="!loading" class="wrapper collection-edit">
       <b-alert class="flow-text">
         Here, you will be able to define the fields to be included in Users'
@@ -41,7 +65,6 @@
             </b-col>
           </b-row>
         </div>
-
         <template v-slot:footer>
           <div class="text-right">
             <b-button class="mr-2" variant="outline-primary" @click="onCancel"
@@ -75,6 +98,15 @@
   .ErrorBox-dismissBtn {
     float: right;
   }
+}
+
+::v-deep .customMappingDropdown {
+  background-color: $light-grey-color;
+  border: none;
+}
+
+::v-deep .show .customMappingDropdown i {
+  transform: rotate(90deg);
 }
 </style>
 
@@ -112,6 +144,12 @@ export default {
       } catch (error) {
         return false
       }
+    },
+    downloadMappingValue() {
+      const blob = new Blob([JSON.stringify(this.mappingValue)], {
+        type: 'application/json'
+      })
+      return window.URL.createObjectURL(blob)
     }
   },
   async mounted() {
@@ -125,6 +163,26 @@ export default {
     this.loading = false
   },
   methods: {
+    loadMappingValue(event) {
+      let file = event.target.files[0]
+      let reader = new FileReader()
+      reader.onload = async e => {
+        this.mappingValue = e.target.result
+        this.$refs.jsoneditor.setContent(this.mappingValue)
+        this.$bvToast.toast(
+          'The file has been written in the json editor. You can still edit it before saving if necessary.',
+          {
+            title: 'Import successfully',
+            variant: 'success',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
+          }
+        )
+      }
+      reader.readAsText(file)
+    },
     onMappingChange(value) {
       this.mappingValue = value
     },
