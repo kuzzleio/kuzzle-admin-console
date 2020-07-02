@@ -198,7 +198,10 @@ export default {
       }
 
       let searchQuery = null
-      searchQuery = filterManager.toSearchQuery(this.currentFilter, this.collectionMapping)
+      searchQuery = filterManager.toSearchQuery(
+        this.currentFilter,
+        this.collectionMapping
+      )
       if (!searchQuery) {
         searchQuery = {}
       }
