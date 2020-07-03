@@ -73,7 +73,7 @@
             params: { index: indexName, collection: collectionName }
           }"
         >
-          <span v-html="highlight(truncateName(collectionName, 15), filter)" />
+          <HighlightedSpan :value="collectionName" :filter="filter" />
         </router-link>
       </div>
     </div>
