@@ -7,8 +7,13 @@
         @environment::importEnv="$emit('environment::importEnv')"
       />
     </div>
+
+    <div class="Home-routeWrapper">
+      <main-spinner v-if="authInitializing"></main-spinner>
+      <router-view v-else />
+    </div>
     <b-alert
-      class="position-fixed fixed-bottom m-0 rounded-0 text-center"
+      class="rounded-0 text-center mb-0 "
       dismissible
       fade
       style="z-index: 2000;"
@@ -21,11 +26,6 @@
       recommended <a href="#/signup" class="alert-link"> that you create one.</a
       ><i class="fa fa-exclamation-triangle ml-2" aria-hidden="true"></i>
     </b-alert>
-
-    <div class="Home-routeWrapper">
-      <main-spinner v-if="authInitializing"></main-spinner>
-      <router-view v-else />
-    </div>
 
     <b-modal
       id="tokenExpired"
