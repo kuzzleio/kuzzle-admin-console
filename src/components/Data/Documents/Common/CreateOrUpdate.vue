@@ -75,21 +75,18 @@
 .DocumentCreateOrUpdate {
   flex-grow: 1;
 
-  &-editorLayout {
+  &-editorLayout,
+  &-mappingLayout {
     display: flex;
     flex-direction: column;
   }
   &-jsonEditor {
     flex-grow: 1;
   }
-
-  &-mappingLayout {
-    display: flex;
-    flex-direction: column;
-  }
   &-mapping {
     flex: 1 1 1px;
     margin-bottom: 0;
+    overflow: auto;
   }
 }
 </style>

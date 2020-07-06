@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container class="CreateProfile">
     <Headline>
       Create a new profile
     </Headline>
@@ -8,13 +8,21 @@
   </b-container>
 </template>
 
+<style lang="scss" scoped>
+.CreateProfile {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+</style>
+
 <script>
 import CreateOrUpdate from './CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'SecurityUpdate',
+  name: 'CreateProfile',
   components: {
     Headline,
     CreateOrUpdate,

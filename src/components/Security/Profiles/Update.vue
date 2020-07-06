@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container class="UpdateProfile">
     <Headline>
       Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
@@ -14,13 +14,21 @@
   </b-container>
 </template>
 
+<style lang="scss" scoped>
+.UpdateProfile {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+</style>
+
 <script>
 import CreateOrUpdate from './CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'SecurityUpdate',
+  name: 'UpdateProfile',
   components: {
     Headline,
     CreateOrUpdate,
