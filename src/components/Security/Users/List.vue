@@ -1,6 +1,6 @@
 <template>
   <div class="UserList">
-    <slot v-if="isCollectionEmpty" name="emptySet" />
+    <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
       <b-row class="justify-content-md-center" no-gutters>
         <b-col cols="12">
@@ -212,8 +212,6 @@ export default {
       return this.currentFilter.active !== filterManager.NO_ACTIVE
     },
     isCollectionEmpty() {
-      console.log(!this.isDocumentListFiltered && this.totalDocuments === 0)
-
       return !this.isDocumentListFiltered && this.totalDocuments === 0
     },
     displayBulkDelete() {
