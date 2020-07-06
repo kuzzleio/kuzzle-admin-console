@@ -6,7 +6,7 @@
         :collection="$route.params.collection"
       />
     </div>
-    <MultipaneResizer data-cy="sidebarResizer"/>
+    <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
       <template v-if="loading">
         <main-spinner></main-spinner>
@@ -64,7 +64,7 @@ export default {
 .DataLayout-contentWrapper {
   flex-grow: 1;
   height: 100%;
-  overflow: auto;
+  // overflow: auto;
   padding: $content-gutter;
 }
 
