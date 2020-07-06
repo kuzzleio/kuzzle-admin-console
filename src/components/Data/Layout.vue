@@ -64,7 +64,7 @@ export default {
 .DataLayout-contentWrapper {
   flex-grow: 1;
   height: 100%;
-  // overflow: auto;
+  overflow: auto;
   padding: $content-gutter;
 }
 
