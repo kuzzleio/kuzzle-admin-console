@@ -163,10 +163,6 @@
     overflow: auto;
   }
 }
-
-.flex-grow {
-  flex: 1 1 1px;
-}
 </style>
 
 <script>
