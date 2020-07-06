@@ -8,7 +8,7 @@
       </b-row>
     </template>
     <slot v-if="isCollectionEmpty" name="emptySet" />
-    <template v-if="!isCollectionEmpty && !loading">
+    <template v-if="!loading">
       <b-row class="justify-content-md-center" no-gutters>
         <b-col cols="12">
           <filters
@@ -259,8 +259,6 @@ export default {
       }
     },
     async fetchDocuments() {
-      this.loading = true
-
       this.$forceUpdate()
 
       this.selectedDocuments = []
