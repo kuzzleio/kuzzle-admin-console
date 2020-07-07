@@ -3,11 +3,10 @@ module.exports = {
 
   env: {
     es6: true,
-    node: true,
-    jquery: true
+    node: true
   },
 
-  extends: ["plugin:vue/essential", "@vue/prettier"],
+  extends: ["plugin:vue/essential", "@vue/prettier", '@vue/typescript'],
 
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
@@ -21,16 +20,10 @@ module.exports = {
 
   overrides: [
     {
-      files: ["**/__tests__/*.{j,t}s?(x)"],
+      files: ["test/**/*.js"],
       env: {
         mocha: true
       }
     }
-  ],
-
-  'extends': [
-    'plugin:vue/essential',
-    '@vue/prettier',
-    '@vue/typescript'
   ]
 };

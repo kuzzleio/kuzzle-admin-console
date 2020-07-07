@@ -64,7 +64,7 @@
         <b-dropdown-item v-if="isRealtime" @click="removeRealtimeCollection">
           Remove collection
         </b-dropdown-item>
-        <b-dropdown-item  @click="onDeleteCollectionClicked">
+        <b-dropdown-item @click="onDeleteCollectionClicked">
           Remove collection
         </b-dropdown-item>
         <template v-if="!isRealtime && !isList">
@@ -153,7 +153,7 @@ export default {
   data: function() {
     return {
       collectionToDelete: '',
-      deleteConfirmation: '',
+      deleteConfirmation: ''
     }
   },
   props: {
