@@ -3,7 +3,7 @@
     <b-card class="h-100">
       <!-- Json view -->
       <b-row class="h-100">
-        <b-col lg="7" md="12" class="DocumentCreateOrUpdate-editorLayout">
+        <b-col lg="7" md="12" class="d-flex flex-column">
           <b-form-group
             label="Document ID"
             label-cols="3"
@@ -23,7 +23,7 @@
         </b-col>
 
         <!-- Mapping -->
-        <b-col lg="5" md="12" class="DocumentCreateOrUpdate-mappingLayout">
+        <b-col lg="5" md="12" class="d-flex flex-column">
           <h3>Mapping</h3>
 
           <pre
@@ -75,11 +75,6 @@
 .DocumentCreateOrUpdate {
   flex-grow: 1;
 
-  &-editorLayout,
-  &-mappingLayout {
-    display: flex;
-    flex-direction: column;
-  }
   &-jsonEditor {
     flex-grow: 1;
   }

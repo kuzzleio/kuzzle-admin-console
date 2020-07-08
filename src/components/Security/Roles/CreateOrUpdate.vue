@@ -1,5 +1,8 @@
 <template>
-  <b-container class="CreateOrUpdateRole h-100" data-cy="CreateOrUpdateRole">
+  <b-container
+    class="CreateOrUpdateRole d-flex flex-column h-100"
+    data-cy="CreateOrUpdateRole"
+  >
     <Headline v-if="id">
       Update role - <span class="code">{{ id }}</span>
     </Headline>
@@ -11,7 +14,7 @@
     <template v-else>
       <b-card class="h-100">
         <b-row class="h-100">
-          <b-col lg="7" md="12" class="CreateOrUpdateRole-editorLayout">
+          <b-col lg="7" md="12" class="d-flex flex-column">
             <b-form-group
               v-if="!id"
               label="Role ID"
@@ -41,7 +44,7 @@
               @change="onContentChange"
             />
           </b-col>
-          <b-col lg="5" md="12" class="CreateOrUpdateRole-cheatsheetLayout">
+          <b-col lg="5" md="12" class="d-flex flex-column">
             <div class="CreateOrUpdateRole-cheatsheet">
               <h3>Cheatsheet</h3>
               Your role consists of a <code>controllers</code> object, in which
@@ -101,15 +104,6 @@
 
 <style lang="scss" scoped>
 .CreateOrUpdateRole {
-  display: flex;
-  flex-direction: column;
-
-  &-editorLayout,
-  &-cheatsheetLayout {
-    display: flex;
-    flex-direction: column;
-  }
-
   &-jsonEditor {
     flex-grow: 1;
   }

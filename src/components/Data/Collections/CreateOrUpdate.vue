@@ -1,5 +1,5 @@
 <template>
-  <div class="CollectionCreateOrUpdate">
+  <div class="CollectionCreateOrUpdate d-flex flex-column h-100">
     <headline>
       <span class="CollectionCreateOrUpdate-index code text-secondary">
         {{ index }}
@@ -8,7 +8,7 @@
       {{ headline }}
     </headline>
 
-    <b-card class="flex-grow" body-class="CollectionCreateOrUpdate-form">
+    <b-card class="flex-grow" body-class="d-flex flex-column">
       <template v-slot:footer>
         <div class="text-right">
           <b-button
@@ -102,16 +102,14 @@
               id="collection"
               ref="jsoneditor"
               tabindex="4"
-              myclass="CollectionCreateOrUpdate-jsonEditor"
+              myclass="h-100"
               :content="rawMapping"
               @change="onMappingChanged"
             />
           </b-col>
 
           <b-col cols="4">
-            <div
-              class="CollectionCreateOrUpdate-helpLayout h-100 text-secondary"
-            >
+            <div class="d-flex flex-column h-100 text-secondary">
               <div class="CollectionCreateOrUpdate-help">
                 You can (optionally) use this editor to define the mapping for
                 this collection.
@@ -144,20 +142,6 @@
 
 <style lang="scss" scoped>
 .CollectionCreateOrUpdate {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  &-form,
-  &-helpLayout {
-    display: flex;
-    flex-direction: column;
-  }
-
-  &-jsonEditor {
-    height: 100%;
-  }
-
   &-help {
     flex: 1 1 1px;
     overflow: auto;

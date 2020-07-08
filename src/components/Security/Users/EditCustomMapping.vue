@@ -1,5 +1,8 @@
 <template>
-  <b-container class="EditUserMapping h-100" data-cy="EditUserMapping">
+  <b-container
+    class="EditUserMapping d-flex flex-column h-100"
+    data-cy="EditUserMapping"
+  >
     <b-row>
       <b-col cols="6">
         <headline>Edit User Custom Data Mapping</headline>
@@ -13,10 +16,10 @@
           Export Mapping
         </b-button>
         <b-form-file
-          class="float-right mr-3"
+          class="float-right mr-3 w-50"
           ref="file-input"
           @change="loadMappingValue($event)"
-          placeholder="Import mapping from JSON file"
+          placeholder="Import mapping"
         />
       </b-col>
     </b-row>
@@ -31,7 +34,7 @@
             <json-editor
               id="user-custom-data-mapping-editor"
               data-cy="EditUserMapping-JSONEditor"
-              myclass="EditUserMapping-jsonEditor"
+              myclass="h-100"
               ref="jsoneditor"
               tabindex="4"
               :content="mappingValue"
@@ -78,38 +81,6 @@
     </template>
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-.EditUserMapping {
-  display: flex;
-  flex-direction: column;
-  &-jsonEditor {
-    height: 100%;
-  }
-}
-
-.ErrorBox {
-  color: #fff;
-  padding: 10px;
-
-  p {
-    margin: 0;
-  }
-
-  .ErrorBox-dismissBtn {
-    float: right;
-  }
-}
-
-::v-deep .customMappingDropdown {
-  background-color: $light-grey-color;
-  border: none;
-}
-
-::v-deep .show .customMappingDropdown i {
-  transform: rotate(90deg);
-}
-</style>
 
 <script type="text/javascript">
 /**

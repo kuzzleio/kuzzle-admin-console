@@ -1,5 +1,5 @@
 <template>
-  <b-container class="CreateProfile">
+  <b-container class="CreateProfile d-flex flex-column h-100">
     <Headline>
       Create a new profile
     </Headline>
@@ -7,14 +7,6 @@
     <create-or-update @cancel="onCancel" @submit="onSubmit" />
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-.CreateProfile {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>
 
 <script>
 import CreateOrUpdate from './CreateOrUpdate'

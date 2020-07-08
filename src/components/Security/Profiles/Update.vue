@@ -1,5 +1,5 @@
 <template>
-  <b-container class="UpdateProfile">
+  <b-container class="UpdateProfile d-flex flex-column h-100">
     <Headline>
       Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
@@ -13,14 +13,6 @@
     />
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-.UpdateProfile {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>
 
 <script>
 import CreateOrUpdate from './CreateOrUpdate'

@@ -2,7 +2,7 @@
   <b-card class="ProfileCreateOrUpdate">
     <!-- Json view -->
     <b-row class="h-100">
-      <b-col lg="7" md="12" class="ProfileCreateOrUpdate-editorLayout">
+      <b-col lg="7" md="12" class="d-flex flex-column">
         <b-form-group
           v-if="!id"
           label="Profile ID"
@@ -35,7 +35,7 @@
       </b-col>
 
       <!-- Mapping -->
-      <b-col lg="5" md="12" class="ProfileCreateOrUpdate-cheatsheetLayout">
+      <b-col lg="5" md="12" class="d-flex flex-column">
         <h3>Cheatsheet</h3>
         <div class="ProfileCreateOrUpdate-cheatsheet">
           Your profile is a set of <code>policies</code>, each of which will
@@ -102,14 +102,8 @@
 
 <style lang="scss" scoped>
 .ProfileCreateOrUpdate {
-  // margin-bottom: 3em;
   flex-grow: 1;
 
-  &-editorLayout,
-  &-cheatsheetLayout {
-    display: flex;
-    flex-direction: column;
-  }
   &-jsonEditor {
     flex-grow: 1;
   }

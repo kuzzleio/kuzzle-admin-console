@@ -1,5 +1,5 @@
 <template>
-  <b-container class="DocumentCreate">
+  <b-container class="DocumentCreate d-flex flex-column h-100">
     <template v-if="hasRights" class="wrapper">
       <headline>
         Create a new document
@@ -18,14 +18,6 @@
     </template>
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-.DocumentCreate {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-</style>
 
 <script>
 import PageNotAllowed from '../../Common/PageNotAllowed'
