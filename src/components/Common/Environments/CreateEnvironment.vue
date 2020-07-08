@@ -254,8 +254,7 @@ export default {
       this.environment.backendMajorVersion = this.environments[
         this.environmentId
       ].backendMajorVersion
-      // NOTE reset validation after setting the loaded values
-      this.$nextTick(() => this.$v.environment.$reset())
+      this.$nextTick(() => this.showValidationErrors())
     } else {
       this.environment.name = null
       this.environment.host = null
@@ -270,6 +269,17 @@ export default {
       const { $dirty, $error } = this.$v.environment[fieldName]
       const state = $dirty ? !$error : null
       return state
+    },
+    showValidationErrors() {
+      this.$v.environment.$touch()
+      Object.keys(this.$v.environment).forEach(field => {
+        if (/^\$/.test(field)) {
+          return
+        }
+        if (this.$v.environment[field].$anyError === false) {
+          this.$v.environment[field].$reset()
+        }
+      })
     },
     checkSSL() {
       if (this.environment.port === 443) {
