@@ -1,6 +1,6 @@
 <template>
-  <b-container class="CollectionUpdate">
-    <div v-if="hasRights">
+  <b-container class="CollectionUpdate h-100">
+    <div v-if="hasRights" class="h-100">
       <create-or-update
         v-if="!loading"
         headline="Update collection"
@@ -18,7 +18,6 @@
     </div>
   </b-container>
 </template>
-
 <script>
 import PageNotAllowed from '../../Common/PageNotAllowed'
 import CreateOrUpdate from './CreateOrUpdate'
