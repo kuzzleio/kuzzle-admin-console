@@ -14,7 +14,6 @@
           placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
           type="text"
           :value="kuid"
-          :disabled="autoGenerateKuid"
           @change="setCustomKuid"
         />
         <span class="code" v-if="!editKuid">{{ kuid }}</span>
@@ -30,6 +29,16 @@
           @selected-profile="onProfileSelected"
           @remove-profile="removeProfile"
         />
+        <b-row>
+          <b-col offset="6">
+            <div class="text-danger">
+              <small v-if="validations.$anyError"
+                >Please add at least one profile</small
+              >
+              <small v-else><br /></small>
+            </div>
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
   </form>
@@ -43,21 +52,12 @@ export default {
   components: {
     UserProfileList
   },
-  data() {
-    return {
-      autoGenerateKuidValue: false
-    }
-  },
   props: {
     addedProfiles: {
       type: Array,
       default: () => {
         return []
       }
-    },
-    autoGenerateKuid: {
-      type: Boolean,
-      default: false
     },
     kuid: {
       type: String,
@@ -66,6 +66,9 @@ export default {
     editKuid: {
       type: Boolean,
       default: false
+    },
+    validations: {
+      type: Object
     }
   },
   methods: {
@@ -77,14 +80,6 @@ export default {
     },
     removeProfile(profile) {
       this.$emit('profile-remove', profile)
-    }
-  },
-  watch: {
-    autoGenerateKuid: {
-      immediate: true,
-      handler(v) {
-        this.autoGenerateKuidValue = v
-      }
     }
   }
 }

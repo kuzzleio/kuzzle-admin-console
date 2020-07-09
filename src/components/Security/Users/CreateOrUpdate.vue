@@ -23,10 +23,18 @@
             @tab-changed="switchTab"
           >
             <b-tab id="UserUpdate-basicTab" title="Basic">
+              <template v-slot:title>
+                <i
+                  v-if="$v.addedProfiles.$anyError"
+                  class="fas fa-exclamation-circle text-danger"
+                />
+                Basic
+              </template>
               <basic
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
                 :kuid="kuid"
+                :validations="$v.addedProfiles"
                 @set-custom-kuid="setCustomKuid"
                 @profile-add="onProfileAdded"
                 @profile-remove="onProfileRemoved"
@@ -40,6 +48,13 @@
               />
             </b-tab>
             <b-tab id="UserUpdate-customTab" title="Custom">
+              <template v-slot:title>
+                <i
+                  v-if="$v.customContentValue.$anyError"
+                  class="fas fa-exclamation-circle text-danger"
+                />
+                Custom
+              </template>
               <custom-data
                 :mapping="customContentMapping"
                 :value="customContent"
@@ -51,13 +66,7 @@
 
         <template v-slot:footer>
           <b-row class="mt-2">
-            <b-col cols="9"
-              ><b-alert :show="error" variant="danger">
-                <i class="fa fa-times dismiss-error" @click="dismissError()" />
-                {{ error }}
-              </b-alert></b-col
-            >
-            <b-col class="text-right">
+            <b-col offset="9" class="text-right">
               <b-button class="m-1" tabindex="6" @click.prevent="cancel"
                 >Cancel</b-button
               >
@@ -66,6 +75,7 @@
                 data-cy="UserUpdate-submit"
                 type="submit"
                 variant="primary"
+                :disabled="submitting"
                 @click.prevent="submit"
               >
                 <span v-if="id">Save</span>
@@ -75,8 +85,6 @@
           </b-row>
         </template>
       </b-card>
-
-      <!-- Actions -->
     </b-container>
   </div>
 </template>
@@ -91,6 +99,9 @@
 </style>
 
 <script>
+import { validationMixin } from 'vuelidate'
+// import { minLength } from 'vuelidate/lib/validators'
+
 import Basic from './Steps/Basic'
 import CredentialsSelector from './Steps/CredentialsSelector'
 import CustomData from './Steps/CustomData'
@@ -99,7 +110,9 @@ import Notice from '../Common/Notice'
 import MainSpinner from '../../Common/MainSpinner'
 import Promise from 'bluebird'
 import { mapGetters } from 'vuex'
+
 export default {
+  mixins: [validationMixin],
   name: 'CreateOrUpdateUser',
   components: {
     Basic,
@@ -111,9 +124,7 @@ export default {
   },
   data() {
     return {
-      error: null,
       loading: false,
-      refresh: false,
       activeTab: 'basic',
       activeTabObject: null,
       submitting: false,
@@ -127,30 +138,46 @@ export default {
       customContentMapping: {}
     }
   },
+  validations() {
+    const v = {
+      addedProfiles: {
+        minLength: function(value) {
+          return value.length > 0
+        }
+      },
+      customContentValue: {
+        syntaxOK: function(value) {
+          try {
+            JSON.parse(value)
+            return true
+          } catch (error) {
+            return false
+          }
+        }
+      }
+    }
+    // TODO One day we should be able to validate credentials (big deal)
+    return v
+  },
   props: {
     id: {
       type: String
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper']),
-    stepNumber() {
-      switch (this.activeTab) {
-        case 'basic':
-          return 0
-        case 'credentials':
-          return 1
-        default:
-          return 2
-      }
-    }
+    ...mapGetters('kuzzle', ['$kuzzle', 'wrapper'])
   },
   methods: {
     onProfileAdded(profile) {
-      this.addedProfiles.push(profile)
+      this.$v.addedProfiles.$model.push(profile)
+      this.$v.addedProfiles.$touch()
     },
     onProfileRemoved(profile) {
-      this.addedProfiles.splice(this.addedProfiles.indexOf(profile), 1)
+      this.$v.addedProfiles.$model.splice(
+        this.$v.addedProfiles.$model.indexOf(profile),
+        1
+      )
+      this.$v.addedProfiles.$touch()
     },
     setCustomKuid(value) {
       this.kuid = value
@@ -159,7 +186,7 @@ export default {
       this.credentials[payload.strategy] = { ...payload.credentials }
     },
     onCustomContentChanged(value) {
-      this.customContentValue = value
+      this.$v.customContentValue.$model = value
     },
     switchTab(name) {
       this.activeTab = name
@@ -167,21 +194,11 @@ export default {
     setActiveTabObject(tab) {
       this.activeTabObject = tab
     },
-    validate() {
-      if (!this.addedProfiles.length) {
-        throw new Error('Please add at least one profile to the user')
-      }
-
-      return true
-    },
     async submit() {
-      try {
-        this.validate()
-      } catch (e) {
-        this.setError(e.message)
+      this.$v.$touch()
+      if (this.$v.$anyError) {
         return
       }
-      this.loading = true
       this.submitting = true
 
       try {
@@ -225,29 +242,20 @@ export default {
               await this.$store.direct.dispatch.auth.checkFirstAdmin()
             } catch (err) {
               this.$log.error(err)
-              this.setError(err.message)
             }
           }
         }
         this.$router.push({ name: 'SecurityUsersList' })
-        this.loading = false
       } catch (err) {
-        if (err) {
-          this.$log.error(err)
-          this.setError(err.message)
-          this.submitting = false
-        }
-        this.loading = false
+        this.$log.error(err)
+        this.submitting = false
+        this.$bvToast.toast(err.message, {
+          title: 'Unable to create user',
+          variant: 'danger',
+          toaster: 'b-toaster-bottom-right',
+          appendToast: true
+        })
       }
-    },
-    setError(msg) {
-      this.error = msg
-      setTimeout(() => {
-        this.dismissError()
-      }, 15000)
-    },
-    dismissError() {
-      this.error = null
     },
     cancel() {
       if (this.$router._prevTransition && this.$router._prevTransition.to) {
