@@ -26,7 +26,7 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it('Should not be able to create an environment with the same name of an existing one', () => {
+  it.only('Should not be able to create an environment with the same name of an existing one', () => {
     const localEnvName = 'local'
     localStorage.setItem(
       'environments',
@@ -55,12 +55,9 @@ describe('Environments', function() {
       `v${backendVersion}.x`
     )
     cy.get('[data-cy=EnvironmentCreateModal-submit]').click()
-    cy.get('.b-toast')
+    cy.get('#input-env-name-feedback')
       .should('be.visible')
-      .should(
-        'contain',
-        `An environment with name ${localEnvName} already exists. Please specify a different one.`
-      )
+      .should('contain', `An environment with the same name already exists`)
   })
 
   it('Should be able to delete environments', function() {
