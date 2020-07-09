@@ -1,5 +1,5 @@
 <template>
-  <div class="LoginPage">
+  <div class="ResetPassword">
     <b-row align-h="center" class="w-100">
       <b-col xl="6" lg="7" md="8" sm="10">
         <b-card>
@@ -31,6 +31,15 @@
     </b-row>
   </div>
 </template>
+
+<style type="text/css" scoped>
+.ResetPassword {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
 
 <script>
 import ResetPasswordForm from './Common/Login/ResetPasswordForm'
