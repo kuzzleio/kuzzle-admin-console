@@ -130,14 +130,14 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const SaveFavorisLocalStorage= (filters, index, collection) => {
+export const SaveFavorisToLocalStorage= (filters, index, collection) => {
   localStorage.setItem(
     `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filters)
   )
 }
 
-export const NewFavorisLocalStorage = (filter, index, collection) => {
+export const NewFavorisToLocalStorage = (filter, index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot save filters to localstorage if no index or collection are specified'
@@ -146,12 +146,12 @@ export const NewFavorisLocalStorage = (filter, index, collection) => {
   if (filter.active === null) {
     return
   }
-  let filters = LoadFavorisLocalStorage(index, collection)
+  let filters = LoadFavorisFromLocalStorage(index, collection)
   filters.push(filter)
-  SaveFavorisLocalStorage(filters, index, collection)
+  SaveFavorisToLocalStorage(filters, index, collection)
 }
 
-export const LoadFavorisLocalStorage = (index, collection) => {
+export const LoadFavorisFromLocalStorage = (index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot load filters from localstorage if no index or collection are specified'
@@ -166,14 +166,14 @@ export const LoadFavorisLocalStorage = (index, collection) => {
   return []
 }
 
-export const SaveHistoyLocalStorage= (filters, index, collection) => {
+export const SaveHistoyToLocalStorage= (filters, index, collection) => {
   localStorage.setItem(
     `${HISTORY_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filters)
   )
 }
 
-export const NewHistoyLocalStorage = (filter, index, collection) => {
+export const NewHistoyToLocalStorage = (filter, index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot save filters to localstorage if no index or collection are specified'
@@ -182,7 +182,7 @@ export const NewHistoyLocalStorage = (filter, index, collection) => {
   if (filter.active === null) {
     return
   }
-  let filters = LoadHistoyLocalStorage(index, collection)
+  let filters = LoadHistoyFromLocalStorage(index, collection)
   let date = new Date(Date.now())
   filter.name =
     date.getDate() +
@@ -199,10 +199,10 @@ export const NewHistoyLocalStorage = (filter, index, collection) => {
     filters.shift()
   }
   filters.push(filter)
-  SaveHistoyLocalStorage(filters, index, collection)
+  SaveHistoyToLocalStorage(filters, index, collection)
 }
 
-export const LoadHistoyLocalStorage = (index, collection) => {
+export const LoadHistoyFromLocalStorage = (index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot load filters from localstorage if no index or collection are specified'

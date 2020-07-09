@@ -471,7 +471,7 @@ export default {
           this.collection
         )
         if (!isLoadHistory) {
-          filterManager.NewHistoyLocalStorage(
+          filterManager.NewHistoyToLocalStorage(
             newFilters,
             this.index,
             this.collection

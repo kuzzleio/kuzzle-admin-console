@@ -131,7 +131,7 @@ export default {
           this.index,
           this.collection
         )
-        filterManager.NewHistoyLocalStorage(
+        filterManager.NewHistoyToLocalStorage(
           newValue,
           this.index,
           this.collection
@@ -185,7 +185,7 @@ export default {
           this.index,
           this.collection
         )
-        filterManager.NewHistoyLocalStorage(
+        filterManager.NewHistoyToLocalStorage(
           newFilters,
           this.index,
           this.collection

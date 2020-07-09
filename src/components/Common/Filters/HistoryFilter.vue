@@ -32,11 +32,11 @@ export default {
     }
   },
   mounted() {
-    this.filters = filterManager.LoadHistoyLocalStorage(
+    this.filters = filterManager.LoadHistoyFromLocalStorage(
       this.index,
       this.collection
     )
-    this.favoris = filterManager.LoadFavorisLocalStorage(
+    this.favoris = filterManager.LoadFavorisFromLocalStorage(
       this.index,
       this.collection
     )
@@ -54,7 +54,7 @@ export default {
   watch: {
     filters: {
       handler() {
-        filterManager.SaveHistoyLocalStorage(
+        filterManager.SaveHistoyToLocalStorage(
           this.filters,
           this.index,
           this.collection
@@ -64,7 +64,7 @@ export default {
     },
     favoris: {
       handler() {
-        filterManager.SaveFavorisLocalStorage(
+        filterManager.SaveFavorisToLocalStorage(
           this.favoris,
           this.index,
           this.collection

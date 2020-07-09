@@ -30,7 +30,7 @@ export default {
     }
   },
   mounted() {
-    this.favoris = filterManager.LoadFavorisLocalStorage(
+    this.favoris = filterManager.LoadFavorisFromLocalStorage(
       this.index,
       this.collection
     )
@@ -48,7 +48,7 @@ export default {
   watch: {
     favoris: {
       handler() {
-        filterManager.SaveFavorisLocalStorage(this.favoris, this.index, this.collection)
+        filterManager.SaveFavorisToLocalStorage(this.favoris, this.index, this.collection)
       },
       deep: true
     }
