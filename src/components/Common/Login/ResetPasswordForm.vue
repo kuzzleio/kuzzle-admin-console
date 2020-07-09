@@ -2,6 +2,7 @@
   <form id="resetPasswordForm" method="post" @submit.prevent="resetPassword()">
     <div class="resetPasswordForm-inputs">
       <b-form-group
+        data-cy="ResetPassword-password--group"
         invalid-feedback="Password must not be empty"
         label="New password"
         label-for="password"
@@ -24,6 +25,7 @@
       </b-form-group>
 
       <b-form-group
+        data-cy="ResetPassword-password2--group"
         description="Re-type the password for confirmation"
         label="Confirm password"
         label-cols-sm="4"

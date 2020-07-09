@@ -8,6 +8,7 @@
 
     <b-form>
       <b-form-group
+        data-cy="CreateEnvironment-name--group"
         description="A friendly name for the connection"
         id="env-name"
         label="Connection name"
@@ -27,6 +28,7 @@
       </b-form-group>
 
       <b-form-group
+        data-cy="CreateEnvironment-host--group"
         description="The host where your Kuzzle is running"
         id="env-host"
         label="Hostname"
@@ -44,6 +46,7 @@
       </b-form-group>
 
       <b-form-group
+        data-cy="CreateEnvironment-port--group"
         id="env-port"
         label="Port"
         description="The port where your Kuzzle is listening for connections"
@@ -70,6 +73,7 @@
         ></b-form-checkbox>
       </b-form-group>
       <b-form-group
+        data-cy="CreateEnvironment-backendVersion--group"
         label="Kuzzle version"
         label-cols-sm="4"
         label-cols-lg="3"

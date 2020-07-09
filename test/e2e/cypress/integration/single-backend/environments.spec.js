@@ -26,7 +26,7 @@ describe('Environments', function() {
     cy.get(`[data-cy="EnvironmentSwitch-env_${fmt(newEnvName)}"]`)
   })
 
-  it.only('Should not be able to create an environment with the same name of an existing one', () => {
+  it('Should not be able to create an environment with the same name of an existing one', () => {
     const localEnvName = 'local'
     localStorage.setItem(
       'environments',
@@ -58,6 +58,48 @@ describe('Environments', function() {
     cy.get('#input-env-name-feedback')
       .should('be.visible')
       .should('contain', `An environment with the same name already exists`)
+  })
+
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.visit('/create-connection/')
+    cy.get('[data-cy="CreateEnvironment-name"]').type(' ', {
+      force: true
+    })
+    cy.get('[data-cy="CreateEnvironment-name--group"]').should(
+      'contain',
+      'You must enter a non-empty environment name'
+    )
+
+    cy.get('[data-cy="CreateEnvironment-host"]').type(' ', {
+      force: true
+    })
+    cy.get('[data-cy="CreateEnvironment-host--group"]').should(
+      'contain',
+      'You must enter a non-empty host name'
+    )
+
+    cy.get('[data-cy="CreateEnvironment-host"]').type(
+      '{selectall}invalid host ',
+      {
+        force: true
+      }
+    )
+    cy.get('[data-cy="CreateEnvironment-host--group"]').should(
+      'contain',
+      'Must be a valid host name'
+    )
+
+    cy.get('[data-cy=CreateEnvironment-port]').type('{selectall} tralala')
+    cy.get(
+      '[data-cy="CreateEnvironment-port--group"] .invalid-feedback'
+    ).should('not.be.visible')
+
+    cy.get('[data-cy=Environment-SubmitButton]').click()
+    cy.get('[data-cy="CreateEnvironment-backendVersion--group"]').should(
+      'contain',
+      'You must select a backend version'
+    )
+    cy.url().should('be', '/create-connection/')
   })
 
   it('Should be able to delete environments', function() {
