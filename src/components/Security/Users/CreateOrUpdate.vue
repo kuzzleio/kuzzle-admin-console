@@ -25,7 +25,7 @@
             <b-tab id="UserUpdate-basicTab" title="Basic">
               <template v-slot:title>
                 <i
-                  v-if="$v.addedProfiles.$anyError"
+                  v-if="$v.basic.$anyError"
                   class="fas fa-exclamation-circle text-danger"
                 />
                 Basic
@@ -34,7 +34,7 @@
                 :edit-kuid="!id"
                 :added-profiles="addedProfiles"
                 :kuid="kuid"
-                :validations="$v.addedProfiles"
+                :validations="$v.basic"
                 @set-custom-kuid="setCustomKuid"
                 @profile-add="onProfileAdded"
                 @profile-remove="onProfileRemoved"
@@ -89,18 +89,10 @@
   </div>
 </template>
 
-<style scoped>
-.bold {
-  font-weight: normal;
-}
-.UserUpdate--container {
-  transition: max-width 0.6s;
-}
-</style>
-
 <script>
 import { validationMixin } from 'vuelidate'
-// import { minLength } from 'vuelidate/lib/validators'
+import { startsWithSpace, isWhitespace } from '../../../utils'
+import { not } from 'vuelidate/lib/validators'
 
 import Basic from './Steps/Basic'
 import CredentialsSelector from './Steps/CredentialsSelector'
@@ -140,11 +132,16 @@ export default {
   },
   validations() {
     const v = {
+      kuid: {
+        notEmpty: not(isWhitespace),
+        notStartsWithSpace: not(startsWithSpace)
+      },
       addedProfiles: {
         minLength: function(value) {
           return value.length > 0
         }
       },
+      basic: ['kuid', 'addedProfiles'],
       customContentValue: {
         syntaxOK: function(value) {
           try {
@@ -180,7 +177,7 @@ export default {
       this.$v.addedProfiles.$touch()
     },
     setCustomKuid(value) {
-      this.kuid = value
+      this.$v.kuid.$model = value
     },
     onCredentialsChanged(payload) {
       this.credentials[payload.strategy] = { ...payload.credentials }

@@ -1,24 +1,21 @@
 <template>
   <form class="wrapper">
-    <b-row>
-      <b-col cols="2">
-        <strong>KUID</strong>
-      </b-col>
+    <b-form-group label-cols="2">
+      <template v-slot:label><strong>KUID</strong></template>
 
-      <b-col>
-        <b-input
-          v-if="editKuid"
-          class="validate"
-          data-cy="UserBasic-kuid"
-          id="custom-kuid"
-          placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
-          type="text"
-          :value="kuid"
-          @change="setCustomKuid"
-        />
-        <span class="code" v-if="!editKuid">{{ kuid }}</span>
-      </b-col>
-    </b-row>
+      <b-input
+        v-if="editKuid"
+        class="validate"
+        data-cy="UserBasic-kuid"
+        id="custom-kuid"
+        placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
+        type="text"
+        :disabled="!editKuid"
+        :state="validateState('kuid')"
+        :value="kuid"
+        @input="setCustomKuid"
+      />
+    </b-form-group>
     <b-row class="mt-2">
       <b-col cols="2">
         <strong>Profiles</strong>
@@ -32,7 +29,7 @@
         <b-row>
           <b-col offset="6">
             <div class="text-danger">
-              <small v-if="validations.$anyError"
+              <small v-if="validations.addedProfiles.$error"
                 >Please add at least one profile</small
               >
               <small v-else><br /></small>
@@ -72,6 +69,10 @@ export default {
     }
   },
   methods: {
+    validateState(fieldName) {
+      const { $dirty, $error } = this.validations[fieldName]
+      return $dirty ? !$error : null
+    },
     setCustomKuid(value) {
       this.$emit('set-custom-kuid', value)
     },

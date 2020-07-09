@@ -111,15 +111,6 @@
           </b-row>
         </b-col>
       </b-row>
-      <b-alert :show="errors.environmentAlreadyExists" variant="danger">
-        An environment with the same name exists already
-      </b-alert>
-      <b-alert :show="errors.host" variant="danger">
-        The hostname is invalid
-      </b-alert>
-      <b-alert :show="errors.name" variant="danger">
-        The hostname is invalid
-      </b-alert>
     </b-form>
   </div>
 </template>
@@ -127,6 +118,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { numeric, required } from 'vuelidate/lib/validators'
+import { isValidHostname } from '../../../utils'
 
 import { envColors, DEFAULT_COLOR } from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
@@ -159,11 +151,6 @@ export default {
           text: 'v2.x'
         }
       ],
-      errors: {
-        name: false,
-        host: false,
-        environmentAlreadyExists: false
-      },
       environment: {
         name: '',
         host: '',
@@ -183,7 +170,8 @@ export default {
       },
       host: {
         required,
-        notIncludeScheme
+        notIncludeScheme,
+        isValidHostname
       },
       port: {
         required,
@@ -223,6 +211,9 @@ export default {
       }
       if (!this.$v.environment.host.notIncludeScheme) {
         return 'Do not include the protocol in your host name'
+      }
+      if (!this.$v.environment.host.isValidHostname) {
+        return 'Must be a valid host name'
       }
       return null
     },

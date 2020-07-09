@@ -155,7 +155,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { requiredIf } from 'vuelidate/lib/validators'
+import { requiredUnless } from 'vuelidate/lib/validators'
 
 import Headline from '../../Materialize/Headline'
 import Focus from '../../../directives/focus.directive'
@@ -203,9 +203,7 @@ export default {
   validations() {
     return {
       name: {
-        required: requiredIf(function() {
-          return !this.collection
-        }),
+        required: requiredUnless('collection'),
         isValidCollectionName
       }
     }
