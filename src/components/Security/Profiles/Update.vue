@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container class="UpdateProfile d-flex flex-column h-100">
     <Headline>
       Edit profile - <span class="bold">{{ id }}</span>
     </Headline>
@@ -20,7 +20,7 @@ import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import { mapGetters } from 'vuex'
 export default {
-  name: 'SecurityUpdate',
+  name: 'UpdateProfile',
   components: {
     Headline,
     CreateOrUpdate,

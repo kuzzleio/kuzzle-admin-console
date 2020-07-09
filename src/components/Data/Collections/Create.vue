@@ -1,16 +1,13 @@
 <template>
-  <b-container class="CollectionCreate">
-    <div v-if="hasRights">
-      <create-or-update
-        headline="Create a new collection"
-        submit-label="Create"
-        :index="index"
-        @submit="create"
-      />
-    </div>
-    <div v-else>
-      <page-not-allowed />
-    </div>
+  <b-container class="CollectionCreate h-100">
+    <create-or-update
+      v-if="hasRights"
+      headline="Create a new collection"
+      submit-label="Create"
+      :index="index"
+      @submit="create"
+    />
+    <page-not-allowed v-else />
   </b-container>
 </template>
 
@@ -65,9 +62,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.CollectionCreate {
-  margin-bottom: 4em;
-}
-</style>

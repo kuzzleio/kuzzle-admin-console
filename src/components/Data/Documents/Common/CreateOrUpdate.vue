@@ -1,9 +1,9 @@
 <template>
   <div class="DocumentCreateOrUpdate">
-    <b-card>
+    <b-card class="h-100">
       <!-- Json view -->
-      <b-row>
-        <b-col lg="7" md="12">
+      <b-row class="h-100">
+        <b-col lg="7" md="12" class="d-flex flex-column">
           <b-form-group
             label="Document ID"
             label-cols="3"
@@ -16,15 +16,14 @@
           <json-editor
             id="document"
             ref="jsoneditor"
-            class="document-json"
+            class="DocumentCreateOrUpdate-jsonEditor"
             :content="rawDocument"
-            :height="500"
             @change="onDocumentChange"
           />
         </b-col>
 
         <!-- Mapping -->
-        <b-col lg="5" md="12">
+        <b-col lg="5" md="12" class="d-flex flex-column">
           <h3>Mapping</h3>
 
           <pre
@@ -74,10 +73,15 @@
 
 <style rel="stylesheet/scss" lang="scss">
 .DocumentCreateOrUpdate {
+  flex-grow: 1;
+
+  &-jsonEditor {
+    flex-grow: 1;
+  }
   &-mapping {
-    height: 500px;
-    margin: 0;
-    overflow-y: auto;
+    flex: 1 1 1px;
+    margin-bottom: 0;
+    overflow: auto;
   }
 }
 </style>

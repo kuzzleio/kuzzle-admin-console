@@ -23,7 +23,6 @@ export default {
 
 <style lang="scss" rel="stylesheet/scss" scoped>
 .Headline {
-  margin-bottom: 30px;
   color: $primary-color;
 
   h1 {

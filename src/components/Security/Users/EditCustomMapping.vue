@@ -1,71 +1,66 @@
 <template>
-  <b-container data-cy="EditUserMapping">
+  <b-container
+    class="EditUserMapping d-flex flex-column h-100"
+    data-cy="EditUserMapping"
+  >
     <b-row>
-      <b-col cols="7">
+      <b-col cols="6">
         <headline>Edit User Custom Data Mapping</headline>
       </b-col>
-      <b-col class="mt-2">
-        <b-row>
-          <b-col cols="5">
-            <b-button download="mappring.json" :href="downloadMappingValue">
-              Export Mapping
-            </b-button>
-          </b-col>
-          <b-col cols="7">
-            <b-form-file
-              ref="file-input"
-              class="custom-file-input"
-              id="import-mapping"
-              @change="loadMappingValue($event)"
-              title="Import mapping from JSON file"
+      <b-col>
+        <b-button
+          class="float-right"
+          download="mappring.json"
+          :href="downloadMappingValue"
+        >
+          Export Mapping
+        </b-button>
+        <b-form-file
+          class="float-right mr-3 w-50"
+          ref="file-input"
+          @change="loadMappingValue($event)"
+          placeholder="Import mapping"
+        />
+      </b-col>
+    </b-row>
+    <b-alert class="flow-text" show>
+      Here, you will be able to define the fields to be included in Users'
+      custom data payload.
+    </b-alert>
+    <template v-if="!loading">
+      <b-card class="flex-grow" body-class="h-100">
+        <b-row class="h-100">
+          <b-col cols="8">
+            <json-editor
+              id="user-custom-data-mapping-editor"
+              data-cy="EditUserMapping-JSONEditor"
+              myclass="h-100"
+              ref="jsoneditor"
+              tabindex="4"
+              :content="mappingValue"
+              @change="onMappingChange"
             />
-            <label class="custom-file-label" for="import-mapping"
-              >Import file</label
+          </b-col>
+          <b-col class="text-secondary">
+            Mapping is the process of defining how a document, and the fields it
+            contains, are stored and indexed.
+            <a
+              href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+              target="_blank"
+              >Read more about mapping</a
+            >
+            <br />
+            You should omit the root "properties" field in this form.
+            <pre>
+{
+"age": { "type": "integer" },
+"name": { "type": "string" }
+}
+        </pre
             >
           </b-col>
         </b-row>
-      </b-col>
-    </b-row>
-    <div v-if="!loading" class="wrapper collection-edit">
-      <b-alert class="flow-text">
-        Here, you will be able to define the fields to be included in Users'
-        custom data payload.
-      </b-alert>
-      <b-card class="card">
-        <div class="card-panel card-body">
-          <b-row>
-            <b-col cols="8">
-              <json-editor
-                id="user-custom-data-mapping-editor"
-                data-cy="EditUserMapping-JSONEditor"
-                myclass="pre_ace"
-                ref="jsoneditor"
-                tabindex="4"
-                :content="mappingValue"
-                :height="350"
-                @change="onMappingChange"
-              />
-            </b-col>
-            <b-col>
-              Mapping is the process of defining how a document, and the fields
-              it contains, are stored and indexed.
-              <a
-                href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
-                target="_blank"
-                >Read more about mapping</a
-              >
-              <br />
-              You should omit the root "properties" field in this form.
-              <pre>
-{
-  "age": { "type": "integer" },
-  "name": { "type": "string" }
-}
-          </pre
-              >
-            </b-col>
-          </b-row>
-        </div>
+
         <template v-slot:footer>
           <div class="text-right">
             <b-button class="mr-2" variant="outline-primary" @click="onCancel"
@@ -83,33 +78,9 @@
           </div>
         </template>
       </b-card>
-    </div>
+    </template>
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-.ErrorBox {
-  color: #fff;
-  padding: 10px;
-
-  p {
-    margin: 0;
-  }
-
-  .ErrorBox-dismissBtn {
-    float: right;
-  }
-}
-
-::v-deep .customMappingDropdown {
-  background-color: $light-grey-color;
-  border: none;
-}
-
-::v-deep .show .customMappingDropdown i {
-  transform: rotate(90deg);
-}
-</style>
 
 <script type="text/javascript">
 /**
