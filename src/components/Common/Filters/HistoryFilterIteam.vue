@@ -1,5 +1,5 @@
 <template>
-  <div :class="hidden">
+  <li class="list-group-item p-1">
     <b-container fluid>
       <b-row align-h="between" no-gutters>
         <b-col cols="10" class="py-1">
@@ -12,6 +12,7 @@
             "
             aria-hidden="true"
           />
+
           <a
             class="d-inline-block align-middle code pointer"
             @click="toggleCollapse"
@@ -22,11 +23,11 @@
           </b-button>
           <b-button
             variant="link"
-            :title="'Bookmark Filter'"
-            @click="switchBookmark"
+            :title="'Favori Filter'"
+            @click="favorisUpdate"
           >
             <i
-              :class="filter.bookmark === true ? 'fa fa-star' : 'far fa-star'"
+              :class="IsFavori() === true ? 'fa fa-star' : 'far fa-star'"
               aria-hidden="true"
             />
           </b-button>
@@ -57,84 +58,73 @@
     <b-modal
       size="lg"
       :id="`changeNameHistoryFilter-${filter.id}`"
-      title="you want to change this filter ?"
+      title="you want to change this filter name ?"
       @ok="SubmitChange"
       @cancel="cancelChange"
       @close="cancelChange"
     >
       <b-input v-model="filter.name" type="text" required />
-      <b-form-checkbox v-model="filter.bookmark">
-        {{
-          filter.bookmark === true
-            ? 'Remove this filter to my bookmark'
-            : 'Add this filter to my bookmark'
-        }}
-      </b-form-checkbox>
     </b-modal>
-  </div>
+  </li>
 </template>
 
 <script>
-import JsonFormatter from '../../../directives/json-formatter.directive'
 import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'HistoryFilterRaw',
-  directives: {
-    JsonFormatter
-  },
+  name: 'HistoryFilterIteam',
   props: {
     index: String,
     collection: String,
-    filter: Object
+    filter: Object,
+    favoris: Array
   },
   data() {
     return {
-      hidden: false,
       expanded: false,
-      oldName: this.filter.name,
-      oldBookmark: this.filter.bookmark
+      oldName: this.filter.name
     }
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper'])
   },
-  watch: {},
   methods: {
-    switchBookmark() {
-      filterManager.modifieHistoryRawFromLocalStorage(
-        this.filter.id,
-        this.filter.name,
-        !this.filter.bookmark,
-        this.index,
-        this.collection
-      )
-      this.filter.bookmark = !this.filter.bookmark
+    IsFavori() {
+      let idIndex = this.favoris
+        .map(favori => {
+          return favori.id
+        })
+        .indexOf(this.filter.id)
+      if (idIndex !== -1) {
+        return true
+      } else {
+        return false
+      }
     },
     cancelChange() {
       this.filter.name = this.oldName
-      this.filter.bookmark = this.oldBookmark
+    },
+    favorisUpdate() {
+      if (this.IsFavori()) {
+        let idIndex = this.favoris
+          .map(favori => {
+            return favori.id
+          })
+          .indexOf(this.filter.id)
+        this.favoris.splice(idIndex, 1)
+      } else {
+        this.favoris.push(this.filter)
+      }
     },
     SubmitChange() {
-      filterManager.modifieHistoryRawFromLocalStorage(
-        this.filter.id,
-        this.filter.name,
-        this.filter.bookmark,
-        this.index,
-        this.collection
-      )
+      this.favorisUpdate()
     },
     OpenModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.filter.id)
     },
     deleteFilter() {
-      filterManager.removeHistoryRawFromLocalStorage(
-        this.filter.id,
-        this.index,
-        this.collection
-      )
-      this.hidden = 'hidden'
+      this.$emit('filters-delete', this.filter.id)
     },
     useFilter() {
       if (this.filter.active == 'raw') {
@@ -160,9 +150,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.hidden {
-  display: none;
-}
-</style>

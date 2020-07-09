@@ -1,28 +1,25 @@
 <template>
-  <div>
-    <HistoryFilterRaw
+  <ul class="list-group">
+    <HistoryFilterIteam
       v-for="(filter, i) in filters"
       :key="i"
       :index="index"
       :collection="collection"
       :filter="filter"
-      class="HistoryFilterRaw p-1"
+      :favoris="favoris"
+      @filters-delete="onFiltersDelete"
     />
-  </div>
+  </ul>
 </template>
 
 <script>
-import JsonFormatter from '../../../directives/json-formatter.directive'
 import * as filterManager from '../../../services/filterManager'
-import HistoryFilterRaw from './HistoryFilterRaw'
+import HistoryFilterIteam from './HistoryFilterIteam'
 
 export default {
   name: 'HistoryFilter',
-  directives: {
-    JsonFormatter
-  },
   components: {
-    HistoryFilterRaw
+    HistoryFilterIteam
   },
   props: {
     index: String,
@@ -30,22 +27,51 @@ export default {
   },
   data() {
     return {
-      filters: []
+      filters: [],
+      favoris: []
     }
   },
   mounted() {
-    this.filters = filterManager.loadHistoyToLocalStorage(
+    this.filters = filterManager.LoadHistoyLocalStorage(
       this.index,
       this.collection
     )
+    this.favoris = filterManager.LoadFavorisLocalStorage(
+      this.index,
+      this.collection
+    )
+  },
+  methods: {
+    onFiltersDelete(id) {
+      let idIndex = this.filters
+        .map(filter => {
+          return filter.id
+        })
+        .indexOf(id)
+      this.filters.splice(idIndex, 1)
+    }
+  },
+  watch: {
+    filters: {
+      handler() {
+        filterManager.SaveHistoyLocalStorage(
+          this.filters,
+          this.index,
+          this.collection
+        )
+      },
+      deep: true
+    },
+    favoris: {
+      handler() {
+        filterManager.SaveFavorisLocalStorage(
+          this.favoris,
+          this.index,
+          this.collection
+        )
+      },
+      deep: true
+    }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.HistoryFilterRaw {
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
-}
-</style>
