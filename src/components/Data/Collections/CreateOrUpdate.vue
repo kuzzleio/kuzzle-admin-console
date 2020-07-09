@@ -29,13 +29,17 @@
         label="Collection name"
         label-for="collection-name-input"
         label-cols-sm="3"
-        :state="nameInputState"
       >
         <template v-slot:description>
           <span v-if="collection">This field cannot be updated</span>
           <span v-else>This field is mandatory</span>
         </template>
-        <template v-slot:invalid-feedback
+        <template v-if="!$v.name.required" v-slot:invalid-feedback
+          >Please fill-in a valid collection name.
+        </template>
+        <template
+          v-else-if="!$v.name.isValidCollectionName"
+          v-slot:invalid-feedback
           >The name you entered is invalid.
           <a
             target="_blank"
@@ -43,14 +47,14 @@
             >Read more about how to choose a valid name</a
           >
         </template>
+
         <b-input
           data-cy="CollectionCreateOrUpdate-name"
           id="collection-name-input"
           type="text"
           name="collection"
-          required
           tabindex="1"
-          v-model="name"
+          v-model="$v.name.$model"
           :disabled="!!collection"
           :state="nameInputState"
         />
@@ -137,11 +141,24 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { requiredIf } from 'vuelidate/lib/validators'
+
 import Headline from '../../Materialize/Headline'
 import Focus from '../../../directives/focus.directive'
 import JsonEditor from '../../Common/JsonEditor'
 
+function isValidCollectionName(value) {
+  const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
+    value
+  )
+  const containsUpperCase = /[A-Z]/.test(value)
+  const isTooLong = new TextEncoder().encode(value).length > 128
+  return !containsDisallowed && !containsUpperCase && !isTooLong
+}
+
 export default {
+  mixins: [validationMixin],
   name: 'CollectionCreateOrUpdate',
   components: {
     Headline,
@@ -170,17 +187,21 @@ export default {
       realtimeOnlyState: this.realtimeOnly || false
     }
   },
+  validations() {
+    return {
+      name: {
+        required: requiredIf(function() {
+          return !this.collection
+        }),
+        isValidCollectionName
+      }
+    }
+  },
   computed: {
     nameInputState() {
-      if (this.name === '' || this.collection !== null) {
-        return null
-      }
-      const containsDisallowed = /\\\\|\/|\*|\?|"|<|>|\||\s|,|#|:|%|&|\./.test(
-        this.name
-      )
-      const containsUpperCase = /[A-Z]/.test(this.name)
-      const isTooLong = new TextEncoder().encode(this.name).length > 128
-      return !containsDisallowed && !containsUpperCase && !isTooLong
+      const { $dirty, $error } = this.$v.name
+      const state = $dirty ? !$error : null
+      return state
     },
     mappingState() {
       try {
@@ -213,23 +234,12 @@ export default {
       }
     },
     onSubmit() {
-      if (this.isMappingValid) {
-        if (this.name) {
-          this.$emit('submit', {
-            dynamic: this.dynamicState,
-            name: this.name,
-            mapping: this.mappingState,
-            realtimeOnly: this.realtimeOnlyState
-          })
-        } else {
-          this.$bvToast.toast('You must specify a collection name', {
-            title: 'You cannot proceed',
-            variant: 'info',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true
-          })
-        }
-      } else {
+      this.$v.$touch()
+      if (this.$v.$anyError) {
+        return
+      }
+
+      if (!this.isMappingValid) {
         this.$bvToast.toast(
           'The JSON specification of the mapping contains syntax errors',
           {
@@ -240,6 +250,13 @@ export default {
           }
         )
       }
+
+      this.$emit('submit', {
+        dynamic: this.dynamicState,
+        name: this.name,
+        mapping: this.mappingState,
+        realtimeOnly: this.realtimeOnlyState
+      })
     }
   },
   watch: {
