@@ -1,5 +1,8 @@
 // Pleas keep this export syntax, this file is used by the tests
 // (until nodejs supports js modules export)
+
+const trim = require('lodash/trim')
+
 module.exports = {
   /**
    * Substitutes all the DOM-unfriendly characters with '-'
@@ -28,5 +31,11 @@ module.exports = {
     }),
   antiGlitchOverlayTimeout: 900,
   LS_ENVIRONMENTS: 'environments',
-  LS_CURRENT_ENV: 'currentEnvironment'
+  LS_CURRENT_ENV: 'currentEnvironment',
+  startsWithSpace(value) {
+    return value[0] === ' '
+  },
+  isWhitespace(value) {
+    return trim(value) === ''
+  }
 }

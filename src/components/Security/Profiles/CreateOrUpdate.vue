@@ -7,13 +7,24 @@
           v-if="!id"
           label="Profile ID"
           label-cols="3"
+          label-for="profile-id"
           :description="!id ? 'This field is mandatory' : ''"
         >
+          <template v-slot:invalid-feedback id="profile-id-feedback">
+            <span v-if="!$v.idValue.required">This field cannot be empty</span>
+            <span v-else-if="!$v.idValue.isNotWhitespace"
+              >This field cannot contain just whitespaces</span
+            >
+            <span v-else-if="!$v.idValue.startsWithLetter"
+              >This field cannot start with a whitespace</span
+            >
+          </template>
           <b-input
-            v-model="idValue"
+            v-model="$v.idValue.$model"
             data-cy="ProfileCreateOrUpdate-id"
+            id="profile-id"
             :disabled="id"
-            :state="idState"
+            :state="validateState('idValue')"
           ></b-input>
         </b-form-group>
         <b-form-group
@@ -78,7 +89,7 @@
           class="ml-2"
           data-cy="ProfileCreateOrUpdate-createBtn"
           variant="primary"
-          :disabled="submitting || !isJsonValid || !idState"
+          :disabled="submitting"
           @click="submit"
         >
           <i class="fa fa-plus-circle left" />
@@ -89,7 +100,7 @@
           class="ml-2"
           data-cy="ProfileCreateOrUpdate-updateBtn"
           variant="primary"
-          :disabled="submitting || !isJsonValid"
+          :disabled="submitting"
           @click="submit"
         >
           <i class="fa fa-pencil-alt left" />
@@ -116,11 +127,15 @@
 </style>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { requiredUnless, not } from 'vuelidate/lib/validators'
+import { startsWithSpace, isWhitespace } from '../../../utils'
+
 import JsonEditor from '../../Common/JsonEditor'
 import JsonFormatter from '../../../directives/json-formatter.directive'
-import { trim } from 'lodash'
 
 export default {
+  mixins: [validationMixin],
   name: 'ProfileCreateOrUpdate',
   components: {
     JsonEditor
@@ -139,32 +154,41 @@ export default {
   },
   data() {
     return {
-      profileValue: '{}',
+      profileValue: this.profile || '{}',
       idValue: null,
       submitting: false
     }
   },
-  computed: {
-    idState() {
-      if (!this.idValue || trim(this.idValue, ' ') === '') {
-        return false
-      }
-      return true
+  validations: {
+    idValue: {
+      required: requiredUnless('id'),
+      isNotWhitespace: not(isWhitespace),
+      startsWithLetter: not(startsWithSpace)
     },
-    isJsonValid() {
-      try {
-        JSON.parse(this.profileValue)
-      } catch (e) {
-        return false
+    profileValue: {
+      syntaxOK: function(value) {
+        try {
+          JSON.parse(value)
+        } catch (e) {
+          return false
+        }
+        return true
       }
-      return true
     }
   },
   methods: {
+    validateState(fieldName) {
+      const { $dirty, $error } = this.$v[fieldName]
+      return $dirty ? !$error : null
+    },
     onContentChange(value) {
       this.profileValue = value
     },
     submit() {
+      this.$v.$touch()
+      if (this.$v.$anyError) {
+        return
+      }
       this.$emit('submit', {
         profile: JSON.parse(this.profileValue),
         id: this.idValue
