@@ -119,7 +119,7 @@ const actions = createActions({
 
       return commit.setAdminExists(true)
     } catch (error) {
-      if (error.status === 403) {
+      if (error.status === 403 || error.status === 401) {
         return commit.setAdminExists(true)
       } else {
         throw error

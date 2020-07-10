@@ -16,7 +16,8 @@
       :to="{ name: 'Collections', params: { index: indexName } }"
     >
       <i class="fa fa-database" aria-hidden="true" />
-      <span v-html="highlight(indexName, filter)" /> ({{ collectionCount }})
+      <HighlightedSpan :value="indexName" :filter="filter" />
+      ({{ collectionCount }})
     </router-link>
     <div class="collections">
       <div
@@ -38,7 +39,7 @@
             aria-hidden="true"
             title="Persisted collection"
           />
-          <span v-html="highlight(collectionName, filter)" />
+          <HighlightedSpan :value="collectionName" :filter="filter" />
         </router-link>
       </div>
       <div
@@ -72,7 +73,7 @@
             params: { index: indexName, collection: collectionName }
           }"
         >
-          <span v-html="highlight(truncateName(collectionName, 15), filter)" />
+          <HighlightedSpan :value="collectionName" :filter="filter" />
         </router-link>
       </div>
     </div>
@@ -81,8 +82,11 @@
 
 <script>
 import { truncateName } from '../../../utils'
-
+import HighlightedSpan from '../../Common/HighlightedSpan'
 export default {
+  components: {
+    HighlightedSpan
+  },
   props: {
     forceOpen: {
       type: Boolean,
@@ -200,22 +204,6 @@ export default {
         this.currentIndex === indexName &&
         this.currentCollection === collectionName
       )
-    },
-    highlight(value, filter) {
-      if (value && value !== '' && filter && filter !== '') {
-        let index = value.toLowerCase().indexOf(filter.toLowerCase())
-
-        if (index >= 0) {
-          value =
-            value.substring(0, index) +
-            '<strong class="highlight">' +
-            value.substring(index, index + filter.length) +
-            '</strong>' +
-            value.substring(index + filter.length)
-        }
-      }
-
-      return value
     },
     removeRealtimeCollection(indexName, collectionName) {
       this.$store.direct.dispatch.index.removeRealtimeCollection({

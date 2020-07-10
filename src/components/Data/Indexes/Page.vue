@@ -101,7 +101,6 @@
                   name: 'CreateCollection',
                   params: { index: row.item.indexName }
                 }"
-                @click="openDeleteModal(row.item.indexName)"
                 ><i class="fa fa-plus"></i
               ></b-button>
               <b-button

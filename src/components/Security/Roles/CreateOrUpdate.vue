@@ -1,5 +1,8 @@
 <template>
-  <b-container class="mb-5" data-cy="CreateOrUpdateRole">
+  <b-container
+    class="CreateOrUpdateRole d-flex flex-column h-100"
+    data-cy="CreateOrUpdateRole"
+  >
     <Headline v-if="id">
       Update role - <span class="code">{{ id }}</span>
     </Headline>
@@ -9,9 +12,9 @@
     <Notice />
     <template v-if="loading"></template>
     <template v-else>
-      <b-card>
-        <b-row>
-          <b-col lg="7" md="12">
+      <b-card class="h-100">
+        <b-row class="h-100">
+          <b-col lg="7" md="12" class="d-flex flex-column">
             <b-form-group
               v-if="!id"
               label="Role ID"
@@ -34,23 +37,23 @@
               <b-input :disabled="true" :value="id"></b-input>
             </b-form-group>
             <json-editor
-              class="document-json"
+              class="CreateOrUpdateRole-jsonEditor"
               data-cy="RoleCreateOrUpdate-jsonEditor"
               ref="jsoneditor"
               :content="documentValue"
-              :height="500"
               @change="onContentChange"
             />
           </b-col>
-          <b-col lg="5" md="12">
-            <h3>Cheatsheet</h3>
-            Your role consists of a <code>controllers</code> object, in which
-            each key represents a controller in your Kuzzle. Each contoller key
-            contains an <code>actions</code> object, in which each key
-            represents a valid action within that controller. Whitelist your
-            actions by setting their value to <code>true</code> to allow them in
-            the role, like the example below:
-            <pre class="my-3 ml-3">
+          <b-col lg="5" md="12" class="d-flex flex-column">
+            <div class="CreateOrUpdateRole-cheatsheet">
+              <h3>Cheatsheet</h3>
+              Your role consists of a <code>controllers</code> object, in which
+              each key represents a controller in your Kuzzle. Each contoller
+              key contains an <code>actions</code> object, in which each key
+              represents a valid action within that controller. Whitelist your
+              actions by setting their value to <code>true</code> to allow them
+              in the role, like the example below:
+              <pre class="my-3 ml-3">
 {
   "controllers": {
     "document": {
@@ -61,7 +64,9 @@
     }
   }
 }
-            </pre>
+            </pre
+              >
+            </div>
           </b-col>
         </b-row>
 
@@ -96,6 +101,19 @@
     </template>
   </b-container>
 </template>
+
+<style lang="scss" scoped>
+.CreateOrUpdateRole {
+  &-jsonEditor {
+    flex-grow: 1;
+  }
+
+  &-cheatsheet {
+    flex: 1 1 1px;
+    overflow: auto;
+  }
+}
+</style>
 
 <script>
 import Headline from '../../Materialize/Headline'
