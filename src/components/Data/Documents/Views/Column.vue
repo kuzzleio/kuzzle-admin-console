@@ -73,6 +73,10 @@
           <i class="fas fa-sync-alt left" />
           Refresh
         </b-button>
+        <b-button variant="outline-secondary" class="mr-2" @click="csvExport">
+          <i class="fas fa-file-download left" />
+          Export
+        </b-button>
       </b-col>
 
       <b-col cols="4" class="text-right"
@@ -333,6 +337,35 @@ export default {
     }
   },
   methods: {
+    csvExport() {
+      const test = []
+      for (const item of this.formattedItems) {
+        const itemArray = []
+        delete item.actions
+        Object.keys(item).forEach(i => {
+          itemArray.push(i)
+          if (typeof item[i] === 'object') {
+            itemArray.push(null)
+          } else {
+            itemArray.push(item[i])
+          }
+        })
+        test.push(itemArray)
+      }
+      let csvContent =
+        'data:text/csv;charset=utf-8,' + test.map(e => e.join(',')).join('\n')
+      var encodedUri = encodeURI(csvContent)
+      var link = document.createElement('a')
+      link.setAttribute('href', encodedUri)
+      const date = new Date()
+      link.setAttribute(
+        'download',
+        `${this.index}_${this.collection}_${date.getMonth() +
+          1}-${date.getDate()}-${date.getFullYear()}.csv`
+      )
+      document.body.appendChild(link) // Required for FF
+      link.click()
+    },
     resetColumns() {
       this.selectedFields = []
       this.saveSelectedFieldsToLocalStorage()
