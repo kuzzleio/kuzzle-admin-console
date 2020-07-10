@@ -5,6 +5,7 @@
         <b-form-select
           v-model="selectedProfiled"
           @change="onProfileSelected"
+          :state="valid"
           data-cy="UserProfileList-select"
         >
           <b-select-option v-if="availableProfiles.length" :value="0">
@@ -73,7 +74,8 @@ export default {
   data() {
     return {
       profileList: [],
-      selectedProfiled: 0
+      selectedProfiled: 0,
+      valid: null
     }
   },
   computed: {
@@ -91,6 +93,10 @@ export default {
     return this.fetchProfileList()
   },
   methods: {
+    validate() {
+      this.valid = this.addedProfiles.length !== 0 ? null : false
+      return this.valid === null ? true : false
+    },
     fetchProfileList() {
       return this.wrapper.performSearchProfiles().then(result => {
         result.documents.forEach(profile => {

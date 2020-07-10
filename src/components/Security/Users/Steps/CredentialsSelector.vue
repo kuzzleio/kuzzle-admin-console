@@ -40,6 +40,7 @@
                   :name="fieldName"
                   :value="getValue(strategy, fieldName)"
                   :type="fieldType(fieldName)"
+                  :state="inputState(strategy, fieldName)"
                   @input="onFieldChange(strategy, fieldName, $event)"
                 />
               </b-form-group>
@@ -73,11 +74,21 @@ export default {
     return {
       error: '',
       document: null,
-      id: null
+      id: null,
+      validLogin: null
     }
   },
   computed: {},
   methods: {
+    inputState(strategy, fieldName) {
+      if (strategy === 'local' && fieldName === 'username') {
+        return this.validLogin
+      }
+      return null
+    },
+    loginState(state) {
+      this.validLogin = state
+    },
     getValue(strategy, fieldName) {
       if (!this.credentials[strategy]) {
         return null

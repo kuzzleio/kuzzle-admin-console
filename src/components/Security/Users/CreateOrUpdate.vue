@@ -11,48 +11,46 @@
       <Notice />
 
       <b-card no-body>
-        <template v-if="loading">
-          <MainSpinner class="my-5" />
-        </template>
-        <template v-else>
-          <b-tabs
-            card
-            v-if="!loading"
-            :active="activeTab"
-            :object-tab-active="activeTabObject"
-            @tab-changed="switchTab"
-          >
-            <b-tab id="UserUpdate-basicTab" title="Basic">
-              <basic
-                :edit-kuid="!id"
-                :added-profiles="addedProfiles"
-                :kuid="kuid"
-                @set-custom-kuid="setCustomKuid"
-                @profile-add="onProfileAdded"
-                @profile-remove="onProfileRemoved"
-              />
-              <credentials-selector
-                class="mt-3"
-                :credentials="credentials"
-                :strategies="strategies"
-                :credentials-mapping="credentialsMapping"
-                @input="onCredentialsChanged"
-              />
-            </b-tab>
-            <b-tab id="UserUpdate-customTab" title="Custom">
-              <custom-data
-                :mapping="customContentMapping"
-                :value="customContent"
-                @input="onCustomContentChanged"
-              />
-            </b-tab>
-          </b-tabs>
-        </template>
+        <MainSpinner v-show="loading" class="my-5" />
+        <b-tabs
+          v-show="!loading"
+          card
+          :active="activeTab"
+          :object-tab-active="activeTabObject"
+          @tab-changed="switchTab"
+        >
+          <b-tab id="UserUpdate-basicTab" title="Basic">
+            <basic
+              ref="basicUserCreation"
+              :edit-kuid="!id"
+              :added-profiles="addedProfiles"
+              :kuid="kuid"
+              @set-custom-kuid="setCustomKuid"
+              @profile-add="onProfileAdded"
+              @profile-remove="onProfileRemoved"
+            />
+            <credentials-selector
+              ref="credentialsSelector"
+              class="mt-3"
+              :credentials="credentials"
+              :strategies="strategies"
+              :credentials-mapping="credentialsMapping"
+              @input="onCredentialsChanged"
+            />
+          </b-tab>
+          <b-tab id="UserUpdate-customTab" title="Custom">
+            <custom-data
+              :mapping="customContentMapping"
+              :value="customContent"
+              @input="onCustomContentChanged"
+            />
+          </b-tab>
+        </b-tabs>
 
         <template v-slot:footer>
           <b-row class="mt-2">
             <b-col cols="9"
-              ><b-alert :show="error" variant="danger">
+              ><b-alert :show="error !== null" variant="danger">
                 <i class="fa fa-times dismiss-error" @click="dismissError()" />
                 {{ error }}
               </b-alert></b-col
@@ -168,10 +166,9 @@ export default {
       this.activeTabObject = tab
     },
     validate() {
-      if (!this.addedProfiles.length) {
+      if (!this.$refs.basicUserCreation.validate()) {
         throw new Error('Please add at least one profile to the user')
       }
-
       return true
     },
     async submit() {
@@ -182,6 +179,7 @@ export default {
         return
       }
       this.loading = true
+      this.$refs.credentialsSelector.loginState(null)
       this.submitting = true
 
       try {
@@ -238,13 +236,16 @@ export default {
           this.submitting = false
         }
         this.loading = false
+        if (err.message.match(/Login ".*" is already used./)) {
+          this.$refs.credentialsSelector.loginState(false)
+        }
       }
     },
     setError(msg) {
       this.error = msg
       setTimeout(() => {
         this.dismissError()
-      }, 15000)
+      }, 10000)
     },
     dismissError() {
       this.error = null
@@ -259,7 +260,6 @@ export default {
   },
   async mounted() {
     this.loading = true
-
     try {
       let credentialsMapping = await this.$kuzzle.security.getAllCredentialFields()
       this.strategies = Object.keys(credentialsMapping)

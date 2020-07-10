@@ -26,6 +26,7 @@
       </b-col>
       <b-col cols="10">
         <user-profile-list
+          ref="profileList"
           :added-profiles="addedProfiles"
           @selected-profile="onProfileSelected"
           @remove-profile="removeProfile"
@@ -45,7 +46,8 @@ export default {
   },
   data() {
     return {
-      autoGenerateKuidValue: false
+      autoGenerateKuidValue: false,
+      profilesValid: null
     }
   },
   props: {
@@ -69,6 +71,9 @@ export default {
     }
   },
   methods: {
+    validate() {
+      return this.$refs.profileList.validate()
+    },
     setCustomKuid(value) {
       this.$emit('set-custom-kuid', value)
     },
