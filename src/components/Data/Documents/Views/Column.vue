@@ -73,7 +73,12 @@
           <i class="fas fa-sync-alt left" />
           Refresh
         </b-button>
-        <b-button variant="outline-secondary" class="mr-2" @click="csvExport">
+        <b-button
+          variant="outline-secondary"
+          class="mr-2"
+          :download="exportFilename()"
+          :href="csvExport()"
+        >
           <i class="fas fa-file-download left" />
           Export
         </b-button>
@@ -337,8 +342,13 @@ export default {
     }
   },
   methods: {
+    exportFilename() {
+      const date = new Date()
+      return `${this.index}_${this.collection}_${date.getMonth() +
+        1}-${date.getDate()}-${date.getFullYear()}.csv`
+    },
     csvExport() {
-      const test = []
+      const documents = []
       for (const item of this.formattedItems) {
         const itemArray = []
         delete item.actions
@@ -350,21 +360,13 @@ export default {
             itemArray.push(item[i])
           }
         })
-        test.push(itemArray)
+        documents.push(itemArray)
       }
-      let csvContent =
-        'data:text/csv;charset=utf-8,' + test.map(e => e.join(',')).join('\n')
-      var encodedUri = encodeURI(csvContent)
-      var link = document.createElement('a')
-      link.setAttribute('href', encodedUri)
-      const date = new Date()
-      link.setAttribute(
-        'download',
-        `${this.index}_${this.collection}_${date.getMonth() +
-          1}-${date.getDate()}-${date.getFullYear()}.csv`
-      )
-      document.body.appendChild(link) // Required for FF
-      link.click()
+      const csv = documents.map(e => e.join(',')).join('\n')
+      const blob = new Blob([csv], {
+        type: 'text/csv;charset=utf-8'
+      })
+      return URL.createObjectURL(blob)
     },
     resetColumns() {
       this.selectedFields = []
