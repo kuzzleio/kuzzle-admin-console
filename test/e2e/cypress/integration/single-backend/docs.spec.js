@@ -17,6 +17,15 @@ describe('Document List', function() {
         },
         value2: {
           type: 'integer'
+        },
+        firstName: {
+          type: 'text'
+        },
+        lastName: {
+          type: 'text'
+        },
+        job: {
+          type: 'text'
         }
       }
     })
@@ -136,6 +145,56 @@ describe('Document List', function() {
     cy.get('[data-cy="SelectField--value2"]').click({ force: true })
     cy.get('[data-cy="ColumnViewHead--Value"]').should('exist')
     cy.get('[data-cy="ColumnViewHead--Value2"]').should('exist')
+  })
+
+  it('Should be abl to export columnview to csv', function() {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.wait(500)
+    cy.get('[data-cy="CollectionDropdown-column"]').click()
+    cy.url().should('contain', 'listViewType=column')
+
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--firstName"]').click({ force: true })
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--lastName"]').click({ force: true })
+    cy.get('[data-cy="SelectField"]').click()
+    cy.get('[data-cy="SelectField--job"]').click({ force: true })
+
+    cy.get('[data-cy="csvExport"]').click()
+    const date = new Date()
+    cy.get('[data-cy="csvExport"]')
+      .should('have.attr', 'download')
+      .should(
+        'equal',
+        `${indexName}_${collectionName}_${date.getMonth() +
+          1}-${date.getDate()}-${date.getFullYear()}.csv`
+      )
+    cy.get('[data-cy="csvExport"]')
+      .should('have.attr', 'href')
+      .then(
+        href =>
+          new Cypress.Promise(resolve => {
+            const xhr = new XMLHttpRequest()
+            xhr.open('GET', href, true)
+            xhr.responseType = 'blob'
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                const blob = xhr.response
+                const reader = new FileReader()
+                reader.onload = () => {
+                  resolve(reader.result)
+                }
+                reader.readAsText(blob)
+              }
+            }
+            xhr.send()
+          })
+      )
+      .should(
+        'include',
+        ',firstName,Luca,job,Blockchain as a Service,lastName,Marchesini'
+      )
   })
 
   it.skip('Should handle the time series view properly', function() {

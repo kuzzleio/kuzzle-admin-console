@@ -78,6 +78,7 @@
           class="mr-2"
           :download="exportFilename()"
           :href="csvExport()"
+          data-cy="csvExport"
         >
           <i class="fas fa-file-download left" />
           Export
