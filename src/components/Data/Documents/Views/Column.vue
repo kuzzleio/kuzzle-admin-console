@@ -76,7 +76,7 @@
         <b-button
           variant="outline-secondary"
           class="mr-2"
-          :download="exportFilename()"
+          :download="exportFilename"
           :href="csvExport()"
           data-cy="csvExport"
         >
@@ -340,19 +340,19 @@ export default {
     },
     checkboxId() {
       return `checkbox-${this.document.id}`
-    }
-  },
-  methods: {
+    },
     exportFilename() {
       const date = new Date()
       return `${this.index}_${this.collection}_${date.getMonth() +
         1}-${date.getDate()}-${date.getFullYear()}.csv`
-    },
+    }
+  },
+  methods: {
     csvExport() {
       const documents = []
       for (const item of this.formattedItems) {
         const itemArray = []
-        delete item.actions
+        _.omit(item, ['actions'])
         Object.keys(item).forEach(i => {
           itemArray.push(i)
           if (typeof item[i] === 'object') {
