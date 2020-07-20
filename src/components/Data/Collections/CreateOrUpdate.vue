@@ -25,6 +25,7 @@
         </div>
       </template>
       <b-form-group
+        data-cy="CollectionCreateOrUpdate-name"
         id="collection-name"
         label="Collection name"
         label-for="collection-name-input"
@@ -49,7 +50,6 @@
         </template>
 
         <b-input
-          data-cy="CollectionCreateOrUpdate-name"
           id="collection-name-input"
           type="text"
           name="collection"
@@ -205,6 +205,16 @@ export default {
       name: {
         required: requiredUnless('collection'),
         isValidCollectionName
+      },
+      rawMapping: {
+        syntaxOK: function(value) {
+          try {
+            JSON.parse(value)
+          } catch (e) {
+            return false
+          }
+          return true
+        }
       }
     }
   },

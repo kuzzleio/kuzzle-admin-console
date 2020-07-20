@@ -17,6 +17,7 @@
           <b-col lg="7" md="12" class="d-flex flex-column">
             <b-form-group
               v-if="!id"
+              data-cy="RoleCreateOrUpdate-id"
               label="Role ID"
               label-cols="3"
               :description="!id ? 'This field is mandatory' : ''"
@@ -34,7 +35,6 @@
               </template>
               <b-input
                 v-model="$v.idValue.$model"
-                data-cy="RoleCreateOrUpdate-id"
                 :disabled="id"
                 :state="validateState('idValue')"
               ></b-input>

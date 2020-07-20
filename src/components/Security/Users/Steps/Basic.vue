@@ -1,12 +1,19 @@
 <template>
   <form class="wrapper">
-    <b-form-group label-cols="2">
+    <b-form-group label-cols="2" data-cy="UserBasic-kuid">
       <template v-slot:label><strong>KUID</strong></template>
 
+      <template v-slot:invalid-feedback>
+        <span v-if="!validations.kuid.notEmpty"
+          >The KUID cannot contain just whitespaces</span
+        >
+        <span v-else-if="!validations.kuid.notStartsWithSpace"
+          >The KUID cannot start with a whitespace</span
+        >
+      </template>
       <b-input
         v-if="editKuid"
         class="validate"
-        data-cy="UserBasic-kuid"
         id="custom-kuid"
         placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
         type="text"
@@ -28,7 +35,7 @@
         />
         <b-row>
           <b-col offset="6">
-            <div class="text-danger">
+            <div class="text-danger" data-cy="UserProfileList-invalidFeedback">
               <small v-if="validations.addedProfiles.$error"
                 >Please add at least one profile</small
               >

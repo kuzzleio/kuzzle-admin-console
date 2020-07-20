@@ -217,6 +217,7 @@ describe('Document update/replace', () => {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
+  const documentId = 'myId'
 
   beforeEach(() => {
     cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
@@ -224,7 +225,7 @@ describe('Document update/replace', () => {
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
     cy.request(
       'POST',
-      `${kuzzleUrl}/${indexName}/${collectionName}/myId/_create`,
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}/_create`,
       {
         foo: 'bar',
         more: 'moar'
@@ -240,7 +241,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
+    cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
@@ -263,12 +264,13 @@ describe('Document update/replace', () => {
       )
     cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
 
-    cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
-      res => {
-        expect(res.body.result._source.foo).to.be.equals('changed')
-        expect(res.body.result._source.more).to.be.equals('moar')
-      }
-    )
+    cy.request(
+      'GET',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
+    ).then(res => {
+      expect(res.body.result._source.foo).to.be.equals('changed')
+      expect(res.body.result._source.more).to.be.equals('moar')
+    })
   })
 
   it('should replace a document', () => {
@@ -277,7 +279,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
+    cy.get(`[data-cy="DocumentListItem-update--${documentId}"]`).click()
 
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
@@ -301,12 +303,13 @@ describe('Document update/replace', () => {
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 
-    cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
-      res => {
-        expect(res.body.result._source.foo).to.be.equals('changed')
-        expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
-      }
-    )
+    cy.request(
+      'GET',
+      `${kuzzleUrl}/${indexName}/${collectionName}/${documentId}`
+    ).then(res => {
+      expect(res.body.result._source.foo).to.be.equals('changed')
+      expect(res.body.result._source.more).to.be.undefined // eslint-disable-line no-unused-expressions
+    })
   })
 
   it('Should be able edit a document on column view', function() {
@@ -316,7 +319,7 @@ describe('Document update/replace', () => {
     cy.get('[data-cy="CollectionDropdown"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.wait(500)
-    cy.get('[data-cy="ColumnView-table-edit-btn--myId"]').click()
+    cy.get(`[data-cy="ColumnView-table-edit-btn--${documentId}"]`).click()
     cy.wait(500)
     cy.contains('Edit document')
   })

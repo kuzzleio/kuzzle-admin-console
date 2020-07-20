@@ -108,7 +108,7 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"query": { 
+"query": {
 "bool": {
 "must": {
 "match_phrase_prefix": {
@@ -282,9 +282,66 @@ describe('Users', function() {
 
     cy.get(
       '[data-cy="UserManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({force: true})
+    ).click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 4)
     cy.url().should('contain', 'from=10')
+  })
+
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.visit(`/#/security/users/create`)
+    cy.get('[data-cy=UserBasic-kuid] input').type(' ')
+    cy.get('[data-cy=UserBasic-kuid] .invalid-feedback').should(
+      'contain',
+      'The KUID cannot contain just whitespaces'
+    )
+
+    cy.get('[data-cy=UserBasic-kuid] input').type(' someKuid')
+    cy.get('[data-cy=UserBasic-kuid] .invalid-feedback').should(
+      'contain',
+      'The KUID cannot start with a whitespace'
+    )
+
+    cy.get('[data-cy=UserBasic-kuid] input').type('{selectall}valid')
+
+    cy.get('[data-cy=UserUpdate-submit]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal(`#/security/users/create`)
+    })
+    cy.get('[data-cy="UserProfileList-invalidFeedback"]').should(
+      'contain',
+      'Please add at least one profile'
+    )
+    cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
+      'be',
+      'visible'
+    )
+
+    cy.get('[data-cy=UserProfileList-select]').select('default')
+    cy.get('[data-cy="UserUpdate-basicTab--dangerIcon"]').should(
+      'not.be',
+      'visible'
+    )
+    cy.get('[data-cy="UserProfileList-invalidFeedback"]').should(
+      'not.be',
+      'visible'
+    )
+
+    cy.get('[data-cy="UserUpdate-customTab"]').click()
+    cy.get('[data-cy=UserCustomContent-jsonEditor] .ace_content')
+      .click()
+      .type('{selectall}SuM UNnv4L33d JZOOOOO000n K0d')
+
+    cy.get('[data-cy="UserUpdate-customTab--dangerIcon"]').should(
+      'be',
+      'visible'
+    )
+
+    cy.get('[data-cy=UserUpdate-submit]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal(`#/security/users/create`)
+    })
   })
 
   it('Should be able to create a new user with custom KUID', () => {

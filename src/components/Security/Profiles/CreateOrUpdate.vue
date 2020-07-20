@@ -5,6 +5,7 @@
       <b-col lg="7" md="12" class="d-flex flex-column">
         <b-form-group
           v-if="!id"
+          data-cy="ProfileCreateOrUpdate-id"
           label="Profile ID"
           label-cols="3"
           label-for="profile-id"
@@ -21,7 +22,6 @@
           </template>
           <b-input
             v-model="$v.idValue.$model"
-            data-cy="ProfileCreateOrUpdate-id"
             id="profile-id"
             :disabled="id"
             :state="validateState('idValue')"

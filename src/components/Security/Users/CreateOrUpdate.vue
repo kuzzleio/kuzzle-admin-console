@@ -22,11 +22,12 @@
             :object-tab-active="activeTabObject"
             @tab-changed="switchTab"
           >
-            <b-tab id="UserUpdate-basicTab" title="Basic">
+            <b-tab id="UserUpdate-basicTab">
               <template v-slot:title>
                 <i
                   v-if="$v.basic.$anyError"
                   class="fas fa-exclamation-circle text-danger"
+                  data-cy="UserUpdate-basicTab--dangerIcon"
                 />
                 Basic
               </template>
@@ -47,11 +48,15 @@
                 @input="onCredentialsChanged"
               />
             </b-tab>
-            <b-tab id="UserUpdate-customTab" title="Custom">
+            <b-tab
+              id="UserUpdate-customTab"
+              :title-link-attributes="{ 'data-cy': 'UserUpdate-customTab' }"
+            >
               <template v-slot:title>
                 <i
                   v-if="$v.customContentValue.$anyError"
                   class="fas fa-exclamation-circle text-danger"
+                  data-cy="UserUpdate-customTab--dangerIcon"
                 />
                 Custom
               </template>
