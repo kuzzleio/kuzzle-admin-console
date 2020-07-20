@@ -1,129 +1,144 @@
 <template>
   <div class="UserList">
-    <template v-if="loading">
-      <b-row class="text-center">
-        <b-col>
-          <b-spinner variant="primary" class="mt-5"></b-spinner>
-        </b-col>
-      </b-row>
-    </template>
-    <slot v-if="isCollectionEmpty" name="emptySet" />
-    <template v-if="!isCollectionEmpty && !loading">
+    <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
+    <template v-else>
       <b-row class="justify-content-md-center" no-gutters>
         <b-col cols="12">
-          <filters
-            class="mb-3"
-            :available-operands="searchFilterOperands"
-            :current-filter="currentFilter"
-            :collection-mapping="collectionMapping"
-            @filters-updated="onFiltersUpdated"
-            @reset="onFiltersUpdated"
-          />
+          <template v-if="!isCollectionEmpty">
+            <filters
+              class="mb-3"
+              :available-operands="searchFilterOperands"
+              :current-filter="currentFilter"
+              :collection-mapping="collectionMapping"
+              @filters-updated="onFiltersUpdated"
+              @reset="onFiltersUpdated"
+            />
+          </template>
         </b-col>
       </b-row>
-      <b-card
-        class="light-shadow"
-        :bg-variant="documents.length === 0 ? 'light' : 'default'"
-      >
-        <b-card-text class="p-0">
-          <div v-show="!documents.length" class="row valign-center empty-set">
-            <b-row align-h="center" class="valign-center empty-set">
-              <b-col cols="2" class="text-center">
-                <i
-                  class="fa fa-5x fa-search text-secondary mt-3"
-                  aria-hidden="true"
-                />
-              </b-col>
-              <b-col md="6">
-                <h3 class="text-secondary font-weight-bold">
-                  There is no result matching your query. Please try with
-                  another filter.
-                </h3>
-                <p>
-                  <em
-                    >Learn more about filtering syntax on
-                    <a
-                      href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
-                      target="_blank"
-                      >Kuzzle Elasticsearch Cookbook</a
-                    ></em
-                  >
-                </p>
-              </b-col>
-            </b-row>
-          </div>
-
-          <div v-if="documents.length">
-            <b-row no-gutters class="mb-2">
-              <b-col cols="8">
-                <b-button
-                  variant="outline-dark"
-                  class="mr-2"
-                  data-cy="UserList-toggleAllBtn"
-                  @click="toggleAll"
-                >
-                  <i
-                    :class="
-                      `far ${allChecked ? 'fa-check-square' : 'fa-square'} left`
-                    "
-                  />
-                  Toggle all
-                </b-button>
-                <b-button
-                  variant="outline-danger"
-                  class="mr-2"
-                  data-cy="UserList-bulkDeleteBtn"
-                  :disabled="!displayBulkDelete"
-                  @click="deleteBulk"
-                >
-                  <i class="fa fa-minus-circle left" />
-                  Delete selected
-                </b-button>
-              </b-col>
-              <b-col cols="4" class="text-right"
-                >Show
-                <b-form-select
-                  class="mx-2"
-                  style="width: unset"
-                  :options="itemsPerPage"
-                  :value="paginationSize"
-                  @change="changePaginationSize($event)"
-                >
-                </b-form-select>
-                <span v-if="totalDocuments"
-                  >of {{ totalDocuments }} total items.</span
-                ></b-col
-              >
-            </b-row>
-          </div>
-          <div
-            v-show="documents.length"
-            class="row CrudlDocument-collection"
-            data-cy="UserList-items"
+      <template v-if="loading">
+        <b-row class="text-center">
+          <b-col>
+            <b-spinner
+              v-if="loading"
+              variant="primary"
+              class="mt-5"
+            ></b-spinner>
+          </b-col>
+        </b-row>
+      </template>
+      <template v-else>
+        <template v-if="!isCollectionEmpty">
+          <b-card
+            class="light-shadow"
+            :bg-variant="documents.length === 0 ? 'light' : 'default'"
           >
-            <div class="col s12">
-              <b-list-group class="w-100">
-                <b-list-group-item
-                  v-for="document in documents"
-                  class="p-2"
-                  data-cy="UserList-item"
-                  :key="document.id"
-                >
-                  <UserItem
-                    :document="document"
-                    :is-checked="isChecked(document.id)"
-                    :index="index"
-                    :collection="collection"
-                    @checkbox-click="toggleSelectDocuments"
-                    @edit="editUser"
-                    @delete="deleteUser"
-                  />
-                </b-list-group-item>
-              </b-list-group>
-            </div>
-          </div>
-        </b-card-text>
-      </b-card>
+            <b-card-text class="p-0">
+              <div
+                v-show="!documents.length"
+                class="row valign-center empty-set"
+              >
+                <b-row align-h="center" class="valign-center empty-set">
+                  <b-col cols="2" class="text-center">
+                    <i
+                      class="fa fa-5x fa-search text-secondary mt-3"
+                      aria-hidden="true"
+                    />
+                  </b-col>
+                  <b-col md="6">
+                    <h3 class="text-secondary font-weight-bold">
+                      There is no result matching your query. Please try with
+                      another filter.
+                    </h3>
+                    <p>
+                      <em
+                        >Learn more about filtering syntax on
+                        <a
+                          href="https://docs.kuzzle.io/core/2/guides/cookbooks/elasticsearch/basic-queries/"
+                          target="_blank"
+                          >Kuzzle Elasticsearch Cookbook</a
+                        ></em
+                      >
+                    </p>
+                  </b-col>
+                </b-row>
+              </div>
+
+              <div v-if="documents.length">
+                <b-row no-gutters class="mb-2">
+                  <b-col cols="8">
+                    <b-button
+                      variant="outline-dark"
+                      class="mr-2"
+                      data-cy="UserList-toggleAllBtn"
+                      @click="toggleAll"
+                    >
+                      <i
+                        :class="
+                          `far ${
+                            allChecked ? 'fa-check-square' : 'fa-square'
+                          } left`
+                        "
+                      />
+                      Toggle all
+                    </b-button>
+                    <b-button
+                      variant="outline-danger"
+                      class="mr-2"
+                      data-cy="UserList-bulkDeleteBtn"
+                      :disabled="!displayBulkDelete"
+                      @click="deleteBulk"
+                    >
+                      <i class="fa fa-minus-circle left" />
+                      Delete selected
+                    </b-button>
+                  </b-col>
+                  <b-col cols="4" class="text-right"
+                    >Show
+                    <b-form-select
+                      class="mx-2"
+                      style="width: unset"
+                      :options="itemsPerPage"
+                      :value="paginationSize"
+                      @change="changePaginationSize($event)"
+                    >
+                    </b-form-select>
+                    <span v-if="totalDocuments"
+                      >of {{ totalDocuments }} total items.</span
+                    ></b-col
+                  >
+                </b-row>
+              </div>
+              <div
+                v-show="documents.length"
+                class="row CrudlDocument-collection"
+                data-cy="UserList-items"
+              >
+                <div class="col s12">
+                  <b-list-group class="w-100">
+                    <b-list-group-item
+                      v-for="document in documents"
+                      class="p-2"
+                      data-cy="UserList-item"
+                      :key="document.id"
+                    >
+                      <UserItem
+                        :document="document"
+                        :is-checked="isChecked(document.id)"
+                        :index="index"
+                        :collection="collection"
+                        @checkbox-click="toggleSelectDocuments"
+                        @edit="editUser"
+                        @delete="deleteUser"
+                      />
+                    </b-list-group-item>
+                  </b-list-group>
+                </div>
+              </div>
+            </b-card-text>
+          </b-card>
+        </template>
+      </template>
       <b-row align-h="center" v-if="!loading">
         <b-pagination
           class="m-2 mt-4"
@@ -239,6 +254,7 @@ export default {
       this.selectedDocuments.splice(index, 1)
     },
     onFiltersUpdated(newFilters) {
+      this.currentFilter = newFilters
       try {
         filterManager.save(
           newFilters,
@@ -260,7 +276,6 @@ export default {
     },
     async fetchDocuments() {
       this.loading = true
-
       this.$forceUpdate()
 
       this.selectedDocuments = []
