@@ -5,7 +5,7 @@
       :key="i"
       :index="index"
       :collection="collection"
-      :favori="favori"
+      :favorite="favori"
       @favoris-delete="onFavoriteDelete"
     />
   </ul>
