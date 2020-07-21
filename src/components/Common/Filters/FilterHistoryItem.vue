@@ -24,10 +24,10 @@
           <b-button
             variant="link"
             :title="'Favorite Filters'"
-            @click="favoriteUpdate"
+            @click="updateFavorite"
           >
             <i
-              :class="IsFavorite() === true ? 'fa fa-star' : 'far fa-star'"
+              :class="isFavorite() === true ? 'fa fa-star' : 'far fa-star'"
               aria-hidden="true"
             />
           </b-button>
@@ -58,8 +58,8 @@
     <b-modal
       size="lg"
       :id="`changeNameHistoryFilter-${filter.id}`"
-      title="Do you want to change the name of this filter?"
-      @ok="SubmitChange"
+      title="Edit favorite filter name"
+      @ok="submitChange"
       @cancel="cancelChange"
       @close="cancelChange"
     >
@@ -73,7 +73,7 @@ import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'HistoryFilterItem',
+  name: 'FilterHistoryItem',
   props: {
     index: String,
     collection: String,
@@ -90,7 +90,7 @@ export default {
     ...mapGetters('kuzzle', ['wrapper'])
   },
   methods: {
-    IsFavorite() {
+    isFavorite() {
       let idIndex = this.favorite
         .map(favori => {
           return favori.id
@@ -105,8 +105,8 @@ export default {
     cancelChange() {
       this.filter.name = this.oldName
     },
-    favoriteUpdate() {
-      if (this.IsFavorite()) {
+    updateFavorite() {
+      if (this.isFavorite()) {
         let idIndex = this.favorite
           .map(favori => {
             return favori.id
@@ -117,8 +117,8 @@ export default {
         this.favorite.push(this.filter)
       }
     },
-    SubmitChange() {
-      this.favoriteUpdate()
+    submitChange() {
+      this.updateFavorite()
     },
     openModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.filter.id)

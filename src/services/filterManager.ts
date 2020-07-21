@@ -130,7 +130,7 @@ export const saveToLocalStorage = (filter, index, collection) => {
   )
 }
 
-export const saveFavoriteToLocalStorage= (filters, index, collection) => {
+export const saveFavoritesToLocalStorage= (filters, index, collection) => {
   localStorage.setItem(
     `${FAVORIS_LOCALSTORAGE_PREFIX}:${index}/${collection}`,
     JSON.stringify(filters)

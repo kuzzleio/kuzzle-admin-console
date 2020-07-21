@@ -1,6 +1,6 @@
 <template>
   <ul class="list-group">
-    <HistoryFilterItem
+    <FilterHistoryItem
       v-for="(filter, i) in filters"
       :key="i"
       :index="index"
@@ -14,12 +14,12 @@
 
 <script>
 import * as filterManager from '../../../services/filterManager'
-import HistoryFilterItem from './HistoryFilterItem'
+import FilterHistoryItem from './FilterHistoryItem'
 
 export default {
-  name: 'HistoryFilter',
+  name: 'FilterHistory',
   components: {
-    HistoryFilterItem
+    FilterHistoryItem
   },
   props: {
     index: String,
@@ -64,7 +64,7 @@ export default {
     },
     favorite: {
       handler() {
-        filterManager.saveFavoriteToLocalStorage(
+        filterManager.saveFavoritesToLocalStorage(
           this.favorite,
           this.index,
           this.collection

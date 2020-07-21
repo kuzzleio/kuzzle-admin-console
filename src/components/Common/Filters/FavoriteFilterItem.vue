@@ -16,7 +16,7 @@
           <a
             class="d-inline-block align-middle code pointer"
             @click="toggleCollapse"
-            >{{ favori.name }}</a
+            >{{ favorite.name }}</a
           >
           <b-button variant="link" :title="'Edit Filter'" @click="openModal">
             <i class="fa fa-pencil-alt" />
@@ -47,12 +47,12 @@
     </b-container>
     <b-modal
       size="lg"
-      :id="`changeNameHistoryFilter-${favori.id}`"
-      title="you want to change this favori name ?"
+      :id="`changeNameHistoryFilter-${favorite.id}`"
+      title="you want to change this favorite name ?"
       @cancel="cancelChange"
       @close="cancelChange"
     >
-      <b-input v-model="favori.name" type="text" required />
+      <b-input v-model="favorite.name" type="text" required />
     </b-modal>
   </li>
 </template>
@@ -62,16 +62,16 @@ import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'FavoriFilterIteam',
+  name: 'FavoriteFilterItem',
   props: {
     index: String,
     collection: String,
-    favori: Object
+    favorite: Object
   },
   data() {
     return {
       expanded: false,
-      oldName: this.favori.name,
+      oldName: this.favorite.name,
     }
   },
   computed: {
@@ -79,29 +79,29 @@ export default {
   },
   methods: {
     cancelChange() {
-      this.favori.name = this.oldName
+      this.favorite.name = this.oldName
     },
     openModal() {
-      this.$bvModal.show('changeNameHistoryFilter-' + this.favori.id)
+      this.$bvModal.show('changeNameHistoryFilter-' + this.favorite.id)
     },
     deleteFavori() {
-      this.$emit('favoris-delete', this.favori.id)
+      this.$emit('favoris-delete', this.favorite.id)
     },
     useFilter() {
-      if (this.favori.active == 'raw') {
-        this.$parent.$emit('filter-raw-submitted', this.favori.raw, true)
+      if (this.favorite.active == 'raw') {
+        this.$parent.$emit('filter-raw-submitted', this.favorite.raw, true)
       }
-      if (this.favori.active == 'basic') {
+      if (this.favorite.active == 'basic') {
         this.$parent.$emit(
           'filter-basic-submitted',
-          this.favori.basic,
-          this.favori.sorting,
+          this.favorite.basic,
+          this.favorite.sorting,
           true
         )
       }
     },
     getFilter() {
-      let loadedFilter = Object.assign(new filterManager.Filter(), this.favori)
+      let loadedFilter = Object.assign(new filterManager.Filter(), this.favorite)
       if (loadedFilter.active == 'basic') return loadedFilter.basic
       if (loadedFilter.active == 'raw') return loadedFilter.raw
     },
