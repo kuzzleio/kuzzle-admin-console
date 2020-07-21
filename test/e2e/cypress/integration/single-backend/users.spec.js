@@ -112,8 +112,7 @@ describe('Users', function() {
 "bool": {
 "must": {
 "match_phrase_prefix": {
-"name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
-}`,
+"name": "Dummy User (${kuids[1]})"`,
         {
           force: true
         }
