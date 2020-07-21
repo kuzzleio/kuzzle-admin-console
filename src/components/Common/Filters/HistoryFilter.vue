@@ -1,12 +1,12 @@
 <template>
   <ul class="list-group">
-    <HistoryFilterIteam
+    <HistoryFilterItem
       v-for="(filter, i) in filters"
       :key="i"
       :index="index"
       :collection="collection"
       :filter="filter"
-      :favoris="favoris"
+      :favorite="favorite"
       @filters-delete="onFiltersDelete"
     />
   </ul>
@@ -14,12 +14,12 @@
 
 <script>
 import * as filterManager from '../../../services/filterManager'
-import HistoryFilterIteam from './HistoryFilterIteam'
+import HistoryFilterItem from './HistoryFilterItem'
 
 export default {
   name: 'HistoryFilter',
   components: {
-    HistoryFilterIteam
+    HistoryFilterItem
   },
   props: {
     index: String,
@@ -28,15 +28,15 @@ export default {
   data() {
     return {
       filters: [],
-      favoris: []
+      favorite: []
     }
   },
   mounted() {
-    this.filters = filterManager.LoadHistoyFromLocalStorage(
+    this.filters = filterManager.loadHistoyFromLocalStorage(
       this.index,
       this.collection
     )
-    this.favoris = filterManager.LoadFavorisFromLocalStorage(
+    this.favorite = filterManager.loadFavoritesFromLocalStorage(
       this.index,
       this.collection
     )
@@ -54,7 +54,7 @@ export default {
   watch: {
     filters: {
       handler() {
-        filterManager.SaveHistoyToLocalStorage(
+        filterManager.saveHistoyToLocalStorage(
           this.filters,
           this.index,
           this.collection
@@ -62,10 +62,10 @@ export default {
       },
       deep: true
     },
-    favoris: {
+    favorite: {
       handler() {
-        filterManager.SaveFavorisToLocalStorage(
-          this.favoris,
+        filterManager.saveFavoriteToLocalStorage(
+          this.favorite,
           this.index,
           this.collection
         )

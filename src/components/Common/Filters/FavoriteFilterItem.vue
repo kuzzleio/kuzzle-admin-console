@@ -18,7 +18,7 @@
             @click="toggleCollapse"
             >{{ favori.name }}</a
           >
-          <b-button variant="link" :title="'Edit Filter'" @click="OpenModal">
+          <b-button variant="link" :title="'Edit Filter'" @click="openModal">
             <i class="fa fa-pencil-alt" />
           </b-button>
         </b-col>
@@ -81,7 +81,7 @@ export default {
     cancelChange() {
       this.favori.name = this.oldName
     },
-    OpenModal() {
+    openModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.favori.id)
     },
     deleteFavori() {

@@ -18,16 +18,16 @@
             @click="toggleCollapse"
             >{{ filter.name }}</a
           >
-          <b-button variant="link" :title="'Edit Filter'" @click="OpenModal">
+          <b-button variant="link" :title="'Edit Filter'" @click="openModal">
             <i class="fa fa-pencil-alt" />
           </b-button>
           <b-button
             variant="link"
-            :title="'Favori Filter'"
-            @click="favorisUpdate"
+            :title="'Favorite Filters'"
+            @click="favoriteUpdate"
           >
             <i
-              :class="IsFavori() === true ? 'fa fa-star' : 'far fa-star'"
+              :class="IsFavorite() === true ? 'fa fa-star' : 'far fa-star'"
               aria-hidden="true"
             />
           </b-button>
@@ -58,7 +58,7 @@
     <b-modal
       size="lg"
       :id="`changeNameHistoryFilter-${filter.id}`"
-      title="you want to change this filter name ?"
+      title="Do you want to change the name of this filter?"
       @ok="SubmitChange"
       @cancel="cancelChange"
       @close="cancelChange"
@@ -73,12 +73,12 @@ import * as filterManager from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'HistoryFilterIteam',
+  name: 'HistoryFilterItem',
   props: {
     index: String,
     collection: String,
     filter: Object,
-    favoris: Array
+    favorite: Array
   },
   data() {
     return {
@@ -90,8 +90,8 @@ export default {
     ...mapGetters('kuzzle', ['wrapper'])
   },
   methods: {
-    IsFavori() {
-      let idIndex = this.favoris
+    IsFavorite() {
+      let idIndex = this.favorite
         .map(favori => {
           return favori.id
         })
@@ -105,22 +105,22 @@ export default {
     cancelChange() {
       this.filter.name = this.oldName
     },
-    favorisUpdate() {
-      if (this.IsFavori()) {
-        let idIndex = this.favoris
+    favoriteUpdate() {
+      if (this.IsFavorite()) {
+        let idIndex = this.favorite
           .map(favori => {
             return favori.id
           })
           .indexOf(this.filter.id)
-        this.favoris.splice(idIndex, 1)
+        this.favorite.splice(idIndex, 1)
       } else {
-        this.favoris.push(this.filter)
+        this.favorite.push(this.filter)
       }
     },
     SubmitChange() {
-      this.favorisUpdate()
+      this.favoriteUpdate()
     },
-    OpenModal() {
+    openModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.filter.id)
     },
     deleteFilter() {

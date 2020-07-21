@@ -49,10 +49,10 @@
             >Filter History</b-nav-item
           >
           <b-nav-item
-            data-cy="Filters-favorisTab"
-            :active="complexFiltersSelectedTab === 'favoris'"
-            @click="complexFiltersSelectedTab = 'favoris'"
-            >Favoris Filter</b-nav-item
+            data-cy="Filters-favoriteTab"
+            :active="complexFiltersSelectedTab === 'favorite'"
+            @click="complexFiltersSelectedTab = 'favorite'"
+            >favorite Filter</b-nav-item
           >
           <i
             class="Filters-btnClose fa fa-times close"
@@ -95,8 +95,8 @@
         @filter-basic-submitted="onBasicFilterUpdated"
         @filter-raw-submitted="onRawFilterUpdated"
       />
-      <favoris-filter
-        v-if="complexFiltersSelectedTab === 'favoris'"
+      <favorite-filters
+        v-if="complexFiltersSelectedTab === 'favorite'"
         :index="index"
         :collection="collection"
         @filter-basic-submitted="onBasicFilterUpdated"
@@ -140,7 +140,7 @@ import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
 import HistoryFilter from './HistoryFilter'
-import FavorisFilter from './FavorisFilter'
+import FavoriteFilters from './FavoriteFilters'
 
 import {
   NO_ACTIVE,
@@ -157,7 +157,7 @@ export default {
     BasicFilter,
     RawFilter,
     HistoryFilter,
-    FavorisFilter
+    FavoriteFilters
   },
   props: {
     index: {

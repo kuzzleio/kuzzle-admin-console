@@ -1,24 +1,24 @@
 <template>
   <ul class="list-group">
-    <FavoriFilterIteam
+    <FavoriteFilterItem
       v-for="(favori, i) in favoris"
       :key="i"
       :index="index"
       :collection="collection"
       :favori="favori"
-      @favoris-delete="onFavoriDelete"
+      @favoris-delete="onFavoriteDelete"
     />
   </ul>
 </template>
 
 <script>
 import * as filterManager from '../../../services/filterManager'
-import FavoriFilterIteam from './FavoriFilterIteam'
+import FavoriteFilterItem from './FavoriteFilterItem'
 
 export default {
-  name: 'FavorisFilter',
+  name: 'FavoriteFilters',
   components: {
-    FavoriFilterIteam
+    FavoriteFilterItem
   },
   props: {
     index: String,
@@ -30,13 +30,13 @@ export default {
     }
   },
   mounted() {
-    this.favoris = filterManager.LoadFavorisFromLocalStorage(
+    this.favoris = filterManager.loadFavoritesFromLocalStorage(
       this.index,
       this.collection
     )
   },
   methods: {
-    onFavoriDelete(id) {
+    onFavoriteDelete(id) {
       let idIndex = this.favoris
         .map(favori => {
           return favori.id
@@ -48,7 +48,7 @@ export default {
   watch: {
     favoris: {
       handler() {
-        filterManager.SaveFavorisToLocalStorage(this.favoris, this.index, this.collection)
+        filterManager.saveFavoriteToLocalStorage(this.favoris, this.index, this.collection)
       },
       deep: true
     }
