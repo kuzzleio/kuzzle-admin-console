@@ -110,7 +110,7 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"query": { 
+"query": {
 "bool": {
 "must": {
 "match_phrase_prefix": {
@@ -287,6 +287,29 @@ describe('Users', function() {
     ).click({force: true})
     cy.get('[data-cy=UserItem]').should('have.length', 4)
     cy.url().should('contain', 'from=10')
+  })
+
+  it('Should be able to lists the users with a wrong from url parameter', () => {
+    for (let i = 0; i < 5; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/user-${i}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (user-${i})`
+          },
+          credentials: {
+            local: {
+              username: `user-${i}`,
+              password: 'test'
+            }
+          }
+        }
+      )
+    }
+    cy.visit('/#/security/users?from=10')
+    cy.get('[data-cy=UserItem]').should('have.length', 5)
   })
 
   it('Should be able to create a new user with custom KUID', () => {
