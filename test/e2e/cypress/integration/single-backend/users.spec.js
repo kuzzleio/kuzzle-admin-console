@@ -115,7 +115,7 @@ describe('Users', function() {
 "must": {
 "match_phrase_prefix": {
 "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
-}`,
+`,
         {
           force: true
         }
