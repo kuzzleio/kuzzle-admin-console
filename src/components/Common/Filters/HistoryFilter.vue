@@ -1,14 +1,24 @@
 <template>
   <ul class="list-group">
-    <FilterHistoryItem
-      v-for="(filter, i) in filters"
-      :key="i"
-      :index="index"
-      :collection="collection"
-      :filter="filter"
-      :favorite="favorite"
-      @filters-delete="onFiltersDelete"
-    />
+    <template v-if="filters.length > 0">
+      <FilterHistoryItem
+        v-for="(filter, i) in filters"
+        :key="i"
+        :index="index"
+        :collection="collection"
+        :filter="filter"
+        :favorite="favorite"
+        @filters-delete="onFiltersDelete"
+      />
+    </template>
+    <template v-else>
+      <h4 class="text-secondary text-center">
+        You don't have any history filters.
+      </h4>
+      <p class="text-secondary text-center">
+        You can add more by making a query.
+      </p>
+    </template>
   </ul>
 </template>
 

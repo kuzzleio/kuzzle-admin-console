@@ -1,13 +1,23 @@
 <template>
   <ul class="list-group">
-    <FavoriteFilterItem
-      v-for="(favori, i) in favorites"
-      :key="i"
-      :index="index"
-      :collection="collection"
-      :favorite="favori"
-      @favoris-delete="onFavoriteDelete"
-    />
+    <template v-if="favorites.length > 0">
+      <FavoriteFilterItem
+        v-for="(favori, i) in favorites"
+        :key="i"
+        :index="index"
+        :collection="collection"
+        :favorite="favori"
+        @favoris-delete="onFavoriteDelete"
+      />
+    </template>
+    <template v-else>
+      <h4 class="text-secondary text-center">
+        You don't have any favorites filters.
+      </h4>
+      <p class="text-secondary text-center">
+        You can add more by browsing the history of your filters.
+      </p>
+    </template>
   </ul>
 </template>
 
@@ -48,7 +58,11 @@ export default {
   watch: {
     favorites: {
       handler() {
-        filterManager.saveFavoritesToLocalStorage(this.favorites, this.index, this.collection)
+        filterManager.saveFavoritesToLocalStorage(
+          this.favorites,
+          this.index,
+          this.collection
+        )
       },
       deep: true
     }
