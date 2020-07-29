@@ -56,9 +56,17 @@
       >
         <document-list-item
           :document="document"
+          :itemName="document.id"
           :collection="collection"
-          :index="index"
+          :canEdit="true"
+          :canDelete="true"
           :is-checked="isChecked(document.id)"
+          @edit="
+            $router.push({
+              name: 'UpdateDocument',
+              params: { id: document.id }
+            })
+          "
           @checkbox-click="$emit('checkbox-click', $event)"
           @delete="$emit('delete', $event)"
         />

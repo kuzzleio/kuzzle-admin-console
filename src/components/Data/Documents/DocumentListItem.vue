@@ -22,12 +22,19 @@
         />
         <a
           class="d-inline-block align-middle code pointer"
-          @click="toggleCollapse"
-          >{{ document.id }}</a
+          @click="toggleCollapse()"
+          >{{ itemName }}</a
         >
       </b-col>
       <b-col cols="2">
         <div class="float-right">
+          <b-button
+              class="mx-1"
+              variant="link"
+              title="Browse contents"
+              @click="document.id ? toggleCollapse() : $emit('item-link-click')"
+              ><i class="fa fa-eye"></i
+            ></b-button>
           <b-button
             class="DocumentListItem-update"
             href=""
@@ -39,7 +46,7 @@
                 ? 'Edit Document'
                 : 'You are not allowed to edit this Document'
             "
-            @click.prevent="editDocument"
+            @click.prevent="$emit('edit')"
           >
             <i class="fa fa-pencil-alt" :class="{ disabled: !canEdit }" />
           </b-button>
@@ -87,7 +94,11 @@ export default {
     index: String,
     collection: String,
     document: Object,
-    isChecked: Boolean
+    isChecked: Boolean,
+    itemName: String,
+    itemLink: Function,
+    canEdit: Boolean,
+    canDelete: Boolean,
   },
   data() {
     return {
@@ -104,20 +115,8 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['canEditDocument', 'canDeleteDocument']),
-    canEdit() {
-      if (!this.index || !this.collection) {
-        return false
-      }
-      return this.canEditDocument(this.index, this.collection)
-    },
-    canDelete() {
-      if (!this.index || !this.collection) {
-        return false
-      }
-      return this.canDeleteDocument(this.index, this.collection)
-    },
     checkboxId() {
-      return `checkbox-${this.document.id}`
+      return `checkbox-${this.itemName}`
     },
     /**
      * Deletes the "id" who should not be displayed in the document body.
@@ -134,21 +133,13 @@ export default {
       this.expanded = !this.expanded
     },
     notifyCheckboxClick() {
-      this.$emit('checkbox-click', this.document.id)
+      this.$emit('checkbox-click', this.itemName)
     },
     deleteDocument() {
       if (this.canDelete) {
-        this.$emit('delete', this.document.id)
+        this.$emit('delete', this.itemName)
       }
     },
-    editDocument() {
-      if (this.canEdit) {
-        this.$router.push({
-          name: 'UpdateDocument',
-          params: { id: this.document.id }
-        })
-      }
-    }
   }
 }
 </script>
