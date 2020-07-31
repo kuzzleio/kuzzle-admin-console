@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid data-cy="DocumentListItem">
+  <b-container fluid data-cy="DataListItem">
     <b-row align-h="between" no-gutters>
       <b-col cols="10" class="py-1">
         <i
@@ -39,7 +39,7 @@
             class="DocumentListItem-update"
             href=""
             variant="link"
-            :data-cy="`DocumentListItem-update--${document.id}`"
+            :data-cy="`DataListItem-edit--${itemName}`"
             :disabled="!canEdit"
             :title="
               canEdit
@@ -54,7 +54,7 @@
             class="DocumentListItem-delete"
             href=""
             variant="link"
-            :data-cy="`DocumentListItem-delete--${document.id}`"
+            :data-cy="`DataListItem-delete--${itemName}`"
             :disabled="!canDelete"
             :title="
               canDelete
@@ -82,11 +82,11 @@
 
 <script>
 import _ from 'lodash'
-import JsonFormatter from '../../../directives/json-formatter.directive'
+import JsonFormatter from '../../directives/json-formatter.directive'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'DocumentListItem',
+  name: 'DataListItem',
   directives: {
     JsonFormatter
   },

@@ -52,7 +52,7 @@ import CrudlDocument from './CrudlDocument'
 import UserItem from '../Security/Users/UserItem'
 import RoleItem from '../Security/Roles/RoleItem'
 import ProfileItem from '../Security/Profiles/ProfileItem'
-import DocumentItem from '../Data/Documents/DocumentListItem'
+import DataListItem from '../Data/DocumentListItem'
 import * as filterManager from '../../services/filterManager'
 
 export default {
@@ -62,7 +62,7 @@ export default {
     UserItem,
     RoleItem,
     ProfileItem,
-    DocumentItem
+    DataListItem
   },
   props: {
     index: String,

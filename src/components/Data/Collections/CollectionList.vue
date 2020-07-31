@@ -47,19 +47,13 @@
               You can create the collection by hitting the button above.
             </p>
           </template>
-          <b-card class="light-shadow" bg-variant="default" v-else>
-            <b-row no-gutters class="mb-2">
-              <b-input-group class="mb-2">
-                <template v-slot:prepend>
-                  <b-input-group-text>Filter</b-input-group-text>
-                </template>
-
-                <auto-focus-input
-                  name="collection"
-                  v-model="filter"
-                  @submit="navigateToCollection"
-                />
-              </b-input-group>
+          <b-card
+            class="light-shadow"
+            bg-variant="default"
+            data-cy="CollectionList-table"
+            v-else
+          >
+            <b-container fluid class="p-0">
               <b-row no-gutters class="mb-2">
                 <b-button
                   variant="outline-dark"
@@ -87,42 +81,62 @@
                   <i class="fa fa-minus-circle left" />
                   Delete
                 </b-button>
-              </b-row>
-              <b-list-group class="w-100">
-                <b-list-group-item
-                  v-for="collection in filtredCollections"
-                  class="p-2"
-                  :key="collection.id"
-                >
-                  <document-list-item
-                    :document="collection"
-                    :itemName="collection.name"
-                    :canEdit="
-                      collection.type === 'stored' ||
-                        canEditCollection(index, collection.name)
-                    "
-                    :canDelete="canDelete"
-                    :is-checked="isChecked(collection.name)"
-                    @edit="
-                      canEditCollection(index, collection.name)
-                        ? $router.push({
-                            name: 'EditCollection',
-                            params: { collection: collection.name, index: index }
-                          })
-                        : ''
-                    "
-                    @item-link-click="
-                      $router.push({
-                        name: 'DocumentList',
-                        params: { index, collection: collection.name }
-                      })
-                    "
-                    @checkbox-click="toggleSelectDocuments(collection.name)"
-                    @delete="onDeleteCollectionClicked(collection.name)"
+                <b-input-group class="col">
+                  <template v-slot:prepend>
+                    <b-input-group-text>Filter</b-input-group-text>
+                  </template>
+
+                  <auto-focus-input
+                    name="collection"
+                    v-model="filter"
+                    @submit="navigateToCollection"
                   />
-                </b-list-group-item>
-              </b-list-group>
-            </b-row>
+                </b-input-group>
+              </b-row>
+            </b-container>
+            <template v-if="filtredCollections.length === 0">
+              <h4 class="text-secondary text-center mt-4 b-5">
+                There is no collection matching your filter.
+              </h4>
+            </template>
+            <b-list-group class="w-100">
+              <b-list-group-item
+                v-for="collection in filtredCollections"
+                class="p-2"
+                :key="collection.id"
+                :data-cy="'CollectionList-name--' + collection.name"
+              >
+                <data-list-item
+                  :document="collection"
+                  :itemName="collection.name"
+                  :canEdit="
+                    collection.type === 'stored' ||
+                      canEditCollection(index, collection.name)
+                  "
+                  :canDelete="canDelete"
+                  :is-checked="isChecked(collection.name)"
+                  @edit="
+                    canEditCollection(index, collection.name)
+                      ? $router.push({
+                          name: 'EditCollection',
+                          params: {
+                            collection: collection.name,
+                            index: index
+                          }
+                        })
+                      : ''
+                  "
+                  @item-link-click="
+                    $router.push({
+                      name: 'DocumentList',
+                      params: { index, collection: collection.name }
+                    })
+                  "
+                  @checkbox-click="toggleSelectDocuments(collection.name)"
+                  @delete="onDeleteCollectionClicked(collection.name)"
+                />
+              </b-list-group-item>
+            </b-list-group>
           </b-card>
         </div>
       </template>
@@ -148,7 +162,7 @@
         </template>
         <b-form-input
           id="deleteCollectionPromptField"
-          data-cy=""
+          data-cy="DeleteColPrompt-confirm"
           v-model="deleteConfirmation"
           @keypress.enter="onDeleteCollectionConfirmed"
         ></b-form-input>
@@ -197,7 +211,7 @@ import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
 import { truncateName } from '../../../utils'
 import { mapGetters } from 'vuex'
-import DocumentListItem from '../Documents/DocumentListItem'
+import DataListItem from '../DataListItem'
 export default {
   name: 'CollectionList',
   components: {
@@ -206,7 +220,7 @@ export default {
     ListNotAllowed,
     MainSpinner,
     AutoFocusInput,
-    DocumentListItem
+    DataListItem
   },
   props: {
     index: String

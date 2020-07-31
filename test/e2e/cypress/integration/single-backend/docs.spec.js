@@ -240,7 +240,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
+    cy.get(`[data-cy="DataListItem-edit--myId"]`).click()
 
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
@@ -262,9 +262,9 @@ describe('Document update/replace', () => {
         }
       )
     cy.get('[data-cy="DocumentUpdate-btn"]').click({ force: true })
-
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(
       res => {
+        cy.wait(1000)
         expect(res.body.result._source.foo).to.be.equals('changed')
         expect(res.body.result._source.more).to.be.equals('moar')
       }
@@ -277,7 +277,7 @@ describe('Document update/replace', () => {
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
-    cy.get(`[data-cy="DocumentListItem-update--myId"]`).click()
+    cy.get(`[data-cy="DataListItem-edit--myId"]`).click()
 
     cy.get('.ace_text-input').should('be.visible')
     cy.wait(2000)
@@ -298,7 +298,7 @@ describe('Document update/replace', () => {
         }
       )
     cy.get('[data-cy="DocumentReplace-btn"]').click({ force: true })
-
+    cy.wait(1000)
     cy.get('[data-cy="DocumentList-item"]').should('be.visible')
 
     cy.request('GET', `${kuzzleUrl}/${indexName}/${collectionName}/myId`).then(

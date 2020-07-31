@@ -54,7 +54,7 @@
         data-cy="DocumentList-item"
         :key="document.id"
       >
-        <document-list-item
+        <data-list-item
           :document="document"
           :itemName="document.id"
           :collection="collection"
@@ -76,13 +76,13 @@
 </template>
 
 <script>
-import DocumentListItem from '../DocumentListItem'
+import DataListItem from '../../DataListItem'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'DocumentsListView',
   components: {
-    DocumentListItem
+    DataListItem
   },
   props: {
     allChecked: {

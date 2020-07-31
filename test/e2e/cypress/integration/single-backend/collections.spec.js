@@ -46,7 +46,7 @@ describe('Collection management', function() {
         }
       )
     cy.get('[data-cy=CollectionCreateOrUpdate-submit]').click()
-    cy.get(`[data-cy="CollectionList-edit--${collectionName}"]`).click()
+    cy.get(`[data-cy="DataListItem-edit--${collectionName}"]`).click()
     cy.get('[data-cy="JSONEditor"]')
       .should('contain', '"firstName": {')
       .should('contain', '"type": "keyword"')
@@ -85,8 +85,8 @@ describe('Collection management', function() {
     cy.wait(500)
     cy.visit(`/#/data/${indexName}/`)
 
-    cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
-    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
+    cy.get(`[data-cy="DataListItem-delete--${collectionName}"]`).click()
+    cy.get('[data-cy="DeleteColPrompt-confirm"]').type(collectionName)
     cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
 
     cy.get('[data-cy="CollectionList-table"]').should(
@@ -118,8 +118,9 @@ describe('Collection management', function() {
 
     cy.get('body').type('f{enter}')
 
-    cy.url().should('contain', 'foobar')
+    cy.get(`[data-cy="DataListItem-edit--foobar"]`)
     cy.contains('foobar')
-    cy.contains('This collection is empty')
+    cy.get('body').type('f{enter}')
+    cy.contains('There is no collection matching your filter.')
   })
 })
