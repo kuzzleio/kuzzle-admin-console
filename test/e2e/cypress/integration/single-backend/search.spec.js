@@ -136,11 +136,11 @@ describe('Search', function() {
     cy.wait(250)
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('not.contain', 'Keylogger')
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 2)
 
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'Keylogger')
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 1)
   })
 
   it('remembers the Basic Search query across collections', function() {
@@ -186,15 +186,15 @@ describe('Search', function() {
     })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 1)
 
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
     cy.url().should('not.contain', 'Keylogger')
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 2)
 
     cy.get(`[data-cy=Treeview-item--${collectionName}]`).click()
     cy.url().should('contain', 'Keylogger')
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 1)
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').should(
@@ -219,7 +219,7 @@ describe('Search', function() {
       delay: 60
     })
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 1)
 
     cy.request(
       'POST',
@@ -234,7 +234,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-displayActiveFilters"]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
     cy.get('[data-cy=BasicFilter-submitBtn]').click()
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 2)
   })
 
   it('resets the search query but not the list view type, when the RESET button is hit', function() {
@@ -254,7 +254,7 @@ describe('Search', function() {
     cy.get('[data-cy="QuickFilter-input"]').type('Keylogger', { delay: 60 })
 
     cy.url().should('contain', 'Keylogger')
-    cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
+    cy.get('[data-cy="DataListItem"]').should('have.length', 1)
 
     cy.get('[data-cy="CollectionDropdown"]').click()
     cy.get('[data-cy=CollectionDropdown-column]').click()
@@ -328,7 +328,7 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-sortOrderSelect"]').select('desc')
     cy.get('.BasicFilter-submitBtn').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
+    cy.get('[data-cy="DataListItem"]').should(function($el) {
       expect($el.first()).to.contain('maret')
       expect($el.last()).to.contain('marchesini')
     })
@@ -393,7 +393,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
+    cy.get('[data-cy="DataListItem"]').should(function($el) {
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
@@ -459,7 +459,7 @@ describe('Search', function() {
 
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
+    cy.get('[data-cy="DataListItem"]').should(function($el) {
       expect($el.first()).to.contain('Aggregations')
     })
   })

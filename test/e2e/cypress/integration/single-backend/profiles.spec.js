@@ -156,7 +156,7 @@ describe('Profiles', () => {
           force: true
         }
       )
-    cy.get('[data-cy="ProfileCreateOrUpdate-updateBtn"]').click()
+    cy.get('[data-cy="ProfileCreateOrUpdate-updateBtn"]').click({force: true})
     cy.url().should('not.contain', profileId)
     cy.contains(profileId)
     cy.wait(1000)
