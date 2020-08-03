@@ -68,6 +68,7 @@ export default {
     hideModal() {
       this.resetForm()
       this.$bvModal.hide(this.id)
+      this.$emit('modal-close')
     },
     async tryDeleteIndex() {
       if (!this.index.trim()) {

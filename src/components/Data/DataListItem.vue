@@ -91,8 +91,6 @@ export default {
     JsonFormatter
   },
   props: {
-    index: String,
-    collection: String,
     document: Object,
     isChecked: Boolean,
     itemName: String,
@@ -103,7 +101,7 @@ export default {
   data() {
     return {
       expanded: false,
-      checked: false
+      checked: this.isChecked
     }
   },
   watch: {

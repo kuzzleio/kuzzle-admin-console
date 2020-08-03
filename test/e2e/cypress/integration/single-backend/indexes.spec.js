@@ -45,7 +45,7 @@ describe('Indexes', () => {
 
     cy.waitOverlay()
 
-    cy.get(`[data-cy=IndexesPage-delete--${indexName}]`).click()
+    cy.get(`[data-cy=DataListItem-delete--${indexName}]`).click()
 
     cy.get('[data-cy="DeleteIndexModal-name"').type(indexName, { force: true })
     cy.get('[data-cy="DeleteIndexModal-deleteBtn"]').click()
@@ -61,8 +61,8 @@ describe('Indexes', () => {
 
     cy.get('body').type('n{enter}')
 
-    cy.url().should('contain', 'nyc-open-data')
-    cy.contains('nyc-open-data')
-    cy.contains('This index has no collections.')
+    cy.get('[data-cy="IndexesPage-name--nyc-open-data')
+    cy.get('body').type('n{enter}')
+    cy.contains('There is no index matching your filter.')
   })
 })

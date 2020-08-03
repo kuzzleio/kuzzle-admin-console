@@ -256,10 +256,10 @@ export default {
       return this.selectedDocuments.length > 0
     },
     allChecked() {
-      if (!this.selectedDocuments || !this.collections) {
+      if (!this.selectedDocuments || !this.filtredCollections) {
         return false
       }
-      return this.selectedDocuments.length === this.collections.length
+      return this.selectedDocuments.length === this.filtredCollections.length
     },
     canDelete() {
       return true
@@ -352,7 +352,7 @@ export default {
         return
       }
       this.selectedDocuments = []
-      this.selectedDocuments = this.collections.map(
+      this.selectedDocuments = this.filtredCollections.map(
         collection => collection.name
       )
     },
@@ -376,6 +376,7 @@ export default {
     resetDeletePrompt() {
       this.collectionToDelete = ''
       this.deleteConfirmation = ''
+      this.selectedDocuments.shift()
       this.DeleteCollections()
     },
     truncateName,
@@ -424,7 +425,6 @@ export default {
           index: this.index,
           collection: this.collectionToDelete
         })
-        this.selectedDocuments.shift()
         this.$bvModal.hide('deleteCollectionPrompt')
 
         await this.fetchStoredCollections()
