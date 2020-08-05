@@ -32,7 +32,7 @@
               class="mx-1"
               variant="link"
               title="Browse contents"
-              @click="document.id ? toggleCollapse() : $emit('item-link-click')"
+              @click="data.id ? toggleCollapse() : $emit('item-link-click')"
               ><i class="fa fa-eye"></i
             ></b-button>
           <b-button
@@ -70,7 +70,7 @@
     </b-row>
     <b-row>
       <b-collapse
-        :id="`collapse-${document.id}`"
+        :id="`collapse-${itemName}`"
         v-model="expanded"
         class="ml-3 DocumentListItem-content w-100"
       >
@@ -91,7 +91,7 @@ export default {
     JsonFormatter
   },
   props: {
-    document: Object,
+    data: Object,
     isChecked: Boolean,
     itemName: String,
     itemLink: Function,
@@ -117,13 +117,13 @@ export default {
       return `checkbox-${this.itemName}`
     },
     /**
-     * Deletes the "id" who should not be displayed in the document body.
+     * Deletes the "id" who should not be displayed in the data body.
      * Also put the "_kuzzle_info" field in last position
      */
     formattedDocument() {
-      const document = _.omit(this.document, ['id', '_kuzzle_info'])
-      document._kuzzle_info = this.document._kuzzle_info
-      return document
+      const data = _.omit(this.data, ['id', '_kuzzle_info'])
+      data._kuzzle_info = this.data._kuzzle_info
+      return data
     }
   },
   methods: {

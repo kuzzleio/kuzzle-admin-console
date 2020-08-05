@@ -90,7 +90,7 @@
                 :data-cy="'IndexesPage-name--' + index.indexName"
               >
                 <data-list-item
-                  :document="index"
+                  :data="index"
                   :itemName="index.indexName"
                   :canEdit="true"
                   :canDelete="true"

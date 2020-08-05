@@ -55,7 +55,7 @@
         :key="document.id"
       >
         <data-list-item
-          :document="document"
+          :data="document"
           :itemName="document.id"
           :collection="collection"
           :canEdit="true"

@@ -107,7 +107,7 @@
                 :data-cy="'CollectionList-name--' + collection.name"
               >
                 <data-list-item
-                  :document="collection"
+                  :data="collection"
                   :itemName="collection.name"
                   :canEdit="
                     collection.type === 'stored' ||
