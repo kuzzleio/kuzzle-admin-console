@@ -22,7 +22,7 @@
             v-for="(andBlock, filterIndex) in orBlock"
             :key="`andBlock-${filterIndex}`"
           >
-            <b-col class="text-right">
+            <b-col class="text-right" cols="1">
               <span
                 v-if="filterIndex !== 0"
                 class="text-secondary font-weight-bold"
@@ -74,24 +74,22 @@
                 v-model="andBlock.value"
               />
             </b-col>
-            <div v-else>
-              <b-col cols="1">
+            <template v-else>
+              <b-col cols="3">
                 <b-form-input
                   v-model="andBlock.gt_value"
                   placeholder="Value 1"
                   type="text"
-                  class="BasicFilter--gtValue validate"
+                  class="BasicFilter--gtValue validate mb-1"
                 />
-              </b-col>
-              <b-col cols="1">
                 <b-form-input
                   v-model="andBlock.lt_value"
                   placeholder="Value 2"
                   type="text"
-                  class="BasicFilter--ltValue validate"
+                  class="BasicFilter--ltValue validate mt-1"
                 />
-              </b-col>
-            </div>
+                </b-col>
+            </template>
             <b-col cols="1">
               <i
                 class="fa fa-times mt-2 pointer"
@@ -104,7 +102,7 @@
                 variant="outline-secondary"
                 @click="addAndBasicFilter(groupIndex)"
               >
-                <i class="fa fa-plus left mr-2" />AND
+                <i class="fa fa-plus left mr-1" />AND
               </b-button>
             </b-col>
           </b-row>
