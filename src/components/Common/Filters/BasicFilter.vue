@@ -62,6 +62,9 @@
             <b-col cols="2">
               <b-form-select
                 v-model="andBlock.operator"
+                :data-cy="
+                      `BasicFilter-operator`
+                    "
                 :options="availableOperandsFormatted"
               />
             </b-col>
@@ -89,12 +92,18 @@
                   v-model="andBlock.gt_value"
                   placeholder="Value 1"
                   type="text"
+                  :data-cy="
+                      `BasicFilter-operator-Range-Value1`
+                    "
                   class="BasicFilter--gtValue validate mb-1"
                 />
                 <b-form-input
                   v-model="andBlock.lt_value"
                   placeholder="Value 2"
                   type="text"
+                  :data-cy="
+                      `BasicFilter-operator-Range-Value2`
+                    "
                   class="BasicFilter--ltValue validate mt-1"
                 />
               </b-col>

@@ -378,14 +378,14 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-      "query": { 
-      "bool": {
-      "must": {
-      "match_phrase_prefix": {
-      "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-      "sort": {
-      "lastName": "desc"
-      }`,
+        "query": { 
+        "bool": {
+        "must": {
+        "match_phrase_prefix": {
+        "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+        "sort": {
+        "lastName": "desc"
+        }`,
         {
           force: true
         }
@@ -446,12 +446,12 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-      "query": {},
-      "aggregations": {
-        "my_aggs": {
-          "terms": {
-            "field": "firstName"
-          `,
+        "query": {},
+        "aggregations": {
+          "my_aggs": {
+            "terms": {
+              "field": "firstName"
+            `,
         {
           force: true
         }
@@ -464,7 +464,7 @@ describe('Search', function() {
     })
   })
 
-  it.skip('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+  it.skip('should not show aggregations in search result when no aggregations are specified in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -489,7 +489,7 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-        "query": {}`,
+          "query": {}`,
         {
           force: true
         }
@@ -537,4 +537,24 @@ describe('Search', function() {
     cy.contains('dummy-42')
     cy.url().should('contain', 'from=30')
   })
+})
+
+it('should be able to display the range field correctly', function () {
+  cy.request(
+    'POST',
+    `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+    {
+      firstName: 'bar'
+    }
+  )
+
+  cy.visit('/')
+  cy.get('.IndexesPage').should('be.visible')
+  cy.visit(`/#/data/${indexName}/${collectionName}`)
+  cy.contains(collectionName)
+  cy.get('[data-cy=QuickFilter-optionBtn]').click()
+  cy.get('[data-cy=Filters-basicTab]').click()
+  cy.get('[data-cy="BasicFilter-operator"]').select('Range')
+  cy.get(`[data-cy="BasicFilter-operator-Range-Value1"]`).invoke('innerWidth').should('be.gt', 100);
+  cy.get(`[data-cy="BasicFilter-operator-Range-Value2"]`).invoke('innerWidth').should('be.gt', 100);
 })
