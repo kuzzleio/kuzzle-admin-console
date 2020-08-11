@@ -12,7 +12,7 @@
     </template>
     <template v-else>
       <h4 class="text-secondary text-center">
-        You don't have any favorites filters.
+        You don't have any favorite filters.
       </h4>
       <p class="text-secondary text-center">
         You can add more by browsing the history of your filters.
