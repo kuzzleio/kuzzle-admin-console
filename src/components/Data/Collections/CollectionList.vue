@@ -392,7 +392,7 @@ export default {
       this.collectionToDelete = name
       this.$bvModal.show('deleteCollectionPrompt')
     },
-    DeleteCollections() {
+    deleteCollections() {
       if (this.selectedCollections.length > 0) {
         this.onDeleteCollectionClicked(this.selectedCollections[0])
       }

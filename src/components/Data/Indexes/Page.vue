@@ -257,7 +257,7 @@ export default {
       this.selectedIndexes.shift()
       this.DeleteIndexes()
     },
-    DeleteIndexes() {
+    deleteIndexes() {
       if (this.selectedIndexes.length > 0) {
         this.openDeleteModal(this.selectedIndexes[0])
       }
