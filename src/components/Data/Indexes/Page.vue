@@ -22,23 +22,54 @@
       <template v-if="loading"></template>
       <template v-else>
         <b-row class="mb-3">
-          <b-col sm="8" class="text-secondary pt-2">
+          <b-col sm="6" class="text-secondary pt-2">
             {{ tableItems.length }}
             {{ tableItems.length === 1 ? 'index' : 'indexes' }}
           </b-col>
-          <b-col sm="4">
-            <b-input-group>
-              <template v-slot:prepend>
-                <b-input-group-text>Filter</b-input-group-text>
-              </template>
+          <b-col sm="6">
+            <b-row>
+              <b-col cols="6" class="text-right">
+                <b-button
+                  variant="outline-dark"
+                  class="mr-2"
+                  @click="onToggleAllClicked"
+                >
+                  <i
+                    :class="
+                      `far ${
+                        selectedIndexes.length === filteredIndexes.length
+                          ? 'fa-check-square'
+                          : 'fa-square'
+                      } left`
+                    "
+                  />
+                  Toggle all
+                </b-button>
 
-              <auto-focus-input
-                name="index"
-                v-model="filter"
-                :disabled="tableItems.length === 0"
-                @submit="navigateToIndex"
-              />
-            </b-input-group>
+                <b-button
+                  variant="outline-danger"
+                  :disabled="!bulkDeleteEnabled"
+                  @click="DeleteIndexes"
+                >
+                  <i class="fa fa-minus-circle left" />
+                  Delete
+                </b-button>
+              </b-col>
+              <b-col cols="6">
+                <b-input-group>
+                  <template v-slot:prepend>
+                    <b-input-group-text>Filter</b-input-group-text>
+                  </template>
+
+                  <auto-focus-input
+                    name="index"
+                    v-model="filter"
+                    :disabled="tableItems.length === 0"
+                    @submit="navigateToIndex"
+                  />
+                </b-input-group>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
 
@@ -63,6 +94,16 @@
             <h4 class="text-secondary text-center">
               There is no index matching your filter.
             </h4>
+          </template>
+          <template v-slot:cell(selected)="row">
+            <b-form-checkbox
+              class="d-inline-block align-middle"
+              type="checkbox"
+              unchecked-value="false"
+              value="true"
+              :checked="isChecked(row.item.indexName)"
+              @change="onCheckboxClick(row.item.indexName)"
+            />
           </template>
           <template v-slot:cell(icon)>
             <i class="fa fa-2x fa-database mr-2"></i>
@@ -117,7 +158,11 @@
       </template>
     </template>
     <CreateIndexModal :id="createIndexModalId" />
-    <DeleteIndexModal :id="deleteIndexModalId" :index="indexToDelete" />
+    <DeleteIndexModal
+      :id="deleteIndexModalId"
+      :index="indexToDelete"
+      @modal-close="onModalClose"
+    />
   </b-container>
 </template>
 
@@ -146,6 +191,11 @@ export default {
       indexToDelete: null,
       tableFields: [
         {
+          class: 'CollectionList-type align-middle',
+          key: 'selected',
+          label: ''
+        },
+        {
           key: 'icon',
           label: '',
           tdClass: 'IndexesPage-icon text-secondary align-middle'
@@ -168,13 +218,20 @@ export default {
           class: 'text-right align-middle'
         }
       ],
-      filteredIndexes: []
+      filteredIndexes: [],
+      selectedIndexes: []
     }
+  },
+  mounted() {
+    this.updateFilteredIndexes(this.tableItems)
   },
   computed: {
     ...mapGetters('auth', ['canSearchIndex', 'canCreateIndex']),
     loading() {
       return this.$store.direct.state.index.loadingIndexes
+    },
+    bulkDeleteEnabled() {
+      return this.selectedIndexes.length > 0
     },
     indexes() {
       return this.$store.state.index.indexesAndCollections
@@ -195,6 +252,40 @@ export default {
   methods: {
     openCreateModal() {
       this.$bvModal.show(this.createIndexModalId)
+    },
+    onModalClose() {
+      this.selectedIndexes.shift()
+      this.DeleteIndexes()
+    },
+    DeleteIndexes() {
+      if (this.selectedIndexes.length > 0) {
+        this.openDeleteModal(this.selectedIndexes[0])
+      }
+    },
+    allChecked() {
+      if (!this.selectedIndexes || !this.filteredIndexes) {
+        return false
+      }
+      return this.selectedIndexes.length === this.filteredIndexes.length
+    },
+    onToggleAllClicked() {
+      if (this.allChecked()) {
+        this.selectedIndexes = []
+        return
+      }
+      this.selectedIndexes = []
+      this.selectedIndexes = this.filteredIndexes.map(index => index.indexName)
+    },
+    isChecked(name) {
+      return this.selectedIndexes.indexOf(name) > -1
+    },
+    onCheckboxClick(name) {
+      let index = this.selectedIndexes.indexOf(name)
+      if (index === -1) {
+        this.selectedIndexes.push(name)
+        return
+      }
+      this.selectedIndexes.splice(index, 1)
     },
     openDeleteModal(index) {
       this.indexToDelete = index
