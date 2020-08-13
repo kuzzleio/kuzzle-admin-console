@@ -29,6 +29,7 @@
             </b-button>
             <b-button
               variant="link"
+              :data-cy="'FilterFavoriItem-Remove--' + id"
               @click="deleteFavori"
               :title="'Delete Favori'"
             >
@@ -66,7 +67,8 @@ export default {
   props: {
     index: String,
     collection: String,
-    favorite: Object
+    favorite: Object,
+    id: Number
   },
   data() {
     return {

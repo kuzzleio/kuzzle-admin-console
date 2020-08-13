@@ -55,6 +55,7 @@
             >favorite Filter</b-nav-item
           >
           <i
+            data-cy="Filters-close"
             class="Filters-btnClose fa fa-times close"
             @click="advancedFiltersVisible = false"
           />

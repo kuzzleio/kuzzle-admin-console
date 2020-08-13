@@ -4,9 +4,11 @@
       <FilterHistoryItem
         v-for="(filter, i) in filters"
         :key="i"
+        :data-cy="'FilterHistoryItem--' + i"
         :index="index"
         :collection="collection"
         :filter="filter"
+        :id="i"
         :favorite="favorite"
         @filters-delete="onFiltersDelete"
       />

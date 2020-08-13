@@ -24,6 +24,7 @@
           <b-button
             variant="link"
             :title="'Favorite Filters'"
+            :data-cy="'FilterHistoryItem-Add-Favorite--' + id"
             @click="updateFavorite"
           >
             <i
@@ -34,7 +35,7 @@
         </b-col>
         <b-col cols="2">
           <div class="float-right">
-            <b-button variant="link" @click="useFilter" :title="'Edit Filter'">
+            <b-button variant="link" @click="useFilter" :title="'Edit Filter'" :data-cy="'FilterHistoryItem-Search-Favorite--' + id">
               <i class="fa fa-search" />
             </b-button>
             <b-button
@@ -78,7 +79,8 @@ export default {
     index: String,
     collection: String,
     filter: Object,
-    favorite: Array
+    favorite: Array,
+    id: Number
   },
   data() {
     return {

@@ -1,4 +1,4 @@
-describe('Search', function() {
+describe('Search', function () {
   const kuzzleUrl = 'http://localhost:7512'
   const indexName = 'testindex'
   const collectionName = 'testcollection'
@@ -52,7 +52,7 @@ describe('Search', function() {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
-  it('perists the Quick Search query in the URL', function() {
+  it('perists the Quick Search query in the URL', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -70,7 +70,7 @@ describe('Search', function() {
     cy.url().should('contain', 'active=quick')
   })
 
-  it('persists the Basic Search query in the URL', function() {
+  it('persists the Basic Search query in the URL', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -98,7 +98,7 @@ describe('Search', function() {
     cy.url().should('contain', 'Blockchain')
   })
 
-  it('remembers the Quick Search query across collections', function() {
+  it('remembers the Quick Search query across collections', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -143,7 +143,7 @@ describe('Search', function() {
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
   })
 
-  it('remembers the Basic Search query across collections', function() {
+  it('remembers the Basic Search query across collections', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -207,7 +207,7 @@ describe('Search', function() {
     )
   })
 
-  it('refreshes search when the Search button is hit twice', function() {
+  it('refreshes search when the Search button is hit twice', function () {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
@@ -237,7 +237,7 @@ describe('Search', function() {
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
   })
 
-  it('resets the search query but not the list view type, when the RESET button is hit', function() {
+  it('resets the search query but not the list view type, when the RESET button is hit', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -281,7 +281,7 @@ describe('Search', function() {
     cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 2)
   })
 
-  it('sorts the results when sorting is selected in the basic filter', function() {
+  it('sorts the results when sorting is selected in the basic filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/maret/_create?refresh=wait_for`,
@@ -328,13 +328,13 @@ describe('Search', function() {
     cy.get('[data-cy="BasicFilter-sortOrderSelect"]').select('desc')
     cy.get('.BasicFilter-submitBtn').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
+    cy.get('[data-cy="DocumentListItem"]').should(function ($el) {
       expect($el.first()).to.contain('maret')
       expect($el.last()).to.contain('marchesini')
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function() {
+  it('sorts the results when sorting is specfied in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -393,13 +393,13 @@ describe('Search', function() {
 
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
+    cy.get('[data-cy="DocumentListItem"]').should(function ($el) {
       expect($el.first()).to.contain('Maret')
       expect($el.last()).to.contain('Marchesini')
     })
   })
 
-  it('transforms a search query from basic filter to raw filter', function() {
+  it('transforms a search query from basic filter to raw filter', function () {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')
     cy.visit(`/#/data/${indexName}/${collectionName}`)
@@ -421,7 +421,7 @@ describe('Search', function() {
       .and('contain', 'bar')
   })
 
-  it.skip('should show aggregations in search result when aggregations are specified in the raw filter', function() {
+  it.skip('should show aggregations in search result when aggregations are specified in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -459,12 +459,12 @@ describe('Search', function() {
 
     cy.get('[data-cy="RawFilter-submitBtn"]').click()
 
-    cy.get('[data-cy="DocumentListItem"]').should(function($el) {
+    cy.get('[data-cy="DocumentListItem"]').should(function ($el) {
       expect($el.first()).to.contain('Aggregations')
     })
   })
 
-  it.skip('should not show aggregations in search result when no aggregations are specified in the raw filter', function() {
+  it.skip('should not show aggregations in search result when no aggregations are specified in the raw filter', function () {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -536,5 +536,186 @@ describe('Search', function() {
     cy.contains('dummy-41')
     cy.contains('dummy-42')
     cy.url().should('contain', 'from=30')
+  })
+  it('should add my search in history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('4')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+  })
+  it('should add mamy search in history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    for (let i = 0, item = 0; i < 10; i += 2, item++) {
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.get('[data-cy=QuickFilter-optionBtn]').click()
+      cy.get('[data-cy=Filters-basicTab]').click()
+      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
+      cy.get('[data-cy=BasicFilter-submitBtn]').click()
+      cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+      cy.get('[data-cy=Filters-historyTab]').click()
+      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="Filters-close"]').click()
+      cy.get('[data-cy="QuickFilter-resetBtn"]').click()
+    }
+  })
+  it('should be able to add a filter to favorite', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-Add-Favorite--0"]').click()
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]')
+  })
+  it('should display message for empty favorite or history', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.contains("You haven't performed any search yet.")
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.contains("You don't have any favorite filters.")
+  })
+  it('should be able to remove a favorite filter', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-Add-Favorite--0"]').click()
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]')
+    cy.get('[data-cy="FilterFavoriItem-Remove--0"]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]').should('not.exist')
+    cy.contains("You don't have any favorite filters.")
+  })
+  it('should by able to perform search from history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    for (let i = 0, item = 0; i < 10; i += 2, item++) {
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.get('[data-cy=QuickFilter-optionBtn]').click()
+      cy.get('[data-cy=Filters-basicTab]').click()
+      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
+      cy.get('[data-cy=BasicFilter-submitBtn]').click()
+      cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+      cy.get('[data-cy=Filters-historyTab]').click()
+      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="Filters-close"]').click()
+      cy.get('[data-cy="QuickFilter-resetBtn"]').click()
+    }
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem-Search-Favorite--0"]').click()
+    cy.contains('dummy-0')
+    cy.contains('dummy-10')
+    cy.contains('dummy-9').should('not.exist')
   })
 })

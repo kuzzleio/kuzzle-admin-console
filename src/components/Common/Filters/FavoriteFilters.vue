@@ -4,6 +4,8 @@
       <FavoriteFilterItem
         v-for="(favori, i) in favorites"
         :key="i"
+        :id="i"
+        :data-cy="'FilterFavoriItem--' + i"
         :index="index"
         :collection="collection"
         :favorite="favori"
