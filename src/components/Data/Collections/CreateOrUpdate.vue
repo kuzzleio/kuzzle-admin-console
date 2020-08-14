@@ -1,5 +1,5 @@
 <template>
-  <div class="CollectionCreateOrUpdate">
+  <div class="CollectionCreateOrUpdate d-flex flex-column h-100">
     <headline>
       <span class="CollectionCreateOrUpdate-index code text-secondary">
         {{ index }}
@@ -8,7 +8,7 @@
       {{ headline }}
     </headline>
 
-    <b-card class="Mapping">
+    <b-card class="flex-grow" body-class="d-flex flex-column">
       <template v-slot:footer>
         <div class="text-right">
           <b-button
@@ -79,7 +79,7 @@
         />
       </b-form-group>
 
-      <div v-if="!realtimeOnlyState">
+      <template v-if="!realtimeOnlyState">
         <b-form-group label="Dynamic mapping" label-cols-sm="3">
           <template v-slot:description
             >Set the type of dynamic policy for this collection.
@@ -96,45 +96,58 @@
           ></b-form-radio-group>
         </b-form-group>
         <hr />
-        <b-row>
+        <b-row class="flex-grow">
           <b-col cols="8">
             <json-editor
               id="collection"
               ref="jsoneditor"
               tabindex="4"
-              myclass="pre_ace"
+              myclass="h-100"
               :content="rawMapping"
               @change="onMappingChanged"
             />
           </b-col>
 
           <b-col cols="4">
-            <div class="text-secondary">
-              You can (optionally) use this editor to define the mapping for
-              this collection.
-              <br />
-              The mapping of a collection is the definition of how each document
-              in the collection (and its fields) are stored and indexed.
-              <a
-                href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
-                target="_blank"
-                >Read more about mapping</a
-              >
-              <br /><br />
-              For example:
-              <pre>
+            <div class="d-flex flex-column h-100 text-secondary">
+              <div class="CollectionCreateOrUpdate-help">
+                You can (optionally) use this editor to define the mapping for
+                this collection.
+                <br />
+                The mapping of a collection is the definition of how each
+                document in the collection (and its fields) are stored and
+                indexed.
+                <a
+                  href="https://docs.kuzzle.io/api/1/controller-collection/update-mapping/"
+                  target="_blank"
+                  >Read more about mapping</a
+                >
+                <br /><br />
+                For example:
+                <pre>
 {
   "age": { "type": "integer" },
   "name": { "type": "text" }
 }
-              </pre>
+              </pre
+                >
+              </div>
             </div>
           </b-col>
         </b-row>
-      </div>
+      </template>
     </b-card>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.CollectionCreateOrUpdate {
+  &-help {
+    flex: 1 1 1px;
+    overflow: auto;
+  }
+}
+</style>
 
 <script>
 import Headline from '../../Materialize/Headline'
@@ -222,15 +235,12 @@ export default {
             realtimeOnly: this.realtimeOnlyState
           })
         } else {
-          this.$bvToast.toast(
-          'You must specify a collection name',
-          {
+          this.$bvToast.toast('You must specify a collection name', {
             title: 'You cannot proceed',
             variant: 'info',
             toaster: 'b-toaster-bottom-right',
             appendToast: true
-          }
-        )
+          })
         }
       } else {
         this.$bvToast.toast(

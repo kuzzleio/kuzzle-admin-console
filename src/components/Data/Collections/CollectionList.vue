@@ -32,23 +32,54 @@
       </template>
       <template v-else>
         <b-row class="mb-3">
-          <b-col sm="8" class="text-secondary">
+          <b-col sm="6" class="text-secondary">
             {{ collections.length }}
             {{ collections.length === 1 ? 'collection' : 'collections' }}
           </b-col>
-          <b-col sm="4">
-            <b-input-group>
-              <template v-slot:prepend>
-                <b-input-group-text>Filter</b-input-group-text>
-              </template>
+          <b-col sm="6">
+            <b-row>
+              <b-col cols="6" class="text-right">
+                <b-button
+                  variant="outline-dark"
+                  class="mr-2"
+                  @click="onToggleAllClicked"
+                >
+                  <i
+                    :class="
+                      `far ${
+                        selectedCollections.length === filteredCollections.length
+                          ? 'fa-check-square'
+                          : 'fa-square'
+                      } left`
+                    "
+                  />
+                  Toggle all
+                </b-button>
 
-              <auto-focus-input
-                name="collection"
-                v-model="filter"
-                @submit="navigateToCollection"
-                :disabled="collections.length === 0"
-              />
-            </b-input-group>
+                <b-button
+                  variant="outline-danger"
+                  :disabled="!bulkDeleteEnabled"
+                  @click="DeleteCollections"
+                >
+                  <i class="fa fa-minus-circle left" />
+                  Delete
+                </b-button>
+              </b-col>
+              <b-col cols="6">
+                <b-input-group>
+                  <template v-slot:prepend>
+                    <b-input-group-text>Filter</b-input-group-text>
+                  </template>
+
+                  <auto-focus-input
+                    name="collection"
+                    v-model="filter"
+                    @submit="navigateToCollection"
+                    :disabled="collections.length === 0"
+                  />
+                </b-input-group>
+              </b-col>
+            </b-row>
           </b-col>
         </b-row>
         <data-not-found v-if="!indexExists" class="mt-3"></data-not-found>
@@ -79,6 +110,16 @@
             <h4 class="text-secondary text-center">
               There is no collection matching your filter.
             </h4>
+          </template>
+          <template v-slot:cell(selected)="row">
+            <b-form-checkbox
+              class="d-inline-block align-middle"
+              type="checkbox"
+              unchecked-value="false"
+              value="true"
+              :checked="isChecked(row.item.name)"
+              @change="onCheckboxClick(row.item.name)"
+            />
           </template>
           <template v-slot:cell(type)="type">
             <i
@@ -246,7 +287,8 @@ export default {
       collectionToDelete: '',
       deleteConfirmation: '',
       rawStoredCollections: [],
-      filteredCollections: []
+      filteredCollections: [],
+      selectedCollections: []
     }
   },
   computed: {
@@ -256,6 +298,9 @@ export default {
       'canCreateCollection',
       'canEditCollection'
     ]),
+    bulkDeleteEnabled() {
+      return this.selectedCollections.length > 0
+    },
     indexExists() {
       return !!this.$store.state.index.indexesAndCollections[this.index]
     },
@@ -285,6 +330,11 @@ export default {
     },
     tableFields() {
       return [
+        {
+          class: 'CollectionList-type align-middle',
+          key: 'selected',
+          label: ''
+        },
         {
           class: 'CollectionList-type align-middle',
           key: 'type',
@@ -342,9 +392,43 @@ export default {
       this.collectionToDelete = name
       this.$bvModal.show('deleteCollectionPrompt')
     },
+    deleteCollections() {
+      if (this.selectedCollections.length > 0) {
+        this.onDeleteCollectionClicked(this.selectedCollections[0])
+      }
+    },
+    allChecked() {
+      if (!this.selectedCollections || !this.filteredCollections) {
+        return false
+      }
+      return this.selectedCollections.length === this.filteredCollections.length
+    },
+    onToggleAllClicked() {
+      if (this.allChecked()) {
+        this.selectedCollections = []
+        return
+      }
+      this.selectedCollections = []
+      this.selectedCollections = this.filteredCollections.map(
+        collection => collection.name
+      )
+    },
+    isChecked(name) {
+      return this.selectedCollections.indexOf(name) > -1
+    },
+    onCheckboxClick(name) {
+      let index = this.selectedCollections.indexOf(name)
+      if (index === -1) {
+        this.selectedCollections.push(name)
+        return
+      }
+      this.selectedCollections.splice(index, 1)
+    },
     resetDeletePrompt() {
       this.collectionToDelete = ''
       this.deleteConfirmation = ''
+      this.selectedCollections.shift()
+      this.DeleteCollections()
     },
     truncateName,
     async fetchStoredCollections() {
@@ -387,7 +471,10 @@ export default {
           index: this.index,
           collection: this.collectionToDelete
         })
+
         this.$bvModal.hide('deleteCollectionPrompt')
+
+        await this.fetchStoredCollections()
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -422,8 +509,9 @@ export default {
       this.filteredCollections = filteredCollections
     }
   },
-  mounted() {
-    this.fetchStoredCollections()
+  async mounted() {
+    await this.fetchStoredCollections()
+    this.updateFilteredCollections(this.collections)
   },
   watch: {
     index: {

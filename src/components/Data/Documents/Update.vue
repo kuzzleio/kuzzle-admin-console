@@ -1,5 +1,5 @@
 <template>
-  <b-container class="DocumentUpdate">
+  <b-container class="DocumentUpdate d-flex flex-column h-100">
     <template v-if="hasRights">
       <headline>
         Edit document
@@ -32,12 +32,6 @@
     </template>
   </b-container>
 </template>
-
-<style lang="scss" scoped>
-.DocumentUpdate {
-  height: 100%;
-}
-</style>
 
 <script>
 import PageNotAllowed from '../../Common/PageNotAllowed'

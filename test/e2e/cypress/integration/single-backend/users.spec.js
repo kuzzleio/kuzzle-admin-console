@@ -37,8 +37,10 @@ describe('Users', function() {
     cy.visit('/#/security/users')
     cy.contains(kuids[0])
     cy.contains(kuids[1])
-    cy.get('[data-cy=QuickFilter-input]').type(kuids[0])
-    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[1])
+    cy.get('[data-cy=QuickFilter-input]').type(kuids[1])
+    cy.wait(1000)
+    cy.get('[data-cy="UserList-items"').should('contain', kuids[1])
+    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
   })
 
   it('Should be able to search users via the advanced search', () => {
@@ -355,7 +357,7 @@ describe('Users', function() {
       `{selectall}${credentials.password}`
     )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
     cy.get('[data-cy=UserItem]').should('have.length', 1)
   })
 
@@ -451,7 +453,7 @@ describe('Users', function() {
       .contains('{')
       .click({ force: true })
     cy.get('textarea.ace_text-input')
-      .clear({ force: true })
+      .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
 "address": {

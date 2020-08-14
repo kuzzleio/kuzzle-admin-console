@@ -66,10 +66,11 @@ describe('Roles', () => {
 "get": true,
 "search": true`,
         {
+          delay: 200,
           force: true
         }
       )
-    cy.get('[data-cy="RoleCreateOrUpdate-updateBtn"]').click({force: true})
+    cy.get('[data-cy="RoleCreateOrUpdate-updateBtn"]').click({ force: true })
     cy.contains(roleId)
     cy.wait(1000)
     cy.request('GET', `${kuzzleUrl}/roles/${roleId}`).should(response => {
@@ -208,7 +209,7 @@ describe('Roles', () => {
     cy.get('[data-cy="RoleItem"]').should('have.length', 10)
     cy.get(
       '[data-cy="RolesManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({force: true})
+    ).click({ force: true })
     cy.get('[data-cy="RoleItem"]').should('have.length', 7)
   })
 })

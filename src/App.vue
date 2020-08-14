@@ -1,7 +1,6 @@
 <template>
   <div class="App">
-    <main-spinner v-if="initializing"></main-spinner>
-    <template v-else>
+    <template>
       <router-view
         data-cy="App-loggedIn"
         @environment::create="editEnvironment"
@@ -41,47 +40,18 @@ import {} from './assets/global.scss'
 import ModalCreateOrUpdate from './components/Common/Environments/ModalCreateOrUpdate'
 import ModalDelete from './components/Common/Environments/ModalDelete'
 import ModalImport from './components/Common/Environments/ModalImport'
-import MainSpinner from './components/Common/MainSpinner'
 
 export default {
   name: 'KuzzleAdminConsole',
   components: {
     ModalCreateOrUpdate,
     ModalDelete,
-    ModalImport,
-    MainSpinner
+    ModalImport
   },
   data() {
     return {
-      initializing: true,
       environmentId: null
     }
-  },
-
-  async mounted() {
-    this.$log.debug('App:Mounted')
-    this.initializing = true
-    try {
-      // NOTE This operation is pretty useless here, as the environments must be
-      // loaded in the router guard. We double check here in order to display a
-      // warning if necessary, since we cannot show a toast from the router guard.
-      this.$store.direct.dispatch.kuzzle.loadEnvironments()
-    } catch (error) {
-      this.$log.error(error.message)
-      this.$log.error(localStorage.getItem('environments'))
-      this.$bvToast.toast(
-        'The list of saved connections seems to be malformed. If you know how to fix it, take a look at the console.',
-        {
-          title: 'Ooops! Something went wrong while loading the connections.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        }
-      )
-    }
-    this.initializing = false
   },
   methods: {
     editEnvironment(id) {

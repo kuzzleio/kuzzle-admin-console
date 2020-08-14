@@ -21,7 +21,7 @@
         OK
       </b-button>
     </template>
-    <b-form>
+    <b-form v-on:submit.prevent="tryCreateIndex">
       <b-form-group
         label="Index name"
         label-for="indexName"

@@ -22,7 +22,7 @@
             v-for="(andBlock, filterIndex) in orBlock"
             :key="`andBlock-${filterIndex}`"
           >
-            <b-col class="text-right">
+            <b-col class="text-right" cols="1">
               <span
                 v-if="filterIndex !== 0"
                 class="text-secondary font-weight-bold"
@@ -30,29 +30,41 @@
                 AND
               </span>
             </b-col>
+            <b-col cols="3">
+              <b-row align-v="center" align-h="center" class="mt-1">
+                <b-col cols="2">
+                  <i v-if="filterIndex === 0" class="fas fa-question-circle fa-lg" v-b-popover.hover.top="'For an attribute to be in the list, it must be contained in the mapping.'"></i>
+                </b-col>
+                <b-col cols="10">
+                  <b-form-select
+                    placeholder="Attribute"
+                    :data-cy="
+                      `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
+                    "
+                    @change="
+                      attribute =>
+                        selectAttribute(attribute, groupIndex, filterIndex)
+                    "
+                    :value="
+                      filters.basic[groupIndex][filterIndex].attribute || ''
+                    "
+                    :options="selectAttributesValues"
+                  >
+                    <template v-slot:first>
+                      <b-form-select-option :value="''" disabled
+                        >Attribute</b-form-select-option
+                      >
+                    </template>
+                  </b-form-select>
+                </b-col>
+              </b-row>
+            </b-col>
             <b-col cols="2">
               <b-form-select
-                placeholder="Attribute"
-                :data-cy="
-                  `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
-                "
-                @change="
-                  attribute =>
-                    selectAttribute(attribute, groupIndex, filterIndex)
-                "
-                :value="filters.basic[groupIndex][filterIndex].attribute || ''"
-                :options="selectAttributesValues"
-              >
-                <template v-slot:first>
-                  <b-form-select-option :value="''" disabled
-                    >Attribute</b-form-select-option
-                  >
-                </template>
-              </b-form-select>
-            </b-col>
-            <b-col cols="3">
-              <b-form-select
                 v-model="andBlock.operator"
+                :data-cy="
+                      `BasicFilter-operator`
+                    "
                 :options="availableOperandsFormatted"
               />
             </b-col>
@@ -74,24 +86,28 @@
                 v-model="andBlock.value"
               />
             </b-col>
-            <div v-else>
-              <b-col cols="1">
+            <template v-else>
+              <b-col cols="3">
                 <b-form-input
                   v-model="andBlock.gt_value"
                   placeholder="Value 1"
                   type="text"
-                  class="BasicFilter--gtValue validate"
+                  :data-cy="
+                      `BasicFilter-operator-Range-Value1`
+                    "
+                  class="BasicFilter--gtValue validate mb-1"
                 />
-              </b-col>
-              <b-col cols="1">
                 <b-form-input
                   v-model="andBlock.lt_value"
                   placeholder="Value 2"
                   type="text"
-                  class="BasicFilter--ltValue validate"
+                  :data-cy="
+                      `BasicFilter-operator-Range-Value2`
+                    "
+                  class="BasicFilter--ltValue validate mt-1"
                 />
               </b-col>
-            </div>
+            </template>
             <b-col cols="1">
               <i
                 class="fa fa-times mt-2 pointer"
@@ -104,7 +120,7 @@
                 variant="outline-secondary"
                 @click="addAndBasicFilter(groupIndex)"
               >
-                <i class="fa fa-plus left mr-2" />AND
+                <i class="fa fa-plus left mr-1" />AND
               </b-button>
             </b-col>
           </b-row>
