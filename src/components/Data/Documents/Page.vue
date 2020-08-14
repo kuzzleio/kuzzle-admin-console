@@ -19,14 +19,19 @@
               indexOrCollectionNotFound || !canCreateDocument(index, collection)
             "
             :to="{ name: 'CreateDocument', params: { index, collection } }"
-            >Create New Document</b-button
-          ><collection-dropdown
+            >Create New Document</b-button>
+          <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
             :index="index"
             :collection="collection"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
+          />
+          <collection-dropdown-action
+            class="icon-medium icon-black ml-2"
+            :index="index"
+            :collection="collection"
             @clear="onCollectionClear"
           />
         </b-col>
@@ -173,7 +178,8 @@ import NoResultsEmptyState from './NoResultsEmptyState'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionDropdown from '../Collections/Dropdown'
+import CollectionDropdownView from '../Collections/DropdownView'
+import CollectionDropdownAction from '../Collections/DropdownAction'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -189,7 +195,8 @@ const LIST_VIEW_TIME_SERIES = 'time-series'
 export default {
   name: 'DocumentsPage',
   components: {
-    CollectionDropdown,
+    CollectionDropdownView,
+    CollectionDropdownAction,
     DeleteModal,
     Column,
     List,

@@ -67,7 +67,7 @@ describe('Collection management', function() {
     cy.wait(1000)
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.contains(documentId)
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownAction"]').click()
     cy.get('[data-cy="CollectionDropdown-clear"]').click()
     cy.get('[data-cy="CollectionClearModal-collectionName"]').type(
       collectionName

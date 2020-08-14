@@ -256,7 +256,7 @@ describe('Search', function() {
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy=CollectionDropdown-column]').click()
     cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
 

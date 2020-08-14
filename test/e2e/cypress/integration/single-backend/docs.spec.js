@@ -47,11 +47,11 @@ describe('Document List', function() {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-list"]').click()
     cy.url().should('contain', 'listViewType=list')
@@ -69,7 +69,7 @@ describe('Document List', function() {
         job: 'Blockchain Keylogger as a Service'
       }
     )
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.get('[data-cy="CollectionDropdownView"').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.get('[data-cy=Treeview-item--anothercollection]').click()
 
@@ -119,7 +119,7 @@ describe('Document List', function() {
     cy.waitOverlay()
 
     cy.visit(`/#/data/${indexName}/${collectionName}`)
-    cy.get('[data-cy="CollectionDropdown"').click()
+    cy.get('[data-cy="CollectionDropdownView"').click()
     cy.wait(500)
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.url().should('contain', 'listViewType=column')
@@ -313,7 +313,7 @@ describe('Document update/replace', () => {
     cy.waitOverlay()
     cy.visit(`/#/data/${indexName}/${collectionName}`)
 
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy="CollectionDropdown-column"]').click()
     cy.wait(500)
     cy.get('[data-cy="ColumnView-table-edit-btn--myId"]').click()

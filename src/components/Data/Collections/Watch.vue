@@ -11,13 +11,18 @@
             </headline>
           </b-col>
           <b-col class="text-right">
-            <collection-dropdown
+            <collection-dropdown-view
               active-view="realtime"
               class="icon-medium icon-black"
               :index="index"
               :collection="collection"
               @list="$router.push({ name: 'DocumentList' })"
               @column="$router.push({ name: 'DocumentList' })"
+            />
+            <collection-dropdown-action
+              class="icon-medium icon-black"
+              :index="index"
+              :collection="collection"
             />
           </b-col>
         </b-row>
@@ -237,7 +242,8 @@
 <script>
 import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
-import CollectionDropdown from '../Collections/Dropdown'
+import CollectionDropdownView from '../Collections/DropdownView'
+import CollectionDropdownAction from '../Collections/DropdownAction'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -252,7 +258,8 @@ export default {
   },
   components: {
     Notification,
-    CollectionDropdown,
+    CollectionDropdownView,
+    CollectionDropdownAction,
     JsonEditor,
     Headline
   },
