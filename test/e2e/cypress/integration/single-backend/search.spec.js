@@ -567,7 +567,7 @@ describe('Search', function () {
     cy.get('[data-cy=Filters-historyTab]').click()
     cy.get('[data-cy="FilterHistoryItem--0"]')
   })
-  it('should be able to multi-searchable and must appear in the history section.', () => {
+  it('Should be able to see previous searches in the search history.', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
