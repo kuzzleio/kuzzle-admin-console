@@ -47,7 +47,8 @@
                   <i
                     :class="
                       `far ${
-                        selectedCollections.length === filteredCollections.length
+                        selectedCollections.length ===
+                        filteredCollections.length
                           ? 'fa-check-square'
                           : 'fa-square'
                       } left`
@@ -59,7 +60,12 @@
                 <b-button
                   variant="outline-danger"
                   :disabled="!bulkDeleteEnabled"
-                  @click="DeleteCollections"
+                  v-if="
+                    $store.state.kuzzle.environments[
+                      $store.state.kuzzle.currentId
+                    ].backendMajorVersion !== 1
+                  "
+                  @click="deleteCollections"
                 >
                   <i class="fa fa-minus-circle left" />
                   Delete
@@ -190,6 +196,10 @@
             <b-button
               class="mx-1"
               variant="link"
+              v-if="
+                $store.state.kuzzle.environments[$store.state.kuzzle.currentId]
+                  .backendMajorVersion !== 1
+              "
               title="Delete collection"
               :data-cy="`CollectionList-delete--${row.item.name}`"
               @click="onDeleteCollectionClicked(row.item.name)"
@@ -230,6 +240,10 @@
           >Cancel</b-button
         >
         <b-button
+          v-if="
+            $store.state.kuzzle.environments[$store.state.kuzzle.currentId]
+              .backendMajorVersion !== 1
+          "
           data-cy="DeleteCollectionPrompt-OK"
           variant="danger"
           :disabled="!deleteConfirmation"
@@ -428,7 +442,7 @@ export default {
       this.collectionToDelete = ''
       this.deleteConfirmation = ''
       this.selectedCollections.shift()
-      this.DeleteCollections()
+      this.deleteCollections()
     },
     truncateName,
     async fetchStoredCollections() {
