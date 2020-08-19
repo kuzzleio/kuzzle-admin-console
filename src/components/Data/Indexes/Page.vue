@@ -49,7 +49,7 @@
                 <b-button
                   variant="outline-danger"
                   :disabled="!bulkDeleteEnabled"
-                  @click="DeleteIndexes"
+                  @click="deleteIndexes"
                 >
                   <i class="fa fa-minus-circle left" />
                   Delete
@@ -255,7 +255,7 @@ export default {
     },
     onModalClose() {
       this.selectedIndexes.shift()
-      this.DeleteIndexes()
+      this.deleteIndexes()
     },
     deleteIndexes() {
       if (this.selectedIndexes.length > 0) {
