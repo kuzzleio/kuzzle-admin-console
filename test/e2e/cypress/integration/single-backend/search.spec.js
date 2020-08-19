@@ -567,7 +567,7 @@ describe('Search', function () {
     cy.get('[data-cy=Filters-historyTab]').click()
     cy.get('[data-cy="FilterHistoryItem--0"]')
   })
-  it('should add mamy search in history', () => {
+  it('should be able to multi-searchable and must appear in the history section.', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
@@ -678,7 +678,7 @@ describe('Search', function () {
     cy.get('[data-cy="FilterFavoriItem--0"]').should('not.exist')
     cy.contains("You don't have any favorite filters.")
   })
-  it('should by able to perform search from history', () => {
+  it('should be able to perform search from history', () => {
     const docCount = 10
     const documents = []
     for (let i = 0; i < docCount * 2; i += 2) {
