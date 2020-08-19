@@ -621,6 +621,7 @@ describe('Search', function () {
         documents
       }
     )
+
     cy.visit(`/#/data/${indexName}/${collectionName}`)
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
     cy.get('[data-cy=Filters-basicTab]').click()
