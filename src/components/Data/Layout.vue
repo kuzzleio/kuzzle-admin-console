@@ -6,7 +6,7 @@
         :collection="$route.params.collection"
       />
     </div>
-    <MultipaneResizer data-cy="sidebarResizer"/>
+    <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
       <template v-if="loading">
         <main-spinner></main-spinner>

@@ -89,3 +89,15 @@ async function poll(url, state = 'up') {
 Cypress.Commands.add('waitForService', (url, state = 'up') => {
   return poll(url, state)
 })
+
+Cypress.Commands.add('skipOnBackendVersion', version => {
+  const currentEnvName = localStorage.getItem('currentEnv')
+  const currentEnv = JSON.parse(localStorage.getItem('environments'))[
+    currentEnvName
+  ]
+
+  if (currentEnv.backendMajorVersion === version) {
+    const ctx = cy.state('runnable').ctx
+    ctx.skip()
+  }
+})

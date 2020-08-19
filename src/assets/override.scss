@@ -23,6 +23,10 @@ $theme-colors: (
   align-items: center;
 }
 
+.flex-grow {
+  flex: 1 1 1px;
+}
+
 .text-small {
   font-size: 0.75em
 }

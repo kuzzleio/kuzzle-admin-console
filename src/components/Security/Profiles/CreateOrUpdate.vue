@@ -1,8 +1,8 @@
 <template>
   <b-card class="ProfileCreateOrUpdate">
     <!-- Json view -->
-    <b-row>
-      <b-col lg="7" md="12">
+    <b-row class="h-100">
+      <b-col lg="7" md="12" class="d-flex flex-column">
         <b-form-group
           v-if="!id"
           label="Profile ID"
@@ -26,31 +26,32 @@
         </b-form-group>
 
         <json-editor
-          class="document-json"
+          class="ProfileCreateOrUpdate-jsonEditor"
           data-cy="ProfileCreateOrUpdate-jsonEditor"
           ref="jsoneditor"
           :content="profile"
-          :height="500"
           @change="onContentChange"
         />
       </b-col>
 
       <!-- Mapping -->
-      <b-col lg="5" md="12">
+      <b-col lg="5" md="12" class="d-flex flex-column">
         <h3>Cheatsheet</h3>
-        Your profile is a set of <code>policies</code>, each of which will
-        contain a set of roles, like the example below:
-        <pre class="my-3 ml-3">
+        <div class="ProfileCreateOrUpdate-cheatsheet">
+          Your profile is a set of <code>policies</code>, each of which will
+          contain a set of roles, like the example below:
+          <pre class="my-3 ml-3">
 {
   "policies": [{
       "roleId": "roleId"
     }]
 }
-        </pre>
-        You can also restrict your policy to a set of indexes and collections,
-        so that your roles will be valid to a specific subset of your data, like
-        the example below:
-        <pre class="my-3 ml-3">
+        </pre
+          >
+          You can also restrict your policy to a set of indexes and collections,
+          so that your roles will be valid to a specific subset of your data,
+          like the example below:
+          <pre class="my-3 ml-3">
 {
   "policies": [{
       "roleIds": "roleId"
@@ -63,7 +64,9 @@
       }
     }]
 }
-        </pre>
+        </pre
+          >
+        </div>
       </b-col>
     </b-row>
 
@@ -96,6 +99,21 @@
     </template>
   </b-card>
 </template>
+
+<style lang="scss" scoped>
+.ProfileCreateOrUpdate {
+  flex-grow: 1;
+
+  &-jsonEditor {
+    flex-grow: 1;
+  }
+  &-cheatsheet {
+    flex: 1 1 1px;
+    margin-bottom: 0;
+    overflow: auto;
+  }
+}
+</style>
 
 <script>
 import JsonEditor from '../../Common/JsonEditor'
@@ -158,9 +176,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.ProfileCreateOrUpdate {
-  margin-bottom: 3em;
-}
-</style>
