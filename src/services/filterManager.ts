@@ -159,7 +159,7 @@ export const saveHistoyToLocalStorage= (filters, index, collection) => {
   )
 }
 
-export const newHistoyLocalStorage = (filter, index, collection) => {
+export const addNewHistoryItemAndSave = (filter, index, collection) => {
   if (!index || !collection) {
     throw new Error(
       'Cannot save filters to localstorage if no index or collection are specified'

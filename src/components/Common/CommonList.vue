@@ -131,7 +131,7 @@ export default {
           this.index,
           this.collection
         )
-        filterManager.newHistoyLocalStorage(
+        filterManager.addNewHistoryItemAndSave(
           newValue,
           this.index,
           this.collection
@@ -185,7 +185,7 @@ export default {
           this.index,
           this.collection
         )
-        filterManager.newHistoyLocalStorage(
+        filterManager.addNewHistoryItemAndSave(
           newFilters,
           this.index,
           this.collection

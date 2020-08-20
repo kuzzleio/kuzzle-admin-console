@@ -263,7 +263,7 @@ export default {
           this.collection
         )
         if (!isLoadHistory) {
-          filterManager.newHistoyLocalStorage(
+          filterManager.addNewHistoryItemAndSave(
             newFilters,
             this.index,
             this.collection
