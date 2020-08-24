@@ -96,7 +96,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { startsWithSpace, isWhitespace } from '../../../utils'
+import { startsWithSpace, isWhitespace } from '../../../validators'
 import { not } from 'vuelidate/lib/validators'
 
 import Basic from './Steps/Basic'

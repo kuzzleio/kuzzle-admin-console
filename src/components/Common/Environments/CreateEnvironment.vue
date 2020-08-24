@@ -127,6 +127,22 @@ import { isValidHostname, notIncludeScheme } from '../../../validators'
 import { envColors, DEFAULT_COLOR } from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
 
+/**
+ * Vuelidate validator.
+ * The validator framework injects the execution context (`this`
+ * is the current component).
+ */
+function nameIsUnique(value) {
+  if (this.environmentId) {
+    return true
+  }
+
+  return Object.keys(this.environments).indexOf(value) === -1
+}
+// function isValidColor(color) {
+//   return envColors.includes(color)
+// }
+
 export default {
   mixins: [validationMixin],
   name: 'CreateEnvironment',
@@ -157,13 +173,7 @@ export default {
     environment: {
       name: {
         required,
-        nameIsUnique: value => {
-          if (this.environmentId) {
-            return true
-          }
-
-          return Object.keys(this.environments).indexOf(value) === -1
-        }
+        nameIsUnique
       },
       host: {
         required,

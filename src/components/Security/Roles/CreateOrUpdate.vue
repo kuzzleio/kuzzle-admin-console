@@ -129,7 +129,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { requiredUnless, not } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace } from '../../../utils'
+import { startsWithSpace, isWhitespace } from '../../../validators'
 
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'

@@ -1,8 +1,6 @@
 // Pleas keep this export syntax, this file is used by the tests
 // (until nodejs supports js modules export)
 
-const trim = require('lodash/trim')
-
 module.exports = {
   /**
    * Substitutes all the DOM-unfriendly characters with '-'

@@ -129,7 +129,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { requiredUnless, not } from 'vuelidate/lib/validators'
-import { startsWithSpace, isWhitespace } from '../../../utils'
+import { startsWithSpace, isWhitespace } from '../../../validators'
 
 import JsonEditor from '../../Common/JsonEditor'
 import JsonFormatter from '../../../directives/json-formatter.directive'

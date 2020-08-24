@@ -1,3 +1,5 @@
+const trim = require('lodash/trim')
+
 module.exports = {
   startsWithSpace(value) {
     return value[0] === ' '
