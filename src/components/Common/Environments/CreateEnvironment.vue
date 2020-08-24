@@ -122,23 +122,10 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { numeric, required } from 'vuelidate/lib/validators'
-import { isValidHostname } from '../../../utils'
+import { isValidHostname, notIncludeScheme } from '../../../validators'
 
 import { envColors, DEFAULT_COLOR } from '../../../vuex/modules/kuzzle/store'
 const useHttps = window.location.protocol === 'https:'
-function nameIsUnique(value) {
-  if (this.environmentId) {
-    return true
-  }
-
-  return Object.keys(this.environments).indexOf(value) === -1
-}
-function notIncludeScheme(value) {
-  return !/^(http|ws):\/\//.test(value)
-}
-function isValidColor(color) {
-  return envColors.includes(color)
-}
 
 export default {
   mixins: [validationMixin],
@@ -170,7 +157,13 @@ export default {
     environment: {
       name: {
         required,
-        nameIsUnique
+        nameIsUnique: value => {
+          if (this.environmentId) {
+            return true
+          }
+
+          return Object.keys(this.environments).indexOf(value) === -1
+        }
       },
       host: {
         required,
@@ -183,7 +176,7 @@ export default {
       },
       color: {
         required,
-        isValidColor
+        isValidColor: color => envColors.includes(color)
       },
       backendMajorVersion: {
         required
