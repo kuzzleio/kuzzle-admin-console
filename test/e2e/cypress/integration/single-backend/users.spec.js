@@ -110,12 +110,12 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"query": { 
-"bool": {
-"must": {
-"match_phrase_prefix": {
-"name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
-}`,
+  "query": {
+  "bool": {
+  "must": {
+  "match_phrase_prefix": {
+  "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
+  `,
         {
           force: true
         }
@@ -284,9 +284,33 @@ describe('Users', function() {
 
     cy.get(
       '[data-cy="UserManagement-pagination"] .page-link[aria-posinset="2"]'
-    ).click({force: true})
+    ).click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 4)
     cy.url().should('contain', 'from=10')
+  })
+
+  it('Should be able to lists the users with a wrong from url parameter', () => {
+    cy.skipOnBackendVersion(1)
+    for (let i = 0; i < 5; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/user-${i}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (user-${i})`
+          },
+          credentials: {
+            local: {
+              username: `user-${i}`,
+              password: 'test'
+            }
+          }
+        }
+      )
+    }
+    cy.visit('/#/security/users?from=10')
+    cy.get('[data-cy=UserItem]').should('have.length', 5)
   })
 
   it('Should be able to create a new user with custom KUID', () => {
@@ -321,13 +345,13 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"super_important_field": "LOL"`,
+  "super_important_field": "LOL"`,
         {
           force: true
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -357,7 +381,7 @@ describe('Users', function() {
       `{selectall}${credentials.password}`
     )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 1)
   })
 
@@ -422,13 +446,13 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"super_important_field": "LOL"`,
+  "super_important_field": "LOL"`,
         {
           force: true
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click({force: true})
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -456,9 +480,9 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"address": {
-"type": "text"
-`,
+  "address": {
+  "type": "text"
+  `,
         {
           force: true
         }

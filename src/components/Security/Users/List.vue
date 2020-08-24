@@ -309,6 +309,14 @@ export default {
         )
         this.documents = res.documents
         this.totalDocuments = res.total
+        if (res.documents.length === 0 && res.total !== 0) {
+          this.onFiltersUpdated(
+            Object.assign(this.currentFilter, {
+              from: 0
+            })
+          )
+          return
+        }
       } catch (error) {
         this.$log.error(error)
         this.$log.debug(error.stack)
