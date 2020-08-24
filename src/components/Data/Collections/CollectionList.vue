@@ -59,7 +59,7 @@
                 <b-button
                   variant="outline-danger"
                   :disabled="!bulkDeleteEnabled"
-                  @click="DeleteCollections"
+                  @click="deleteCollections"
                 >
                   <i class="fa fa-minus-circle left" />
                   Delete
