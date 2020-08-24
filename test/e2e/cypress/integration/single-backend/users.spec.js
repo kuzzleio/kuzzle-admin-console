@@ -290,28 +290,27 @@ describe('Users', function() {
   })
 
   it('Should be able to lists the users with a wrong from url parameter', () => {
-    if (Cypress.env('BACKEND_VERSION') === 2) {
-      for (let i = 0; i < 5; i++) {
-        cy.request(
-          'POST',
-          `${kuzzleUrl}/users/user-${i}/_create?refresh=wait_for`,
-          {
-            content: {
-              profileIds: ['default'],
-              name: `Dummy User (user-${i})`
-            },
-            credentials: {
-              local: {
-                username: `user-${i}`,
-                password: 'test'
-              }
+    cy.skipOnBackendVersion(1)
+    for (let i = 0; i < 5; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/user-${i}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (user-${i})`
+          },
+          credentials: {
+            local: {
+              username: `user-${i}`,
+              password: 'test'
             }
           }
-        )
-      }
-      cy.visit('/#/security/users?from=10')
-      cy.get('[data-cy=UserItem]').should('have.length', 5)
+        }
+      )
     }
+    cy.visit('/#/security/users?from=10')
+    cy.get('[data-cy=UserItem]').should('have.length', 5)
   })
 
   it('Should be able to create a new user with custom KUID', () => {
