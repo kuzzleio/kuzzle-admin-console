@@ -35,6 +35,16 @@
         >
           Security
         </b-nav-item>
+        <b-nav-item
+          :active="
+            $route.path.match('/query')
+              ? $route.path.match('/query').length > 0
+              : false
+          "
+          :to="{ name: 'Query' }"
+        >
+          Query
+        </b-nav-item>
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
         <b-nav-text
