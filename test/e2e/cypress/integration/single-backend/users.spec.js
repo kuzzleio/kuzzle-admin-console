@@ -37,8 +37,10 @@ describe('Users', function() {
     cy.visit('/#/security/users')
     cy.contains(kuids[0])
     cy.contains(kuids[1])
-    cy.get('[data-cy=QuickFilter-input]').type(kuids[0])
-    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[1])
+    cy.get('[data-cy=QuickFilter-input]').type(kuids[1])
+    cy.wait(1000)
+    cy.get('[data-cy="UserList-items"').should('contain', kuids[1])
+    cy.get('[data-cy="UserList-items"').should('not.contain', kuids[0])
   })
 
   it('Should be able to search users via the advanced search', () => {
@@ -108,11 +110,12 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"query": {
-"bool": {
-"must": {
-"match_phrase_prefix": {
-"name": "Dummy User (${kuids[1]})"`,
+  "query": {
+  "bool": {
+  "must": {
+  "match_phrase_prefix": {
+  "name": "Dummy User (${kuids[1]})"{downarrow}{downarrow}{downarrow}{downarrow}
+  `,
         {
           force: true
         }
@@ -342,6 +345,30 @@ describe('Users', function() {
       expect(location.hash).to.equal(`#/security/users/create`)
     })
   })
+  
+  it('Should be able to list the users with a wrong from url parameter', () => {
+    cy.skipOnBackendVersion(1)
+    for (let i = 0; i < 5; i++) {
+      cy.request(
+        'POST',
+        `${kuzzleUrl}/users/user-${i}/_create?refresh=wait_for`,
+        {
+          content: {
+            profileIds: ['default'],
+            name: `Dummy User (user-${i})`
+          },
+          credentials: {
+            local: {
+              username: `user-${i}`,
+              password: 'test'
+            }
+          }
+        }
+      )
+    }
+    cy.visit('/#/security/users?from=10')
+    cy.get('[data-cy=UserItem]').should('have.length', 5)
+  })
 
   it('Should be able to create a new user with custom KUID', () => {
     const kuid = 'trippy'
@@ -375,13 +402,13 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"super_important_field": "LOL"`,
+  "super_important_field": "LOL"`,
         {
           force: true
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -411,7 +438,7 @@ describe('Users', function() {
       `{selectall}${credentials.password}`
     )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get('[data-cy=UserItem]').should('have.length', 1)
   })
 
@@ -476,13 +503,13 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"super_important_field": "LOL"`,
+  "super_important_field": "LOL"`,
         {
           force: true
         }
       )
 
-    cy.get('[data-cy="UserUpdate-submit"]').click()
+    cy.get('[data-cy="UserUpdate-submit"]').click({ force: true })
     cy.get(`[data-cy=UserItem-${kuid}--toggle]`).click()
     cy.get('[data-cy=UserItem]').should('contain', '"admin"')
     cy.get('[data-cy=UserItem]').should('contain', 'super_important_field')
@@ -510,9 +537,9 @@ describe('Users', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-"address": {
-"type": "text"
-`,
+  "address": {
+  "type": "text"
+  `,
         {
           force: true
         }

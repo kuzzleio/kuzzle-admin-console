@@ -4,7 +4,7 @@
     ref="deleteIndexModal"
     size="lg"
     :id="id"
-    @hide="resetForm"
+    @hidden="resetForm"
   >
     <template v-slot:modal-title>
       Index <strong>{{ truncateName(index) }}</strong> deletion
@@ -68,6 +68,7 @@ export default {
     hideModal() {
       this.resetForm()
       this.$bvModal.hide(this.id)
+      this.$emit("modal-close")
     },
     async tryDeleteIndex() {
       if (!this.index.trim()) {

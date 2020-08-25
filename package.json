@@ -5,7 +5,7 @@
   "author": "The Kuzzle team <support@kuzzle.io>",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --dest dist$DEPLOY_PATH",
+    "build": "vue-cli-service build --dest dist$DEPLOY_PATH --modern",
     "test": "npm run e2e",
     "lint": "vue-cli-service lint",
     "e2e": "./test/e2e/run-test/bin/run",
