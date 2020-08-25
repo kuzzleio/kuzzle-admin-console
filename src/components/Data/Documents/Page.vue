@@ -468,7 +468,7 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters, isLoadHistory) {
+    async onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -477,7 +477,7 @@ export default {
           this.index,
           this.collection
         )
-        if (!isLoadHistory) {
+        if (!loadedFromHistory) {
           filterManager.addNewHistoryItemAndSave(
             newFilters,
             this.index,

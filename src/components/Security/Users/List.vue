@@ -253,7 +253,7 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    onFiltersUpdated(newFilters, isLoadHistory) {
+    onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -262,7 +262,7 @@ export default {
           this.index,
           this.collection
         )
-        if (!isLoadHistory) {
+        if (!loadedFromHistory) {
           filterManager.addNewHistoryItemAndSave(
             newFilters,
             this.index,

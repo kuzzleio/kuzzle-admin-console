@@ -272,15 +272,15 @@ export default {
         })
       )
     },
-    onBasicFilterUpdated(filter, sorting, isLoadHistory) {
+    onBasicFilterUpdated(filter, sorting, loadedFromHistory) {
       const newFilter = new Filter()
       newFilter.basic = filter
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
       newFilter.sorting = sorting
       newFilter.from = 0
-      this.onFiltersUpdated(newFilter, isLoadHistory)
+      this.onFiltersUpdated(newFilter, loadedFromHistory)
     },
-    onRawFilterUpdated(filter, isLoadHistory) {
+    onRawFilterUpdated(filter, loadedFromHistory) {
       this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
@@ -288,7 +288,7 @@ export default {
           raw: filter,
           from: 0
         }),
-        isLoadHistory
+        loadedFromHistory
       )
     },
     onRefresh() {
@@ -306,9 +306,9 @@ export default {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace
     },
-    onFiltersUpdated(newFilters, isLoadHistory) {
+    onFiltersUpdated(newFilters, loadedFromHistory) {
       this.advancedFiltersVisible = false
-      this.$emit('filters-updated', newFilters, isLoadHistory)
+      this.$emit('filters-updated', newFilters, loadedFromHistory)
     },
     onEnterPressed() {
       this.$emit('enter-pressed')
