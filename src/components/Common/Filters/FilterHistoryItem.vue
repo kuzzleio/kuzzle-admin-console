@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     isFavorite() {
-      let idIndex = this.favorite
+      const idIndex = this.favorite
         .map(favori => {
           return favori.id
         })
@@ -109,7 +109,7 @@ export default {
     },
     updateFavorite() {
       if (this.isFavorite()) {
-        let idIndex = this.favorite
+        const idIndex = this.favorite
           .map(favori => {
             return favori.id
           })
@@ -142,7 +142,7 @@ export default {
       }
     },
     getFilter() {
-      let loadedFilter = Object.assign(new filterManager.Filter(), this.filter)
+      const loadedFilter = Object.assign(new filterManager.Filter(), this.filter)
       if (loadedFilter.active == 'basic') return loadedFilter.basic
       if (loadedFilter.active == 'raw') return loadedFilter.raw
     },

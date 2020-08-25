@@ -168,8 +168,8 @@ export const addNewHistoryItemAndSave = (filter, index, collection) => {
   if (filter.active === null) {
     return
   }
-  let filters = loadHistoyFromLocalStorage(index, collection)
-  let date = new Date(Date.now())
+  const filters = loadHistoyFromLocalStorage(index, collection)
+  const date = new Date(Date.now())
   filter.name =
     date.getDate() +
     '/' +

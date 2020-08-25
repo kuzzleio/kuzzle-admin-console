@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     onFiltersDelete(id) {
-      let idIndex = this.filters
+      const idIndex = this.filters
         .map(filter => {
           return filter.id
         })
