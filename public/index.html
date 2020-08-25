@@ -5,15 +5,15 @@
     <title>Kuzzle Admin Console</title>
     <style>
       html {
-        /* We can avoid setting height:100vh on the grid container if we use height:100% 
-          on the root element and then all descendants up until the grid container. 
-          Using 100vh can be a simpler option, but the vh unit can be problematic on 
-          iOS and Android: https://nicolas-hoizey.com/articles/2015/02/18/viewport-height-is-taller-than-the-visible-part-of-the-document-in-some-mobile-browsers/ 
+        /* We can avoid setting height:100vh on the grid container if we use height:100%
+          on the root element and then all descendants up until the grid container.
+          Using 100vh can be a simpler option, but the vh unit can be problematic on
+          iOS and Android: https://nicolas-hoizey.com/articles/2015/02/18/viewport-height-is-taller-than-the-visible-part-of-the-document-in-some-mobile-browsers/
         */
         height: 100%;
         /* With our styles we should not have any cause for a scrollbar on the page itself,
           so this is not strictly necessary, but to be safe we can prevent scrollbars on
-          the full page. 
+          the full page.
         */
         overflow: hidden;
       }
@@ -108,7 +108,6 @@
       href="favicon-128.png"
       sizes="128x128"
     />
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
     <meta name="msapplication-TileColor" content="#FFFFFF" />
     <meta
       name="msapplication-TileImage"
