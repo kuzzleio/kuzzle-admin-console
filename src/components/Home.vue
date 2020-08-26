@@ -70,6 +70,8 @@ export default {
   },
   methods: {
     onTokenExpired() {
+      console.log("plop");
+      
       this.$store.direct.dispatch.auth.setSession(null)
     },
     noop() {}
@@ -77,7 +79,7 @@ export default {
   mounted() {
     this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
     this.$kuzzle.on('queryError', e => {
-      if (e.id === 'security.token.invalid') {
+      if (e.id === 'security.token.expired') {
         this.onTokenExpired()
       }
     })
