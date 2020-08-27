@@ -4,16 +4,16 @@
     <template v-else>
       <b-row class="justify-content-md-center" no-gutters>
         <b-col cols="12">
-          <template v-if="!isCollectionEmpty">
-            <filters
-              class="mb-3"
-              :available-operands="searchFilterOperands"
-              :current-filter="currentFilter"
-              :collection-mapping="collectionMapping"
-              @filters-updated="onFiltersUpdated"
-              @reset="onFiltersUpdated"
-            />
-          </template>
+          <filters
+            class="mb-3"
+            :available-operands="searchFilterOperands"
+            :current-filter="currentFilter"
+            :collection-mapping="collectionMapping"
+            :index="index"
+            :collection="collection"
+            @filters-updated="onFiltersUpdated"
+            @reset="onFiltersUpdated"
+          />
         </b-col>
       </b-row>
       <template v-if="loading">
@@ -253,7 +253,7 @@ export default {
 
       this.selectedDocuments.splice(index, 1)
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -262,6 +262,13 @@ export default {
           this.index,
           this.collection
         )
+        if (!loadedFromHistory) {
+          filterManager.addNewHistoryItemAndSave(
+            newFilters,
+            this.index,
+            this.collection
+          )
+        }
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast('The complete error has been printed to console', {
