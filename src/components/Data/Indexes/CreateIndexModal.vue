@@ -15,7 +15,6 @@
       <b-button
         data-cy="CreateIndexModal-createBtn"
         variant="primary"
-        :disabled="index.length === 0"
         @click="tryCreateIndex"
       >
         OK
@@ -23,18 +22,40 @@
     </template>
     <b-form v-on:submit.prevent="tryCreateIndex">
       <b-form-group
+        data-cy="CreateIndexModal-name"
         label="Index name"
         label-for="indexName"
-        description="The index name should contain only lowercase characters, no space and cannot
-          begin with an underscore (_)"
       >
+        <template v-slot:description
+          >The index name should contain only lowercase characters and no
+          spaces. It also must not contain de following characters:
+          <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
+          <code>"</code>, <code>&lt;</code> <code></code>, <code>></code>,
+          <code>|</code>, <code>,</code>, <code>#</code>, <code>:</code>,
+          <code>%</code>, <code>&</code>, <code>.</code> "</template
+        >
+        <template v-slot:invalid-feedback id="profile-id-feedback">
+          <span v-if="!$v.index.required">This field cannot be empty</span>
+          <span v-else-if="!$v.index.isNotWhitespace"
+            >This field cannot contain just whitespaces</span
+          >
+          <span v-else-if="!$v.index.startsWithLetter"
+            >This field cannot start with a whitespace</span
+          >
+          <span v-else-if="!$v.index.isLowercase"
+            >This field cannot contain uppercase letters</span
+          >
+          <span v-else-if="!$v.index.validChars"
+            >This field cannnot contain invalid chars</span
+          >
+        </template>
         <b-form-input
-          data-cy="CreateIndexModal-name"
           id="indexName"
           autofocus
           required
           type="text"
-          v-model="index"
+          v-model="$v.index.$model"
+          :state="validateState('index')"
         ></b-form-input>
       </b-form-group>
       <b-alert
@@ -51,7 +72,16 @@
 <style lang="scss"></style>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { not, required } from 'vuelidate/lib/validators'
+import { startsWithSpace, isWhitespace, isUppercase } from '../../../validators'
+
+function includesInvalidIndexChars(value) {
+  // eslint-disable-next-line no-useless-escape
+  return /[@\\\/\*\?"<>,#:%&\|\.]/.test(value)
+}
 export default {
+  mixins: [validationMixin],
   name: 'CreateIndexModal',
   props: {
     id: {
@@ -65,7 +95,22 @@ export default {
       index: ''
     }
   },
+  validations() {
+    return {
+      index: {
+        isNotWhitespace: not(isWhitespace),
+        startsWithLetter: not(startsWithSpace),
+        isLowercase: not(isUppercase),
+        required,
+        validChars: not(includesInvalidIndexChars)
+      }
+    }
+  },
   methods: {
+    validateState(fieldName) {
+      const { $dirty, $error } = this.$v[fieldName]
+      return $dirty ? !$error : null
+    },
     resetForm() {
       this.index = ''
       this.error = ''
@@ -76,7 +121,8 @@ export default {
       this.$bvModal.hide(this.id)
     },
     async tryCreateIndex() {
-      if (!this.index.trim()) {
+      this.$v.$touch()
+      if (this.$v.$anyError) {
         return
       }
 

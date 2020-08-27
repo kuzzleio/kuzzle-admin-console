@@ -14,5 +14,8 @@ module.exports = {
   },
   notIncludeScheme(value) {
     return !/^(http|ws):\/\//.test(value)
+  },
+  isUppercase(value) {
+    return /[A-Z]/.test(value)
   }
 }
