@@ -32,7 +32,7 @@
           <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
           <code>"</code>, <code>&lt;</code>, <code>></code>,
           <code>|</code>, <code>,</code>, <code>#</code>, <code>:</code>,
-          <code>%</code>, <code>&</code>, <code>.</code> "</template
+          <code>%</code>, <code>&</code>, <code>.</code> </template
         >
         <template v-slot:invalid-feedback id="profile-id-feedback">
           <span v-if="!$v.index.required">This field cannot be empty</span>
