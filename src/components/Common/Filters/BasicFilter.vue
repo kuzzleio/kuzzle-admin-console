@@ -33,7 +33,13 @@
             <b-col cols="3">
               <b-row align-v="center" align-h="center" class="mt-1">
                 <b-col cols="2">
-                  <i v-if="filterIndex === 0" class="fas fa-question-circle fa-lg" v-b-popover.hover.top="'For an attribute to be in the list, it must be contained in the mapping.'"></i>
+                  <i
+                    v-if="filterIndex === 0"
+                    class="fas fa-question-circle fa-lg"
+                    v-b-popover.hover.top="
+                      'For an attribute to be in the list, it must be contained in the mapping.'
+                    "
+                  ></i>
                 </b-col>
                 <b-col cols="10">
                   <b-form-select
@@ -62,9 +68,7 @@
             <b-col cols="2">
               <b-form-select
                 v-model="andBlock.operator"
-                :data-cy="
-                      `BasicFilter-operator`
-                    "
+                :data-cy="`BasicFilter-operator`"
                 :options="availableOperandsFormatted"
               />
             </b-col>
@@ -92,18 +96,14 @@
                   v-model="andBlock.gt_value"
                   placeholder="Value 1"
                   type="text"
-                  :data-cy="
-                      `BasicFilter-operator-Range-Value1`
-                    "
+                  :data-cy="`BasicFilter-operator-Range-Value1`"
                   class="BasicFilter--gtValue validate mb-1"
                 />
                 <b-form-input
                   v-model="andBlock.lt_value"
                   placeholder="Value 2"
                   type="text"
-                  :data-cy="
-                      `BasicFilter-operator-Range-Value2`
-                    "
+                  :data-cy="`BasicFilter-operator-Range-Value2`"
                   class="BasicFilter--ltValue validate mt-1"
                 />
               </b-col>

@@ -47,7 +47,8 @@
                   <i
                     :class="
                       `far ${
-                        selectedCollections.length === filteredCollections.length
+                        selectedCollections.length ===
+                        filteredCollections.length
                           ? 'fa-check-square'
                           : 'fa-square'
                       } left`

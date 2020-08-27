@@ -9,7 +9,7 @@
       <template v-slot:button-content>
         <b class="mr-2">View</b>
       </template>
-      
+
       <b-dropdown-group id="collection-dd-group-views" header="View type">
         <b-dropdown-item
           data-cy="CollectionDropdown-list"
