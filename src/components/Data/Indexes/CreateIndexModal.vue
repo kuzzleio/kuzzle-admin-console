@@ -30,7 +30,7 @@
           >The index name should contain only lowercase characters and no
           spaces. It also must not contain de following characters:
           <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
-          <code>"</code>, <code>&lt;</code> <code></code>, <code>></code>,
+          <code>"</code>, <code>&lt;</code>, <code>></code>,
           <code>|</code>, <code>,</code>, <code>#</code>, <code>:</code>,
           <code>%</code>, <code>&</code>, <code>.</code> "</template
         >
