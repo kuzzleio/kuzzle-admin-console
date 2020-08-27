@@ -70,8 +70,6 @@ export default {
   },
   methods: {
     onTokenExpired() {
-      console.log("plop");
-      
       this.$store.direct.dispatch.auth.setSession(null)
     },
     noop() {}
