@@ -12,11 +12,45 @@ describe('Indexes', () => {
     cy.waitOverlay()
 
     cy.get('[data-cy="IndexesPage-createBtn"').click()
-    cy.get('[data-cy="CreateIndexModal-name"]').type(indexName, {
+    cy.get('[data-cy="CreateIndexModal-name"] input').type(indexName, {
       force: true
     })
     cy.get('[data-cy="CreateIndexModal-createBtn"]').click()
     cy.contains(indexName)
+  })
+
+  it('Should show visual feedback when creating invalid index', () => {
+    cy.waitOverlay()
+
+    cy.get('[data-cy="IndexesPage-createBtn"').click()
+    cy.get('[data-cy="CreateIndexModal-name"] input').type(' ', {
+      force: true
+    })
+    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+    cy.get('[data-cy="CreateIndexModal-name"] input').type('s', {
+      force: true
+    })
+    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+      'contain',
+      'This field cannot start with a whitespace'
+    )
+    cy.get('[data-cy="CreateIndexModal-name"] input').type('{selectall}A', {
+      force: true
+    })
+    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+      'contain',
+      'This field cannot contain uppercase letters'
+    )
+    cy.get('[data-cy="CreateIndexModal-name"] input').type('{selectall}asd#', {
+      force: true
+    })
+    cy.get('[data-cy="CreateIndexModal-name"] .invalid-feedback').should(
+      'contain',
+      'This field cannnot contain invalid chars'
+    )
   })
 
   it('Should not allow to create the same index twice', () => {
@@ -28,7 +62,7 @@ describe('Indexes', () => {
     cy.get('[data-cy="IndexesPage-createBtn"')
       .should('be.visible')
       .click()
-    cy.get('[data-cy="CreateIndexModal-name"]').type(indexName, {
+    cy.get('[data-cy="CreateIndexModal-name"] input').type(indexName, {
       force: true
     })
     cy.get('[data-cy="CreateIndexModal-createBtn"]').click()

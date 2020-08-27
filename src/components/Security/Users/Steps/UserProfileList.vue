@@ -54,7 +54,7 @@
         </b-badge>
       </template>
       <template v-else>
-        <span class="text-secondary">Please add at least one profile</span>
+        <span class="text-secondary">No profiles selected</span>
       </template>
     </b-col>
   </b-row>
