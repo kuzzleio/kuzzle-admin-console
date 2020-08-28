@@ -14,7 +14,11 @@ describe('Collection management with multi-backend', function() {
       version: '1',
       docoArgs: ['up'],
     })
-    cy.wait(3000)
+    cy.waitForService(`http://localhost:7512`)
+    cy.request(
+      'POST',
+      `http://localhost:7512/${indexName}/_create`
+    )
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
