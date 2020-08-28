@@ -5,13 +5,16 @@ describe('Collection management with multi-backend', function() {
 
   beforeEach(() => {
     // reset database and setup
-    cy.request('POST', `${kuzzleUrl}/admin/_resetDatabase`)
-    cy.request('POST', `${kuzzleUrl}/${indexName}/_create`)
-
-    cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
+    cy.task('doco', { version: '1', docoArgs: ['down'] })
+    cy.task('doco', { version: '2', docoArgs: ['down'] })
+    cy.wait(3000)
   })
   it('Should disable delete collections for KUZZLE V1', () => {
-    cy.skipOnBackendVersion(2)
+    cy.task('doco', {
+      version: '1',
+      docoArgs: ['up'],
+    })
+    cy.wait(3000)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
 
     cy.visit(`/#/data/`)
