@@ -42,7 +42,20 @@
             @click="complexFiltersSelectedTab = 'raw'"
             >Raw JSON Filter</b-nav-item
           >
+          <b-nav-item
+            data-cy="Filters-historyTab"
+            :active="complexFiltersSelectedTab === 'history'"
+            @click="complexFiltersSelectedTab = 'history'"
+            >Filter History</b-nav-item
+          >
+          <b-nav-item
+            data-cy="Filters-favoriteTab"
+            :active="complexFiltersSelectedTab === 'favorite'"
+            @click="complexFiltersSelectedTab = 'favorite'"
+            >favorite Filter</b-nav-item
+          >
           <i
+            data-cy="Filters-close"
             class="Filters-btnClose fa fa-times close"
             @click="advancedFiltersVisible = false"
           />
@@ -75,6 +88,20 @@
         :collection-mapping="collectionMapping"
         @filter-submitted="onBasicFilterUpdated"
         @reset="onReset"
+      />
+      <history-filter
+        v-if="complexFiltersSelectedTab === 'history'"
+        :index="index"
+        :collection="collection"
+        @filter-basic-submitted="onBasicFilterUpdated"
+        @filter-raw-submitted="onRawFilterUpdated"
+      />
+      <favorite-filters
+        v-if="complexFiltersSelectedTab === 'favorite'"
+        :index="index"
+        :collection="collection"
+        @filter-basic-submitted="onBasicFilterUpdated"
+        @filter-raw-submitted="onRawFilterUpdated"
       />
     </template>
   </b-card>
@@ -113,6 +140,8 @@
 import QuickFilter from './QuickFilter'
 import BasicFilter from './BasicFilter'
 import RawFilter from './RawFilter'
+import HistoryFilter from './HistoryFilter'
+import FavoriteFilters from './FavoriteFilters'
 
 import {
   NO_ACTIVE,
@@ -127,9 +156,19 @@ export default {
   components: {
     QuickFilter,
     BasicFilter,
-    RawFilter
+    RawFilter,
+    HistoryFilter,
+    FavoriteFilters
   },
   props: {
+    index: {
+      type: String,
+      required: true
+    },
+    collection: {
+      type: String,
+      required: true
+    },
     actionButtonsVisible: {
       type: Boolean,
       required: false,
@@ -233,22 +272,23 @@ export default {
         })
       )
     },
-    onBasicFilterUpdated(filter, sorting) {
+    onBasicFilterUpdated(filter, sorting, loadedFromHistory) {
       const newFilter = new Filter()
       newFilter.basic = filter
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
       newFilter.sorting = sorting
       newFilter.from = 0
-      this.onFiltersUpdated(newFilter)
+      this.onFiltersUpdated(newFilter, loadedFromHistory)
     },
-    onRawFilterUpdated(filter) {
+    onRawFilterUpdated(filter, loadedFromHistory) {
       this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter,
           from: 0
-        })
+        }),
+        loadedFromHistory
       )
     },
     onRefresh() {
@@ -259,15 +299,16 @@ export default {
       )
     },
     onReset() {
+      this.advancedFiltersVisible = false
       this.$emit('reset', new Filter())
     },
     setObjectTabActive(tab) {
       this.objectTabActive = tab
       this.refreshace = !this.refreshace
     },
-    onFiltersUpdated(newFilters) {
+    onFiltersUpdated(newFilters, loadedFromHistory) {
       this.advancedFiltersVisible = false
-      this.$emit('filters-updated', newFilters)
+      this.$emit('filters-updated', newFilters, loadedFromHistory)
     },
     onEnterPressed() {
       this.$emit('enter-pressed')

@@ -1,25 +1,28 @@
 <template>
   <form class="wrapper">
-    <b-row>
-      <b-col cols="2">
-        <strong>KUID</strong>
-      </b-col>
+    <b-form-group label-cols="2" data-cy="UserBasic-kuid">
+      <template v-slot:label><strong>KUID</strong></template>
 
-      <b-col>
-        <b-input
-          v-if="editKuid"
-          class="validate"
-          data-cy="UserBasic-kuid"
-          id="custom-kuid"
-          placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
-          type="text"
-          :value="kuid"
-          :disabled="autoGenerateKuid"
-          @change="setCustomKuid"
-        />
-        <span class="code" v-if="!editKuid">{{ kuid }}</span>
-      </b-col>
-    </b-row>
+      <template v-slot:invalid-feedback>
+        <span v-if="!validations.kuid.notEmpty"
+          >The KUID cannot contain just whitespaces</span
+        >
+        <span v-else-if="!validations.kuid.notStartsWithSpace"
+          >The KUID cannot start with a whitespace</span
+        >
+      </template>
+      <b-input
+        v-if="editKuid"
+        class="validate"
+        id="custom-kuid"
+        placeholder="You can leave this field empty to let Kuzzle auto-generate the KUID"
+        type="text"
+        :disabled="!editKuid"
+        :state="validateState('kuid')"
+        :value="kuid"
+        @input="setCustomKuid"
+      />
+    </b-form-group>
     <b-row class="mt-2">
       <b-col cols="2">
         <strong>Profiles</strong>
@@ -30,6 +33,16 @@
           @selected-profile="onProfileSelected"
           @remove-profile="removeProfile"
         />
+        <b-row>
+          <b-col offset="6">
+            <div class="text-danger" data-cy="UserProfileList-invalidFeedback">
+              <small v-if="validations.addedProfiles.$error"
+                >Please add at least one profile</small
+              >
+              <small v-else><br /></small>
+            </div>
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
   </form>
@@ -43,21 +56,12 @@ export default {
   components: {
     UserProfileList
   },
-  data() {
-    return {
-      autoGenerateKuidValue: false
-    }
-  },
   props: {
     addedProfiles: {
       type: Array,
       default: () => {
         return []
       }
-    },
-    autoGenerateKuid: {
-      type: Boolean,
-      default: false
     },
     kuid: {
       type: String,
@@ -66,9 +70,16 @@ export default {
     editKuid: {
       type: Boolean,
       default: false
+    },
+    validations: {
+      type: Object
     }
   },
   methods: {
+    validateState(fieldName) {
+      const { $dirty, $error } = this.validations[fieldName]
+      return $dirty ? !$error : null
+    },
     setCustomKuid(value) {
       this.$emit('set-custom-kuid', value)
     },
@@ -77,14 +88,6 @@ export default {
     },
     removeProfile(profile) {
       this.$emit('profile-remove', profile)
-    }
-  },
-  watch: {
-    autoGenerateKuid: {
-      immediate: true,
-      handler(v) {
-        this.autoGenerateKuidValue = v
-      }
     }
   }
 }

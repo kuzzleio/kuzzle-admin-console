@@ -61,6 +61,8 @@
                   :available-operands="searchFilterOperands"
                   :current-filter="currentFilter"
                   :collection-mapping="collectionMapping"
+                  :index="index"
+                  :collection="collection"
                   @filters-updated="onFiltersUpdated"
                   @reset="onFiltersUpdated"
                   @enter-pressed="navigateToDocument"
@@ -473,7 +475,7 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters) {
+    async onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -482,6 +484,13 @@ export default {
           this.index,
           this.collection
         )
+        if (!loadedFromHistory) {
+          filterManager.addNewHistoryItemAndSave(
+            newFilters,
+            this.index,
+            this.collection
+          )
+        }
         await this.fetchDocuments()
       } catch (e) {
         this.$bvToast.toast(e.message, {
