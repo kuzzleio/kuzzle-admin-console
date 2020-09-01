@@ -22,11 +22,11 @@
       <template v-if="loading"></template>
       <template v-else>
         <b-row class="mb-3">
-          <b-col sm="6" class="text-secondary pt-2">
+          <b-col class="text-secondary pt-2">
             {{ tableItems.length }}
             {{ tableItems.length === 1 ? 'index' : 'indexes' }}
           </b-col>
-          <b-col sm="6">
+          <b-col sm="10">
             <b-row>
               <b-col cols="6" class="text-right">
                 <b-button

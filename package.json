@@ -63,6 +63,7 @@
     "vue-template-compiler": "^2.6.10",
     "vue2-leaflet": "^1.0.2",
     "vuejs-logger": "1.5.4",
+    "vuelidate": "^0.7.5",
     "vuex": "^3.1.2"
   },
   "engines": {

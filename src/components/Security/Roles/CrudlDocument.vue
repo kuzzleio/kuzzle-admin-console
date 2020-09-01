@@ -2,6 +2,8 @@
   <div class="CrudlDocument">
     <filters
       :current-filter="currentFilter.basic"
+      :index="index"
+      :collection="collection"
       @filters-updated="onBasicFilterUpdated"
       @reset="onBasicFilterUpdated"
     />

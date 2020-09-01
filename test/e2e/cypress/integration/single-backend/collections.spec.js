@@ -11,6 +11,59 @@ describe('Collection management', function() {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.waitOverlay()
+    cy.visit(`/#/data/${indexName}/create`)
+    cy.contains('Create a new collection')
+
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(' ', {
+      force: true
+    })
+
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-name"] .invalid-feedback'
+    ).should('contain', 'The name you entered is invalid')
+
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
+
+    cy.get(
+      '[data-cy="CollectionCreateOrUpdate-name"] .invalid-feedback'
+    ).should('contain', 'Please fill-in a valid collection name')
+
+    cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal(`#/data/${indexName}/create`)
+    })
+
+    cy.get('[data-cy="CollectionCreateOrUpdate-name"] input').type(
+      '{selectall}validcoll',
+      {
+        force: true
+      }
+    )
+
+    cy.get('[data-cy="JSONEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+
+    cy.get('[data-cy="JSONEditor"] textarea.ace_text-input')
+      .should('be.visible')
+      .type('{selectall}{backspace}', { delay: 200, force: true })
+      .type(`SuM UNV4L1d jayZON Kood`)
+
+    cy.get('[data-cy="CollectionCreateOrUpdate-submit"]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal(`#/data/${indexName}/create`)
+    })
+  })
+
   it('Should be able to create a collection and access it', function() {
     cy.visit(`/#/data/${indexName}/create`)
     cy.get('.CollectionCreate').should('be.visible')

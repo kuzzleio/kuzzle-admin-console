@@ -5,6 +5,57 @@ describe('Roles', () => {
     cy.initLocalEnv(Cypress.env('BACKEND_VERSION'))
   })
 
+  it('Should render a visual feedback and prevent submitting when input is not valid', () => {
+    cy.waitOverlay()
+    cy.visit('/#/security/roles/create')
+    cy.contains('Create a new role')
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type(' ', {
+      force: true
+    })
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot contain just whitespaces'
+    )
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type(
+      '{selectall}{backspace}',
+      {
+        force: true
+      }
+    )
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] .invalid-feedback').should(
+      'contain',
+      'This field cannot be empty'
+    )
+
+    cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal('#/security/roles/create')
+    })
+
+    cy.get('[data-cy="RoleCreateOrUpdate-id"] input').type('{selectall}valid', {
+      force: true
+    })
+
+    cy.get('[data-cy="RoleCreateOrUpdate-jsonEditor"] .ace_line')
+      .contains('{')
+      .click({ force: true })
+
+    cy.get('textarea.ace_text-input')
+      .clear({ force: true })
+      .type(`SuM UNV4L1d jayZON Kood`)
+
+    cy.get('[data-cy=RoleCreateOrUpdate-createBtn]').click()
+    cy.wait(1000)
+    cy.location().should(location => {
+      expect(location.hash).to.equal('#/security/roles/create')
+    })
+  })
+
   it('Should be able to create a new role', () => {
     const roleId = 'dummy'
     cy.visit('/#/security/roles/create')
