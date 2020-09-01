@@ -61,7 +61,8 @@
                   variant="outline-danger"
                   :disabled="!bulkDeleteEnabled"
                   v-if="
-                    $store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1
+                    $store.direct.getters.kuzzle.currentEnvironment
+                      .backendMajorVersion !== 1
                   "
                   @click="deleteCollections"
                 >
@@ -195,7 +196,8 @@
               class="mx-1"
               variant="link"
               v-if="
-                $store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1
+                $store.direct.getters.kuzzle.currentEnvironment
+                  .backendMajorVersion !== 1
               "
               title="Delete collection"
               :data-cy="`CollectionList-delete--${row.item.name}`"
@@ -238,7 +240,8 @@
         >
         <b-button
           v-if="
-            $store.direct.getters.kuzzle.currentEnvironment.backendMajorVersion !== 1
+            $store.direct.getters.kuzzle.currentEnvironment
+              .backendMajorVersion !== 1
           "
           data-cy="DeleteCollectionPrompt-OK"
           variant="danger"

@@ -5,6 +5,8 @@
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
         :collection-mapping="collectionMapping"
+        :index="index"
+        :collection="collection"
         @filters-updated="onFiltersUpdated"
         @reset="onFiltersUpdated"
       />

@@ -256,7 +256,7 @@ describe('Search', function () {
     cy.url().should('contain', 'Keylogger')
     cy.get('[data-cy="DocumentListItem"]').should('have.length', 1)
 
-    cy.get('[data-cy="CollectionDropdown"]').click()
+    cy.get('[data-cy="CollectionDropdownView"]').click()
     cy.get('[data-cy=CollectionDropdown-column]').click()
     cy.get('[data-cy="ColumnView-table"] tbody tr').should('have.length', 1)
 
@@ -536,6 +536,188 @@ describe('Search', function () {
     cy.contains('dummy-41')
     cy.contains('dummy-42')
     cy.url().should('contain', 'from=30')
+  })
+  it('should add my search in history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('4')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+  })
+  it('Should be able to see previous searches in the search history.', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    for (let i = 0, item = 0; i < 10; i += 2, item++) {
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.get('[data-cy=QuickFilter-optionBtn]').click()
+      cy.get('[data-cy=Filters-basicTab]').click()
+      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
+      cy.get('[data-cy=BasicFilter-submitBtn]').click()
+      cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+      cy.get('[data-cy=Filters-historyTab]').click()
+      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="Filters-close"]').click()
+      cy.get('[data-cy="QuickFilter-resetBtn"]').click()
+    }
+  })
+  it('should be able to add a filter to favorite', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-Add-Favorite--0"]').click()
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]')
+  })
+  it('should display message for empty favorite or history', () => {
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.contains("You haven't performed any search yet.")
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.contains("You don't have any favorite filters.")
+  })
+  it('should be able to remove a favorite filter', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-basicTab]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('1')
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem--0"]')
+    cy.get('[data-cy="FilterHistoryItem-Add-Favorite--0"]').click()
+    cy.get('[data-cy=Filters-favoriteTab]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]')
+    cy.get('[data-cy="FilterFavoriItem-Remove--0"]').click()
+    cy.get('[data-cy="FilterFavoriItem--0"]').should('not.exist')
+    cy.contains("You don't have any favorite filters.")
+  })
+  it('should be able to perform search from history', () => {
+    const docCount = 10
+    const documents = []
+    for (let i = 0; i < docCount * 2; i += 2) {
+      documents.push({
+        _id: `dummy-${i}`,
+        body: {
+          firstName: 'Dummy',
+          lastName: `Clone-${i}`,
+          job: 'Blockchain as a Service'
+        }
+      })
+    }
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_mWrite?refresh=wait_for`,
+      {
+        documents
+      }
+    )
+    for (let i = 0, item = 0; i < 10; i += 2, item++) {
+      cy.visit(`/#/data/${indexName}/${collectionName}`)
+      cy.get('[data-cy=QuickFilter-optionBtn]').click()
+      cy.get('[data-cy=Filters-basicTab]').click()
+      cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select('lastName')
+      cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type(i)
+      cy.get('[data-cy=BasicFilter-submitBtn]').click()
+      cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+      cy.get('[data-cy=Filters-historyTab]').click()
+      cy.get('[data-cy="FilterHistoryItem--' + item + '"]')
+      cy.get('[data-cy="Filters-close"]').click()
+      cy.get('[data-cy="QuickFilter-resetBtn"]').click()
+    }
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-historyTab]').click()
+    cy.get('[data-cy="FilterHistoryItem-Search-Favorite--0"]').click()
+    cy.contains('dummy-0')
+    cy.contains('dummy-10')
+    cy.contains('dummy-9').should('not.exist')
   })
 
   it('should be able to display the range field correctly', function () {

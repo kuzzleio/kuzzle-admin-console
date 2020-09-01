@@ -131,6 +131,11 @@ export default {
           this.index,
           this.collection
         )
+        filterManager.addNewHistoryItemAndSave(
+          newValue,
+          this.index,
+          this.collection
+        )
       }
     },
     currentFilter() {
@@ -177,6 +182,11 @@ export default {
         filterManager.save(
           newFilters,
           this.$router,
+          this.index,
+          this.collection
+        )
+        filterManager.addNewHistoryItemAndSave(
+          newFilters,
           this.index,
           this.collection
         )

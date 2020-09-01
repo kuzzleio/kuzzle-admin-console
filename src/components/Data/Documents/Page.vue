@@ -19,14 +19,19 @@
               indexOrCollectionNotFound || !canCreateDocument(index, collection)
             "
             :to="{ name: 'CreateDocument', params: { index, collection } }"
-            >Create New Document</b-button
-          ><collection-dropdown
+            >Create New Document</b-button>
+          <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
             :index="index"
             :collection="collection"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
+          />
+          <collection-dropdown-action
+            class="icon-medium icon-black ml-2"
+            :index="index"
+            :collection="collection"
             @clear="onCollectionClear"
           />
         </b-col>
@@ -56,6 +61,8 @@
                   :available-operands="searchFilterOperands"
                   :current-filter="currentFilter"
                   :collection-mapping="collectionMapping"
+                  :index="index"
+                  :collection="collection"
                   @filters-updated="onFiltersUpdated"
                   @reset="onFiltersUpdated"
                   @enter-pressed="navigateToDocument"
@@ -173,7 +180,8 @@ import NoResultsEmptyState from './NoResultsEmptyState'
 import RealtimeOnlyEmptyState from './RealtimeOnlyEmptyState'
 import Filters from '../../Common/Filters/Filters'
 import ListNotAllowed from '../../Common/ListNotAllowed'
-import CollectionDropdown from '../Collections/Dropdown'
+import CollectionDropdownView from '../Collections/DropdownView'
+import CollectionDropdownAction from '../Collections/DropdownAction'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -189,7 +197,8 @@ const LIST_VIEW_TIME_SERIES = 'time-series'
 export default {
   name: 'DocumentsPage',
   components: {
-    CollectionDropdown,
+    CollectionDropdownView,
+    CollectionDropdownAction,
     DeleteModal,
     Column,
     List,
@@ -466,7 +475,7 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters) {
+    async onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
       try {
         filterManager.save(
@@ -475,6 +484,13 @@ export default {
           this.index,
           this.collection
         )
+        if (!loadedFromHistory) {
+          filterManager.addNewHistoryItemAndSave(
+            newFilters,
+            this.index,
+            this.collection
+          )
+        }
         await this.fetchDocuments()
       } catch (e) {
         this.$bvToast.toast(e.message, {

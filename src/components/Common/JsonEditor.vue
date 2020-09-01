@@ -79,9 +79,10 @@ export default {
   mounted() {
     Vue.nextTick(() => {
       /* eslint no-undef: 0 */
-      editor = ace.edit(this.$refs.jsoneditor)
+      editor = ace.edit(this.$refs.jsoneditor, {
+        mode: 'ace/mode/json'
+      })
       editor.setTheme('ace/theme/tomorrow')
-      editor.getSession().setMode('ace/mode/json')
       editor.setFontSize(15)
       editor.getSession().setTabSize(2)
       editor.setReadOnly(this.readonly)

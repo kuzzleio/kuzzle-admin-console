@@ -2,6 +2,7 @@
   <form id="resetPasswordForm" method="post" @submit.prevent="resetPassword()">
     <div class="resetPasswordForm-inputs">
       <b-form-group
+        data-cy="ResetPassword-password--group"
         invalid-feedback="Password must not be empty"
         label="New password"
         label-for="password"
@@ -18,12 +19,13 @@
           required
           tabindex="1"
           type="password"
-          v-model="password"
-          @blur="setValidated"
+          v-model="$v.password.$model"
+          :state="validateState('password')"
         />
       </b-form-group>
 
       <b-form-group
+        data-cy="ResetPassword-password2--group"
         description="Re-type the password for confirmation"
         label="Confirm password"
         label-cols-sm="4"
@@ -39,9 +41,9 @@
           required
           tabindex="2"
           type="password"
-          v-model="password2"
+          v-model="$v.password2.$model"
           :pattern="password2Pattern"
-          @blur="setValidated"
+          :state="validateState('password2')"
         />
       </b-form-group>
 
@@ -66,7 +68,11 @@
 </template>
 
 <script>
+import { validationMixin } from 'vuelidate'
+import { sameAs, required } from 'vuelidate/lib/validators'
+
 export default {
+  mixins: [validationMixin],
   name: 'ResetPasswordForm',
   props: {
     resetToken: String
@@ -78,12 +84,24 @@ export default {
       password2: ''
     }
   },
+  validations: {
+    password: {
+      required
+    },
+    password2: {
+      required,
+      sameAs: sameAs('password')
+    }
+  },
   computed: {
     password2Feedback() {
-      if (this.password !== this.password2) {
+      if (!this.$v.password2.sameAs) {
         return 'Passwords do not match'
       }
-      return 'Password must not be empty'
+      if (!this.$v.password2.required) {
+        return 'Password must not be empty'
+      }
+      return null
     },
     password2Pattern() {
       // html validation pattern use regular expressions
@@ -93,6 +111,11 @@ export default {
     }
   },
   methods: {
+    validateState(fieldName) {
+      const { $dirty, $error } = this.$v[fieldName]
+      const state = $dirty ? !$error : null
+      return state
+    },
     async resetPassword() {
       this.error = ''
 
@@ -105,9 +128,6 @@ export default {
       } catch (error) {
         this.error = error.message
       }
-    },
-    setValidated(event) {
-      event.target.parentNode.classList.add('was-validated')
     }
   }
 }

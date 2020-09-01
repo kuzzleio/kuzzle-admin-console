@@ -1,7 +1,7 @@
 <template>
   <span>
     <b-dropdown
-      data-cy="CollectionDropdown"
+      data-cy="CollectionDropdownAction"
       no-caret
       toggle-class="collectionDropdown"
       variant="light"
@@ -10,40 +10,6 @@
       <template v-slot:button-content>
         <i class="fas fa-ellipsis-v" />
       </template>
-
-      <b-dropdown-group id="collection-dd-group-views" header="View type">
-        <b-dropdown-item
-          data-cy="CollectionDropdown-list"
-          :active="activeView === 'list'"
-          @click="$emit('list')"
-        >
-          List view
-        </b-dropdown-item>
-        <b-dropdown-item
-          data-cy="CollectionDropdown-column"
-          :active="activeView === 'column'"
-          @click="$emit('column')"
-        >
-          Column view
-        </b-dropdown-item>
-        <b-dropdown-item
-          :active="activeView === 'realtime'"
-          :disabled="!canSubscribe(index, collection)"
-          :title="
-            !canSubscribe(index, collection)
-              ? 'Your rights do not allow you to subscribe to this collection'
-              : ''
-          "
-          :to="
-            canSubscribe(index, collection)
-              ? { name: 'WatchCollection', params: { collection, index } }
-              : ''
-          "
-        >
-          Realtime view
-        </b-dropdown-item>
-      </b-dropdown-group>
-      <b-dropdown-divider />
 
       <b-dropdown-group id="collection-dd-group-actions" header="Actions">
         <b-dropdown-item
@@ -157,11 +123,8 @@ export default {
     }
   },
   props: {
-    activeView: String,
     collection: String,
     index: String,
-    isRealtime: Boolean,
-    myclass: String
   },
   computed: {
     ...mapGetters('auth', [
