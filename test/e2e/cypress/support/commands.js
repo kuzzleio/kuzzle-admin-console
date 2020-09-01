@@ -101,3 +101,15 @@ Cypress.Commands.add('skipOnBackendVersion', version => {
     ctx.skip()
   }
 })
+
+Cypress.Commands.add('skipUnlessBackendVersion', version => {
+  const currentEnvName = localStorage.getItem('currentEnv')
+  const currentEnv = JSON.parse(localStorage.getItem('environments'))[
+    currentEnvName
+  ]
+
+  if (currentEnv.backendMajorVersion !== version) {
+    const ctx = cy.state('runnable').ctx
+    ctx.skip()
+  }
+})
