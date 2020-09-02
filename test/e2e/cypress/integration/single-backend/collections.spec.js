@@ -148,6 +148,19 @@ describe('Collection management', function() {
     )
   })
 
+  it('Should disable delete collections for Kuzzle v1', () => {
+    cy.skipUnlessBackendVersion(1)
+    cy.waitForService(`http://localhost:7512`)
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+
+    cy.visit(`/#/data/`)
+    cy.wait(500)
+    cy.visit(`/#/data/${indexName}/`)
+    cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).should(
+      'not.exist'
+    )
+  })
+
   it('is able to fetch collections when index change', function() {
     cy.request('POST', `${kuzzleUrl}/anotherindex/_create`)
     cy.request('PUT', `${kuzzleUrl}/anotherindex/foo`)

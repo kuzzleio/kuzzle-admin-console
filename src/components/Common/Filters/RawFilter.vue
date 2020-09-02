@@ -48,7 +48,6 @@
 
 <script>
 import JsonEditor from '../../Common/JsonEditor'
-import { formatFromBasicSearch } from '../../../services/filterManager'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -56,7 +55,6 @@ export default {
     JsonEditor
   },
   props: {
-    formatFromBasicSearch: { type: Function, default: formatFromBasicSearch },
     submitButtonLabel: {
       type: String,
       required: false,
