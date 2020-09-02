@@ -60,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     tokenValid() {
       return this.$store.direct.state.auth.tokenValid
     },
@@ -77,8 +77,22 @@ export default {
   mounted() {
     this.$kuzzle.on('tokenExpired', () => this.onTokenExpired())
     this.$kuzzle.on('queryError', e => {
-      if (e.id === 'security.token.invalid') {
-        this.onTokenExpired()
+      if (this.currentEnvironment.backendMajorVersion === 1) {
+        switch (e.id) {
+          case 'security.token.invalid':
+            this.onTokenExpired()
+            break
+          default:
+            break
+        }
+      } else {
+        switch (e.id) {
+          case 'security.token.expired':
+            this.onTokenExpired()
+            break
+          default:
+            break
+        }
       }
     })
   },

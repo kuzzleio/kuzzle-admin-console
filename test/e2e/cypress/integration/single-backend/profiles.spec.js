@@ -202,7 +202,7 @@ describe('Profiles', () => {
     cy.get('textarea.ace_text-input')
       .clear({ force: true })
       .type(
-        `{
+        `{selectall}{
 "policies": [{
 "roleId": "admin"`,
         {
