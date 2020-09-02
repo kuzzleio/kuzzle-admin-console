@@ -106,14 +106,13 @@ class RunTest extends Command {
         `\n ${emoji.get('raised_hands')} Stack is up. Ready to run the tests!`
       )
     )
-    const npmArgs = [
-      local ? 'open' : 'run',
-      process.env.CYPRESS_RECORD_KEY ? '--record' : '',
-      local ? '' : '--spec',
-      local ? '' : "'test/e2e/cypress/integration/single-backend/**/*.spec.js'",
-      local ? '' : '--group',
-      local ? '' : `kuzzle-v${version}`
-    ]
+
+    const npmArgs = this.buildCypressArgs(
+      local,
+      version,
+      process.env.CYPRESS_RECORD_KEY,
+      false
+    )
     try {
       const cy = execa('cypress', npmArgs, {
         env: {
@@ -159,14 +158,12 @@ class RunTest extends Command {
         `\n ${emoji.get('raised_hands')} Stack is up. Ready to run the tests!`
       )
     )
-    const npmArgs = [
-      local ? 'open' : 'run',
-      process.env.CYPRESS_RECORD_KEY ? '--record' : '',
-      local ? '' : '--spec',
-      local ? '' : "'test/e2e/cypress/integration/multi-backend/**/*.spec.js'",
-      local ? '' : '--group',
-      local ? '' : `multi-backend`
-    ]
+    const npmArgs = this.buildCypressArgs(
+      local,
+      'multi-backend',
+      process.env.CYPRESS_RECORD_KEY,
+      true
+    )
     try {
       const cy = execa('cypress', npmArgs, {
         env: {
@@ -182,6 +179,26 @@ class RunTest extends Command {
       this.log(`\n ${emoji.get('red_circle')} Sorry, tests are red.`)
       process.exit(1)
     }
+  }
+
+  buildCypressArgs(
+    local: boolean,
+    version: String,
+    recordKey: String | undefined,
+    multi: boolean
+  ) {
+    return local
+      ? ['open']
+      : [
+          'run',
+          recordKey ? '--record' : '',
+          '--spec',
+          `test/e2e/cypress/integration/${
+            multi ? 'multi-backend' : 'single-backend'
+          }/*.spec.js`,
+          recordKey ? '--group' : '',
+          recordKey ? `kuzzle-v${version}` : ''
+        ]
   }
 
   async waitFor(name: string, uri: string) {
