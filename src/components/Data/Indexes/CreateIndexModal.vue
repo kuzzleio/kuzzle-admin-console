@@ -30,10 +30,10 @@
           >The index name should contain only lowercase characters and no
           spaces. It also must not contain de following characters:
           <code>\</code>, <code>/</code>, <code>*</code>, <code>?</code>,
-          <code>"</code>, <code>&lt;</code>, <code>></code>,
-          <code>|</code>, <code>,</code>, <code>#</code>, <code>:</code>,
-          <code>%</code>, <code>&</code>, <code>.</code> </template
-        >
+          <code>"</code>, <code>&lt;</code>, <code>></code>, <code>|</code>,
+          <code>,</code>, <code>#</code>, <code>:</code>, <code>%</code>,
+          <code>&</code>, <code>.</code>
+        </template>
         <template v-slot:invalid-feedback id="profile-id-feedback">
           <span v-if="!$v.index.required">This field cannot be empty</span>
           <span v-else-if="!$v.index.isNotWhitespace"
