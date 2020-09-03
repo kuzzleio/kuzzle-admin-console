@@ -19,7 +19,8 @@
               indexOrCollectionNotFound || !canCreateDocument(index, collection)
             "
             :to="{ name: 'CreateDocument', params: { index, collection } }"
-            >Create New Document</b-button>
+            >Create New Document</b-button
+          >
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"

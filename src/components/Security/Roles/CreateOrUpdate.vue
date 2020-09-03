@@ -134,6 +134,7 @@ import { startsWithSpace, isWhitespace } from '../../../validators'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import JsonEditor from '../../Common/JsonEditor'
+import omit from 'lodash/omit'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -229,10 +230,9 @@ export default {
     }
     try {
       this.loading = true
-      const role = await this.$kuzzle.security.getRole(this.id)
-      this.idValue = role._id
-      delete role._kuzzle
-      delete role._id
+      const fetchedRole = await this.$kuzzle.security.getRole(this.id)
+      this.idValue = fetchedRole._id
+      const role = omit(fetchedRole, ['_id', '_kuzzle'])
       this.documentValue = JSON.stringify(role, null, 2)
     } catch (e) {
       this.$log.error(e)

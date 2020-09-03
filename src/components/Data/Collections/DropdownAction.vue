@@ -124,7 +124,7 @@ export default {
   },
   props: {
     collection: String,
-    index: String,
+    index: String
   },
   computed: {
     ...mapGetters('auth', [

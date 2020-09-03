@@ -19,6 +19,8 @@ import CreateOrUpdate from './CreateOrUpdate'
 import Headline from '../../Materialize/Headline'
 import Notice from '../Common/Notice'
 import { mapGetters } from 'vuex'
+import omit from 'lodash/omit'
+
 export default {
   name: 'UpdateProfile',
   components: {
@@ -88,9 +90,8 @@ export default {
   async mounted() {
     this.loading = true
     try {
-      const profile = await this.$kuzzle.security.getProfile(this.id)
-      delete profile._kuzzle
-      delete profile._id
+      const fetchedProfile = await this.$kuzzle.security.getProfile(this.id)
+      const profile = omit(fetchedProfile, ['_id', '_kuzzle'])
       this.document = JSON.stringify(profile, null, 2)
       this.loading = false
     } catch (e) {

@@ -1,5 +1,5 @@
 // import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
-import SDK from 'kuzzle-sdk-v7'
+import { Kuzzle, WebSocket } from 'kuzzle-sdk-v7'
 import { KuzzleWrapperV1 } from './kuzzleWrapper-v1'
 
 // NOTE - We instantiate a new Kuzzle SDK with Websocket protocol
@@ -8,7 +8,7 @@ import { KuzzleWrapperV1 } from './kuzzleWrapper-v1'
 // `localhost` as the call to `connect()` is performed in the `connectToEnvironment`
 // method, which instantiates a new `WebSocket` class with the hostname
 // corresponding to the selected environment.
-export const kuzzle = new SDK.Kuzzle(new SDK.WebSocket('localhost'))
+export const kuzzle = new Kuzzle(new WebSocket('localhost'))
 
 export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
   version: string = '2'
@@ -22,7 +22,7 @@ export class KuzzleWrapperV2 extends KuzzleWrapperV1 {
       this.disconnect()
     }
 
-    kuzzle.protocol = new SDK.WebSocket(environment.host, {
+    kuzzle.protocol = new WebSocket(environment.host, {
       port: parseInt(environment.port),
       sslConnection: environment.ssl
     })
