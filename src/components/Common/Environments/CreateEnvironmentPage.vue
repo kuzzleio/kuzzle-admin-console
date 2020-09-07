@@ -1,11 +1,8 @@
 <template>
   <div class="CreateEnvironmentPage">
-    <form
-      class="CreateEnvironmentPage-form"
-      @submit.prevent="createEnvironment"
-    >
+    <form class="CreateEnvironmentPage-form" @submit.prevent="submit">
       <b-container>
-        <b-card class="my-3">
+        <b-card>
           <b-jumbotron
             lead="Please provide the details below to connect to your Kuzzle instance."
           >
@@ -15,32 +12,41 @@
                 alt="Welcome to the Kuzzle Admin Console"
                 height="60"
               />
-              <h1>Create a Connection</h1>
+              <h1 v-if="!$attrs.id">Create a Connection</h1>
+              <h1 v-else>Edit a Connection</h1>
             </template>
           </b-jumbotron>
 
           <create-environment
             ref="createEnvironmentComponent"
-            :environment-id="null"
+            :environment-id="$attrs.id"
             @environment::importEnv="importEnv"
           />
 
           <template v-slot:footer>
             <div class="text-right">
               <b-button
+                v-if="hasEnvironment"
+                class="mr-3"
+                variant="outline-secondary"
+                @click="$router.push({ name: 'SelectEnvironment' })"
+              >
+                Cancel
+              </b-button>
+              <b-button
                 class="CreateEnvironment-import mr-3"
                 data-cy="CreateEnvironment-import"
                 variant="outline-primary"
                 @click="importEnv"
               >
-                Import a connection
+                Import connections
               </b-button>
               <b-button
                 data-cy="Environment-SubmitButton"
                 variant="primary"
                 type="submit"
               >
-                Create connection
+                {{ $attrs.id ? 'Save' : 'Create' }} connection
               </b-button>
             </div>
           </template>
@@ -52,16 +58,24 @@
 
 <script>
 import CreateEnvironment from './CreateEnvironment'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CreateEnvironmentPage',
   components: {
     CreateEnvironment
   },
+  computed: {
+    ...mapGetters('kuzzle', ['hasEnvironment', 'environments'])
+  },
   methods: {
-    async createEnvironment() {
-      await this.$refs.createEnvironmentComponent.createEnvironment()
-      this.$router.push('/')
+    async submit() {
+      await this.$refs.createEnvironmentComponent.submit()
+      if (this.$attrs.id) {
+        this.$router.push({ name: 'SelectEnvironment' })
+      } else {
+        this.$router.push('/')
+      }
     },
     importEnv() {
       this.$emit('environment::importEnv')

@@ -5,11 +5,17 @@
     data-cy="EnvironmentSwitch"
     toggle-class="text-truncate"
     variant="outline-secondary"
-    :text="dropdownText"
     :block="block"
     :right="right"
     :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
   >
+    <template v-slot:button-content
+      ><i
+        v-if="!isValidEnvironment(currentEnvironment)"
+        class="fas fa-exclamation-triangle text-danger"
+      ></i
+      >&nbsp;{{ dropdownText }}</template
+    >
     <b-dropdown-item
       v-for="(env, index) in $store.direct.getters.kuzzle.environments"
       class="EnvironmentSwitch-env environment"
@@ -18,7 +24,7 @@
     >
       <div
         @click="
-          checkEnvironment(env)
+          isValidEnvironment(env)
             ? switchEnv(index)
             : $emit('environment::create', index)
         "
@@ -26,7 +32,7 @@
       >
         {{ env.name }}
         <i
-          v-if="!checkEnvironment(env)"
+          v-if="!isValidEnvironment(env)"
           class="fas fa-exclamation-triangle text-danger"
         ></i>
         <div class="text-muted">{{ env.host }}</div>
@@ -62,8 +68,8 @@
 <script>
 import { formatForDom } from '../../../utils'
 import { mapValues, omit } from 'lodash'
-import { envColors } from '../../../vuex/modules/kuzzle/store'
-
+import { isValidEnvironment } from '../../../validators'
+import { mapGetters } from 'vuex'
 export default {
   name: 'EnvironmentSwitch',
   props: {
@@ -81,9 +87,7 @@ export default {
     }
   },
   computed: {
-    currentEnvironment() {
-      return this.$store.direct.getters.kuzzle.currentEnvironment
-    },
+    ...mapGetters('kuzzle', ['currentEnvironment']),
     dropdownText() {
       if (!this.currentEnvironment) {
         return 'Select a connection'
@@ -105,6 +109,7 @@ export default {
     }
   },
   methods: {
+    isValidEnvironment,
     async switchEnv(id) {
       try {
         await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
@@ -116,22 +121,6 @@ export default {
           this.$store.direct.dispatch.kuzzle.onConnectionError(error)
         }
       }
-    },
-    checkEnvironment(env) {
-      if (
-        !env.name ||
-        !env.host ||
-        !env.port ||
-        !env.backendMajorVersion ||
-        typeof env.port !== 'number' ||
-        env.ssl === undefined ||
-        env.ssl === null ||
-        !env.color ||
-        !envColors.includes(env.color)
-      ) {
-        return false
-      }
-      return true
     },
     formatForDom
   }
