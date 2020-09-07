@@ -4,6 +4,7 @@
     v-model="value"
     v-bind="$attrs"
     data-auto-focus-input="true"
+    class="w-75"
   />
 </template>
 
