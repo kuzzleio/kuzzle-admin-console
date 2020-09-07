@@ -5,14 +5,14 @@
       :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
     >
       <b-row>
-        <b-col sm="8">
+        <b-col>
           <headline>
             <span class="code" :title="collection">{{
               truncateName(collection, 20)
             }}</span>
           </headline>
         </b-col>
-        <b-col class="text-right mt-3">
+        <b-col sm="6" class="text-right mt-3">
           <b-button
             variant="primary"
             :disabled="

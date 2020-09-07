@@ -32,11 +32,11 @@
       </template>
       <template v-else>
         <b-row class="mb-3">
-          <b-col sm="6" class="text-secondary">
+          <b-col sm="2" class="text-secondary">
             {{ collections.length }}
             {{ collections.length === 1 ? 'collection' : 'collections' }}
           </b-col>
-          <b-col sm="6">
+          <b-col sm="10">
             <b-row>
               <b-col cols="6" class="text-right">
                 <b-button
