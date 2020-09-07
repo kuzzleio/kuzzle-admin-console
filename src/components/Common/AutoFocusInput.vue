@@ -1,10 +1,12 @@
 <template>
   <b-form-input
     :ref="refName"
+    :class="{
+      'w-75': limitWidth === true
+    }"
     v-model="value"
     v-bind="$attrs"
     data-auto-focus-input="true"
-    class="w-75"
   />
 </template>
 
@@ -31,6 +33,10 @@ export default {
     initialValue: {
       type: String,
       default: ''
+    },
+    limitWidth: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

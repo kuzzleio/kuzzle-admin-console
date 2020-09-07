@@ -12,10 +12,11 @@
               name="quick-filter"
               data-cy="QuickFilter-input"
               debounce="300"
-              :placeholder="placeholder"
-              :initialValue="this.initialValue"
               type="search"
               v-model="value"
+              :limitWidth="true"
+              :initialValue="this.initialValue"
+              :placeholder="placeholder"
               @submit="inputSubmit"
             />
           </b-input-group>
