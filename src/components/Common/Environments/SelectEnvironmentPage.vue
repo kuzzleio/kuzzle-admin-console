@@ -22,6 +22,7 @@
                 @environment::create="$emit('environment::create', $event)"
                 @environment::delete="$emit('environment::delete', $event)"
                 @environment::importEnv="$emit('environment::importEnv')"
+                @environmentSwitched="onEnvSwitched"
               />
             </b-col>
           </b-row>
@@ -33,9 +34,15 @@
 
 <script>
 import EnvironmentSelector from './EnvironmentsSwitch'
+
 export default {
   name: 'SelectEnvironmentPage',
-  components: { EnvironmentSelector }
+  components: { EnvironmentSelector },
+  methods: {
+    onEnvSwitched() {
+      this.$router.push({ path: '/' })
+    }
+  }
 }
 </script>
 

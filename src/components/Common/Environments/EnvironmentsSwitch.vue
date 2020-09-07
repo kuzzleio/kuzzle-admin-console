@@ -109,7 +109,7 @@ export default {
       try {
         await this.$store.direct.dispatch.kuzzle.setCurrentEnvironment(id)
         this.$log.debug(`Switched.`)
-        this.$router.push({ path: '/' })
+        this.$emit('environmentSwitched')
       } catch (error) {
         this.$log.error(error)
         if (error.code) {
