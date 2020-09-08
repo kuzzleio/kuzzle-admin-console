@@ -423,6 +423,7 @@ describe('Environments', function() {
 
   it('Should redirect to the edit environment page when the app opens and the current environment is malformed', () => {
     const envName = 'malformed'
+    const backendVersion = Cypress.env('BACKEND_VERSION') || 2
     localStorage.setItem(
       'environments',
       JSON.stringify({
@@ -440,7 +441,9 @@ describe('Environments', function() {
     cy.contains('Edit a Connection')
     cy.contains('You must select a backend version')
     cy.url().should('contain', `/#/edit-connection/${envName}`)
-    cy.get('[data-cy=CreateEnvironment-backendVersion]').select('v2.x')
+    cy.get('[data-cy=CreateEnvironment-backendVersion]').select(
+      `v${backendVersion}.x`
+    )
     cy.get('[data-cy=Environment-SubmitButton]').click()
 
     cy.url().should('contain', 'login')
