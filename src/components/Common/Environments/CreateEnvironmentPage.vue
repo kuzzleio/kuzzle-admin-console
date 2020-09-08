@@ -71,7 +71,7 @@ export default {
   methods: {
     async submit() {
       await this.$refs.createEnvironmentComponent.submit()
-      if (this.$attrs.id) {
+      if (this.environments.length > 1) {
         this.$router.push({ name: 'SelectEnvironment' })
       } else {
         this.$router.push('/')
