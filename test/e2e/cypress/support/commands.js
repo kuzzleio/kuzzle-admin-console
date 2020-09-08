@@ -35,13 +35,12 @@ Cypress.Commands.add('waitOverlay', () => {
 
 Cypress.Commands.add(
   'initLocalEnv',
-  (backendVersion = 2, token = 'anonymous', port = 7512) => {
-    const validEnvName = 'valid'
+  (backendVersion = 2, token = 'anonymous', port = 7512, envName = 'valid') => {
     localStorage.setItem(
       'environments',
       JSON.stringify({
-        [validEnvName]: {
-          name: validEnvName,
+        [envName]: {
+          name: envName,
           color: 'darkblue',
           host: 'localhost',
           ssl: false,
@@ -51,7 +50,7 @@ Cypress.Commands.add(
         }
       })
     )
-    localStorage.setItem('currentEnv', validEnvName)
+    localStorage.setItem('currentEnv', envName)
   }
 )
 
