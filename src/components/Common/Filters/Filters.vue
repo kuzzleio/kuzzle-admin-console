@@ -34,25 +34,25 @@
             data-cy="Filters-basicTab"
             :active="complexFiltersSelectedTab === 'basic'"
             @click="complexFiltersSelectedTab = 'basic'"
-            >Advanced Filter</b-nav-item
+            ><i class="fas fa-filter"></i>&nbsp;Advanced</b-nav-item
           >
           <b-nav-item
             data-cy="Filters-rawTab"
             :active="complexFiltersSelectedTab === 'raw'"
             @click="complexFiltersSelectedTab = 'raw'"
-            >Raw JSON Filter</b-nav-item
+            ><i class="fas fa-scroll"></i>&nbsp;Raw JSON</b-nav-item
           >
           <b-nav-item
             data-cy="Filters-historyTab"
             :active="complexFiltersSelectedTab === 'history'"
             @click="complexFiltersSelectedTab = 'history'"
-            >Filter History</b-nav-item
+            ><i class="fas fa-history"></i>&nbsp;History</b-nav-item
           >
           <b-nav-item
             data-cy="Filters-favoriteTab"
             :active="complexFiltersSelectedTab === 'favorite'"
             @click="complexFiltersSelectedTab = 'favorite'"
-            >favorite Filter</b-nav-item
+            ><i class="fas fa-star"></i>&nbsp;Saved</b-nav-item
           >
           <i
             data-cy="Filters-close"
