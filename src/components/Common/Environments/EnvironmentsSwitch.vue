@@ -9,13 +9,18 @@
     :right="right"
     :class="blendColor ? 'EnvironmentSwitch--blendColor' : ''"
   >
-    <template v-slot:button-content
-      ><i
-        v-if="!isValidEnvironment(currentEnvironment)"
-        class="fas fa-exclamation-triangle text-danger"
-      ></i
-      >&nbsp;{{ dropdownText }}</template
-    >
+    <template v-slot:button-content>
+      <template v-if="currentEnvironment">
+        <i
+          v-if="!isValidEnvironment(currentEnvironment)"
+          class="fas fa-exclamation-triangle text-danger"
+        ></i
+        >&nbsp;{{ currentEnvironment.name }}
+      </template>
+      <template v-else>
+        Select a connection
+      </template>
+    </template>
     <b-dropdown-item
       v-for="(env, index) in $store.direct.getters.kuzzle.environments"
       class="EnvironmentSwitch-env environment"
@@ -88,13 +93,6 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['currentEnvironment']),
-    dropdownText() {
-      if (!this.currentEnvironment) {
-        return 'Select a connection'
-      }
-
-      return this.currentEnvironment.name
-    },
     exportUrl() {
       const envWitoutToken = mapValues(
         this.$store.state.kuzzle.environments,
