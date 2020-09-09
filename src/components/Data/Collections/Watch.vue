@@ -13,7 +13,7 @@
           <b-col class="text-right">
             <collection-dropdown-view
               active-view="realtime"
-              class="icon-medium icon-black"
+              class="icon-medium icon-black mr-2"
               :index="index"
               :collection="collection"
               @list="$router.push({ name: 'DocumentList' })"
@@ -243,7 +243,7 @@
 import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
 import CollectionDropdownView from '../Collections/DropdownView'
-import CollectionDropdownAction from '../Collections/DropdownAction'
+import CollectionDropdownAction from '../Collections/DropdownActionRealtime'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'

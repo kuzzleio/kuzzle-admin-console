@@ -208,49 +208,12 @@
         </b-table>
       </template>
     </div>
-
-    <b-modal
-      size="lg"
-      id="deleteCollectionPrompt"
-      title="Are you sure you want to delete this collection?"
-      @hidden="resetDeletePrompt"
-    >
-      <b-form-group
-        description="This operation is NOT reversible"
-        label-for="deleteCollectionPromptField"
-        :state="deletionConfirmed"
-        :invalid-feedback="deletionPromptFeedback"
-      >
-        <template v-slot:label>
-          Please type the name of the collection (<span class="code">{{
-            collectionToDelete
-          }}</span
-          >) below to confirm the deletion:
-        </template>
-        <b-form-input
-          id="deleteCollectionPromptField"
-          data-cy="DeleteCollectionPrompt-confirm"
-          v-model="deleteConfirmation"
-          @keypress.enter="onDeleteCollectionConfirmed"
-        ></b-form-input>
-      </b-form-group>
-      <template v-slot:modal-footer>
-        <b-button @click="$bvModal.hide('deleteCollectionPrompt')"
-          >Cancel</b-button
-        >
-        <b-button
-          v-if="
-            $store.direct.getters.kuzzle.currentEnvironment
-              .backendMajorVersion !== 1
-          "
-          data-cy="DeleteCollectionPrompt-OK"
-          variant="danger"
-          :disabled="!deleteConfirmation"
-          @click="onDeleteCollectionConfirmed"
-          >OK</b-button
-        >
-      </template>
-    </b-modal>
+    <modal-delete
+      :collection-to-delete="collectionToDelete"
+      :index="index"
+      :modal-id="modalDeleteId"
+      @afterDelete="afterDeleteCollections"
+    ></modal-delete>
   </b-container>
 </template>
 
@@ -280,6 +243,7 @@ import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
+import ModalDelete from './ModalDelete'
 import { truncateName } from '../../../utils'
 import { mapGetters } from 'vuex'
 export default {
@@ -289,18 +253,19 @@ export default {
     Headline,
     ListNotAllowed,
     MainSpinner,
-    AutoFocusInput
+    AutoFocusInput,
+    ModalDelete
   },
   props: {
     index: String
   },
   data() {
     return {
-      filter: '',
       collectionToDelete: '',
-      deleteConfirmation: '',
-      rawStoredCollections: [],
+      filter: '',
       filteredCollections: [],
+      modalDeleteId: 'modal-collection-delete',
+      rawStoredCollections: [],
       selectedCollections: []
     }
   },
@@ -327,19 +292,6 @@ export default {
         return false
       }
       return this.$store.state.index.indexesAndCollections[this.index].loading
-    },
-    deletionConfirmed() {
-      return (
-        this.deleteConfirmation !== '' &&
-        this.deleteConfirmation !== null &&
-        this.deleteConfirmation === this.collectionToDelete
-      )
-    },
-    deletionPromptFeedback() {
-      if (this.deleteConfirmation === '' || this.deletionConfirmed) {
-        return ''
-      }
-      return 'Confirmation is not matching collection name'
     },
     tableFields() {
       return [
@@ -403,12 +355,17 @@ export default {
   methods: {
     onDeleteCollectionClicked(name) {
       this.collectionToDelete = name
-      this.$bvModal.show('deleteCollectionPrompt')
+      this.$bvModal.show(this.modalDeleteId)
     },
     deleteCollections() {
       if (this.selectedCollections.length > 0) {
         this.onDeleteCollectionClicked(this.selectedCollections[0])
       }
+    },
+    afterDeleteCollections() {
+      this.$bvModal.hide(this.modalDeleteId)
+      this.collectionToDelete = ''
+      this.fetchStoredCollections()
     },
     allChecked() {
       if (!this.selectedCollections || !this.filteredCollections) {
@@ -437,12 +394,6 @@ export default {
       }
       this.selectedCollections.splice(index, 1)
     },
-    resetDeletePrompt() {
-      this.collectionToDelete = ''
-      this.deleteConfirmation = ''
-      this.selectedCollections.shift()
-      this.deleteCollections()
-    },
     truncateName,
     async fetchStoredCollections() {
       const storedCollections = this.$store.state.index.indexesAndCollections[
@@ -466,34 +417,6 @@ export default {
           {
             title:
               'Ooops! Something went wrong while counting documents in collections.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-    },
-    async onDeleteCollectionConfirmed() {
-      if (!this.deleteConfirmation) {
-        return
-      }
-      try {
-        await this.$store.direct.dispatch.index.deleteCollection({
-          index: this.index,
-          collection: this.collectionToDelete
-        })
-
-        this.$bvModal.hide('deleteCollectionPrompt')
-
-        await this.fetchStoredCollections()
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title: 'Ooops! Something went wrong while deleting the collection.',
             variant: 'warning',
             toaster: 'b-toaster-bottom-right',
             appendToast: true,

@@ -27,25 +27,11 @@
         >
           Edit collection
         </b-dropdown-item>
-        <b-dropdown-item v-if="isRealtime" @click="removeRealtimeCollection">
-          Remove collection
-        </b-dropdown-item>
         <b-dropdown-item @click="onDeleteCollectionClicked">
           Remove collection
         </b-dropdown-item>
-        <template v-if="!isRealtime && !isList">
-          <b-dropdown-item
-            :to="{
-              name: 'DocumentList',
-              params: { collection: collection, index: index }
-            }"
-          >
-            Browse documents
-          </b-dropdown-item>
-        </template>
 
         <b-dropdown-item
-          v-if="!isRealtime && isList"
           class="text-secondary"
           data-cy="CollectionDropdown-clear"
           :disabled="!canTruncateCollection(index, collection)"
@@ -111,8 +97,9 @@
 <script>
 import ModalClear from './ModalClear.vue'
 import { mapGetters } from 'vuex'
+
 export default {
-  name: 'CollectionDropdown',
+  name: 'CollectionDropdownAction',
   components: {
     ModalClear
   },
@@ -183,12 +170,6 @@ export default {
     resetDeletePrompt() {
       this.collectionToDelete = ''
       this.deleteConfirmation = ''
-    },
-    removeRealtimeCollection() {
-      this.$store.direct.dispatch.collection.removeRealtimeCollection({
-        index: this.index,
-        collection: this.collection
-      })
     },
     openModal() {
       if (
