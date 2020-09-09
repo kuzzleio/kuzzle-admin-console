@@ -25,7 +25,7 @@
             <b-col class="text-center mb-1" xl="1">
               <span
                 v-if="filterIndex !== 0"
-                class="text-secondary font-weight-bold "
+                class="text-secondary font-weight-bold"
               >
                 AND
               </span>
