@@ -129,7 +129,7 @@ describe('Collection management', function() {
     cy.contains('This collection is empty')
   })
 
-  it('is able to delete a collection', function() {
+  it('Should be able to delete a stored collection from the collection list', function() {
     cy.skipOnBackendVersion(1)
 
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
@@ -148,7 +148,27 @@ describe('Collection management', function() {
     )
   })
 
-  it('Should disable delete collections for Kuzzle v1', () => {
+  it('Should be able to delete a stored collection from its own dropdown action', function() {
+    cy.skipOnBackendVersion(1)
+
+    cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
+
+    cy.visit(`/#/data/`)
+    cy.wait(500)
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy="CollectionDropdownAction"]').click()
+    cy.get('[data-cy="CollectionDropdown-delete"]').click()
+    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
+    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
+
+    cy.get('[data-cy="CollectionList-table"]').should(
+      'not.contain',
+      collectionName
+    )
+  })
+
+  it('Should disable delete stored collections for Kuzzle v1', () => {
     cy.skipUnlessBackendVersion(1)
     cy.waitForService(`http://localhost:7512`)
     cy.request('PUT', `${kuzzleUrl}/${indexName}/${collectionName}`)
@@ -159,9 +179,49 @@ describe('Collection management', function() {
     cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).should(
       'not.exist'
     )
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.get('[data-cy="CollectionDropdownAction"]').click()
+    cy.get('[data-cy="CollectionDropdown-delete"]').should('not.exist')
   })
 
-  it('is able to fetch collections when index change', function() {
+  it('Should be able to delete a realtime collection from the list', () => {
+    localStorage.setItem(
+      'realtimeCollections',
+      JSON.stringify([{ index: indexName, collection: collectionName }])
+    )
+
+    cy.waitForService(`http://localhost:7512`)
+    cy.visit(`/#/data/${indexName}/`)
+    cy.get(`[data-cy="CollectionList-delete--${collectionName}"]`).click()
+    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
+    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
+
+    cy.get('[data-cy="CollectionList-table"]').should(
+      'not.contain',
+      collectionName
+    )
+  })
+
+  it('Should be able to delete a realtime collection from the Watch view', () => {
+    localStorage.setItem(
+      'realtimeCollections',
+      JSON.stringify([{ index: indexName, collection: collectionName }])
+    )
+
+    cy.waitForService(`http://localhost:7512`)
+    cy.visit(`/#/data/${indexName}/${collectionName}/watch`)
+    cy.get('[data-cy=Watch-deleteCollectionBtn]').click()
+
+    cy.get('[data-cy="DeleteCollectionPrompt-confirm"]').type(collectionName)
+    cy.get('[data-cy="DeleteCollectionPrompt-OK"]').click()
+
+    cy.get('[data-cy="CollectionList-table"]').should(
+      'not.contain',
+      collectionName
+    )
+  })
+
+  it('Should be able to fetch collections when index change', function() {
     cy.request('POST', `${kuzzleUrl}/anotherindex/_create`)
     cy.request('PUT', `${kuzzleUrl}/anotherindex/foo`)
 

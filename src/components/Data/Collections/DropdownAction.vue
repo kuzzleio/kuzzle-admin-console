@@ -11,7 +11,7 @@
         <i class="fas fa-ellipsis-v" />
       </template>
 
-      <b-dropdown-group id="collection-dd-group-actions" header="Actions">
+      <b-dropdown-group header="Actions">
         <b-dropdown-item
           :disabled="!canEditCollection(index, collection)"
           :title="
@@ -27,7 +27,14 @@
         >
           Edit collection
         </b-dropdown-item>
-        <b-dropdown-item @click="onDeleteCollectionClicked">
+        <b-dropdown-item
+          data-cy="CollectionDropdown-delete"
+          v-if="
+            $store.direct.getters.kuzzle.currentEnvironment
+              .backendMajorVersion !== 1
+          "
+          @click="onDeleteCollectionClicked"
+        >
           Delete collection
         </b-dropdown-item>
 

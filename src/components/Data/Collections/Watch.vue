@@ -20,11 +20,19 @@
               @column="$router.push({ name: 'DocumentList' })"
             />
             <b-button
+              v-if="isRealtimeCollection"
+              data-cy="Watch-deleteCollectionBtn"
               title="Delete this collection"
               @click="onDeleteCollectionClicked"
             >
               <i class="fa fa-trash"></i>
             </b-button>
+            <collection-dropdown-action
+              v-else
+              class="icon-medium icon-black"
+              :index="index"
+              :collection="collection"
+            />
           </b-col>
         </b-row>
         <b-card v-if="!canSubscribe(index, collection)">
@@ -250,6 +258,7 @@
 import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
 import CollectionDropdownView from './DropdownView'
+import CollectionDropdownAction from './DropdownAction'
 import ModalDelete from './ModalDelete'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
@@ -264,6 +273,7 @@ export default {
     JsonFormatter
   },
   components: {
+    CollectionDropdownAction,
     CollectionDropdownView,
     Headline,
     JsonEditor,
@@ -326,6 +336,12 @@ export default {
       } catch (error) {
         return false
       }
+    },
+    isRealtimeCollection() {
+      return this.$store.direct.getters.index.isCollectionRealtimeOnly(
+        this.index,
+        this.collection
+      )
     }
   },
   methods: {
