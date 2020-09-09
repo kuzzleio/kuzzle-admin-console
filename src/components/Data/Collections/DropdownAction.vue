@@ -28,7 +28,7 @@
           Edit collection
         </b-dropdown-item>
         <b-dropdown-item @click="onDeleteCollectionClicked">
-          Remove collection
+          Delete collection
         </b-dropdown-item>
 
         <b-dropdown-item
@@ -36,7 +36,7 @@
           data-cy="CollectionDropdown-clear"
           :disabled="!canTruncateCollection(index, collection)"
           :title="
-            !canSubscribe(index, collection)
+            !canTruncateCollection(index, collection)
               ? 'Your rights do not allow you to truncate this collection'
               : ''
           "
@@ -53,60 +53,31 @@
       :collection="collection"
       @clear="$emit('clear')"
     />
-    <b-modal
-      size="lg"
-      id="deleteCollectionPrompt"
-      title="Are you sure you want to delete this collection?"
-      @hidden="resetDeletePrompt"
-    >
-      <b-form-group
-        description="This operation is NOT reversible"
-        label-for="deleteCollectionPromptField"
-        :state="deletionConfirmed"
-        :invalid-feedback="deletionPromptFeedback"
-      >
-        <template v-slot:label>
-          Please type the name of the collection (<span class="code">{{
-            collectionToDelete
-          }}</span
-          >) below to confirm the deletion:
-        </template>
-        <b-form-input
-          id="deleteCollectionPromptField"
-          data-cy="DeleteCollectionPrompt-confirm"
-          v-model="deleteConfirmation"
-          @keypress.enter="onDeleteCollectionConfirmed"
-        ></b-form-input>
-      </b-form-group>
-      <template v-slot:modal-footer>
-        <b-button @click="$bvModal.hide('deleteCollectionPrompt')"
-          >Cancel</b-button
-        >
-        <b-button
-          data-cy="DeleteCollectionPrompt-OK"
-          variant="danger"
-          :disabled="!deleteConfirmation"
-          @click="onDeleteCollectionConfirmed"
-          >OK</b-button
-        >
-      </template>
-    </b-modal>
+    <modal-delete
+      :collection-to-delete="collection"
+      :index="index"
+      :modal-id="modalDeleteId"
+      @afterDelete="afterDeleteCollection"
+    ></modal-delete>
   </span>
 </template>
 
 <script>
 import ModalClear from './ModalClear.vue'
+import ModalDelete from './ModalDelete'
+
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollectionDropdownAction',
   components: {
-    ModalClear
+    ModalClear,
+    ModalDelete
   },
   data: function() {
     return {
-      collectionToDelete: '',
-      deleteConfirmation: ''
+      deleteConfirmation: '',
+      modalDeleteId: 'modal-collection-delete'
     }
   },
   props: {
@@ -114,58 +85,14 @@ export default {
     index: String
   },
   computed: {
-    ...mapGetters('auth', [
-      'canEditCollection',
-      'canSubscribe',
-      'canTruncateCollection'
-    ]),
-    isList() {
-      return this.$route.name === 'DocumentList'
-    },
-    deletionConfirmed() {
-      return (
-        this.deleteConfirmation !== '' &&
-        this.deleteConfirmation !== null &&
-        this.deleteConfirmation === this.collectionToDelete
-      )
-    },
-    deletionPromptFeedback() {
-      if (this.deleteConfirmation === '' || this.deletionConfirmed) {
-        return ''
-      }
-      return 'Confirmation is not matching collection name'
-    }
+    ...mapGetters('auth', ['canEditCollection', 'canTruncateCollection'])
   },
   methods: {
-    async onDeleteCollectionConfirmed() {
-      if (!this.deleteConfirmation) {
-        return
-      }
-      try {
-        await this.$store.direct.dispatch.index.deleteCollection({
-          index: this.index,
-          collection: this.collectionToDelete
-        })
-        this.$bvModal.hide('deleteCollectionPrompt')
-        this.$router.push({ path: '/data/' + this.index })
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title: 'Ooops! Something went wrong while deleting the collection.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-    },
     onDeleteCollectionClicked() {
-      this.collectionToDelete = this.collection
-      this.$bvModal.show('deleteCollectionPrompt')
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({ name: 'Collections', params: { index: this.index } })
     },
     resetDeletePrompt() {
       this.collectionToDelete = ''

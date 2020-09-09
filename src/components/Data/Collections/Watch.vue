@@ -19,11 +19,12 @@
               @list="$router.push({ name: 'DocumentList' })"
               @column="$router.push({ name: 'DocumentList' })"
             />
-            <collection-dropdown-action
-              class="icon-medium icon-black"
-              :index="index"
-              :collection="collection"
-            />
+            <b-button
+              title="Delete this collection"
+              @click="onDeleteCollectionClicked"
+            >
+              <i class="fa fa-trash"></i>
+            </b-button>
           </b-col>
         </b-row>
         <b-card v-if="!canSubscribe(index, collection)">
@@ -236,14 +237,20 @@
         </div>
       </div>
     </b-container>
+    <modal-delete
+      :collection-to-delete="collection"
+      :index="index"
+      :modal-id="modalDeleteId"
+      @afterDelete="afterDeleteCollection"
+    ></modal-delete>
   </div>
 </template>
 
 <script>
 import Headline from '../../Materialize/Headline'
 import Notification from '../Realtime/Notification'
-import CollectionDropdownView from '../Collections/DropdownView'
-import CollectionDropdownAction from '../Collections/DropdownActionRealtime'
+import CollectionDropdownView from './DropdownView'
+import ModalDelete from './ModalDelete'
 import JsonEditor from '../../Common/JsonEditor'
 import * as filterManager from '../../../services/filterManager'
 import { truncateName } from '@/utils'
@@ -257,11 +264,11 @@ export default {
     JsonFormatter
   },
   components: {
-    Notification,
     CollectionDropdownView,
-    CollectionDropdownAction,
+    Headline,
     JsonEditor,
-    Headline
+    ModalDelete,
+    Notification
   },
   props: {
     index: String,
@@ -270,12 +277,13 @@ export default {
   data() {
     return {
       advancedFiltersVisible: false,
-      subscribed: false,
-      room: null,
+      modalDeleteId: 'modal-collection-delete',
       rawFilter: '{}',
-      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
+      room: null,
       notifications: [],
       notificationsLengthLimit: 50,
+      subscribed: false,
+      subscribeOptions: { scope: 'all', users: 'all', state: 'all' },
       warning: { message: '', count: 0, lastTime: null, info: false }
     }
   },
@@ -321,6 +329,12 @@ export default {
     }
   },
   methods: {
+    onDeleteCollectionClicked() {
+      this.$bvModal.show(this.modalDeleteId)
+    },
+    afterDeleteCollection() {
+      this.$router.push({ name: 'Collections', params: { index: this.index } })
+    },
     truncateName,
     onFilterChanged(value) {
       this.rawFilter = value
