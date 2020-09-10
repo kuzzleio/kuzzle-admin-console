@@ -1,12 +1,6 @@
 <template>
   <form class="RawFilter">
     <b-container fluid class="mt-2">
-      <b-row no-gutters v-if="currentFilter.basic" class="blue lighten-3">
-        A Basic filter is currently active. This shows your basic filter as raw
-        filter. If you modify this raw filter it will not change the basic
-        filter view and will reset this raw filter to the original content of
-        the basic filter.
-      </b-row>
       <b-row no-gutters>
         <b-col cols="12">
           <json-editor
@@ -76,10 +70,6 @@ export default {
       default: () => {
         return {}
       }
-    },
-    mappingAttributes: {
-      type: Object,
-      required: true
     }
   },
   data() {
@@ -120,30 +110,6 @@ export default {
     },
     reset() {
       this.$emit('reset')
-    }
-  },
-  watch: {
-    currentFilter: {
-      immediate: true,
-      handler(val) {
-        if (!val) {
-          return
-        }
-        if (val.basic) {
-          this.rawFilter = JSON.stringify(
-            this.wrapper.basicSearchToESQuery(
-              val.basic,
-              this.mappingAttributes
-            ),
-            null,
-            2
-          )
-        }
-        if (!val.raw) {
-          return
-        }
-        this.rawFilter = JSON.stringify(val.raw, null, 2)
-      }
     }
   }
 }

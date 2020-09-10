@@ -483,32 +483,20 @@ export default {
     },
     async onFiltersUpdated(newFilters, loadedFromHistory) {
       this.currentFilter = newFilters
-      try {
-        filterManager.save(
-          this.currentFilter,
-          this.$router,
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.index,
+        this.collection
+      )
+      if (!loadedFromHistory) {
+        filterManager.addNewHistoryItemAndSave(
+          newFilters,
           this.index,
           this.collection
         )
-        if (!loadedFromHistory) {
-          filterManager.addNewHistoryItemAndSave(
-            newFilters,
-            this.index,
-            this.collection
-          )
-        }
-        await this.fetchDocuments()
-      } catch (e) {
-        this.$bvToast.toast(e.message, {
-          title: 'Ooops! Something went wrong while performing the search.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
-        this.$log.error(e)
       }
+      // await this.fetchDocuments()
     },
     afterCollectionClear() {
       this.documents = []
@@ -588,6 +576,7 @@ export default {
           size
         })
       )
+      this.fetchDocuments()
     },
 
     // SELECT ITEMS

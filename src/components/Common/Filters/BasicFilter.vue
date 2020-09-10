@@ -140,7 +140,7 @@
     </div>
 
     <b-row align-h="center" align-v="center">
-      <b-col sm="5">
+      <b-col sm="4">
         <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
           <b-form-select
             data-cy="BasicFilter-sortAttributeSelect"
@@ -169,6 +169,13 @@
       /></b-col>
       <b-col v-if="actionButtonsVisible" class="text-right">
         <b-button
+          class="BasicFilter-generateRawBtn mt-2 mb-2 mr-2"
+          data-cy="BasicFilter-generateRawBtn"
+          @click.prevent="generateRawFilter"
+        >
+          <i class="fas fa-scroll"></i>&nbsp; Generate Raw JSON
+        </b-button>
+        <b-button
           data-cy="BasicFilter-submitBtn"
           class="BasicFilter-submitBtn mt-2 mb-2 mr-2"
           variant="primary"
@@ -190,6 +197,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 const emptyBasicFilter = { attribute: null, operator: 'contains', value: null }
 const emptySorting = { attribute: null, order: 'asc' }
 
@@ -220,10 +228,6 @@ export default {
     mappingAttributes: {
       type: Object,
       required: true
-    },
-    toggleAutoComplete: {
-      type: Boolean,
-      default: true
     }
   },
   data() {
@@ -236,6 +240,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('kuzzle', ['wrapper']),
     selectAttributesValues() {
       return Object.keys(this.mappingAttributes).map(a => ({
         text: a,
@@ -302,6 +307,14 @@ export default {
     },
     selectAttribute(attribute, groupIndex, filterIndex) {
       this.filters.basic[groupIndex][filterIndex].attribute = attribute
+    },
+    generateRawFilter() {
+      const raw = this.wrapper.basicSearchToESQuery(
+        this.filters.basic,
+        this.mappingAttributes
+      )
+      this.$log.debug(JSON.stringify(raw, null, 2))
+      this.$emit('generate-raw-filter', raw)
     },
     submitSearch() {
       if (!this.isFilterValid) {

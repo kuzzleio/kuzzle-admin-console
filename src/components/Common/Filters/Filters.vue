@@ -12,19 +12,19 @@
           v-if="!advancedFiltersVisible"
           style="flex-grow: 1"
           v-model="quickFilter"
-          :initialValue="quickFilter"
+          submit-button-label="Quick Search"
           :action-buttons-visible="actionButtonsVisible"
           :advanced-filters-visible="advancedFiltersVisible"
           :advanced-query-label="advancedQueryLabel"
           :complex-filter-active="complexFilterActive"
           :enabled="quickFilterEnabled"
+          :initialValue="quickFilter"
           :placeholder="quickFilterPlaceholder"
-          :submit-button-label="submitButtonLabel"
           :submit-on-type="quickFilterSubmitOnType"
           @display-advanced-filters="
             advancedFiltersVisible = !advancedFiltersVisible
           "
-          @filter-submitted="onQuickFilterUpdated"
+          @filter-submitted="onQuickFilterSubmitted"
           @refresh="onRefresh"
           @reset="onReset"
           @enter-pressed="onEnterPressed"
@@ -65,43 +65,39 @@
     <template v-if="advancedFiltersVisible">
       <raw-filter
         v-if="complexFiltersSelectedTab === 'raw'"
-        :raw-filter="rawFilter"
-        :format-from-basic-search="formatFromBasicSearch"
-        :sorting-enabled="sortingEnabled"
+        submit-button-label="Raw JSON Search"
         :action-buttons-visible="actionButtonsVisible"
-        :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
-        :refresh-ace="refreshace"
-        :mapping-attributes="mappingAttributes"
-        @filter-submitted="onRawFilterUpdated"
+        :sorting-enabled="sortingEnabled"
+        @filter-submitted="onRawFilterSubmitted"
         @reset="onReset"
       />
       <basic-filter
         v-if="complexFiltersSelectedTab === 'basic'"
-        :toggle-auto-complete="toggleAutoComplete"
-        :basic-filter="basicFilter"
-        :sorting-enabled="sortingEnabled"
-        :available-operands="availableOperands"
-        :submit-button-label="submitButtonLabel"
+        submit-button-label="Advanced Search"
         :action-buttons-visible="actionButtonsVisible"
-        :sorting="sorting"
+        :available-operands="availableOperands"
+        :basic-filter="basicFilter"
         :mapping-attributes="mappingAttributes"
-        @filter-submitted="onBasicFilterUpdated"
+        :sorting="sorting"
+        :sorting-enabled="sortingEnabled"
+        @filter-submitted="onBasicFilterSubmitted"
+        @generate-raw-filter="onGenerateRawFilter"
         @reset="onReset"
       />
       <history-filter
         v-if="complexFiltersSelectedTab === 'history'"
         :index="index"
         :collection="collection"
-        @filter-basic-submitted="onBasicFilterUpdated"
-        @filter-raw-submitted="onRawFilterUpdated"
+        @filter-basic-submitted="onBasicFilterSubmitted"
+        @filter-raw-submitted="onRawFilterSubmitted"
       />
       <favorite-filters
         v-if="complexFiltersSelectedTab === 'favorite'"
         :index="index"
         :collection="collection"
-        @filter-basic-submitted="onBasicFilterUpdated"
-        @filter-raw-submitted="onRawFilterUpdated"
+        @filter-basic-submitted="onBasicFilterSubmitted"
+        @filter-raw-submitted="onRawFilterSubmitted"
       />
     </template>
   </b-card>
@@ -263,33 +259,40 @@ export default {
     }
   },
   methods: {
-    onQuickFilterUpdated(term) {
+    onQuickFilterSubmitted(term) {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: term ? ACTIVE_QUICK : NO_ACTIVE,
-          quick: term,
-          from: 0
+          quick: term
         })
       )
+      this.onSubmit()
     },
-    onBasicFilterUpdated(filter, sorting, loadedFromHistory) {
+    onBasicFilterSubmitted(filter, sorting, loadedFromHistory) {
       const newFilter = new Filter()
       newFilter.basic = filter
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
       newFilter.sorting = sorting
-      newFilter.from = 0
       this.onFiltersUpdated(newFilter, loadedFromHistory)
+      this.onSubmit()
+    },
+    onGenerateRawFilter(raw) {
+      this.onRawFilterUpdated(raw, false)
+      this.complexFiltersSelectedTab = 'raw'
     },
     onRawFilterUpdated(filter, loadedFromHistory) {
-      this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
-          raw: filter,
-          from: 0
+          raw: filter
         }),
         loadedFromHistory
       )
+    },
+    onRawFilterSubmitted(filter, loadedFromHistory) {
+      this.advancedFiltersVisible = false
+      this.onRawFilterUpdated(filter, loadedFromHistory)
+      this.onSubmit()
     },
     onRefresh() {
       this.onFiltersUpdated(
@@ -297,6 +300,7 @@ export default {
           from: 0
         })
       )
+      this.submit()
     },
     onReset() {
       this.advancedFiltersVisible = false
@@ -309,6 +313,15 @@ export default {
     onFiltersUpdated(newFilters, loadedFromHistory) {
       this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters, loadedFromHistory)
+    },
+    onSubmit() {
+      this.onFiltersUpdated(
+        Object.assign(this.currentFilter, {
+          from: 0
+        }),
+        false
+      )
+      this.$emit('submit')
     },
     onEnterPressed() {
       this.$emit('enter-pressed')

@@ -39,11 +39,7 @@ export default {
     },
     readonly: Boolean,
     id: String,
-    height: { type: Number, default: 250 },
-    refreshAce: {
-      type: Boolean,
-      default: false
-    }
+    height: { type: Number, default: 250 }
   },
   computed: {
     classes() {
@@ -67,13 +63,6 @@ export default {
     setContent(value) {
       this.$log.debug('Setting content', value)
       editor.getSession().setValue(value)
-    }
-  },
-  watch: {
-    refreshAce() {
-      setTimeout(() => {
-        editor.focus()
-      }, 500)
     }
   },
   mounted() {

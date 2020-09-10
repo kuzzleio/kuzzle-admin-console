@@ -19,7 +19,6 @@
                 @submit="inputSubmit"
               />
             </div>
-            
           </b-input-group>
         </div>
       </b-col>
@@ -188,7 +187,6 @@ export default {
       border-bottom: solid 1px #e4e1e1;
     }
   }
-  
 }
 
 .QuickFilter-searchIcon {
