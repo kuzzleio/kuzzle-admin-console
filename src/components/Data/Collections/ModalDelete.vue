@@ -6,6 +6,10 @@
     @hidden="resetDeletePrompt"
   >
     <b-form-group
+      v-if="
+        backendMajorVersion !== 1 ||
+          isCollectionRealtimeOnly(index, collectionToDelete)
+      "
       description="This operation is NOT reversible"
       label-for="deleteCollectionPromptField"
       :state="deletionConfirmed"
@@ -24,14 +28,17 @@
         @keypress.enter="onDeleteCollectionConfirmed"
       ></b-form-input>
     </b-form-group>
+    <template v-else>
+      Kuzzle v1 does not allow to delete a stored collection.
+    </template>
     <template v-slot:modal-footer>
       <b-button @click="$bvModal.hide('deleteCollectionPrompt')"
         >Cancel</b-button
       >
       <b-button
         v-if="
-          $store.direct.getters.kuzzle.currentEnvironment
-            .backendMajorVersion !== 1
+          backendMajorVersion !== 1 ||
+            isCollectionRealtimeOnly(index, collectionToDelete)
         "
         data-cy="DeleteCollectionPrompt-OK"
         variant="danger"
@@ -44,6 +51,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'ClearCollectionModal',
   props: {
@@ -63,6 +72,8 @@ export default {
     return { deleteConfirmation: '' }
   },
   computed: {
+    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
+    ...mapGetters('index', ['isCollectionRealtimeOnly']),
     deletionConfirmed() {
       return (
         this.deleteConfirmation !== '' &&

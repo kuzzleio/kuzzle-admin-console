@@ -196,8 +196,8 @@
               class="mx-1"
               variant="link"
               v-if="
-                $store.direct.getters.kuzzle.currentEnvironment
-                  .backendMajorVersion !== 1
+                currentEnvironment.backendMajorVersion !== 1 ||
+                  row.item.type === 'realtime'
               "
               title="Delete collection"
               :data-cy="`CollectionList-delete--${row.item.name}`"
@@ -270,7 +270,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle']),
+    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     ...mapGetters('auth', [
       'canSearchCollection',
       'canCreateCollection',
