@@ -109,7 +109,7 @@
                 />
               </template>
             </b-col>
-            <b-col xl="1" class="mb-1 text-center">
+            <b-col xl="1" class="mb-1 text-right">
               <i
                 class="fa fa-times mt-2 pointer"
                 @click="removeAndBasicFilter(groupIndex, filterIndex)"
