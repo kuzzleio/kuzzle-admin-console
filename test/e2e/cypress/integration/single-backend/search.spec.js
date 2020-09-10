@@ -375,7 +375,7 @@ describe('Search', function() {
     })
   })
 
-  it('sorts the results when sorting is specfied in the raw filter', function() {
+  it.only('sorts the results when sorting is specfied in the raw filter', function() {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -419,14 +419,13 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-        "query": {
-        "bool": {
-        "must": {
-        "match_phrase_prefix": {
-        "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-        "sort": {
-        "lastName": "desc"
-        }`,
+"query": {
+"bool": {
+"must": {
+"match_phrase_prefix": {
+"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+"sort": {
+"lastName": "desc"`,
         {
           force: true
         }
