@@ -7,7 +7,7 @@
   >
     <b-form-group
       v-if="
-        backendMajorVersion !== 1 ||
+        currentEnvironment.backendMajorVersion !== 1 ||
           isCollectionRealtimeOnly(index, collectionToDelete)
       "
       description="This operation is NOT reversible"
@@ -37,7 +37,7 @@
       >
       <b-button
         v-if="
-          backendMajorVersion !== 1 ||
+          currentEnvironment.backendMajorVersion !== 1 ||
             isCollectionRealtimeOnly(index, collectionToDelete)
         "
         data-cy="DeleteCollectionPrompt-OK"

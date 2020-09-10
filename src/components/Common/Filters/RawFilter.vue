@@ -111,6 +111,20 @@ export default {
     reset() {
       this.$emit('reset')
     }
+  },
+  watch: {
+    currentFilter: {
+      immediate: true,
+      handler(val) {
+        if (!val) {
+          return
+        }
+        if (!val.raw) {
+          return
+        }
+        this.rawFilter = JSON.stringify(val.raw, null, 2)
+      }
+    }
   }
 }
 </script>

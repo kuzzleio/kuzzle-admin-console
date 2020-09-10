@@ -311,10 +311,10 @@ export default {
       this.refreshace = !this.refreshace
     },
     onFiltersUpdated(newFilters, loadedFromHistory) {
-      this.advancedFiltersVisible = false
       this.$emit('filters-updated', newFilters, loadedFromHistory)
     },
     onSubmit() {
+      this.advancedFiltersVisible = false
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           from: 0

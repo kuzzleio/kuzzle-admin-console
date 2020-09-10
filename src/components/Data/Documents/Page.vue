@@ -67,6 +67,7 @@
                   @enter-pressed="navigateToDocument"
                   @filters-updated="onFiltersUpdated"
                   @reset="onFiltersUpdated"
+                  @submit="fetchDocuments"
                 />
               </template>
             </b-col>
