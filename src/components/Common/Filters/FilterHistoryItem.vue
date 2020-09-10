@@ -25,7 +25,7 @@
             variant="link"
             :title="'Favorite Filters'"
             :data-cy="'FilterHistoryItem-Add-Favorite--' + id"
-            @click="updateFavorite"
+            @click="toggleFavorite"
           >
             <i
               :class="isFavorite() === true ? 'fa fa-star' : 'far fa-star'"
@@ -35,7 +35,12 @@
         </b-col>
         <b-col cols="2">
           <div class="float-right">
-            <b-button variant="link" @click="useFilter" :title="'Edit Filter'" :data-cy="'FilterHistoryItem-Search-Favorite--' + id">
+            <b-button
+              variant="link"
+              title="Use Filter"
+              :data-cy="'FilterHistoryItem-Search-Favorite--' + id"
+              @click="useFilter"
+            >
               <i class="fa fa-search" />
             </b-button>
             <b-button
@@ -94,8 +99,8 @@ export default {
   methods: {
     isFavorite() {
       const idIndex = this.favorite
-        .map(favori => {
-          return favori.id
+        .map(f => {
+          return f.id
         })
         .indexOf(this.filter.id)
       if (idIndex !== -1) {
@@ -107,20 +112,11 @@ export default {
     cancelChange() {
       this.filter.name = this.oldName
     },
-    updateFavorite() {
-      if (this.isFavorite()) {
-        const idIndex = this.favorite
-          .map(favori => {
-            return favori.id
-          })
-          .indexOf(this.filter.id)
-        this.favorite.splice(idIndex, 1)
-      } else {
-        this.favorite.push(this.filter)
-      }
+    toggleFavorite() {
+      this.$emit('toggle-favorite', !this.isFavorite())
     },
     submitChange() {
-      this.updateFavorite()
+      this.$emit('change')
     },
     openModal() {
       this.$bvModal.show('changeNameHistoryFilter-' + this.filter.id)
@@ -129,20 +125,13 @@ export default {
       this.$emit('filters-delete', this.filter.id)
     },
     useFilter() {
-      if (this.filter.active == 'raw') {
-        this.$parent.$emit('filter-raw-submitted', this.filter.raw, true)
-      }
-      if (this.filter.active == 'basic') {
-        this.$parent.$emit(
-          'filter-basic-submitted',
-          this.filter.basic,
-          this.filter.sorting,
-          true
-        )
-      }
+      this.$parent.$emit('submit', this.filter)
     },
     getFilter() {
-      const loadedFilter = Object.assign(new filterManager.Filter(), this.filter)
+      const loadedFilter = Object.assign(
+        new filterManager.Filter(),
+        this.filter
+      )
       if (loadedFilter.active == 'basic') return loadedFilter.basic
       if (loadedFilter.active == 'raw') return loadedFilter.raw
     },

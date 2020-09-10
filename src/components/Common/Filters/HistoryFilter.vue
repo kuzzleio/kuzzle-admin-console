@@ -2,7 +2,7 @@
   <ul class="list-group">
     <template v-if="filters.length > 0">
       <FilterHistoryItem
-        v-for="(filter, i) in filters"
+        v-for="(filter, i) in sortedHistory"
         :key="i"
         :data-cy="'FilterHistoryItem--' + i"
         :index="index"
@@ -11,6 +11,8 @@
         :id="i"
         :favorite="favorite"
         @filters-delete="onFiltersDelete"
+        @toggle-favorite="toggleFavorite(filter, $event)"
+        @change="onFilterChange"
       />
     </template>
     <template v-else>
@@ -43,6 +45,11 @@ export default {
       favorite: []
     }
   },
+  computed: {
+    sortedHistory() {
+      return [...this.filters].sort((a, b) => (a.id < b.id ? 1 : -1))
+    }
+  },
   mounted() {
     this.filters = filterManager.loadHistoyFromLocalStorage(
       this.index,
@@ -54,6 +61,13 @@ export default {
     )
   },
   methods: {
+    onFilterChange() {
+      filterManager.saveHistoyToLocalStorage(
+        this.filters,
+        this.index,
+        this.collection
+      )
+    },
     onFiltersDelete(id) {
       const idIndex = this.filters
         .map(filter => {
@@ -61,28 +75,21 @@ export default {
         })
         .indexOf(id)
       this.filters.splice(idIndex, 1)
-    }
-  },
-  watch: {
-    filters: {
-      handler() {
-        filterManager.saveHistoyToLocalStorage(
-          this.filters,
-          this.index,
-          this.collection
-        )
-      },
-      deep: true
     },
-    favorite: {
-      handler() {
-        filterManager.saveFavoritesToLocalStorage(
-          this.favorite,
-          this.index,
-          this.collection
+    toggleFavorite(filter, favorite) {
+      if (favorite) {
+        this.favorite.push(filter)
+      } else {
+        this.favorite.splice(
+          this.favorite.findIndex(e => e.id === filter.id),
+          1
         )
-      },
-      deep: true
+      }
+      filterManager.saveFavoritesToLocalStorage(
+        this.favorite,
+        this.index,
+        this.collection
+      )
     }
   }
 }

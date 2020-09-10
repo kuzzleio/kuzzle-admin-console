@@ -89,8 +89,7 @@
         v-if="complexFiltersSelectedTab === 'history'"
         :index="index"
         :collection="collection"
-        @filter-basic-submitted="onBasicFilterSubmitted"
-        @filter-raw-submitted="onRawFilterSubmitted"
+        @submit="onSubmitFromHistory"
       />
       <favorite-filters
         v-if="complexFiltersSelectedTab === 'favorite'"
@@ -259,6 +258,10 @@ export default {
     }
   },
   methods: {
+    setObjectTabActive(tab) {
+      this.objectTabActive = tab
+      this.refreshace = !this.refreshace
+    },
     onQuickFilterSubmitted(term) {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
@@ -268,60 +271,57 @@ export default {
       )
       this.onSubmit()
     },
-    onBasicFilterSubmitted(filter, sorting, loadedFromHistory) {
+    onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()
       newFilter.basic = filter
       newFilter.active = filter ? ACTIVE_BASIC : NO_ACTIVE
       newFilter.sorting = sorting
-      this.onFiltersUpdated(newFilter, loadedFromHistory)
-      this.onSubmit()
+      this.onSubmit(newFilter)
     },
-    onGenerateRawFilter(raw) {
-      this.onRawFilterUpdated(raw, false)
-      this.complexFiltersSelectedTab = 'raw'
+
+    onRawFilterSubmitted(filter) {
+      this.advancedFiltersVisible = false
+      this.onSubmit(
+        Object.assign(this.currentFilter, {
+          active: filter ? ACTIVE_RAW : NO_ACTIVE,
+          raw: filter
+        })
+      )
     },
-    onRawFilterUpdated(filter, loadedFromHistory) {
+    onSubmitFromHistory(filter) {
+      this.advancedFiltersVisible = false
+      this.onSubmit(Object.assign(this.currentFilter, filter), false)
+    },
+    onGenerateRawFilter(filter) {
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
           raw: filter
-        }),
-        loadedFromHistory
+        })
       )
-    },
-    onRawFilterSubmitted(filter, loadedFromHistory) {
-      this.advancedFiltersVisible = false
-      this.onRawFilterUpdated(filter, loadedFromHistory)
-      this.onSubmit()
+      this.complexFiltersSelectedTab = 'raw'
     },
     onRefresh() {
-      this.onFiltersUpdated(
+      this.submit(
         Object.assign(this.currentFilter, {
           from: 0
         })
       )
-      this.submit()
     },
     onReset() {
-      this.advancedFiltersVisible = false
-      this.$emit('reset', new Filter())
+      this.onSubmit(new Filter())
     },
-    setObjectTabActive(tab) {
-      this.objectTabActive = tab
-      this.refreshace = !this.refreshace
+    onFiltersUpdated(newFilters) {
+      this.$emit('filters-updated', newFilters)
     },
-    onFiltersUpdated(newFilters, loadedFromHistory) {
-      this.$emit('filters-updated', newFilters, loadedFromHistory)
-    },
-    onSubmit() {
+    onSubmit(filter, saveToHistory = true) {
       this.advancedFiltersVisible = false
       this.onFiltersUpdated(
-        Object.assign(this.currentFilter, {
+        Object.assign(filter, {
           from: 0
-        }),
-        false
+        })
       )
-      this.$emit('submit')
+      this.$emit('submit', saveToHistory)
     },
     onEnterPressed() {
       this.$emit('enter-pressed')

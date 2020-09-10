@@ -66,8 +66,7 @@
                   :mapping-attributes="mappingAttributes"
                   @enter-pressed="navigateToDocument"
                   @filters-updated="onFiltersUpdated"
-                  @reset="onFiltersUpdated"
-                  @submit="fetchDocuments"
+                  @submit="onFilterSubmit"
                 />
               </template>
             </b-col>
@@ -436,8 +435,10 @@ export default {
         params: { id }
       })
     },
-    onRefresh() {
-      this.fetchDocuments()
+    afterCollectionClear() {
+      this.documents = []
+      this.totalDocuments = 0
+      this.currentFilter = new filterManager.Filter()
     },
     // LIST (FETCH & SEARCH)
     // =========================================================================
@@ -482,27 +483,21 @@ export default {
         params: { id: document.id }
       })
     },
-    async onFiltersUpdated(newFilters, loadedFromHistory) {
+    onRefresh() {
+      this.fetchDocuments()
+    },
+    async onFiltersUpdated(newFilters) {
       this.currentFilter = newFilters
-      filterManager.save(
-        this.currentFilter,
-        this.$router,
-        this.index,
-        this.collection
-      )
-      if (!loadedFromHistory) {
+    },
+    onFilterSubmit(saveToHistory = true) {
+      if (saveToHistory) {
         filterManager.addNewHistoryItemAndSave(
-          newFilters,
+          this.currentFilter,
           this.index,
           this.collection
         )
       }
-      // await this.fetchDocuments()
-    },
-    afterCollectionClear() {
-      this.documents = []
-      this.totalDocuments = 0
-      this.currentFilter = new filterManager.Filter()
+      this.fetchDocuments()
     },
     async fetchDocuments() {
       this.$forceUpdate()
@@ -514,6 +509,14 @@ export default {
         from: this.paginationFrom,
         size: this.paginationSize
       }
+
+      filterManager.save(
+        this.currentFilter,
+        this.$router,
+        this.index,
+        this.collection
+      )
+
       try {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
