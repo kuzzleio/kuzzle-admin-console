@@ -111,14 +111,14 @@
             <b-col cols="1">
               <i
                 class="fa fa-times mt-2 pointer"
-                @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                @click="removeAndCondition(groupIndex, filterIndex)"
               />
             </b-col>
             <b-col cols="2" align-self="center" class="text-center">
               <b-button
                 v-if="filterIndex === orBlock.length - 1"
                 variant="outline-secondary"
-                @click="addAndBasicFilter(groupIndex)"
+                @click="addAndCondition(groupIndex)"
               >
                 <i class="fa fa-plus left mr-1" />AND
               </b-button>
@@ -217,7 +217,7 @@ export default {
       required: false,
       default: true
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     },
@@ -237,16 +237,16 @@ export default {
   },
   computed: {
     selectAttributesValues() {
-      return this.attributeItems.map(a => ({ text: a, value: a }))
+      return Object.keys(this.mappingAttributes).map(a => ({
+        text: a,
+        value: a
+      }))
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map(e => ({
         value: e,
         text: this.availableOperands[e]
       }))
-    },
-    attributeItems() {
-      return this.buildAttributeList(this.collectionMapping)
     },
     isFilterValid: function() {
       // For each andBlocks in orBlocks, check if attribute and value field are filled
@@ -338,14 +338,14 @@ export default {
     addGroupBasicFilter() {
       this.filters.basic.push([{ ...emptyBasicFilter }])
     },
-    addAndBasicFilter(groupIndex) {
+    addAndCondition(groupIndex) {
       if (!this.filters.basic[groupIndex]) {
         return false
       }
 
       this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
     },
-    removeAndBasicFilter(groupIndex, filterIndex) {
+    removeAndCondition(groupIndex, filterIndex) {
       if (
         !this.filters.basic[groupIndex] ||
         !this.filters.basic[groupIndex][filterIndex]
@@ -370,34 +370,6 @@ export default {
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
-    },
-    buildAttributeList(mapping, path = []) {
-      let attributes = []
-
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (attributeValue.properties) {
-          attributes = attributes.concat(
-            this.buildAttributeList(
-              attributeValue.properties,
-              path.concat(attributeName)
-            )
-          )
-        } else if (attributeValue.type) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
-
-          // Other attribute types are listed in the "fields" property
-          if (attributeValue.fields) {
-            attributes = attributes.concat(
-              this.buildAttributeList(
-                attributeValue.fields,
-                path.concat(attributeName)
-              )
-            )
-          }
-        }
-      }
-
-      return attributes
     }
   }
 }
