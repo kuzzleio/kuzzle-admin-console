@@ -207,7 +207,7 @@ describe('Search', function() {
     )
   })
 
-  it.only('Should be able to perform a Basic Search on a _kuzzle_info field', function() {
+  it('Should be able to perform a Basic Search on a _kuzzle_info field', function() {
     cy.skipOnBackendVersion(1)
     cy.request(
       'POST',
