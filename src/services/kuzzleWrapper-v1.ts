@@ -1,6 +1,7 @@
 import { Kuzzle, WebSocket } from 'kuzzle-sdk-v6'
 import Promise from 'bluebird'
 import omit from 'lodash/omit'
+import { MappingAttributes } from './mappingHelpers'
 
 // NOTE - We instantiate a new Kuzzle SDK with Websocket protocol
 // pointing to `localhost` because we cannot instantiate the `WebSocket`
@@ -248,7 +249,7 @@ export class KuzzleWrapperV1 {
     }
   }
 
-  basicSearchToESQuery(groups = [[]], mappings): object {
+  basicSearchToESQuery(groups = [[]], mappingAttrs: MappingAttributes): object {
     let bool: any = {}
 
     bool.should = groups.map(filters => {
@@ -260,12 +261,12 @@ export class KuzzleWrapperV1 {
 
         // TODO Convert this into a big switch/case
         if (filter.operator === 'contains') {
-          if (mappings[filter.attribute].type === 'text') {
+          if (mappingAttrs[filter.attribute].type === 'text') {
             formattedFilter.bool.must.push({
               match_phrase_prefix: { [filter.attribute]: filter.value }
             })
           }
-          if (mappings[filter.attribute].type === 'keyword') {
+          if (mappingAttrs[filter.attribute].type === 'keyword') {
             formattedFilter.bool.must.push({
               regexp: {
                 [filter.attribute]:
@@ -274,12 +275,12 @@ export class KuzzleWrapperV1 {
             })
           }
         } else if (filter.operator === 'not_contains') {
-          if (mappings[filter.attribute].type === 'text') {
+          if (mappingAttrs[filter.attribute].type === 'text') {
             formattedFilter.bool.must_not.push({
               match_phrase_prefix: { [filter.attribute]: filter.value }
             })
           }
-          if (mappings[filter.attribute].type === 'keyword') {
+          if (mappingAttrs[filter.attribute].type === 'keyword') {
             formattedFilter.bool.must_not.push({
               regexp: {
                 [filter.attribute]:
