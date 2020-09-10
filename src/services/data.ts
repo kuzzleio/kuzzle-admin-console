@@ -1,3 +1,5 @@
+import { Index } from '@/vuex/modules/index/types'
+
 export const dedupeRealtimeCollections = collections => {
   if (!collections.realtime) {
     return collections
@@ -38,7 +40,12 @@ export const getRealtimeCollectionFromStorage = index => {
     localStorage.getItem('realtimeCollections') || '[]'
   )
     .filter(o => o.index === index)
-    .map(o => o.collection)
+    .map(o => {
+      return {
+        name: o.collection,
+        type: 'realtime',
+      }
+    })
 
   return realtimeCollections
 }
@@ -88,3 +95,10 @@ export const filterIndexesByKeyword = (indexTree, word) => {
     }
   })
 }
+
+export const getIndexPosition = (indexes :Index[], indexName :string) :number => {
+  return indexes.findIndex(el => {
+    el.name === indexName
+  })
+}
+
