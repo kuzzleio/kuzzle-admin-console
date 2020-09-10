@@ -7,7 +7,7 @@ export interface AttributeProperties {
 }
 
 export const extractAttributesFromMapping = (
-  mapping: object,
+  mapping: object = {},
   attributes: MappingAttributes = {},
   prefix: string = '',
   path: string[] = []
