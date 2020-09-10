@@ -33,7 +33,7 @@
             class="icon-medium icon-black ml-2"
             :index="index"
             :collection="collection"
-            @clear="onCollectionClear"
+            @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
@@ -505,7 +505,7 @@ export default {
         this.$log.error(e)
       }
     },
-    onCollectionClear() {
+    afterCollectionClear() {
       this.documents = []
       this.totalDocuments = 0
       this.currentFilter = new filterManager.Filter()
