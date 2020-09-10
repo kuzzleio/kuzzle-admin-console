@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div class="Home-routeWrapper">
+    <div class="Home-routeWrapper" data-cy="App-loggedIn">
       <main-spinner v-if="authInitializing"></main-spinner>
       <router-view v-else />
     </div>
