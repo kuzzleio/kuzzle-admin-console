@@ -263,13 +263,12 @@ export default {
       this.refreshace = !this.refreshace
     },
     onQuickFilterSubmitted(term) {
-      this.onFiltersUpdated(
+      this.onSubmit(
         Object.assign(this.currentFilter, {
           active: term ? ACTIVE_QUICK : NO_ACTIVE,
           quick: term
         })
       )
-      this.onSubmit()
     },
     onBasicFilterSubmitted(filter, sorting) {
       const newFilter = new Filter()

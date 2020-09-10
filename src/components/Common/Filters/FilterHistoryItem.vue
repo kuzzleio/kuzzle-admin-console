@@ -38,7 +38,7 @@
             <b-button
               variant="link"
               title="Use Filter"
-              :data-cy="'FilterHistoryItem-Search-Favorite--' + id"
+              :data-cy="'FilterHistoryItem-useBtn--' + id"
               @click="useFilter"
             >
               <i class="fa fa-search" />

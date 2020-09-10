@@ -312,6 +312,7 @@ export default {
             from
           })
         )
+        this.fetchDocuments()
       }
     },
     collection: {
