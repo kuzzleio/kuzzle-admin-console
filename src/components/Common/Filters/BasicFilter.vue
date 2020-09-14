@@ -22,107 +22,122 @@
             v-for="(andBlock, filterIndex) in orBlock"
             :key="`andBlock-${filterIndex}`"
           >
-            <b-col class="text-center mb-1" xl="1">
-              <span
-                v-if="filterIndex !== 0"
-                class="text-secondary font-weight-bold"
-              >
-                AND
-              </span>
-            </b-col>
-            <b-col xl="3" class="mb-1">
+            <b-col xl="11">
               <b-row align-v="center" align-h="center">
-                <template v-if="filterIndex === 0">
-                  <b-col cols="1" class="ml-3">
-                    <i
-                      class="fas fa-question-circle fa-lg"
-                      v-b-popover.hover.top="
-                        'For an attribute to be in the list, it must be contained in the mapping.'
-                      "
-                    ></i>
-                  </b-col>
-                </template>
-                <b-col>
-                  <b-form-select
-                    placeholder="Attribute"
-                    :data-cy="
-                      `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
-                    "
-                    @change="
-                      attribute =>
-                        selectAttribute(attribute, groupIndex, filterIndex)
-                    "
-                    :value="
-                      filters.basic[groupIndex][filterIndex].attribute || ''
-                    "
-                    :options="selectAttributesValues"
-                  >
-                    <template v-slot:first>
-                      <b-form-select-option :value="''" disabled
-                        >Attribute</b-form-select-option
+                <b-col cols="11">
+                  <b-row align-v="center" align-h="center">
+                    <b-col class="text-center mb-1" xl="1">
+                      <span
+                        v-if="filterIndex !== 0"
+                        class="text-secondary font-weight-bold"
                       >
-                    </template>
-                  </b-form-select>
+                        AND
+                      </span>
+                    </b-col>
+                    <b-col xl="4" class="mb-1">
+                      <b-row align-v="center" align-h="center">
+                        <template v-if="filterIndex === 0">
+                          <b-col cols="1" class="ml-3">
+                            <i
+                              class="fas fa-question-circle fa-lg"
+                              v-b-popover.hover.top="
+                                'For an attribute to be in the list, it must be contained in the mapping.'
+                              "
+                            ></i>
+                          </b-col>
+                        </template>
+                        <b-col>
+                          <b-form-select
+                            placeholder="Attribute"
+                            :data-cy="
+                              `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
+                            "
+                            @change="
+                              attribute =>
+                                selectAttribute(
+                                  attribute,
+                                  groupIndex,
+                                  filterIndex
+                                )
+                            "
+                            :value="
+                              filters.basic[groupIndex][filterIndex]
+                                .attribute || ''
+                            "
+                            :options="selectAttributesValues"
+                          >
+                            <template v-slot:first>
+                              <b-form-select-option :value="''" disabled
+                                >Attribute</b-form-select-option
+                              >
+                            </template>
+                          </b-form-select>
+                        </b-col>
+                      </b-row>
+                    </b-col>
+                    <b-col xl="3" class="mb-1">
+                      <b-form-select
+                        v-model="andBlock.operator"
+                        :data-cy="`BasicFilter-operator`"
+                        :options="availableOperandsFormatted"
+                      />
+                    </b-col>
+                    <b-col
+                      xl="4"
+                      class="mb-1"
+                      v-if="
+                        andBlock.operator !== 'exists' &&
+                          andBlock.operator !== 'not_exists'
+                      "
+                    >
+                      <template v-if="andBlock.operator !== 'range'">
+                        <b-form-input
+                          class="BasicFilter--value validate"
+                          placeholder="Value"
+                          type="text"
+                          :data-cy="
+                            `BasicFilter-valueInput--${groupIndex}.${filterIndex}`
+                          "
+                          v-model="andBlock.value"
+                        />
+                      </template>
+                      <template v-else>
+                        <b-form-input
+                          v-model="andBlock.gt_value"
+                          placeholder="Value 1"
+                          type="text"
+                          :data-cy="`BasicFilter-operator-Range-Value1`"
+                          class="BasicFilter--gtValue validate mb-1"
+                        />
+                        <b-form-input
+                          v-model="andBlock.lt_value"
+                          placeholder="Value 2"
+                          type="text"
+                          :data-cy="`BasicFilter-operator-Range-Value2`"
+                          class="BasicFilter--ltValue validate mt-1"
+                        />
+                      </template>
+                    </b-col>
+                  </b-row>
+                </b-col>
+                <b-col sm="1">
+                  <i
+                    class="fa fa-times pointer"
+                    @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                  />
                 </b-col>
               </b-row>
             </b-col>
-            <b-col xl="2" class="mb-1">
-              <b-form-select
-                v-model="andBlock.operator"
-                :data-cy="`BasicFilter-operator`"
-                :options="availableOperandsFormatted"
-              />
-            </b-col>
-            <b-col
-              xl="3"
-              class="mb-1"
-              v-if="
-                andBlock.operator !== 'exists' &&
-                  andBlock.operator !== 'not_exists'
-              "
-            >
-              <template v-if="andBlock.operator !== 'range'">
-                <b-form-input
-                  class="BasicFilter--value validate"
-                  placeholder="Value"
-                  type="text"
-                  :data-cy="
-                    `BasicFilter-valueInput--${groupIndex}.${filterIndex}`
-                  "
-                  v-model="andBlock.value"
-                />
-              </template>
-              <template v-else>
-                <b-form-input
-                  v-model="andBlock.gt_value"
-                  placeholder="Value 1"
-                  type="text"
-                  :data-cy="`BasicFilter-operator-Range-Value1`"
-                  class="BasicFilter--gtValue validate mb-1"
-                />
-                <b-form-input
-                  v-model="andBlock.lt_value"
-                  placeholder="Value 2"
-                  type="text"
-                  :data-cy="`BasicFilter-operator-Range-Value2`"
-                  class="BasicFilter--ltValue validate mt-1"
-                />
-              </template>
-            </b-col>
-            <b-col xl="1" class="mb-1 text-right">
-              <i
-                class="fa fa-times mt-2 pointer"
-                @click="removeAndBasicFilter(groupIndex, filterIndex)"
-              />
-            </b-col>
-            <b-col xl="2" align-self="center" class="text-center mb-1">
-              <b-button
-                v-if="filterIndex === orBlock.length - 1"
-                variant="outline-secondary"
-                @click="addAndBasicFilter(groupIndex)"
-              >
-                <i class="fa fa-plus left mr-1" />AND
-              </b-button>
+            <b-col xl="1">
+              <b-row align-v="center" align-h="center">
+                <b-button
+                  v-if="filterIndex === orBlock.length - 1"
+                  variant="outline-secondary"
+                  @click="addAndBasicFilter(groupIndex)"
+                >
+                  <i class="fa fa-plus left mr-1" />AND
+                </b-button>
+              </b-row>
             </b-col>
           </b-row>
         </b-card>
