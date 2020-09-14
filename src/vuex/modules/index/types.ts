@@ -1,26 +1,54 @@
 export class Index {
   private _name: string
-  loading = false 
-  collections: Collection[] = []
+  loading = false
+  collections?: Collection[]
 
   constructor(name: string) {
     this._name = name
   }
 
-  get name() { 
+  get name() {
     return this._name
   }
 
+  get CollectionsCount(): number | undefined {
+    return this.collections?.length
+  }
+
+  public initCollections(collections: Collection[]) {
+    this.collections = collections
+  }
+
   public addCollection(collection: Collection) {
+    if (!this.collections) {
+      throw new Error(
+        'Unable to perform operations, the collection list is not yet initialized'
+      )
+    }
     this.collections.push(collection)
   }
 
   public removeCollection(collection: Collection) {
-    this.collections = this.collections.filter(el => el.name !== collection.name)
+    if (!this.collections) {
+      throw new Error(
+        'Unable to perform operations, the collection list is not yet initialized'
+      )
+    }
+
+    this.collections = this.collections.filter(
+      el => el.name !== collection.name
+    )
   }
 
-  public doesCollectionExist(collectionName: string) :boolean {
-    return this.collections.find(el => el.name === collectionName) ? true : false
+  public doesCollectionExist(collectionName: string): boolean {
+    if (!this.collections) {
+      throw new Error(
+        'Unable to perform operations, the collection list is not yet initialized'
+      )
+    }
+    return this.collections.find(el => el.name === collectionName)
+      ? true
+      : false
   }
 }
 
@@ -31,16 +59,16 @@ export class Collection {
   count?: number
 
   constructor(name: string, type: CollectionType) {
-    this._name = name;
-    this._type = type;
+    this._name = name
+    this._type = type
   }
 
   get name(): string {
-    return this._name;
+    return this._name
   }
 
   get type(): CollectionType {
-    return this._type;
+    return this._type
   }
 
   public isRealtime(): boolean {

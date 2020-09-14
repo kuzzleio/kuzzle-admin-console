@@ -19,12 +19,12 @@
 
     <list-not-allowed v-if="!canSearchIndex" />
     <template v-else>
-      <template v-if="loading"></template>
+      <template v-if="loadingIndexes"></template>
       <template v-else>
         <b-row class="mb-3">
           <b-col class="text-secondary pt-2">
-            {{ tableItems.length }}
-            {{ tableItems.length === 1 ? 'index' : 'indexes' }}
+            {{ indexes.length }}
+            {{ indexes.length === 1 ? 'index' : 'indexes' }}
           </b-col>
           <b-col sm="10">
             <b-row>
@@ -64,7 +64,7 @@
                   <auto-focus-input
                     name="index"
                     v-model="filter"
-                    :disabled="tableItems.length === 0"
+                    :disabled="indexes.length === 0"
                     @submit="navigateToIndex"
                   />
                 </b-input-group>
@@ -79,7 +79,7 @@
           striped
           outlined
           show-empty
-          :items="tableItems"
+          :items="indexes"
           :fields="tableFields"
           :filter="filter"
           @filtered="updateFilteredIndexes"
@@ -101,23 +101,26 @@
               type="checkbox"
               unchecked-value="false"
               value="true"
-              :checked="isChecked(row.item.indexName)"
-              @change="onCheckboxClick(row.item.indexName)"
+              :checked="isChecked(row.item)"
+              @change="onCheckboxClick(row.item)"
             />
+          </template>
+          <template v-slot:cell(collectionCount)="row">
+            <span>{{ row.item.collectionCount || '--' }}</span>
           </template>
           <template v-slot:cell(icon)>
             <i class="fa fa-2x fa-database mr-2"></i>
           </template>
-          <template v-slot:cell(indexName)="indexName">
+          <template v-slot:cell(indexName)="row">
             <router-link
-              :data-cy="`IndexesPage-name--${indexName.value}`"
-              :title="indexName.value"
+              :data-cy="`IndexesPage-name--${row.item.name}`"
+              :title="row.item.name"
               :to="{
                 name: 'Collections',
-                params: { index: indexName.value }
+                params: { index: row.item.name }
               }"
             >
-              {{ indexName.value }}
+              {{ row.item.name }}
             </router-link>
           </template>
           <template v-slot:cell(actions)="row">
@@ -126,10 +129,10 @@
                 class="mx-1"
                 title="browse this index"
                 variant="link"
-                :data-cy="`IndexesPage-browse--${row.item.indexName}`"
+                :data-cy="`IndexesPage-browse--${row.item.name}`"
                 :to="{
                   name: 'Collections',
-                  params: { index: row.item.indexName }
+                  params: { index: row.item.name }
                 }"
                 ><i class="fa fa-eye"></i
               ></b-button>
@@ -137,19 +140,19 @@
                 class="mx-1"
                 title="Create a collection in this index"
                 variant="link"
-                :data-cy="`IndexesPage-createCollection--${row.item.indexName}`"
+                :data-cy="`IndexesPage-createCollection--${row.item.name}`"
                 :to="{
                   name: 'CreateCollection',
-                  params: { index: row.item.indexName }
+                  params: { index: row.item.name }
                 }"
                 ><i class="fa fa-plus"></i
               ></b-button>
               <b-button
                 class="mx-1"
-                :data-cy="`IndexesPage-delete--${row.item.indexName}`"
+                :data-cy="`IndexesPage-delete--${row.item.name}`"
                 title="Delete index"
                 variant="link"
-                @click="openDeleteModal(row.item.indexName)"
+                @click="openDeleteModal(row.item)"
                 ><i class="fa fa-trash"></i
               ></b-button>
             </div>
@@ -157,11 +160,14 @@
         </b-table>
       </template>
     </template>
-    <CreateIndexModal :id="createIndexModalId" />
+    <CreateIndexModal
+      :id="createIndexModalId"
+      @modal-close="onCreateModalClose"
+    />
     <DeleteIndexModal
       :id="deleteIndexModalId"
       :index="indexToDelete"
-      @modal-close="onModalClose"
+      @modal-close="onDeleteModalClose"
     />
   </b-container>
 </template>
@@ -223,69 +229,80 @@ export default {
     }
   },
   mounted() {
-    this.updateFilteredIndexes(this.tableItems)
+    this.updateFilteredIndexes(this.indexes)
   },
   computed: {
     ...mapGetters('auth', ['canSearchIndex', 'canCreateIndex']),
-    loading() {
-      return this.$store.direct.state.index.loadingIndexes
-    },
+    ...mapGetters('index', ['indexes', 'loadingIndexes']),
     bulkDeleteEnabled() {
       return this.selectedIndexes.length > 0
-    },
-    indexes() {
-      return this.$store.state.index.indexesAndCollections
-    },
-    tableItems() {
-      return Object.keys(this.indexes).map(i => ({
-        indexName: i,
-        collectionCount:
-          this.indexes[i].realtime.length + this.indexes[i].stored.length
-      }))
-    },
-    orderedFilteredIndices() {
-      return this.$store.state.index.indexes
-        .filter(indexName => indexName.indexOf(this.filter) !== -1)
-        .sort()
-    }
-  },
-  methods: {
-    openCreateModal() {
-      this.$bvModal.show(this.createIndexModalId)
-    },
-    onModalClose() {
-      this.selectedIndexes.shift()
-      this.deleteIndexes()
-    },
-    deleteIndexes() {
-      if (this.selectedIndexes.length > 0) {
-        this.openDeleteModal(this.selectedIndexes[0])
-      }
     },
     allChecked() {
       if (!this.selectedIndexes || !this.filteredIndexes) {
         return false
       }
       return this.selectedIndexes.length === this.filteredIndexes.length
+    }
+  },
+  methods: {
+    openCreateModal() {
+      this.$bvModal.show(this.createIndexModalId)
+    },
+    async onDeleteModalClose() {
+      this.selectedIndexes = this.selectedIndexes.slice(1)
+
+      if (this.bulkDeleteEnabled) {
+        this.deleteIndexes()
+      } else {
+        await this.listIndexes()
+      }
+    },
+    async onCreateModalClose() {
+      await this.listIndexes()
+    },
+    async listIndexes() {
+      try {
+        await this.$store.direct.dispatch.index.listIndexes()
+      } catch (err) {
+        this.$log.error(err)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
+          {
+            title: err.message,
+            variant: 'danger',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true
+          }
+        )
+      }
+    },
+    deleteIndexes() {
+      if (this.bulkDeleteEnabled) {
+        this.openDeleteModal(this.selectedIndexes[0])
+      }
     },
     onToggleAllClicked() {
-      if (this.allChecked()) {
+      if (this.allChecked) {
         this.selectedIndexes = []
         return
       }
       this.selectedIndexes = []
-      this.selectedIndexes = this.filteredIndexes.map(index => index.indexName)
+      this.selectedIndexes = this.filteredIndexes
     },
-    isChecked(name) {
-      return this.selectedIndexes.indexOf(name) > -1
+    isChecked(index) {
+      return this.selectedIndexes.find(el => el.name === index.name)
+        ? true
+        : false
     },
-    onCheckboxClick(name) {
-      let index = this.selectedIndexes.indexOf(name)
-      if (index === -1) {
-        this.selectedIndexes.push(name)
+    onCheckboxClick(index) {
+      let indexPosition = this.selectedIndexes.findIndex(
+        el => el.name === index.name
+      )
+      if (indexPosition === -1) {
+        this.selectedIndexes.push(index)
         return
       }
-      this.selectedIndexes.splice(index, 1)
+      this.selectedIndexes.splice(indexPosition, 1)
     },
     openDeleteModal(index) {
       this.indexToDelete = index
@@ -300,7 +317,7 @@ export default {
 
       const route = {
         name: 'Collections',
-        params: { index: index.indexName }
+        params: { index: index.name }
       }
 
       this.$router.push(route)

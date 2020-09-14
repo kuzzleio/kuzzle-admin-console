@@ -4,26 +4,26 @@
     ref="deleteIndexModal"
     size="lg"
     :id="id"
-    @hidden="resetForm"
+    @hide="resetForm"
   >
     <template v-slot:modal-title>
-      Index <strong>{{ truncateName(index) }}</strong> deletion
+      Index <strong>{{ truncateName(index.name) }}</strong> deletion
     </template>
 
     <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="hideModal">
+      <b-button variant="secondary" @click="closeModal(false)">
         Cancel
       </b-button>
       <b-button
-        data-cy="DeleteIndexModal-deleteBtn"
         variant="danger"
-        :disabled="index !== indexConfirmation"
+        data-cy="DeleteIndexModal-deleteBtn"
+        :disabled="index.name !== indexConfirmation"
         @click="tryDeleteIndex"
       >
         OK
       </b-button>
     </template>
-    <b-form>
+    <form ref="form" v-on:submit.prevent="tryDeleteIndex">
       <b-form-group label="Index name confirmation" label-for="indexName">
         <b-form-input
           data-cy="DeleteIndexModal-name"
@@ -34,7 +34,7 @@
         ></b-form-input>
       </b-form-group>
       <b-alert :show="error.length" variant="danger">{{ error }}</b-alert>
-    </b-form>
+    </form>
   </b-modal>
 </template>
 
@@ -49,8 +49,7 @@ export default {
       required: true
     },
     index: {
-      required: true,
-      validator: prop => typeof prop === 'string' || prop === null
+      required: false,
     }
   },
   data() {
@@ -65,19 +64,19 @@ export default {
       this.indexConfirmation = ''
       this.error = ''
     },
-    hideModal() {
+    closeModal(isIndexDeleted) {
       this.resetForm()
       this.$bvModal.hide(this.id)
-      this.$emit('modal-close')
+      this.$emit('modal-close', { isIndexDeleted })
     },
     async tryDeleteIndex() {
-      if (!this.index.trim()) {
+      if (this.indexConfirmation !== this.index.name) {
         return
       }
 
       try {
         await this.$store.direct.dispatch.index.deleteIndex(this.index)
-        this.hideModal()
+        this.closeModal(true)
       } catch (err) {
         this.error = err.message
       }

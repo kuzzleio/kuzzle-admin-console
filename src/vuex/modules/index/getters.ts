@@ -1,13 +1,9 @@
 import { IndexState } from './types'
 
-export const indexCollections = state => index => {
-  return state.indexes[index] || { realtime: [], stored: [] }
+export const index = state => (indexName: string) => {
+  return state.indexes.find(el => el.name === indexName)
 }
 
-export const indexes = (state: IndexState) =>
-  Object.keys(state.indexes)
+export const indexes = (state: IndexState) => state.indexes
 
 export const loadingIndexes = (state: IndexState) => state.loadingIndexes
-
-export const loadingCollections = (state: IndexState) =>
-  state.loadingCollections

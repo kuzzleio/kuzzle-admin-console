@@ -63,7 +63,7 @@
 
 <script>
 import IndexBranch from './IndexBranch'
-import { filterIndexesByKeyword } from '../../../services/data'
+import { filterIndexesByKeyword } from '../../../services/indexHelpers'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -95,11 +95,11 @@ export default {
         ? this.$store.state.index.indexesAndCollections
         : {}
     },
-    isLoading() {
-      return (
-        this.$store.direct.getters.index.loadingIndexes ||
-        this.$store.direct.getters.index.loadingCollections
-      )
+    isLoadingIndexes() {
+      return this.$store.direct.getters.index.loadingIndexes
+    },
+    indexes() {
+      return this.$store.direct.getters.index.indexes
     }
   }
 }

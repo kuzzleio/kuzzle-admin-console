@@ -1,10 +1,10 @@
 <template>
   <Multipane class="DataLayout Custom-resizer" layout="vertical">
     <div class="DataLayout-sidebarWrapper" data-cy="DataLayout-sidebarWrapper">
-      <treeview
+      <!-- <treeview
         :index="$route.params.index"
         :collection="$route.params.collection"
-      />
+      /> -->
     </div>
     <MultipaneResizer data-cy="sidebarResizer" />
     <div class="DataLayout-contentWrapper">
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import Treeview from './Leftnav/Treeview'
+// import Treeview from './Leftnav/Treeview'
 import MainSpinner from '../Common/MainSpinner'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 
@@ -25,7 +25,7 @@ export default {
   name: 'DataLayout',
   components: {
     MainSpinner,
-    Treeview,
+    // Treeview,
     Multipane,
     MultipaneResizer
   },
@@ -35,12 +35,12 @@ export default {
     }
   },
   methods: {
-    async loadStuff() {
-      await this.$store.direct.dispatch.index.listIndexesAndCollections()
+    async loadIndexes() {
+      await this.$store.direct.dispatch.index.listIndexes()
     }
   },
   mounted() {
-    this.loadStuff()
+    this.loadIndexes()
   }
 }
 </script>

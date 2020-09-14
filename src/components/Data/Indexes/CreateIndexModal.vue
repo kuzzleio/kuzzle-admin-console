@@ -116,9 +116,9 @@ export default {
       this.error = ''
     },
     async hideModal() {
-      await this.$store.direct.dispatch.index.listIndexes()
       this.resetForm()
       this.$bvModal.hide(this.id)
+      this.$emit('modal-close')
     },
     async tryCreateIndex() {
       this.$v.$touch()
@@ -128,7 +128,6 @@ export default {
 
       try {
         await this.$store.direct.dispatch.index.createIndex(this.index)
-        await this.$store.direct.dispatch.index.listIndexes()
         this.hideModal()
       } catch (err) {
         this.error = err.message
