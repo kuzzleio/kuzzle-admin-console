@@ -24,7 +24,7 @@
           >
             <b-col xl="11">
               <b-row align-v="center" align-h="center">
-                <b-col cols="11">
+                <b-col cols="10" class="mt-1">
                   <b-row align-v="center" align-h="center">
                     <b-col class="text-center mb-1" xl="1">
                       <span
@@ -120,11 +120,12 @@
                     </b-col>
                   </b-row>
                 </b-col>
-                <b-col sm="1">
-                  <i
-                    class="fa fa-times pointer"
+                <b-col sm="2" class="text-center">
+                  <b-button
                     @click="removeAndBasicFilter(groupIndex, filterIndex)"
-                  />
+                  >
+                    <i class="fa fa-times pointer" />
+                  </b-button>
                 </b-col>
               </b-row>
             </b-col>
