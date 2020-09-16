@@ -27,7 +27,7 @@
 
     <list-not-allowed v-if="!canSearchCollection(index)" />
     <div class="CollectionList-content" v-else>
-      <template v-if="loading">
+      <template v-if="index.loading">
         <main-spinner />
       </template>
       <template v-else>
@@ -314,19 +314,8 @@ export default {
     bulkDeleteEnabled() {
       return this.selectedCollections.length > 0
     },
-    indexExists() {
-      return !!this.$store.state.index.indexesAndCollections[this.index]
-    },
-    loading() {
-      if (
-        this.$store.state.index.indexesAndCollections.loadingIndexes === true
-      ) {
-        return true
-      }
-      if (!this.indexExists) {
-        return false
-      }
-      return this.$store.state.index.indexesAndCollections[this.index].loading
+    indexTest() {
+      return this.$store.direct.getters.index.getOneByName(this.index)
     },
     deletionConfirmed() {
       return (

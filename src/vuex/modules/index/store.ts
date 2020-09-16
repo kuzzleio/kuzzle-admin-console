@@ -13,6 +13,7 @@ import {
 } from './types'
 import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
+import _ from 'lodash'
 
 const state: IndexState = {
   indexes: [],
@@ -53,7 +54,11 @@ const mutations = createMutations<IndexState>()({
     state.indexes.push(index)
   },
   removeIndex(state, index: Index) {
-    state.indexes = state.indexes.filter(el => el.name !== index.name)
+    Vue.delete(state.indexes, getIndexPosition(state.indexes, index.name))
+  },
+  removeIndexes(state, indexes: Index[]) {
+    const keepedIndexes = _.difference(state.indexes, indexes)
+    Vue.set(state, 'indexes', keepedIndexes)
   },
   removeCollection(state, { index, collection }: IndexCollectionPayload): void {
     state.indexes[getIndexPosition(state.indexes, index.name)].removeCollection(
@@ -71,12 +76,19 @@ const actions = createActions({
 
     commit.addIndex(index)
   },
-  async deleteIndex(context, index) {
+  async deleteIndex(context, index: Index) {
     const { commit, rootGetters } = indexActionContext(context)
 
     await rootGetters.kuzzle.$kuzzle.index.delete(index.name)
 
     commit.removeIndex(index)
+  },
+  async bulkDeleteIndexes(context, indexes: Index[]) {
+    const { commit, rootGetters } = indexActionContext(context)
+    const indexesNames = indexes.map(el => el.name)
+
+    await rootGetters.kuzzle.$kuzzle.index.mDelete(indexesNames)
+    commit.removeIndexes(indexes)
   },
   async listIndexes(context) {
     const { commit, rootGetters } = indexActionContext(context)

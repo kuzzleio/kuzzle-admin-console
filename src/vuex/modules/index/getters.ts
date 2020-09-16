@@ -1,6 +1,6 @@
 import { IndexState } from './types'
 
-export const index = state => (indexName: string) => {
+export const getOneByName = state => (indexName: string) => {
   return state.indexes.find(el => el.name === indexName)
 }
 

@@ -49,7 +49,7 @@
                 <b-button
                   variant="outline-danger"
                   :disabled="!bulkDeleteEnabled"
-                  @click="deleteIndexes"
+                  @click="openBulkDeleteModal"
                 >
                   <i class="fa fa-minus-circle left" />
                   Delete
@@ -161,13 +161,18 @@
       </template>
     </template>
     <CreateIndexModal
-      :id="createIndexModalId"
-      @modal-close="onCreateModalClose"
+      :modalId="createIndexModalId"
+      @create-successful="onCreateModalSuccess"
     />
     <DeleteIndexModal
-      :id="deleteIndexModalId"
       :index="indexToDelete"
-      @modal-close="onDeleteModalClose"
+      :modalId="deleteIndexModalId"
+      @delete-successful="onDeleteModalSuccess"
+    />
+    <BulkDeleteIndexesModal
+      :indexes="selectedIndexes"
+      :modalId="bulkDeleteIndexesModalId"
+      @delete-successful="onDeleteModalSuccess"
     />
   </b-container>
 </template>
@@ -176,6 +181,7 @@
 import Headline from '../../Materialize/Headline'
 import CreateIndexModal from './CreateIndexModal'
 import DeleteIndexModal from './DeleteIndexModal'
+import BulkDeleteIndexesModal from './BulkDeleteIndexesModal'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import AutoFocusInput from '../../Common/AutoFocusInput'
 import { mapGetters } from 'vuex'
@@ -186,6 +192,7 @@ export default {
     Headline,
     CreateIndexModal,
     DeleteIndexModal,
+    BulkDeleteIndexesModal,
     ListNotAllowed,
     AutoFocusInput
   },
@@ -193,6 +200,7 @@ export default {
     return {
       createIndexModalId: 'createIndexModal',
       deleteIndexModalId: 'deleteIndexModal',
+      bulkDeleteIndexesModalId: 'bulkDeleteIndexesModal',
       filter: '',
       indexToDelete: null,
       tableFields: [
@@ -248,19 +256,20 @@ export default {
     openCreateModal() {
       this.$bvModal.show(this.createIndexModalId)
     },
-    async onDeleteModalClose() {
-      this.selectedIndexes = this.selectedIndexes.slice(1)
-
-      if (this.bulkDeleteEnabled) {
-        this.deleteIndexes()
-      } else {
-        await this.listIndexes()
-      }
+    openDeleteModal(index) {
+      this.indexToDelete = index
+      this.$bvModal.show(this.deleteIndexModalId)
     },
-    async onCreateModalClose() {
-      await this.listIndexes()
+    openBulkDeleteModal() {
+      this.$bvModal.show(this.bulkDeleteIndexesModalId)
     },
-    async listIndexes() {
+    async onDeleteModalSuccess() {
+      await this.refreshIndexes()
+    },
+    async onCreateModalSuccess() {
+      await this.refreshIndexes()
+    },
+    async refreshIndexes() {
       try {
         await this.$store.direct.dispatch.index.listIndexes()
       } catch (err) {
@@ -274,11 +283,6 @@ export default {
             appendToast: true
           }
         )
-      }
-    },
-    deleteIndexes() {
-      if (this.bulkDeleteEnabled) {
-        this.openDeleteModal(this.selectedIndexes[0])
       }
     },
     onToggleAllClicked() {
@@ -295,18 +299,18 @@ export default {
         : false
     },
     onCheckboxClick(index) {
-      let indexPosition = this.selectedIndexes.findIndex(
+      const indexAlreadySelected = this.selectedIndexes.find(
         el => el.name === index.name
       )
-      if (indexPosition === -1) {
+
+      if (!indexAlreadySelected) {
         this.selectedIndexes.push(index)
         return
       }
-      this.selectedIndexes.splice(indexPosition, 1)
-    },
-    openDeleteModal(index) {
-      this.indexToDelete = index
-      this.$bvModal.show(this.deleteIndexModalId)
+
+      this.selectedIndexes = this.selectedIndexes.filter(
+        el => el.name !== index.name
+      )
     },
     navigateToIndex() {
       const index = this.filteredIndexes[0]

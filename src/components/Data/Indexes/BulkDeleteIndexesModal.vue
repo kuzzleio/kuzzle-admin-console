@@ -7,10 +7,7 @@
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      <template>
-        Index
-        <strong>{{ truncateName(index.name) }}</strong> deletion</template
-      >
+      Bulk delete indexes
     </template>
 
     <template v-slot:modal-footer>
@@ -28,7 +25,7 @@
     </template>
     <form ref="form" v-on:submit.prevent="performDelete()">
       <b-form-group
-        label="Index name confirmation"
+        label="Type 'DELETE' to confirm the deletion of the selected indexes"
         label-for="inputConfirmation"
       >
         <b-form-input
@@ -45,17 +42,17 @@
 </template>
 
 <script>
-import { truncateName } from '@/utils'
+const BULK_DELETE_CONFIRMATION = 'DELETE'
 
 export default {
-  name: 'deleteIndexModal',
+  name: 'bulkDeleteIndexModal',
   props: {
     modalId: {
       type: String,
       required: true
     },
-    index: {
-      type: Object,
+    indexes: {
+      type: Array,
       required: false
     }
   },
@@ -67,11 +64,10 @@ export default {
   },
   computed: {
     isConfirmationValid() {
-      return this.confirmation === this.index.name
+      return this.confirmation === BULK_DELETE_CONFIRMATION
     }
   },
   methods: {
-    truncateName,
     resetForm() {
       this.confirmation = ''
       this.error = ''
@@ -93,7 +89,7 @@ export default {
       }
 
       try {
-        await this.$store.direct.dispatch.index.deleteIndex(this.index)
+        await this.$store.direct.dispatch.index.bulkDeleteIndexes(this.indexes)
         this.onDeleteSuccess()
       } catch (err) {
         this.error = err.message

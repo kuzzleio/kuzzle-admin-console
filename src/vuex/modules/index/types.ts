@@ -25,6 +25,7 @@ export class Index {
         'Unable to perform operations, the collection list is not yet initialized'
       )
     }
+
     this.collections.push(collection)
   }
 
@@ -46,6 +47,7 @@ export class Index {
         'Unable to perform operations, the collection list is not yet initialized'
       )
     }
+
     return this.collections.find(el => el.name === collectionName)
       ? true
       : false

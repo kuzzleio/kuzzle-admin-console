@@ -1,6 +1,6 @@
 import { Index } from '@/vuex/modules/index/types'
 
-export const filterIndexesByKeyword = (indexTree, word) => {
+export const filterIndexesByKeyword = (indexTree, word: string) => {
   const indexes = Object.keys(indexTree)
   if (!word || word === '') {
     return indexes
@@ -35,6 +35,9 @@ export const filterIndexesByKeyword = (indexTree, word) => {
   })
 }
 
-export const getIndexPosition = (indexes :Index[], indexName :string) :number => {
+export const getIndexPosition = (
+  indexes: Index[],
+  indexName: string
+): number => {
   return indexes.findIndex(el => el.name === indexName)
 }

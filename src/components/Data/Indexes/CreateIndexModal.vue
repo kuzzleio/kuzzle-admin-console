@@ -4,12 +4,11 @@
     ref="createIndexModal"
     size="lg"
     title="Index creation"
-    :id="id"
+    :id="modalId"
     @hide="resetForm"
-    @close="hideModal"
   >
     <template v-slot:modal-footer>
-      <b-button variant="secondary" @click="hideModal">
+      <b-button variant="secondary" @click="onCancel">
         Cancel
       </b-button>
       <b-button
@@ -84,7 +83,7 @@ export default {
   mixins: [validationMixin],
   name: 'CreateIndexModal',
   props: {
-    id: {
+    modalId: {
       type: String,
       required: true
     }
@@ -112,13 +111,18 @@ export default {
       return $dirty ? !$error : null
     },
     resetForm() {
+      this.$v.$reset()
       this.index = ''
       this.error = ''
     },
-    async hideModal() {
+    async onCreateSuccess() {
       this.resetForm()
-      this.$bvModal.hide(this.id)
-      this.$emit('modal-close')
+      this.$bvModal.hide(this.modalId)
+      this.$emit('create-successful')
+    },
+    async onCancel() {
+      this.resetForm()
+      this.$bvModal.hide(this.modalId)
     },
     async tryCreateIndex() {
       this.$v.$touch()
@@ -128,7 +132,7 @@ export default {
 
       try {
         await this.$store.direct.dispatch.index.createIndex(this.index)
-        this.hideModal()
+        this.onCreateSuccess()
       } catch (err) {
         this.error = err.message
       }
