@@ -743,7 +743,7 @@ describe('Search', function() {
       .should('be.gt', 100)
   })
 
-  it.only('should be able to toggle fullscreen filters', () => {
+  it('should be able to toggle fullscreen filters', () => {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
