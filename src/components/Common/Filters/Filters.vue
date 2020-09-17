@@ -60,12 +60,14 @@
               v-if="!isFullscreen"
               class="Filters-headerBtn ml-3 fas fa-expand-arrows-alt"
               data-cy="Filters-fullscreen"
+              title="Toggle fullscreen"
               @click="toggleFullscreen"
             ></i>
             <i
               v-else
               class="Filters-headerBtn ml-3 fas fa-compress-arrows-alt"
               data-cy="Filters-fullscreen"
+              title="Toggle fullscreen"
               @click="toggleFullscreen"
             ></i>
             <i
