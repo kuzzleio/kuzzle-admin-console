@@ -378,14 +378,13 @@ describe('Search', function() {
       .type('{selectall}{backspace}', { delay: 200, force: true })
       .type(
         `{
-        "query": {
-        "bool": {
-        "must": {
-        "match_phrase_prefix": {
-        "job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
-        "sort": {
-        "lastName": "desc"
-        }`,
+"query": {
+"bool": {
+"must": {
+"match_phrase_prefix": {
+"job": "Blockchain"{downarrow}{downarrow}{downarrow}{downarrow},
+"sort": {
+"lastName": "desc"`,
         {
           force: true
         }
@@ -744,7 +743,7 @@ describe('Search', function() {
       .should('be.gt', 100)
   })
 
-  it('should be able to toggle fullscreen filters', () => {
+  it.only('should be able to toggle fullscreen filters', () => {
     cy.request(
       'POST',
       `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
@@ -771,16 +770,16 @@ describe('Search', function() {
     cy.get('[data-cy=Filters-rawTab]').click()
     cy.get('.RawFilter').should('be.visible')
 
-    cy.get('[data-cy=Filters-fullscreen]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
     cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
 
-    cy.get('[data-cy=Filters-fullscreen]').click()
-    cy.get('[data-cy=Filters-close]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy=Filters-close]').click({ force: true })
 
     cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
 
     cy.get('[data-cy=QuickFilter-optionBtn]').click()
-    cy.get('[data-cy=Filters-fullscreen]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
     cy.get('[data-cy=RawFilter-submitBtn]').click()
     cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
   })
