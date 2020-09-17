@@ -1,10 +1,11 @@
 <template>
   <b-card
+    :class="{ 'full-screen': isFullscreen && advancedFiltersVisible }"
+    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
+    :no-body="!advancedFiltersVisible"
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
     "
-    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
-    :no-body="!advancedFiltersVisible"
   >
     <template v-slot:header>
       <b-nav card-header tabs>
@@ -54,11 +55,25 @@
             @click="complexFiltersSelectedTab = 'favorite'"
             ><i class="fas fa-star"></i>&nbsp;Saved</b-nav-item
           >
-          <i
-            data-cy="Filters-close"
-            class="Filters-btnClose fa fa-times close"
-            @click="advancedFiltersVisible = false"
-          />
+          <div class="Filters-headerActions">
+            <i
+              v-if="!isFullscreen"
+              class="Filters-headerBtn ml-3 fas fa-expand-arrows-alt"
+              data-cy="Filters-fullscreen"
+              @click="toggleFullscreen"
+            ></i>
+            <i
+              v-else
+              class="Filters-headerBtn ml-3 fas fa-compress-arrows-alt"
+              data-cy="Filters-fullscreen"
+              @click="toggleFullscreen"
+            ></i>
+            <i
+              data-cy="Filters-close"
+              class="Filters-headerBtn ml-3 fas fa-times-circle"
+              @click="onCloseClicked"
+            />
+          </div>
         </template>
       </b-nav>
     </template>
@@ -108,17 +123,18 @@
 </template>
 
 <style lang="scss" scoped>
-.Filters-btnClose {
-  cursor: pointer;
-  color: grey;
+.Filters-headerActions {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 17px;
+  right: 17px;
+}
+.Filters-headerBtn {
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.5;
 
   &:hover {
-    color: #555;
-    background: #eee;
-    border-radius: 3px;
+    opacity: 0.9;
   }
 }
 .Filters-advanced {
@@ -220,6 +236,7 @@ export default {
     return {
       advancedFiltersVisible: false,
       complexFiltersSelectedTab: ACTIVE_BASIC,
+      isFullscreen: false,
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
@@ -312,6 +329,13 @@ export default {
     },
     onEnterPressed() {
       this.$emit('enter-pressed')
+    },
+    toggleFullscreen() {
+      this.isFullscreen = !this.isFullscreen
+    },
+    onCloseClicked() {
+      this.advancedFiltersVisible = false
+      this.isFullscreen = false
     }
   }
 }
