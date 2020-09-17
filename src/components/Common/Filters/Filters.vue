@@ -1,5 +1,6 @@
 <template>
   <b-card
+    data-cy="Filters"
     :class="{ 'full-screen': isFullscreen && advancedFiltersVisible }"
     :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
     :no-body="!advancedFiltersVisible"
@@ -73,7 +74,7 @@
             <i
               data-cy="Filters-close"
               class="Filters-headerBtn ml-3 fas fa-times-circle"
-              @click="onCloseClicked"
+              @click="close"
             />
           </div>
         </template>
@@ -300,7 +301,7 @@ export default {
       this.onFiltersUpdated(newFilter, loadedFromHistory)
     },
     onRawFilterUpdated(filter, loadedFromHistory) {
-      this.advancedFiltersVisible = false
+      this.close()
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
@@ -318,7 +319,7 @@ export default {
       )
     },
     onReset() {
-      this.advancedFiltersVisible = false
+      this.close()
       this.$emit('reset', new Filter())
     },
     setObjectTabActive(tab) {
@@ -326,7 +327,7 @@ export default {
       this.refreshace = !this.refreshace
     },
     onFiltersUpdated(newFilters, loadedFromHistory) {
-      this.advancedFiltersVisible = false
+      this.close()
       this.$emit('filters-updated', newFilters, loadedFromHistory)
     },
     onEnterPressed() {
@@ -335,7 +336,7 @@ export default {
     toggleFullscreen() {
       this.isFullscreen = !this.isFullscreen
     },
-    onCloseClicked() {
+    close() {
       this.advancedFiltersVisible = false
       this.isFullscreen = false
     }
