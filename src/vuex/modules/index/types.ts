@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 export class Index {
   private _name: string
   loading = false
@@ -11,12 +13,19 @@ export class Index {
     return this._name
   }
 
-  get CollectionsCount(): number | undefined {
+  get collectionsCount(): number | undefined {
     return this.collections?.length
   }
 
   public initCollections(collections: Collection[]) {
-    this.collections = collections
+    if (!this.collections) {
+      this.collections = collections
+      return
+    }
+
+    const realtimeCollections = this.collections.filter(el => el.isRealtime)
+
+    this.collections = _.union(this.collections, realtimeCollections)
   }
 
   public addCollection(collection: Collection) {
@@ -41,6 +50,16 @@ export class Index {
     )
   }
 
+  public getOneCollection(collectionName: string) {
+    if (!this.collections) {
+      throw new Error(
+        'Unable to perform operations, the collection list is not yet initialized'
+      )
+    }
+
+    return this.collections.find(el => el.name === collectionName)
+  }
+
   public doesCollectionExist(collectionName: string): boolean {
     if (!this.collections) {
       throw new Error(
@@ -58,7 +77,7 @@ export class Collection {
   private _name: string
   private _type: CollectionType
   mapping?: object
-  count?: number
+  dynamic?: string
 
   constructor(name: string, type: CollectionType) {
     this._name = name
@@ -104,6 +123,14 @@ export interface IndexLoadingCollectionsPayload {
 }
 
 export interface CreateCollectionPayload {
+  index: Index
+  name: string
+  isRealtime: boolean
+  mapping: object
+  dynamic: string
+}
+
+export interface UpdateCollectionPayload {
   index: Index
   name: string
   isRealtime: boolean

@@ -106,7 +106,7 @@
             />
           </template>
           <template v-slot:cell(collectionCount)="row">
-            <span>{{ row.item.collectionCount || '--' }}</span>
+            <span>{{ row.item.collectionsCount || '--' }}</span>
           </template>
           <template v-slot:cell(icon)>
             <i class="fa fa-2x fa-database mr-2"></i>
@@ -117,7 +117,7 @@
               :title="row.item.name"
               :to="{
                 name: 'Collections',
-                params: { index: row.item.name }
+                params: { indexName: row.item.name }
               }"
             >
               {{ row.item.name }}

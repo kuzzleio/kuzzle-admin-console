@@ -9,11 +9,13 @@ import {
   IndexCollectionPayload,
   IndexCollectionsPayload,
   IndexLoadingCollectionsPayload,
-  CreateCollectionPayload
+  CreateCollectionPayload,
+  UpdateCollectionPayload
 } from './types'
 import { createMutations, createModule, createActions } from 'direct-vuex'
 import { moduleActionContext } from '@/vuex/store'
 import _ from 'lodash'
+import { mergeMetaAttributes } from '@/services/collectionHelper'
 
 const state: IndexState = {
   indexes: [],
@@ -49,6 +51,17 @@ const mutations = createMutations<IndexState>()({
     state.indexes[getIndexPosition(state.indexes, index.name)].addCollection(
       collection
     )
+  },
+  updateCollection(state, { index, collection }: IndexCollectionPayload) {
+    if (!index.collections) {
+      return
+    }
+
+    const collectionPosition = index.collections.findIndex(
+      el => el.name === collection.name
+    )
+
+    Vue.set(index.collections, collectionPosition, collection)
   },
   addIndex(state, index: Index) {
     state.indexes.push(index)
@@ -115,7 +128,7 @@ const actions = createActions({
 
     const result = await rootGetters.kuzzle.$kuzzle.collection.list(index.name)
 
-    const collections = result.collections.array.map(el => {
+    const collections = result.collections.map(el => {
       const collectionType =
         el.type === CollectionType.STORED
           ? CollectionType.STORED
@@ -125,7 +138,7 @@ const actions = createActions({
     })
 
     commit.setCollections({
-      index: index.name,
+      index,
       collections
     })
 
@@ -145,40 +158,113 @@ const actions = createActions({
       throw new Error(`Collection "${name}" already exist`)
     }
 
-    commit.setLoadingCollectionsForIndex({ index, loading: true })
+    commit.setLoadingCollections({ index, loading: true })
+
+    const collectionType = isRealtime
+      ? CollectionType.REALTIME
+      : CollectionType.STORED
+
+    let collection = new Collection(name, collectionType)
+
+    if (isRealtime) {
+      commit.addCollection({ index, collection })
+      commit.setLoadingCollections({ index, loading: false })
+      return
+    }
+
+    collection.mapping = mapping
+    collection.dynamic = dynamic
+
+    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, {
+      dynamic,
+      properties: {
+        ...mapping
+      }
+    })
+
+    commit.addCollection({ index, collection })
+    commit.setLoadingCollections({ index, loading: false })
+  },
+  async updateCollection(
+    context,
+    { index, name, isRealtime, mapping, dynamic }: UpdateCollectionPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
+
+    if (!index.doesCollectionExist(name)) {
+      throw new Error(`Collection "${name}" doesn't exist`)
+    }
+
+    if (isRealtime) {
+      return Promise.resolve()
+    }
 
     const collectionType = isRealtime
       ? CollectionType.STORED
       : CollectionType.REALTIME
-    let collection = new Collection(name, collectionType)
-    collection.mapping = mapping
 
-    await rootGetters.kuzzle.$kuzzle.collection.create(index.name, name, {
-      properties: {
-        ...mapping
-      },
-      dynamic
+    let updatedCollection = new Collection(name, collectionType)
+
+    updatedCollection.mapping = mapping
+    updatedCollection.dynamic = dynamic
+
+    await rootGetters.kuzzle.$kuzzle.query({
+      controller: 'collection',
+      action: 'updateMapping',
+      collection: name,
+      index: index.name,
+      body: {
+        dynamic,
+        properties: {
+          ...mapping
+        }
+      }
     })
 
-    commit.addCollection({ index, collection })
-    commit.setLoadingCollectionsForIndex({ index, loading: false })
+    commit.updateCollection({ index, collection: updatedCollection })
   },
   async deleteCollection(
     context,
     { index, collection }: IndexCollectionPayload
   ) {
-    const { commit, rootGetters } = indexActionContext(context)
-    commit.setLoadingCollectionsForIndex({ index, loading: true })
-
-    if (index.doesCollectionExist(collection.name)) {
-      await rootGetters.kuzzle.$kuzzle.collection.delete(
-        index.name,
-        collection.name
-      )
-      commit.removeCollection(collection)
+    if (!index.doesCollectionExist(collection.name)) {
+      throw new Error(`Collection "${name}" doesn't exist`)
     }
 
-    commit.setLoadingCollectionsForIndex({ index, loading: false })
+    const { commit, rootGetters } = indexActionContext(context)
+
+    commit.setLoadingCollections({ index, loading: true })
+
+    await rootGetters.kuzzle.$kuzzle.collection.delete(
+      index.name,
+      collection.name
+    )
+
+    commit.removeCollection(collection)
+    commit.setLoadingCollections({ index, loading: false })
+  },
+  async fetchCollectionMapping(
+    context,
+    { index, collection }: IndexCollectionPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
+
+    if (!index.doesCollectionExist(collection.name)) {
+      throw new Error(`Collection "${name}" doesn't exist`)
+    }
+
+    commit.setLoadingCollections({ index, loading: true })
+
+    const kuzzleMapping = await rootGetters.kuzzle.$kuzzle.collection.getMapping(
+      index.name,
+      collection.name
+    )
+
+    collection.mapping = kuzzleMapping.properties
+    collection.dynamic = kuzzleMapping.dynamic
+
+    commit.updateCollection({ index, collection: collection })
+    commit.setLoadingCollections({ index, loading: false })
   }
 })
 

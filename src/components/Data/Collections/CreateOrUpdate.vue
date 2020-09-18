@@ -13,7 +13,7 @@
         <div class="text-right">
           <b-button
             class="mr-2"
-            :to="{ name: 'Collections', params: { index } }"
+            :to="{ name: 'Collections', params: { indexName: index } }"
             >Cancel</b-button
           >
           <b-button

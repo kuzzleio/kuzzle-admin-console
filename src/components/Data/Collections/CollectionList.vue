@@ -1,23 +1,24 @@
 <template>
-  <b-container class="CollectionList">
+  <data-not-found v-if="!index" class="mt-3"></data-not-found>
+  <b-container class="CollectionList" v-else>
     <headline>
       <b-row>
         <b-col sm="9" class="text-truncate">
           <i class="fa fa-database text-secondary"></i> &nbsp;
-          <span class="code">{{ index }}</span>
+          <span class="code">{{ indexName }}</span>
         </b-col>
         <b-col class="text-right">
           <b-button
             class="align-middle"
             data-cy="CollectionList-create"
             variant="primary"
-            :disabled="!canCreateCollection(index) || !indexExists"
+            :disabled="!canCreateCollection(indexName) || !index"
             :title="
-              !canCreateCollection(index)
-                ? `Your rights disallow you to create collections on index ${index}`
+              !canCreateCollection(indexName)
+                ? `Your rights disallow you to create collections on index ${indexName}`
                 : ''
             "
-            :to="{ name: 'CreateCollection', params: { index: index } }"
+            :to="{ name: 'CreateCollection', params: { indexName } }"
           >
             <i class="fa fa-plus"></i> Create a collection
           </b-button>
@@ -25,9 +26,9 @@
       </b-row>
     </headline>
 
-    <list-not-allowed v-if="!canSearchCollection(index)" />
+    <list-not-allowed v-if="!canSearchCollection(indexName)" />
     <div class="CollectionList-content" v-else>
-      <template v-if="index.loading">
+      <template v-if="loading">
         <main-spinner />
       </template>
       <template v-else>
@@ -87,10 +88,8 @@
             </b-row>
           </b-col>
         </b-row>
-        <data-not-found v-if="!indexExists" class="mt-3"></data-not-found>
 
         <b-table
-          v-else
           striped
           outlined
           show-empty
@@ -105,7 +104,7 @@
               This index has no collections.
             </h4>
             <p
-              v-if="canCreateCollection(index)"
+              v-if="canCreateCollection(index.name)"
               class="text-secondary text-center"
             >
               You can create the collection by hitting the button above.
@@ -126,34 +125,37 @@
               @change="onCheckboxClick(row.item.name)"
             />
           </template>
-          <template v-slot:cell(type)="type">
+          <template v-slot:cell(type)="row">
             <i
               class="fa fa-2x"
               :class="{
-                'fa-bolt ml-2': type.value === 'realtime',
-                'fa-th-list': type.value === 'stored'
+                'fa-bolt ml-2': row.item.type === 'realtime',
+                'fa-th-list': row.item.type === 'stored'
               }"
-              :title="type.value === 'realtime' ? 'Realtime' : 'Stored'"
+              :title="row.item.type === 'realtime' ? 'Realtime' : 'Stored'"
             ></i>
           </template>
-          <template v-slot:cell(name)="name">
+          <template v-slot:cell(name)="row">
             <b-link
               class="code"
-              :data-cy="`CollectionList-name--${name.value}`"
-              :title="name.value"
+              :data-cy="`CollectionList-name--${row.item.name}`"
+              :title="row.item.name"
               :to="
-                name.item.type === 'realtime'
+                row.item.type === 'realtime'
                   ? {
                       name: 'WatchCollection',
-                      params: { index, collection: name.value }
+                      params: { index: indexName, collection: row.item.name }
                     }
                   : {
                       name: 'DocumentList',
-                      params: { index, collection: name.value }
+                      params: { index: indexName, collection: row.item.name }
                     }
               "
-              >{{ truncateName(name.value) }}</b-link
+              >{{ truncateName(row.item.name) }}</b-link
             >
+          </template>
+          <template v-slot:cell(count)="row">
+            {{ row.item.count }}
           </template>
           <template v-slot:cell(actions)="row">
             <b-button
@@ -164,11 +166,11 @@
                 row.item.type === 'realtime'
                   ? {
                       name: 'WatchCollection',
-                      params: { index, collection: row.item.name }
+                      params: { index: indexName, collection: row.item.name }
                     }
                   : {
                       name: 'DocumentList',
-                      params: { index, collection: row.item.name }
+                      params: { index: indexName, collection: row.item.name }
                     }
               "
               ><i class="fa fa-eye"></i
@@ -179,14 +181,13 @@
               title="Edit collection"
               :data-cy="`CollectionList-edit--${row.item.name}`"
               :disabled="
-                row.item.type !== 'stored' ||
-                  !canEditCollection(index, row.item.name)
+                row.item.type !== 'stored' || !canEditCollection(row.item.name)
               "
               :to="
-                canEditCollection(index, row.item.name)
+                canEditCollection(row.item.name)
                   ? {
                       name: 'EditCollection',
-                      params: { collection: row.item.name, index }
+                      params: { index: indexName, collection: row.item.name }
                     }
                   : ''
               "
@@ -208,71 +209,8 @@
         </b-table>
       </template>
     </div>
-
-    <b-modal
-      size="lg"
-      id="deleteCollectionPrompt"
-      title="Are you sure you want to delete this collection?"
-      @hidden="resetDeletePrompt"
-    >
-      <b-form-group
-        description="This operation is NOT reversible"
-        label-for="deleteCollectionPromptField"
-        :state="deletionConfirmed"
-        :invalid-feedback="deletionPromptFeedback"
-      >
-        <template v-slot:label>
-          Please type the name of the collection (<span class="code">{{
-            collectionToDelete
-          }}</span
-          >) below to confirm the deletion:
-        </template>
-        <b-form-input
-          id="deleteCollectionPromptField"
-          data-cy="DeleteCollectionPrompt-confirm"
-          v-model="deleteConfirmation"
-          @keypress.enter="onDeleteCollectionConfirmed"
-        ></b-form-input>
-      </b-form-group>
-      <template v-slot:modal-footer>
-        <b-button @click="$bvModal.hide('deleteCollectionPrompt')"
-          >Cancel</b-button
-        >
-        <b-button
-          v-if="
-            $store.direct.getters.kuzzle.currentEnvironment
-              .backendMajorVersion !== 1
-          "
-          data-cy="DeleteCollectionPrompt-OK"
-          variant="danger"
-          :disabled="!deleteConfirmation"
-          @click="onDeleteCollectionConfirmed"
-          >OK</b-button
-        >
-      </template>
-    </b-modal>
   </b-container>
 </template>
-
-<style lang="scss" rel="stylesheet/scss">
-.CollectionList-type {
-  width: 2em;
-  color: #555;
-}
-.CollectionList-actions {
-  width: 30%;
-}
-.CollectionList-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  a {
-    color: #222;
-    font-weight: 500;
-  }
-}
-</style>
 
 <script>
 import DataNotFound from '../Data404'
@@ -292,7 +230,7 @@ export default {
     AutoFocusInput
   },
   props: {
-    index: String
+    indexName: String
   },
   data() {
     return {
@@ -311,24 +249,17 @@ export default {
       'canCreateCollection',
       'canEditCollection'
     ]),
+    loading() {
+      return this.$store.direct.getters.index.loadingCollections(this.indexName)
+    },
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collections() {
+      return this.index ? this.index.collections : []
+    },
     bulkDeleteEnabled() {
       return this.selectedCollections.length > 0
-    },
-    indexTest() {
-      return this.$store.direct.getters.index.getOneByName(this.index)
-    },
-    deletionConfirmed() {
-      return (
-        this.deleteConfirmation !== '' &&
-        this.deleteConfirmation !== null &&
-        this.deleteConfirmation === this.collectionToDelete
-      )
-    },
-    deletionPromptFeedback() {
-      if (this.deleteConfirmation === '' || this.deletionConfirmed) {
-        return ''
-      }
-      return 'Confirmation is not matching collection name'
     },
     tableFields() {
       return [
@@ -349,49 +280,17 @@ export default {
           class: 'CollectionList-name align-middle'
         },
         {
-          key: 'documents',
-          label: 'Documents',
-          sortable: true,
-          class: 'CollectionList-document align-middle'
-        },
-        {
           class: 'CollectionList-actions align-middle text-right',
           key: 'actions',
           label: ''
         }
       ]
-    },
-    realtimeCollections() {
-      const collections = this.$store.state.index.indexesAndCollections[
-        this.index
-      ]
-        ? this.$store.state.index.indexesAndCollections[this.index].realtime
-        : []
-
-      return collections.map(collection => ({
-        name: collection,
-        documents: 'N/A',
-        type: 'realtime'
-      }))
-    },
-    storedCollections() {
-      const rawStoredCollections = this.rawStoredCollections
-        ? this.rawStoredCollections
-        : this.$store.state.index.indexesAndCollections[this.index].stored
-
-      return rawStoredCollections.map(({ collection, count }) => ({
-        name: collection,
-        documents: count,
-        type: 'stored'
-      }))
-    },
-    collections() {
-      return [...this.realtimeCollections, ...this.storedCollections]
     }
   },
   methods: {
-    onDeleteCollectionClicked(name) {
-      this.collectionToDelete = name
+    truncateName,
+    onDeleteCollectionClicked(collectionName) {
+      this.collectionToDelete = collectionName
       this.$bvModal.show('deleteCollectionPrompt')
     },
     deleteCollections() {
@@ -426,28 +325,13 @@ export default {
       }
       this.selectedCollections.splice(index, 1)
     },
-    resetDeletePrompt() {
-      this.collectionToDelete = ''
-      this.deleteConfirmation = ''
-      this.selectedCollections.shift()
-      this.deleteCollections()
-    },
-    truncateName,
-    async fetchStoredCollections() {
-      const storedCollections = this.$store.state.index.indexesAndCollections[
-        this.index
-      ]
-        ? this.$store.state.index.indexesAndCollections[this.index].stored
-        : []
-
-      const promises = storedCollections.map(collection => {
-        return this.$kuzzle.document
-          .count(this.index, collection)
-          .then(count => ({ collection, count }))
-      })
+    async fetchCollections() {
+      if (!this.index) {
+        return
+      }
 
       try {
-        this.rawStoredCollections = await Promise.all(promises)
+        await this.$store.direct.dispatch.index.fetchCollections(this.index)
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -455,34 +339,6 @@ export default {
           {
             title:
               'Ooops! Something went wrong while counting documents in collections.',
-            variant: 'warning',
-            toaster: 'b-toaster-bottom-right',
-            appendToast: true,
-            dismissible: true,
-            noAutoHide: true
-          }
-        )
-      }
-    },
-    async onDeleteCollectionConfirmed() {
-      if (!this.deleteConfirmation) {
-        return
-      }
-      try {
-        await this.$store.direct.dispatch.index.deleteCollection({
-          index: this.index,
-          collection: this.collectionToDelete
-        })
-
-        this.$bvModal.hide('deleteCollectionPrompt')
-
-        await this.fetchStoredCollections()
-      } catch (error) {
-        this.$log.error(error)
-        this.$bvToast.toast(
-          'The complete error has been printed to the console.',
-          {
-            title: 'Ooops! Something went wrong while deleting the collection.',
             variant: 'warning',
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
@@ -511,16 +367,37 @@ export default {
       this.filteredCollections = filteredCollections
     }
   },
-  async mounted() {
-    await this.fetchStoredCollections()
+  async created() {
+    await this.fetchCollections()
     this.updateFilteredCollections(this.collections)
   },
   watch: {
     index: {
-      handler() {
-        this.fetchStoredCollections()
+      async handler() {
+        await this.fetchCollections()
+        this.updateFilteredCollections(this.collections)
       }
     }
   }
 }
 </script>
+
+<style lang="scss" rel="stylesheet/scss">
+.CollectionList-type {
+  width: 2em;
+  color: #555;
+}
+.CollectionList-actions {
+  width: 30%;
+}
+.CollectionList-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  a {
+    color: #222;
+    font-weight: 500;
+  }
+}
+</style>

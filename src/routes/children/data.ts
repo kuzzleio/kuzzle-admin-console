@@ -8,7 +8,7 @@ export default [
     }
   },
   {
-    path: '/data/:index',
+    path: '/data/:indexName',
     name: 'Collections',
     meta: {
       auth: true
@@ -17,17 +17,17 @@ export default [
       require(['../../components/Data/Collections/CollectionList'], resolve)
     },
     props: route => ({
-      index: route.params.index
+      indexName: route.params.indexName
     })
   },
   {
-    path: '/data/:index/create',
+    path: '/data/:indexName/create',
     name: 'CreateCollection',
     component(resolve) {
       require(['../../components/Data/Collections/Create'], resolve)
     },
     props: route => ({
-      index: route.params.index
+      indexName: route.params.indexName
     })
   },
   {
@@ -48,8 +48,8 @@ export default [
       require(['../../components/Data/Collections/Update'], resolve)
     },
     props: route => ({
-      index: route.params.index,
-      collection: route.params.collection
+      indexName: route.params.index,
+      collectionName: route.params.collection
     })
   },
   {

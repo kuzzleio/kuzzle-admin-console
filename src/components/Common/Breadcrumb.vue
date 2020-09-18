@@ -71,10 +71,10 @@
         <router-link
           :to="{
             name: 'Collections',
-            params: { index: $route.params.index }
+            params: { indexName: $route.params.index }
           }"
         >
-          {{ $route.params.index }}
+          {{ $route.params.indexName }}
         </router-link>
       </li>
 
@@ -143,22 +143,19 @@
 export default {
   name: 'CommonBreadcrumb',
   methods: {
+    index() {
+      return this.$route.params.index
+        ? this.$store.direct.getters.index.getOneIndex(this.$route.params.index)
+        : undefined
+    },
     isCollectionRealtime() {
-      if (
-        !this.$store.direct.state.index.indexesAndCollections[
-          this.$route.params.index
-        ]
-      ) {
+      if (!this.index || this.$route.params.collection) {
         return false
       }
-
-      return (
-        // prettier-ignore
-        this.$store.direct.state.index
-          .indexesAndCollections[this.$route.params.index]
-          .realtime
-          .indexOf(this.$route.params.collection) !== -1
-      )
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.$route.params.collection
+      ).isRealtime
     },
     isRouteActive(routeName) {
       if (Array.isArray(routeName)) {
