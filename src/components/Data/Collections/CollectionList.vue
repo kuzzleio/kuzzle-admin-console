@@ -121,8 +121,8 @@
               type="checkbox"
               unchecked-value="false"
               value="true"
-              :checked="isChecked(row.item.name)"
-              @change="onCheckboxClick(row.item.name)"
+              :checked="isChecked(row.item)"
+              @change="onCheckboxClick(row.item)"
             />
           </template>
           <template v-slot:cell(type)="row">
@@ -202,28 +202,45 @@
               "
               title="Delete collection"
               :data-cy="`CollectionList-delete--${row.item.name}`"
-              @click="onDeleteCollectionClicked(row.item.name)"
+              @click="onDeleteCollectionClicked(row.item)"
               ><i class="fa fa-trash"></i
             ></b-button>
           </template>
         </b-table>
       </template>
     </div>
+    <DeleteCollectionModal
+      :index="index"
+      :collection="collectionToDelete"
+      :modalId="deleteCollectionModalId"
+      @delete-successful="onDeleteModalSuccess"
+    />
+    <BulkDeleteCollectionsModal
+      :index="index"
+      :collections="selectedCollections"
+      :modalId="bulkDeleteCollectionsModalId"
+      @delete-successful="onDeleteModalSuccess"
+    />
   </b-container>
 </template>
 
 <script>
 import DataNotFound from '../Data404'
+import DeleteCollectionModal from './DeleteCollectionModal'
+import BulkDeleteCollectionsModal from './BulkDeleteCollectionsModal'
 import Headline from '../../Materialize/Headline'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import MainSpinner from '../../Common/MainSpinner'
 import AutoFocusInput from '../../Common/AutoFocusInput'
 import { truncateName } from '../../../utils'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'CollectionList',
   components: {
     DataNotFound,
+    DeleteCollectionModal,
+    BulkDeleteCollectionsModal,
     Headline,
     ListNotAllowed,
     MainSpinner,
@@ -234,8 +251,10 @@ export default {
   },
   data() {
     return {
+      deleteCollectionModalId: 'deleteCollectionModal',
+      bulkDeleteCollectionsModalId: 'bulkDeleteCollectionsModal',
       filter: '',
-      collectionToDelete: '',
+      collectionToDelete: null,
       deleteConfirmation: '',
       rawStoredCollections: [],
       filteredCollections: [],
@@ -260,6 +279,12 @@ export default {
     },
     bulkDeleteEnabled() {
       return this.selectedCollections.length > 0
+    },
+    allChecked() {
+      if (!this.selectedCollections || !this.filteredCollections) {
+        return false
+      }
+      return this.selectedCollections.length === this.filteredCollections.length
     },
     tableFields() {
       return [
@@ -289,41 +314,44 @@ export default {
   },
   methods: {
     truncateName,
-    onDeleteCollectionClicked(collectionName) {
-      this.collectionToDelete = collectionName
-      this.$bvModal.show('deleteCollectionPrompt')
+    onDeleteCollectionClicked(collection) {
+      this.collectionToDelete = collection
+      this.$bvModal.show(this.deleteCollectionModalId)
     },
     deleteCollections() {
-      if (this.selectedCollections.length > 0) {
-        this.onDeleteCollectionClicked(this.selectedCollections[0])
-      }
-    },
-    allChecked() {
-      if (!this.selectedCollections || !this.filteredCollections) {
-        return false
-      }
-      return this.selectedCollections.length === this.filteredCollections.length
+      this.$bvModal.show(this.bulkDeleteCollectionsModalId)
     },
     onToggleAllClicked() {
-      if (this.allChecked()) {
+      if (this.allChecked) {
         this.selectedCollections = []
         return
       }
+
       this.selectedCollections = []
-      this.selectedCollections = this.filteredCollections.map(
-        collection => collection.name
+      this.selectedCollections = this.filteredCollections
+    },
+    isChecked(collection) {
+      return this.selectedCollections.find(el => el.name === collection.name)
+        ? true
+        : false
+    },
+    onCheckboxClick(collection) {
+      const collectionAlreadySelected = this.selectedCollections.find(
+        el => el.name === collection.name
       )
-    },
-    isChecked(name) {
-      return this.selectedCollections.indexOf(name) > -1
-    },
-    onCheckboxClick(name) {
-      let index = this.selectedCollections.indexOf(name)
-      if (index === -1) {
-        this.selectedCollections.push(name)
+
+      if (!collectionAlreadySelected) {
+        this.selectedCollections.push(collection)
         return
       }
-      this.selectedCollections.splice(index, 1)
+
+      this.selectedCollections = this.selectedCollections.filter(
+        el => el.name !== collection.name
+      )
+    },
+    async onDeleteModalSuccess() {
+      await this.fetchCollections()
+      this.updateFilteredCollections(this.collections)
     },
     async fetchCollections() {
       if (!this.index) {

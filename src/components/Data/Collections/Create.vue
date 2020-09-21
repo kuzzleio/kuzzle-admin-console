@@ -39,7 +39,6 @@ export default {
         await this.$store.direct.dispatch.index.createCollection({
           index: this.index,
           name: payload.name,
-          isRealtime: payload.realtimeOnly,
           mapping: payload.mapping,
           dynamic: payload.dynamic
         })

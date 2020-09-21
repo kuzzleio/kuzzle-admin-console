@@ -18,14 +18,7 @@ export class Index {
   }
 
   public initCollections(collections: Collection[]) {
-    if (!this.collections) {
-      this.collections = collections
-      return
-    }
-
-    const realtimeCollections = this.collections.filter(el => el.isRealtime)
-
-    this.collections = _.union(this.collections, realtimeCollections)
+    this.collections = collections
   }
 
   public addCollection(collection: Collection) {

@@ -43,9 +43,7 @@ const mutations = createMutations<IndexState>()({
     )
   },
   setCollections(state, { index, collections }: IndexCollectionsPayload) {
-    state.indexes[getIndexPosition(state.indexes, index.name)].initCollections(
-      collections
-    )
+    Vue.set(index, 'collections', collections)
   },
   addCollection(state, { index, collection }: IndexCollectionPayload) {
     state.indexes[getIndexPosition(state.indexes, index.name)].addCollection(
@@ -146,7 +144,7 @@ const actions = createActions({
   },
   async createCollection(
     context,
-    { index, name, isRealtime, mapping, dynamic }: CreateCollectionPayload
+    { index, name, mapping, dynamic }: CreateCollectionPayload
   ) {
     const { commit, rootGetters } = indexActionContext(context)
 
@@ -160,17 +158,7 @@ const actions = createActions({
 
     commit.setLoadingCollections({ index, loading: true })
 
-    const collectionType = isRealtime
-      ? CollectionType.REALTIME
-      : CollectionType.STORED
-
-    let collection = new Collection(name, collectionType)
-
-    if (isRealtime) {
-      commit.addCollection({ index, collection })
-      commit.setLoadingCollections({ index, loading: false })
-      return
-    }
+    let collection = new Collection(name, CollectionType.STORED)
 
     collection.mapping = mapping
     collection.dynamic = dynamic
@@ -228,7 +216,7 @@ const actions = createActions({
     { index, collection }: IndexCollectionPayload
   ) {
     if (!index.doesCollectionExist(collection.name)) {
-      throw new Error(`Collection "${name}" doesn't exist`)
+      throw new Error(`Collection "${collection.name}" doesn't exist`)
     }
 
     const { commit, rootGetters } = indexActionContext(context)
@@ -240,7 +228,26 @@ const actions = createActions({
       collection.name
     )
 
-    commit.removeCollection(collection)
+    commit.removeCollection({ index, collection })
+    commit.setLoadingCollections({ index, loading: false })
+  },
+  async bulkDeleteCollections(
+    context,
+    { index, collections }: IndexCollectionsPayload
+  ) {
+    const { commit, rootGetters } = indexActionContext(context)
+
+    commit.setLoadingCollections({ index, loading: true })
+
+    for (let collection of collections) {
+      await rootGetters.kuzzle.$kuzzle.collection.delete(
+        index.name,
+        collection.name
+      )
+
+      commit.removeCollection({ index, collection })
+    }
+
     commit.setLoadingCollections({ index, loading: false })
   },
   async fetchCollectionMapping(

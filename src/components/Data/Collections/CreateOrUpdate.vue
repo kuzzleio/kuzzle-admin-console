@@ -60,30 +60,7 @@
         />
       </b-form-group>
 
-      <b-form-group
-        id="collection-is-realtime"
-        label="Collection is realtime only"
-        label-cols-sm="3"
-      >
-        <template v-slot:description>
-          <span v-if="collection">This field cannot be updated</span>
-          <span v-else
-            >Check this if you want this collection to be realtime only.
-            Realtime collections are useful to subscribe to realtime messages
-            and not physically stored into Kuzzle, only the Admin Console keeps
-            track of them.</span
-          >
-        </template>
-        <b-form-checkbox
-          data-cy="CollectionCreateOrUpdate-realtimeOnly"
-          id="collection-is-realtime-checkbox"
-          tabindex="1"
-          v-model="realtimeOnlyState"
-          :disabled="!!collection"
-        />
-      </b-form-group>
-
-      <template v-if="!realtimeOnlyState">
+      <template>
         <b-form-group label="Dynamic mapping" label-cols-sm="3">
           <template v-slot:description
             >Set the type of dynamic policy for this collection.
@@ -185,7 +162,6 @@ export default {
     collection: String,
     headline: String,
     submitLabel: { type: String, default: 'OK' },
-    realtimeOnly: Boolean,
     mapping: {
       type: Object,
       default: () => ({})
@@ -196,8 +172,7 @@ export default {
     return {
       dynamicState: this.dynamic || 'false',
       name: this.collection || '',
-      rawMapping: '{}',
-      realtimeOnlyState: this.realtimeOnly || false
+      rawMapping: '{}'
     }
   },
   validations() {
@@ -275,8 +250,7 @@ export default {
       this.$emit('submit', {
         dynamic: this.dynamicState,
         name: this.name,
-        mapping: this.mappingState,
-        realtimeOnly: this.realtimeOnlyState
+        mapping: this.mappingState
       })
     }
   },
@@ -295,12 +269,6 @@ export default {
         } catch (error) {
           this.$log.error(error)
         }
-      }
-    },
-    realtimeOnly: {
-      immediate: true,
-      handler(v) {
-        this.realtimeOnlyState = v
       }
     },
     collection: {
