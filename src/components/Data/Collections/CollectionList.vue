@@ -144,11 +144,17 @@
                 row.item.type === 'realtime'
                   ? {
                       name: 'WatchCollection',
-                      params: { index: indexName, collection: row.item.name }
+                      params: {
+                        indexName: indexName,
+                        collectionName: row.item.name
+                      }
                     }
                   : {
                       name: 'DocumentList',
-                      params: { index: indexName, collection: row.item.name }
+                      params: {
+                        indexName: indexName,
+                        collectionName: row.item.name
+                      }
                     }
               "
               >{{ truncateName(row.item.name) }}</b-link
@@ -166,11 +172,17 @@
                 row.item.type === 'realtime'
                   ? {
                       name: 'WatchCollection',
-                      params: { index: indexName, collection: row.item.name }
+                      params: {
+                        indexName: indexName,
+                        collectionName: row.item.name
+                      }
                     }
                   : {
                       name: 'DocumentList',
-                      params: { index: indexName, collection: row.item.name }
+                      params: {
+                        indexName: indexName,
+                        collectionName: row.item.name
+                      }
                     }
               "
               ><i class="fa fa-eye"></i
@@ -187,7 +199,10 @@
                 canEditCollection(row.item.name)
                   ? {
                       name: 'EditCollection',
-                      params: { index: indexName, collection: row.item.name }
+                      params: {
+                        indexName: indexName,
+                        collectionName: row.item.name
+                      }
                     }
                   : ''
               "

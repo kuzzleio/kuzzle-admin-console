@@ -7,8 +7,8 @@
       <b-row>
         <b-col>
           <headline>
-            <span class="code" :title="collection">{{
-              truncateName(collection, 20)
+            <span class="code" :title="collectionName">{{
+              truncateName(collectionName, 20)
             }}</span>
           </headline>
         </b-col>
@@ -16,29 +16,33 @@
           <b-button
             variant="primary"
             :disabled="
-              indexOrCollectionNotFound || !canCreateDocument(index, collection)
+              indexOrCollectionNotFound ||
+                !canCreateDocument(indexName, collectionName)
             "
-            :to="{ name: 'CreateDocument', params: { index, collection } }"
+            :to="{
+              name: 'CreateDocument',
+              params: { indexName, collectionName }
+            }"
             >Create New Document</b-button
           >
           <collection-dropdown-view
             class="icon-medium icon-black ml-2"
             :active-view="listViewType"
-            :index="index"
-            :collection="collection"
+            :index="indexName"
+            :collection="collectionName"
             @list="onListViewClicked"
             @column="onColumnViewClicked"
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
-            :index="index"
-            :collection="collection"
+            :index="indexName"
+            :collection="collectionName"
             @clear="onCollectionClear"
           />
         </b-col>
       </b-row>
 
-      <list-not-allowed v-if="!canSearchDocument(index, collection)" />
+      <list-not-allowed v-if="!canSearchDocument(indexName, collectionName)" />
       <template v-else>
         <data-not-found
           v-if="indexOrCollectionNotFound"
@@ -50,10 +54,14 @@
               <template v-if="isCollectionEmpty">
                 <realtime-only-empty-state
                   v-if="isRealtimeCollection"
-                  :index="index"
-                  :collection="collection"
+                  :index="indexName"
+                  :collection="collectionName"
                 />
-                <empty-state v-else :index="index" :collection="collection" />
+                <empty-state
+                  v-else
+                  :index="indexName"
+                  :collection="collectionName"
+                />
               </template>
 
               <template v-if="!isCollectionEmpty">
@@ -62,8 +70,8 @@
                   :available-operands="searchFilterOperands"
                   :current-filter="currentFilter"
                   :collection-mapping="collectionMapping"
-                  :index="index"
-                  :collection="collection"
+                  :index="indexName"
+                  :collection="collectionName"
                   @filters-updated="onFiltersUpdated"
                   @reset="onFiltersUpdated"
                   @enter-pressed="navigateToDocument"
@@ -94,9 +102,9 @@
                     <List
                       v-if="listViewType === 'list'"
                       :all-checked="allChecked"
-                      :collection="collection"
+                      :collection="collectionName"
                       :documents="documents"
-                      :index="index"
+                      :index="indexName"
                       :current-page-size="paginationSize"
                       :selected-documents="selectedDocuments"
                       :total-documents="totalDocuments"
@@ -110,8 +118,8 @@
 
                     <Column
                       v-if="listViewType === 'column'"
-                      :index="index"
-                      :collection="collection"
+                      :index="indexName"
+                      :collection="collectionName"
                       :documents="documents"
                       :mapping="collectionMapping"
                       :selected-documents="selectedDocuments"
@@ -212,8 +220,8 @@ export default {
     DataNotFound
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
@@ -244,6 +252,15 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.collectionName
+      )
+    },
     geoDocuments() {
       return this.documents.filter(document => {
         const [lat, lng] = this.getCoordinates(document)
@@ -282,21 +299,7 @@ export default {
       return parseInt(this.currentFilter.size) || 10
     },
     isRealtimeCollection() {
-      if (this.$store.state.index.indexesAndCollections) {
-        if (!this.$store.state.index.indexesAndCollections[this.index]) {
-          return false
-        }
-        if (
-          !this.$store.state.index.indexesAndCollections[this.index].realtime
-        ) {
-          return false
-        }
-        return (
-          // prettier-ignore
-          this.$store.state.index.indexesAndCollections[this.index].realtime.indexOf(this.collection) !== -1
-        )
-      }
-      return false
+      return this.collection.isRealtime()
     }
   },
   watch: {
@@ -310,13 +313,13 @@ export default {
         )
       }
     },
-    collection: {
+    collectionName: {
       immediate: true,
       handler() {
         this.loadAllTheThings()
       }
     },
-    index: {
+    indexName: {
       immediate: true,
       handler() {
         this.loadAllTheThings()
@@ -388,8 +391,8 @@ export default {
       this.deleteModalIsLoading = true
       try {
         await this.wrapper.performDeleteDocuments(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           documentsToDelete
         )
         this.$bvModal.hide('modal-delete')
@@ -443,15 +446,15 @@ export default {
         this.saveListView()
 
         this.currentFilter = filterManager.load(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           this.$route
         )
         filterManager.save(
           this.currentFilter,
           this.$router,
-          this.index,
-          this.collection
+          this.indexName,
+          this.collectionName
         )
         this.loading = false
       } catch {
@@ -482,14 +485,14 @@ export default {
         filterManager.save(
           this.currentFilter,
           this.$router,
-          this.index,
-          this.collection
+          this.indexName,
+          this.collectionName
         )
         if (!loadedFromHistory) {
           filterManager.addNewHistoryItemAndSave(
             newFilters,
-            this.index,
-            this.collection
+            this.indexName,
+            this.collectionName
           )
         }
         await this.fetchDocuments()
@@ -512,7 +515,7 @@ export default {
     },
     async fetchDocuments() {
       this.$forceUpdate()
-      this.indexOrCollectionNotFound = false
+      this.indexNameOrCollectionNotFound = false
 
       this.selectedDocuments = []
 
@@ -524,7 +527,7 @@ export default {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
-          this.collectionMapping,
+          this.collectionNameMapping,
           this.wrapper
         )
         if (!searchQuery) {
@@ -536,8 +539,8 @@ export default {
         // TODO: refactor how search is done
         // Execute search with corresponding searchQuery
         const res = await this.wrapper.performSearchDocuments(
-          this.collection,
-          this.index,
+          this.collectionName,
+          this.indexName,
           searchQuery,
           pagination,
           sorting
@@ -547,7 +550,7 @@ export default {
       } catch (e) {
         this.$log.error(e)
         if (e.status === 412) {
-          this.indexOrCollectionNotFound = true
+          this.indexNameOrCollectionNotFound = true
         } else if (e.message.includes('failed to create query')) {
           this.$bvToast.toast(
             'Your query is ill-formed. The complete error has been dumped to the console.',
@@ -632,13 +635,15 @@ export default {
     // =========================================================================
     async loadMappingInfo() {
       const { properties } = await this.wrapper.getMappingDocument(
-        this.collection,
-        this.index
+        this.collectionName,
+        this.indexName
       )
 
-      this.collectionMapping = properties
+      this.collectionNameMapping = properties
 
-      this.mappingGeopoints = this.listMappingGeopoints(this.collectionMapping)
+      this.mappingGeopoints = this.listMappingGeopoints(
+        this.collectionNameMapping
+      )
       this.selectedGeopoint = this.mappingGeopoints[0]
     },
     loadListView() {
@@ -646,7 +651,7 @@ export default {
         this.listViewType = this.$route.query.listViewType
       } else {
         const typeFromLS = localStorage.getItem(
-          `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`
+          `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`
         )
         if (typeFromLS) {
           this.listViewType = typeFromLS
@@ -657,7 +662,7 @@ export default {
     },
     saveListView() {
       localStorage.setItem(
-        `${LOCALSTORAGE_PREFIX}:${this.index}/${this.collection}`,
+        `${LOCALSTORAGE_PREFIX}:${this.indexName}/${this.collectionName}`,
         this.listViewType
       )
       const otherQueryParams = _.omit(
@@ -671,7 +676,7 @@ export default {
       this.$router.push({ query: mergedQuery }).catch(() => {})
     },
     addHumanReadableDateFields() {
-      if (!this.collectionMapping) {
+      if (!this.collectionNameMapping) {
         return
       }
 
@@ -701,7 +706,7 @@ export default {
         }
       }
 
-      findDateFields(this.collectionMapping, null)
+      findDateFields(this.collectionNameMapping, null)
 
       this.documents.forEach(changeField)
     }

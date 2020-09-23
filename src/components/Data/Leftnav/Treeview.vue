@@ -72,8 +72,8 @@ export default {
     IndexBranch
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {

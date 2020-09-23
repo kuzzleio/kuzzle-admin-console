@@ -6,9 +6,9 @@
       </headline>
 
       <create-or-update
-        :index="index"
-        :collection="collection"
-        :mapping="mapping"
+        :index="indexName"
+        :collection="collectionName"
+        :mapping="this.collection.mapping"
         @cancel="onCancel"
         @submit="onSubmit"
       />
@@ -33,8 +33,8 @@ export default {
     PageNotAllowed
   },
   props: {
-    index: String,
-    collection: String
+    indexName: String,
+    collectionName: String
   },
   data() {
     return {
@@ -45,8 +45,17 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', ['canCreateDocument']),
+    index() {
+      return this.$store.direct.getters.index.getOneIndex(this.indexName)
+    },
+    collection() {
+      return this.$store.direct.getters.index.getOneCollection(
+        this.index,
+        this.collectionName
+      )
+    },
     hasRights() {
-      return this.canCreateDocument(this.index, this.collection)
+      return this.canCreateDocument(this.indexName, this.collectionName)
     }
   },
   methods: {
@@ -60,19 +69,21 @@ export default {
 
       try {
         await this.$kuzzle.document.create(
-          this.index,
-          this.collection,
+          this.indexName,
+          this.collectionName,
           document,
           id,
           { refresh: 'wait_for' }
         )
-        await this.$store.direct.dispatch.collection.fetchCollectionDetail({
-          index: this.index,
-          collection: this.collection
-        })
+
+        await this.fetchCollectionMapping()
+
         this.$router.push({
           name: 'DocumentList',
-          params: { index: this.index, collection: this.collection }
+          params: {
+            indexName: this.indexName,
+            collectionName: this.collectionName
+          }
         })
       } catch (err) {
         this.$log.error(err)
@@ -92,33 +103,35 @@ export default {
         params: { index: this.index, collection: this.collection }
       })
     },
-    async fetch() {
+    async fetchCollectionMapping() {
       try {
-        const details = await this.$store.direct.dispatch.collection.fetchCollectionDetail(
+        this.$store.direct.dispatch.index.fetchCollectionMapping({
+          index: this.index,
+          collection: this.collection
+        })
+      } catch (error) {
+        this.$log.error(error)
+        this.$bvToast.toast(
+          'The complete error has been printed to the console.',
           {
-            index: this.index,
-            collection: this.collection
+            title:
+              'Ooops! Something went wrong while counting documents in collections.',
+            variant: 'warning',
+            toaster: 'b-toaster-bottom-right',
+            appendToast: true,
+            dismissible: true,
+            noAutoHide: true
           }
         )
-        this.$log.debug(`fetched mapping`)
-        this.$log.info(details)
-        this.mapping = details.mapping
-      } catch (err) {
-        this.$log.error(err)
-        this.$bvToast.toast(err.message, {
-          title:
-            'Ooops! Something went wrong while loading the collection mapping.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        })
       }
     }
   },
-  mounted() {
-    this.fetch()
+  async mounted() {
+    if (!this.collection || !this.index) {
+      return
+    }
+
+    await this.fetchCollectionMapping()
   }
 }
 </script>
