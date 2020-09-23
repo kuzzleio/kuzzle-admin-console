@@ -284,7 +284,7 @@ export default {
         this.environment.ssl = true
       }
     },
-    createEnvironment() {
+    submit() {
       this.$v.environment.$touch()
       if (this.$v.environment.$anyError) {
         return

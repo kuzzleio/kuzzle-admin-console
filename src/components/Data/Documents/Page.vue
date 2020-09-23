@@ -508,7 +508,7 @@ export default {
         this.$log.error(e)
       }
     },
-    onCollectionClear() {
+    afterCollectionClear() {
       this.documents = []
       this.totalDocuments = 0
       this.currentFilter = new filterManager.Filter()
