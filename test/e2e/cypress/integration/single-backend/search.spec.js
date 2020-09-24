@@ -781,4 +781,45 @@ describe('Search', function() {
       .invoke('innerWidth')
       .should('be.gt', 100)
   })
+
+  it('should be able to toggle fullscreen filters', () => {
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'bar'
+      }
+    )
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'bar'
+      }
+    )
+
+    cy.visit('/')
+    cy.get('.IndexesPage').should('be.visible')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+    cy.contains(collectionName)
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click()
+    cy.get('[data-cy="Filters"]').should('have.class', 'full-screen')
+    cy.get('.BasicFilter-predicates').should('be.visible')
+    cy.get('[data-cy=Filters-rawTab]').click()
+    cy.get('.RawFilter').should('be.visible')
+
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
+
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy=Filters-close]').click({ force: true })
+
+    cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
+
+    cy.get('[data-cy=QuickFilter-optionBtn]').click()
+    cy.get('[data-cy=Filters-fullscreen]').click({ force: true })
+    cy.get('[data-cy=RawFilter-submitBtn]').click()
+    cy.get('[data-cy="Filters"]').should('not.have.class', 'full-screen')
+  })
 })

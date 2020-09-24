@@ -7,7 +7,7 @@
   >
     <b-form-group
       v-if="
-        currentEnvironment.backendMajorVersion !== 1 ||
+        backendMajorVersion !== 1 ||
           isCollectionRealtimeOnly(index, collectionToDelete)
       "
       description="This operation is NOT reversible"
@@ -37,7 +37,7 @@
       >
       <b-button
         v-if="
-          currentEnvironment.backendMajorVersion !== 1 ||
+          backendMajorVersion !== 1 ||
             isCollectionRealtimeOnly(index, collectionToDelete)
         "
         data-cy="DeleteCollectionPrompt-OK"
@@ -74,6 +74,9 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     ...mapGetters('index', ['isCollectionRealtimeOnly']),
+    backendMajorVersion() {
+      return this.currentEnvironment.backendMajorVersion
+    },
     deletionConfirmed() {
       return (
         this.deleteConfirmation !== '' &&

@@ -45,32 +45,28 @@
           class="mt-3"
         ></data-not-found>
         <template v-else>
-          <b-row class="justify-content-md-center" no-gutters>
-            <b-col cols="12">
-              <template v-if="isCollectionEmpty">
-                <realtime-only-empty-state
-                  v-if="isRealtimeCollection"
-                  :index="index"
-                  :collection="collection"
-                />
-                <empty-state v-else :index="index" :collection="collection" />
-              </template>
+          <template v-if="isCollectionEmpty">
+            <realtime-only-empty-state
+              v-if="isRealtimeCollection"
+              :index="index"
+              :collection="collection"
+            />
+            <empty-state v-else :index="index" :collection="collection" />
+          </template>
 
-              <template v-if="!isCollectionEmpty">
-                <filters
-                  class="mb-3"
-                  :available-operands="searchFilterOperands"
-                  :collection="collection"
-                  :current-filter="currentFilter"
-                  :index="index"
-                  :mapping-attributes="mappingAttributes"
-                  @enter-pressed="navigateToDocument"
-                  @filters-updated="onFiltersUpdated"
-                  @submit="onFilterSubmit"
-                />
-              </template>
-            </b-col>
-          </b-row>
+          <template v-if="!isCollectionEmpty">
+            <filters
+              class="mb-3"
+              :available-operands="searchFilterOperands"
+              :collection="collection"
+              :current-filter="currentFilter"
+              :index="index"
+              :mapping-attributes="mappingAttributes"
+              @enter-pressed="navigateToDocument"
+              @filters-updated="onFiltersUpdated"
+              @submit="onFilterSubmit"
+            />
+          </template>
           <template v-if="loading">
             <b-row class="text-center">
               <b-col>
@@ -436,11 +432,6 @@ export default {
         params: { id }
       })
     },
-    afterCollectionClear() {
-      this.documents = []
-      this.totalDocuments = 0
-      this.currentFilter = new filterManager.Filter()
-    },
     // LIST (FETCH & SEARCH)
     // =========================================================================
     async loadAllTheThings() {
@@ -499,6 +490,11 @@ export default {
         )
       }
       this.fetchDocuments()
+    },
+    afterCollectionClear() {
+      this.documents = []
+      this.totalDocuments = 0
+      this.currentFilter = new filterManager.Filter()
     },
     async fetchDocuments() {
       this.$forceUpdate()

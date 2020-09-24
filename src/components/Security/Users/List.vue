@@ -2,20 +2,16 @@
   <div class="UserList">
     <slot v-if="isCollectionEmpty && !loading" name="emptySet" />
     <template v-else>
-      <b-row class="justify-content-md-center" no-gutters>
-        <b-col cols="12">
-          <filters
-            class="mb-3"
-            :available-operands="searchFilterOperands"
-            :current-filter="currentFilter"
-            :mapping-attributes="mappingAttributes"
-            :index="index"
-            :collection="collection"
-            @filters-updated="onFiltersUpdated"
-            @reset="onFiltersUpdated"
-          />
-        </b-col>
-      </b-row>
+      <filters
+        class="mb-3"
+        :available-operands="searchFilterOperands"
+        :current-filter="currentFilter"
+        :mapping-attributes="mappingAttributes"
+        :index="index"
+        :collection="collection"
+        @filters-updated="onFiltersUpdated"
+        @reset="onFiltersUpdated"
+      />
       <template v-if="loading">
         <b-row class="text-center">
           <b-col>
