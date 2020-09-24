@@ -6,7 +6,7 @@
         class="mb-3"
         :available-operands="searchFilterOperands"
         :current-filter="currentFilter"
-        :collection-mapping="collectionMapping"
+        :mapping-attributes="mappingAttributes"
         :index="index"
         :collection="collection"
         @filters-updated="onFiltersUpdated"

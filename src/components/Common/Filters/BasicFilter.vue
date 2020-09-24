@@ -146,7 +146,6 @@
                   </b-button>
                 </b-row>
               </b-col>
-              <b-col class="pl-0 ml-0" cols="5"><hr /></b-col>
             </b-row>
           </b-card>
 
