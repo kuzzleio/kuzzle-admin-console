@@ -72,7 +72,7 @@ export default {
         return {}
       }
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     }
@@ -128,7 +128,7 @@ export default {
           this.rawFilter = JSON.stringify(
             this.wrapper.basicSearchToESQuery(
               val.basic,
-              this.collectionMapping
+              this.mappingAttributes
             ),
             null,
             2

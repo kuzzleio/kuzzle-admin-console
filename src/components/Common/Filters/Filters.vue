@@ -90,7 +90,7 @@
         :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
         :refresh-ace="refreshace"
-        :collectionMapping="collectionMapping"
+        :mapping-attributes="mappingAttributes"
         @filter-submitted="onRawFilterUpdated"
         @reset="onReset"
       />
@@ -103,7 +103,7 @@
         :submit-button-label="submitButtonLabel"
         :action-buttons-visible="actionButtonsVisible"
         :sorting="sorting"
-        :collection-mapping="collectionMapping"
+        :mapping-attributes="mappingAttributes"
         @filter-submitted="onBasicFilterUpdated"
         @reset="onReset"
       />
@@ -202,7 +202,7 @@ export default {
       type: Object,
       required: true
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     },

@@ -177,14 +177,14 @@ export default {
       type: Boolean,
       default: false
     },
+    mappingAttributes: {
+      type: Object,
+      required: true
+    },
     performSearch: Function,
     performDelete: Function,
     routeCreate: String,
-    routeUpdate: String,
-    collectionMapping: {
-      type: Object,
-      required: true
-    }
+    routeUpdate: String
   },
 
   data() {
@@ -291,7 +291,7 @@ export default {
       let searchQuery = null
       searchQuery = filterManager.toSearchQuery(
         this.currentFilter,
-        this.collectionMapping,
+        this.mappingAttributes,
         this.wrapper
       )
       if (!searchQuery) {

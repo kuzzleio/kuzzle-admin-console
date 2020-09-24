@@ -207,6 +207,47 @@ describe('Search', function() {
     )
   })
 
+  it('Should be able to perform a Basic Search on a _kuzzle_info field', function() {
+    cy.skipOnBackendVersion(1)
+    cy.request(
+      'POST',
+      `${kuzzleUrl}/${indexName}/${collectionName}/_create?refresh=wait_for`,
+      {
+        firstName: 'Adrien',
+        lastName: 'Maret',
+        job: 'Blockchain Keylogger as a Service'
+      }
+    )
+
+    cy.visit('/')
+    cy.get('.IndexesPage').should('be.visible')
+    cy.visit(`/#/data/${indexName}/${collectionName}`)
+
+    cy.get('[data-cy="QuickFilter-optionBtn"]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
+      '_kuzzle_info.author'
+    )
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('Luca', {
+      delay: 60
+    })
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 0)
+
+    cy.get('[data-cy=QuickFilter-displayActiveFilters]').click()
+    cy.get('[data-cy="Filters-basicTab"]').click()
+    cy.get('[data-cy="BasicFilter-attributeSelect--0.0"]').select(
+      '_kuzzle_info.author'
+    )
+    cy.get('[data-cy="BasicFilter-valueInput--0.0"]').type('{selectall}-1', {
+      delay: 60
+    })
+    cy.get('[data-cy=BasicFilter-submitBtn]').click()
+
+    cy.get('[data-cy="DocumentListItem"]').should('have.length', 2)
+  })
+
   it('refreshes search when the Search button is hit twice', function() {
     cy.visit('/')
     cy.get('.IndexesPage').should('be.visible')

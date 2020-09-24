@@ -33,7 +33,7 @@
             class="icon-medium icon-black ml-2"
             :index="index"
             :collection="collection"
-            @clear="onCollectionClear"
+            @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
@@ -58,13 +58,13 @@
             <filters
               class="mb-3"
               :available-operands="searchFilterOperands"
-              :current-filter="currentFilter"
-              :collection-mapping="collectionMapping"
-              :index="index"
               :collection="collection"
+              :current-filter="currentFilter"
+              :index="index"
+              :mapping-attributes="mappingAttributes"
+              @enter-pressed="navigateToDocument"
               @filters-updated="onFiltersUpdated"
               @reset="onFiltersUpdated"
-              @enter-pressed="navigateToDocument"
             />
           </template>
           <template v-if="loading">
@@ -181,6 +181,7 @@ import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 
@@ -240,6 +241,9 @@ export default {
       'canDeleteDocument',
       'canEditDocument'
     ]),
+    mappingAttributes() {
+      return this.extractAttributesFromMapping(this.collectionMapping)
+    },
     geoDocuments() {
       return this.documents.filter(document => {
         const [lat, lng] = this.getCoordinates(document)
@@ -326,6 +330,7 @@ export default {
     }
   },
   methods: {
+    extractAttributesFromMapping,
     truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
@@ -501,7 +506,7 @@ export default {
         this.$log.error(e)
       }
     },
-    onCollectionClear() {
+    afterCollectionClear() {
       this.documents = []
       this.totalDocuments = 0
       this.currentFilter = new filterManager.Filter()
@@ -520,7 +525,7 @@ export default {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
-          this.collectionMapping,
+          this.mappingAttributes,
           this.wrapper
         )
         if (!searchQuery) {

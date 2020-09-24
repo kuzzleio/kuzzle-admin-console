@@ -25,126 +25,147 @@
               class="mt-1"
               v-for="(andBlock, filterIndex) in orBlock"
               :key="`andBlock-${filterIndex}`"
+              no-gutters
             >
-              <b-col class="text-right" cols="1">
-                <span
-                  v-if="filterIndex !== 0"
-                  class="text-secondary font-weight-bold"
-                >
-                  AND
-                </span>
-              </b-col>
-              <b-col cols="3">
-                <b-row align-v="center" align-h="center" class="mt-1">
-                  <b-col cols="2">
-                    <i
-                      v-if="filterIndex === 0"
-                      class="fas fa-question-circle fa-lg"
-                      v-b-popover.hover.top="
-                        'For an attribute to be in the list, it must be contained in the mapping.'
-                      "
-                    ></i>
-                  </b-col>
-                  <b-col cols="10">
-                    <b-form-select
-                      placeholder="Attribute"
-                      :data-cy="
-                        `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
-                      "
-                      @change="
-                        attribute =>
-                          selectAttribute(attribute, groupIndex, filterIndex)
-                      "
-                      :value="
-                        filters.basic[groupIndex][filterIndex].attribute || ''
-                      "
-                      :options="selectAttributesValues"
-                    >
-                      <template v-slot:first>
-                        <b-form-select-option :value="''" disabled
-                          >Attribute</b-form-select-option
+              <b-col xl="11">
+                <b-row align-v="center" align-h="center" no-gutters>
+                  <b-col cols="11" class="mt-1">
+                    <b-row align-v="center" align-h="center">
+                      <b-col class="text-center mb-1 px-0" xl="1">
+                        <span
+                          v-if="filterIndex !== 0"
+                          class="text-secondary font-weight-bold"
                         >
-                      </template>
-                    </b-form-select>
+                          AND
+                        </span>
+                      </b-col>
+                      <b-col xl="4" class="mb-1">
+                        <b-row align-v="center" align-h="center">
+                          <template v-if="filterIndex === 0">
+                            <b-col cols="1" class="ml-3">
+                              <i
+                                class="fas fa-question-circle fa-lg"
+                                v-b-popover.hover.top="
+                                  'For an attribute to be in the list, it must be contained in the mapping.'
+                                "
+                              ></i>
+                            </b-col>
+                          </template>
+                          <b-col>
+                            <b-form-select
+                              placeholder="Attribute"
+                              :data-cy="
+                                `BasicFilter-attributeSelect--${groupIndex}.${filterIndex}`
+                              "
+                              @change="
+                                attribute =>
+                                  selectAttribute(
+                                    attribute,
+                                    groupIndex,
+                                    filterIndex
+                                  )
+                              "
+                              :value="
+                                filters.basic[groupIndex][filterIndex]
+                                  .attribute || ''
+                              "
+                              :options="selectAttributesValues"
+                            >
+                              <template v-slot:first>
+                                <b-form-select-option :value="''" disabled
+                                  >Attribute</b-form-select-option
+                                >
+                              </template>
+                            </b-form-select>
+                          </b-col>
+                        </b-row>
+                      </b-col>
+                      <b-col xl="3" class="mb-1">
+                        <b-form-select
+                          v-model="andBlock.operator"
+                          :data-cy="`BasicFilter-operator`"
+                          :options="availableOperandsFormatted"
+                        />
+                      </b-col>
+                      <b-col
+                        xl="4"
+                        class="mb-1"
+                        v-if="
+                          andBlock.operator !== 'exists' &&
+                            andBlock.operator !== 'not_exists'
+                        "
+                      >
+                        <template v-if="andBlock.operator !== 'range'">
+                          <b-form-input
+                            class="BasicFilter--value validate"
+                            placeholder="Value"
+                            type="text"
+                            :data-cy="
+                              `BasicFilter-valueInput--${groupIndex}.${filterIndex}`
+                            "
+                            v-model="andBlock.value"
+                          />
+                        </template>
+                        <template v-else>
+                          <b-form-input
+                            v-model="andBlock.gt_value"
+                            placeholder="Value 1"
+                            type="text"
+                            :data-cy="`BasicFilter-operator-Range-Value1`"
+                            class="BasicFilter--gtValue validate mb-1"
+                          />
+                          <b-form-input
+                            v-model="andBlock.lt_value"
+                            placeholder="Value 2"
+                            type="text"
+                            :data-cy="`BasicFilter-operator-Range-Value2`"
+                            class="BasicFilter--ltValue validate mt-1"
+                          />
+                        </template>
+                      </b-col>
+                    </b-row>
+                  </b-col>
+                  <b-col sm="1" class="text-center">
+                    <b-button
+                      v-if="filterIndex > 0"
+                      @click="removeAndCondition(groupIndex, filterIndex)"
+                    >
+                      <i class="fa fa-times pointer" />
+                    </b-button>
                   </b-col>
                 </b-row>
               </b-col>
-              <b-col cols="2">
-                <b-form-select
-                  v-model="andBlock.operator"
-                  :data-cy="`BasicFilter-operator`"
-                  :options="availableOperandsFormatted"
-                />
+              <b-col xl="1">
+                <b-row align-v="center" align-h="center">
+                  <b-button
+                    v-if="filterIndex === orBlock.length - 1"
+                    variant="outline-secondary"
+                    @click="addAndCondition(groupIndex)"
+                  >
+                    <i class="fa fa-plus left mr-1" />AND
+                  </b-button>
+                </b-row>
               </b-col>
-              <b-col
-                cols="3"
-                v-if="andBlock.operator !== 'range'"
-                v-show="
-                  andBlock.operator !== 'exists' &&
-                    andBlock.operator !== 'not_exists'
-                "
-              >
-                <b-form-input
-                  class="BasicFilter--value validate"
-                  placeholder="Value"
-                  type="text"
-                  :data-cy="
-                    `BasicFilter-valueInput--${groupIndex}.${filterIndex}`
-                  "
-                  v-model="andBlock.value"
-                />
-              </b-col>
-              <template v-else>
-                <b-col cols="3">
-                  <b-form-input
-                    v-model="andBlock.gt_value"
-                    placeholder="Value 1"
-                    type="text"
-                    :data-cy="`BasicFilter-operator-Range-Value1`"
-                    class="BasicFilter--gtValue validate mb-1"
-                  />
-                  <b-form-input
-                    v-model="andBlock.lt_value"
-                    placeholder="Value 2"
-                    type="text"
-                    :data-cy="`BasicFilter-operator-Range-Value2`"
-                    class="BasicFilter--ltValue validate mt-1"
-                  />
-                </b-col>
-              </template>
-              <b-col cols="1">
-                <i
-                  class="fa fa-times mt-2 pointer"
-                  @click="removeAndBasicFilter(groupIndex, filterIndex)"
-                />
-              </b-col>
-              <b-col cols="2" align-self="center" class="text-center">
-                <b-button
-                  v-if="filterIndex === orBlock.length - 1"
-                  variant="outline-secondary"
-                  @click="addAndBasicFilter(groupIndex)"
-                >
-                  <i class="fa fa-plus left mr-1" />AND
-                </b-button>
-              </b-col>
+              <b-col class="pl-0 ml-0" cols="5"><hr /></b-col>
             </b-row>
           </b-card>
 
-          <b-row v-if="groupIndex < filters.basic.length - 1" class="mx-0">
-            <b-col class="pr-0 mr-0" cols="5"><hr /></b-col>
+          <b-row v-if="groupIndex < filters.basic.length - 1">
+            <b-col class="pr-0 mr-0" md="5"><hr /></b-col>
             <b-col
-              cols="2"
+              md="2"
               class="pr-0 mr-0 pl-0 ml-0 mt-2 text-center text-secondary"
             >
               <b>OR</b>
             </b-col>
-            <b-col class="pl-0 ml-0" cols="5"><hr /></b-col>
+            <b-col class="pl-0 ml-0" md="5"><hr /></b-col>
           </b-row>
         </div>
       </div>
     </div>
-    <b-row align-h="center" align-v="center" class="mt-3">
-      <b-col sm="5">
+
+    <b-row align-h="center" align-v="center">
+      <b-col md="5">
         <b-input-group v-if="sortingEnabled" class="ml-1" prepend="Sorting">
           <b-form-select
             data-cy="BasicFilter-sortAttributeSelect"
@@ -161,7 +182,7 @@
           >
         </b-input-group>
       </b-col>
-      <b-col sm="2"
+      <b-col md="2"
         ><b-select
           v-if="sortingEnabled"
           v-model="filters.sorting.order"
@@ -221,7 +242,7 @@ export default {
       required: false,
       default: true
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     },
@@ -241,16 +262,16 @@ export default {
   },
   computed: {
     selectAttributesValues() {
-      return this.attributeItems.map(a => ({ text: a, value: a }))
+      return Object.keys(this.mappingAttributes).map(a => ({
+        text: a,
+        value: a
+      }))
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map(e => ({
         value: e,
         text: this.availableOperands[e]
       }))
-    },
-    attributeItems() {
-      return this.buildAttributeList(this.collectionMapping)
     },
     isFilterValid: function() {
       // For each andBlocks in orBlocks, check if attribute and value field are filled
@@ -342,14 +363,14 @@ export default {
     addGroupBasicFilter() {
       this.filters.basic.push([{ ...emptyBasicFilter }])
     },
-    addAndBasicFilter(groupIndex) {
+    addAndCondition(groupIndex) {
       if (!this.filters.basic[groupIndex]) {
         return false
       }
 
       this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
     },
-    removeAndBasicFilter(groupIndex, filterIndex) {
+    removeAndCondition(groupIndex, filterIndex) {
       if (
         !this.filters.basic[groupIndex] ||
         !this.filters.basic[groupIndex][filterIndex]
@@ -374,34 +395,6 @@ export default {
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
-    },
-    buildAttributeList(mapping, path = []) {
-      let attributes = []
-
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (attributeValue.properties) {
-          attributes = attributes.concat(
-            this.buildAttributeList(
-              attributeValue.properties,
-              path.concat(attributeName)
-            )
-          )
-        } else if (attributeValue.type) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
-
-          // Other attribute types are listed in the "fields" property
-          if (attributeValue.fields) {
-            attributes = attributes.concat(
-              this.buildAttributeList(
-                attributeValue.fields,
-                path.concat(attributeName)
-              )
-            )
-          }
-        }
-      }
-
-      return attributes
     }
   }
 }
