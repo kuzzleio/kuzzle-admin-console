@@ -212,8 +212,8 @@
               class="mx-1"
               variant="link"
               v-if="
-                currentEnvironment.backendMajorVersion !== 1 ||
-                  row.item.type === 'realtime'
+                $store.direct.getters.kuzzle.currentEnvironment
+                  .backendMajorVersion !== 1
               "
               title="Delete collection"
               :data-cy="`CollectionList-delete--${row.item.name}`"
@@ -273,13 +273,11 @@ export default {
       deleteConfirmation: '',
       rawStoredCollections: [],
       filteredCollections: [],
-      modalDeleteId: 'modal-collection-delete',
-      rawStoredCollections: [],
       selectedCollections: []
     }
   },
   computed: {
-    ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
+    ...mapGetters('kuzzle', ['$kuzzle']),
     ...mapGetters('auth', [
       'canSearchCollection',
       'canCreateCollection',

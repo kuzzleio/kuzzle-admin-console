@@ -35,9 +35,9 @@
           />
           <collection-dropdown-action
             class="icon-medium icon-black ml-2"
-            :index="indexName"
-            :collection="collectionName"
-            @clear="onCollectionClear"
+            :index="index"
+            :collection="collection"
+            @clear="afterCollectionClear"
           />
         </b-col>
       </b-row>
