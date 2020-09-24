@@ -21,12 +21,13 @@
             class="mt-1"
             v-for="(andBlock, filterIndex) in orBlock"
             :key="`andBlock-${filterIndex}`"
+            no-gutters
           >
             <b-col xl="11">
-              <b-row align-v="center" align-h="center">
-                <b-col cols="10" class="mt-1">
+              <b-row align-v="center" align-h="center" no-gutters>
+                <b-col cols="11" class="mt-1">
                   <b-row align-v="center" align-h="center">
-                    <b-col class="text-center mb-1" xl="1">
+                    <b-col class="text-center mb-1 px-0" xl="1">
                       <span
                         v-if="filterIndex !== 0"
                         class="text-secondary font-weight-bold"
@@ -120,9 +121,10 @@
                     </b-col>
                   </b-row>
                 </b-col>
-                <b-col sm="2" class="text-center">
+                <b-col sm="1" class="text-center">
                   <b-button
-                    @click="removeAndBasicFilter(groupIndex, filterIndex)"
+                    v-if="filterIndex > 0"
+                    @click="removeAndCondition(groupIndex, filterIndex)"
                   >
                     <i class="fa fa-times pointer" />
                   </b-button>
@@ -134,7 +136,7 @@
                 <b-button
                   v-if="filterIndex === orBlock.length - 1"
                   variant="outline-secondary"
-                  @click="addAndBasicFilter(groupIndex)"
+                  @click="addAndCondition(groupIndex)"
                 >
                   <i class="fa fa-plus left mr-1" />AND
                 </b-button>
@@ -234,7 +236,7 @@ export default {
       required: false,
       default: true
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     },
@@ -254,16 +256,16 @@ export default {
   },
   computed: {
     selectAttributesValues() {
-      return this.attributeItems.map(a => ({ text: a, value: a }))
+      return Object.keys(this.mappingAttributes).map(a => ({
+        text: a,
+        value: a
+      }))
     },
     availableOperandsFormatted() {
       return Object.keys(this.availableOperands).map(e => ({
         value: e,
         text: this.availableOperands[e]
       }))
-    },
-    attributeItems() {
-      return this.buildAttributeList(this.collectionMapping)
     },
     isFilterValid: function() {
       // For each andBlocks in orBlocks, check if attribute and value field are filled
@@ -355,14 +357,14 @@ export default {
     addGroupBasicFilter() {
       this.filters.basic.push([{ ...emptyBasicFilter }])
     },
-    addAndBasicFilter(groupIndex) {
+    addAndCondition(groupIndex) {
       if (!this.filters.basic[groupIndex]) {
         return false
       }
 
       this.filters.basic[groupIndex].push({ ...emptyBasicFilter })
     },
-    removeAndBasicFilter(groupIndex, filterIndex) {
+    removeAndCondition(groupIndex, filterIndex) {
       if (
         !this.filters.basic[groupIndex] ||
         !this.filters.basic[groupIndex][filterIndex]
@@ -387,34 +389,6 @@ export default {
       }
 
       this.filters.basic[groupIndex].splice(filterIndex, 1)
-    },
-    buildAttributeList(mapping, path = []) {
-      let attributes = []
-
-      for (const [attributeName, attributeValue] of Object.entries(mapping)) {
-        if (attributeValue.properties) {
-          attributes = attributes.concat(
-            this.buildAttributeList(
-              attributeValue.properties,
-              path.concat(attributeName)
-            )
-          )
-        } else if (attributeValue.type) {
-          attributes = attributes.concat(path.concat(attributeName).join('.'))
-
-          // Other attribute types are listed in the "fields" property
-          if (attributeValue.fields) {
-            attributes = attributes.concat(
-              this.buildAttributeList(
-                attributeValue.fields,
-                path.concat(attributeName)
-              )
-            )
-          }
-        }
-      }
-
-      return attributes
     }
   }
 }

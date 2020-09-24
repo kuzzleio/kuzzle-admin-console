@@ -74,6 +74,9 @@ export default {
   computed: {
     ...mapGetters('kuzzle', ['$kuzzle', 'currentEnvironment']),
     ...mapGetters('index', ['isCollectionRealtimeOnly']),
+    backendMajorVersion() {
+      return this.currentEnvironment.backendMajorVersion
+    },
     deletionConfirmed() {
       return (
         this.deleteConfirmation !== '' &&

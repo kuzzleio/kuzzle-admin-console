@@ -44,7 +44,7 @@
         index="%kuzzle"
         route-create="SecurityUsersCreate"
         route-update="SecurityUsersUpdate"
-        :collection-mapping="userMapping"
+        :mapping-attributes="mappingAttributes"
       >
         <b-card class="EmptyState text-center" slot="emptySet">
           <i class="text-secondary fas fa-user fa-6x mb-3"></i>
@@ -65,6 +65,8 @@ import List from './List'
 import ListNotAllowed from '../../Common/ListNotAllowed'
 import Headline from '../../Materialize/Headline'
 import { mapGetters } from 'vuex'
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
+
 export default {
   name: 'UsersManagement',
   components: {
@@ -79,13 +81,17 @@ export default {
   },
   computed: {
     ...mapGetters('kuzzle', ['wrapper']),
-    ...mapGetters('auth', ['canSearchUser', 'canCreateUser'])
+    ...mapGetters('auth', ['canSearchUser', 'canCreateUser']),
+    mappingAttributes() {
+      return this.extractAttributesFromMapping(this.userMapping)
+    }
   },
   async mounted() {
     const mapping = await this.wrapper.getMappingUsers()
     this.userMapping = mapping.mapping
   },
   methods: {
+    extractAttributesFromMapping,
     createUser() {
       this.$router.push({ name: 'SecurityUsersCreate' })
     }
