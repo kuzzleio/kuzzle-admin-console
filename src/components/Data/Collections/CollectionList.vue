@@ -365,16 +365,16 @@ export default {
       )
     },
     async onDeleteModalSuccess() {
-      await this.fetchCollectionsList()
+      await this.fetchCollectionList()
       this.updateFilteredCollections(this.collections)
     },
-    async fetchCollectionsList() {
+    async fetchCollectionList() {
       if (!this.index) {
         return
       }
 
       try {
-        await this.$store.direct.dispatch.index.fetchCollectionsList(this.index)
+        await this.$store.direct.dispatch.index.fetchCollectionList(this.index)
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -416,7 +416,7 @@ export default {
   watch: {
     index: {
       async handler() {
-        await this.fetchCollectionsList()
+        await this.fetchCollectionList()
         this.updateFilteredCollections(this.collections)
       }
     }

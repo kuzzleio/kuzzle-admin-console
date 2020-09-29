@@ -7,7 +7,7 @@
     @hide="resetForm"
   >
     <template v-slot:modal-title>
-      Bulk delete collections
+      Are you sure you want to delete all the selected collections?"
     </template>
 
     <template v-slot:modal-footer>
@@ -27,6 +27,7 @@
       <b-form-group
         label="Type 'DELETE' to confirm the deletion of the selected collections"
         label-for="inputConfirmation"
+        description="This operation is NOT reversible"
       >
         <b-form-input
           data-cy="BulkDeletesCollections-name"

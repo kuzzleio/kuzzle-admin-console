@@ -101,7 +101,7 @@ const actions = createActions({
     await rootGetters.kuzzle.$kuzzle.index.mDelete(indexesNames)
     commit.removeIndexes(indexes)
   },
-  async fetchIndexesList(context) {
+  async fetchIndexeList(context) {
     const { commit, rootGetters } = indexActionContext(context)
     const indexes = state.indexes
     commit.setLoadingIndexes(true)
@@ -120,7 +120,7 @@ const actions = createActions({
 
     commit.setLoadingIndexes(false)
   },
-  async fetchCollectionsList(context, index: Index) {
+  async fetchCollectionList(context, index: Index) {
     const { commit, rootGetters } = indexActionContext(context)
     commit.setLoadingCollections({ index, loading: true })
 

@@ -48,9 +48,9 @@ export default {
     }
   },
   methods: {
-    async fetchIndexesList() {
+    async fetchIndexeList() {
       try {
-        await this.$store.direct.dispatch.index.fetchIndexesList()
+        await this.$store.direct.dispatch.index.fetchIndexeList()
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -67,10 +67,10 @@ export default {
         )
       }
     },
-    async fetchCollectionsList(indexName) {
+    async fetchCollectionList(indexName) {
       try {
         const index = this.$store.direct.getters.index.getOneIndex(indexName)
-        await this.$store.direct.dispatch.index.fetchCollectionsList(index)
+        await this.$store.direct.dispatch.index.fetchCollectionList(index)
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
@@ -117,12 +117,24 @@ export default {
     }
   },
   async mounted() {
+    // ---- LAZY LOADING SEQUENCE ----
+    //
+    // The "DataLayout" component is in charge of
+    // dispatching all the actions of the store that need
+    // to fetch information from Kuzzle beforehand.
+    //
+    // 1 - Always fetch index list
+    // 2 - Fetch collection list
+    // 3 - Fetch collection mapping
+    //
+    // Each action is conditioned by the parameters coming from the router.
+
     this.isFetching = true
 
-    await this.fetchIndexesList()
+    await this.fetchIndexeList()
 
     if (this.$route.params.indexName) {
-      await this.fetchCollectionsList(this.$route.params.indexName)
+      await this.fetchCollectionList(this.$route.params.indexName)
     }
 
     if (this.$route.params.indexName && this.$route.params.collectionName) {

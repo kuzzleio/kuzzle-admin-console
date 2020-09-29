@@ -28,8 +28,9 @@
     </template>
     <form ref="form" v-on:submit.prevent="performDelete()">
       <b-form-group
-        label="Index name confirmation"
+        label="Type the name of the index to confirm deletion"
         label-for="inputConfirmation"
+        description="This operation is NOT reversible"
       >
         <b-form-input
           data-cy="DeleteIndexModal-name"
