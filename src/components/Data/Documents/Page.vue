@@ -1,8 +1,8 @@
 <template>
   <div class="DocumentList">
     <b-container
-      class="DocumentList--container"
       :class="{ 'DocumentList--containerFluid': listViewType !== 'list' }"
+      class="DocumentList--container"
     >
       <b-row>
         <b-col>

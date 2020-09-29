@@ -271,7 +271,7 @@ export default {
     },
     async refreshIndexes() {
       try {
-        await this.$store.direct.dispatch.index.listIndexes()
+        await this.$store.direct.dispatch.index.fetchIndexesList()
       } catch (err) {
         this.$log.error(err)
         this.$bvToast.toast(

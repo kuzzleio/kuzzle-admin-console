@@ -31,35 +31,19 @@
             All indexes
           </router-link>
           <index-branch
-            v-for="indexName in orderedFilteredIndices"
-            :collections="indexesAndCollections[indexName]"
-            :current-collection="collection"
-            :current-index="index"
-            :data-cy="`Treeview-item-index--${indexName}`"
+            v-for="index in orderedFilteredIndexes"
+            :index="index"
+            :browsed-index-name="indexName"
+            :browsed-collection-name="collectionName"
             :filter="filter"
-            :index-name="indexName"
-            :key="indexName"
+            :key="index.name"
+            :data-cy="`Treeview-item-index--${index.name}`"
           />
         </div>
       </template>
     </aside>
   </b-overlay>
 </template>
-
-<style lang="scss" scoped>
-.Treeview {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.Treeview-search {
-  border-bottom: 1px solid #dbdbdb;
-}
-.Treeview-items {
-  flex: 1;
-  overflow-y: auto;
-}
-</style>
 
 <script>
 import IndexBranch from './IndexBranch'
@@ -82,20 +66,12 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['canSearchIndex']),
-    orderedFilteredIndices() {
+    orderedFilteredIndexes() {
       return [
-        ...filterIndexesByKeyword(
-          this.$store.direct.state.index.indexesAndCollections,
-          this.filter
-        )
-      ].sort()
+        ...filterIndexesByKeyword(this.indexes, this.filter)
+      ].sort((a, b) => a.name.localeCompare(b.name))
     },
-    indexesAndCollections() {
-      return Object.keys(this.$store.state.index.indexesAndCollections).length
-        ? this.$store.state.index.indexesAndCollections
-        : {}
-    },
-    isLoadingIndexes() {
+    isLoading() {
       return this.$store.direct.getters.index.loadingIndexes
     },
     indexes() {
@@ -104,3 +80,20 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.Treeview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.Treeview-search {
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.Treeview-items {
+  flex: 1;
+  overflow-y: auto;
+}
+</style>

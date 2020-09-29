@@ -1,7 +1,6 @@
 import { Index } from '@/vuex/modules/index/types'
 
-export const filterIndexesByKeyword = (indexTree, word: string) => {
-  const indexes = Object.keys(indexTree)
+export const filterIndexesByKeyword = (indexes: Index[], word: string) => {
   if (!word || word === '') {
     return indexes
   }
@@ -9,25 +8,14 @@ export const filterIndexesByKeyword = (indexTree, word: string) => {
   let lowerCaseWord = word.toLowerCase()
 
   return indexes.filter(element => {
-    if (element.toLowerCase().indexOf(lowerCaseWord) >= 0) {
-      return true
-    }
-
-    let collections = indexTree[element]
-
-    if (
-      collections.stored &&
-      collections.stored.some(
-        collection => collection.toLowerCase().indexOf(lowerCaseWord) >= 0
-      )
-    ) {
+    if (element.name.toLowerCase().indexOf(lowerCaseWord) >= 0) {
       return true
     }
 
     if (
-      collections.realtime &&
-      collections.realtime.some(
-        collection => collection.toLowerCase().indexOf(lowerCaseWord) >= 0
+      element.collections &&
+      element.collections.some(
+        collection => collection.name.toLowerCase().indexOf(lowerCaseWord) >= 0
       )
     ) {
       return true

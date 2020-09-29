@@ -125,13 +125,6 @@ export default {
         )
       }
     }
-  },
-  async mounted() {
-    if (!this.collection || !this.index) {
-      return
-    }
-
-    await this.fetchCollectionMapping()
   }
 }
 </script>

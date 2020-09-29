@@ -64,32 +64,6 @@ export default {
       )
     }
   },
-  mounted() {
-    if (!this.collection || !this.index) {
-      return
-    }
-
-    try {
-      this.$store.direct.dispatch.index.fetchCollectionMapping({
-        index: this.index,
-        collection: this.collection
-      })
-    } catch (error) {
-      this.$log.error(error)
-      this.$bvToast.toast(
-        'The complete error has been printed to the console.',
-        {
-          title:
-            'Ooops! Something went wrong while counting documents in collections.',
-          variant: 'warning',
-          toaster: 'b-toaster-bottom-right',
-          appendToast: true,
-          dismissible: true,
-          noAutoHide: true
-        }
-      )
-    }
-  },
   methods: {
     async update(payload) {
       this.error = ''

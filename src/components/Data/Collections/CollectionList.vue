@@ -365,23 +365,23 @@ export default {
       )
     },
     async onDeleteModalSuccess() {
-      await this.fetchCollections()
+      await this.fetchCollectionsList()
       this.updateFilteredCollections(this.collections)
     },
-    async fetchCollections() {
+    async fetchCollectionsList() {
       if (!this.index) {
         return
       }
 
       try {
-        await this.$store.direct.dispatch.index.fetchCollections(this.index)
+        await this.$store.direct.dispatch.index.fetchCollectionsList(this.index)
       } catch (error) {
         this.$log.error(error)
         this.$bvToast.toast(
           'The complete error has been printed to the console.',
           {
             title:
-              'Ooops! Something went wrong while counting documents in collections.',
+              'Ooops! Something went wrong while fetching the collections list.',
             variant: 'warning',
             toaster: 'b-toaster-bottom-right',
             appendToast: true,
@@ -411,13 +411,12 @@ export default {
     }
   },
   async created() {
-    await this.fetchCollections()
     this.updateFilteredCollections(this.collections)
   },
   watch: {
     index: {
       async handler() {
-        await this.fetchCollections()
+        await this.fetchCollectionsList()
         this.updateFilteredCollections(this.collections)
       }
     }
