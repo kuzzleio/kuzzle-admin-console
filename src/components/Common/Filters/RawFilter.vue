@@ -1,48 +1,43 @@
 <template>
   <form class="RawFilter">
-    <b-container fluid class="mt-2">
-      <b-row no-gutters v-if="currentFilter.basic" class="blue lighten-3">
-        A Basic filter is currently active. This shows your basic filter as raw
-        filter. If you modify this raw filter it will not change the basic
-        filter view and will reset this raw filter to the original content of
-        the basic filter.
-      </b-row>
-      <b-row no-gutters>
-        <b-col cols="12">
-          <json-editor
-            id="rawsearch"
-            ref="jsoneditor"
-            myclass="pre_ace"
-            :content="rawFilter"
-            @change="onFilterChange"
-          />
-        </b-col>
-      </b-row>
-      <b-alert :show="!isFilterValid && showError" variant="danger" class="mt-2"
-        >Your JSON filter contains errors.</b-alert
-      >
-      <b-row no-gutters v-if="actionButtonsVisible">
-        <b-col sm="12" class="text-right">
-          <b-button
-            class="mt-2 mr-2 mb-2"
-            data-cy="RawFilter-submitBtn"
-            variant="primary"
-            :disabled="!isFilterValid"
-            @click.prevent="submit"
-          >
-            {{ submitButtonLabel }}
-          </b-button>
-          <b-button
-            class="ml-2"
-            data-cy="RawFilter-resetBtn"
-            variant="outline-secondary"
-            @click="reset"
-          >
-            Reset
-          </b-button>
-        </b-col>
-      </b-row>
-    </b-container>
+    <b-row no-gutters v-if="currentFilter.basic" class="blue lighten-3">
+      A Basic filter is currently active. This shows your basic filter as raw
+      filter. If you modify this raw filter it will not change the basic filter
+      view and will reset this raw filter to the original content of the basic
+      filter.
+    </b-row>
+    <json-editor
+      id="rawsearch"
+      class="JsonEditor"
+      ref="jsoneditor"
+      myclass="pre_ace"
+      :content="rawFilter"
+      @change="onFilterChange"
+    />
+    <b-alert :show="!isFilterValid && showError" variant="danger" class="mt-2"
+      >Your JSON filter contains errors.</b-alert
+    >
+    <b-row no-gutters v-if="actionButtonsVisible">
+      <b-col sm="12" class="text-right">
+        <b-button
+          class="mt-2 mr-2 mb-2"
+          data-cy="RawFilter-submitBtn"
+          variant="primary"
+          :disabled="!isFilterValid"
+          @click.prevent="submit"
+        >
+          {{ submitButtonLabel }}
+        </b-button>
+        <b-button
+          class="ml-2"
+          data-cy="RawFilter-resetBtn"
+          variant="outline-secondary"
+          @click="reset"
+        >
+          Reset
+        </b-button>
+      </b-col>
+    </b-row>
   </form>
 </template>
 
@@ -77,7 +72,7 @@ export default {
         return {}
       }
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     }
@@ -133,7 +128,7 @@ export default {
           this.rawFilter = JSON.stringify(
             this.wrapper.basicSearchToESQuery(
               val.basic,
-              this.collectionMapping
+              this.mappingAttributes
             ),
             null,
             2
@@ -150,7 +145,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#rawsearch.pre_ace {
-  height: 100px;
+.RawFilter {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.JsonEditor {
+  flex-grow: 1;
 }
 </style>

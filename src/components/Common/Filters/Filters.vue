@@ -1,10 +1,12 @@
 <template>
   <b-card
+    data-cy="Filters"
+    :class="{ 'full-screen': isFullscreen && advancedFiltersVisible }"
+    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
+    :no-body="!advancedFiltersVisible"
     :text-variant="
       complexFilterActive && !advancedFiltersVisible ? 'white' : 'dark'
     "
-    :header-tag="advancedFiltersVisible ? 'nav' : 'div'"
-    :no-body="!advancedFiltersVisible"
   >
     <template v-slot:header>
       <b-nav card-header tabs>
@@ -54,11 +56,27 @@
             @click="complexFiltersSelectedTab = 'favorite'"
             ><i class="fas fa-star"></i>&nbsp;Saved</b-nav-item
           >
-          <i
-            data-cy="Filters-close"
-            class="Filters-btnClose fa fa-times close"
-            @click="advancedFiltersVisible = false"
-          />
+          <div class="Filters-headerActions">
+            <i
+              v-if="!isFullscreen"
+              class="Filters-headerBtn ml-3 fas fa-expand-arrows-alt"
+              data-cy="Filters-fullscreen"
+              title="Toggle fullscreen"
+              @click="toggleFullscreen"
+            ></i>
+            <i
+              v-else
+              class="Filters-headerBtn ml-3 fas fa-compress-arrows-alt"
+              data-cy="Filters-fullscreen"
+              title="Toggle fullscreen"
+              @click="toggleFullscreen"
+            ></i>
+            <i
+              data-cy="Filters-close"
+              class="Filters-headerBtn ml-3 fas fa-times-circle"
+              @click="close"
+            />
+          </div>
         </template>
       </b-nav>
     </template>
@@ -72,7 +90,7 @@
         :submit-button-label="submitButtonLabel"
         :current-filter="currentFilter"
         :refresh-ace="refreshace"
-        :collectionMapping="collectionMapping"
+        :mapping-attributes="mappingAttributes"
         @filter-submitted="onRawFilterUpdated"
         @reset="onReset"
       />
@@ -85,7 +103,7 @@
         :submit-button-label="submitButtonLabel"
         :action-buttons-visible="actionButtonsVisible"
         :sorting="sorting"
-        :collection-mapping="collectionMapping"
+        :mapping-attributes="mappingAttributes"
         @filter-submitted="onBasicFilterUpdated"
         @reset="onReset"
       />
@@ -108,17 +126,18 @@
 </template>
 
 <style lang="scss" scoped>
-.Filters-btnClose {
-  cursor: pointer;
-  color: grey;
+.Filters-headerActions {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 17px;
+  right: 17px;
+}
+.Filters-headerBtn {
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.5;
 
   &:hover {
-    color: #555;
-    background: #eee;
-    border-radius: 3px;
+    opacity: 0.9;
   }
 }
 .Filters-advanced {
@@ -183,7 +202,7 @@ export default {
       type: Object,
       required: true
     },
-    collectionMapping: {
+    mappingAttributes: {
       type: Object,
       required: true
     },
@@ -220,6 +239,7 @@ export default {
     return {
       advancedFiltersVisible: false,
       complexFiltersSelectedTab: ACTIVE_BASIC,
+      isFullscreen: false,
       jsonInvalid: false,
       objectTabActive: null,
       refreshace: false
@@ -281,7 +301,7 @@ export default {
       this.onFiltersUpdated(newFilter, loadedFromHistory)
     },
     onRawFilterUpdated(filter, loadedFromHistory) {
-      this.advancedFiltersVisible = false
+      this.close()
       this.onFiltersUpdated(
         Object.assign(this.currentFilter, {
           active: filter ? ACTIVE_RAW : NO_ACTIVE,
@@ -299,7 +319,7 @@ export default {
       )
     },
     onReset() {
-      this.advancedFiltersVisible = false
+      this.close()
       this.$emit('reset', new Filter())
     },
     setObjectTabActive(tab) {
@@ -307,11 +327,18 @@ export default {
       this.refreshace = !this.refreshace
     },
     onFiltersUpdated(newFilters, loadedFromHistory) {
-      this.advancedFiltersVisible = false
+      this.close()
       this.$emit('filters-updated', newFilters, loadedFromHistory)
     },
     onEnterPressed() {
       this.$emit('enter-pressed')
+    },
+    toggleFullscreen() {
+      this.isFullscreen = !this.isFullscreen
+    },
+    close() {
+      this.advancedFiltersVisible = false
+      this.isFullscreen = false
     }
   }
 }

@@ -49,36 +49,32 @@
           class="mt-3"
         ></data-not-found>
         <template v-else>
-          <b-row class="justify-content-md-center" no-gutters>
-            <b-col cols="12">
-              <template v-if="isCollectionEmpty">
-                <realtime-only-empty-state
-                  v-if="isRealtimeCollection"
-                  :index="indexName"
-                  :collection="collectionName"
-                />
-                <empty-state
-                  v-else
-                  :index="indexName"
-                  :collection="collectionName"
-                />
-              </template>
+          <template v-if="isCollectionEmpty">
+            <realtime-only-empty-state
+              v-if="isRealtimeCollection"
+              :index="indexName"
+              :collection="collectionName"
+            />
+            <empty-state
+              v-else
+              :index="indexName"
+              :collection="collectionName"
+            />
+          </template>
 
-              <template v-if="!isCollectionEmpty">
-                <filters
-                  class="mb-3"
-                  :available-operands="searchFilterOperands"
-                  :current-filter="currentFilter"
-                  :collection-mapping="collectionMapping"
-                  :index="indexName"
-                  :collection="collectionName"
-                  @filters-updated="onFiltersUpdated"
-                  @reset="onFiltersUpdated"
-                  @enter-pressed="navigateToDocument"
-                />
-              </template>
-            </b-col>
-          </b-row>
+          <template v-if="!isCollectionEmpty">
+            <filters
+              class="mb-3"
+              :available-operands="searchFilterOperands"
+              :collection="collectionName"
+              :current-filter="currentFilter"
+              :index="indexName"
+              :mapping-attributes="mappingAttributes"
+              @enter-pressed="navigateToDocument"
+              @filters-updated="onFiltersUpdated"
+              @reset="onFiltersUpdated"
+            />
+          </template>
           <template v-if="loading">
             <b-row class="text-center">
               <b-col>
@@ -193,6 +189,7 @@ import CollectionDropdownView from '../Collections/DropdownView'
 import CollectionDropdownAction from '../Collections/DropdownAction'
 import Headline from '../../Materialize/Headline'
 import * as filterManager from '../../../services/filterManager'
+import { extractAttributesFromMapping } from '../../../services/mappingHelpers'
 import { truncateName } from '@/utils'
 import { mapGetters } from 'vuex'
 
@@ -260,6 +257,9 @@ export default {
         this.index,
         this.collectionName
       )
+    },
+    mappingAttributes() {
+      return this.extractAttributesFromMapping(this.collectionMapping)
     },
     geoDocuments() {
       return this.documents.filter(document => {
@@ -333,6 +333,7 @@ export default {
     }
   },
   methods: {
+    extractAttributesFromMapping,
     truncateName,
     // VIEW MAP - GEOPOINTS
     // =========================================================================
@@ -527,9 +528,10 @@ export default {
         let searchQuery = null
         searchQuery = filterManager.toSearchQuery(
           this.currentFilter,
-          this.collectionNameMapping,
+          this.mappingAttributes,
           this.wrapper
         )
+
         if (!searchQuery) {
           searchQuery = {}
         }

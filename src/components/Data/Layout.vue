@@ -166,6 +166,7 @@ export default {
 }
 
 .DataLayout-contentWrapper {
+  position: unset;
   flex-grow: 1;
   height: 100%;
   overflow: auto;
