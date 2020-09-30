@@ -34,6 +34,7 @@
             @column="onColumnViewClicked"
           />
           <collection-dropdown-action
+            v-if="index && collection"
             class="icon-medium icon-black ml-2"
             :index="index"
             :collection="collection"
@@ -237,8 +238,7 @@ export default {
       mappingGeopoints: [],
       selectedGeopoint: null,
       resultPerPage: [10, 25, 50, 100, 500],
-      currentPage: 1,
-      indexOrCollectionNotFound: false
+      currentPage: 1
     }
   },
   computed: {
@@ -257,6 +257,9 @@ export default {
         this.index,
         this.collectionName
       )
+    },
+    indexOrCollectionNotFound() {
+      return !this.index || !this.collection ? true : false
     },
     mappingAttributes() {
       return this.extractAttributesFromMapping(this.collectionMapping)

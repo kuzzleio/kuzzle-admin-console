@@ -284,7 +284,10 @@ export default {
       'canEditCollection'
     ]),
     loading() {
-      return this.$store.direct.getters.index.loadingCollections(this.indexName)
+      return (
+        this.$store.direct.getters.index.loadingCollections(this.indexName) &&
+        this.collections
+      )
     },
     index() {
       return this.$store.direct.getters.index.getOneIndex(this.indexName)
@@ -415,10 +418,10 @@ export default {
   },
   watch: {
     index: {
-      async handler() {
-        await this.fetchCollectionList()
-        this.updateFilteredCollections(this.collections)
-      }
+      // async handler() {
+      //   await this.fetchCollectionList()
+      //   this.updateFilteredCollections(this.collections)
+      // }
     }
   }
 }

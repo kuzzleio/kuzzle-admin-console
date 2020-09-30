@@ -11,6 +11,7 @@
       <template v-if="loading">
         <main-spinner></main-spinner>
       </template>
+      <data-not-found v-else-if="dataNotFound" class="mt-3"></data-not-found>
       <router-view v-else />
     </div>
   </Multipane>
@@ -20,6 +21,7 @@
 import MainSpinner from '../Common/MainSpinner'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import Treeview from '@/components/Data/Leftnav/Treeview'
+import DataNotFound from './Data404'
 
 export default {
   name: 'DataLayout',
@@ -27,11 +29,13 @@ export default {
     MainSpinner,
     Treeview,
     Multipane,
-    MultipaneResizer
+    MultipaneResizer,
+    DataNotFound
   },
   data() {
     return {
-      isFetching: false
+      isFetching: false,
+      dataNotFound: false
     }
   },
   computed: {
@@ -67,9 +71,8 @@ export default {
         )
       }
     },
-    async fetchCollectionList(indexName) {
+    async fetchCollectionList(index) {
       try {
-        const index = this.$store.direct.getters.index.getOneIndex(indexName)
         await this.$store.direct.dispatch.index.fetchCollectionList(index)
       } catch (error) {
         this.$log.error(error)
@@ -87,14 +90,8 @@ export default {
         )
       }
     },
-    async fetchCollectionMapping(indexName, collectionName) {
+    async fetchCollectionMapping(index, collection) {
       try {
-        const index = this.$store.direct.getters.index.getOneIndex(indexName)
-        const collection = this.$store.direct.getters.index.getOneCollection(
-          index,
-          collectionName
-        )
-
         await this.$store.direct.dispatch.index.fetchCollectionMapping({
           index,
           collection
@@ -117,34 +114,77 @@ export default {
     }
   },
   async mounted() {
-    // ---- LAZY LOADING SEQUENCE ----
-    //
-    // The "DataLayout" component is in charge of
-    // dispatching all the actions of the store that need
-    // to fetch information from Kuzzle beforehand.
-    //
-    // 1 - Always fetch index list
-    // 2 - Fetch collection list
-    // 3 - Fetch collection mapping
-    //
-    // Each action is conditioned by the parameters coming from the router.
-
-    this.isFetching = true
-
     await this.fetchIndexeList()
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.dataNotFound = false
+    next()
+  },
+  watch: {
+    '$route.params.indexName': {
+      async handler(indexName) {
+        if (!indexName) {
+          return
+        }
 
-    if (this.$route.params.indexName) {
-      await this.fetchCollectionList(this.$route.params.indexName)
+        this.isFetching = true
+
+        await this.fetchIndexeList()
+
+        const index = this.$store.direct.getters.index.getOneIndex(indexName)
+
+        if (!index) {
+          this.dataNotFound = true
+          this.isFetching = false
+          return
+        }
+
+        await this.fetchCollectionList(index)
+        this.isFetching = false
+      }
+    },
+    '$route.params.collectionName': {
+      async handler(collectionName) {
+        if (!collectionName) {
+          return
+        }
+
+        this.dataNotFound = false
+        this.isFetching = true
+
+        if (!this.$route.params.indexName) {
+          this.dataNotFound = true
+          this.isFetching = false
+          return
+        }
+
+        const index = this.$store.direct.getters.index.getOneIndex(
+          this.$route.params.indexName
+        )
+
+        if (!index) {
+          this.dataNotFound = true
+          this.isFetching = false
+          return
+        }
+
+        await this.fetchCollectionList(index)
+
+        const collection = this.$store.direct.getters.index.getOneCollection(
+          index,
+          collectionName
+        )
+
+        if (!collection) {
+          this.dataNotFound = true
+          this.isFetching = false
+          return
+        }
+
+        await this.fetchCollectionMapping(index, collection)
+        this.isFetching = false
+      }
     }
-
-    if (this.$route.params.indexName && this.$route.params.collectionName) {
-      await this.fetchCollectionMapping(
-        this.$route.params.indexName,
-        this.$route.params.collectionName
-      )
-    }
-
-    this.isFetching = false
   }
 }
 </script>
@@ -156,6 +196,7 @@ export default {
   flex-direction: row;
   flex-wrap: nowrap;
 }
+
 .DataLayout-sidebarWrapper {
   background-color: $light-grey-color;
   min-width: $sidebar-width;

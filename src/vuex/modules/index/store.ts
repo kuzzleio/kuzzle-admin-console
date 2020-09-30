@@ -257,7 +257,7 @@ const actions = createActions({
     const { commit, rootGetters } = indexActionContext(context)
 
     if (!index.doesCollectionExist(collection.name)) {
-      throw new Error(`Collection "${name}" doesn't exist`)
+      throw new Error(`Collection "${collection.name}" doesn't exist`)
     }
 
     commit.setLoadingCollections({ index, loading: true })

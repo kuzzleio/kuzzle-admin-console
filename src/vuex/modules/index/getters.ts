@@ -11,7 +11,7 @@ export const loadingIndexes = (state: IndexState) => state.loadingIndexes
 
 export const loadingCollections = state => (indexName: string) => {
   const index = state.indexes.find(el => el.name === indexName)
-  return index ? index.loading : true
+  return index ? index.loading : false
 }
 
 export const collections = state => (indexName: string) => {
